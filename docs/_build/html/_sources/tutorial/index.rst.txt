@@ -9,5 +9,6 @@ Tutorial Index
    addWallet.rst
    walletmanager/index.rst
    associations/index.rst
+   settings/index.rst
 
 This is the tutorial index.
