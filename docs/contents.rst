@@ -10,6 +10,9 @@ Welcome to Verto Guide's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   intro
+   pages/intro
+
 
 
 Indices and tables
