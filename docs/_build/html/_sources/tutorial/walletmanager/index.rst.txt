@@ -116,7 +116,7 @@ For more information about managing associations for a wallet, please see the fo
 .. toctree::
    :maxdepth: 1
 
-   associations.rst
+   ../associations/index.rst
 
 6. Delete: The final column is in the event that the user wants to delete a key. Note that the default key cannot be deleted.
 
