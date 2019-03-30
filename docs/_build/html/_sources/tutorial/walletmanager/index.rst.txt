@@ -103,7 +103,22 @@ By clicking on the image, you are able to add the private key within the Verto c
 
    addPrivateKey.rst
 
-5. Delete: The final column is in the event that the user wants to delete a key. Note that the default key cannot be deleted.
+5. Associations: You can associate your wallet to various external parties in order to leverage more advanced features in Verto.
+
+Click the icon below to manage your associations.
+
+.. image:: img/walletManagerSearch.png
+   :alt: Create Verto Wallet
+   :align: center
+
+For more information about managing associations for a wallet, please see the following:
+
+.. toctree::
+   :maxdepth: 1
+
+   associations.rst
+
+6. Delete: The final column is in the event that the user wants to delete a key. Note that the default key cannot be deleted.
 
 .. image:: img/walletManagerDelete.png
    :alt: Create Verto Wallet
@@ -116,7 +131,7 @@ By selecting the icon, you are redirected to delete the wallet from Verto. For m
 
    deleteWallet.rst
 
-6. Number Of Results Shown: At the bottom right of the wallet, you are able to select the number of visible rows within the wallet. Default is 5.
+7. Number Of Results Shown: At the bottom right of the wallet, you are able to select the number of visible rows within the wallet. Default is 5.
 walletManagerNumRecords
 
 .. image:: img/walletManagerPaginator.png
