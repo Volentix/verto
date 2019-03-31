@@ -88,19 +88,25 @@ Once selected, you will see the following screen. To associte the wallet with Ve
    :alt: Create Verto Wallet
    :align: center
 
-The following screen will be updated to the new look and feel, however, the fields will remain the same. The associate screen appears as follows:
+Note that Verto does NOT store your Venue credentials in the wallet. They are used in a one time event.
 
-.. image:: img/venueAssignAddress.png
+Add your Venue username.
+
+.. image:: img/venuescreen1.png
    :alt: Create Verto Wallet
    :align: center
 
-Note that none of the login credentials are stored in Verto.
+Put in your Venue password.
 
-The fields required are:
+.. image:: img/venuescreen2.png
+   :alt: Create Verto Wallet
+   :align: center
 
-1. Your Venue user name
-2. Venue password
-3. Your Verto password
+The final screen requires your Verto password in order to update your wallet.
+
+.. image:: img/venuescreen3.png
+   :alt: Create Verto Wallet
+   :align: center
 
 Once you click save, you will be redirected to the Associations screen again. Note that Venue has now been associated to the wallet.
 
