@@ -92,7 +92,7 @@ Approved
 
 If you have completed the process, you will be re-directed to the 'Request Address' screen and are now ready to get vtx.
 
-.. image:: img/final.png
+.. image:: img/requestAddress.png
    :alt: Create Verto Wallet
    :align: center
 
