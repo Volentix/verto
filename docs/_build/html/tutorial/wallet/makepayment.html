@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Create Ledger Save File &mdash; Verto Guide  documentation</title>
+  <title>Make Payment &mdash; Verto Guide  documentation</title>
   
 
   
@@ -35,8 +35,7 @@
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Create Ledger Write It Down" href="createLedgerWriteItDown.html" />
-    <link rel="prev" title="Create Ledger" href="createLedger.html" /> 
+    <link rel="prev" title="Wallet" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -84,28 +83,15 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Tutorial Index</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../downloadWallet.html">Download Wallet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../setupWallet.html">Setup Wallet</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../addWallet.html">Add Wallet</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../addWallet.html#about">About</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../addWallet.html#overview">Overview</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="../addWallet.html#create-a-new-account">Create A New Account</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../addWallet.html#adding-existing-account">Adding Existing Account</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2 current"><a class="reference internal" href="../walletmanager/index.html">Wallet Manager</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../walletmanager/index.html#about">About</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../walletmanager/index.html#adding-wallet">Adding Wallet</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="../addWallet.html">Add Wallet</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../walletmanager/index.html#understanding-the-table">Understanding The Table</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../addWallet.html">Add Wallet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../walletmanager/index.html">Wallet Manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../associations/index.html">Associations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../settings/index.html">Settings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../getvtx/index.html">Get VTX</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../wallet/index.html">Wallet</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Wallet</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Make Payment</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -155,19 +141,15 @@
         
           <li><a href="../index.html">Tutorial Index</a> &raquo;</li>
         
-          <li><a href="../setupWallet.html">Setup Wallet</a> &raquo;</li>
+          <li><a href="index.html">Wallet</a> &raquo;</li>
         
-          <li><a href="../addWallet.html">Add Wallet</a> &raquo;</li>
-        
-          <li><a href="createLedger.html">Create Ledger</a> &raquo;</li>
-        
-      <li>Create Ledger Save File</li>
+      <li>Make Payment</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/tutorial/addwallets/createLedgerSaveFile.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/tutorial/wallet/makepayment.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -180,31 +162,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="create-ledger-save-file">
-<h1>Create Ledger Save File<a class="headerlink" href="#create-ledger-save-file" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="about">
-<h2>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h2>
-<p>This page provides the details for creating a new Ledger wallet and downloading the private key in an encrypted file.</p>
-</div>
-<div class="section" id="wallet-name">
-<h2>Wallet Name<a class="headerlink" href="#wallet-name" title="Permalink to this headline">¶</a></h2>
-<p>Provide the wallet with a meaningful name.</p>
-<p>Note that this cannot be changed later.</p>
-<img alt="Create Verto Wallet" class="align-center" src="../../_images/saveToFile1.png" />
-</div>
-<div class="section" id="file-password">
-<h2>File Password<a class="headerlink" href="#file-password" title="Permalink to this headline">¶</a></h2>
-<p>On this screen you are asked to provide the password, and confirm it, that will be used to encrypt the private key.</p>
-<p>Note that it is recommended that you select a different password from the wallet.</p>
-<p>Also note that this password is non-recoverable. If you loose the password Volentix, nor any of its partners, are able to get it back for you.</p>
-<img alt="Create Verto Wallet" class="align-center" src="../../_images/saveToFile2.png" />
-</div>
-<div class="section" id="verto-password">
-<h2>Verto Password<a class="headerlink" href="#verto-password" title="Permalink to this headline">¶</a></h2>
-<p>On the final screen you must put in your Verto password.</p>
-<p>Once you have completed this screen you will be redirected into the new wallets home screen.</p>
-<img alt="Create Verto Wallet" class="align-center" src="../../_images/saveToFile3.png" />
-</div>
+  <div class="section" id="make-payment">
+<h1>Make Payment<a class="headerlink" href="#make-payment" title="Permalink to this headline">¶</a></h1>
+<p>sdas</p>
 </div>
 
 
@@ -215,10 +175,8 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="createLedgerWriteItDown.html" class="btn btn-neutral float-right" title="Create Ledger Write It Down" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-      
-        <a href="createLedger.html" class="btn btn-neutral float-left" title="Create Ledger" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Wallet" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
