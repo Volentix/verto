@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Claim VTX &mdash; Verto Guide  documentation</title>
+  <title>View History &mdash; Verto Guide  documentation</title>
   
 
   
@@ -35,8 +35,7 @@
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="View History" href="viewhistory.html" />
-    <link rel="prev" title="Request Address" href="requestAddress.html" /> 
+    <link rel="prev" title="Claim VTX" href="claimvtx.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -154,13 +153,15 @@
         
           <li><a href="requestAddress.html">Request Address</a> &raquo;</li>
         
-      <li>Claim VTX</li>
+          <li><a href="claimvtx.html">Claim VTX</a> &raquo;</li>
+        
+      <li>View History</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/tutorial/getvtx/claimvtx.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/tutorial/getvtx/viewhistory.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -173,22 +174,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="claim-vtx">
-<h1>Claim VTX<a class="headerlink" href="#claim-vtx" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="view-history">
+<h1>View History<a class="headerlink" href="#view-history" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="about">
 <h2>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h2>
-<p>This page provides an overview if requesting an address for Crowdfund. This address, once allocated will be used to send tokens to.</p>
-<div class="section" id="address-display">
-<h3>Address Display<a class="headerlink" href="#address-display" title="Permalink to this headline">¶</a></h3>
-<p>The following is what you are presented with once an address has been allocated.</p>
-<img alt="Create Verto Wallet" class="align-center" src="../../_images/requestAddress.png" />
-<p>On the left is the QR code of the allocated addresses public key. Also on the page is the time availble to use the address. You will also note the copy button.</p>
-<p>At this point you can use your native wallet of choice to send tokens to the publically allocated address.4</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="viewhistory.html">View History</a></li>
-</ul>
-</div>
+<p>This page provides an overview of viewing your Get VTX history.</p>
+<p>In short, when getting vtx, the transaction must go through various stages before being allocated and attested on the ledger. For example, we need six block confirmations before finalizing the transactions. This page provides the auditing necessary for you to monitor your transaction through the system.</p>
+<p>You will be presented with the following on entering this page.</p>
+<img alt="Create Verto Wallet" class="align-center" src="../../_images/history.png" />
+<p>You can toggle the statuses to see current as well as previous transaction histories.</p>
+<p>The stages of a transaction are detailed below.</p>
+<div class="section" id="stages-of-a-transaction">
+<h3>Stages Of A Transaction<a class="headerlink" href="#stages-of-a-transaction" title="Permalink to this headline">¶</a></h3>
+<p>The process of getting VTX has multiple stages. They are:</p>
+<ol class="arabic simple">
+<li><p>Cancelled: The transaction has been canceled.</p></li>
+<li><p>Pending: The transaction has been received and viewed on the native chain, however, it has not yet been confirmed.</p></li>
+<li><p>Accepted: The transaction has been confirmed and is in the process of being written to ledger. Please note that this is a very quick phase. If your transaction remains in this phase for any period of time please notify the Verto team. You can notify the team by clicking the Support button on the left hand navigation.</p></li>
+</ol>
+<img alt="Create Verto Wallet" class="align-center" src="../../_images/support.png" />
 </div>
 </div>
 </div>
@@ -201,10 +205,8 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="viewhistory.html" class="btn btn-neutral float-right" title="View History" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-      
-        <a href="requestAddress.html" class="btn btn-neutral float-left" title="Request Address" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="claimvtx.html" class="btn btn-neutral float-left" title="Claim VTX" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
