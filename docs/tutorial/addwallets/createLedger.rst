@@ -11,6 +11,8 @@ This page provides the details on how to create a Ledger account.
    :alt: Create Verto Wallet
    :align: center
 
+Warning: The private key is your responsibility. Volentix nor its partners have a copy. If you loose the private key it cannot be recovered by the system.
+
 =================
 Overview
 =================
