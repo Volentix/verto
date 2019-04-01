@@ -25,3 +25,14 @@ At this point you can use your native wallet of choice to send tokens to the pub
    :maxdepth: 1
 
    viewhistory.rst
+
+---------------------
+Times Up
+---------------------
+
+Once you run out of time allocated to you for the address, you will be presented with the following screen.
+
+.. image:: img/timesup.png
+   :alt: Create Verto Wallet
+   :align: center
+
