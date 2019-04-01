@@ -20,7 +20,7 @@ Starting Out
 You can navigate to the Crowdfund summary page from your wallet. Click the 'View Crowdfund' button.
 
 
-.. image:: img/crowdfundpaused.png
+.. image:: img/getvtxbutton.png
    :alt: Create Verto Wallet
    :align: center
 
@@ -30,7 +30,17 @@ Once you have selected to View Crowdfund, you will be directed to the Crowdfund 
    :alt: Create Verto Wallet
    :align: center
 
-Click the 'Get VTX' button.
+You are presented with two options:
+
+1. Get VTX: Use a native chain to get your own VTX.
+2. Get VTX History: To see the history of your transactions.
+
+To know more about the transaction history page, please see the following:
+
+.. toctree::
+   :maxdepth: 1
+
+   viewhistory.rst
 
 ===========
 Status
@@ -102,3 +112,4 @@ For more information on requesting an address, please see the following:
    :maxdepth: 1
 
    requestAddress.rst
+
