@@ -31,7 +31,7 @@ Verto is being built as a multi-currency wallet for integrating sovereign servic
 
 If you are unfamiliar with the Volentix repository management strategy, [please read this guide.](https://github.com/Volentix/documentation/blob/master/REPO_MANAGEMENT_GUIDE.md)
 
-To know more about Verto architecture, [please read this guide.](https://vertohowto.readthedocs.io/en/latest/architecture/vision.html)
+To know more about Verto architecture, [please read this guide.](https://vertohowto.readthedocs.io/en/latest/architecture/index.html)
 
 ## Install
 
