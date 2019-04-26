@@ -62,7 +62,7 @@ No install the dependancies:
 npm i
 ```
 
-Thats it!
+Thats it! Happy hacking!
 
 ## Usage
 
