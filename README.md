@@ -8,17 +8,7 @@
 > A multi-currency cross-blockchain peer-to-peer wallet
 
 
-Verto is being built as a multi-currency wallet
-for use with the VDex decentralized exchange,
-and intends to facilitate personal custody and
-local management of private and public keys
-in peer-to-peer transactions, with the goal of
-eliminating the risks of devastating losses of
-stake associated with traumatic failures of central
-operators.
-Verto plans to employ a system of smart contracts to maintain the state between two
-trading clients, the simplest operations being accomplished with atomic swaps [Volentix ecosystem](https://volentix.io).
-
+Verto is being built as a multi-currency wallet for integrating sovereign services into one, user controlled and managed, anonymous, and decentralized tool. The focus of Verto is to simplify the usage of blockchain technology in a way that is intuative for those unfamiliar with the technology.
 
 ## Table of Contents
 
@@ -27,6 +17,36 @@ trading clients, the simplest operations being accomplished with atomic swaps [V
 - [Maintainers](#maintainers)
 - [Contribute](#contribute)
 - [License](#license)
+
+
+No fluff
+
+    1. No tracking of an kind happens within Verto.
+    2. Services associate a user through the Verto public address.
+
+To Do:
+
+Knowledge management systems in verto.
+
+trading clients, the simplest operations being accomplished with atomic swaps [Volentix ecosystem](https://volentix.io).
+Bitcoin wallet
+
+Tor integration
+
+Change the web hosting from s3 to a decentralized service.
+
+
+
+and intends to facilitate personal custody and
+local management of private and public keys
+in peer-to-peer transactions, with the goal of
+eliminating the risks of devastating losses of
+stake associated with traumatic failures of central
+operators.
+Verto plans to employ a system of smart contracts to maintain the state between two
+
+
+
 
 ## Install
 

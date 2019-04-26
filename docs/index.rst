@@ -5,4 +5,5 @@ Verto Documentation!
    :maxdepth: 2
 
    tutorial/index.rst
+   architecture/index.rst
 
