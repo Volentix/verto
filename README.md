@@ -10,16 +10,28 @@
 
 Verto is being built as a multi-currency wallet for integrating sovereign services into one, user controlled and managed, anonymous, and decentralized tool. The focus of Verto is to simplify the usage of blockchain technology in a way that is intuative for those unfamiliar with the technology.
 
-
-Please refer to the [Architectural Guide](https://vertohowto.readthedocs.io/en/latest/architecture/vision.html) for more details about Verto design.
-
 ## Table of Contents
 
+<!-- toc -->
+
+- [Before You Begin](#before-you-begin)
 - [Install](#install)
 - [Usage](#usage)
+  * [Web](#web)
+  * [Electron](#electron)
+  * [Android](#android)
+  * [IOS](#ios)
 - [Maintainers](#maintainers)
 - [Contribute](#contribute)
 - [License](#license)
+
+<!-- tocstop -->
+
+## Before You Begin
+
+If you are unfamiliar with the Volentix repository management strategy, [please read this guide.](https://github.com/Volentix/documentation/blob/master/REPO_MANAGEMENT_GUIDE.md)
+
+To know more about Verto architecture, [please read this guide.](https://vertohowto.readthedocs.io/en/latest/architecture/vision.html)
 
 ## Install
 
