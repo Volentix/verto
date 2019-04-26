@@ -12,5 +12,3 @@ Tutorial Index
    settings/index.rst
    getvtx/index.rst
    wallet/index.rst
-
-This is the tutorial index.
