@@ -10,6 +10,9 @@
 
 Verto is being built as a multi-currency wallet for integrating sovereign services into one, user controlled and managed, anonymous, and decentralized tool. The focus of Verto is to simplify the usage of blockchain technology in a way that is intuative for those unfamiliar with the technology.
 
+
+Please refer to the [Architectural Guide](https://vertohowto.readthedocs.io/en/latest/architecture/vision.html) for more details about Verto design.
+
 ## Table of Contents
 
 - [Install](#install)
@@ -18,44 +21,71 @@ Verto is being built as a multi-currency wallet for integrating sovereign servic
 - [Contribute](#contribute)
 - [License](#license)
 
-
-No fluff
-
-    1. No tracking of an kind happens within Verto.
-    2. Services associate a user through the Verto public address.
-
-To Do:
-
-Knowledge management systems in verto.
-
-trading clients, the simplest operations being accomplished with atomic swaps [Volentix ecosystem](https://volentix.io).
-Bitcoin wallet
-
-Tor integration
-
-Change the web hosting from s3 to a decentralized service.
-
-
-
-and intends to facilitate personal custody and
-local management of private and public keys
-in peer-to-peer transactions, with the goal of
-eliminating the risks of devastating losses of
-stake associated with traumatic failures of central
-operators.
-Verto plans to employ a system of smart contracts to maintain the state between two
-
-
-
-
 ## Install
 
+To install Verto you will need to have the following installed on your system:
+
+1. **NPM:** v6.4.1
+2. **Node:** v10.15.0
+3. **Quasar:** v0.17.23. Note that this is at the time of writting. We are in the process of migrating to v1.X. [Install Quasar Docs](https://quasar-framework.org/guide/). Make sure you have selected the right version of the documentation on the left hand panel.
+
 ```
+Note that other version of Node and NPM may work, however, these are the versions our team is using.
 ```
+
+If you are looking to simply try running Verto, but do not wish to contribute, you can simply clone the repository
+```
+git clone https://github.com/Volentix/verto.git
+```
+
+If you are looking to make contributions, you will need to fork the repository. Please refer to the [Contributing Guide for details](.github/CONTRIBUTING.md)
+
+Once you have a copy locally, cd into the cloned directory:
+```
+cd verto
+```
+
+No install the dependancies:
+```
+npm i
+```
+
+Thats it!
 
 ## Usage
 
+You can run Verto on the following platforms:
+
+### Web
+
+Only a browser is required to run on web.
+
 ```
+quasar dev
+```
+
+### Electron
+
+No additional tooling is required to run Verto as an electron app.
+
+```
+quasar dev -m electron
+```
+
+### Android
+
+You must install the android development environment for your platform. This is considered out of scope for this guide. Please refer to online documentation from official sources.
+
+```
+quasar dev -m android
+```
+
+### IOS
+
+You must install the android development environment for your platform. This is considered out of scope for this guide. Please refer to online documentation from official sources.
+
+```
+quasar dev -m ios
 ```
 
 ## Maintainers
@@ -64,7 +94,7 @@ Verto plans to employ a system of smart contracts to maintain the state between 
 
 ## Contribute
 
-See [the contribute file](contribute.md)!
+See [the contribute file](.github/CONTRIBUTING.md)!
 
 PRs accepted.
 
