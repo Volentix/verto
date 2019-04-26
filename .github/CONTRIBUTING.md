@@ -8,7 +8,7 @@ In addition to the `Volentix Standard Contribution File`, the following contains
 
 ### Communication
 
-TODO: Need to add the communication channels to this file.
+Please join us on [Discord](https://discord.gg/wFAmdxq )
 
 ## What We Are Looking For
 
