@@ -6,3 +6,4 @@ Verto Documentation!
 
    tutorial/index.rst
    architecture/index.rst
+   faq/index.rst
