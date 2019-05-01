@@ -23,7 +23,7 @@ Verto also integrates functionality of other DApps:
 2. KYC with [Blocktopus](https://blocktopus.io/)
 3. Multi-payment gateways like [Zixipay](https://zixipay.com/login)
 4. A crypto ratings and rankings dashboard from [Vespucci](https://vespucci.site/)
-5. Integration with [Coinswitch](https://coinswitch.co/)
+5. Anonymous coin trading with with [Coinswitch](https://coinswitch.co/)
 
 ## Task Request
 
