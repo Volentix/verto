@@ -1,0 +1,87 @@
+{
+  "name": "verto",
+  "version": "0.8.5",
+  "description": "A multi-currency crypto wallet with initial support for EOS & VTX",
+  "cordovaId": "org.cordova.verto",
+  "author": "Volentix Labs <volentix.io>",
+  "private": true,
+  "homepage": "https://github.com/Volentix/verto",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Volentix/verto.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Volentix/verto/issues"
+  },
+  "scripts": {
+    "dev": "quasar dev -m electron",
+    "ios": "quasar dev -m cordova -T ios",
+    "android": "quasar dev -m cordova -T android",
+    "electron": "quasar dev -m electron",
+    "pwa": "quasar dev -m pwa",
+    "build": "quasar build -m electron",
+    "build-electron": "quasar build -m electron --target all",
+    "build-pwa": "quasar build -m pwa",
+    "build-ios": "quasar build -m cordova -T ios",
+    "build-android": "quasar build -m cordova -T android",
+    "deploy-dev": "aws s3 sync dist/pwa-mat/ s3://verto-dev",
+    "deploy-prod": "aws s3 sync dist/pwa-mat/ s3://verto-prod",
+    "lint": "./node_modules/eslint/bin/eslint.js --fix --ext .js,.vue src",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "dependencies": {
+    "@chenfengyuan/vue-countdown": "1.1.0",
+    "@chenfengyuan/vue-qrcode": "1.0.0",
+    "axios": "0.18.0",
+    "clipboard-polyfill": "2.7.0",
+    "dotenv": "6.2.0",
+    "dotenv-webpack": "1.6.0",
+    "electron-log": "2.2.17",
+    "electron-updater": "4.0.6",
+    "eosjs": "^16.0.9",
+    "eosjs-ecc": "4.0.4",
+    "file-saver": "2.0.0",
+    "fs-web": "1.0.1",
+    "sjcl": "1.0.8",
+    "volentix-ledger": "0.2.71",
+    "vue": "2.5.22",
+    "vue-filter-number-format": "^1.0.3",
+    "vue-i18n": "7.8.1",
+    "vue-template-compiler": "2.5.22",
+    "vuelidate": "^0.7.4"
+  },
+  "devDependencies": {
+    "autoprefixer": "9.4.7",
+    "babel-eslint": "8.2.6",
+    "babel-plugin-add-module-exports": "^1.0.0",
+    "devtron": "1.4.0",
+    "electron": "4.0.3",
+    "electron-builder": "^20.40.2",
+    "electron-debug": "2.0.0",
+    "electron-devtools-installer": "2.2.4",
+    "eslint": "4.19.1",
+    "eslint-config-standard": "11.0.0",
+    "eslint-friendly-formatter": "4.0.1",
+    "eslint-loader": "2.1.1",
+    "eslint-plugin-import": "2.16.0",
+    "eslint-plugin-node": "6.0.1",
+    "eslint-plugin-promise": "3.8.0",
+    "eslint-plugin-standard": "3.1.0",
+    "eslint-plugin-vue": "4.7.1",
+    "file-loader": "3.0.1",
+    "icon-factory": "https://github.com/quasarframework/quasar-icon-factory",
+    "quasar-cli": "^0.17.24",
+    "strip-ansi": "3.0.1",
+    "webpack": "4.29.0"
+  },
+  "engines": {
+    "node": ">= 8.9.0",
+    "npm": ">= 5.6.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 10"
+  ]
+}
