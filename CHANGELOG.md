@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.X.X] - 201X-XX-XX
 ### Added
 - Standard Volentix OS component integration.
+- Started the architecture documentation.
 
 ### Changed
-- None
+- Updated Quasar to Version 1
 
 ### Removed
 - None
