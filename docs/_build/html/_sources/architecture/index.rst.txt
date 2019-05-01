@@ -5,3 +5,4 @@ Architecture Index
    :maxdepth: 1
 
    vision.rst
+   coreconcepts.rst
