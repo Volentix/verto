@@ -1,0 +1,38 @@
+// app global css
+@font-face
+    font-family Tittilium
+    src url("../assets/fonts/Titillium_Web/TitilliumWeb-Regular.ttf")
+.titillium
+  font-family 'Tittilium', sans-serif !important
+  letter-spacing 0.1rem
+  font-weight 600
+  line-height 1.2
+big.titillium
+  font-size 30px
+  text-transform text-uppercase
+
+
+.bg-main
+  background-image url("../assets/img/blue_bg.jpg")
+  background-position center
+  background-repeat no-repeat
+  background-size cover
+
+.q-layout-drawer
+  height calc(100vh - 50px)
+  top 50px
+
+.modal-close-button
+  position absolute
+  top 5px
+  right 5px
+
+// IOS FIX
+.q-layout-footer, .q-layout-header
+  z-index 4000
+body.platform-ios .q-drawer-container .q-layout-drawer
+  height calc(100vh - 40px)
+  top 40px
+
+.q-if-control + .q-if-control, .q-if-control + .q-if-inner, .q-if-inner + .q-if-control
+    margin-left 0px

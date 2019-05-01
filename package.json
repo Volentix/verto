@@ -1,0 +1,79 @@
+{
+  "name": "verto",
+  "version": "0.8.6",
+  "description": "A multi-currency crypto wallet with initial support for EOS & VTX",
+  "productName": "Verto",
+  "cordovaId": "io.volentix.verto",
+  "author": "Volentix Labs <volentix.io>",
+  "private": true,
+  "homepage": "https://github.com/Volentix/verto",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Volentix/verto.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Volentix/verto/issues"
+  },
+  "scripts": {
+    "dev": "quasar dev -m electron",
+    "ios": "quasar dev -m cordova -T ios",
+    "android": "quasar dev -m cordova -T android",
+    "electron": "quasar dev -m electron",
+    "pwa": "quasar dev -m pwa",
+    "build": "quasar build -m electron",
+    "build-electron": "quasar build -m electron --target all",
+    "build-pwa": "quasar build -m pwa",
+    "build-ios": "quasar build -m cordova -T ios",
+    "build-android": "quasar build -m cordova -T android",
+    "deploy-dev": "aws s3 sync dist/pwa-mat/ s3://verto-dev",
+    "deploy-prod": "aws s3 sync dist/pwa-mat/ s3://verto-prod",
+    "lint": "./node_modules/eslint/bin/eslint.js --fix --ext .js,.vue src",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "dependencies": {
+    "@chenfengyuan/vue-countdown": "^1.1.2",
+    "@chenfengyuan/vue-qrcode": "^1.0.0",
+    "@quasar/extras": "^1.1.1",
+    "@quasar/quasar-app-extension-qenv": "https://github.com/codenamezjames/app-extension-qenv",
+    "axios": "^0.18.0",
+    "clipboard-polyfill": "^2.8.0",
+    "electron-log": "^3.0.5",
+    "electron-updater": "^4.0.6",
+    "eosjs": "^16.0.9",
+    "eosjs-ecc": "4.0.4",
+    "file-saver": "^2.0.1",
+    "fs-web": "^1.0.1",
+    "quasar": "^1.0.0-beta.19",
+    "sjcl": "^1.0.8",
+    "volentix-ledger": "^0.2.71",
+    "vue-filter-number-format": "^1.0.3",
+    "vue-i18n": "^8.11.1",
+    "vue-template-compiler": "^2.6.10",
+    "vuelidate": "^0.7.4"
+  },
+  "devDependencies": {
+    "@quasar/app": "^1.0.0-beta.20",
+    "@vue/eslint-config-standard": "^4.0.0",
+    "babel-eslint": "^10.0.1",
+    "devtron": "1.4.0",
+    "electron": "4.0.5",
+    "electron-debug": "2.1.0",
+    "electron-devtools-installer": "2.2.4",
+    "eslint": "^5.16.0",
+    "eslint-loader": "^2.1.2",
+    "eslint-plugin-vue": "^5.2.2",
+    "strip-ansi": "=3.0.1"
+  },
+  "engines": {
+    "node": ">= 8.9.0",
+    "npm": ">= 5.6.0",
+    "yarn": ">= 1.6.0"
+  },
+  "browserslist": [
+    "last 1 version, not dead, ie >= 11"
+  ],
+  "resolutions": {
+    "ajv": "6.8.1"
+  }
+}
