@@ -1,12 +1,12 @@
 # Utopian Task Requests
 
-> Guide to creating a [Utopian](https://join.utopian.io/) task Request
-
-Please note that [Utopian](https://join.utopian.io/) has its own general code of conduct and guidelines for behaviour. It is assumed that these guidelines are met and in parallel with the Volentix standard below.
+> Guide to creating a [Utopian](https://utopian.io/) task Request
 
 This readme will take you through the process of creating a Task request for Verto. These task requests will be prioritized and pushed out to the Utopian community.
 
 ## Esacalation
+
+Please note that [Utopian](https://utopian.io/) has its own general code of conduct and guidelines for behaviour. It is assumed that these guidelines are met and in parallel with the Volentix standard below.
 
 In the event you are having an issue, please email arbitrator@volentix.io.
 

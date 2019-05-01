@@ -1,21 +1,21 @@
 # Development Task Request - <DESCRIPTION>
 
-![alt text](<IMAGE_SOURCE> "<IMAGE_DESCRIPTION")
+![alt text](<IMAGE_SOURCE> "<IMAGE_DESCRIPTION>")
 
 ## Repository
 
 https://github.com/Volentix/verto
 
 ## What is Verto
-[Verto](https://volentix.io/verto/) it is the crypto asset management system of Volentix.]
+[Verto](https://volentix.io/verto/) it is the Crypto Asset Manager of a decentraized ecosystem for normal everyday users.
 
 Verto is:
 
-1. Peer to peer
-2. Multi-blockchain
-3. Multi-platform
-4. User friendly
-5. Data management by the user
+1. User friendly
+2. Peer to peer
+3. Multi-blockchain
+4. Multi-platform
+5. Data management controlled by the user
 
 Verto also integrates functionality of other DApps:
 
