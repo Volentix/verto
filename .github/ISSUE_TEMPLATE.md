@@ -28,7 +28,7 @@ Please provide any relevant information about your setup. This is important in c
 
 Please describe the behavior you are expecting.
 
-## Current Behavior
+## Actual Behavior
 
 What is the current behavior?
 
