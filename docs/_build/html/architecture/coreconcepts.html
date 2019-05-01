@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Core Concepts &mdash; Verto Guide  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial Index" href="../tutorial/index.html" />
+    <link rel="prev" title="Vision" href="vision.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Verto Guide
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Architecture Index</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="vision.html">Vision</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Core Concepts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#config">Config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multiplatform">MultiPlatform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#web">Web?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorial Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Verto Guide</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Architecture Index</a> &raquo;</li>
+        
+      <li>Core Concepts</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/architecture/coreconcepts.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="core-concepts">
+<h1>Core Concepts<a class="headerlink" href="#core-concepts" title="Permalink to this headline">¶</a></h1>
+<p>The following document provides the core concepts behind the Verto. Note that these core concepts are inline with the three main principles outlined in the <a class="reference external" href="vision.html">Vision</a>.</p>
+<div class="section" id="config">
+<h2>Config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
+<p>The config information for Verto, and its associated data, can be found in the verto.config file on your local operating system. Its contents are the responsibility of the owner and are never stored into a centralized service.</p>
+<p>Note that this configuration information is designed to be extendable as the wallet begins to take on more features. For now, the focus has been on each wallet and its configuration, as a result, all the configuration can be found in the <cite>keys</cite> label. Each key has their configuration contained within it. However, going further, and especially once the sovereign identity management system gets more verbose, we would expect more top level elements begin to take shape in the config file.</p>
+<p>The following shows the configurtion as of the time of writting. Note the keys with <cite>//</cite> are considered comments for clearer context but do not appear in the decrypred file.</p>
+<blockquote>
+<div><div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;keys&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Wallet Name&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;verto/vtx/btc&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;PUBLIC_KEY&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;defaultKey&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="nt">&quot;associations&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Zixipay/Blocktopus/Venue&quot;</span><span class="p">,</span>
+                    <span class="nt">&quot;createTime&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-04-03T19:00:26.164Z&quot;</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="nt">&quot;//&quot;</span><span class="p">:</span> <span class="s2">&quot;This is opt in and can be removed by the user at any time.&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;//&quot;</span><span class="p">:</span> <span class="s2">&quot;Note that the private key is encrypted even after the verto.config &quot;</span><span class="p">,</span>
+            <span class="nt">&quot;//&quot;</span><span class="p">:</span> <span class="s2">&quot;has been decrypted. This is additional security for the private key.&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;privateKeyEncrypted&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&quot;iv&quot;</span><span class="p">:</span> <span class="s2">&quot;uBkNBWS6hgmoJ0zU2vDaXw==&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;v&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="nt">&quot;iter&quot;</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+                <span class="nt">&quot;ks&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span>
+                <span class="nt">&quot;ts&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+                <span class="nt">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;ccm&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;adata&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;cipher&quot;</span><span class="p">:</span> <span class="s2">&quot;aes&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;salt&quot;</span><span class="p">:</span> <span class="s2">&quot;uX9mUzihxaA=&quot;</span><span class="p">,</span>
+                <span class="nt">&quot;ct&quot;</span><span class="p">:</span> <span class="s2">&quot;PokVS37fX4+izqVGY6vJhnbS50kJzxJTswul8d0LFA2cQ/.....&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>For more details about the configuration management of the system, please see the file <cite>src/util/ConfigManager.js</cite>.</p>
+</div>
+<div class="section" id="multiplatform">
+<h2>MultiPlatform<a class="headerlink" href="#multiplatform" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>Currently, Verto is supported on the following platforms:</dt><dd><ol class="arabic simple">
+<li><p>Windows</p></li>
+<li><p>Mac</p></li>
+<li><p>Linux</p></li>
+<li><p>IOS</p></li>
+<li><p>Android</p></li>
+<li><p>Web</p></li>
+</ol>
+</dd>
+</dl>
+<p>For the most part, the application has no differences between platforms, however, as the config information is capture on the host machine (inflixdb on the web), the mechanics for retrieving the information is managed per environment. For details on how this is accomplished, please refer to the <cite>src/util/platformTools/index.js</cite> file.</p>
+</div>
+<div class="section" id="web">
+<h2>Web?<a class="headerlink" href="#web" title="Permalink to this headline">¶</a></h2>
+<p>Verto has a web site for anyone to use, however, it does have one main shortcoming in that it, for now, must be hosted from a centralized S3 bucket, however, it is intended that the website be migrated to a more decentralized service (like IPFS) in the near future.</p>
+<p>If you have any thoughts about how to decentralize the web based delivery, <a class="reference external" href="https://discord.gg/wFAmdxq">please contact the team on Discord</a>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../tutorial/index.html" class="btn btn-neutral float-right" title="Tutorial Index" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="vision.html" class="btn btn-neutral float-left" title="Vision" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Volentix Labs
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
