@@ -14,7 +14,7 @@
               <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
             </q-icon>
             <big class="titillium q-pa-md">Wallet</big>
-            <q-icon class="float-right" name="refresh" size="2.5rem" @click.native="createLedger()" >
+            <q-icon class="float-right" name="refresh" size="2.5rem" @click.native="retrieveBalance()" >
               <q-tooltip>Refresh</q-tooltip>
             </q-icon>
           </div>
@@ -129,21 +129,6 @@
         </div>
       </q-card>
     </q-dialog>
-    <q-dialog v-model="endOfAddressList">
-      <q-card class="bg-black text-white q-pa-lg">
-        <q-icon class="float-right q-mt-md" name="close" size="1.5rem" color="white" @click.native="endOfAddressList = false" />
-        <div class="text-center bg-dark q-pa-lg text-white">
-          <div class="">
-            <div>
-              <div class="text-h5 qr-wallet-title">{{ $t('Main.mainNetDown') }}</div>
-              <p class="wallet-address-qr q-pr-md q-py-md q-ma-none" >{{ $t('Main.mainNetDownMessage') }}</p>
-              <p class="wallet-address-qr q-pr-md q-py-md q-ma-none" >{{ this.eosEndpoints }}</p>
-              <q-btn glossy outline  label="Try Again" @click="createLedger()" />
-            </div>
-          </div>
-        </div>
-      </q-card>
-    </q-dialog>
     <q-dialog v-model="showLedgerPullProgress">
       <q-card class="bg-black text-white q-pa-lg">
         <div class="text-center">
@@ -173,18 +158,13 @@
 <script>
 // import configManager from '../../util/ConfigManager'
 import EosWrapper from '@/util/EosWrapper'
-import Ledger from 'volentix-ledger'
+import { userError } from '@/util/errorHandler'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import Vue from 'vue'
 import moment from 'moment'
 import store from '@/store'
 
 Vue.component(VueQrcode.name, VueQrcode)
-
-const chainId = process.env[store.state.settings.network].CHAIN_ID
-const myaccount = process.env[store.state.settings.network].ACCOUNT_NAME
-const ledgeraccount = process.env[store.state.settings.network].LEDGER_ACCOUNT
-let ledger = {}
 
 Vue.filter('formatDate', function (value) {
   if (value) {
@@ -241,7 +221,7 @@ export default {
     this.setConnectionOn()
     this.walletName = this.$store.state.currentwallet.wallet.name
     this.walletKey = this.$store.state.currentwallet.wallet.key
-    setTimeout(this.createLedger, 200)
+    this.retrieveBalance()
   },
   methods: {
     isEosWallet () {
@@ -280,29 +260,6 @@ export default {
         exec(command)
       }
     },
-    async createLedger () {
-      this.showLedgerPullProgress = true
-      this.endOfAddressList = false
-      this.currentEosAdddress = this.eosEndpoints[this.currentEosEndpointIndex]
-      ledger = new Ledger({
-        httpEndpoint: this.eosEndpoints[this.currentEosEndpointIndex],
-        chainId: chainId
-      }, process.env[store.state.settings.network].LEDGER_ACCOUNT_NAME)
-      const success = await this.retrieveBalance()
-      if (success) {
-        this.showLedgerPullProgress = false
-      } else {
-        this.currentEosEndpointIndex++
-        if (this.currentEosEndpointIndex >= this.eosEndpoints.length) {
-          this.currentEosEndpointIndex = 0
-          this.showLedgerPullProgress = false
-          this.endOfAddressList = true
-        } else {
-          this.currentEosAdddress = this.eosEndpoints[this.currentEosEndpointIndex]
-          this.createLedger()
-        }
-      }
-    },
     copyWalletKey () {
       this.$clipboardWrite(this.activeTransaction.sToKey)
       this.$q.notify({ color: 'positive', message: this.$t('DisplayKey.copied') })
@@ -318,13 +275,9 @@ export default {
       this.spinnervisible = true
       var self = this
       try {
-        const balance = await ledger.retrieveBalance({
-          account: myaccount,
-          wallet: this.walletKey
-        },
-        ledgeraccount)
-        this.balance = parseFloat(balance.amount).toFixed(4)
-        this.vtxTotal = this.balance
+        let result = await this.$axios.get(process.env[this.$store.state.settings.network].DEMUX_API + '/ledger/balance/' + this.walletKey)
+        self.balance = parseFloat(result.data.balance).toFixed(4)
+        self.vtxTotal = self.balance
         let vtxProm = 0
         let eosProm = 0
         if (this.$store.state.currentwallet.wallet.type === 'eos') {
@@ -334,10 +287,11 @@ export default {
               if (result.length) {
                 self.vtxBalance = result[0].split(' ')[0]
               }
-              // self.balance = parseFloat(balance.amount).toFixed(4)
               self.vtxTotal = parseFloat(+self.vtxBalance + +self.vtxTotal).toFixed(4)
-            }).catch(function (err) {
-              console.log(err)
+            }).catch(function (error) {
+              // TODO: Exception handling
+              userError(error)
+              return false
             })
           // get EOS Balance on EOS Account
           eosProm = eos.getCurrencyBalanceP(this.walletName)
@@ -353,14 +307,13 @@ export default {
           let eos2btc = await this.$axios.get('https://api.coingecko.com/api/v3/simple/price?ids=eos&vs_currencies=btc')
           let eosBtcTotals = parseFloat(+eos2btc.data.eos.btc * +self.eosBalance).toFixed(4)
           let vtxBtcTotals = parseFloat((+results.data.crowdsale.current_price * +self.vtxTotal) / 100000000).toFixed(4)
-          console.log()
           self.currentBtcValue = +eosBtcTotals + +vtxBtcTotals || 0
         })
         this.spinnervisible = false
         return true
       } catch (error) {
-        console.log(error)
         this.spinnervisible = false
+        userError(error)
         return false
         // TODO: Exception handling
         // Can't retrieve the balance
