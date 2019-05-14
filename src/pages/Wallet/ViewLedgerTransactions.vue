@@ -170,21 +170,6 @@
         </div>
       </q-card>
     </q-dialog>
-    <q-dialog v-model="endOfAddressList">
-      <q-card class="bg-black text-white q-pa-lg">
-      <q-icon class="float-right q-mt-md" name="close" size="1.5rem" color="white" @click.native="endOfAddressList = false" />
-      <div class="row gutter-sm bg-dark q-pa-lg text-white">
-        <div class="col flex items-center text-center">
-          <div>
-            <div class="text-h5 qr-wallet-title">{{ $t('Main.mainNetDown') }}</div>
-            <p class="wallet-address-qr q-pr-md q-py-md q-ma-none" >{{ $t('Main.mainNetDownMessage') }}</p>
-            <p class="wallet-address-qr q-pr-md q-py-md q-ma-none" >{{ this.eosEndpoints }}</p>
-            <q-btn glossy outline  label="Try Again" @click="createLedger()" />
-          </div>
-        </div>
-      </div>
-      </q-card>
-    </q-dialog>
     <q-dialog v-model="showLedgerPullProgress">
       <q-card class="bg-black text-white q-pa-lg">
         <div class="text-center">
@@ -214,17 +199,12 @@
 <script>
 import EosWrapper from '@/util/EosWrapper'
 import { userError } from '@/util/errorHandler'
-import Ledger from 'volentix-ledger'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import Vue from 'vue'
 import moment from 'moment'
 import store from '@/store'
 
 Vue.component(VueQrcode.name, VueQrcode)
-
-const chainId = process.env[store.state.settings.network].CHAIN_ID
-const myaccount = process.env[store.state.settings.network].ACCOUNT_NAME
-let ledger = {}
 
 Vue.filter('formatDate', function (value) {
   if (value) {
@@ -322,9 +302,6 @@ export default {
       tableData: [],
       transactions: [],
       vtxTotal: 0,
-      balance: 0,
-      vtxBalance: 0,
-      eosBalance: 0,
       currentBtcValue: 0,
       sendAmount: 0.0,
       sendTo: '',
@@ -337,7 +314,7 @@ export default {
     this.setConnectionOn()
     this.walletName = store.state.currentwallet.wallet.name
     this.walletKey = store.state.currentwallet.wallet.key
-    setTimeout(this.createLedger, 200)
+    this.getTransactionHistory()
   },
   methods: {
     isEosWallet () {
@@ -376,31 +353,6 @@ export default {
         exec(command)
       }
     },
-    async createLedger () {
-      this.showLedgerPullProgress = true
-      this.endOfAddressList = false
-      this.currentEosAdddress = this.eosEndpoints[this.currentEosEndpointIndex]
-      ledger = new Ledger({
-        httpEndpoint: this.eosEndpoints[this.currentEosEndpointIndex],
-        chainId: chainId
-      }, process.env[store.state.settings.network].LEDGER_ACCOUNT_NAME)
-      const success = await this.getTransactionHistory()
-      if (success) {
-        this.showLedgerPullProgress = false
-        this.spinnervisible = false
-      } else {
-        this.currentEosEndpointIndex++
-        if (this.currentEosEndpointIndex >= this.eosEndpoints.length) {
-          this.currentEosEndpointIndex = 0
-          this.showLedgerPullProgress = false
-          this.endOfAddressList = true
-          this.spinnervisible = false
-        } else {
-          this.currentEosAdddress = this.eosEndpoints[this.currentEosEndpointIndex]
-          this.createLedger()
-        }
-      }
-    },
     truncate (text, len) {
       if (text.length >= len) return text.substr(0, len) + '...'
       return text
@@ -409,26 +361,11 @@ export default {
       this.activeTransaction = transaction
     },
     async getTransactionHistory () {
-      // const actions = await (new eosWrapper()).getActions(accountName)
-      this.showLedgerPullProgress = true
-      try {
-        const userTransactions = await ledger.retrieveTransactions({
-          account: myaccount,
-          wallet: this.walletKey
-        })
-        if (userTransactions.transactions.length > 0) {
-          this.transactions = userTransactions.transactions
-          this.transactions = this.transactions.reverse()
-          this.tableData = this.transactions
-          this.getDate()
-        }
-        this.showLedgerPullProgress = false
-        return true
-      } catch (error) {
-        this.showLedgerPullProgress = false
-        return false
-        // TODO: Exception handling
-      }
+      let result = await this.$axios.get(process.env[this.$store.state.settings.network].DEMUX_API + '/ledger/' + this.walletKey + '?skip=0&limit=100')
+      result.data.data = result.data.data.reverse()
+      this.tableData = result.data.data
+      this.getDate()
+      return true
     },
     showDetails () {
     },
