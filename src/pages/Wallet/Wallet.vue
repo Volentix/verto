@@ -194,8 +194,6 @@ export default {
       },
       showTransactionProgress: false,
       dark: true,
-      eosEndpoints: process.env[store.state.settings.network].EOS_ENDPOINTS.split(','),
-      currentEosEndpointIndex: 0,
       activeTransaction: null,
       endOfAddressList: false,
       walletName: '',
