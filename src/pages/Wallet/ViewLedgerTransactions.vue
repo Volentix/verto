@@ -76,7 +76,7 @@
                     {{ col.value | formatDate }}
                   </div>
                   <div>
-                    {{ col.value | formatTime}}
+                    {{ col.value | formatTime }}
                   </div>
                 </div>
               </q-td>
