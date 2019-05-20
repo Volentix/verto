@@ -16,17 +16,8 @@
             <q-icon class="float-left" name="help_outline" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('wallet/ledgertransactions')">
               <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
             </q-icon>
-            <big class="titillium q-pa-xl">Ledger Transactions</big>
+            <big class="titillium q-pa-xl">VTX Transactions</big>
             <q-icon class="float-right" name="close" size="2.5rem" color="white" @click.native="$router.push('wallet')"/>
-            <!--
-            <big>
-              <span @click="getTransactionHistory()" class="q-pa-sm">
-                <q-icon name="refresh" size="3rem">
-                  <q-tooltip>Refresh</q-tooltip>
-                </q-icon>
-              </span>
-            </big>
-            -->
           </div>
         </q-card-section>
         <q-card-section class="text-center">
@@ -85,7 +76,7 @@
                     {{ col.value | formatDate }}
                   </div>
                   <div>
-                    {{ col.value | formatTime }}
+                    {{ col.value | formatTime}}
                   </div>
                 </div>
               </q-td>
@@ -114,60 +105,56 @@
         </div>
       </q-card>
     </q-dialog>
-    <q-dialog v-model="activeTransaction" v-if="activeTransaction" content-css="max-height: 90vh;" no-refocus>
-      <q-card class="bg-black text-white q-pa-lg">
-        <q-icon class="float-right q-mt-md" name="close" size="1.5rem" color="white" @click.native="activeTransaction = null" />
-        <div class="row gutter-sm q-pa-lg text-white" style="max-width: 550px; width: 100vw;">
-          <q-list no-border dark class="full-width">
-            <q-list-header>Transaction Record</q-list-header>
-            <q-item>
-              <q-item-label class="text-h6 text-center">Amount: {{parseFloat(activeTransaction.amount).toFixed(4).toString()}}</q-item-label>
-            </q-item>
-            <q-item>
-              <q-item-label label="From:" />
-              <q-item-section right>
-                <q-item-tile stamp>{{activeTransaction.toAccount}}</q-item-tile>
-              </q-item-section>
-            </q-item>
-            <q-item>
-              <q-item-label label="Wallet:" />
-              <q-item-section right>
-                <q-item-tile stamp>
-                  <q-tooltip anchor="top right" self="bottom right">
-                    {{activeTransaction.sToKey}}
-                  </q-tooltip>
-                  <q-btn outline dense icon="file_copy" @click="copyKey()" no-caps >
-                    &nbsp;{{truncate(activeTransaction.sToKey, 10)}}
+    <q-dialog border v-model="checkActiveTransaction" v-if="activeTransaction" no-refocus @hide="activeTransaction = null">
+      <q-card>
+        <q-toolbar>
+          <q-toolbar-title><span class="text-weight-bold">Transaction Record</span></q-toolbar-title>
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-toolbar>
+          <q-markup-table>
+            <tbody>
+              <tr>
+                <td class="text-left">Amount:</td>
+                <td class="text-right">{{parseFloat(activeTransaction.amount).toFixed(4).toString()}}</td>
+              </tr>
+              <tr>
+                <td class="text-left">From:</td>
+                <td class="text-right">
+                  <q-btn outline dense icon="file_copy" @click="copy2clip(activeTransaction.fromaccount)" no-caps >
+                    &nbsp;{{truncate(activeTransaction.fromaccount, 12)}}
                   </q-btn>
-                </q-item-tile>
-              </q-item-section>
-            </q-item>
-            <q-item>
-              <q-item-label label="Transaction Id:" />
-              <q-item-section right>
-                <q-item-tile stamp>{{activeTransaction.Id}}</q-item-tile>
-              </q-item-section>
-            </q-item>
-            <q-item>
-              <q-item-label label="Block #:" />
-              <q-item-section right>
-                <q-item-tile stamp>{{activeTransaction.tbn}}</q-item-tile>
-              </q-item-section>
-            </q-item>
-            <q-item>
-              <q-item-label label="Transaction Time:" />
-              <q-item-section right>
-                <q-item-tile stamp>{{activeTransaction.timestamp}}</q-item-tile>
-              </q-item-section>
-            </q-item>
-            <q-item>
-              <q-item-label label="Prefix #:" />
-              <q-item-section right>
-                <q-item-tile stamp>{{activeTransaction.tbp}}</q-item-tile>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="text-left">To:</td>
+                <td class="text-right">
+                  <q-btn outline dense icon="file_copy" @click="copy2clip(activeTransaction.tokey)" no-caps >
+                    &nbsp;{{truncate(activeTransaction.tokey, 12)}}
+                  </q-btn>
+                </td>
+              </tr>
+              <tr>
+                <td class="text-left">Transaction Id:</td>
+                <td class="text-right">
+                  <q-btn outline dense icon="file_copy" @click="copy2clip(activeTransaction.trx_id)" no-caps >
+                    &nbsp;{{truncate(activeTransaction.trx_id, 12)}}
+                  </q-btn>
+                </td>
+              </tr>
+              <tr>
+                <td class="text-left">Block #:</td>
+                <td class="text-right">{{activeTransaction.blockNumber}}</td>
+              </tr>
+              <tr>
+                <td class="text-left">Transaction Time:</td>
+                <td class="text-right">{{ activeTransaction.timestamp | formatDate }} {{ activeTransaction.timestamp | formatTime }}</td>
+              </tr>
+              <tr>
+                <td class="text-left">Memo:</td>
+                <td class="text-right">{{activeTransaction.comment}}</td>
+              </tr>
+            </tbody>
+          </q-markup-table>
       </q-card>
     </q-dialog>
     <q-dialog v-model="showLedgerPullProgress">
@@ -219,7 +206,14 @@ Vue.filter('formatTime', function (value) {
 })
 
 export default {
-  // name: 'ComponentName',
+  computed: {
+    checkActiveTransaction: {
+      get () {
+        return !!this.activeTransaction
+      },
+      set () {}
+    }
+  },
   data () {
     return {
       spinnervisible: true,
@@ -239,10 +233,7 @@ export default {
       },
       showTransactionProgress: false,
       dark: true,
-      eosEndpoints: process.env[store.state.settings.network].EOS_ENDPOINTS.split(','),
-      currentEosEndpointIndex: 0,
       activeTransaction: null,
-      endOfAddressList: false,
       walletName: '',
       showLedgerPullProgress: false,
       walletKey: store.state.currentwallet.wallet.key,
@@ -354,32 +345,51 @@ export default {
       }
     },
     truncate (text, len) {
-      if (text.length >= len) return text.substr(0, len) + '...'
+      // Just a little modification to not truncate a eos account name.
+      if (text.length > len) return text.substr(0, len) + '...'
       return text
     },
     showTransactionDetails (transaction) {
       this.activeTransaction = transaction
     },
     async getTransactionHistory () {
+      // get them from the demux api of the vtx ledger contract
       let result = await this.$axios.get(process.env[this.$store.state.settings.network].DEMUX_API + '/ledger/' + this.walletKey + '?skip=0&limit=100')
-      result.data.data = result.data.data.reverse()
-      this.tableData = result.data.data
-      this.getDate()
+
+      if (this.$store.state.currentwallet.wallet.type === 'eos') {
+        // get them from the eos token side of things
+        let eosresult = await this.$axios.get(process.env[this.$store.state.settings.network].DEMUX_API + '/eos/' + this.walletName + '?skip=0&limit=100')
+
+        // the two APIs don't have the same output so let's map it out.
+        var self = this
+        let ledgerformatedresult = eosresult.data.data.map(function (eos) {
+          if (eos.from === self.walletName) { eos.quantity = -eos.quantity }
+          let row = {
+            'amount': eos.quantity,
+            'comment': eos.memo,
+            'toaccount': eos.to,
+            'fromaccount': eos.from,
+            'timestamp': eos.timestamp,
+            'blockNumber': eos.blockNumber,
+            'trx_id': eos.trx_id,
+            'tokey': eos.to
+          }
+          return row
+        })
+
+        result.data.data = result.data.data.concat(ledgerformatedresult)
+      }
+      // sort the transactions from the newest to the oldest
+      this.tableData = result.data.data.sort((a, b) => a.blockNumber - b.blockNumber).reverse()
       return true
     },
     showDetails () {
     },
-    getDate () {
-      for (let i = 0; i < this.transactions.length; i++) {
-        this.transactions[i].timestamp =
-          parseInt(this.transactions[i].timestamp) / 1000
-        this.transactions[i].timestamp = moment(this.transactions[i].timestamp).format('MMM DD, YYYY')
-      }
-    },
-    copyKey (key) {
-      this.$clipboardWrite(key)
+    copy2clip (value) {
+      // more generic copy
+      this.$clipboardWrite(value)
       this.$q.notify({
-        message: this.$t('DisplayKey.copied'),
+        message: this.$t('Main.copied'),
         color: 'positive'
       })
     },
