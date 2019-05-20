@@ -194,7 +194,7 @@
       <q-btn flat dense round icon="close" color="white" class="modal-close-button" @click="activeTransaction = null" />
       <div class="row gutter-sm q-pa-lg text-white" style="max-width: 550px; width: 100vw;">
         <q-list no-border dark class="full-width">
-          <q-list-header>Completed</q-list-header>
+          <q-item-label header>Completed</q-item-label>
           <q-item>
             <q-item-label label="Native Currency:" />
             <q-item-section right>
@@ -237,7 +237,7 @@
             </q-item-section>
           </q-item>
 
-          <q-list-header>VTX</q-list-header>
+          <q-item-label header>VTX</q-item-label>
 
           <q-item>
             <q-item-label label="Pre Bonus Vtx Amount:" />
@@ -267,7 +267,7 @@
             </q-item-section>
           </q-item>
 
-          <q-list-header>Steps</q-list-header>
+          <q-item-label header>Steps</q-item-label>
 
           <q-item>
             <q-item-label label="Transaction Time:" />
