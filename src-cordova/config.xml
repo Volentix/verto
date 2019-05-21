@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="org.cordova.verto" version="0.8.5" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="org.cordova.verto" version="0.8.8" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Verto</name>
     <description>A multi-currency crypto wallet with initial support for EOS &amp; VTX</description>
     <author email="support@volentix.io" href="https://volentix.io">Volentix Labs, Inc.</author>
@@ -66,5 +66,5 @@
     <preference name="AndroidExtraFilesystems" value="files,files-external,documents,sdcard,root" />
     <preference name="SplashScreenDelay" value="5000" />
     <engine name="android" spec="^7.1.4" />
-    <engine name="ios" spec="~4.5.5" />
+    <engine name="ios" spec="^4.5.5" />
 </widget>

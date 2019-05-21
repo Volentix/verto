@@ -8,6 +8,7 @@ const config = {
     'BLOCKTOPUS_URL': 'https://volentix.blocktopus.io',
     'VENUE_URL': 'https://venue.volentix.io/',
     'ZIXIPAY_MERCHANT_ID': 'M432589',
+    "COINSWITCH_APIKEY": "B1jvw5Ytx9OmO2zC1H977dvFT4jmNdQ81OZQCH6d",
     'EOS_TRANSACTION_EXPLORER': 'https://bloks.io/transaction/',
     'READ_THE_DOCS': 'https://vertohowto.readthedocs.io/en/latest/tutorial/'
   },
@@ -20,6 +21,7 @@ const config = {
     'BLOCKTOPUS_URL': 'https://test.volentix.blocktopus.io/',
     'VENUE_URL': 'https://venue-dev.volentix.io/',
     'ZIXIPAY_MERCHANT_ID': 'M696982',
+    "COINSWITCH_APIKEY": "wQCY6jJitu3CKE7oTqZv83W3XIdWevGw7dXY1hV5",
     'EOS_TRANSACTION_EXPLORER': 'https://kylin.eosx.io/tx/',
     'READ_THE_DOCS': 'https://vertohowto.readthedocs.io/en/latest/tutorial/'
   }
