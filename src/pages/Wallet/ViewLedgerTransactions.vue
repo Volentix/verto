@@ -16,7 +16,7 @@
             <q-icon class="float-left" name="help_outline" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('wallet/ledgertransactions')">
               <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
             </q-icon>
-            <big class="titillium q-pa-xl">VTX Transactions</big>
+            <big class="titillium q-pa-xl">Transactions</big>
             <q-icon class="float-right" name="close" size="2.5rem" color="white" @click.native="$router.push('wallet')"/>
           </div>
         </q-card-section>
@@ -65,10 +65,10 @@
                 </div>
                 <div v-if="col.name === 'vtx'" class="text-right text-weight-medium text-h6">
                   <div v-if="col.value > 0">
-                    + {{ parseFloat(props.row.amount).toFixed(2) }} VTX
+                    + {{ parseFloat(props.row.amount).toFixed(2) }} {{ props.row.currency || 'VTX' }}
                   </div>
                   <div v-else>
-                    {{ parseFloat(props.row.amount).toFixed(2) }} VTX
+                    {{ parseFloat(props.row.amount).toFixed(2) }} {{ props.row.currency || 'VTX' }}
                   </div>
                 </div>
                 <div v-if="col.name === 'date'" class="text-right text-weight-medium">
@@ -116,6 +116,10 @@
               <tr>
                 <td class="text-left">Amount:</td>
                 <td class="text-right">{{parseFloat(activeTransaction.amount).toFixed(4).toString()}}</td>
+              </tr>
+              <tr>
+                <td class="text-left">Currency:</td>
+                <td class="text-right">{{activeTransaction.currency || 'VTX'}}</td>
               </tr>
               <tr>
                 <td class="text-left">From:</td>
@@ -366,6 +370,7 @@ export default {
           if (eos.from === self.walletName) { eos.quantity = -eos.quantity }
           let row = {
             'amount': eos.quantity,
+            'currency': eos.currency,
             'comment': eos.memo,
             'toaccount': eos.to,
             'fromaccount': eos.from,
