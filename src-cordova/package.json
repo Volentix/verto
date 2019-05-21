@@ -1,7 +1,7 @@
 {
   "name": "org.cordova.quasar.app",
   "displayName": "Verto",
-  "version": "0.8.0",
+  "version": "0.8.8",
   "description": "A multi-currency crypto wallet with initial support for EOS & VTX",
   "main": "index.js",
   "scripts": {
