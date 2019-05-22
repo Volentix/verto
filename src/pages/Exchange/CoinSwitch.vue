@@ -25,7 +25,40 @@
                     separator
                     v-model="depositCoin"
                     :options="depositCoinOptions"
-                  />
+                    :options-sanitize="false"
+                    :sanitize="false"
+                >
+                  <template v-slot:option="scope">
+                    <q-item
+                      v-bind="scope.itemProps"
+                      v-on="scope.itemEvents"
+                    >
+                      <q-item-section avatar>
+                        <q-icon :name="`img:${scope.opt.image}`" />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label v-html="scope.opt.label" />
+                        <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                  <template v-slot:selected>
+                    <q-item
+                      v-if="depositCoin"
+                    >
+                      <q-item-section avatar>
+                        <q-icon :name="`img:${depositCoin.image}`" />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label v-html="depositCoin.label" />
+                        <q-item-label caption>{{ depositCoin.value }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-item
+                      v-else>
+                    </q-item>
+                  </template>
+                </q-select>
                 <q-input
                   type="text"
                   dark
@@ -58,12 +91,45 @@
               </q-item>
               <div class="q-pa-md">
                 <q-select
-                  dark
-                  label="Select Coin to Receive"
-                  separator
-                  v-model="destinationCoin"
-                  :options="destinationCoinOptions"
-                />
+                    dark
+                    label="Select Coin to Exchange"
+                    separator
+                    v-model="destinationCoin"
+                    :options="destinationCoinOptions"
+                    :options-sanitize="false"
+                    :sanitize="false"
+                >
+                  <template v-slot:option="scope">
+                    <q-item
+                      v-bind="scope.itemProps"
+                      v-on="scope.itemEvents"
+                    >
+                      <q-item-section avatar>
+                        <q-icon :name="`img:${scope.opt.image}`" />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label v-html="scope.opt.label" />
+                        <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                  <template v-slot:selected>
+                    <q-item
+                      v-if="destinationCoin"
+                    >
+                      <q-item-section avatar>
+                        <q-icon :name="`img:${destinationCoin.image}`" />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label v-html="destinationCoin.label" />
+                        <q-item-label caption>{{ destinationCoin.value }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-item
+                      v-else>
+                    </q-item>
+                  </template>
+                </q-select>
                 <q-input
                   type="text"
                   dark
@@ -167,6 +233,14 @@ const headers = {
   'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
 }
 
+const typeUpper = function (thing) {
+  if (typeof thing === 'string' && thing.length >= 1) {
+    return thing.toUpperCase()
+  } else {
+    return ''
+  }
+}
+
 let url = ''
 if (process.env.PROD) {
   url = 'https://api.coinswitch.co'
@@ -180,23 +254,22 @@ export default {
   data () {
     return {
       step: 1,
+      optionsSanitize: false,
       spinnervisible: false,
       lastChangedValue: 'deposit',
       coins: [],
-      depositCoin: 'btc',
+      depositCoin: null,
       depositQuantity: 0,
       depositCoinOptions: [{
         label: 'Bitcoin',
         value: 'btc',
-        stamp: 'btc',
         image: 'https://files.coinswitch.co/public/coins/btc.png'
       }],
-      destinationCoin: 'ltc',
+      destinationCoin: null,
       destinationQuantity: 0,
       destinationCoinOptions: [{
         label: 'EOS',
         value: 'eos',
-        stamp: 'eos',
         image: 'https://files.coinswitch.co/public/coins/eos.png'
       }],
       rateData: {
@@ -225,16 +298,16 @@ export default {
   },
   computed: {
     depositQuantityLabel () {
-      return this.depositCoin.toUpperCase() + ' to Send'
+      return typeUpper(this.depositCoin) + ' to Send'
     },
     destinationQuantityLabel () {
-      return this.destinationCoin.toUpperCase() + ' to Receive'
+      return typeUpper(this.destinationCoin) + ' to Receive'
     },
     returnAddressLabel () {
-      return this.depositCoin.toUpperCase() + ' Return Address'
+      return typeUpper(this.depositCoin) + ' Return Address'
     },
     destinationAddressLabel () {
-      return this.destinationCoin.toUpperCase() + ' Destination Address'
+      return typeUpper(this.destinationCoin) + ' Destination Address'
     }
   },
   created () {
@@ -249,8 +322,7 @@ export default {
         if (coin.isActive === true) {
           let row = {
             'label': coin.name,
-            'value': coin.symbol.toUpperCase(),
-            'stamp': coin.symbol.toUpperCase(),
+            'value': coin.symbol,
             'image': coin.logoUrl
           }
           return row
@@ -320,7 +392,6 @@ export default {
               let row = {
                 'label': self.coins.filter(coins => coins.symbol === coin.destinationCoin)[0].name,
                 'value': coin.destinationCoin,
-                'stamp': coin.destinationCoin,
                 'image': self.coins.filter(coins => coins.symbol === coin.destinationCoin)[0].logoUrl
               }
               return row
