@@ -26,8 +26,8 @@
     "build-pwa": "quasar build -m pwa",
     "build-ios": "quasar build -m cordova -T ios",
     "build-android": "quasar build -m cordova -T android",
-    "deploy-dev": "aws s3 sync dist/pwa-mat/ s3://verto-dev",
-    "deploy-prod": "aws s3 sync dist/pwa-mat/ s3://verto-prod",
+    "deploy-dev": "aws s3 sync dist/pwa/ s3://verto-dev",
+    "deploy-prod": "aws s3 sync dist/pwa/ s3://verto-prod",
     "lint": "./node_modules/eslint/bin/eslint.js --fix --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0"
   },

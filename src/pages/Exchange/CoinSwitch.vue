@@ -19,40 +19,34 @@
                 <q-item-label>Coin you Send</q-item-label>
               </q-item>
               <div class="q-pa-md">
-                  <q-field>
-                    <q-select
-                        dark
-                        label="Select Coin to Exchange"
-                        separator
-                        v-model="depositCoin"
-                        :options="depositCoinOptions"
-                      />
-                  </q-field>
-                  <q-field>
-                    <q-input
-                      type="text"
-                      dark
-                      v-model="refundAddress.address"
-                      color="green"
-                      @input="verifyAddress()"
-                      :float-label="returnAddressLabel"
-                    />
-                  </q-field>
-                  <q-field>
-                    <q-input
-                      type="text"
-                      dark
-                      v-model="refundAddress.tag"
-                      color="green"
-                      float-label="Tag or Memo, often required by exchanges"
-                    />
-                  </q-field>
-                </div>
-                <div class="q-pa-sm" v-show="true" @click="getPairs(); $refs.stepper.next()">
-                  <q-icon name="navigate_next" size="3.2rem" color="green"   >
-                    <q-tooltip>{{ $t('next') }}</q-tooltip>
-                  </q-icon>
-                </div>
+                <q-select
+                    dark
+                    label="Select Coin to Exchange"
+                    separator
+                    v-model="depositCoin"
+                    :options="depositCoinOptions"
+                  />
+                <q-input
+                  type="text"
+                  dark
+                  v-model="refundAddress.address"
+                  color="green"
+                  @input="verifyAddress()"
+                  :label="returnAddressLabel"
+                />
+                <q-input
+                  type="text"
+                  dark
+                  v-model="refundAddress.tag"
+                  color="green"
+                  label="Tag or Memo, often required by exchanges"
+                />
+              </div>
+              <div class="q-pa-sm" v-show="true" @click="getPairs(); $refs.stepper.next()">
+                <q-icon name="navigate_next" size="3.2rem" color="green"   >
+                  <q-tooltip>{{ $t('next') }}</q-tooltip>
+                </q-icon>
+              </div>
             </div>
           </q-card-section>
         </q-step>
@@ -63,40 +57,34 @@
                 <q-item-label>Coin you Get</q-item-label>
               </q-item>
               <div class="q-pa-md">
-                  <q-field>
-                    <q-select
-                        dark
-                        label="Select Coin to Receive"
-                        separator
-                        v-model="destinationCoin"
-                        :options="destinationCoinOptions"
-                      />
-                  </q-field>
-                  <q-field>
-                    <q-input
-                      type="text"
-                      dark
-                      v-model="destinationAddress.address"
-                      color="green"
-                      @input="verifyAddress()"
-                      :float-label="destinationAddressLabel"
-                    />
-                  </q-field>
-                  <q-field>
-                    <q-input
-                      type="text"
-                      dark
-                      v-model="destinationAddress.tag"
-                      color="green"
-                      float-label="Tag or Memo, often required by exchanges"
-                    />
-                  </q-field>
-                </div>
-                <div class="q-pa-sm" v-show="true" @click="getRate(); $refs.stepper.next()">
-                  <q-icon name="navigate_next" size="3.2rem" color="green"   >
-                    <q-tooltip>{{ $t('next') }}</q-tooltip>
-                  </q-icon>
-                </div>
+                <q-select
+                  dark
+                  label="Select Coin to Receive"
+                  separator
+                  v-model="destinationCoin"
+                  :options="destinationCoinOptions"
+                />
+                <q-input
+                  type="text"
+                  dark
+                  v-model="destinationAddress.address"
+                  color="green"
+                  @input="verifyAddress()"
+                  :label="destinationAddressLabel"
+                />
+                <q-input
+                  type="text"
+                  dark
+                  v-model="destinationAddress.tag"
+                  color="green"
+                  label="Tag or Memo, often required by exchanges"
+                />
+              </div>
+              <div class="q-pa-sm" v-show="true" @click="getRate(); $refs.stepper.next()">
+                <q-icon name="navigate_next" size="3.2rem" color="green"   >
+                  <q-tooltip>{{ $t('next') }}</q-tooltip>
+                </q-icon>
+              </div>
             </div>
           </q-card-section>
         </q-step>
@@ -107,32 +95,30 @@
                 <q-item-label>Choose Quantity</q-item-label>
               </q-item>
               <div class="q-pa-md">
-                  <q-field>
-                      <q-input
-                        class="q-pa-sm"
-                        type="number"
-                        dark
-                        v-model="depositQuantity"
-                        color="green"
-                        @input="quatityFromDeposit()"
-                        :float-label="depositQuantityLabel"
-                      />
-                      <q-input
-                        class="q-pa-sm"
-                        type="number"
-                        dark
-                        v-model="destinationQuantity"
-                        color="yellow"
-                        @input="quatityFromDestination()"
-                        :float-label="destinationQuantityLabel"
-                      />
-                  </q-field>
-                </div>
-                <div class="q-pa-sm" v-show="true" @click="postOrder(); $refs.stepper.next()">
-                  <q-icon name="navigate_next" size="3.2rem" color="green"   >
-                    <q-tooltip>{{ $t('next') }}</q-tooltip>
-                  </q-icon>
-                </div>
+                <q-input
+                  class="q-pa-sm"
+                  type="number"
+                  dark
+                  v-model="depositQuantity"
+                  color="green"
+                  @input="quatityFromDeposit()"
+                  :float-label="depositQuantityLabel"
+                />
+                <q-input
+                  class="q-pa-sm"
+                  type="number"
+                  dark
+                  v-model="destinationQuantity"
+                  color="yellow"
+                  @input="quatityFromDestination()"
+                  :float-label="destinationQuantityLabel"
+                />
+              </div>
+              <div class="q-pa-sm" v-show="true" @click="postOrder(); $refs.stepper.next()">
+                <q-icon name="navigate_next" size="3.2rem" color="green"   >
+                  <q-tooltip>{{ $t('next') }}</q-tooltip>
+                </q-icon>
+              </div>
             </div>
           </q-card-section>
         </q-step>
@@ -176,7 +162,6 @@
 <script>
 import store from '@/store'
 import { userError } from '@/util/errorHandler'
-import { required } from 'vuelidate/lib/validators' // , between
 
 const headers = {
   'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
@@ -240,31 +225,16 @@ export default {
   },
   computed: {
     depositQuantityLabel () {
-      return this.depositCoin + ' to Send'
+      return this.depositCoin.toUpperCase() + ' to Send'
     },
     destinationQuantityLabel () {
-      return this.destinationCoin + ' to Receive'
+      return this.destinationCoin.toUpperCase() + ' to Receive'
     },
     returnAddressLabel () {
-      return this.depositCoin + ' Return Address'
+      return this.depositCoin.toUpperCase() + ' Return Address'
     },
     destinationAddressLabel () {
-      return this.destinationCoin + ' Destination Address'
-    }
-  },
-  validations: {
-    destinationAddress: {
-      address: {
-        required
-      }
-    },
-    depositQuantity: {
-      required
-      // between: between(this.rateData.limitMinDepositCoin, this.rateData.limitMaxDepositCoin)
-    },
-    destinationQuantity: {
-      required
-      // between: between(this.rateData.limitMinDestinationCoin, this.rateData.limitMaxDestinationCoin)
+      return this.destinationCoin.toUpperCase() + ' Destination Address'
     }
   },
   created () {
@@ -272,14 +242,15 @@ export default {
   mounted () {
     const self = this
     this.$axios.get(url + '/v2/coins', { headers }).then(function (result) {
-      console.log('results:', result.data)
+      console.log('coins results:', result.data)
+      // will be using this coins array later with the destination select
       self.coins = result.data.data
-      self.depositCoinOptions = result.data.data.map(function (coin) {
+      self.depositCoinOptions = self.coins.map(function (coin) {
         if (coin.isActive === true) {
           let row = {
             'label': coin.name,
-            'value': coin.symbol,
-            'stamp': coin.symbol,
+            'value': coin.symbol.toUpperCase(),
+            'stamp': coin.symbol.toUpperCase(),
             'image': coin.logoUrl
           }
           return row
@@ -325,7 +296,7 @@ export default {
         },
         { headers })
         .then((response) => {
-          console.log('results:', response.data)
+          console.log('order results:', response.data)
           self.exchangeAddress = response.data.data.exchangeAddress
           self.expectedDepositCoinAmount = response.data.data.expectedDepositCoinAmount
           self.expectedDestinationCoinAmount = response.data.data.expectedDestinationCoinAmount
@@ -343,7 +314,7 @@ export default {
         },
         { headers })
         .then((response) => {
-          console.log('results:', response.data)
+          console.log('pairs results:', response.data)
           self.destinationCoinOptions = response.data.data.map(function (coin) {
             if (coin.isActive === true) {
               let row = {
