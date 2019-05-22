@@ -10,7 +10,7 @@
     </q-card>
     <q-card style="max-width: 500px; width: 100%;" flat>
       <q-stepper v-model="step" ref="stepper" alternative-labels active-color="green" animated >
-        <q-step default :name="1" title="Responsibility" class="bg-black workflow-step" :done="step > 1">
+        <q-step style="min-height: 450px" default :name="1" title="Responsibility" class="bg-black workflow-step" :done="step > 1">
           <q-card-section class="text-white">
           <div class="q-py-sm text-uppercase">
             <q-item class="items-center">
@@ -23,7 +23,7 @@
               <q-item-section class="col-auto q-mr-md">
                 <q-chip dense color="red" class="shadow-1">&nbsp;</q-chip>
               </q-item-section>
-              <q-item-label>Private Key are not stored inside the wallets configuration by default</q-item-label>
+              <q-item-label>Private Keys are not stored inside the wallets configuration by default</q-item-label>
             </q-item>
             <q-item class="items-center">
               <q-item-section class="col-auto q-mr-md">
@@ -63,7 +63,7 @@
           </q-expansion-item>
           </q-card-section>
         </q-step>
-        <q-step :name="2" title="Storage" class=" bg-black workflow-step" :done="step > 2" icon="fas fa-save">
+        <q-step style="min-height: 450px" :name="2" title="Storage" class=" bg-black workflow-step" :done="step > 2" icon="fas fa-save">
           <q-card-section class="text-white text-center">
             <div class="q-py-sm text-uppercase">
               <q-item class="items-center">
