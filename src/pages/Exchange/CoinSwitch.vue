@@ -330,7 +330,10 @@ export default {
       }).filter(function (el) {
         return el != null
       }).sort(function (a, b) {
-        return a.label < b.label
+        if (a.label.toLowerCase() < b.label.toLowerCase()) {
+          return -1
+        }
+        return 1
       })
 
       console.log('depositCoinOptions:', self.depositCoinOptions)
@@ -365,8 +368,8 @@ export default {
 
       this.$axios.post(url + '/v2/order',
         {
-          depositCoin: self.depositCoin,
-          destinationCoin: self.destinationCoin,
+          depositCoin: self.depositCoin.value,
+          destinationCoin: self.destinationCoin.value,
           depositCoinAmount,
           destinationCoinAmount,
           destinationAddress: self.destinationAddress,
@@ -386,9 +389,11 @@ export default {
     },
     getPairs () {
       const self = this
+      console.log('depositCoin', self.depositCoin)
+
       this.$axios.post(url + '/v2/pairs',
         {
-          depositCoin: self.depositCoin
+          depositCoin: self.depositCoin.value
         },
         { headers })
         .then((response) => {
@@ -404,6 +409,11 @@ export default {
             } // deal with false, should not create empty option.
           }).filter(function (el) {
             return el != null
+          }).sort(function (a, b) {
+            if (a.label.toLowerCase() < b.label.toLowerCase()) {
+              return -1
+            }
+            return 1
           })
         })
         .catch((err) => {
@@ -415,8 +425,8 @@ export default {
       const self = this
       this.$axios.post(url + '/v2/rate',
         {
-          depositCoin: self.depositCoin,
-          destinationCoin: self.destinationCoin
+          depositCoin: self.depositCoin.value,
+          destinationCoin: self.destinationCoin.value
         },
         { headers })
         .then((response) => {
