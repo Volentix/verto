@@ -327,7 +327,13 @@ export default {
           }
           return row
         }
+      }).filter(function (el) {
+        return el != null
+      }).sort(function (a, b) {
+        return a.label < b.label
       })
+
+      console.log('depositCoinOptions:', self.depositCoinOptions)
     })
   },
   methods: {
@@ -396,6 +402,8 @@ export default {
               }
               return row
             } // deal with false, should not create empty option.
+          }).filter(function (el) {
+            return el != null
           })
         })
         .catch((err) => {
