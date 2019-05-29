@@ -39,7 +39,7 @@
                   >
                     <template v-slot:option="scope">
                       <q-item
-                        dark
+                        class="custom-menu"
                         v-bind="scope.itemProps"
                         v-on="scope.itemEvents"
                       >
@@ -116,6 +116,7 @@
                   >
                     <template v-slot:option="scope">
                       <q-item
+                        class="custom-menu"
                         v-bind="scope.itemProps"
                         v-on="scope.itemEvents"
                       >
@@ -665,11 +666,11 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.q-menu.scroll.q-menu--square {
-  background: #424242 !important;
+.custom-menu {
+  background: #424242
 }
 .q-item__label {
-  color: #848484;
+  color: #ffffff;
 }
 .q-item__label--caption {
   color: #848484;
