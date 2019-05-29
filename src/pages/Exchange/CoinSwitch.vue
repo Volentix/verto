@@ -31,6 +31,8 @@
                       label="Select Coin to Send"
                       separator
                       v-model="depositCoin"
+                      use-input
+                      @filter="filterDepositCoin"
                       :disabled="!depositCoinOptions"
                       :loading="!depositCoinOptions"
                       :options="depositCoinOptions"
@@ -83,7 +85,7 @@
                     label="Tag or Memo, often required by exchanges"
                   />
                 </div>
-                <div class="q-pa-sm" v-show="true" @click="getPairs(); $refs.stepper.next()">
+                <div class="q-pa-sm" v-show="true" @click="checkToGetPairs()">
                   <q-icon name="navigate_next" size="3.2rem" color="green"   >
                     <q-tooltip>{{ $t('next') }}</q-tooltip>
                   </q-icon>
@@ -105,6 +107,8 @@
                       dark
                       label="Select Coin to Receive"
                       separator
+                      use-input
+                      @filter="filterDestinationCoin"
                       v-model="destinationCoin"
                       :disabled="!destinationCoinOptions"
                       :loading="!destinationCoinOptions"
@@ -144,9 +148,11 @@
                   <q-input
                     type="text"
                     dark
+                    ref="destinationAddressAddress"
                     v-model="destinationAddress.address"
                     color="green"
                     @input="verifyAddress()"
+                    :rules="[ val => val.length >= 3 || 'Destination Address Cannot less than 3 characters' ]"
                     :label="destinationAddressLabel"
                   />
                   <q-input
@@ -157,7 +163,7 @@
                     label="Tag or Memo, often required by exchanges"
                   />
                 </div>
-                <div class="q-pa-sm" v-show="true" @click="getRate(); $refs.stepper.next()">
+                <div class="q-pa-sm" v-show="true" @click="checkToGetRate()">
                   <q-icon name="navigate_next" size="3.2rem" color="green"   >
                     <q-tooltip>{{ $t('next') }}</q-tooltip>
                   </q-icon>
@@ -262,7 +268,7 @@
                           size="80px"
                           :thickness="0.25"
                           color="green"
-                          track-color="grey-3"
+                          :track-color="trackColor"
                         >
                           <q-avatar size="60px">
                             <img :src="`${logoUrl}`">
@@ -286,7 +292,7 @@ import store from '@/store'
 import { userError } from '@/util/errorHandler'
 
 const url = 'https://api.coinswitch.co'
-const headers = {
+let headers = {
   'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
 }
 
@@ -311,9 +317,11 @@ export default {
       depositCoin: null,
       depositQuantity: 0,
       depositCoinOptions: null,
+      depositCoinUnfilter: null,
       destinationCoin: null,
       destinationQuantity: 0,
       destinationCoinOptions: null,
+      destinationCoinUnfilter: null,
       rateData: null,
       rateDataTemplate: {
         rate: 1,
@@ -368,7 +376,6 @@ export default {
           break
       }
 
-      console.log('getStatus:', value)
       return value
     },
     friendlyStatus () {
@@ -406,6 +413,27 @@ export default {
 
       return value
     },
+    trackColor () {
+      let value = ''
+
+      switch (this.status) {
+        case null:
+        case 'no_deposit':
+        case 'confirming':
+        case 'exchanging':
+        case 'sending':
+        case 'complete':
+          value = 'white'
+          break
+        case 'failed':
+        case 'refunded':
+        case 'timeout':
+          value = 'red'
+          break
+      }
+
+      return value
+    },
     logoUrl () {
       if (this.destinationCoin != null) {
         return this.coins.filter(coins => coins.symbol === this.destinationCoin.value)[0].logoUrl
@@ -415,7 +443,7 @@ export default {
     },
     exchangeLabel () {
       if (this.depositCoin != null) {
-        return 'Complete this exchange by sending ' + this.expectedDepositCoinAmount + ' ' + typeUpper(this.depositCoin.value) + ' to this address within the next 24 hours'
+        return 'Complete this exchange by sending ' + this.expectedDepositCoinAmount + ' ' + typeUpper(this.depositCoin.value) + ' to this address within the next 12 hours'
       } else {
         return 'Complete this exchange by sending the coins to this address within the next 24 hours'
       }
@@ -454,7 +482,6 @@ export default {
   mounted () {
     const self = this
     this.$axios.get(url + '/v2/coins', { headers }).then(function (result) {
-      console.log('coins results:', result.data)
       // will be using this coins array later with the destination select
       self.coins = result.data.data
       self.depositCoinOptions = self.coins.map(function (coin) {
@@ -475,13 +502,24 @@ export default {
         return 1
       })
 
-      console.log('depositCoinOptions:', self.depositCoinOptions)
+      self.depositCoinUnfilter = self.depositCoinOptions
     })
   },
   methods: {
+    filterDepositCoin (val, update, abort) {
+      update(() => {
+        const needle = val.toLowerCase()
+        this.depositCoinOptions = this.depositCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+      })
+    },
+    filterDestinationCoin (val, update, abort) {
+      update(() => {
+        const needle = val.toLowerCase()
+        this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+      })
+    },
     copy2clip (value) {
       // more generic copy
-      console.log('copy2clip')
       this.$clipboardWrite(value)
       this.$q.notify({
         message: this.$t('Main.copied'),
@@ -496,6 +534,23 @@ export default {
         this.$refs.stepper.next()
       }
     },
+    checkToGetPairs () {
+      if (this.depositCoin === null) {
+        userError('There is a problem with the coin selection')
+      } else {
+        this.getPairs()
+        this.$refs.stepper.next()
+      }
+    },
+    checkToGetRate () {
+      if (this.$refs.destinationAddressAddress.hasError || this.destinationAddress.address === '' ||
+      this.destinationCoin === null) {
+        userError('There is a problem with the destination address or the coin is not selected')
+      } else {
+        this.getRate()
+        this.$refs.stepper.next()
+      }
+    },
     verifyAddress () {
       // check validity of all keys
     },
@@ -503,27 +558,24 @@ export default {
       // deal with precision
       this.destinationQuantity = (+this.depositQuantity * +this.rateData.rate) - +this.rateData.minerFee
       this.lastChangedValue = 'deposit'
-      console.log('destinationQuantity: ', this.destinationQuantity)
     },
     quatityFromDestination () {
       // deal with precision
       this.depositQuantity = (+this.destinationQuantity + +this.rateData.minerFee) / +this.rateData.rate
       this.lastChangedValue = 'destination'
-      console.log('depositQuantity: ', this.depositQuantity)
     },
     orderStatus () {
       const self = this
       this.$axios.get(url + '/v2/order/' + this.orderId, { headers }).then(function (result) {
-        console.log('order results:', result.data)
         self.status = result.data.data.status
-      })
 
-      if (this.status === 'no_deposit' ||
-      this.status === 'confirming' ||
-      this.status === 'exchanging' ||
-      this.status === 'sending') {
-        setTimeout(this.orderStatus(), 30000)
-      }
+        if (self.status === 'no_deposit' ||
+        self.status === 'confirming' ||
+        self.status === 'exchanging' ||
+        self.status === 'sending') {
+          setTimeout(() => { self.orderStatus() }, 30000)
+        }
+      })
     },
     postOrder () {
       const self = this
@@ -547,7 +599,6 @@ export default {
         },
         { headers })
         .then((response) => {
-          console.log('order results:', response.data)
           self.orderId = response.data.data.orderId
           self.exchangeAddress = response.data.data.exchangeAddress
           self.expectedDepositCoinAmount = response.data.data.expectedDepositCoinAmount
@@ -568,7 +619,6 @@ export default {
         },
         { headers })
         .then((response) => {
-          console.log('pairs results:', response.data)
           self.destinationCoinOptions = response.data.data.map(function (coin) {
             if (coin.isActive === true) {
               let row = {
@@ -586,6 +636,8 @@ export default {
             }
             return 1
           })
+
+          self.destinationCoinUnfilter = self.destinationCoinOptions
         })
         .catch((err) => {
           console.log(err)
@@ -601,7 +653,6 @@ export default {
         },
         { headers })
         .then((response) => {
-          console.log('rate results:', response.data)
           self.rateData = response.data.data
         })
         .catch((err) => {
