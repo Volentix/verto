@@ -175,10 +175,11 @@
             <q-card-section>
               <div class="text-center text-white uppercase">
                 <q-item>
-                  <q-item-label>Choose Quantity</q-item-label>
+                  <q-item-label>Choose quantity to send or receive</q-item-label>
                 </q-item>
                 <div class="q-pa-md">
                   <q-input
+                    ref="depositQuantity"
                     class="q-pa-sm"
                     type="number"
                     dark
@@ -192,11 +193,12 @@
                               val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']"
                   />
                   <q-input
+                    ref="destinationQuantity"
                     class="q-pa-sm"
                     type="number"
                     dark
                     v-model="destinationQuantity"
-                    color="yellow"
+                    color="green"
                     @input="quatityFromDestination()"
                     :disabled="!rateData"
                     :loading="!rateData"
@@ -205,7 +207,7 @@
                               val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']"
                   />
                 </div>
-                <div class="q-pa-sm" v-show="true" @click="postOrder(); $refs.stepper.next()">
+                <div class="q-pa-sm" v-show="true" @click="checkToPostOrder()">
                   <q-icon name="navigate_next" size="3.2rem" color="green"   >
                     <q-tooltip>{{ $t('next') }}</q-tooltip>
                   </q-icon>
@@ -223,31 +225,53 @@
             <q-card-section>
               <div class="text-center text-white uppercase">
                 <q-item>
-                  <q-item-label>Execute Exchange by Sending the Coins</q-item-label>
+                  <q-item-label>{{exchangeLabel}}</q-item-label>
                 </q-item>
-                <div class="q-pa-md">
-                  <div class="col-auto flex flex-center">
-                    <div class="q-pr-md">
-                      <qrcode :value="exchangeAddress.address" :options="{size: 150}"></qrcode>
-                    </div>
-                  </div>
-                  <div class="col flex items-center">
-                    <div>
-                      <div class="q-headline qr-wallet-title">{{ $t('Main.address') }}</div>
-                      <p class="wallet-address-qr q-pr-md q-py-md q-ma-none" >{{exchangeAddress.address}}</p>
-                      <q-btn flat icon="file_copy" label="Copy Key" @click="copyKey(exchangeAddress.address)" />
-                    </div>
-                  </div>
-                  <div>
-                    <p class="wallet-address-qr q-pr-md q-py-md q-ma-none" >{{expectedDepositCoinAmount}}</p>
-                    <p class="wallet-address-qr q-pr-md q-py-md q-ma-none" >{{expectedDestinationCoinAmount}}</p>
+                <div class="col-auto flex flex-center">
+                  <div class="q-pr-md">
+                    <qrcode v-if="exchangeAddress.address" :value="exchangeAddress.address" :options="{size: 150}"></qrcode>
                   </div>
                 </div>
-                <div class="q-pa-sm" v-show="true" @click="$refs.stepper.next()">
-                  <q-icon name="navigate_next" size="3.2rem" color="green"   >
-                    <q-tooltip>{{ $t('next') }}</q-tooltip>
-                  </q-icon>
-                </div>
+                <q-btn class="full-width" flat @click="copy2clip(exchangeAddress.address)" size="sm">
+                  <q-input class="fit"
+                    dark
+                    readonly
+                    v-model="exchangeAddress.address"
+                    hint=""
+                  >
+                    <template v-slot:append>
+                      <q-icon name="file_copy" @click="copy2clip(exchangeAddress.address)" />
+                    </template>
+                  </q-input>
+                </q-btn>
+                <q-card dark bordered class="bg-grey-9 my-card">
+                  <q-card-section>
+                    <div class="text-h6">Status of the exchange checked every 30 seconds</div>
+                  </q-card-section>
+                  <q-separator dark inset />
+                  <q-card-section>
+                    <div class="row">
+                      <div class="col">
+                        {{ friendlyStatus }}
+                      </div>
+                      <div class="col">
+                        <q-circular-progress
+                          :indeterminate="!status"
+                          show-value
+                          :value="getStatus"
+                          size="80px"
+                          :thickness="0.25"
+                          color="green"
+                          track-color="grey-3"
+                        >
+                          <q-avatar size="60px">
+                            <img :src="`${logoUrl}`">
+                          </q-avatar>
+                        </q-circular-progress>
+                      </div>
+                    </div>
+                  </q-card-section>
+                </q-card>
               </div>
             </q-card-section>
           </q-step>
@@ -312,10 +336,90 @@ export default {
         tag: null
       },
       expectedDepositCoinAmount: 0,
-      expectedDestinationCoinAmount: 0
+      expectedDestinationCoinAmount: 0,
+      orderId: null,
+      status: null,
+      requestStop: false
     }
   },
   computed: {
+    getStatus () {
+      let value = 0
+
+      switch (this.status) {
+        case null:
+        case 'no_deposit':
+        case 'failed':
+        case 'refunded':
+        case 'timeout':
+          value = 0
+          break
+        case 'confirming':
+          value = 25
+          break
+        case 'exchanging':
+          value = 50
+          break
+        case 'sending':
+          value = 75
+          break
+        case 'complete':
+          value = 100
+          break
+      }
+
+      console.log('getStatus:', value)
+      return value
+    },
+    friendlyStatus () {
+      let value = ''
+
+      switch (this.status) {
+        case null:
+          value = ''
+          break
+        case 'no_deposit':
+          value = 'No deposit detected yet'
+          break
+        case 'failed':
+          value = 'The transaction has failed'
+          break
+        case 'refunded':
+          value = 'The transaction has been refunded'
+          break
+        case 'timeout':
+          value = 'The transaction has timed out'
+          break
+        case 'confirming':
+          value = 'The transaction is confirming'
+          break
+        case 'exchanging':
+          value = 'The transaction is exchanging'
+          break
+        case 'sending':
+          value = 'The coins are being sent'
+          break
+        case 'complete':
+          value = 'The transaction is complete'
+          break
+      }
+
+      return value
+    },
+    logoUrl () {
+      if (this.destinationCoin != null) {
+        return this.coins.filter(coins => coins.symbol === this.destinationCoin.value)[0].logoUrl
+      } else {
+        return '/static/icon.png'
+      }
+    },
+    exchangeLabel () {
+      if (this.depositCoin != null) {
+        return 'Complete this exchange by sending ' + this.expectedDepositCoinAmount + ' ' + typeUpper(this.depositCoin.value) + ' to this address within the next 24 hours'
+      } else {
+        return 'Complete this exchange by sending the coins to this address within the next 24 hours'
+      }
+    },
     depositQuantityLabel () {
       if (this.depositCoin != null) {
         return typeUpper(this.depositCoin.value) + ' to Send'
@@ -375,6 +479,23 @@ export default {
     })
   },
   methods: {
+    copy2clip (value) {
+      // more generic copy
+      console.log('copy2clip')
+      this.$clipboardWrite(value)
+      this.$q.notify({
+        message: this.$t('Main.copied'),
+        color: 'positive'
+      })
+    },
+    checkToPostOrder () {
+      if (this.$refs.depositQuantity.hasError || this.$refs.destinationQuantity.hasError) {
+        userError('There is a problem with the quantities')
+      } else {
+        this.postOrder()
+        this.$refs.stepper.next()
+      }
+    },
     verifyAddress () {
       // check validity of all keys
     },
@@ -389,6 +510,20 @@ export default {
       this.depositQuantity = (+this.destinationQuantity + +this.rateData.minerFee) / +this.rateData.rate
       this.lastChangedValue = 'destination'
       console.log('depositQuantity: ', this.depositQuantity)
+    },
+    orderStatus () {
+      const self = this
+      this.$axios.get(url + '/v2/order/' + this.orderId, { headers }).then(function (result) {
+        console.log('order results:', result.data)
+        self.status = result.data.data.status
+      })
+
+      if (this.status === 'no_deposit' ||
+      this.status === 'confirming' ||
+      this.status === 'exchanging' ||
+      this.status === 'sending') {
+        setTimeout(this.orderStatus(), 30000)
+      }
     },
     postOrder () {
       const self = this
@@ -413,9 +548,12 @@ export default {
         { headers })
         .then((response) => {
           console.log('order results:', response.data)
+          self.orderId = response.data.data.orderId
           self.exchangeAddress = response.data.data.exchangeAddress
           self.expectedDepositCoinAmount = response.data.data.expectedDepositCoinAmount
           self.expectedDestinationCoinAmount = response.data.data.expectedDestinationCoinAmount
+
+          this.orderStatus()
         })
         .catch((err) => {
           console.log(err)
@@ -476,8 +614,11 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.q-menu {
-  background: #424242;
+.q-menu.scroll.q-menu--square {
+  background: #424242 !important;
+}
+.q-item__label {
+  color: #848484;
 }
 .q-item__label--caption {
   color: #848484;
