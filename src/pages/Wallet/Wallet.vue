@@ -274,6 +274,7 @@ export default {
       var self = this
       try {
         // Getting the account balance from demux in case of the ledger contract
+        console.log('process.env: ', process.env)
         let result = await this.$axios.get(process.env[this.$store.state.settings.network].DEMUX_API + '/ledger/balance/' + this.walletKey)
         self.balance = parseFloat(result.data.balance).toFixed(4)
         self.vtxTotal = self.balance
