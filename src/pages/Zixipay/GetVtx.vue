@@ -1,8 +1,8 @@
 <template>
   <q-page class="flex flex-center text-white bg-black">
     <div v-show='showzixipay'>
-      <q-card style="max-width: 500px;" flat>
-        <q-card-section class="text-weight-bold text-white text-center text-uppercase">
+      <q-card class="bg-black" style="max-width: 500px;" flat>
+        <q-card-section class="bg-black text-weight-bold text-white text-center text-uppercase">
           <q-icon class="float-left" name="help_outline" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('getvtx/zixipay')">
             <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
           </q-icon>
@@ -15,8 +15,8 @@
             >
           </p>
         </q-card-section>
-        <q-stepper dark color="green bg-white" ref="stepper" alternative-labels :contractable="contractable">
-          <q-step default :order="1" name="first" title="Select Currency" class=" bg-black workflow-step">
+        <q-stepper v-model="step" done-color="green" active-color="green" color="green bg-white" ref="stepper" alternative-labels animated>
+          <q-step default :order="1" :name="1" :done="step>1" title="Select Currency" class=" bg-black workflow-step">
             <q-card-section class="text-center text-white text-uppercase">
               <div class="q-pa-md">
                   <div class="q-pa-sm">
@@ -30,23 +30,21 @@
               </div>
             </q-card-section>
           </q-step>
-          <q-step name="second" :order="2" title="Amount" class="bg-black workflow-step">
+          <q-step :name="2" :done="step>2"  :order="2" title="Amount" class="bg-black workflow-step">
             <q-card-section class=" text-white">
               <div class="float-center text-center">
                 <div class="">
                   <span class="q-pa-sm">
-                    <q-field>
-                      <q-input
-                        class="q-pa-sm"
-                        type="number"
-                        dark
-                        v-model="form.amount"
-                        color="yellow"
-                        label="Amount"
-                        @blur="$v.form.amount.$touch"
-                        :error="$v.form.amount.$error"
-                      />
-                    </q-field>
+                    <q-input
+                      class="q-pa-sm"
+                      type="number"
+                      dark
+                      v-model="form.amount"
+                      color="yellow"
+                      label="Amount"
+                      @blur="$v.form.amount.$touch"
+                      :error="$v.form.amount.$error"
+                    />
                   </span>
                   <div class="q-pa-sm" v-show="form.amount > 0" @click="$refs.stepper.next()" >
                     <q-icon name="navigate_next" size="3.2rem" color="green"   >
@@ -58,12 +56,11 @@
               </div>
             </q-card-section>
           </q-step>
-          <q-step name="third" :order="3" title="Description" class="bg-black workflow-step">
+          <q-step :name="3" :done="step>3" :order="3" title="Description" class="bg-black workflow-step">
             <q-card-section class="text-white">
               <div class="float-center text-center">
                 <div class="">
                   <span class="q-pa-sm">
-                  <q-field>
                     <q-input
                       class="q-pa-sm"
                       type="text"
@@ -72,7 +69,6 @@
                       color="yellow"
                       label="Description"
                     />
-                  </q-field>
                   </span>
                   <div class="q-pa-sm" v-show="form.description" @click="submit" >
                     <q-icon name="navigate_next" size="3.2rem" color="green"   >
@@ -138,7 +134,7 @@ export default {
     return {
       zixipayForm: {},
       spinnervisible: false,
-      contractable: true,
+      step: 1,
       showzixipay: true,
       showiframe: false,
       showsuccess: false,

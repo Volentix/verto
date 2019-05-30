@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column flex-center text-white bg-black  text-white">
+  <q-page class="column flex-center text-white bg-black">
     <q-card flat class="bg-black" style="width: 100%; max-width: 500px;">
       <q-card-section class="text-weight-bold text-center text-uppercase">
         <q-icon class="float-left" name="help_outline" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('addwallets/addLedger')">
@@ -10,7 +10,7 @@
       </q-card-section>
     </q-card>
     <q-card flat class="bg-black" style="width: 100%; max-width: 500px;">
-      <q-stepper dark done-color="green" ref="stepper" alternative-labels v-model="step">
+      <q-stepper done-color="green" active-color="green" ref="stepper" alternative-labels animated v-model="step">
         <q-step :name="1" title="Wallet Name" class="bg-black workflow-step" :done="step>1">
           <q-card-section class="text-center text-white"  >
               <q-input

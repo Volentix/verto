@@ -40,7 +40,6 @@
             <div class="float-center text-center">
               <div class="">
                 <span class="q-pa-sm">
-                <q-field>
                   <q-input
                     v-model="walletName"
                     dark
@@ -49,7 +48,6 @@
                     @keyup.enter="showTheSaveScreen"
                     :label="$t('DisplayKey.walletname')"
                   />
-                </q-field>
                 </span>
                 <div class="q-pa-sm" v-show="showNameSubmit" @click="showTheSaveScreen" >
                   <q-icon name="navigate_next" size="3.2rem" color="green"   >
@@ -69,17 +67,15 @@
             <div class="float-center text-center">
               <div class="text-white">
                 <span class="q-pa-sm">
-                  <q-field  >
-                    <q-input
-                      v-model="vertoPassword"
-                      type="password"
-                      dark
-                      color="green"
-                      @input="checkPassword"
-                      @keyup.enter="submit"
-                      :label="$t('DisplayKey.verto_password')"
-                    />
-                  </q-field>
+                  <q-input
+                    v-model="vertoPassword"
+                    type="password"
+                    dark
+                    color="green"
+                    @input="checkPassword"
+                    @keyup.enter="submit"
+                    :label="$t('DisplayKey.verto_password')"
+                  />
                 </span>
                 <div v-show="nameAlreadyUsed" class="text-h6 text-uppercase text-red">
                   {{ $t('DisplayKey.name_is_used') }}

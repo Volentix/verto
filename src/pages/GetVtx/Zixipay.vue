@@ -1,7 +1,7 @@
 <template>
   <q-page class="flex flex-center text-white bg-black">
-    <q-card class="q-pa-sm" style="max-width: 700px; min-width: 500px; border-style: solid;" flat>
-      <q-card-section class="text-weight-bold text-white text-center text-uppercase">
+    <q-card class="q-pa-sm bg-black" style="max-width: 700px; min-width: 500px; border-style: solid;" flat>
+      <q-card-section class="bg-black text-weight-bold text-white text-center text-uppercase">
         powered by <big>Zixipay</big>
       </q-card-section>
       <q-card-section class="text-center text-white">
