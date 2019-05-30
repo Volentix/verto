@@ -13,7 +13,7 @@
       <q-inner-loading :visible="spinnervisible">
         <q-spinner size="50px" color="primary" />
       </q-inner-loading>
-      <q-stepper done-color="green" ref="stepper" alternative-labels v-model="step">
+      <q-stepper done-color="green" active-color="green" ref="stepper" alternative-labels animated v-model="step">
         <q-step :name="1" :done="step>1" title="Select Config File" class=" bg-black workflow-step">
           <q-card-section class="text-white text-center">
             <div class="flex flex-center text-white q-pa-sm">
