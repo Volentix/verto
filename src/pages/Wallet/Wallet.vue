@@ -11,7 +11,7 @@
         <q-card-title class="text-weight-bold text-center uppercase">
           <div>
             <q-icon class="float-left" name="help_outline" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('wallet/index')">
-              <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
+              <q-tooltip v-if="!$q.platform.is.cordova" >{{ $t('SettingsView.help') }}</q-tooltip>
             </q-icon>
             <big class="titillium q-pa-xl">Wallet</big>
             <q-icon class="float-right" name="refresh" size="2.5rem" @click.native="createLedger()" >
