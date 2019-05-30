@@ -13,7 +13,7 @@
       <q-inner-loading :visible="spinnervisible">
         <q-spinner size="50px" color="primary" />
       </q-inner-loading>
-      <q-stepper done-color="green" ref="stepper" alternative-labels v-model="step">
+      <q-stepper active-color="green" done-color="green" ref="stepper" alternative-labels animated v-model="step">
         <!--
           1. Paid to
         -->

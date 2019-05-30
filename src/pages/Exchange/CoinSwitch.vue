@@ -9,7 +9,7 @@
           <q-icon class="float-left" name="help_outline" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('exchange/coinswitch')">
             <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
           </q-icon>
-          <big class="titillium uppercase">{{ $t('SettingsView.exchange') }}</big>
+          <big class="titillium text-uppercase">{{ $t('SettingsView.exchange') }}</big>
           <q-icon class="float-right" name="close" size="2.5rem" color="white" @click.native="$router.push('/wallet')"/>
         </q-card-section>
       </q-card>
@@ -239,7 +239,7 @@
                     <qrcode v-if="exchangeAddress.address" :value="exchangeAddress.address" :options="{size: 150}"></qrcode>
                   </div>
                 </div>
-                <q-btn class="full-width" flat @click="copy2clip(exchangeAddress.address)" size="sm">
+                <q-btn class="full-width" no-caps flat @click="copy2clip(exchangeAddress.address)" size="sm">
                   <q-input class="fit"
                     dark
                     readonly
