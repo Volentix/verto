@@ -64,6 +64,14 @@ export default [
         }
       },
       {
+        name: 'exchange',
+        path: '/exchange',
+        component: () => import('pages/Exchange/CoinSwitch.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'save-to-file',
         path: '/save-to-file',
         component: () => import('pages/Intro/SaveToFile.vue'),
