@@ -1,40 +1,40 @@
 <template>
-  <q-page class="flex flex-center text-white bg-black  text-white">
-    <q-card style="max-width: 500px;" flat>
-      <q-card-section class="text-weight-bold text-center text-uppercase">
+  <q-page class="flex flex-center text-white bg-black">
+    <q-card class="bg-black" style="max-width: 500px;" flat>
+      <q-card-section class="bg-black text-weight-bold text-center text-uppercase">
         <q-icon class="float-left" name="help_outline" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('getvtx/requestAddress')">
           <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
         </q-icon>
         <big class="titillium q-pa-xl">{{ $t('RequestNativeChainAddress.header') }}</big>
         <q-icon class="float-right" name="close" size="2.5rem" color="white" @click.native="$router.push('summary-vtx')"/>
       </q-card-section>
-      <q-stepper dark done-color="green" active-color="green" ref="stepper" alternative-labels :contractable="contractable">
-        <q-step default name="first" title="Rules" class=" bg-black workflow-step">
+      <q-stepper v-model="step" done-color="green" active-color="green" ref="stepper" alternative-labels animated>
+        <q-step default :name="1" :done="step > 1" title="Rules" class=" bg-black workflow-step">
           <q-card-section class="text-center text-white text-uppercase"  >
-            <q-item>
-              <q-item-section>
+            <q-item class="items-center">
+              <q-item-section class="col-auto q-mr-md">
                 <q-chip dense color="red" class="shadow-1">&nbsp;</q-chip>
               </q-item-section>
-              <q-item-label :label="$t('RequestNativeChainAddress.second_p')" />
+              <q-item-label>{{ $t('RequestNativeChainAddress.second_p') }}</q-item-label>
             </q-item>
-            <q-item>
-              <q-item-section>
+            <q-item class="items-center">
+              <q-item-section class="col-auto q-mr-md">
                 <q-chip dense color="red" class="shadow-1">&nbsp;</q-chip>
               </q-item-section>
-              <q-item-label :label="$t('RequestNativeChainAddress.second_p_point_1')" />
+              <q-item-label>{{ $t('RequestNativeChainAddress.second_p_point_1') }}</q-item-label>
             </q-item>
-            <q-item>
-              <q-item-section>
+            <q-item class="items-center">
+              <q-item-section class="col-auto q-mr-md">
                 <q-chip dense color="red" class="shadow-1">&nbsp;</q-chip>
               </q-item-section>
-              <q-item-label :label="$t('RequestNativeChainAddress.third_p')" />
+              <q-item-label>{{ $t('RequestNativeChainAddress.third_p') }}</q-item-label>
             </q-item>
             <div class="q-pa-md">
               <q-btn  outline glossy @click="$refs.stepper.next()">I understand</q-btn>
             </div>
           </q-card-section>
         </q-step>
-        <q-step name="second" title="Native Chain" class=" bg-black workflow-step">
+        <q-step :name="2" :done="step > 2" title="Native Chain" class=" bg-black workflow-step">
           <q-card-section class="text-center text-white"  >
             <div class="q-pa-md">
                 <div class="q-pa-sm">
@@ -88,7 +88,7 @@ import countdown from '@chenfengyuan/vue-countdown'
 export default {
   data () {
     return {
-      contractable: true,
+      step: 1,
       currency: 'BTC',
       showModal: false,
       showInvsetorMustWait: false,

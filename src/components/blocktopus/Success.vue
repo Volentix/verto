@@ -1,15 +1,13 @@
 <template>
   <q-page class="flex flex-center text-white bg-black" >
-  <div class="fixed-center text-center bg-primary q-pa-lg" style="max-width: 700px; margin: 0 auto; ">
+  <div class="fixed-center text-center q-pa-lg" style="max-width: 700px; margin: 0 auto; ">
     <q-card-section class="text-weight-bold text-center text-uppercase">
       <big class="titillium q-pa-lg">Update Config</big>
       <q-icon class="float-right" name="close" size="2.5rem" color="white" @click.native="$router.push('/associations')"/>
     </q-card-section>
-    <q-stepper done-color="green" active-color="green" ref="stepper" alternative-labels :contractable="contractable">
-        <q-step default name="first" title="Verto Password" class=" bg-black workflow-step">
+    <q-stepper v-model="step" done-color="green" active-color="green" ref="stepper" alternative-labels animated>
+        <q-step default :name="1" :done="step > 1" title="Verto Password" class=" bg-black workflow-step">
           <q-card-section class="text-center text-white"  >
-            <q-field
-        >
             <q-input
               type="password"
               dark
@@ -19,7 +17,6 @@
               color="green"
               v-bind:label="$t('ChangeVertoPassword.current')"
             />
-        </q-field>
         <div v-show="badPassword" class="text-h6 text-uppercase text-red  q-pa-md">
           {{ $t('SaveToFile.password_incorrect') }}
         </div>
@@ -51,7 +48,7 @@ export default {
       modal: false,
       badPassword: false,
       unknownError: false,
-      contractable: true
+      step: 1
     }
   },
   methods: {

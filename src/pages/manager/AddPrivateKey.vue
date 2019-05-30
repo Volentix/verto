@@ -10,7 +10,7 @@
       </q-card-section>
     </q-card>
     <q-card flat class="bg-black" style="width: 100%; max-width: 500px;">
-    <q-stepper done-color="green" ref="stepper" alternative-labels v-model="step">
+    <q-stepper active-color="green" done-color="green" ref="stepper" alternative-labels animated v-model="step">
         <!--
           1. Paid to
         -->
