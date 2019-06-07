@@ -1,6 +1,6 @@
 <template>
-  <q-page class="column flex-center text-white bg-black  text-white">
-    <q-card style="max-width: 500px; width: 100%;" flat>
+  <q-page class="column flex-center text-white bg-black">
+    <q-card class="bg-black" style="max-width: 500px; width: 100%;" flat>
       <q-card-section class="text-weight-bold text-center text-uppercase bg-black">
         <q-icon class="float-left" name="help_outline" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('setupWallet')">
           <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>

@@ -1,6 +1,6 @@
 <template>
   <q-page class="column flex-center text-white bg-black">
-    <q-card flat style="max-width: 500px; width: 100%;">
+    <q-card class="bg-black" flat style="max-width: 500px; width: 100%;">
       <q-card-section class="text-weight-bold text-center text-uppercase bg-black">
         <q-icon class="float-left" name="help_outline" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('addwallets/createLedgerSaveFile')">
           <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
@@ -10,7 +10,7 @@
       </q-card-section>
     </q-card>
     <q-card flat style="max-width: 500px; width: 100%;">
-      <q-stepper dark done-color="green" active-color="green" ref="stepper" alternative-labels v-model="step">
+      <q-stepper done-color="green" active-color="green" ref="stepper" alternative-labels v-model="step" animated>
         <!--
           Step 1: Name
         -->
@@ -152,8 +152,7 @@ export default {
       showNextButtonToPassword: false,
       showSubmitButton: false,
       nameAlreadyUsed: false,
-      passwordInvalid: false,
-      contractable: true
+      passwordInvalid: false
     }
   },
   mounted () {

@@ -15,7 +15,7 @@
       </q-card-section>
     </q-card>
     <q-card style="max-width: 500px; width: 100%;" flat>
-      <q-stepper color="green" ref="stepper" alternative-labels v-model="step">
+      <q-stepper done-color="green" active-color="green" color="green" ref="stepper" alternative-labels v-model="step">
         <q-step :name="1" title="Create Password" class="bg-black workflow-step" :done="step > 1">
           <q-card-section>
             <div class="text-center text-white text-uppercase">
