@@ -367,7 +367,8 @@ class ConfigManager {
 
     decryptPrivateKey (password, encryptedText) {
       try {
-        const privateKey = JSON.parse(sjcl.decrypt(password, encryptedText))
+        // sjcl.decrypt returns a string, no need to JSON.parse it.
+        const privateKey = sjcl.decrypt(password, encryptedText)
         return { success: true, key: privateKey }
       } catch (e) {
         return { success: false }

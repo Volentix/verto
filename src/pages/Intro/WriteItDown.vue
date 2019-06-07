@@ -1,18 +1,18 @@
 <template>
   <q-page class="flex flex-center text-white bg-black">
-    <q-card flat>
-      <q-card-section class="text-weight-bold text-center text-uppercase">
+    <q-card flat class="bg-black">
+      <q-card-section class="bg-black text-weight-bold text-center text-uppercase">
         <q-icon class="float-left" name="help_outline" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('addwallets/createLedgerWriteItDown')">
           <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
         </q-icon>
         <big class="titillium">Write It Down</big>
         <q-icon class="float-right" name="close" size="2.5rem" color="white" @click.native="$router.push('create-wallet-options')"/>
       </q-card-section>
-      <q-stepper dark color="green bg-white" ref="stepper" alternative-labels :contractable="contractable">
+      <q-stepper  v-model="step" done-color="green" active-color="green" color="green bg-white" ref="stepper" alternative-labels animated>
         <!--
           Step 1: Display Private Key
         -->
-        <q-step default name="first" title="Private Key" class=" bg-black workflow-step">
+        <q-step default :name="1" :done="step > 1" title="Private Key" class=" bg-black workflow-step">
           <q-card-section class=" text-white"  >
             <div class="float-center text-center">
               <div style='border-style: solid;' class="q-pa-md">
@@ -35,7 +35,7 @@
         <!--
           Step 2: Display Private Key
         -->
-        <q-step default name="second" title="Wallet Name" class=" bg-black workflow-step">
+        <q-step default :name="2" :done="step > 2" title="Wallet Name" class=" bg-black workflow-step">
           <q-card-section class=" text-white"  >
             <div class="float-center text-center">
               <div class="">
@@ -62,7 +62,7 @@
         <!--
           Step 3: Display Private Key
         -->
-        <q-step default name="third" title="VertoPassword" class=" bg-black workflow-step">
+        <q-step default :name="3" :done="step > 3" title="VertoPassword" class=" bg-black workflow-step">
           <q-card-section class=" text-white"  >
             <div class="float-center text-center">
               <div class="text-white">
@@ -117,7 +117,7 @@ export default {
       showPasswordSubmit: false,
       nameAlreadyUsed: false,
       passwordInvalid: false,
-      contractable: true
+      step: 1
     }
   },
   mounted () {
