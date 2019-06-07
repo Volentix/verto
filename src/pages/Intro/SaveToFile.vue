@@ -152,8 +152,7 @@ export default {
       showNextButtonToPassword: false,
       showSubmitButton: false,
       nameAlreadyUsed: false,
-      passwordInvalid: false,
-      contractable: true
+      passwordInvalid: false
     }
   },
   mounted () {
