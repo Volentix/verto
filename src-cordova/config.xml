@@ -13,7 +13,6 @@
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
     <allow-navigation href="https://*/*" />
-    <icon src="res/icon/android/icon-96-xhdpi.png" />
     <platform name="android">
         <allow-intent href="market:*" />
         <icon density="ldpi" src="../src/statics/cordova/android/ldpi.png" />
