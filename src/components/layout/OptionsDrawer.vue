@@ -68,7 +68,13 @@ export default {
   },
   mounted () { },
   methods: {
-    openURL,
+    openURL (url) {
+      if (this.$q.platform.is.cordova) {
+        window.open(url, '_system')
+      } else {
+        openURL(url)
+      }
+    },
     logout: function () {
       configManager.logout()
       this.$router.push({
