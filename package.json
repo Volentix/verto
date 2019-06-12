@@ -1,6 +1,6 @@
 {
   "name": "verto",
-  "version": "0.8.8",
+  "version": "0.8.9",
   "description": "A multi-currency crypto wallet with initial support for EOS & VTX",
   "productName": "Verto",
   "cordovaId": "io.volentix.verto",
@@ -16,10 +16,10 @@
     "url": "https://github.com/Volentix/verto/issues"
   },
   "scripts": {
-    "dev": "quasar dev -m electron",
-    "ios": "quasar dev -m cordova -T ios",
-    "android": "quasar dev -m cordova -T android",
-    "electron": "quasar dev -m electron",
+    "dev": "QENV=development quasar dev -m electron",
+    "ios": "QENV=development quasar dev -m cordova -T ios",
+    "android": "QENV=development quasar dev -m cordova -T android",
+    "electron": "QENV=development quasar dev -m electron",
     "pwa": "quasar dev -m pwa",
     "build": "quasar build -m electron",
     "build-electron": "quasar build -m electron --target all",
