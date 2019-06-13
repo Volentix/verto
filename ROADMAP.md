@@ -2,6 +2,8 @@
 
 This document outlines the development plan from a high level and will be updated as the project progresses. It should be noted that this roadmap applies only to the Verto software and not to the other tools and utilities such as vDex which will have their own teams and dedicated roadmaps.
 
+**Everything contained in this document is in draft form and subject to change at any time and provided for information purposes only. Volentix does not guarantee the accuracy of the information contained in this roadmap and the information is provided “as is” with no representations or warranties, express or implied.**
+
 - [Version 1](#version-1)
   * [Features](#features)
     + [Build Pipeline](#build-pipeline)
@@ -9,16 +11,14 @@ This document outlines the development plan from a high level and will be update
     + [Sovereign Identity](#sovereign-identity)
     + [Third Party Plugins](#third-party-plugins)
     + [Installer](#installer)
-    + [2FA Research](#2fa-research)
+    + [2FA Research](#2fa-research) 
   * [Phases](#phases)
     + [1 Architecture](#1-architecture)
     + [2 System Setup](#2-system-setup)
     + [3 Development](#3-development)
   * [Assumptions](#assumptions)
   * [Dependancies](#dependancies)
-  * [Summary](#summary)$
-
-**Everything contained in this document is in draft form and subject to change at any time and provided for information purposes only. Volentix does not guarantee the accuracy of the information contained in this roadmap and the information is provided “as is” with no representations or warranties, express or implied.**
+  * [Summary](#summary)
 
 # Version 1
 
