@@ -93,9 +93,10 @@ Finally, you are not bound to any one channel for escalation. For example, the e
 
 ### First Tier
 
-**SPS:** [Daniel](https://github.com/nothingismagick)
-**VLabs:** [Greg](https://github.com/gluneau)
+- **SPS:** [Daniel](https://github.com/nothingismagick)
+- **VLabs:** [Greg](https://github.com/gluneau)
 
 ### Second Tier
-**SPS:** Razvan
-**Volentix:** [Rhys](https://github.com/realrhys)
+
+- **SPS:** Razvan
+- **Volentix:** [Rhys](https://github.com/realrhys)
