@@ -8,3 +8,5 @@ Architecture Index
    coreconcepts.rst
    si.md
    webview.md
+   pipeline.md
+   plugin.md
