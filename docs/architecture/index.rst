@@ -7,3 +7,4 @@ Architecture Index
    vision.rst
    coreconcepts.rst
    si.md
+   webview.md
