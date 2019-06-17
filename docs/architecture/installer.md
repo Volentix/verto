@@ -1,5 +1,14 @@
 # Verto Installer
 
+ * [Why The Installer](#why-the-installer)
+   + [Migrate To Webview](#migrate-to-webview)
+   + [Plugin Management](#plugin-management)
+ * [Go No / Go](#go-no--go)
+ * [No Go](#no-go)
+ * [Features](#features)
+   + [Launch](#launch)
+   + [Manage Plugins](#manage-plugins)
+
 ## Why The Installer
 
 The following has the documentation for the Verto installer pattern. The reason for an installer is for the following reasons:
@@ -22,11 +31,11 @@ If the team decides not to migrate onto webview, we will still need to review th
 
 ## Features
 
-The downloader will require the following features in order fullfill the usecase.
+The downloader will require the following features in order to fulfill the use case.
 
 ### Launch
 
-This is the Icon the user clicks on for their operating system, however, the launch, at least logically, can be considered as another application outside of Verto. In practice, this launcher may be a plugin from Quasar rather than something Volentix and Verto manage. In essense, others will require this functionality for their applications as well.
+This is the Icon the user clicks on for their operating system, however, the launch, at least logically, can be considered as another application outside of Verto. In practice, this launcher may be a plugin from Quasar rather than something Volentix and Verto manage. In essence, others will require this functionality for their applications as well.
 
 In short, the launcher will:
 
@@ -37,14 +46,14 @@ In short, the launcher will:
 
 The overall Verto architecture will have the capability to manage plugins for the user. The current thought, although not finalized, is to validate and load the plugins before Verto launches.
 
-Note the plugin manager, at least for V1 will be restricted to the MVP for managing plugins. For the MVP, the team will pick one existing function found in Verto and write a plugin for that feature. As the V1 MVP will only have this feature, the plugin itself will be shipped with Verto inside the binary. Note that it will adhere to all the requirements of defined for the managment of plugins. By following this strategy for the V1 release of Verto, the team can focus on the core mechanics of the architecture while staving off the more advanced features such as decentralized distribution as well as user facets like search, upgrade, and delete.
+Note the plugin manager, at least for V1 will be restricted to the MVP for managing plugins. For the MVP, the team will pick one existing function found in Verto and write a plugin for that feature. As the V1 MVP will only have this feature, the plugin itself will be shipped with Verto inside the binary. Note that it will adhere to all the requirements of defined for the management of plugins. By following this strategy for the V1 release of Verto, the team can focus on the core mechanics of the architecture while staving off the more advanced features such as decentralized distribution as well as user facets like search, upgrade, and delete.
 
 The MVP will:
 
 1. Loading and validating of the plugins
-2. Isolation of plugin (no visibilty into the parent view object) functionality
+2. Isolation of plugin (no visibility into the parent view object) functionality
 3. Integration mechanics for the SI feature to 3rd party developers
-4. Plugin + Verto availablity mechanics. The process of having an app approved.
+4. Plugin + Verto availability mechanics. The process of having an app approved.
 
 After the MVP, the application will need to support:
 
@@ -53,3 +62,4 @@ After the MVP, the application will need to support:
 3. Visual dashboard management of plugins
 4. Decentralized marketplace mechanics
 5. Automation on 3rd party functionality integration
+
