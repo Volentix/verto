@@ -4,7 +4,7 @@ Architecture Index
 .. toctree::
    :maxdepth: 1
 
-   vision.rst
+   vision.md
    coreconcepts.rst
    si.md
    webview.md
