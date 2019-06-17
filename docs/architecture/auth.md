@@ -1,5 +1,13 @@
 # Verto Authorization
 
+  * [Intro](#intro)
+  * [Other Peoples Good Ideas](#other-peoples-good-ideas)
+  * [Unique Feature](#unique-feature)
+  * [Encrypted At Rest](#encrypted-at-rest)
+  * [Current State](#current-state)
+  
+## Intro
+
 The goals of Verto authorization is to ensure users have access to desperate security services based on their own needs. For example, a user with small holdings may prefer ease of use over hardened security. In other cases, the user will require more complex protocols as they house significant holdings. In the former, a simple password may be sufficient, but the later will require hardware security features as well.
 
 ## Other Peoples Good Ideas
