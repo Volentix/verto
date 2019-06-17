@@ -64,9 +64,9 @@ Staider
 **Description**
 If someone has an issue with the conduct on the project or finds a security risk, it will need to be escalated to the governance organization, rather than directly to SPS or VLabs.
 
-## Communittee Communication
+## Community Communication
 
-The following is the prefered method of communicating with communittee members.
+The following is the prefered method of communicating with community members.
 
 ### Chat
 
@@ -98,5 +98,5 @@ Finally, you are not bound to any one channel for escalation. For example, the e
 
 ### Second Tier
 
-- **SPS:** Razvan
+- **SPS:** [Razvan](https://github.com/rstoenescu)
 - **Volentix:** [Rhys](https://github.com/realrhys)
