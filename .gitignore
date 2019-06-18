@@ -185,3 +185,6 @@ src/renderer/resources/*
 
 #Config for releases
 electron-builder.yml
+
+# Build folders for readthedocs
+_build/
