@@ -13,23 +13,3 @@ Please join us on [Discord](https://discord.gg/wFAmdxq )
 ## What We Are Looking For
 
 To Do:
-
-Knowledge management systems in verto.
-
-trading clients, the simplest operations being accomplished with atomic swaps [Volentix ecosystem](https://volentix.io).
-Bitcoin wallet
-
-Find small stories.
-
-DEAD CODE CHALLENGE
-
-PREANNOUNCEMENT!  pOST ANNOUNCEMENTS@
-
-Tor integration
-
-Change the web hosting from s3 to a decentralized service.
-
-## Styling
-
-TODO: Coding styles and conventions.
-
