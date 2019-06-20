@@ -1,15 +1,21 @@
 <template>
   <q-page  class="flex flex-center text-white bg-black">
-    <q-card style="width:55rem;" flat class="bg-black">
+    <q-card style="width:55rem; max-width: 100%;" flat class="bg-black">
       <q-card-section class="text-center text-white">
-        <div class="text-center text-weight-bold text-uppercase q-pa-lg">
-          <q-icon class="float-left" name="help_outline" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('walletmanager/index')">
-            <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
-          </q-icon>
-          <big class="titillium q-pa-xl">{{ $t('WalletManager.header') }}</big>
-          <q-icon class="float-right" @click.native="createWallet" name="add_circle_outline" color="green" size="2.5rem">
-            <q-tooltip>{{ $t('CreateVertoPassword.createwallet') }}</q-tooltip>
-          </q-icon>
+        <div class="text-center text-weight-bold text-uppercase q-pa-lg row">
+          <div class="col-auto">
+            <q-icon class="float-left" name="help_outline" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('walletmanager/index')">
+              <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
+            </q-icon>
+          </div>
+          <div class="col text-center">
+            <big class="titillium q-pa-xs">{{ $t('WalletManager.header') }}</big>
+          </div>
+          <div class="col-auto">
+            <q-icon class="float-right" @click.native="createWallet" name="add_circle_outline" color="green" size="2.5rem">
+              <q-tooltip>{{ $t('CreateVertoPassword.createwallet') }}</q-tooltip>
+            </q-icon>
+          </div>
         </div>
         <q-table
           class="bg-black"
