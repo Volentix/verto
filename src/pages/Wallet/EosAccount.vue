@@ -13,7 +13,7 @@
   </q-card>
   <q-card flat class="bg-black" style="width: 100%; max-width: 700px;">
     <div v-show="showMainSteps">
-        <q-stepper color="green" ref="stepper" alternative-labels v-model="step">
+        <q-stepper done-color="green" active-color="green" color="green" ref="stepper" alternative-labels v-model="step">
           <!--
             1.Private key
             -->
@@ -153,7 +153,7 @@
         <big class="titillium">Save Private Key</big>
         <q-icon class="float-right" name="close" size="2.5rem" color="white" @click.native="$router.push('create-wallet-options')"/>
       </q-card-section>
-      <q-stepper color="green" ref="stepperFilePassword" alternative-labels v-model="step2">
+      <q-stepper done-color="green" active-color="green" color="green" ref="stepperFilePassword" alternative-labels v-model="step2">
         <!--
           1.Private key
           -->
@@ -327,7 +327,7 @@ export default {
     gotToVertoPassword (saveFile) {
       this.addWallet.storeInWallet = saveFile
       this.showMainSteps = true
-      this.$refs.stepperFilePassword.reset()
+      this.$refs.stepperFilePassword.goTo(1)
       this.$refs.stepper.next()
     },
     createAccount () {

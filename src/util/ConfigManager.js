@@ -340,16 +340,17 @@ class ConfigManager {
         let i
         for (i = 0; i < config.keys.length; i++) {
           const wallet = config.keys[i]
-          if (wallet.name.toLowerCase() === walletInformation.walletName.toLowerCase()) {
+
+          if (wallet.name.toLowerCase() === walletInformation.walletName.value.toLowerCase()) {
             return { success: false, message: 'name_already_used' }
           }
         }
         if (walletInformation.filePassword) {
           walletInformation.addressPrivateEncrypted = JSON.parse(sjcl.encrypt(walletInformation.filePassword, JSON.stringify(walletInformation.addressPriv)))
-          await platformTools.downloadFile(JSON.stringify(walletInformation.addressPrivateEncrypted), walletInformation.walletName + '.priv')
+          await platformTools.downloadFile(JSON.stringify(walletInformation.addressPrivateEncrypted), walletInformation.walletName.value + '.priv')
         }
         const wallet = {
-          name: walletInformation.walletName,
+          name: walletInformation.walletName.value,
           type: 'eos',
           key: walletInformation.address,
           defaultKey: config.keys.length < 1
@@ -367,8 +368,8 @@ class ConfigManager {
 
     decryptPrivateKey (password, encryptedText) {
       try {
-        // sjcl.decrypt returns a string, no need to JSON.parse it.
-        const privateKey = sjcl.decrypt(password, encryptedText)
+        // sjcl.decrypt returns a string, no need to JSON.parse it, but it can't be quoted!
+        const privateKey = sjcl.decrypt(password, encryptedText).replace(/['"]+/g, '')
         return { success: true, key: privateKey }
       } catch (e) {
         return { success: false }
