@@ -93,6 +93,15 @@
                   />
 
               </div>
+              <div>
+                <q-select
+                  dark
+                  v-model="tokenSymbol"
+                  :options="options"
+                  :option-disable="opt => opt === 'VTX' ? true : opt.inactive"
+                  label="Select Token"
+                />
+              </div>
               <div class="q-pa-sm" v-show="navigationButtons.amount" @click="showSummary()" >
                 <q-icon name="navigate_next" size="3.2rem" color="green"   >
                   <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
@@ -331,14 +340,8 @@ export default {
       },
       tokenSymbol: 'EOS',
       options: [
-        {
-          label: 'VTX',
-          value: 'VTX'
-        },
-        {
-          label: 'EOS',
-          value: 'EOS'
-        }
+        'VTX',
+        'EOS'
       ],
       tableData: [],
       transactions: [],
@@ -509,7 +512,7 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
 .q-data-table th
   text-align right
 .close-button
@@ -532,5 +535,6 @@ export default {
   width:100%;
   table-layout: fixed;
   overflow-wrap: break-word;
-
+.q-menu
+  background: #535353 !important
 </style>

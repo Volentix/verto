@@ -136,6 +136,7 @@
 
 <script>
 import configManager from '../../util/ConfigManager'
+import { devError } from 'src/util/errorHandler'
 
 export default {
   // name: 'ComponentName',
@@ -237,6 +238,7 @@ export default {
           }
         }
       } catch (e) {
+        devError(e)
         if (!this.nameAlreadyUsed) {
           this.passwordInvalid = true
           this.showSubmitButton = false
