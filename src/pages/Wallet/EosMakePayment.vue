@@ -94,7 +94,13 @@
 
               </div>
               <div>
-                <q-select dark class="custom-menu" v-model="tokenSymbol" :options="options" label="Select Token" />
+                <q-select
+                  dark
+                  v-model="tokenSymbol"
+                  :options="options"
+                  :option-disable="opt => opt === 'VTX' ? true : opt.inactive"
+                  label="Select Token"
+                />
               </div>
               <div class="q-pa-sm" v-show="navigationButtons.amount" @click="showSummary()" >
                 <q-icon name="navigate_next" size="3.2rem" color="green"   >
@@ -530,5 +536,5 @@ export default {
   table-layout: fixed;
   overflow-wrap: break-word;
 .q-menu
-  background: #424242 !important
+  background: #535353 !important
 </style>
