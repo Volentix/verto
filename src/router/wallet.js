@@ -93,6 +93,15 @@ export default [
         }
       },
       {
+        name: 'vdexnodes',
+        path: '/vdexnodes',
+        component: () => import('pages/vDex/Nodes.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
         name: 'wallet',
         path: 'wallet',
         component: () => import('pages/Wallet/Wallet.vue'),

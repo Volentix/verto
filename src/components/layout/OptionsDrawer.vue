@@ -14,6 +14,12 @@
         </q-item-section>
         <q-item-label>{{ $t('SettingsView.current_wallet') }}</q-item-label>
       </q-item>
+      <q-item to="/vdexnodes">
+        <q-item-section class="flex-center">
+          <q-avatar icon="developer_board" size="65px"/>
+        </q-item-section>
+        <q-item-label>{{ $t('SettingsView.vdexnodes') }}</q-item-label>
+      </q-item>
       <q-item to="/exchange">
         <q-item-section class="flex-center">
           <q-avatar icon="swap_horizontal_circle" size="65px"/>
