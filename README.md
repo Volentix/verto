@@ -39,7 +39,7 @@ To install Verto you will need to have the following installed on your system:
 
 1. **NPM:** v6.4.1
 2. **Node:** v10.15.0
-3. **Quasar:** v0.17.23. Note that this is at the time of writting. We are in the process of migrating to v1.X. [Install Quasar Docs](https://quasar-framework.org/guide/). Make sure you have selected the right version of the documentation on the left hand panel.
+3. **Quasar:** v1.0.0 [Install Quasar Docs](https://quasar.dev/quasar-cli/installation). 
 
 ```
 Note that other version of Node and NPM may work, however, these are the versions our team is using.
