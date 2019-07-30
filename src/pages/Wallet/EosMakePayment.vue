@@ -98,7 +98,6 @@
                   dark
                   v-model="tokenSymbol"
                   :options="options"
-                  :option-disable="opt => opt === 'VTX' ? true : opt.inactive"
                   label="Select Token"
                 />
               </div>
