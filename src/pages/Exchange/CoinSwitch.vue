@@ -18,7 +18,7 @@
           <q-step
             default
             :name="1"
-            title="Select Coin to Deposit"
+            title="Select Coin to Send"
             class="bg-black workflow-step"
             :done="step > 1"
             :header-nav="step > 1"
@@ -82,7 +82,7 @@
                     dark
                     v-model="refundAddress.tag"
                     color="green"
-                    label="Tag or Memo, often required by exchanges"
+                    label="Optional tag or memo [some exchanges require this field]"
                   />
                 </div>
                 <div class="q-pa-sm" v-show="true" @click="checkToGetPairs()">
@@ -161,7 +161,7 @@
                     dark
                     v-model="destinationAddress.tag"
                     color="green"
-                    label="Tag or Memo, often required by exchanges"
+                    label="Optional tag or memo [some exchanges require this field]"
                   />
                 </div>
                 <div class="q-pa-sm" v-show="true" @click="checkToGetRate()">
@@ -182,7 +182,7 @@
             <q-card-section>
               <div class="text-center text-white uppercase">
                 <q-item>
-                  <q-item-label>Choose quantity to send or receive</q-item-label>
+                  <q-item-label>Choose quantity</q-item-label>
                 </q-item>
                 <div class="q-pa-md">
                   <q-input
@@ -284,6 +284,10 @@
           </q-step>
         </q-stepper>
       </q-card>
+      <p class="text-caption text-center">
+        * Disclaimer:  This transaction is carried out using an open API linked to various Exchanges.<br>
+        By sending coins to the above address, you agreed to <a href="https://coinswitch.co/terms">the terms and conditions</a> of the selected provider.
+      </p>
     </q-card>
   </q-page>
 </template>
@@ -446,7 +450,7 @@ export default {
       if (this.depositCoin != null) {
         return 'Complete this exchange by sending ' + this.expectedDepositCoinAmount + ' ' + typeUpper(this.depositCoin.value) + ' to this address within the next 12 hours'
       } else {
-        return 'Complete this exchange by sending the coins to this address within the next 24 hours'
+        return 'Complete this exchange by sending the coins to this address within the next 12 hours'
       }
     },
     depositQuantityLabel () {
@@ -465,16 +469,16 @@ export default {
     },
     returnAddressLabel () {
       if (this.depositCoin != null) {
-        return typeUpper(this.depositCoin.value) + ' Return Address'
+        return 'Your ' + typeUpper(this.depositCoin.value) + ' return address [in case the transaction does not complete]'
       } else {
-        return 'Coin Return Address'
+        return 'Your return address [in case the transaction does not complete]'
       }
     },
     destinationAddressLabel () {
       if (this.destinationCoin != null) {
-        return typeUpper(this.destinationCoin.value) + ' Destination Address'
+        return 'Address to receive new ' + typeUpper(this.destinationCoin.value)
       } else {
-        return 'Coin Destination Address'
+        return 'Address to receive new coin'
       }
     }
   },
