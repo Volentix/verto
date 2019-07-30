@@ -407,6 +407,13 @@ export default {
         userError(error)
         return false
       }
+    },
+    copyKey (key) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: this.$t('DisplayKey.copied'),
+        color: 'positive'
+      })
     }
   }
 }

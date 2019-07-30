@@ -66,5 +66,4 @@
     <preference name="AndroidExtraFilesystems" value="files,files-external,documents,sdcard,root" />
     <preference name="SplashScreenDelay" value="5000" />
     <engine name="android" spec="^7.1.4" />
-    <engine name="ios" spec="^4.5.5" />
 </widget>
