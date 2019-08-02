@@ -50,6 +50,7 @@
         "cancel": "Cancel",
         "ok": "Ok",
         "delete": "Delete",
+        "upgrade": "Upgrade",
         "keyhere": "Wallet Public Key Here",
         "header": "Wallet Manager",
         "wallets": "Wallets",
