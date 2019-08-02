@@ -77,6 +77,15 @@
                 </div>
               </div>
               <div
+                v-if="col.name === 'associations' && props.row.type !== 'eos'"
+                class="text-right text-white"
+                @click="goToUpgrade(props.row)"
+              >
+                  <q-icon name="update" size="2.2rem" color='yellow'>
+                    <q-tooltip>{{ $t('WalletManager.upgrade') }}</q-tooltip>
+                  </q-icon>
+              </div>
+              <div
                 v-if="col.name === 'associations'"
                 class="text-right text-white"
                 @click="goToAssociations(props.row)"
@@ -181,8 +190,12 @@ export default {
       this.$configManager.updateCurrentWallet(row)
       this.$router.push('associations')
     },
+    goToUpgrade (row) {
+      console.log('row', row)
+    },
     async loadTableData () {
       this.tableData = this.$store.state.currentwallet.config.keys
+      console.log('this.tableData', this.tableData)
     },
     changeCurrentWallet: function (row) {
       this.$configManager.updateCurrentWallet(row)
