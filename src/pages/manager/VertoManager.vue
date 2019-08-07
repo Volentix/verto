@@ -147,7 +147,7 @@
                 type="password"
                 color="green"
                 label="Private Key Password"
-                :error="privateKeyPasswordValid"
+                :error="invalidPrivateKeyPassword"
                 error-message="The password is incorrect"
                 @input="checkPrivateKeyPassword"
               />
@@ -180,6 +180,7 @@
 </template>
 
 <script>
+import sjcl from 'sjcl'
 import { userError } from '@/util/errorHandler'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
@@ -194,7 +195,6 @@ export default {
       vertoPassword: null,
       vertoPasswordWrong: false,
       vertoPassordValid: false,
-      privateKeyPasswordValid: false,
       privateKeyPassword: '',
       privateKeyFromFile: '',
       invalidPrivateKeyPassword: false,
@@ -333,15 +333,15 @@ export default {
       const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, this.currentWallet.privateKeyEncrypted)
       if (result.success) {
         if (result.key.indexOf('privatekey') !== -1) {
-          console.log('found problem')
+          const key = JSON.parse(result.key.replace(/{/g, '{"').replace(/}/g, '"}').replace(/:/g, '":"').replace(/,/g, '","'))
+          this.currentWallet.privateKeyEncrypted = sjcl.encrypt(this.privateKeyPassword, key.privatekey)
+          console.log('found problem and fixed it')
         }
         this.invalidPrivateKeyPassword = false
-        this.privateKeyPasswordValid = true
         this.step = 3
         console.log('result t:', result)
       } else {
         this.invalidPrivateKeyPassword = true
-        this.privateKeyPasswordValid = false
         console.log('result f:', result)
       }
     },
