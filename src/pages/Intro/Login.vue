@@ -77,6 +77,12 @@ export default {
         this.showSubmit = false
       }
     },
+    async startRestoreConfig () {
+      this.$router.push({
+        name: 'restore-wallet',
+        params: { returnto: 'settings' }
+      })
+    },
     async login () {
       this.passHasError = false
       if (!this.password) {
@@ -90,6 +96,7 @@ export default {
         if (results.message === 'no_default_key') {
           this.$router.push({ path: 'vertomanager' })
         } else {
+          // this.startRestoreConfig()
           this.passHasError = true
         }
       }

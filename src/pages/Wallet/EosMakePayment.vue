@@ -30,6 +30,7 @@
             <div class="q-pa-md">
 
                   <q-input
+                    ref="sendTo"
                     v-model="sendTo"
                     dark
                     color="green"
@@ -42,10 +43,13 @@
               <div class="q-pa-md">
 
                   <q-input
+                    ref="sendMemo"
                     v-model="sendMemo"
                     dark
                     color="green"
                     label="Memo"
+                    @input="checkMemo"
+                    error-message="Memo is required on this exchange, check your deposit instructions"
                     @keyup.enter="$refs.stepper.next()"
                   />
 
@@ -99,6 +103,7 @@
                   v-model="tokenSymbol"
                   :options="options"
                   label="Select Token"
+                  @input="checkAmount"
                 />
               </div>
               <div class="q-pa-sm" v-show="navigationButtons.amount" @click="showSummary()" >
@@ -203,24 +208,12 @@
               <tr>
                 <td>
                   <span class="text-h6 q-pa-md">
-                    Token
-                  </span>
-                </td>
-                <td>
-                  <span class="text-h4">
-                    {{ tokenSymbol }}
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <span class="text-h6 q-pa-md">
                     Amount
                   </span>
                 </td>
                 <td>
                   <span class="text-h4">
-                    {{ sendAmount }}
+                    {{ formatedAmount }}
                   </span>
                 </td>
               </tr>
@@ -255,7 +248,7 @@
                 </q-btn>
               </div>
               <div class="q-pa-md">
-                <q-btn color="white" outline glossy flat @click="navigation.paymentSuccessful = false; $refs.stepper.reset()">
+                <q-btn color="white" outline glossy flat @click="navigation.paymentSuccessful = false; $refs.stepper.goTo(1)">
                   <div class="text-h5 text-uppercase">
                     Another Payment
                   </div>
@@ -337,7 +330,7 @@ export default {
         'EOS': 'eosio.token',
         'VTX': 'volentixgsys'
       },
-      tokenSymbol: 'EOS',
+      tokenSymbol: 'VTX',
       options: [
         'VTX',
         'EOS'
@@ -350,6 +343,7 @@ export default {
       eosBalance: 0,
       currentBtcValue: 0,
       sendAmount: null,
+      formatedAmount: null,
       sendTo: '',
       sendMemo: '',
       isCardModalActive: false,
@@ -398,6 +392,7 @@ export default {
       }
     },
     toSummary () {
+      this.formatedAmount = this.formatAmountString()
       if (this.navigationButtons.privateKeyPasswordBtn) {
         this.$refs.stepper.next()
       }
@@ -419,8 +414,22 @@ export default {
     checkTo () {
       this.invalidEosName = false
       if (this.sendTo.length === 12) {
-        this.navigationButtons.to = true
+        if (this.sendTo.toLowerCase() === 'stexofficial') {
+          this.$refs.sendMemo.error = true
+        } else {
+          this.navigationButtons.to = true
+        }
       } else {
+        this.navigationButtons.to = false
+        this.$refs.sendMemo.error = false
+      }
+    },
+    checkMemo () {
+      if (this.sendMemo.length > 0) {
+        this.$refs.sendMemo.error = false
+        this.navigationButtons.to = true
+      } else if (this.sendTo.toLowerCase() === 'stexofficial') {
+        this.$refs.sendMemo.error = true
         this.navigationButtons.to = false
       }
     },
@@ -432,7 +441,7 @@ export default {
       }
     },
     formatAmount: function () {
-      return parseInt(this.sendAmount = Math.abs(Number(this.sendAmount) || 0).toFixed(4)).toString()
+      return parseInt(this.sendAmount = Math.abs(Number(this.sendAmount) || 0).toFixed(8)).toString()
     },
     /**
      * Formats the amount into a string supported by EOS.
@@ -448,10 +457,10 @@ export default {
       } else {
         stringAmount += '.'
       }
-      for (;numberOfDecimals < 4; numberOfDecimals++) {
+      for (;numberOfDecimals < 8; numberOfDecimals++) {
         stringAmount += '0'
       }
-      return stringAmount + ' ' + this.tokenSymbol
+      return parseFloat(stringAmount).toFixed(8) + ' ' + this.tokenSymbol
     },
     showSpinners (visible) {
       this.spinnervisible = visible
@@ -482,13 +491,12 @@ export default {
         return
       }
       this.showSpinners(true)
-      const formatedAmount = this.formatAmountString()
       try {
         const transaction = await (new EosWrapper()).transferToken(
           this.tokenContract[this.tokenSymbol],
           this.walletName,
           this.sendTo.toLowerCase(),
-          formatedAmount,
+          this.formatedAmount,
           this.sendMemo,
           result.key
         )

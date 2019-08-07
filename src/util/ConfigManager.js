@@ -85,6 +85,15 @@ class ConfigManager {
       return { success: true }
     }
 
+    async updateConfig (password, config) {
+      // make sure that the password is correct before proceeding.
+      const configInfo = await this.getConfig(password)
+      if (!configInfo.success) {
+        return configInfo
+      }
+      return this.saveConfigOnly(password, config)
+    }
+
     async addPrivateKeyToWallet (password, name, privateKey) {
       const configInfo = await this.getConfig(password)
       if (!configInfo.success) {

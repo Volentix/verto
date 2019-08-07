@@ -96,7 +96,7 @@ export default {
       this.errorDownloadingFile = false
       try {
         const self = this
-        this.$configManager.downloadFile(this.wallet.privateKeyEncrypted, this.wallet.name + '.priv')
+        this.$configManager.downloadFile(JSON.stringify(this.wallet.privateKeyEncrypted), this.wallet.name + '.priv')
           .then(function (results) {
             self.$refs.stepper.next()
           }).catch(function (err) {
