@@ -1,6 +1,6 @@
 {
   "name": "verto",
-  "version": "0.8.11",
+  "version": "0.9.0",
   "description": "A multi-currency crypto wallet with initial support for EOS & VTX",
   "productName": "Verto",
   "cordovaId": "org.cordova.verto",
