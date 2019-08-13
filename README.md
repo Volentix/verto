@@ -102,7 +102,7 @@ quasar dev -m ios
 
 ## Maintainers
 
-[@rhys@volentixlabs.com](https://github.com/rhys@volentixlabs.com)
+[rhys@volentixlabs.com](https://github.com/rhys@volentixlabs.com)
 
 ## Contribute
 
