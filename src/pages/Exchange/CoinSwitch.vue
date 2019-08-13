@@ -174,7 +174,7 @@
           </q-step>
           <q-step
             :name="3"
-            title="Select Quatity"
+            title="Select Quantity"
             class="bg-black workflow-step"
             :done="step > 3"
             :header-nav="step > 3"
@@ -192,7 +192,7 @@
                     dark
                     v-model="depositQuantity"
                     color="green"
-                    @input="quatityFromDeposit()"
+                    @input="quantityFromDeposit()"
                     :disabled="!rateData"
                     :loading="!rateData"
                     :label="depositQuantityLabel"
@@ -206,7 +206,7 @@
                     dark
                     v-model="destinationQuantity"
                     color="green"
-                    @input="quatityFromDestination()"
+                    @input="quantityFromDestination()"
                     :disabled="!rateData"
                     :loading="!rateData"
                     :label="destinationQuantityLabel"
@@ -559,12 +559,12 @@ export default {
     verifyAddress () {
       // check validity of all keys
     },
-    quatityFromDeposit () {
+    quantityFromDeposit () {
       // deal with precision
       this.destinationQuantity = (+this.depositQuantity * +this.rateData.rate) - +this.rateData.minerFee
       this.lastChangedValue = 'deposit'
     },
-    quatityFromDestination () {
+    quantityFromDestination () {
       // deal with precision
       this.depositQuantity = (+this.destinationQuantity + +this.rateData.minerFee) / +this.rateData.rate
       this.lastChangedValue = 'destination'

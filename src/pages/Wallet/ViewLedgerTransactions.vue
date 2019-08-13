@@ -115,7 +115,7 @@
             <tbody>
               <tr>
                 <td class="text-left">Amount:</td>
-                <td class="text-right">{{parseFloat(activeTransaction.amount).toFixed(4).toString()}}</td>
+                <td class="text-right">{{parseFloat(activeTransaction.amount).toFixed(8).toString()}}</td>
               </tr>
               <tr>
                 <td class="text-left">Currency:</td>
