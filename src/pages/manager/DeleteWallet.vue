@@ -88,7 +88,6 @@ export default {
   created () {
     this.wallet = this.$route.params.wallet
     this.wallet.defaultKey = false
-    console.log(JSON.stringify(this.wallet))
   },
   methods: {
     async downloadPrivateKey () {
@@ -99,7 +98,7 @@ export default {
           .then(function (results) {
             self.$refs.stepper.next()
           }).catch(function (err) {
-            console.log('results: ', err)
+            console.log(err)
             self.errorDownloadingFile = true
           })
       } catch (err) {

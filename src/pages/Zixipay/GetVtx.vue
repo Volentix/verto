@@ -227,7 +227,7 @@ export default {
       })
     },
     getmorevtx: function () {
-      this.$refs.stepper.reset()
+      this.$refs.stepper.goTo(1)
       this.showsuccess = false
       this.showzixipay = true
     },

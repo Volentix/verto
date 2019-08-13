@@ -98,6 +98,7 @@
 </template>
 
 <script>
+import sjcl from 'sjcl'
 import FileSelect from '@/components/FileSelect.vue'
 
 export default {
@@ -168,14 +169,21 @@ export default {
       }
       this.invalidPrivateKeyPassword = false
       const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, this.privateKeyFromFile)
-      // Remove the private key immediately so it
-      // does not stick around any longer than it has to
-      this.privateKeyPassword = ''
       if (!result.success) {
         this.invalidPrivateKeyPassword = true
         this.privateKeyPasswordValid = false
         return
+      } else {
+        // This block is to support an old file format of keys found in the wild
+        if (result.key.indexOf('privatekey') !== -1) {
+          const key = JSON.parse(result.key.replace(/{/g, '{"').replace(/}/g, '"}').replace(/:/g, '":"').replace(/,/g, '","'))
+          this.privateKeyFromFile = JSON.parse(sjcl.encrypt(this.privateKeyPassword, '"' + key.privatekey + '"'))
+          console.log('found problem and fixed it')
+        }
       }
+      // Remove the private key immediately so it
+      // does not stick around any longer than it has to
+      this.privateKeyPassword = ''
       this.$refs.stepper.next()
     },
     checkPrivateKeyPassword () {

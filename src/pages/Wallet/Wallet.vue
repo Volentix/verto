@@ -275,7 +275,7 @@ export default {
       try {
         // Getting the account balance from demux in case of the ledger contract
         let result = await this.$axios.get(process.env[this.$store.state.settings.network].DEMUX_API + '/ledger/balance/' + this.walletKey)
-        self.balance = parseFloat(result.data.balance).toFixed(4)
+        self.balance = parseFloat(result.data.balance).toFixed(8)
         self.vtxTotal = self.balance
         let vtxProm = 0
         let eosProm = 0
@@ -286,7 +286,7 @@ export default {
               if (result.length) {
                 self.vtxBalance = result[0].split(' ')[0]
               }
-              self.vtxTotal = parseFloat(+self.vtxBalance + +self.vtxTotal).toFixed(4)
+              self.vtxTotal = parseFloat(+self.vtxBalance + +self.vtxTotal).toFixed(8)
             }).catch(function (error) {
               // TODO: Exception handling
               userError(error)
@@ -304,8 +304,8 @@ export default {
         Promise.all([vtxProm, eosProm]).then(async values => {
           let results = await this.$axios.get(process.env[store.state.settings.network].CROWDFUND_URL + '/public/api/summary/')
           let eos2btc = await this.$axios.get('https://api.coingecko.com/api/v3/simple/price?ids=eos&vs_currencies=btc')
-          let eosBtcTotals = parseFloat(+eos2btc.data.eos.btc * +self.eosBalance).toFixed(4)
-          let vtxBtcTotals = parseFloat((+results.data.crowdsale.current_price * +self.vtxTotal) / 100000000).toFixed(4)
+          let eosBtcTotals = parseFloat(+eos2btc.data.eos.btc * +self.eosBalance).toFixed(8)
+          let vtxBtcTotals = parseFloat((+results.data.crowdsale.current_price * +self.vtxTotal) / 100000000).toFixed(8)
           self.currentBtcValue = +eosBtcTotals + +vtxBtcTotals || 0
         })
         this.spinnervisible = false

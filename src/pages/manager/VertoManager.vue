@@ -77,6 +77,15 @@
                 </div>
               </div>
               <div
+                v-if="col.name === 'associations' && props.row.type !== 'eos'"
+                class="text-right text-white"
+                @click="getAccountNames(props.row)"
+              >
+                  <q-icon name="update" size="2.2rem" color='yellow'>
+                    <q-tooltip>{{ $t('WalletManager.upgrade') }}</q-tooltip>
+                  </q-icon>
+              </div>
+              <div
                 v-if="col.name === 'associations'"
                 class="text-right text-white"
                 @click="goToAssociations(props.row)"
@@ -95,16 +104,124 @@
         </q-table>
       </q-card-section>
     </q-card>
-  </q-page >
+    <q-dialog v-model="prompt" persistent>
+      <q-card style="min-width: 400px; border:1px solid #FFF;">
+        <q-card-section>
+          <div class="text-h6 text-center">Upgrade and attach an EOS account to this wallet</div>
+        </q-card-section>
+        <q-card-section class="text-white bg-black">
+          <div v-show="!Array.isArray(accountNames) || !accountNames.length">
+
+            <q-card-section class="text-center">
+              <div class="text-h6">There are no EOS accounts attached to this public key. You will need to create or use an existing EOS account and (skip generate new keys & step 3)</div>
+              <q-btn outline rounded @click="goToLink()" label="Change the Active Key Permissions with Bloks.io" />
+            </q-card-section>
+
+          </div>
+          <div v-show="Array.isArray(accountNames) && accountNames.length">
+            <q-stepper
+              dark
+              flat
+              v-model="step"
+              vertical
+              done-color="green"
+              active-color="green"
+              ref="stepper"
+              color="primary"
+              animated
+              class="bg-black"
+            >
+              <q-step
+                :name="1"
+                title="Select account name"
+                icon="settings"
+                :done="step > 1"
+              >
+                <q-select
+                  label="Select an EOS Account Name in the list"
+                  separator
+                  filled
+                  dark
+                  v-model="accountName"
+                  :options="accountNames"
+                  :error="accountNameEmpty"
+                  :loading="!accountNames"
+                  @input="noPrivateKey ? step = 3 : step = 2"
+                />
+              </q-step>
+              <q-step
+                :name="2"
+                title="Validate Private Key"
+                icon="assignment"
+                :disable="noPrivateKey"
+                :done="step > 2"
+              >
+                <q-input
+                  v-model="privateKeyPassword"
+                  dark
+                  type="password"
+                  color="green"
+                  label="Private Key Password"
+                  debounce="500"
+                  :error="invalidPrivateKeyPassword"
+                  error-message="The password is incorrect"
+                  @input="checkPrivateKeyPassword"
+                />
+              </q-step>
+              <q-step
+                :name="3"
+                title="Confirm Verto Password"
+                icon="add_comment"
+                :done="step > 3"
+              >
+                <q-input
+                  v-model="vertoPassword"
+                  dark
+                  type="password"
+                  color="green"
+                  label="Verto Password"
+                  :error="vertoPasswordWrong"
+                  error-message="The password is incorrect"
+                  @input="checkVertoPassword"
+                  @keyup.enter="submit()"
+                />
+              </q-step>
+            </q-stepper>
+          </div>
+          <q-card-actions align="right">
+            <q-btn flat label="Cancel" @click="cancelAccountName()" v-close-popup />
+            <q-btn flat label="Ok" :disable="!vertoPassordValid" @click="upgradeAccountName()" v-close-popup />
+          </q-card-actions>
+          </q-card-section>
+        </q-card>
+    </q-dialog>
+  </q-page>
 </template>
 
 <script>
+import sjcl from 'sjcl'
+import { openURL } from 'quasar'
+import { userError } from '@/util/errorHandler'
+import EosWrapper from '@/util/EosWrapper'
+const eos = new EosWrapper()
 
 export default {
   // name: 'ComponentName',
   data () {
     return {
       dark: true,
+      step: 1,
+      prompt: false,
+      vertoPassword: null,
+      vertoPasswordWrong: false,
+      vertoPassordValid: false,
+      privateKeyPassword: '',
+      privateKeyFromFile: '',
+      invalidPrivateKeyPassword: false,
+      accountName: '',
+      accountNames: null,
+      accountNameEmpty: null,
+      currentWallet: null,
       columns: [
         {
           name: 'default',
@@ -164,6 +281,15 @@ export default {
     }
     this.loadTableData()
   },
+  computed: {
+    noPrivateKey () {
+      if (typeof this.currentWallet !== 'undefined' && this.currentWallet !== null && this.currentWallet.hasOwnProperty('privateKeyEncrypted') && this.currentWallet.privateKeyEncrypted) {
+        return false
+      } else {
+        return true
+      }
+    }
+  },
   methods: {
     changeTheDefaultWallet (row) {
       row.defaultKey = false
@@ -180,6 +306,35 @@ export default {
     goToAssociations (row) {
       this.$configManager.updateCurrentWallet(row)
       this.$router.push('associations')
+    },
+    goToLink () {
+      openURL('https://medium.com/@eosnationbp/change-the-active-key-permissions-with-bloks-io-eos-nation-tutorial-682efb0a00d3')
+    },
+    upgradeAccountName () {
+      this.currentWallet.type = 'eos'
+      this.currentWallet.name = this.accountName.value
+      this.$configManager.updateCurrentWallet(this.currentWallet)
+      this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
+    },
+    cancelAccountName () {
+      this.accountName = null
+      this.step = 1
+    },
+    getAccountNames (row) {
+      this.currentWallet = row
+      const self = this
+      eos.getAccountNamesFromPubKeyP(row.key)
+        .then(function (result) {
+          self.accountNames = []
+          for (var i = 0; i < result.account_names.length; i++) {
+            self.accountNames.push({ label: result.account_names[i], value: result.account_names[i] })
+          }
+          self.walletName = result.account_names[0]
+        }).catch((err) => {
+          console.log(err)
+          userError('There was a problem getting account names')
+        })
+      this.prompt = true
     },
     async loadTableData () {
       this.tableData = this.$store.state.currentwallet.config.keys
@@ -201,6 +356,41 @@ export default {
         type: 'warning',
         position: 'top'
       })
+    },
+    checkPrivateKeyPassword () {
+      const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, JSON.stringify(this.currentWallet.privateKeyEncrypted))
+      if (result.success) {
+        // This block is to support an old file format of keys found in the wild
+        if (result.key.indexOf('privatekey') !== -1) {
+          const key = JSON.parse(result.key.replace(/{/g, '{"').replace(/}/g, '"}').replace(/:/g, '":"').replace(/,/g, '","'))
+          this.currentWallet.privateKeyEncrypted = JSON.parse(sjcl.encrypt(this.privateKeyPassword, '"' + key.privatekey + '"'))
+          console.log('found problem and fixed it')
+        }
+        this.invalidPrivateKeyPassword = false
+        this.step = 3
+      } else {
+        this.invalidPrivateKeyPassword = true
+      }
+    },
+    checkVertoPassword () {
+      this.vertoPasswordWrong = false
+      this.vertoPassordValid = false
+      if (this.vertoPassword.length > 7) {
+        try {
+          const self = this
+          this.$configManager.getConfig(this.vertoPassword)
+            .then(function (result) {
+              self.vertoPasswordWrong = false
+              self.vertoPassordValid = true
+            }).catch(function (err) {
+              self.vertoPasswordWrong = true
+              console.log(err)
+            })
+        } catch (err) {
+          self.vertoPasswordWrong = true
+          console.log(err)
+        }
+      }
     }
   }
 }
