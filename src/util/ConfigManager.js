@@ -375,6 +375,7 @@ class ConfigManager {
       }
     }
 
+    // Function takes two strings, not objects
     decryptPrivateKey (password, encryptedText) {
       try {
         // sjcl.decrypt returns a string, no need to JSON.parse it, but it can't be quoted!
