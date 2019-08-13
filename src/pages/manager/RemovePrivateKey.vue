@@ -100,7 +100,7 @@ export default {
           .then(function (results) {
             self.$refs.stepper.next()
           }).catch(function (err) {
-            console.log('results: ', err)
+            console.log(err)
             self.errorDownloadingFile = true
           })
       } catch (err) {
