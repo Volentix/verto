@@ -159,13 +159,13 @@ node_modules
 
 .quasar
 .thumbs.db
-app/dist
-app/build
+/dist
+/build
 .nuxt.
-app/src-cordova/node_modules
-app/src-cordova/platforms
-app/src-cordova/plugins
-app/src-cordova/www
+/src-cordova/node_modules
+/src-cordova/platforms
+/src-cordova/plugins
+/src-cordova/www
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
