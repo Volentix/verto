@@ -7,6 +7,23 @@
 
 > A multi-currency cross-blockchain peer-to-peer wallet
 
+## BRANCH NOTE
+
+Make sure you are on latest rust
+```
+$ rustup update stable
+$ rustup override set 1.37.0
+```
+
+
+```
+$ git clone https://github.com/quasarframework/tauri.git
+$ git clone https://github.com/lucasfernog/quasar.git
+$ cd quasar
+$ git checkout feature/proton-package
+$ cd app && yarn
+$ cd ../..
+```
 
 Verto is being built as a multi-currency wallet for integrating sovereign services into one, user controlled and managed, anonymous, and decentralized tool. The focus of Verto is to simplify the usage of blockchain technology in a way that is intuative for those unfamiliar with the technology.
 
