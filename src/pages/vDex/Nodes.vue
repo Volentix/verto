@@ -7,7 +7,7 @@
           style="width: 100%"
         />
         <div class="q-pa-md q-gutter-sm text-center">
-          <q-btn outline rounded color="white" label="Become a VDEX Node" @click.native="openURL('https://github.com/Volentix/vDexNode')"/>
+          <q-btn outline rounded color="white" label="Become a VDEX Node" @click.native="openURL('https://github.com/Volentix/vDexNode-GUI/releases')"/>
           <q-btn outline rounded color="white" label="Vote" disabled />
           <q-btn outline rounded color="white" label="Stake VTX" disabled />
         </div>

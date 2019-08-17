@@ -40,8 +40,8 @@
               <div v-if="col.name === 'type'" class="text-center text-white">
                 <div v-if="col.value === 'eos'">
                   <img
-                    src="@/assets/img/currencies/eosioWalletManager.png"
-                    style="max-width:50px;"
+                    src="statics/icon.png"
+                    style="max-width:45px;"
                   >
                 </div>
                 <div v-else>
@@ -315,8 +315,16 @@ export default {
       this.currentWallet.name = this.accountName.value
       this.$configManager.updateCurrentWallet(this.currentWallet)
       this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
+      // reset form variables
+      this.vertoPassword = null
+      this.privateKeyPassword = null
+      this.accountName = null
+      this.step = 1
     },
     cancelAccountName () {
+      // reset form variables
+      this.vertoPassword = null
+      this.privateKeyPassword = null
       this.accountName = null
       this.step = 1
     },
@@ -358,7 +366,17 @@ export default {
       })
     },
     checkPrivateKeyPassword () {
-      const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, JSON.stringify(this.currentWallet.privateKeyEncrypted))
+      let privateKeyEncrypted = ''
+      if (this.currentWallet.privateKeyEncrypted.constructor === String) {
+        // In case it was previously useleslly stringified
+        privateKeyEncrypted = this.currentWallet.privateKeyEncrypted.replace(/\\"/g, '"')
+        console.log('its a String')
+      } else if (this.currentWallet.privateKeyEncrypted.constructor === Object) {
+        privateKeyEncrypted = JSON.stringify(this.currentWallet.privateKeyEncrypted)
+        console.log('its a Object')
+      }
+      const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+      console.log('result', result)
       if (result.success) {
         // This block is to support an old file format of keys found in the wild
         if (result.key.indexOf('privatekey') !== -1) {

@@ -252,14 +252,14 @@ class ConfigManager {
         let currentWallet = store.state.currentwallet.wallet
         // we are deleting the current wallet (not the default)
         // so we need to get the default and make it the current wallet.
-        if (currentWallet.name === wallet.name) {
+        if (currentWallet.name.toString() === wallet.name.toString()) {
           const currentWallets = configInfo.config.keys.filter(function (value, index, arr) {
             return value.defaultKey
           })
           currentWallet = currentWallets[0]
         }
         const keys = configInfo.config.keys.filter(function (value, index, arr) {
-          return value.name !== wallet.name
+          return value.name.toString() !== wallet.name.toString()
         })
         configInfo.config.keys = keys
         return this.saveConfig(password, currentWallet, configInfo.config)
@@ -396,7 +396,7 @@ class ConfigManager {
         let i
         for (i = 0; i < config.keys.length; i++) {
           const wallet = config.keys[i]
-          if (wallet.name.toLowerCase() === keyname.toLowerCase()) {
+          if (wallet.name.toString().toLowerCase() === keyname.toString().toLowerCase()) {
             return { success: false, message: 'name_already_used' }
           }
         }
