@@ -14,7 +14,7 @@
         <!--
           1. Paid to
         -->
-        <q-step :name="1" title="I Understand" class=" bg-black workflow-step" :done="step>1">
+        <q-step :name="1" title="Choose File" class=" bg-black workflow-step" :done="step>1">
           <q-card-section>
           <div class="text-center text-white text-uppercase">
             <div class="text-h6 text-uppercase q-pa-md">
