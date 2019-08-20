@@ -69,13 +69,21 @@
                 <span class="q-pa-sm">
                   <q-input
                     v-model="vertoPassword"
-                    type="password"
                     dark
                     color="green"
                     @input="checkPassword"
                     @keyup.enter="submit"
                     :label="$t('DisplayKey.verto_password')"
-                  />
+                    :type="isPwd ? 'password' : 'text'"
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="isPwd = !isPwd"
+                      />
+                    </template>
+                  </q-input>
                 </span>
                 <div v-show="nameAlreadyUsed" class="text-h6 text-uppercase text-red">
                   {{ $t('DisplayKey.name_is_used') }}
@@ -117,6 +125,7 @@ export default {
       showPasswordSubmit: false,
       nameAlreadyUsed: false,
       passwordInvalid: false,
+      isPwd: true,
       step: 1
     }
   },

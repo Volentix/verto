@@ -378,10 +378,13 @@ class ConfigManager {
     // Function takes two strings, not objects
     decryptPrivateKey (password, encryptedText) {
       try {
+        // make sure the string we get is not quoted, that's not a valid JSON!
+        encryptedText = encryptedText.replace(/^"(.+)"$/, '$1')
         // sjcl.decrypt returns a string, no need to JSON.parse it, but it can't be quoted!
-        const privateKey = sjcl.decrypt(password, encryptedText).replace(/['"]+/g, '')
+        const privateKey = sjcl.decrypt(password, encryptedText).replace(/^"(.+)"$/, '$1')
         return { success: true, key: privateKey }
       } catch (e) {
+        console.log('e', e)
         return { success: false }
       }
     }
