@@ -132,14 +132,22 @@
             <div>
 
                   <q-input
-                    type="password"
                     v-model="privateKeyPassword"
                     dark
                     color="green"
                     label="Private Key Password"
                     @input="checkPrivateKeyPassword"
                     @keyup.enter="toSummary"
-                  />
+                    :type="isPwd ? 'password' : 'text'"
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="isPwd = !isPwd"
+                      />
+                    </template>
+                  </q-input>
 
               </div>
               <!--
@@ -293,6 +301,7 @@ export default {
   data () {
     return {
       file: null,
+      isPwd: true,
       saveKeyInWallet: false,
       hasPrivateKeyInWallet: false,
       invalidEosName: false,

@@ -183,7 +183,7 @@
                   :error="vertoPasswordWrong"
                   error-message="The password is incorrect"
                   @input="checkVertoPassword"
-                  @keyup.enter="submit()"
+                  @keyup.enter="upgradeAccountName(); prompt=false"
                 />
               </q-step>
             </q-stepper>
@@ -380,7 +380,7 @@ export default {
       if (result.success) {
         // This block is to support an old file format of keys found in the wild
         if (result.key.indexOf('privatekey') !== -1) {
-          const key = JSON.parse(result.key.replace(/{/g, '{"').replace(/}/g, '"}').replace(/:/g, '":"').replace(/,/g, '","'))
+          const key = JSON.parse(result.key)
           this.currentWallet.privateKeyEncrypted = JSON.parse(sjcl.encrypt(this.privateKeyPassword, '"' + key.privatekey + '"'))
           console.log('found problem and fixed it')
         }

@@ -57,13 +57,21 @@
           <q-card-section class="text-white text-center">
               <q-input
                 v-model="wallet.vertoPassword"
-                type="password"
                 dark
                 color="green"
                 @input="checkVertoPassword"
                 @keyup.enter="submit"
                 :label="$t('CreateVertoPassword.vertopassword')"
-              />
+                :type="isPwd ? 'password' : 'text'"
+              >
+                <template v-slot:append>
+                  <q-icon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwd = !isPwd"
+                  />
+                </template>
+              </q-input>
             <div v-show="errors.nameUsed" class="text-h6 text-uppercase text-red q-pa-md">
               {{ $t('DisplayKey.name_is_used') }}
             </div>
@@ -91,6 +99,7 @@ export default {
   data () {
     return {
       step: 1,
+      isPwd: true,
       contractable: true,
       wallet: {
         name: '',

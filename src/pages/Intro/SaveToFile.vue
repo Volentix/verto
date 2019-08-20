@@ -61,25 +61,41 @@
             </div>
             <div class="text-left">
                 <div class="q-py-xs">
-                    <q-input
+                  <q-input
                     v-model="password"
-                    type="password"
                     dark
                     color="green"
                     label="Choose Private Key Passwords"
                     @input="checkPassword"
-                  />
+                    :type="isPwd ? 'password' : 'text'"
+                    >
+                    <template v-slot:append>
+                      <q-icon
+                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="isPwd = !isPwd"
+                      />
+                    </template>
+                  </q-input>
                 </div>
                 <div class="q-py-xs">
                     <q-input
                       v-model="confirmPassword"
-                      type="password"
                       dark
                       color="green"
                       label="Confirm Private Key Password"
                       @input="checkPassword"
                       @keyup.enter="showTheVertoPasswordScreen"
-                    />
+                      :type="isPwd ? 'password' : 'text'"
+                      >
+                      <template v-slot:append>
+                        <q-icon
+                          :name="isPwd ? 'visibility_off' : 'visibility'"
+                          class="cursor-pointer"
+                          @click="isPwd = !isPwd"
+                        />
+                      </template>
+                    </q-input>
                 </div>
                 <div
                   v-show="showNextButtonToVertoPassword"
@@ -103,13 +119,21 @@
             <div class="">
                 <q-input
                   v-model="vertoPassword"
-                  type="password"
                   dark
                   color="green"
                   label="Verto Password"
                   @input="checkVertoPassword"
                   @keyup.enter="submit"
-                />
+                  :type="isPwd ? 'password' : 'text'"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
+                </q-input>
             </div>
             <div v-show="nameAlreadyUsed" class="text-h6 text-uppercase text-red q-pa-md">
               {{ $t('DisplayKey.name_is_used') }}
@@ -149,6 +173,7 @@ export default {
       password: '',
       confirmPassword: '',
       vertoPassword: '',
+      isPwd: true,
       showNextButtonToVertoPassword: false,
       showNextButtonToPassword: false,
       showSubmitButton: false,

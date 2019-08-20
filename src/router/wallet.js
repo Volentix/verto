@@ -4,38 +4,11 @@ export default [
     component: () => import('layouts/Default.vue'),
     children: [
       {
-        name: 'get-vtx',
-        path: 'get-vtx',
-        component: () => import('pages/GetVtx/GetVtx.vue'),
-        meta: {
-          authRequired: true,
-          needskeyscreated: true
-        }
-      },
-      {
         name: 'settings',
         path: '/settings',
         component: () => import('pages/Settings/Settings.vue'),
         meta: {
           authRequired: true
-        }
-      },
-      {
-        name: 'begin-get-vtx',
-        path: 'begin-get-vtx',
-        component: () => import('pages/GetVtx/BeginGetVtx.vue'),
-        meta: {
-          authRequired: true,
-          needskeyscreated: true
-        }
-      },
-      {
-        name: 'summary-vtx',
-        path: 'summary-vtx',
-        component: () => import('pages/GetVtx/Summary.vue'),
-        meta: {
-          authRequired: true,
-          needskeyscreated: true
         }
       },
       {
@@ -51,24 +24,6 @@ export default [
         name: 'zixipay-iframe',
         path: 'zixipay-iframe',
         component: () => import('pages/Zixipay/IFrame.vue'),
-        meta: {
-          authRequired: true,
-          needskeyscreated: true
-        }
-      },
-      {
-        name: 'crowd-sale',
-        path: 'crowd-sale',
-        component: () => import('pages/GetVtx/CrowdSale.vue'),
-        meta: {
-          authRequired: true,
-          needskeyscreated: true
-        }
-      },
-      {
-        name: 'request-native-chain-address',
-        path: 'request-native-chain-address',
-        component: () => import('pages/GetVtx/RequestNativeChainAddress.vue'),
         meta: {
           authRequired: true,
           needskeyscreated: true

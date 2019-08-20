@@ -103,7 +103,7 @@
                 @click="$router.push('summary-vtx')"
               >
               <img src="statics/vtx.png" width="52">
-              <span class="q-pa-lg">View Crowdfund</span>
+              <span class="q-pa-lg">Trade VTX</span>
               </q-btn>
             </div>
           </div>
