@@ -1,6 +1,9 @@
 import { Platform } from 'quasar'
 let platformTools
 
+if (Platform.is.tauri) {
+  platformTools = require('./tauri')
+}
 if (Platform.is.electron) {
   platformTools = require('./electron')
 }
