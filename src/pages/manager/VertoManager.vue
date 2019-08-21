@@ -159,14 +159,22 @@
                 <q-input
                   v-model="privateKeyPassword"
                   dark
-                  type="password"
                   color="green"
                   label="Private Key Password"
                   debounce="500"
                   :error="invalidPrivateKeyPassword"
                   error-message="The password is incorrect"
                   @input="checkPrivateKeyPassword"
-                />
+                  :type="isPwd ? 'password' : 'text'"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
+                </q-input>
               </q-step>
               <q-step
                 :name="3"
@@ -177,14 +185,22 @@
                 <q-input
                   v-model="vertoPassword"
                   dark
-                  type="password"
                   color="green"
                   label="Verto Password"
                   :error="vertoPasswordWrong"
                   error-message="The password is incorrect"
                   @input="checkVertoPassword"
                   @keyup.enter="upgradeAccountName(); prompt=false"
-                />
+                  :type="isPwd ? 'password' : 'text'"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
+                </q-input>
               </q-step>
             </q-stepper>
           </div>
@@ -211,6 +227,7 @@ export default {
     return {
       dark: true,
       step: 1,
+      isPwd: true,
       prompt: false,
       vertoPassword: null,
       vertoPasswordWrong: false,
