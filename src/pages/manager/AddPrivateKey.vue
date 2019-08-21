@@ -14,7 +14,7 @@
         <!--
           1. Paid to
         -->
-        <q-step :name="1" title="I Understand" class=" bg-black workflow-step" :done="step>1">
+        <q-step :name="1" title="Choose File" class=" bg-black workflow-step" :done="step>1">
           <q-card-section>
           <div class="text-center text-white text-uppercase">
             <div class="text-h6 text-uppercase q-pa-md">
@@ -43,12 +43,20 @@
                   <q-input
                     v-model="privateKeyPassword"
                     dark
-                    type="password"
                     color="green"
                     label="Private Key Password"
                     @input="checkPrivateKeyPassword"
                     @keyup.enter="gotoVertoPassword()"
-                  />
+                    :type="isPwd ? 'password' : 'text'"
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="isPwd = !isPwd"
+                      />
+                    </template>
+                  </q-input>
             </div>
             <div v-show="invalidPrivateKeyPassword" class="text-h6 text-uppercase text-red q-pa-md text-center">
               Password Incorrect
@@ -72,12 +80,20 @@
                   <q-input
                     v-model="vertoPassword"
                     dark
-                    type="password"
                     color="green"
                     label="Verto Password"
                     @input="checkVertoPassword"
                     @keyup.enter="submit()"
-                  />
+                    :type="isPwd ? 'password' : 'text'"
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="isPwd = !isPwd"
+                      />
+                    </template>
+                  </q-input>
             </div>
             <div v-show="vertoPasswordWrong" class="text-h6 text-uppercase text-red q-pa-md text-center">
               Password Incorrect
@@ -109,6 +125,7 @@ export default {
     return {
       step: 1,
       file: null,
+      isPwd: true,
       iunderstand: false,
       contractable: true,
       gotfile: false,
@@ -168,7 +185,16 @@ export default {
         return
       }
       this.invalidPrivateKeyPassword = false
-      const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, this.privateKeyFromFile)
+      let privateKeyEncrypted = ''
+      if (this.privateKeyFromFile.constructor === String) {
+        // In case it was previously useleslly stringified
+        privateKeyEncrypted = this.privateKeyFromFile.replace(/\\"/g, '"')
+        console.log('its a String')
+      } else if (this.privateKeyFromFile.constructor === Object) {
+        privateKeyEncrypted = JSON.stringify(this.privateKeyFromFile)
+        console.log('its a Object')
+      }
+      const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
       if (!result.success) {
         this.invalidPrivateKeyPassword = true
         this.privateKeyPasswordValid = false
@@ -176,7 +202,7 @@ export default {
       } else {
         // This block is to support an old file format of keys found in the wild
         if (result.key.indexOf('privatekey') !== -1) {
-          const key = JSON.parse(result.key.replace(/{/g, '{"').replace(/}/g, '"}').replace(/:/g, '":"').replace(/,/g, '","'))
+          const key = JSON.parse(result.key)
           this.privateKeyFromFile = JSON.parse(sjcl.encrypt(this.privateKeyPassword, '"' + key.privatekey + '"'))
           console.log('found problem and fixed it')
         }

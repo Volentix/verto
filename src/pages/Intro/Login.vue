@@ -12,7 +12,7 @@
          <div class="">
           <div class="">
             <q-input
-              type="password"
+              :type="isPwd ? 'password' : 'text'"
               dark
               v-model="password"
               color="green"
@@ -25,6 +25,13 @@
              >
               <template v-slot:error>
                 {{$t('Welcome.incorrect')}}
+              </template>
+              <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
               </template>
             </q-input>
           </div>
@@ -55,6 +62,7 @@ export default {
       hasConfig: false,
       passHasError: false,
       password: '',
+      isPwd: true,
       deleteConfigFail: false,
       deleteConfig: false,
       version: {},

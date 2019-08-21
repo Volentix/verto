@@ -9,14 +9,22 @@
         <q-step default :name="1" :done="step > 1" title="Verto Password" class=" bg-black workflow-step">
           <q-card-section class="text-center text-white"  >
             <q-input
-              type="password"
               dark
               v-model="password"
               @input="checkPassword"
               @keyup.enter="submit"
               color="green"
               v-bind:label="$t('ChangeVertoPassword.current')"
-            />
+              :type="isPwd ? 'password' : 'text'"
+              >
+              <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+            </q-input>
         <div v-show="badPassword" class="text-h6 text-uppercase text-red  q-pa-md">
           {{ $t('SaveToFile.password_incorrect') }}
         </div>
@@ -43,6 +51,7 @@ export default {
   data () {
     return {
       password: '',
+      isPwd: true,
       submitBtn: false,
       passHasError: false,
       modal: false,

@@ -119,12 +119,20 @@
                   <q-input
                     dark
                     v-model="addWallet.vertoPassword"
-                    type="password"
                     color="green"
                     @input="showSubmitKey"
                     @keyup.enter="addEosAddress"
                     v-bind:label="$t('CreateVertoPassword.vertopassword')"
-                  />
+                    :type="isPwd ? 'password' : 'text'"
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="isPwd = !isPwd"
+                      />
+                    </template>
+                  </q-input>
               </div>
               <div v-show="incorrectPassword" class="text-h6 text-uppercase text-red q-pa-lg">
                 {{ $t('Welcome.incorrect') }}
@@ -181,14 +189,22 @@
               <div class="text-center text-white">
                 <span class="q-pa-sm">
                     <q-input
-                      type="password"
                       dark
                       v-model="addWallet.filePassword"
                       @input="filePasswordCheck"
                       color="green"
                       label="Password For The File"
                       @keyup.enter="gotoFileConfirmPassword()"
-                    />
+                      :type="isPwd ? 'password' : 'text'"
+                    >
+                      <template v-slot:append>
+                        <q-icon
+                          :name="isPwd ? 'visibility_off' : 'visibility'"
+                          class="cursor-pointer"
+                          @click="isPwd = !isPwd"
+                        />
+                      </template>
+                    </q-input>
                 </span>
                 <div class="q-pa-sm" v-show="filePasswordApproved" @click="gotoFileConfirmPassword()" >
                   <q-icon name="navigate_next" size="3.2rem" color="green"   >
@@ -211,14 +227,22 @@
               <div class="text-center text-white">
                 <span class="q-pa-sm">
                     <q-input
-                      type="password"
                       dark
                       v-model="addWallet.filePasswordConfirm"
                       @input="filePasswordConfirmCheck"
                       color="green"
                       label="Confirm Password For The File"
                       @keyup.enter="gotToSaveFileInWallet()"
-                    />
+                      :type="isPwd ? 'password' : 'text'"
+                    >
+                      <template v-slot:append>
+                        <q-icon
+                          :name="isPwd ? 'visibility_off' : 'visibility'"
+                          class="cursor-pointer"
+                          @click="isPwd = !isPwd"
+                        />
+                      </template>
+                    </q-input>
                 </span>
                 <div class="q-pa-sm" v-show="filePasswordConfirmApproved" @click="gotToSaveFileInWallet()" >
                   <q-icon name="navigate_next" size="3.2rem" color="green"   >
@@ -269,6 +293,7 @@ export default {
     return {
       step: 1,
       step2: 1,
+      isPwd: true,
       contractable: true,
       showMainSteps: true,
       filePasswordApproved: false,

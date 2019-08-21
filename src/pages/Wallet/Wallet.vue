@@ -97,13 +97,12 @@
             </div>
             <div class="q-pa-lg">
               <q-btn
-                :disabled="spinnervisible"
                 outline
                 glossy
-                @click="$router.push('summary-vtx')"
+                @click="goToLink()"
               >
               <img src="statics/vtx.png" width="52">
-              <span class="q-pa-lg">View Crowdfund</span>
+              <span class="q-pa-lg">Trade VTX</span>
               </q-btn>
             </div>
           </div>
@@ -158,6 +157,7 @@
 <script>
 // import configManager from '../../util/ConfigManager'
 import EosWrapper from '@/util/EosWrapper'
+import { openURL } from 'quasar'
 import { userError } from '@/util/errorHandler'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import Vue from 'vue'
@@ -250,6 +250,9 @@ export default {
         this.navigation.makepayment = false
         this.navigation.makepaymentmemo = true
       }
+    },
+    goToLink () {
+      openURL('https://app.stex.com/en/basic-trade/pair/BTC/VTX')
     },
     setConnectionOn () {
       if (this.$q.platform.is.electron) {

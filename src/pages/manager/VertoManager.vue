@@ -40,8 +40,8 @@
               <div v-if="col.name === 'type'" class="text-center text-white">
                 <div v-if="col.value === 'eos'">
                   <img
-                    src="@/assets/img/currencies/eosioWalletManager.png"
-                    style="max-width:50px;"
+                    src="statics/icon.png"
+                    style="max-width:45px;"
                   >
                 </div>
                 <div v-else>
@@ -159,14 +159,22 @@
                 <q-input
                   v-model="privateKeyPassword"
                   dark
-                  type="password"
                   color="green"
                   label="Private Key Password"
                   debounce="500"
                   :error="invalidPrivateKeyPassword"
                   error-message="The password is incorrect"
                   @input="checkPrivateKeyPassword"
-                />
+                  :type="isPwd ? 'password' : 'text'"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
+                </q-input>
               </q-step>
               <q-step
                 :name="3"
@@ -177,14 +185,22 @@
                 <q-input
                   v-model="vertoPassword"
                   dark
-                  type="password"
                   color="green"
                   label="Verto Password"
                   :error="vertoPasswordWrong"
                   error-message="The password is incorrect"
                   @input="checkVertoPassword"
-                  @keyup.enter="submit()"
-                />
+                  @keyup.enter="upgradeAccountName(); prompt=false"
+                  :type="isPwd ? 'password' : 'text'"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
+                </q-input>
               </q-step>
             </q-stepper>
           </div>
@@ -211,6 +227,7 @@ export default {
     return {
       dark: true,
       step: 1,
+      isPwd: true,
       prompt: false,
       vertoPassword: null,
       vertoPasswordWrong: false,
@@ -315,8 +332,16 @@ export default {
       this.currentWallet.name = this.accountName.value
       this.$configManager.updateCurrentWallet(this.currentWallet)
       this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
+      // reset form variables
+      this.vertoPassword = null
+      this.privateKeyPassword = null
+      this.accountName = null
+      this.step = 1
     },
     cancelAccountName () {
+      // reset form variables
+      this.vertoPassword = null
+      this.privateKeyPassword = null
       this.accountName = null
       this.step = 1
     },
@@ -358,11 +383,21 @@ export default {
       })
     },
     checkPrivateKeyPassword () {
-      const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, JSON.stringify(this.currentWallet.privateKeyEncrypted))
+      let privateKeyEncrypted = ''
+      if (this.currentWallet.privateKeyEncrypted.constructor === String) {
+        // In case it was previously useleslly stringified
+        privateKeyEncrypted = this.currentWallet.privateKeyEncrypted.replace(/\\"/g, '"')
+        console.log('its a String')
+      } else if (this.currentWallet.privateKeyEncrypted.constructor === Object) {
+        privateKeyEncrypted = JSON.stringify(this.currentWallet.privateKeyEncrypted)
+        console.log('its a Object')
+      }
+      const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+      console.log('result', result)
       if (result.success) {
         // This block is to support an old file format of keys found in the wild
         if (result.key.indexOf('privatekey') !== -1) {
-          const key = JSON.parse(result.key.replace(/{/g, '{"').replace(/}/g, '"}').replace(/:/g, '":"').replace(/,/g, '","'))
+          const key = JSON.parse(result.key)
           this.currentWallet.privateKeyEncrypted = JSON.parse(sjcl.encrypt(this.privateKeyPassword, '"' + key.privatekey + '"'))
           console.log('found problem and fixed it')
         }
