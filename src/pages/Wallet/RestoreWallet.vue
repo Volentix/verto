@@ -36,12 +36,20 @@
                 <q-input
                   dark
                   v-model="addWallet.vertoPassword"
-                  type="password"
                   color="green"
                   @input="showSubmitKey"
                   @keyup.enter="restoreConfig"
                   v-bind:label="$t('CreateVertoPassword.vertopassword')"
-                />
+                  :type="isPwd ? 'password' : 'text'"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
+                </q-input>
             </div>
             <div v-show="incorrectPassword" class="text-h6 text-uppercase text-red q-pa-lg">
               {{ $t('Welcome.incorrect') }}
@@ -78,6 +86,7 @@ export default {
   data () {
     return {
       step: 1,
+      isPwd: true,
       spinnervisible: false,
       contractable: true,
       submitKey: false,
