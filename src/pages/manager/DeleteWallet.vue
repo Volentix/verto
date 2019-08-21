@@ -35,12 +35,20 @@
               <q-input
                 v-model="vertoPassword"
                 dark
-                type="password"
                 color="green"
                 label="Verto Password"
                 @input="checkVertoPassword"
                 @keyup.enter="submit()"
-              />
+                :type="isPwd ? 'password' : 'text'"
+              >
+                <template v-slot:append>
+                  <q-icon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwd = !isPwd"
+                  />
+                </template>
+              </q-input>
             </div>
             <div v-show="vertoPasswordWrong" class="text-h6 text-uppercase text-red q-pa-md text-center">
               Password Incorrect
@@ -71,6 +79,7 @@ export default {
     return {
       step: 1,
       file: null,
+      isPwd: true,
       iunderstand: false,
       contractable: true,
       gotfile: false,

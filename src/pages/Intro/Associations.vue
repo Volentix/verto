@@ -134,14 +134,21 @@
             > -->
             <q-input
               dark
-              type="password"
               @keyup.enter="addAssociation"
               v-model="vertopassword"
               color="green"
               :error="vertoPasswordEmpty"
               bottom-slots
               v-bind:label="$t('CreateVertoPassword.vertopassword')"
-             >
+              :type="isPwd ? 'password' : 'text'"
+            >
+              <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
               <template v-slot:error>
                 {{$t('Welcome.incorrect')}}
               </template>
@@ -164,6 +171,7 @@ export default {
   // name: 'PageName',
   data () {
     return {
+      isPwd: true,
       blocktopusStatus: {},
       venueStatus: {},
       zixipayStatus: {},

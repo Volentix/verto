@@ -20,13 +20,21 @@
             <q-card-section class="text-center text-white"  >
                 <q-input
                   v-model="passwords.current"
-                  type="password"
                   dark
                   color="green"
                   @input="checkCurrent"
                   @keyup.enter="showNewPassword"
                   :label="$t('ChangeVertoPassword.current')"
-                />
+                  :type="isPwd ? 'password' : 'text'"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
+                </q-input>
               <div v-show="errors.orgPasswordIncorrect" class="text-h6 text-uppercase text-red q-pa-md">
                 {{ $t('SaveToFile.password_incorrect') }}
               </div>
@@ -58,7 +66,6 @@
               <div class="text-center text-white">
                 <span class="q-pa-sm">
                     <q-input
-                      type="password"
                       dark
                       v-model="passwords.new"
                       @input="passwordCheck"
@@ -66,7 +73,16 @@
                       :label="$t('ChangeVertoPassword.new')"
                       @keyup.enter="gotoConfirmScreen"
                       ref="passwordInput"
-                    />
+                      :type="isPwd ? 'password' : 'text'"
+                    >
+                      <template v-slot:append>
+                        <q-icon
+                          :name="isPwd ? 'visibility_off' : 'visibility'"
+                          class="cursor-pointer"
+                          @click="isPwd = !isPwd"
+                        />
+                      </template>
+                    </q-input>
                 </span>
                 <span @click="gotoConfirmScreen" v-show="showSubmit.new">
                   <q-icon name="navigate_next" size="3.2rem" color="green"   >
@@ -84,13 +100,21 @@
             <q-card-section class="text-center text-white"  >
                 <q-input
                   v-model="passwords.confirm"
-                  type="password"
                   dark
                   color="green"
                   @input="checkConfirm"
                   @keyup.enter="submit"
                   :label="$t('ChangeVertoPassword.confirm')"
-                />
+                  :type="isPwd ? 'password' : 'text'"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
+                </q-input>
               <div class="q-pa-md" v-show="showSubmit.confirm" @click="submit" >
                 <q-icon name="navigate_next" size="3.2rem" color="green"   >
                   <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
@@ -112,6 +136,7 @@ export default {
   data () {
     return {
       step: 1,
+      isPwd: true,
       passwords: {
         current: '',
         new: '',

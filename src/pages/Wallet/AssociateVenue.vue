@@ -54,13 +54,21 @@
                 </q-inner-loading>
                 <q-input
                   dark
-                  type="password"
                   v-model="venuePassword"
                   color="green"
                   v-bind:label="$t('VenueAssignAddress.venue_password')"
                   @input="checkVenuePassword"
                   @keyup.enter="gotoVertoPassword()"
-                />
+                  :type="isPwd ? 'password' : 'text'"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
+                </q-input>
                 <div v-show="wrongCredentials" class="text-h6 text-uppercase text-red q-pa-md text-center">
                   {{ $t('VenueAssignAddress.bad_credentials') }}
                 </div>
@@ -95,13 +103,21 @@
               <div class="text-center text-white text-uppercase">
                 <q-input
                   dark
-                  type="password"
                   v-model="vertopassword"
                   color="green"
                   v-bind:label="$t('ChangeVertoPassword.current')"
                   @input="checkVertoPassword"
                   @keyup.enter="addToVerto()"
-                />
+                  :type="isPwd ? 'password' : 'text'"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
+                </q-input>
                 <div v-show="vertoPasswordWrong" class="text-h6 text-uppercase text-red q-pa-md text-center">
                   Password Incorrect
                 </div>
@@ -130,6 +146,7 @@ export default {
   data () {
     return {
       step: 1,
+      isPwd: true,
       spinnervisible: false,
       vertopassword: '',
       usernamenull: false,
