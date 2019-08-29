@@ -144,9 +144,10 @@
                   dark
                   v-model="accountName"
                   :options="accountNames"
-                  :error="accountNameEmpty"
+                  :error="accountNameError"
+                  error-message='This account name is already in your wallet, upgrade the other one instead if you have not done so yet.'
                   :loading="!accountNames"
-                  @input="noPrivateKey ? step = 3 : step = 2"
+                  @input="validAccountName"
                 />
               </q-step>
               <q-step
@@ -237,7 +238,8 @@ export default {
       invalidPrivateKeyPassword: false,
       accountName: '',
       accountNames: null,
-      accountNameEmpty: null,
+      accountNameError: false,
+      accountNameErrorMsg: '',
       currentWallet: null,
       columns: [
         {
@@ -326,6 +328,14 @@ export default {
     },
     goToLink () {
       openURL('https://medium.com/@eosnationbp/change-the-active-key-permissions-with-bloks-io-eos-nation-tutorial-682efb0a00d3')
+    },
+    validAccountName () {
+      if (this.$store.state.currentwallet.config.keys.some((key) => key.name.toLowerCase() === this.accountName.label.toLowerCase())) {
+        this.accountNameError = true
+      } else {
+        this.accountNameError = false
+        this.noPrivateKey ? this.step = 3 : this.step = 2
+      }
     },
     upgradeAccountName () {
       this.currentWallet.type = 'eos'

@@ -95,6 +95,7 @@ class ConfigManager {
     }
 
     async addPrivateKeyToWallet (password, name, privateKey) {
+      privateKey = privateKey.replace(/^"(.+)"$/, '$1')
       const configInfo = await this.getConfig(password)
       if (!configInfo.success) {
         return configInfo
@@ -111,7 +112,8 @@ class ConfigManager {
       if (!wallet) {
         return { success: false, message: 'key_not_found' }
       }
-      wallet.privateKeyEncrypted = privateKey
+      wallet.privateKeyEncrypted = JSON.parse(privateKey)
+      console.log('wallet.privateKeyEncrypted', wallet.privateKeyEncrypted)
       return this.saveConfigOnly(password, config)
     }
 
@@ -252,7 +254,7 @@ class ConfigManager {
         let currentWallet = store.state.currentwallet.wallet
         // we are deleting the current wallet (not the default)
         // so we need to get the default and make it the current wallet.
-        if (currentWallet.name.toString() === wallet.name.toString()) {
+        if (typeof currentWallet === 'string' || currentWallet.name.toString() === wallet.name.toString()) {
           const currentWallets = configInfo.config.keys.filter(function (value, index, arr) {
             return value.defaultKey
           })

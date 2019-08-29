@@ -39,7 +39,7 @@
         -->
         <q-step :name="2" title="Validate" class=" bg-black workflow-step" icon="fas fa-check-double" :done="step>2">
           <q-card-section>
-            <div class="text-h6  text-white text-uppercase text-center">
+            <div class="text-h6 text-white text-center">
                   <q-input
                     v-model="privateKeyPassword"
                     dark
@@ -76,7 +76,7 @@
         -->
         <q-step :name="3" title="Verto Password" class=" bg-black workflow-step" icon="fas fa-lock" :done="step>3">
           <q-card-section>
-            <div class="text-h6  text-white text-uppercase text-center">
+            <div class="text-h6  text-white text-center">
                   <q-input
                     v-model="vertoPassword"
                     dark
@@ -148,7 +148,9 @@ export default {
         return
       }
       try {
+        console.log('this.privateKeyFromFile', this.privateKeyFromFile)
         const result = await this.$configManager.addPrivateKeyToWallet(this.vertoPassword, this.wallet.name, this.privateKeyFromFile)
+        console.log('result', result)
         if (result.success) {
           this.$router.push({ path: 'vertomanager' })
         } else {
@@ -203,8 +205,11 @@ export default {
         // This block is to support an old file format of keys found in the wild
         if (result.key.indexOf('privatekey') !== -1) {
           const key = JSON.parse(result.key)
-          this.privateKeyFromFile = JSON.parse(sjcl.encrypt(this.privateKeyPassword, '"' + key.privatekey + '"'))
+          this.privateKeyFromFile = sjcl.encrypt(this.privateKeyPassword, '"' + key.privatekey + '"')
           console.log('found problem and fixed it')
+        } else {
+          this.privateKeyFromFile = privateKeyEncrypted
+          console.log('key is good as is', result)
         }
       }
       // Remove the private key immediately so it
