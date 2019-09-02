@@ -234,7 +234,7 @@
               Private Key Password Incorrect
             </div>
             <div v-show="unknownError" class="text-h6 text-uppercase text-red q-pa-md">
-              Unknown Error
+              {{ ErrorMessage }}
             </div>
             <div class="q-pa-sm" v-show="navigationButtons.privateKeyPasswordBtn" @click="sendTokens()" >
               <q-icon name="navigate_next" size="3.2rem" color="green"   >
@@ -359,6 +359,7 @@ export default {
       currentEosAdddress: '',
       transactionId: '',
       invalidPrivateKeyPassword: false,
+      ErrorMessage: '',
       unknownError: false
     }
   },
@@ -517,8 +518,12 @@ export default {
           this.invalidEosName = true
         } else if (err.includes('account does not exist')) {
           this.invalidEosName = true
+        } else if (err.includes('maximum billable CPU time')) {
+          this.unknownError = true
+          this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
         } else {
           this.unknownError = true
+          this.ErrorMessage = 'Unknown Error'
         }
         this.showSpinners(false)
         return false
