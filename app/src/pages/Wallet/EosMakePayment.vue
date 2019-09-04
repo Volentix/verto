@@ -339,6 +339,11 @@ export default {
         'EOS': 'eosio.token',
         'VTX': 'volentixgsys'
       },
+      tokenPrecision:
+      {
+        'EOS': 4,
+        'VTX': 8
+      },
       tokenSymbol: 'VTX',
       options: [
         'VTX',
@@ -451,7 +456,7 @@ export default {
       }
     },
     formatAmount: function () {
-      return parseInt(this.sendAmount = Math.abs(Number(this.sendAmount) || 0).toFixed(8)).toString()
+      return parseInt(this.sendAmount = Math.abs(Number(this.sendAmount) || 0).toFixed(this.tokenPrecision[this.tokenSymbol])).toString()
     },
     /**
      * Formats the amount into a string supported by EOS.
@@ -467,10 +472,10 @@ export default {
       } else {
         stringAmount += '.'
       }
-      for (;numberOfDecimals < 8; numberOfDecimals++) {
+      for (;numberOfDecimals < this.tokenPrecision[this.tokenSymbol]; numberOfDecimals++) {
         stringAmount += '0'
       }
-      return parseFloat(stringAmount).toFixed(8) + ' ' + this.tokenSymbol
+      return parseFloat(stringAmount).toFixed(this.tokenPrecision[this.tokenSymbol]) + ' ' + this.tokenSymbol
     },
     showSpinners (visible) {
       this.spinnervisible = visible

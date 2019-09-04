@@ -188,6 +188,7 @@
                   dark
                   color="green"
                   label="Verto Password"
+                  debounce="500"
                   :error="vertoPasswordWrong"
                   error-message="The password is incorrect"
                   @input="checkVertoPassword"
