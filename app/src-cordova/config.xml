@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="org.cordova.verto" version="0.8.11" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Verto</name>
+    <description>A multi-currency crypto wallet with initial support for EOS &amp; VTX</description>
+    <author email="support@volentix.io" href="https://volentix.io">Volentix Labs, Inc.</author>
+    <content src="index.html" />
+    <plugin name="cordova-plugin-whitelist" spec="1" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <allow-navigation href="https://*/*" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+        <icon density="ldpi" src="../src/statics/cordova/android/ldpi.png" />
+        <icon density="mdpi" src="../src/statics/cordova/android/mdpi.png" />
+        <icon density="hdpi" src="../src/statics/cordova/android/hdpi.png" />
+        <icon density="xhdpi" src="../src/statics/cordova/android/xhdpi.png" />
+        <icon density="xxhdpi" src="../src/statics/cordova/android/xxhdpi.png" />
+        <icon density="xxxhdpi" src="../src/statics/cordova/android/xxxhdpi.png" />
+        <splash density="land-ldpi" src="../src/statics/cordova/android/ldpi-screen-landscape.png" />
+        <splash density="land-mdpi" src="../src/statics/cordova/android/mdpi-screen-landscape.png" />
+        <splash density="land-hdpi" src="../src/statics/cordova/android/hdpi-screen-landscape.png" />
+        <splash density="land-xhdpi" src="../src/statics/cordova/android/xhdpi-screen-landscape.png" />
+        <splash density="land-xxhdpi" src="../src/statics/cordova/android/xxhdpi-screen-landscape.png" />
+        <splash density="land-xxxhdpi" src="../src/statics/cordova/android/xxxhdpi-screen-landscape.png" />
+        <splash density="port-ldpi" src="../src/statics/cordova/android/ldpi-screen-portrait.png" />
+        <splash density="port-mdpi" src="../src/statics/cordova/android/mdpi-screen-portrait.png" />
+        <splash density="port-hdpi" src="../src/statics/cordova/android/hdpi-screen-portrait.png" />
+        <splash density="port-xhdpi" src="../src/statics/cordova/android/xhdpi-screen-portrait.png" />
+        <splash density="port-xxhdpi" src="../src/statics/cordova/android/xxhdpi-screen-portrait.png" />
+        <splash density="port-xxxhdpi" src="../src/statics/cordova/android/xxxhdpi-screen-portrait.png" />
+    </platform>
+    <platform name="ios">
+        <allow-intent href="itms:*" />
+        <allow-intent href="itms-apps:*" />
+        <icon height="1024" src="../src/statics/cordova/ios/icon-1024.png" width="1024" />
+        <icon height="100" src="../src/statics/cordova/ios/icon-50@2x.png" width="100" />
+        <icon height="114" src="../src/statics/cordova/ios/icon@2x.png" width="114" />
+        <icon height="120" src="../src/statics/cordova/ios/icon-60@2x.png" width="120" />
+        <icon height="144" src="../src/statics/cordova/ios/icon-72@2x.png" width="144" />
+        <icon height="152" src="../src/statics/cordova/ios/icon-76@2x.png" width="152" />
+        <icon height="167" src="../src/statics/cordova/ios/icon-167.png" width="167" />
+        <icon height="167" src="../src/statics/cordova/ios/icon-83.5@2x.png" width="167" />
+        <icon height="180" src="../src/statics/cordova/ios/icon-60@3x.png" width="180" />
+        <icon height="29" src="../src/statics/cordova/ios/icon-small.png" width="29" />
+        <icon height="40" src="../src/statics/cordova/ios/icon-40.png" width="40" />
+        <icon height="50" src="../src/statics/cordova/ios/icon-50.png" width="50" />
+        <icon height="57" src="../src/statics/cordova/ios/icon.png" width="57" />
+        <icon height="58" src="../src/statics/cordova/ios/icon-small@2x.png" width="58" />
+        <icon height="60" src="../src/statics/cordova/ios/icon-60.png" width="60" />
+        <icon height="72" src="../src/statics/cordova/ios/icon-72.png" width="72" />
+        <icon height="76" src="../src/statics/cordova/ios/icon-76.png" width="76" />
+        <icon height="80" src="../src/statics/cordova/ios/icon-40@2x.png" width="80" />
+        <splash src="res/screen/ios/Default@2x~universal~anyany.png" />
+    </platform>
+    <preference name="phonegap-version" value="cli-8.1.2" />
+    <plugin name="cordova-open-native-settings" spec="1.5.2" />
+    <plugin name="cordova-plugin-file" spec="^6.0.1" />
+    <plugin name="cordova-plugin-file-opener2" spec="^2.1.4" />
+    <plugin name="cordova-plugin-android-permissions" spec="^1.0.0" />
+    <preference name="AndroidPersistentFileLocation" value="Compatibility" />
+    <preference name="AndroidExtraFilesystems" value="files,files-external,documents,sdcard,root" />
+    <preference name="SplashScreenDelay" value="5000" />
+    <engine name="android" spec="^7.1.4" />
+</widget>
