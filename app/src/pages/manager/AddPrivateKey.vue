@@ -39,7 +39,7 @@
         -->
         <q-step :name="2" title="Validate" class=" bg-black workflow-step" icon="fas fa-check-double" :done="step>2">
           <q-card-section>
-            <div class="text-h6  text-white text-uppercase text-center">
+            <div class="text-h6 text-white text-center">
                   <q-input
                     v-model="privateKeyPassword"
                     dark
@@ -76,7 +76,7 @@
         -->
         <q-step :name="3" title="Verto Password" class=" bg-black workflow-step" icon="fas fa-lock" :done="step>3">
           <q-card-section>
-            <div class="text-h6  text-white text-uppercase text-center">
+            <div class="text-h6  text-white text-center">
                   <q-input
                     v-model="vertoPassword"
                     dark
@@ -189,10 +189,8 @@ export default {
       if (this.privateKeyFromFile.constructor === String) {
         // In case it was previously useleslly stringified
         privateKeyEncrypted = this.privateKeyFromFile.replace(/\\"/g, '"')
-        console.log('its a String')
       } else if (this.privateKeyFromFile.constructor === Object) {
         privateKeyEncrypted = JSON.stringify(this.privateKeyFromFile)
-        console.log('its a Object')
       }
       const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
       if (!result.success) {
@@ -203,8 +201,9 @@ export default {
         // This block is to support an old file format of keys found in the wild
         if (result.key.indexOf('privatekey') !== -1) {
           const key = JSON.parse(result.key)
-          this.privateKeyFromFile = JSON.parse(sjcl.encrypt(this.privateKeyPassword, '"' + key.privatekey + '"'))
-          console.log('found problem and fixed it')
+          this.privateKeyFromFile = sjcl.encrypt(this.privateKeyPassword, '"' + key.privatekey + '"')
+        } else {
+          this.privateKeyFromFile = privateKeyEncrypted
         }
       }
       // Remove the private key immediately so it

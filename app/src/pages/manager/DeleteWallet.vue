@@ -31,7 +31,7 @@
         -->
         <q-step :name="2" :done="step>2" title="Verto Password" class="bg-black workflow-step">
           <q-card-section>
-            <div class="text-h6  text-white text-uppercase text-center">
+            <div class="text-h6  text-white text-center">
               <q-input
                 v-model="vertoPassword"
                 dark
