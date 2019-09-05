@@ -181,11 +181,8 @@ export default {
   methods: {
     submit () {
       const custom = 'crowdfund:' + this.$store.state.currentwallet.wallet.key + ':' + now.getTime() // + ':1554818157020' //
-      console.log('custom:', custom)
       const self = this
       const url = process.env[this.$store.state.settings.network].CROWDFUND_URL + 'public/api/zixipay-create-hash/'
-      console.log(url)
-      console.log('merchant:', this.form.merchantid, 'custom:', custom, 'amount:', this.form.amount, 'currency:', this.form.currency)
 
       this.$axios.post(
         url,
@@ -196,7 +193,6 @@ export default {
           currency: this.form.currency
         }
       ).then(function (result) {
-        console.log('MADE IT!!!!!!!! ' + JSON.stringify(result.data.hash))
 
         self.zixipayForm = {
           merchantid: self.form.merchantid,
@@ -208,7 +204,6 @@ export default {
         }
 
         const zixiform = self.$refs['zixiform']
-        console.log(JSON.stringify(self.zixipayForm))
 
         nextTick(function () {
           zixiform.submit()

@@ -113,7 +113,6 @@ class ConfigManager {
         return { success: false, message: 'key_not_found' }
       }
       wallet.privateKeyEncrypted = JSON.parse(privateKey)
-      console.log('wallet.privateKeyEncrypted', wallet.privateKeyEncrypted)
       return this.saveConfigOnly(password, config)
     }
 
