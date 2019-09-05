@@ -193,7 +193,6 @@ export default {
           currency: this.form.currency
         }
       ).then(function (result) {
-
         self.zixipayForm = {
           merchantid: self.form.merchantid,
           description: self.form.description,
