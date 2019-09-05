@@ -398,19 +398,15 @@ export default {
       if (this.currentWallet.privateKeyEncrypted.constructor === String) {
         // In case it was previously useleslly stringified
         privateKeyEncrypted = this.currentWallet.privateKeyEncrypted.replace(/\\"/g, '"')
-        console.log('its a String')
       } else if (this.currentWallet.privateKeyEncrypted.constructor === Object) {
         privateKeyEncrypted = JSON.stringify(this.currentWallet.privateKeyEncrypted)
-        console.log('its a Object')
       }
       const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
-      console.log('result', result)
       if (result.success) {
         // This block is to support an old file format of keys found in the wild
         if (result.key.indexOf('privatekey') !== -1) {
           const key = JSON.parse(result.key)
           this.currentWallet.privateKeyEncrypted = JSON.parse(sjcl.encrypt(this.privateKeyPassword, '"' + key.privatekey + '"'))
-          console.log('found problem and fixed it')
         }
         this.invalidPrivateKeyPassword = false
         this.step = 3

@@ -148,9 +148,7 @@ export default {
         return
       }
       try {
-        console.log('this.privateKeyFromFile', this.privateKeyFromFile)
         const result = await this.$configManager.addPrivateKeyToWallet(this.vertoPassword, this.wallet.name, this.privateKeyFromFile)
-        console.log('result', result)
         if (result.success) {
           this.$router.push({ path: 'vertomanager' })
         } else {
@@ -191,10 +189,8 @@ export default {
       if (this.privateKeyFromFile.constructor === String) {
         // In case it was previously useleslly stringified
         privateKeyEncrypted = this.privateKeyFromFile.replace(/\\"/g, '"')
-        console.log('its a String')
       } else if (this.privateKeyFromFile.constructor === Object) {
         privateKeyEncrypted = JSON.stringify(this.privateKeyFromFile)
-        console.log('its a Object')
       }
       const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
       if (!result.success) {
@@ -206,10 +202,8 @@ export default {
         if (result.key.indexOf('privatekey') !== -1) {
           const key = JSON.parse(result.key)
           this.privateKeyFromFile = sjcl.encrypt(this.privateKeyPassword, '"' + key.privatekey + '"')
-          console.log('found problem and fixed it')
         } else {
           this.privateKeyFromFile = privateKeyEncrypted
-          console.log('key is good as is', result)
         }
       }
       // Remove the private key immediately so it

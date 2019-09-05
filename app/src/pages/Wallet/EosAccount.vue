@@ -398,7 +398,6 @@ export default {
       if (this.submitKey) {
         this.resetErrors()
         const result = await this.$configManager.createEosWallet(this.addWallet)
-        console.log(result)
         if (result.success) {
           this.$router.push({ path: '/wallet' })
         } else {
