@@ -181,7 +181,6 @@ export default {
         } else {
           this.showSubmit.vertoPassword = false
           this.errors.unknown = true
-          console.log('result', result)
         }
       }
     }

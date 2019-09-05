@@ -234,7 +234,7 @@
               Private Key Password Incorrect
             </div>
             <div v-show="unknownError" class="text-h6 text-uppercase text-red q-pa-md">
-              Unknown Error
+              {{ ErrorMessage }}
             </div>
             <div class="q-pa-sm" v-show="navigationButtons.privateKeyPasswordBtn" @click="sendTokens()" >
               <q-icon name="navigate_next" size="3.2rem" color="green"   >
@@ -339,6 +339,11 @@ export default {
         'EOS': 'eosio.token',
         'VTX': 'volentixgsys'
       },
+      tokenPrecision:
+      {
+        'EOS': 4,
+        'VTX': 8
+      },
       tokenSymbol: 'VTX',
       options: [
         'VTX',
@@ -359,6 +364,7 @@ export default {
       currentEosAdddress: '',
       transactionId: '',
       invalidPrivateKeyPassword: false,
+      ErrorMessage: '',
       unknownError: false
     }
   },
@@ -450,7 +456,7 @@ export default {
       }
     },
     formatAmount: function () {
-      return parseInt(this.sendAmount = Math.abs(Number(this.sendAmount) || 0).toFixed(8)).toString()
+      return parseInt(this.sendAmount = Math.abs(Number(this.sendAmount) || 0).toFixed(this.tokenPrecision[this.tokenSymbol])).toString()
     },
     /**
      * Formats the amount into a string supported by EOS.
@@ -466,10 +472,10 @@ export default {
       } else {
         stringAmount += '.'
       }
-      for (;numberOfDecimals < 8; numberOfDecimals++) {
+      for (;numberOfDecimals < this.tokenPrecision[this.tokenSymbol]; numberOfDecimals++) {
         stringAmount += '0'
       }
-      return parseFloat(stringAmount).toFixed(8) + ' ' + this.tokenSymbol
+      return parseFloat(stringAmount).toFixed(this.tokenPrecision[this.tokenSymbol]) + ' ' + this.tokenSymbol
     },
     showSpinners (visible) {
       this.spinnervisible = visible
@@ -517,8 +523,15 @@ export default {
           this.invalidEosName = true
         } else if (err.includes('account does not exist')) {
           this.invalidEosName = true
+        } else if (err.includes('maximum billable CPU time')) {
+          this.unknownError = true
+          this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
+        } else if (err.includes('has insufficient ram')) {
+          this.unknownError = true
+          this.ErrorMessage = 'Your EOS account does not have enough RAM staked to process the transaction.'
         } else {
           this.unknownError = true
+          this.ErrorMessage = 'Unknown Error'
         }
         this.showSpinners(false)
         return false

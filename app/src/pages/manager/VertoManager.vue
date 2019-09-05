@@ -144,9 +144,10 @@
                   dark
                   v-model="accountName"
                   :options="accountNames"
-                  :error="accountNameEmpty"
+                  :error="accountNameError"
+                  error-message='This account name is already in your wallet, upgrade the other one instead if you have not done so yet.'
                   :loading="!accountNames"
-                  @input="noPrivateKey ? step = 3 : step = 2"
+                  @input="validAccountName"
                 />
               </q-step>
               <q-step
@@ -187,6 +188,7 @@
                   dark
                   color="green"
                   label="Verto Password"
+                  debounce="500"
                   :error="vertoPasswordWrong"
                   error-message="The password is incorrect"
                   @input="checkVertoPassword"
@@ -237,7 +239,8 @@ export default {
       invalidPrivateKeyPassword: false,
       accountName: '',
       accountNames: null,
-      accountNameEmpty: null,
+      accountNameError: false,
+      accountNameErrorMsg: '',
       currentWallet: null,
       columns: [
         {
@@ -327,6 +330,14 @@ export default {
     goToLink () {
       openURL('https://medium.com/@eosnationbp/change-the-active-key-permissions-with-bloks-io-eos-nation-tutorial-682efb0a00d3')
     },
+    validAccountName () {
+      if (this.$store.state.currentwallet.config.keys.some((key) => key.name.toLowerCase() === this.accountName.label.toLowerCase())) {
+        this.accountNameError = true
+      } else {
+        this.accountNameError = false
+        this.noPrivateKey ? this.step = 3 : this.step = 2
+      }
+    },
     upgradeAccountName () {
       this.currentWallet.type = 'eos'
       this.currentWallet.name = this.accountName.value
@@ -387,19 +398,15 @@ export default {
       if (this.currentWallet.privateKeyEncrypted.constructor === String) {
         // In case it was previously useleslly stringified
         privateKeyEncrypted = this.currentWallet.privateKeyEncrypted.replace(/\\"/g, '"')
-        console.log('its a String')
       } else if (this.currentWallet.privateKeyEncrypted.constructor === Object) {
         privateKeyEncrypted = JSON.stringify(this.currentWallet.privateKeyEncrypted)
-        console.log('its a Object')
       }
       const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
-      console.log('result', result)
       if (result.success) {
         // This block is to support an old file format of keys found in the wild
         if (result.key.indexOf('privatekey') !== -1) {
           const key = JSON.parse(result.key)
           this.currentWallet.privateKeyEncrypted = JSON.parse(sjcl.encrypt(this.privateKeyPassword, '"' + key.privatekey + '"'))
-          console.log('found problem and fixed it')
         }
         this.invalidPrivateKeyPassword = false
         this.step = 3
