@@ -455,9 +455,6 @@ export default {
         this.navigation.makepaymentmemo = true
       }
     },
-    formatAmount: function () {
-      return parseInt(this.sendAmount = Math.abs(Number(this.sendAmount) || 0).toFixed(this.tokenPrecision[this.tokenSymbol])).toString()
-    },
     /**
      * Formats the amount into a string supported by EOS.
      * Must have 4 decimal places

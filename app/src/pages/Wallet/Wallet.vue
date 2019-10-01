@@ -26,7 +26,7 @@
                 <span class="text-h3">
                   {{ currentBtcValue.toFixed(4) }}
                 </span>
-                <span class="q-subtilte">BTC</span>
+                <span class="q-subtilte">{{ $t('WalletManager.btc') }}</span>
               </div>
               <br>
               <div class="row justify-center q-col-gutter-sm">
