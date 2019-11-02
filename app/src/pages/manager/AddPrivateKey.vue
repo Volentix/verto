@@ -173,7 +173,6 @@ export default {
           that.privateKeyFromFile = reader.result
           that.$refs.stepper.next()
         } catch (e) {
-          console.log(e)
           that.passwordFileError = true
           // userError(e)
         }

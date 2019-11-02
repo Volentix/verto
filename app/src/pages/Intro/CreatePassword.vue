@@ -153,9 +153,6 @@ export default {
         this.$refs.stepper.next()
       }
     },
-    printFile () {
-      console.log(this.file)
-    },
     async startRestoreConfig () {
       this.$router.push({
         name: 'restore-wallet',
@@ -188,7 +185,6 @@ export default {
         await configManager.createWallet(this.password)
         this.$router.replace('/create-wallet-options')
       } catch (e) {
-        console.log(e)
       }
     },
     checked () {

@@ -367,8 +367,7 @@ export default {
           }
           self.walletName = result.account_names[0]
         }).catch((err) => {
-          console.log(err)
-          userError('There was a problem getting account names')
+          userError('There was a problem getting account names', err)
         })
       this.prompt = true
     },
@@ -426,11 +425,11 @@ export default {
               self.vertoPassordValid = true
             }).catch(function (err) {
               self.vertoPasswordWrong = true
-              console.log(err)
+              userError(err)
             })
         } catch (err) {
           self.vertoPasswordWrong = true
-          console.log(err)
+          userError(err)
         }
       }
     }

@@ -293,6 +293,7 @@
 import FileSelect from '@/components/FileSelect.vue'
 import EosWrapper from '@/util/EosWrapper'
 import { openURL } from 'quasar'
+import { userError } from '@/util/errorHandler'
 
 export default {
   components: {
@@ -385,7 +386,7 @@ export default {
           that.privateKeyFromFile = reader.result
           that.hasPrivateKeyInWallet = true
         } catch (e) {
-          console.log(e)
+          userError(e)
           that.hasPrivateKeyInWallet = false
           // userError(e)
         }
