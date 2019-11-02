@@ -55,7 +55,7 @@
           </q-card-section>
         </q-step>
 
-        <q-step default :name="2" :done="step>2" title="Portfolio of Rewards" class=" bg-black workflow-step">
+        <q-step default :name="2" :done="step>2" title="Portfolio" class=" bg-black workflow-step">
           <q-card-section>
             <div class="text-center text-white text-uppercase">
 
@@ -74,21 +74,23 @@
                         </q-badge>
                       </q-item-label>
                       <q-slider
-                        :value="rewards[index].value"
+                        v-model="rewards[index].value"
+                        :label-value="rewards[index].value || 0 + '%'"
                         :min="0"
                         :max="100"
-                        :step="10"
+                        :step="5"
+                        color="orange"
                         dark
                         markers
                         label
                         label-always
-                        @input="monitor()"
+                        @input="monitor(index)"
                       />
                     </q-item-section>
                   </q-item>
                 </q-list>
 
-              <div class="q-pa-sm" @click="step = 2" >
+              <div class="q-pa-sm" @click="formatRewards()" >
                 <q-icon name="navigate_next" size="3.2rem" color="green"   >
                   <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
                 </q-icon>
@@ -97,14 +99,14 @@
           </q-card-section>
         </q-step>
 
-        <q-step default :name="3" :done="step>3" title="Compound your Stake" class=" bg-black workflow-step">
+        <q-step default :name="3" :done="step>3" title="Compound" class=" bg-black workflow-step">
           <q-card-section>
             <div class="text-center text-white text-uppercase">
 
               <q-item tag="label" v-ripple>
                 <q-item-section>
                   <q-item-label>Compound your vote staking rewards</q-item-label>
-                  <q-item-label caption>You can receive your reward already staked or liquid</q-item-label>
+                  <q-item-label caption>You can choose to receive your EOS rewards already staked</q-item-label>
                 </q-item-section>
                 <q-item-section side >
                   <q-toggle
@@ -112,12 +114,29 @@
                     checked-icon="check"
                     color="green"
                     unchecked-icon="clear"
-                    true-value="1"
-                    false-value="0"
+                    :true-value="1"
+                    :false-value="0"
                     keep-color
                   />
                 </q-item-section>
               </q-item>
+
+              <div class="q-pa-sm" @click="step = 4" >
+                <q-icon name="navigate_next" size="3.2rem" color="green"   >
+                  <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
+                </q-icon>
+              </div>
+            </div>
+          </q-card-section>
+        </q-step>
+
+        <q-step default :name="4" :done="step>4" title="Sign & Submit" class=" bg-black workflow-step">
+          <q-card-section>
+            <div class="text-center text-white text-uppercase">
+
+              <q-item-section>
+                <q-item-label>Enter your private key password to sign the transaction</q-item-label>
+              </q-item-section>
 
               <div class="q-pa-md">
                 <q-input
@@ -125,6 +144,10 @@
                   dark
                   color="green"
                   label="Private Key Password"
+                  debounce="500"
+                  :error="invalidPrivateKeyPassword"
+                  error-message="The password is incorrect"
+                  @input="checkPrivateKeyPassword"
                   :type="isPwd ? 'password' : 'text'"
                 >
                   <template v-slot:append>
@@ -135,12 +158,34 @@
                     />
                   </template>
                 </q-input>
-
               </div>
-              <div class="q-pa-sm" @click="step = 2" >
+
+              <div v-show="privateKey.success" class="q-pa-sm" @click="voteProxy()" >
                 <q-icon name="navigate_next" size="3.2rem" color="green"   >
                   <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
                 </q-icon>
+              </div>
+            </div>
+          </q-card-section>
+        </q-step>
+
+        <q-step default :name="5" :done="step>5" title="Result" class=" bg-black workflow-step">
+          <q-card-section>
+            <div class="text-center text-white text-uppercase">
+              <q-inner-loading :visible="spinnervisible">
+                <q-spinner size="50px" color="primary" />
+              </q-inner-loading>
+
+              <q-item-section>
+                <q-item-label>Processing the transaction</q-item-label>
+              </q-item-section>
+
+              <div v-show="!voteError" class="text-h6 text-uppercase text-green q-pa-md">
+                {{ SuccessMessage }}
+              </div>
+
+              <div v-show="voteError" class="text-h6 text-uppercase text-red q-pa-md">
+                {{ ErrorMessage }}
               </div>
             </div>
           </q-card-section>
@@ -166,11 +211,20 @@ export default {
       step: 1,
       apr: 0,
       rewards: [],
+      proxyRewards: '',
+      proxyPercentages: '',
+      voteError: false,
+      ErrorMessage: null,
+      SuccessMessage: null,
+      invalidPrivateKeyPassword: false,
+      privateKey: {
+        success: null
+      },
       voted: false,
       valid: true,
       spinnervisible: false,
-      isPwd: false,
-      staked: 0,
+      isPwd: true,
+      staked: 1,
       proxy: null,
       proxyModel: false,
       proxies: [],
@@ -201,6 +255,8 @@ export default {
     this.currentProxy = this.account.voter_info.proxy
 
     this.rewards = await this.getRewards()
+    // look into checking current reward allocations
+    this.rewards[0].value = 100
     console.table(this.rewards)
 
     let voter = await this.getVoter()
@@ -225,14 +281,51 @@ export default {
     })
   },
   methods: {
-    monitor () {
-      console.log(this.rewards)
+    monitor (val) {
+      let sum = 0
+
+      this.rewards.forEach(reward => {
+        if (reward.value) {
+          sum += reward.value
+        }
+      })
+
+      while (sum > 100) {
+        for (var i = 0; this.rewards.length; i++) {
+          if (i !== val && this.rewards[i].value > 0) {
+            this.rewards[i].value -= 5
+            sum -= 5
+            break
+          }
+        }
+      }
+
+      while (sum < 100) {
+        this.rewards[0].value += 5
+        sum += 5
+      }
+    },
+    async formatRewards () {
+      let proxyPercentagesArr = []
+      let proxyRewardsArr = []
+
+      this.rewards.forEach(reward => {
+        if (reward.value) {
+          proxyPercentagesArr.push(reward.value * 100)
+          proxyRewardsArr.push(reward.symbol.split(',')[1])
+        }
+      })
+
+      this.proxyPercentages = proxyPercentagesArr
+      this.proxyRewards = proxyRewardsArr
+
+      this.step = 3
     },
     async stakeNext () {
       if (this.voted && !this.proxyModel) {
         console.log('unvoteProxy')
       } else if (!this.voted && !this.proxyModel) {
-
+        console.log('Nothing to do, not voted and not voting.')
       } else {
         this.step = 2
       }
@@ -281,11 +374,21 @@ export default {
         userError(error.message)
       }
     },
-    async voteProxy () {
+    checkPrivateKeyPassword () {
       const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
-      const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
-
+      this.privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+      if (this.privateKey.success) {
+        this.invalidPrivateKeyPassword = false
+      } else {
+        this.invalidPrivateKeyPassword = true
+        return false
+      }
+    },
+    async voteProxy () {
       try {
+        this.step = 5
+        this.spinnervisible = true
+
         const result = await eos.transact({
           actions: [{
             account: 'eosio',
@@ -318,16 +421,36 @@ export default {
             }],
             data: {
               owner: this.walletName,
-              staked: 1
+              staked: this.staked
+            }
+          }, {
+            account: 'proxy4nation',
+            name: 'setportfolio',
+            authorization: [{
+              actor: this.walletName,
+              permission: 'active'
+            }],
+            data: {
+              owner: this.walletName,
+              rewards: this.proxyRewards,
+              percentages: this.proxyPercentages
             }
           }]
-        }, { keyProvider: privateKey.key })
+        }, { keyProvider: this.privateKey.key })
 
+        this.spinnervisible = false
         console.log('vote result', result)
+        this.SuccessMessage = 'Congratulations, your transactions have been record on the blockchain.  Check back in 24h to see the rewards received on your account.'
       } catch (error) {
+        this.spinnervisible = false
         console.log('vote error', error)
-        userError(error.message)
+        if (error.includes('maximum billable CPU time')) {
+          this.voteError = true
+          this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
+        }
       }
+
+      this.privateKey.key = null
     },
     async claimProxy () {
       const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
@@ -352,56 +475,6 @@ export default {
         console.log('claim error', error)
         userError(error.message)
       }
-    },
-    async getStake (node) {
-      // try {
-      //   const eos = new EosWrapper(node.private_key)
-      //   const result = await eos.api.transact({
-      //     actions: [{
-      //       account: 'vdexdposvote',
-      //       name: 'voteproducer',
-      //       authorization: [{
-      //         actor: node.account,
-      //         permission: 'active'
-      //       }],
-      //       data: {
-      //         voter_name: node.account,
-      //         producers: node.producers
-      //       }
-      //     }]
-      //   }, {
-      //     blocksBehind: 3,
-      //     expireSeconds: 30
-      //   })
-      //   console.log("vote", node.account)
-      // } catch (error) {
-      //   console.log(error)
-      // }
-    },
-    async vote (node) {
-    //   try {
-    //     const eos = new EosWrapper(node.private_key)
-    //     const result = await eos.api.transact({
-    //       actions: [{
-    //         account: 'vdexdposvote',
-    //         name: 'voteproducer',
-    //         authorization: [{
-    //           actor: node.account,
-    //           permission: 'active'
-    //         }],
-    //         data: {
-    //           voter_name: node.account,
-    //           producers: node.producers
-    //         }
-    //       }]
-    //     }, {
-    //       blocksBehind: 3,
-    //       expireSeconds: 30
-    //     })
-    //     console.log("vote", node.account)
-    //   } catch (error) {
-    //     console.log(error)
-    //   }
     }
   }
 }

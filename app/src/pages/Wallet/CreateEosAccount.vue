@@ -46,6 +46,7 @@ export default {
     return {
       createAccount: true,
       generateUserKeys: false,
+      spinnervisible: false,
       accountName: '',
       createType: '',
       options: [
