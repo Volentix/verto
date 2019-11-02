@@ -3,5 +3,31 @@
     "common_root_object": "none",
     "add_qenv_to_gitignore": false
   },
-  "ual-vuejs-renderer-ae": {}
+  "ual-vuejs-renderer-ae": {},
+  "@quasar/testing": {
+    "harnesses": [
+      "unit-jest",
+      "quality",
+      "security",
+      "security-antivuln"
+    ]
+  },
+  "@quasar/testing-unit-jest": {
+    "babel": "babelrc",
+    "options": [
+      "scripts"
+    ]
+  },
+  "@quasar/testing-quality": {
+    "options": [
+      "scripts"
+    ]
+  },
+  "@quasar/testing-security": {
+    "options": [
+      "zap_local"
+    ],
+    "zapbrowser": "Chrome"
+  },
+  "@quasar/testing-security-antivuln": {}
 }
