@@ -259,14 +259,12 @@ export default {
     this.rewards = await this.getRewards()
     // look into checking current reward allocations
     this.rewards[0].value = 100
-    console.table(this.rewards)
 
     let voter = await this.getVoter()
     if (voter[0].owner === this.walletName) {
       this.voted = true
       this.proxyModel = true
     }
-    console.log('voter', voter)
 
     let APRs = await this.getAPR()
     APRs.forEach(apr => {
@@ -325,9 +323,9 @@ export default {
     },
     async stakeNext () {
       if (this.voted && !this.proxyModel) {
-        console.log('unvoteProxy')
+        // console.log('unvoteProxy')
       } else if (!this.voted && !this.proxyModel) {
-        console.log('Nothing to do, not voted and not voting.')
+        // console.log('Nothing to do, not voted and not voting.')
       } else {
         this.step = 2
       }
@@ -339,7 +337,6 @@ export default {
         )
         return result
       } catch (error) {
-        console.log('apr table error', error)
         userError(error.message)
       }
     },
@@ -350,7 +347,6 @@ export default {
         )
         return result
       } catch (error) {
-        console.log('voters table error', error)
         userError(error.message)
       }
     },
@@ -361,7 +357,6 @@ export default {
         )
         return result
       } catch (error) {
-        console.log('rewards table error', error)
         userError(error.message)
       }
     },
@@ -372,7 +367,6 @@ export default {
         )
         return result
       } catch (error) {
-        console.log('proxy table error', error)
         userError(error.message)
       }
     },
@@ -391,7 +385,7 @@ export default {
         this.step = 5
         this.spinnervisible = true
 
-        const result = await eos.transact({
+        await eos.transact({
           actions: [{
             account: 'eosio',
             name: 'voteproducer',
@@ -441,11 +435,9 @@ export default {
         }, { keyProvider: this.privateKey.key })
 
         this.spinnervisible = false
-        console.log('vote result', result)
         this.SuccessMessage = 'Congratulations, your transactions have been record on the blockchain.  Check back in 24h to see the rewards received on your account.'
       } catch (error) {
         this.spinnervisible = false
-        console.log('vote error', error)
         if (error.includes('maximum billable CPU time')) {
           this.voteError = true
           this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
@@ -462,7 +454,7 @@ export default {
       const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
 
       try {
-        const result = await eos.transact({
+        await eos.transact({
           actions: [{
             account: 'proxy4nation',
             name: 'claim',
@@ -475,9 +467,7 @@ export default {
             }
           }]
         }, { keyProvider: privateKey.key })
-        console.log('claim result', result)
       } catch (error) {
-        console.log('claim error', error)
         userError(error.message)
       }
     }
