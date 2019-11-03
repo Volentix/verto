@@ -28,7 +28,7 @@
 
               <q-item class="flex-center">
                 <q-item-section class="col-auto">
-                  <q-chip dense color="green" class="shadow-1">&nbsp;</q-chip>
+                  <q-chip dense :color="stakedAmount ? 'green' : 'red'" class="shadow-1">&nbsp;</q-chip>
                 </q-item-section>
                 <q-item-label class="col-6 text-left">Staked EOS: {{ stakedAmount }}</q-item-label>
               </q-item>
@@ -251,8 +251,10 @@ export default {
     this.walletName = this.$store.state.currentwallet.wallet.name
     this.account = await eos.getAccount(this.walletName)
 
-    this.stakedAmount = +this.account.voter_info.staked / 10000
-    this.currentProxy = this.account.voter_info.proxy
+    if (this.account.voter_info) {
+      this.stakedAmount = +this.account.voter_info.staked / 10000
+      this.currentProxy = this.account.voter_info.proxy
+    }
 
     this.rewards = await this.getRewards()
     // look into checking current reward allocations
@@ -447,6 +449,9 @@ export default {
         if (error.includes('maximum billable CPU time')) {
           this.voteError = true
           this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
+        } else if (error.includes('user must stake before they can vote')) {
+          this.voteError = true
+          this.ErrorMessage = 'You must stake before you can vote!'
         }
       }
 
