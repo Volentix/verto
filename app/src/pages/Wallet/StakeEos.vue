@@ -5,7 +5,7 @@
         <q-icon name="help_outline" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('wallet/makepayment')">
           <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
         </q-icon>
-        <big class="titillium text-uppercase col">Stake for EOS Proxy</big>
+        <big class="titillium text-uppercase col">Stake and Unstake EOS</big>
         <q-icon name="close" size="2.5rem" color="white" @click.native="$router.push('/wallet')"/>
       </q-card-section>
     </q-card>
@@ -435,7 +435,7 @@ export default {
         }, { keyProvider: this.privateKey.key })
 
         this.spinnervisible = false
-        this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain.  Check back in 24h to see the rewards received on your account.'
+        this.SuccessMessage = 'Congratulations, your transactions have been record on the blockchain.  Check back in 24h to see the rewards received on your account.'
       } catch (error) {
         this.spinnervisible = false
         if (error.includes('maximum billable CPU time')) {
