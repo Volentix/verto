@@ -106,6 +106,26 @@
                   Create Account
               </q-btn>
               </div>
+              <div>
+                <q-btn
+                  v-if="isEosWallet()"
+                  :disabled="spinnervisible"
+                  outline
+                  @click="$router.push({name: 'stakeeos'})"
+                >
+                  Stake EOS
+              </q-btn>
+              </div>
+              <div>
+                <q-btn
+                  v-if="isEosWallet()"
+                  :disabled="spinnervisible"
+                  outline
+                  @click="$router.push({name: 'vtxconverter', params: {eosbalance: eosBalance}})"
+                >
+                  VTX Converter
+              </q-btn>
+              </div>
               <!-- <div>
                   @click="$router.push({name: 'eos-make-payment', params: {vtxbalance: vtxBalance,eosbalance: eosBalance}})"
                 <q-btn outline label="Scan QR" @click="isCardModalActive = true"/>
