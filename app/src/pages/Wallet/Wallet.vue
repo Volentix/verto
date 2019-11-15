@@ -101,7 +101,7 @@
                   v-if="isEosWallet()"
                   :disabled="spinnervisible"
                   outline
-                  @click="$router.push({name: 'createaccounteos'})"
+                  @click="$router.push({name: 'createaccounteos', params: {eosbalance: eosBalance}})"
                 >
                   Create Account
               </q-btn>

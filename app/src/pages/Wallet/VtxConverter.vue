@@ -151,7 +151,6 @@
 </template>
 
 <script>
-import { userError } from '@/util/errorHandler'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 
@@ -273,15 +272,12 @@ export default {
         )
         this.transactionId = transaction.transaction_id
         this.showSpinners(false)
-        this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain.'
+        this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '">block explorer</a>'
       } catch (error) {
         this.showSpinners(false)
         if (error.includes('maximum billable CPU time')) {
           this.transactionError = true
           this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
-        } else if (error.includes('user must stake before they can vote')) {
-          this.transactionError = true
-          this.ErrorMessage = 'You must stake before you can vote!'
         } else if (error.includes('Sorry, Newdex trade is pause')) {
           this.transactionError = true
           this.ErrorMessage = 'Convertion is suspended at the moment, it`s not your fault.  Try again later'
@@ -289,28 +285,6 @@ export default {
       }
 
       this.privateKey.key = null
-    },
-    async claimProxy () {
-      const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
-      const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
-
-      try {
-        await eos.transact({
-          actions: [{
-            account: 'proxy4nation',
-            name: 'claim',
-            authorization: [{
-              actor: this.walletName,
-              permission: 'active'
-            }],
-            data: {
-              owner: this.walletName
-            }
-          }]
-        }, { keyProvider: privateKey.key })
-      } catch (error) {
-        userError(error.message)
-      }
     }
   }
 }

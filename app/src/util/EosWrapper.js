@@ -94,6 +94,13 @@ class EosWrapper {
     return result
   }
 
+  async isAccount (account) {
+    const result = await this.eos.is_account(
+      account
+    )
+    return result
+  }
+
   async getTable (code, scope, table, lowerBound,
     limit) {
     const result = await this.eos.getTableRows({
