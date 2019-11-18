@@ -61,7 +61,7 @@
                 color="green"
                 label="Amount"
                 @input="checkAmount"
-                @keyup.enter="showSummary"
+                @keyup.enter="goToPassword()"
               />
               </div>
               <div v-show="navigationButtons.amount" class="q-pa-sm" @click="step = 2" >
@@ -215,6 +215,11 @@ export default {
     // }
   },
   methods: {
+    goToPassword () {
+      if (this.navigationButtons.amount) {
+        this.step = 2
+      }
+    },
     changeSlider () {
       this.sendAmount = Math.round(10000 * this.eosbalance * (this.slider / 100)) / 10000
       this.checkAmount()

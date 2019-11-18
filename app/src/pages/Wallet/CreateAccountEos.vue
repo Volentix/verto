@@ -15,7 +15,7 @@
       </q-inner-loading>
       <q-stepper active-color="green" done-color="green" ref="stepper" alternative-labels animated v-model="step">
 
-        <q-step default :name="1" :done="step>1" title="Paid To" class=" bg-black workflow-step">
+        <q-step default :name="1" :done="step>1" title="Account Name" class=" bg-black workflow-step">
           <q-card-section>
           <div class="text-center text-white text-uppercase">
             <q-item class="flex-center">
@@ -43,7 +43,7 @@
                     :error="inError"
                     :error-message="errorMessage"
                     @input="checkName"
-                    @keyup.enter="goToMemo()"
+                    @keyup.enter="goToStep(2)"
                   />
 
               </div>
@@ -55,7 +55,84 @@
           </div>
           </q-card-section>
         </q-step>
-        <q-step default :name="2" :done="step>2" title="Sign & Submit" class=" bg-black workflow-step">
+
+        <q-step default :name="2" :done="step>2" title="Select Public Key" class=" bg-black workflow-step">
+          <q-card-section>
+            <div class="text-center text-white text-uppercase">
+
+              <q-item-section>
+                <q-item-label>Select the Public Key for this account</q-item-label>
+              </q-item-section>
+
+              <q-select
+                dark color="white" separator
+                v-model="publicKeySelect"
+                :options="walletOptions"
+                @input="clearInputedKey()"
+              >
+                <template v-slot:option="scope">
+                  <q-item
+                    class="custom-menu"
+                    v-bind="scope.itemProps"
+                    v-on="scope.itemEvents"
+                  >
+                    <q-item-section avatar>
+                      <q-icon :name="`img:${scope.opt.image}`" />
+                    </q-item-section>
+                    <q-item-section dark>
+                      <q-item-label v-html="scope.opt.label" />
+                      <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:selected>
+                  <q-item
+                    v-if="publicKeySelect"
+                  >
+                    <q-item-section avatar>
+                      <q-icon :name="`img:${publicKeySelect.image}`" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label v-html="publicKeySelect.label" />
+                      <q-item-label caption>{{ publicKeySelect.value }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item
+                    v-else>
+                  </q-item>
+                </template>
+              </q-select>
+
+              <q-item-section class="q-pa-md">
+                <q-item-label>or Paste it below</q-item-label>
+              </q-item-section>
+
+              <div>
+                <q-input
+                  v-model="publicKey"
+                  dark
+                  color="green"
+                  label="Public Key"
+                  debounce="500"
+                  :error="invalidPublicKey"
+                  error-message="The Public Key is invalid"
+                  @input="checkPublicKey"
+                  @keyup.enter="goToStep(3)"
+                  type="text"
+                >
+                </q-input>
+              </div>
+
+              <div v-show="!this.invalidPublicKey && (publicKey || publicKeySelect)" class="q-pa-sm" @click="goToStep(3)" >
+                <q-icon name="navigate_next" size="3.2rem" color="green"   >
+                  <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
+                </q-icon>
+              </div>
+            </div>
+          </q-card-section>
+        </q-step>
+
+        <q-step default :name="3" :done="step>3" title="Sign & Submit" class=" bg-black workflow-step">
           <q-card-section>
             <div class="text-center text-white text-uppercase">
 
@@ -94,7 +171,7 @@
           </q-card-section>
         </q-step>
 
-        <q-step default :name="3" :done="step>3" title="Result" class=" bg-black workflow-step">
+        <q-step default :name="4" :done="step>4" title="Result" class=" bg-black workflow-step">
           <q-card-section>
             <div class="text-center text-white text-uppercase">
               <q-inner-loading :visible="spinnervisible">
@@ -143,6 +220,16 @@ export default {
       },
       transactionId: null,
       transactionError: false,
+      publicKey: null,
+      invalidPublicKey: false,
+      publicKeySelect: null,
+      walletOptions: [],
+      tokenLogo:
+      {
+        undefined: '/statics/tray/walletTemplate@2x.png',
+        'vtx': '/statics/tray/walletTemplate@2x.png',
+        'eos': '/statics/img/eos.png'
+      },
       spinnervisible: false,
       eosbalance: 0,
       hasEOS: false
@@ -150,17 +237,53 @@ export default {
   },
   async created () {
     this.eosbalance = this.$route.params.eosbalance
-    console.log('this.eosbalance', this.eosbalance)
     if (this.eosbalance >= 0.35) {
       this.hasEOS = true
     }
 
     this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
+
+    let tableData = this.$store.state.currentwallet.config.keys
+    this.walletOptions = tableData.map((key) => {
+      console.log('key', key)
+      let row = {
+        'label': key.name.toUpperCase(),
+        'value': key.key,
+        'image': this.tokenLogo[key.type]
+      }
+      return row
+    })
   },
   async mounted () {
     this.walletName = this.$store.state.currentwallet.wallet.name
   },
   methods: {
+    goToStep (step) {
+      if (step === 2) {
+        if (!this.inError && this.hasEOS) {
+          this.step = 2
+        }
+      } else if (step === 3) {
+        this.publicKey = this.publicKey ? this.publicKey : this.publicKeySelect.value
+        if (!this.invalidPublicKey) {
+          this.step = 3
+        }
+      }
+    },
+    clearInputedKey () {
+      this.publicKey = null
+      this.invalidPublicKey = false
+    },
+    checkPublicKey () {
+      this.publicKeySelect = null
+      if (this.publicKey &&
+        this.publicKey.length === 53 &&
+        this.publicKey.includes('EOS')) {
+        this.invalidPublicKey = false
+      } else {
+        this.invalidPublicKey = true
+      }
+    },
     checkPrivateKeyPassword () {
       const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
       this.privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
@@ -176,13 +299,11 @@ export default {
       if (this.account.length === 12) {
         if (/(^[a-z1-5]{1}([a-z1-5.]{0,10}[a-z1-5])?$)/g.test(this.account)) {
           try {
-            const exists = await eos.getAccount(this.account)
+            await eos.getAccount(this.account)
             this.inError = true
             this.errorMessage = 'Account Name Taken'
-            console.log('valid', exists)
           } catch (error) {
             this.inError = false
-            console.log('error', error)
           }
         } else {
           this.inError = true
@@ -195,7 +316,7 @@ export default {
     },
     async sendTransaction () {
       try {
-        this.step = 3
+        this.step = 4
         this.showSpinners(true)
 
         this.formatedAmount = this.formatAmountString()
@@ -204,7 +325,7 @@ export default {
           this.walletName,
           'signupeoseos',
           '0.3500 EOS',
-          this.account + '-' + this.publickey,
+          this.account + '-' + this.publicKey,
           this.privateKey.key
         )
         this.transactionId = transaction.transaction_id
