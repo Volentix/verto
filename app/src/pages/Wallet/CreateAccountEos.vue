@@ -245,7 +245,6 @@ export default {
 
     let tableData = this.$store.state.currentwallet.config.keys
     this.walletOptions = tableData.map((key) => {
-      console.log('key', key)
       let row = {
         'label': key.name.toUpperCase(),
         'value': key.key,
@@ -319,7 +318,6 @@ export default {
         this.step = 4
         this.showSpinners(true)
 
-        this.formatedAmount = this.formatAmountString()
         const transaction = await eos.transferToken(
           'eosio.token',
           this.walletName,

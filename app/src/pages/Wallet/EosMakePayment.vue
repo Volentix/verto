@@ -463,7 +463,7 @@ export default {
      */
     formatAmountString () {
       let numberOfDecimals = 0
-      let stringAmount = this.sendAmount.toString()
+      let stringAmount = (Math.round(this.sendAmount * Math.pow(10, this.tokenPrecision[this.tokenSymbol])) / Math.pow(10, this.tokenPrecision[this.tokenSymbol])).toString()
       const amountParsed = stringAmount.split('.')
       if (amountParsed && amountParsed.length > 1) {
         numberOfDecimals = amountParsed[1].length
@@ -473,7 +473,7 @@ export default {
       for (;numberOfDecimals < this.tokenPrecision[this.tokenSymbol]; numberOfDecimals++) {
         stringAmount += '0'
       }
-      return parseFloat(stringAmount).toFixed(this.tokenPrecision[this.tokenSymbol]) + ' ' + this.tokenSymbol
+      return stringAmount + ' ' + this.tokenSymbol
     },
     showSpinners (visible) {
       this.spinnervisible = visible

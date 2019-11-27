@@ -203,10 +203,8 @@ export default {
     this.walletName = this.$store.state.currentwallet.wallet.name
     this.account = await eos.getAccount(this.walletName)
 
-    let result = await this.$axios.get('https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')
+    let result = await this.$axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')
     this.vtxprice = result.data.data.price
-
-    console.log('result', result)
 
     // let result = await eos.getCurrencyBalanceP(this.walletName)
     // console.log('result', result)

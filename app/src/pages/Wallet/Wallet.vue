@@ -111,16 +111,6 @@
                   v-if="isEosWallet()"
                   :disabled="spinnervisible"
                   outline
-                  @click="$router.push({name: 'stakeeos'})"
-                >
-                  Stake EOS
-              </q-btn>
-              </div>
-              <div>
-                <q-btn
-                  v-if="isEosWallet()"
-                  :disabled="spinnervisible"
-                  outline
                   @click="$router.push({name: 'vtxconverter', params: {eosbalance: eosBalance}})"
                 >
                   VTX Converter
