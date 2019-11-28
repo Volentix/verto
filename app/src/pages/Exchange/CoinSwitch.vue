@@ -612,8 +612,7 @@ export default {
           this.orderStatus()
         })
         .catch((err) => {
-          console.log(err)
-          userError('There was a problem posting the order')
+          userError('There was a problem posting the order', err)
         })
     },
     getPairs () {
@@ -645,8 +644,7 @@ export default {
           self.destinationCoinUnfilter = self.destinationCoinOptions
         })
         .catch((err) => {
-          console.log(err)
-          userError('There was a problem getting the destination coins')
+          userError('There was a problem getting the destination coins', err)
         })
     },
     getRate () {
@@ -661,8 +659,7 @@ export default {
           self.rateData = response.data.data
         })
         .catch((err) => {
-          console.log(err)
-          userError('There was a problem getting the rate data')
+          userError('There was a problem getting the rate data', err)
         })
     }
   }

@@ -111,12 +111,91 @@
         </q-card-section>
         <q-card-section class="text-white bg-black">
           <div v-show="!Array.isArray(accountNames) || !accountNames.length">
-
-            <q-card-section class="text-center">
-              <div class="text-h6">There are no EOS accounts attached to this public key. You will need to create or use an existing EOS account and (skip generate new keys & step 3)</div>
-              <q-btn outline rounded @click="goToLink()" label="Change the Active Key Permissions with Bloks.io" />
-            </q-card-section>
-
+            <div class="text-h6">There are no EOS accounts attached to this public key.</div>
+            <q-stepper
+              dark
+              flat
+              v-model="step"
+              vertical
+              done-color="green"
+              active-color="green"
+              ref="stepper"
+              color="primary"
+              animated
+              class="bg-black"
+            >
+              <q-step
+                :name="1"
+                title="Select a new account name"
+                icon="settings"
+                :done="step > 1"
+              >
+                <q-input
+                  v-model="accountNew"
+                  dark
+                  color="green"
+                  label="Account Name"
+                  hint="Choose a 12 Letter and/or Number (1-5)"
+                  :error="inError"
+                  :error-message="errorMessage"
+                  @input="checkName"
+                  @keyup.enter="goToStep(12)"
+                >
+                </q-input>
+                <q-btn v-show="!inError" size="sm" color="green" unelevated round icon="navigate_next" class="float-right" @click="step = 2" />
+              </q-step>
+              <q-step
+                :name="2"
+                title="Send 0.35 EOS to Create the Account"
+                icon="money"
+                :done="step > 2"
+              >
+                <q-input
+                  v-model="accountAmount"
+                  dark
+                  color="green"
+                  label="Minimum Amount:"
+                  readonly
+                >
+                  <template v-slot:append>
+                    <q-icon name="file_copy" @click="copyToClipboard(accountAmount, 'Amount')"/>
+                  </template>
+                </q-input>
+                <q-input
+                  v-model="accountTo"
+                  dark
+                  color="green"
+                  label="Send To:"
+                  readonly
+                >
+                  <template v-slot:append>
+                    <q-icon name="file_copy" @click="copyToClipboard(accountTo, 'To Account')"/>
+                  </template>
+                </q-input>
+                <q-input
+                  v-model="accountMemo"
+                  dark
+                  color="green"
+                  label="Mandatory Memo:"
+                  readonly
+                >
+                  <template v-slot:append>
+                    <q-icon name="file_copy" @click="copyToClipboard(accountMemo, 'Memo')"/>
+                  </template>
+                </q-input>
+                <div class="q-py-sm">
+                  <q-btn v-show="!inError" size="sm" color="green" unelevated round icon="navigate_next" class="float-right" @click="step = 3" />
+                </div>
+              </q-step>
+              <q-step
+                :name="3"
+                title="Retry the Upgrade Account"
+                icon="restore"
+                :done="step > 3"
+              >
+                <div class="text-h6">Once you have purchase EOS from an exchange and the transfer is complete, retry the upgrade, it will find the account then.</div>
+              </q-step>
+            </q-stepper>
           </div>
           <div v-show="Array.isArray(accountNames) && accountNames.length">
             <q-stepper
@@ -237,6 +316,11 @@ export default {
       privateKeyPassword: '',
       privateKeyFromFile: '',
       invalidPrivateKeyPassword: false,
+      errorMessage: '',
+      inError: true,
+      accountAmount: '0.35',
+      accountTo: 'signupeoseos',
+      accountNew: '',
       accountName: '',
       accountNames: null,
       accountNameError: false,
@@ -308,9 +392,36 @@ export default {
       } else {
         return true
       }
+    },
+    accountMemo () {
+      if (this.currentWallet) {
+        return this.accountNew + '-' + this.currentWallet.key
+      } else {
+        return false
+      }
     }
   },
   methods: {
+    async checkName () {
+      this.inError = false
+      if (this.accountNew.length === 12) {
+        if (/(^[a-z1-5]{1}([a-z1-5.]{0,10}[a-z1-5])?$)/g.test(this.accountNew)) {
+          try {
+            await eos.getAccount(this.accountNew)
+            this.inError = true
+            this.errorMessage = 'Account Name Taken'
+          } catch (error) {
+            this.inError = false
+          }
+        } else {
+          this.inError = true
+          this.errorMessage = 'Invalid Account Name'
+        }
+      } else {
+        this.inError = true
+        this.errorMessage = 'You need exactly 12 characters'
+      }
+    },
     changeTheDefaultWallet (row) {
       row.defaultKey = false
       this.$router.push({ name: 'change-default', params: { wallet: row } })
@@ -367,8 +478,7 @@ export default {
           }
           self.walletName = result.account_names[0]
         }).catch((err) => {
-          console.log(err)
-          userError('There was a problem getting account names')
+          userError('There was a problem getting account names', err)
         })
       this.prompt = true
     },
@@ -382,10 +492,10 @@ export default {
     createWallet: function () {
       this.$router.push({ name: 'keep-your-key-safe', params: { isCancelButtonActive: true } })
     },
-    copyToClipboard (key) {
+    copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({
-        message: this.$t('DisplayKey.copied'),
+        message: copied ? copied + ' Copied' : 'Key Copied',
         timeout: 2000,
         icon: 'check',
         textColor: 'black',
@@ -426,11 +536,11 @@ export default {
               self.vertoPassordValid = true
             }).catch(function (err) {
               self.vertoPasswordWrong = true
-              console.log(err)
+              userError(err)
             })
         } catch (err) {
           self.vertoPasswordWrong = true
-          console.log(err)
+          userError(err)
         }
       }
     }
