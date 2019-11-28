@@ -293,6 +293,7 @@
 import FileSelect from '@/components/FileSelect.vue'
 import EosWrapper from '@/util/EosWrapper'
 import { openURL } from 'quasar'
+import { userError } from '@/util/errorHandler'
 
 export default {
   components: {
@@ -385,7 +386,7 @@ export default {
           that.privateKeyFromFile = reader.result
           that.hasPrivateKeyInWallet = true
         } catch (e) {
-          console.log(e)
+          userError(e)
           that.hasPrivateKeyInWallet = false
           // userError(e)
         }
@@ -455,9 +456,6 @@ export default {
         this.navigation.makepaymentmemo = true
       }
     },
-    formatAmount: function () {
-      return parseInt(this.sendAmount = Math.abs(Number(this.sendAmount) || 0).toFixed(this.tokenPrecision[this.tokenSymbol])).toString()
-    },
     /**
      * Formats the amount into a string supported by EOS.
      * Must have 4 decimal places
@@ -465,7 +463,7 @@ export default {
      */
     formatAmountString () {
       let numberOfDecimals = 0
-      let stringAmount = this.sendAmount.toString()
+      let stringAmount = (Math.round(this.sendAmount * Math.pow(10, this.tokenPrecision[this.tokenSymbol])) / Math.pow(10, this.tokenPrecision[this.tokenSymbol])).toString()
       const amountParsed = stringAmount.split('.')
       if (amountParsed && amountParsed.length > 1) {
         numberOfDecimals = amountParsed[1].length
@@ -475,7 +473,7 @@ export default {
       for (;numberOfDecimals < this.tokenPrecision[this.tokenSymbol]; numberOfDecimals++) {
         stringAmount += '0'
       }
-      return parseFloat(stringAmount).toFixed(this.tokenPrecision[this.tokenSymbol]) + ' ' + this.tokenSymbol
+      return stringAmount + ' ' + this.tokenSymbol
     },
     showSpinners (visible) {
       this.spinnervisible = visible

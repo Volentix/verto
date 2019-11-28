@@ -15,7 +15,8 @@
           </q-card-section>
           <q-card-section class="q-pa-md text-center  text-uppercase text-h6">
             <div style='border-style: solid;' class="q-pa-md">
-              <div>{{ $t('CreateWalletOptions.create_account') }}</div>
+              <div>Create new EOS Keys</div>
+              <div class="text-caption">Start here if you do not have an EOS account yet</div>
               <div class="q-pa-md">
                 <q-btn
                   color="white"
@@ -23,7 +24,7 @@
                   outline
                   @click="showMainScreen = false; showCreateLedgerOptions = true"
                 >
-                  {{ $t('CreateWalletOptions.ledger_account') }}
+                  Create
                 </q-btn>
               </div>
             </div>

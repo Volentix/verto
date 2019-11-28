@@ -1,4 +1,5 @@
 // import { Platform } from 'quasar'
+import { devError } from '@/util/errorHandler'
 import sjcl from 'sjcl'
 import store from '../store'
 let platformTools = require('./platformTools')
@@ -204,7 +205,7 @@ class ConfigManager {
         await this.saveConfig(vertoPassword, key, config)
         return { success: true }
       } catch (e) {
-        console.log(e)
+        devError(e)
         // TODO: Exception handling
       }
     }
@@ -385,7 +386,7 @@ class ConfigManager {
         const privateKey = sjcl.decrypt(password, encryptedText).replace(/^"(.+)"$/, '$1')
         return { success: true, key: privateKey }
       } catch (e) {
-        console.log('e', e)
+        devError(e)
         return { success: false }
       }
     }
