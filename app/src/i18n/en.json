@@ -345,13 +345,13 @@
     "CreateWalletOptions": {
         "header": "Verto Wallets",
         "create_account": "Create A New Account",
-        "add_account": "Import an Existing Account",
-        "ledger_account": "Ledger",
-        "eos_account": "EOS",
+        "add_account": "Import Existing EOS Keys",
+        "ledger_account": "Public Key",
+        "eos_account": "Private Key with account only",
         "create_options": "Create Options",
         "write_it_down": "write the private key down",
         "save_to_file": "save the private key encrypted",
-        "create_ledger": "Ledger Options"
+        "create_ledger": "EOS Key Options"
     },
     "SaveToFile": {
         "give_wallet_password": "Encryption Password",
