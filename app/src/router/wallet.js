@@ -93,6 +93,42 @@ export default [
         }
       },
       {
+        name: 'stakeproxyeos',
+        path: '/stakeproxyeos',
+        component: () => import('pages/Wallet/StakeProxyEos.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
+        name: 'stakeeos',
+        path: '/stakeeos',
+        component: () => import('pages/Wallet/StakeEos.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
+        name: 'vtxconverter',
+        path: '/vtxconverter/:eosbalance',
+        component: () => import('pages/Wallet/VtxConverter.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
+        name: 'createaccounteos',
+        path: '/createaccounteos/:eosbalance',
+        component: () => import('pages/Wallet/CreateAccountEos.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
         name: 'eos-make-payment',
         path: 'eos-make-payment/:vtxbalance/:eosbalance',
         component: () => import('pages/Wallet/EosMakePayment.vue'),

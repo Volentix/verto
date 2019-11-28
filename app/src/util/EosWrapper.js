@@ -46,6 +46,11 @@ class EosWrapper {
     return actions
   }
 
+  async getAccount (accountName) {
+    let account = (await this.eos.getAccount(accountName))
+    return account
+  }
+
   // If you look at the result value, you can see an array in the form of a string.
   // This is because there could be tokens with many different symbols in the account
   getCurrencyBalanceP (accountName, contractName = 'eosio.token') {
@@ -79,6 +84,34 @@ class EosWrapper {
         }]
     }, { keyProvider })
     return tr
+  }
+
+  async transact (actions, keyProvider) {
+    const result = await this.eos.transaction(
+      actions,
+      keyProvider
+    )
+    return result
+  }
+
+  async isAccount (account) {
+    const result = await this.eos.is_account(
+      account
+    )
+    return result
+  }
+
+  async getTable (code, scope, table, lowerBound,
+    limit) {
+    const result = await this.eos.getTableRows({
+      code,
+      scope,
+      table,
+      lower_bound: lowerBound,
+      limit,
+      json: true
+    })
+    return result.rows
   }
 }
 

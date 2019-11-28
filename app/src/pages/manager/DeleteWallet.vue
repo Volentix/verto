@@ -70,6 +70,7 @@
 
 <script>
 // import FileSelect from '@/components/FileSelect.vue'
+import { userError } from '@/util/errorHandler'
 
 export default {
   components: {
@@ -107,12 +108,12 @@ export default {
           .then(function (results) {
             self.$refs.stepper.next()
           }).catch(function (err) {
-            console.log(err)
+            userError(err)
             self.errorDownloadingFile = true
           })
       } catch (err) {
         this.errorDownloadingFile = true
-        console.log(err)
+        userError(err)
       }
     },
     async submit () {

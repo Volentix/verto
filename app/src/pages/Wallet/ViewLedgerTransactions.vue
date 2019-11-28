@@ -109,7 +109,7 @@
       <q-card>
         <q-toolbar>
           <q-toolbar-title><span class="text-weight-bold">Transaction Record</span></q-toolbar-title>
-          <q-btn flat round dense icon="close" v-close-popup />
+          <q-btn flat round dense icon="close" @click="activeTransaction = null" />
         </q-toolbar>
           <q-markup-table>
             <tbody>
