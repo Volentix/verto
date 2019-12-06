@@ -15,38 +15,57 @@
       </q-inner-loading>
       <q-stepper active-color="green" done-color="green" ref="stepper" alternative-labels animated v-model="step">
 
-        <q-step default :name="1" :done="step>1" title="Stake or Unstake" class=" bg-black workflow-step">
+        <q-step default :name="1" :done="step>1" title="How many EOS" class=" bg-black workflow-step">
           <q-card-section>
-            <div class="text-center text-white text-uppercase">
-
-              <q-item class="flex-center">
-                <q-item-section class="col-auto">
-                  <q-chip dense :color="currentProxy ? 'green' : 'red'" class="shadow-1">&nbsp;</q-chip>
-                </q-item-section>
-                <q-item-label class="col-6 text-left">Current Staking Proxy: {{ currentProxy }}</q-item-label>
-              </q-item>
-
-              <q-item class="flex-center">
-                <q-item-section class="col-auto">
-                  <q-chip dense :color="stakedAmount ? 'green' : 'red'" class="shadow-1">&nbsp;</q-chip>
-                </q-item-section>
-                <q-item-label class="col-6 text-left">Staked EOS: {{ stakedAmount }}</q-item-label>
-              </q-item>
-
-              <q-item tag="label" v-ripple>
-                <q-item-section>
-                  <q-item-label>Proxy to EOS Nation for an APR of {{ apr }}%</q-item-label>
-                  <q-item-label caption>APR is calculated at the time of claim and is subject to change based on the amount of EOS proxied.</q-item-label>
-                </q-item-section>
-                <q-item-section side >
-                  <q-toggle
-                    checked-icon="check"
-                    color="green"
-                    unchecked-icon="clear"
-                    keep-color v-model="proxyModel"/>
-                </q-item-section>
-              </q-item>
-              <div v-show="showNext" class="q-pa-sm" @click="step = 2" >
+          <div class="text-center text-white text-uppercase">
+            <div class="row">
+              <div class="text-center">
+                <span class="row text-h6 text-center">
+                  EOS (Liquid)
+                </span>
+                <span class="row text-h4">
+                  {{ eosbalance }}
+                </span>
+              </div>
+              <div class="col">
+                <q-linear-progress indeterminate rounded :reverse="progColor === 'red'" :color="progColor" size="xl" class="q-mt-md" />
+              </div>
+              <div class="col text-center">
+                <span class="row text-h6 text-center">
+                  EOS (Staked)
+                </span>
+                <span class="row text-h4">
+                  {{ stakedAmount }}
+                </span>
+              </div>
+            </div>
+            <div>
+              <br>
+              <q-slider
+                v-model="slider"
+                :label-value="slider + '%'"
+                :min="-100"
+                :max="100"
+                :step="5"
+                color="orange"
+                :label-color="progColor"
+                dark
+                markers
+                label
+                label-always
+                @input="changeSlider()"
+              />
+              <q-input
+                type="number"
+                v-model="sendAmount"
+                dark
+                color="green"
+                label="Amount"
+                @input="checkAmount"
+                @keyup.enter="goToPassword()"
+              />
+              </div>
+              <div v-show="navigationButtons.amount" class="q-pa-sm" @click="step = 2" >
                 <q-icon name="navigate_next" size="3.2rem" color="green"   >
                   <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
                 </q-icon>
@@ -55,82 +74,7 @@
           </q-card-section>
         </q-step>
 
-        <q-step default :name="2" :done="step>2" title="Portfolio" class=" bg-black workflow-step">
-          <q-card-section>
-            <div class="text-center text-white text-uppercase">
-
-              <q-item tag="label">
-                <q-item-section>
-                  <q-item-label>Select your rewards Portfolio %</q-item-label>
-                  <q-item-label caption></q-item-label>
-                </q-item-section>
-              </q-item>
-                <q-list dense>
-                  <q-item v-for="(item, index) in rewards" :key="index">
-                    <q-item-section>
-                      <q-item-label caption>
-                        <q-badge color="green" class="q-mb-lg text-h7">
-                          {{ item.symbol.split(",")[1] }}
-                        </q-badge>
-                      </q-item-label>
-                      <q-slider
-                        v-model="rewards[index].value"
-                        :label-value="rewards[index].value || 0 + '%'"
-                        :min="0"
-                        :max="100"
-                        :step="5"
-                        color="orange"
-                        dark
-                        markers
-                        label
-                        label-always
-                        @input="monitor(index)"
-                      />
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-
-              <div class="q-pa-sm" @click="formatRewards()" >
-                <q-icon name="navigate_next" size="3.2rem" color="green"   >
-                  <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
-                </q-icon>
-              </div>
-            </div>
-          </q-card-section>
-        </q-step>
-
-        <q-step default :name="3" :done="step>3" title="Compound" class=" bg-black workflow-step">
-          <q-card-section>
-            <div class="text-center text-white text-uppercase">
-
-              <q-item tag="label" v-ripple>
-                <q-item-section>
-                  <q-item-label>Compound your vote staking rewards</q-item-label>
-                  <q-item-label caption>You can choose to receive your EOS rewards already staked</q-item-label>
-                </q-item-section>
-                <q-item-section side >
-                  <q-toggle
-                    v-model="staked"
-                    checked-icon="check"
-                    color="green"
-                    unchecked-icon="clear"
-                    :true-value="1"
-                    :false-value="0"
-                    keep-color
-                  />
-                </q-item-section>
-              </q-item>
-
-              <div class="q-pa-sm" @click="step = 4" >
-                <q-icon name="navigate_next" size="3.2rem" color="green"   >
-                  <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
-                </q-icon>
-              </div>
-            </div>
-          </q-card-section>
-        </q-step>
-
-        <q-step default :name="4" :done="step>4" title="Sign & Submit" class=" bg-black workflow-step">
+        <q-step default :name="2" :done="step>2" title="Sign & Submit" class=" bg-black workflow-step">
           <q-card-section>
             <div class="text-center text-white text-uppercase">
 
@@ -160,7 +104,7 @@
                 </q-input>
               </div>
 
-              <div v-show="privateKey.success" class="q-pa-sm" @click="voteProxy()" >
+              <div v-show="privateKey.success" class="q-pa-sm" @click="sendTransaction()" >
                 <q-icon name="navigate_next" size="3.2rem" color="green"   >
                   <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
                 </q-icon>
@@ -169,7 +113,7 @@
           </q-card-section>
         </q-step>
 
-        <q-step default :name="5" :done="step>5" title="Result" class=" bg-black workflow-step">
+        <q-step default :name="3" :done="step>3" title="Result" class=" bg-black workflow-step">
           <q-card-section>
             <div class="text-center text-white text-uppercase">
               <q-inner-loading :visible="spinnervisible">
@@ -180,22 +124,17 @@
                 <q-item-label>Processing the transaction</q-item-label>
               </q-item-section>
 
-              <div v-show="!voteError" class="text-h6 text-uppercase text-green q-pa-md">
+              <div v-show="!transactionError" class="text-h6 text-uppercase text-green q-pa-md">
                 {{ SuccessMessage }}
               </div>
 
-              <div v-show="voteError" class="text-h6 text-uppercase text-red q-pa-md">
+              <div v-show="transactionError" class="text-h6 text-uppercase text-red q-pa-md">
                 {{ ErrorMessage }}
               </div>
             </div>
           </q-card-section>
         </q-step>
       </q-stepper>
-      <q-card-section>
-        <q-item-label>Provided By:
-          <img width="100" src="statics/img/eosnation.png">
-        </q-item-label>
-      </q-card-section>
     </q-card>
   </q-page>
 </template>
@@ -209,29 +148,35 @@ export default {
   data () {
     return {
       step: 1,
-      apr: 0,
-      rewards: [],
-      proxyRewards: '',
-      proxyPercentages: '',
-      voteError: false,
+      slider: 0,
+      progColor: 'green',
+      eosbalance: 0,
+      vtxbalance: 0,
+      stakedAmount: 0,
+      vtxprice: 0,
+      sendAmount: null,
+      formatedAmount: null,
+      currentProxy: null,
       ErrorMessage: null,
       SuccessMessage: null,
       invalidPrivateKeyPassword: false,
       privateKey: {
         success: null
       },
-      voted: false,
-      valid: true,
+      transactionId: null,
+      transactionError: false,
       spinnervisible: false,
       isPwd: true,
-      staked: 1,
-      proxy: null,
-      proxyModel: false,
-      proxies: [],
-      stakedAmount: null,
-      currentProxy: null,
       account: null,
-      privateKeyPassword: null
+      privateKeyPassword: null,
+      showSendModal: false,
+      navigationButtons: {
+        to: false,
+        token: false,
+        amount: false,
+        privateKeyPasswordBtn: false,
+        showNextButtonToPassword: false
+      }
     }
   },
   computed: {
@@ -243,7 +188,7 @@ export default {
       }
     }
   },
-  created () {
+  async created () {
     this.eosbalance = this.$route.params.eosbalance
     this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
   },
@@ -255,119 +200,33 @@ export default {
       this.stakedAmount = +this.account.voter_info.staked / 10000
       this.currentProxy = this.account.voter_info.proxy
     }
-
-    this.rewards = await this.getRewards()
-    // look into checking current reward allocations
-    this.rewards[0].value = 100
-
-    let voter = await this.getVoter()
-    if (voter[0].owner === this.walletName) {
-      this.voted = true
-      this.proxyModel = true
-    }
-
-    let APRs = await this.getAPR()
-    APRs.forEach(apr => {
-      if (apr.paused === 0) {
-        this.apr += apr.rate / 100
-      }
-    })
-
-    let proxies = await this.getProxies()
-    proxies.forEach(proxy => {
-      if (proxy.active === 1) {
-        this.proxy = proxy.proxy
-      }
-    })
   },
   methods: {
-    monitor (val) {
-      let sum = 0
-
-      this.rewards.forEach(reward => {
-        if (reward.value) {
-          sum += reward.value
-        }
-      })
-
-      while (sum > 100) {
-        for (var i = 0; this.rewards.length; i++) {
-          if (i !== val && this.rewards[i].value > 0) {
-            this.rewards[i].value -= 5
-            sum -= 5
-            break
-          }
-        }
-      }
-
-      while (sum < 100) {
-        this.rewards[0].value += 5
-        sum += 5
-      }
-    },
-    async formatRewards () {
-      let proxyPercentagesArr = []
-      let proxyRewardsArr = []
-
-      this.rewards.forEach(reward => {
-        if (reward.value) {
-          proxyPercentagesArr.push(reward.value * 100)
-          proxyRewardsArr.push(reward.symbol.split(',')[1])
-        }
-      })
-
-      this.proxyPercentages = proxyPercentagesArr
-      this.proxyRewards = proxyRewardsArr
-
-      this.step = 3
-    },
-    async stakeNext () {
-      if (this.voted && !this.proxyModel) {
-        // console.log('unvoteProxy')
-      } else if (!this.voted && !this.proxyModel) {
-        // console.log('Nothing to do, not voted and not voting.')
-      } else {
+    goToPassword () {
+      if (this.navigationButtons.amount) {
         this.step = 2
       }
     },
-    async getAPR () {
-      try {
-        const result = await eos.getTable(
-          'proxy4nation', 'proxy4nation', 'settings'
-        )
-        return result
-      } catch (error) {
-        userError(error.message)
+    changeSlider () {
+      if (this.slider >= 0) {
+        this.sendAmount = Math.round(10000 * this.eosbalance * (this.slider / 100)) / 10000
+      } else {
+        this.sendAmount = Math.round(10000 * this.stakedAmount * (this.slider / 100)) / 10000
       }
+      this.checkAmount()
     },
-    async getVoter () {
-      try {
-        const result = await eos.getTable(
-          'proxy4nation', 'proxy4nation', 'voters', this.walletName, '1'
-        )
-        return result
-      } catch (error) {
-        userError(error.message)
-      }
-    },
-    async getRewards () {
-      try {
-        const result = await eos.getTable(
-          'proxy4nation', 'proxy4nation', 'rewards'
-        )
-        return result
-      } catch (error) {
-        userError(error.message)
-      }
-    },
-    async getProxies () {
-      try {
-        const result = await eos.getTable(
-          'proxy4nation', 'proxy4nation', 'proxies'
-        )
-        return result
-      } catch (error) {
-        userError(error.message)
+    checkAmount () {
+      this.navigationButtons.amount = false
+
+      if (+this.sendAmount > 0.0 && +this.sendAmount <= +this.eosbalance) {
+        this.slider = Math.round(100 * (this.sendAmount / +this.eosbalance))
+        this.navigationButtons.amount = true
+        this.progColor = 'green'
+      } else if (+this.sendAmount < 0.0 && +this.sendAmount <= +this.stakedAmount) {
+        this.slider = Math.round(100 * (this.sendAmount / +this.stakedAmount))
+        console.log('this.slider', this.slider)
+        this.navigationButtons.amount = true
+        this.progColor = 'red'
       }
     },
     checkPrivateKeyPassword () {
