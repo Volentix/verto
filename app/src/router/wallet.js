@@ -57,6 +57,15 @@ export default [
         }
       },
       {
+        name: 'cruxpay',
+        path: '/cruxpay',
+        component: () => import('pages/CRUX/Dashboard.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
         name: 'wallet',
         path: 'wallet',
         component: () => import('pages/Wallet/Wallet.vue'),
