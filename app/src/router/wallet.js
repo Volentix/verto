@@ -75,6 +75,15 @@ export default [
         }
       },
       {
+        name: 'mnemonic',
+        path: 'mnemonic',
+        component: () => import('pages/Intro/Mnemonic.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
         name: 'change-password',
         path: 'change-password',
         component: () => import('pages/Wallet/ChangePassword.vue'),

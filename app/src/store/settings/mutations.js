@@ -9,3 +9,7 @@ export const setAirplaneMode = (state, data) => {
 export const toggleNetwork = (state, data) => {
   state.network = data
 }
+
+export const mnemonic = (state, data) => {
+  state.mnemonic = data
+}
