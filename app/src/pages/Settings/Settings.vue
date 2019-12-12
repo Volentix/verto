@@ -43,6 +43,16 @@
             <q-btn class='full-width'
               outline
               glossy
+              dense
+              to="/mnemonic"
+            >
+                {{ $t('SettingsView.mnemonic') }}
+              </q-btn>
+          </div>
+          <div class='q-pa-md'>
+            <q-btn class='full-width'
+              outline
+              glossy
               dense @click.native="goChangePassword"
             >
               {{ $t('SettingsView.change_password') }}
