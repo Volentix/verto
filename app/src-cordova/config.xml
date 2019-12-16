@@ -14,6 +14,8 @@
     <allow-intent href="geo:*" />
     <allow-navigation href="https://*/*" />
     <platform name="android">
+        <preference name="android-minSdkVersion" value="28" />
+        <preference name="android-targetSdkVersion" value="29" />
         <allow-intent href="market:*" />
         <icon density="ldpi" src="../src/statics/cordova/android/ldpi.png" />
         <icon density="mdpi" src="../src/statics/cordova/android/mdpi.png" />
