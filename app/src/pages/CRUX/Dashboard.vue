@@ -4,7 +4,7 @@
       <q-item v-for="(item, index) in assets" :key="index">
         <q-item-section avatar>
           <q-avatar>
-            <img :src="'https://files.coinswitch.co/public/coins/' + $( item.symbol.toLowerCase() ) + '.png'">
+            <img :src="getImages(item.symbol)">
           </q-avatar>
         </q-item-section>
         <q-item-section class="col-2">
@@ -52,6 +52,9 @@ export default {
 
       let state = await cruxClient.getCruxIDState()
       console.log('state', state)
+    },
+    getImages (symbol) {
+      return 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png'
     }
   }
 }

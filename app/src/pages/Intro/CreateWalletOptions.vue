@@ -18,12 +18,8 @@
               <div>Create new EOS Keys</div>
               <div class="text-caption">Start here if you do not have an EOS account yet</div>
               <div class="q-pa-md">
-                <q-btn
-                  color="white"
-                  glossy
-                  outline
-                  @click="showMainScreen = false; showCreateLedgerOptions = true"
-                >
+                <q-btn color="white" glossy outline
+                  @click="showMainScreen = false; $router.push('mnemonic')">
                   Create
                 </q-btn>
               </div>
