@@ -369,5 +369,8 @@
     "no": "No",
     "yes": "Yes",
     "next": "Next",
-    "back": "Back"
+    "back": "Back",
+    "restore": "Restore",
+    "create": "Create",
+    "verify": "Verify"
 }
