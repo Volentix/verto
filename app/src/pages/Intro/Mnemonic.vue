@@ -221,10 +221,10 @@ export default {
       if (this.goodPassword) {
         this.config.mnemonic = this.mnemonic
         // this.$store.commit('settings/mnemonic', this.mnemonic)
-        this.$configManager.updateConfig(this.vertoPassword, this.config)
+        await this.$configManager.updateConfig(this.vertoPassword, this.config)
         const keys = await HD.Wallet('eos')
         // Need to pass type? // private key gets saved if no pass?
-        const result = await this.$configManager.saveWalletAndKey('HD EOS Key', this.vertoPassword, null, keys.publicKey, keys.privateKey)
+        const result = await this.$configManager.saveWalletAndKey('HD EOS Key', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto')
 
         if (result && result.success) {
           try {

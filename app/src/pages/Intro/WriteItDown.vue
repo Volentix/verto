@@ -187,7 +187,7 @@ export default {
         return
       }
       this.resetErrors()
-      const result = await this.$configManager.saveWalletAndKey(this.walletName, this.vertoPassword, null, this.publicKey, this.privateKey)
+      const result = await this.$configManager.saveWalletAndKey(this.walletName, this.vertoPassword, null, this.publicKey, this.privateKey, 'verto')
       if (result && result.success) {
         this.walletName = ''
         this.vertoPassword = ''
