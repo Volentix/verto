@@ -4,35 +4,23 @@ import store from '@/store'
 // https://iancoleman.io/bip39/ used to validate the derived keys as per bip44 non-hardened addresses.
 class HD {
   Wallet = async (walletType) => {
-    const bip39 = require('bip39')
     // const bip32 = require('bip32')
-    const rippleBip32 = require('ripple-bip32')
-    const hdkey = require('hdkey')
-    const ethhdkey = require('ethereumjs-wallet/hdkey')
     // const util = require('ethereumjs-util')
-    const bitcoin = require('bitcoinjs-lib')
-    const wif = require('wif')
-    const ecc = require('eosjs-ecc')
     // const createHash = require('create-hash')
     // const bs58check = require('bs58check')
     // const bech32 = require('bech32')
     // const rippleProvider = require('xrp-provider')
-    const litecore = require('litecore-lib')
-    const bitcore = require('bitcore-lib')
-    const dashcore = require('@dashevo/dashcore-lib')
-    const bnb = require('@binance-chain/javascript-sdk')
-    const XlmProvider = require('xlm-provider').default
-    const xtz = require('conseiljs')
-    const ada = require('js-chain-libs/js_chain_libs')
-
+    const bip39 = require('bip39')
+    const bitcoin = require('bitcoinjs-lib')
     const mnemonic = store.state.currentwallet.config.mnemonic
     const seed = bip39.mnemonicToSeedSync(mnemonic)
-    const hdwallet = hdkey.fromMasterSeed(seed)
-    const ethhdwallet = ethhdkey.fromMasterSeed(seed)
-    // const btchdwallet = bip32.fromSeed(seed)
 
     const keys = {
       eos () {
+        const hdkey = require('hdkey')
+        const wif = require('wif')
+        const ecc = require('eosjs-ecc')
+        const hdwallet = hdkey.fromMasterSeed(seed)
         const eosPath = "m/44'/194'/0'/0/0"
         const eosNode = hdwallet.derive(eosPath)
         const publicKey = ecc.PublicKey(eosNode._publicKey).toString()
@@ -41,6 +29,7 @@ class HD {
         return { publicKey, privateKey }
       },
       btc () {
+        const bitcore = require('bitcore-lib')
         const path = "m/44'/0'/0'/0/0"
         const network = bitcoin.networks.livenet
         const xpriv = bitcore.HDPrivateKey.fromSeed(seed, network) // BIP32 Root Key
@@ -53,6 +42,7 @@ class HD {
         return { publicKey, privateKey }
       },
       ltc () {
+        const litecore = require('litecore-lib')
         const path = "m/44'/2'/0'/0/0"
         const network = bitcoin.networks.litecoin
         const xpriv = litecore.HDPrivateKey.fromSeed(seed, network) // BIP32 Root Key
@@ -65,6 +55,8 @@ class HD {
         return { publicKey, privateKey }
       },
       eth () {
+        const ethhdkey = require('ethereumjs-wallet/hdkey')
+        const ethhdwallet = ethhdkey.fromMasterSeed(seed)
         const ethPath = "m/44'/60'/0'/0/0"
         const ethWallet = ethhdwallet.derivePath(ethPath).getWallet()
         const publicKey = ethWallet.getAddressString()
@@ -73,6 +65,7 @@ class HD {
         return { publicKey, privateKey }
       },
       xrp () {
+        const rippleBip32 = require('ripple-bip32')
         const buffer = rippleBip32.fromSeedBuffer(seed)
         const xrpPath = "m/44'/144'/0'/0/0"
         const keyPair = buffer.derivePath(xrpPath).keyPair.getKeyPairs()
@@ -82,6 +75,7 @@ class HD {
         return { publicKey, privateKey }
       },
       dash () {
+        const dashcore = require('@dashevo/dashcore-lib')
         const path = "m/44'/5'/0'/0/0"
         const network = dashcore.Networks.livenet
         const xpriv = dashcore.HDPrivateKey.fromSeed(seed, network) // BIP32 Root Key
@@ -94,6 +88,7 @@ class HD {
         return { publicKey, privateKey }
       },
       xlm () {
+        const XlmProvider = require('xlm-provider').default
         const xlmProvider = new XlmProvider('mainnet')
         const privateKey = xlmProvider.createPrivateKeyFromMnemonic(mnemonic)
         const publicKey = xlmProvider.createPublicKey(privateKey)
@@ -103,6 +98,7 @@ class HD {
       bnb () {
         // Validation required
         // const aminoPrefix = 'eb5ae98721'
+        const bnb = require('@binance-chain/javascript-sdk')
         const privateKey = bnb.crypto.getPrivateKeyFromMnemonic(mnemonic)
         const address = bnb.crypto.getAddressFromPrivateKey(privateKey, 'bnb')
         // const pubkey = bnb.crypto.getPublicKeyFromPrivateKey(privateKey)
@@ -113,6 +109,7 @@ class HD {
       },
       async xtz () {
         // Validation required
+        const xtz = require('conseiljs')
         const ppkeys = await xtz.TezosWalletUtil.getKeysFromMnemonicAndPassphrase(mnemonic)
         const privateKey = ppkeys.privateKey
         const publicKey = ppkeys.publicKeyHash
@@ -121,7 +118,7 @@ class HD {
       },
       async ada () {
         // Validation required
-        console.log('ada', ada)
+        const ada = require('js-chain-libs/js_chain_libs')
         const extPrivateKey = await ada.PrivateKey.from_normal_bytes(seed.slice(0, 32))
         const privateKey = extPrivateKey.to_bech32()
         const account = ada.Account.single_from_public_key(extPrivateKey.to_public())
