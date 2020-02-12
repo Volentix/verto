@@ -12,7 +12,7 @@
           <q-item-label caption>{{ item.symbol }}</q-item-label>
         </q-item-section>
         <q-item-section>
-          <q-input dark filled v-model="item.assetIdentifierValue"/>
+          <q-input dark filled v-model="item.keys.publicKey"/>
         </q-item-section>
       </q-item>
     </q-list>
@@ -21,6 +21,7 @@
 
 <script>
 import { CruxPay } from '@cruxpay/js-sdk'
+import HD from '@/util/hdwallet'
 
 let cruxClient = new CruxPay.CruxClient({
   walletClientName: 'testwallet',
@@ -48,6 +49,10 @@ export default {
   methods: {
     async getAssets () {
       this.assets = await cruxClient.getAssetMap()
+
+      Object.keys(this.assets).forEach(async symbol => {
+        this.assets[symbol].keys = await HD.Wallet(symbol)
+      })
       console.log('assets', this.assets)
 
       let state = await cruxClient.getCruxIDState()

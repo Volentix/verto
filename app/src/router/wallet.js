@@ -102,6 +102,15 @@ export default [
         }
       },
       {
+        name: 'hdwallets',
+        path: 'hdwallets',
+        component: () => import('pages/manager/HDWallets.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
         name: 'associations',
         path: '/associations',
         component: () => import('pages/Intro/Associations.vue'),
