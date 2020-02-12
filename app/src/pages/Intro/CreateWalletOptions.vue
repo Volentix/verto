@@ -14,7 +14,17 @@
             <q-icon class="float-right" name="close" size="2.5rem" color="white" @click.native="$router.push('vertomanager')"/>
           </q-card-section>
           <q-card-section class="q-pa-md text-center  text-uppercase text-h6">
-            <div style='border-style: solid;' class="q-pa-md">
+            <div v-if="mnemonic" style='border-style: solid;' class="q-pa-md">
+              <div>Enable other HD Wallets</div>
+              <div class="text-caption">All new Wallets can be activated from here.</div>
+              <div class="q-pa-md">
+                <q-btn color="white" glossy outline
+                  @click="showMainScreen = false; $router.push('hdwallets')">
+                  Enable
+                </q-btn>
+              </div>
+            </div>
+            <div v-else style='border-style: solid;' class="q-pa-md">
               <div>Create new EOS Keys</div>
               <div class="text-caption">Start here if you do not have an EOS account yet</div>
               <div class="q-pa-md">
@@ -82,11 +92,14 @@ export default {
   data () {
     return {
       showMainScreen: true,
-      showCreateLedgerOptions: false
+      showCreateLedgerOptions: false,
+      mnemonic: this.$store.state.currentwallet.config.mnemonic
       // router.push('write-it-down')
     }
   },
-  mounted () {},
+  mounted () {
+    console.log('mnemonic', this.mnemonic)
+  },
   methods: {
   }
 }

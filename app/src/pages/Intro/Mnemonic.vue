@@ -141,7 +141,6 @@
 
 <script>
 const bip39 = require('bip39')
-import configManager from '@/util/ConfigManager'
 import HD from '@/util/hdwallet'
 
 export default {
@@ -224,11 +223,11 @@ export default {
         await this.$configManager.updateConfig(this.vertoPassword, this.config)
         const keys = await HD.Wallet('eos')
         // Need to pass type? // private key gets saved if no pass?
-        const result = await this.$configManager.saveWalletAndKey('HD EOS Key', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto')
+        const result = await this.$configManager.saveWalletAndKey('HD EOS Key', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
 
         if (result && result.success) {
           try {
-            await configManager.backupConfig()
+            await this.$configManager.backupConfig()
             if (this.$q.platform.is.android) {
               this.$q.notify({ color: 'positive', message: 'Config Saved' })
             }
@@ -242,7 +241,7 @@ export default {
       }
     },
     async checkVertoPassword () {
-      const results = await configManager.getConfig(this.vertoPassword)
+      const results = await this.$configManager.getConfig(this.vertoPassword)
       if (results.success) {
         this.goodPassword = true
         this.config = results.config

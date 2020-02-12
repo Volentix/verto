@@ -181,7 +181,7 @@ class ConfigManager {
       })
     }
 
-    async saveWalletAndKey (keyname, vertoPassword, privateKeyPassword, publicAddress, privateAddress, type) {
+    async saveWalletAndKey (keyname, vertoPassword, privateKeyPassword, publicAddress, privateAddress, type, origin) {
       try {
         const result = await this.getConfig(vertoPassword)
         if (!result.success) return result
@@ -191,7 +191,7 @@ class ConfigManager {
         const defaultKey = config.keys.length <= 0
         if (nameTaken) return { success: false, message: 'name_already_used' }
 
-        const key = { name: keyname, type: type, key: publicAddress, defaultKey: defaultKey }
+        const key = { name: keyname, type: type, origin: origin, key: publicAddress, defaultKey: defaultKey }
 
         if (!privateKeyPassword && privateAddress) {
           key.privateKey = privateAddress
