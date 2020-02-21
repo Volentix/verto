@@ -204,6 +204,7 @@
         "help": "Help",
         "exchange": "Exchange",
         "vdexnodes": "vDexNodes",
+        "cruxpay": "CRUXPay",
         "optionsdd": " Options",
         "vespucci_open": "Vespucci Open",
         "current_wallet": "Current Wallet",
@@ -368,5 +369,8 @@
     "no": "No",
     "yes": "Yes",
     "next": "Next",
-    "back": "Back"
+    "back": "Back",
+    "restore": "Restore",
+    "create": "Create",
+    "verify": "Verify"
 }
