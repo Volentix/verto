@@ -57,9 +57,27 @@ export default [
         }
       },
       {
+        name: 'cruxpay',
+        path: '/cruxpay',
+        component: () => import('pages/CRUX/Dashboard.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
         name: 'wallet',
         path: 'wallet',
         component: () => import('pages/Wallet/Wallet.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
+        name: 'mnemonic',
+        path: 'mnemonic',
+        component: () => import('pages/Intro/Mnemonic.vue'),
         meta: {
           authRequired: true,
           needskeyscreated: true
@@ -78,6 +96,15 @@ export default [
         name: 'vertomanager',
         path: 'vertomanager',
         component: () => import('pages/manager/VertoManager.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
+        name: 'hdwallets',
+        path: 'hdwallets',
+        component: () => import('pages/manager/HDWallets.vue'),
         meta: {
           authRequired: true,
           needskeyscreated: true

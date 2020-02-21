@@ -181,7 +181,7 @@ class ConfigManager {
       })
     }
 
-    async saveWalletAndKey (keyname, vertoPassword, privateKeyPassword, publicAddress, privateAddress) {
+    async saveWalletAndKey (keyname, vertoPassword, privateKeyPassword, publicAddress, privateAddress, type, origin) {
       try {
         const result = await this.getConfig(vertoPassword)
         if (!result.success) return result
@@ -191,7 +191,12 @@ class ConfigManager {
         const defaultKey = config.keys.length <= 0
         if (nameTaken) return { success: false, message: 'name_already_used' }
 
-        const key = { name: keyname, key: publicAddress, defaultKey: defaultKey }
+        const key = { name: keyname, type: type, origin: origin, key: publicAddress, defaultKey: defaultKey }
+
+        if (!privateKeyPassword && privateAddress) {
+          key.privateKey = privateAddress
+        }
+
         // const privateWallet = JSON.stringify({name: keyname, publickey: publicAddress, privatekey: privateAddress})
         config.keys.push(key)
         this.currentConfig = config
@@ -201,6 +206,8 @@ class ConfigManager {
           const encryptedData = sjcl.encrypt(privateKeyPassword, privateAddress)
           const fileName = `keys-${(new Date()).getTime()}.config`
           await platformTools.downloadFile(encryptedData, fileName)
+        } else {
+
         }
         await this.saveConfig(vertoPassword, key, config)
         return { success: true }
