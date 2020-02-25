@@ -10,27 +10,30 @@
           <img :src="getLangUrl()" width=42>
         </a>
       </q-toolbar>
+
+      <tabs-menu class="mobile-only" />
+
     </q-header>
 
-      <q-drawer  side="left" v-model="optionsDrawer" content-class="row" v-if="hasCurrentWallet()" :width="170" >
-        <div class="col-12 column bg-primary">
-          <options-drawer/>
-        </div>
-      </q-drawer>
-      <q-drawer side="right" v-model="langDrawer" content-class="row" :width="170">
-        <div class="col-12 column bg-primary">
-          <lang-drawer @click.native="langDrawer = false"/>
-        </div>
-      </q-drawer>
-      <q-drawer overlay side="right" v-model="langDrawer" content-class="row" :width="170">
-        <div class="col-12 column bg-primary">
-          <lang-drawer @click.native="langDrawer = false"/>
-        </div>
-      </q-drawer>
-      <q-page-container class=" bg-black">
-        <!-- This is where pages get injected -->
-        <router-view />
-      </q-page-container>
+    <q-drawer  side="left" v-model="optionsDrawer" content-class="row" v-if="hasCurrentWallet()" :width="170" >
+      <div class="col-12 column bg-primary">
+        <options-drawer/>
+      </div>
+    </q-drawer>
+    <q-drawer side="right" v-model="langDrawer" content-class="row" :width="170">
+      <div class="col-12 column bg-primary">
+        <lang-drawer @click.native="langDrawer = false"/>
+      </div>
+    </q-drawer>
+    <q-drawer overlay side="right" v-model="langDrawer" content-class="row" :width="170">
+      <div class="col-12 column bg-primary">
+        <lang-drawer @click.native="langDrawer = false"/>
+      </div>
+    </q-drawer>
+    <q-page-container class=" bg-black">
+      <!-- This is where pages get injected -->
+      <router-view />
+    </q-page-container>
   </q-layout>
 </template>
 
@@ -38,6 +41,9 @@
 import configManager from '../util/ConfigManager'
 import LangDrawer from '../components/layout/LangDrawer'
 import OptionsDrawer from '../components/layout/OptionsDrawer'
+
+import TabsMenu from '../components/newSkin/TabsMenu'
+
 const throttle = (func, limit) => {
   let lastFunc
   let lastRan
@@ -61,7 +67,7 @@ const throttle = (func, limit) => {
 
 export default {
   name: 'DefaultLayout',
-  components: { LangDrawer, OptionsDrawer },
+  components: { LangDrawer, OptionsDrawer, TabsMenu },
   data () {
     return {
       optionsDrawer: false,
