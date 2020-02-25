@@ -68,7 +68,11 @@ module.exports = function (ctx) {
         'QStepperNavigation',
         'QToolbar',
         'QToolbarTitle',
-        'QTooltip'
+        'QTooltip',
+        'QTabs',
+        'QTab',
+        'QRouteTab',
+        'QToggle'
       ],
 
       directives: [

@@ -30,14 +30,14 @@
               :key="col.name"
               :props="props"
             >
-              <div v-if="col.name === 'name'" class="text-center text-uppercase text-white q-pa-lg">
+              <div v-if="col.name === 'name'" class="changeCurrentWallet text-center text-uppercase text-white q-pa-lg">
                 <div @click="changeCurrentWallet(props.row)" >
                   <span class=" text-h6">
                   &nbsp;&nbsp;{{ col.value }}
                   </span>
                 </div>
               </div>
-              <div v-if="col.name === 'type'" class="text-center text-white">
+              <div v-if="col.name === 'type'" class="coin_type text-center text-white">
                 <div v-if="col.value === 'eos'">
                   <img
                     src="statics/icon.png"
@@ -51,10 +51,9 @@
                   />
                 </div>
               </div>
-              <div v-if="col.name === 'default'" class="text-left">
+              <div v-if="col.name === 'default'" class="col_name_default text-left">
                 <div v-if="col.value" class="q-pa-lg">
                   <q-checkbox v-model="props.row.defaultKey" color="green" disable>
-
                   </q-checkbox>
                 </div>
                 <div v-else class="q-pa-lg">
@@ -63,7 +62,7 @@
               </div>
               <div
                 v-if="col.name === 'privateKey'"
-                class="text-right text-white"
+                class="col_name_privateKey text-right text-white"
               >
                 <div v-show="props.row.privateKeyEncrypted" @click="removePrivateKey(props.row)">
                   <q-icon color="red" name="remove_circle_outline" size="2.0rem">
