@@ -70,6 +70,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  height: 100vh !important;
   &--title{
     font-size: 35px;
     font-weight: $bold;

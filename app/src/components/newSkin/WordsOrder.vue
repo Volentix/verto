@@ -5,14 +5,14 @@
       <div class="words-order-wrapper--list__empty">
         <ul>
         <li v-for="(word, index) in wordsArray" :key="index">
-        <q-input v-if="word !== ''" outlined round readonly class="qinput" v-model="text[index]"/>
+        <q-input v-if="word !== ''" :class="{'qfilled': userWordsArray[index] !== undefined }" outlined round readonly class="qinput" v-model="userWordsArray[index]"/>
         </li>
         </ul>
       </div>
       <div class="words-order-wrapper--list__random">
         <ul>
         <li v-for="(word, index) in wordsArray" :key="index">
-        <q-input v-if="word !== ''" outlined round readonly class="qinput qoriginal" v-model="wordsArrayRandom[index]"/>
+        <q-input v-if="word !== ''" @click.native="putWordsInOrder(word)" outlined round readonly class="qinput qoriginal" v-model="wordsArrayRandom[index]"/>
         </li>
         </ul>
       </div>
@@ -36,7 +36,7 @@ export default {
     return {
       wordsArray: [],
       wordsArrayRandom: [],
-      text: []
+      userWordsArray: []
     }
   },
   mounted () {
@@ -45,6 +45,17 @@ export default {
     // console.log('wordsArray', this.wordsArray)
   },
   methods: {
+    putWordsInOrder (word) {
+      let found = false
+      this.userWordsArray.map((w) => {
+        if (w === word) {
+          found = true
+        }
+      })
+      if (!found) {
+        this.userWordsArray.push(word)
+      }
+    }
   }
 }
 </script>
@@ -73,10 +84,14 @@ export default {
                     width: auto;
                     height: 35px;
                     &.qfilled{
-                        border-color: #00D0DF;
+                        /deep/ .q-field__control{
+                            border-color: #00D0DF;
+                        }
                     }
                     &.qoriginal{
-                        border-color: #FFB200;
+                        /deep/ .q-field__control{
+                            border-color: #FFB200 !important;
+                        }
                     }
                     /deep/ .q-field__control{
                         height: 30px;

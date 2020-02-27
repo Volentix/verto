@@ -1,7 +1,6 @@
 export default [
   {
     path: '/new-skin',
-    // component: () => import('layouts/Default.vue'),
     component: () => import('layouts/Intro.vue'),
     children: [
       {
@@ -51,11 +50,33 @@ export default [
         meta: {
           authRequired: false
         }
-      },
+      }
+    ]
+  },
+  {
+    path: '/new-skin',
+    component: () => import('layouts/IntroWithTabs.vue'),
+    children: [
       {
         name: 'dashboard',
         path: '/new-skin/dashboard',
         component: () => import('pages/NewSkin/Dashboard.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'profile',
+        path: '/new-skin/profile',
+        component: () => import('pages/NewSkin/Profile.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'wallets',
+        path: '/new-skin/wallets',
+        component: () => import('pages/NewSkin/Wallets.vue'),
         meta: {
           authRequired: false
         }
@@ -66,22 +87,6 @@ export default [
     path: '/',
     component: () => import('layouts/Default.vue'),
     children: [
-      {
-        name: 'profile',
-        path: '/profile',
-        component: () => import('pages/NewSkin/Profile.vue'),
-        meta: {
-          authRequired: true
-        }
-      },
-      {
-        name: 'wallets',
-        path: '/wallets',
-        component: () => import('pages/NewSkin/Wallets.vue'),
-        meta: {
-          authRequired: true
-        }
-      },
       {
         name: 'settings',
         path: '/settings',

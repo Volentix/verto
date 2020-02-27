@@ -11,8 +11,6 @@
         </a>
       </q-toolbar>
 
-      <tabs-menu class="mobile-only" />
-
     </q-header>
 
     <q-drawer  side="left" v-model="optionsDrawer" content-class="row" v-if="hasCurrentWallet()" :width="170" >
@@ -42,8 +40,6 @@ import configManager from '../util/ConfigManager'
 import LangDrawer from '../components/layout/LangDrawer'
 import OptionsDrawer from '../components/layout/OptionsDrawer'
 
-import TabsMenu from '../components/newSkin/TabsMenu'
-
 const throttle = (func, limit) => {
   let lastFunc
   let lastRan
@@ -67,7 +63,7 @@ const throttle = (func, limit) => {
 
 export default {
   name: 'DefaultLayout',
-  components: { LangDrawer, OptionsDrawer, TabsMenu },
+  components: { LangDrawer, OptionsDrawer },
   data () {
     return {
       optionsDrawer: false,

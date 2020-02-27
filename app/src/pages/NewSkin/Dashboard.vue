@@ -1,17 +1,26 @@
 <template>
-  <q-page class="column flex-center text-black bg-white">
-    Landing
+  <q-page class="column text-black bg-white" style="padding-bottom: 50px">
+    <profile-header class="marg" />
+    <wallets />
+    <convert-any-coin />
   </q-page>
 </template>
 
 <script>
+import ProfileHeader from '../../components/newSkin/ProfileHeader'
+import Wallets from '../../components/newSkin/Wallets'
+import ConvertAnyCoin from '../../components/newSkin/ConvertAnyCoin'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
 let platformTools = require('../../util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 
 export default {
-  components: {},
+  components: {
+    ConvertAnyCoin,
+    ProfileHeader,
+    Wallets
+  },
   data () {
     return {
       pword: '',
@@ -50,4 +59,16 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+  /deep/ .wallets-wrapper--list{
+    box-shadow: none;
+    margin-top: 0px;
+  }
+  .marg{
+    /deep/ .profile-wrapper{
+      &--header{
+        margin-bottom: 0px;
+      }
+    }
+  }
+</style>

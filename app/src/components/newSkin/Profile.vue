@@ -25,13 +25,13 @@ export default {
     return {
       active: true,
       menu: [
-        { name: 'Wallets', to: '/wallets', icon: 'account_balance_wallet', info: '' },
-        { name: 'Exchange', to: '/wallets', icon: 'bar_chart', info: '' },
-        { name: 'Personalize your wallet', to: '/wallets', icon: 'bubble_chart', info: '' },
-        { name: 'Privacy', to: '/wallets', icon: 'info', info: 'Backup is incomplete' },
-        { name: 'Link to Verto ID', to: '/wallets', icon: 'vtx', info: 'Not linked' },
-        { name: 'share Verto wallet', to: '/wallets', icon: 'share', info: '' },
-        { name: 'Log Out', to: '/wallets', icon: 'exit_to_app', info: '' }
+        { name: 'Wallets', to: '/new-skin/wallets', icon: 'account_balance_wallet', info: '' },
+        { name: 'Exchange', to: '/new-skin/wallets', icon: 'bar_chart', info: '' },
+        { name: 'Personalize your wallet', to: '/new-skin/wallets', icon: 'bubble_chart', info: '' },
+        { name: 'Privacy', to: '/new-skin/wallets', icon: 'info', info: 'Backup is incomplete' },
+        { name: 'Link to Verto ID', to: '/new-skin/wallets', icon: 'vtx', info: 'Not linked' },
+        { name: 'share Verto wallet', to: '/new-skin/wallets', icon: 'share', info: '' },
+        { name: 'Log Out', to: '/new-skin/wallets', icon: 'exit_to_app', info: '' }
       ]
     }
   },

@@ -1,6 +1,6 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
-    <profile-header class="bgColor" />
+    <profile-header class="marg" />
     <wallets />
   </q-page>
 </template>
@@ -57,11 +57,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  .bgColor{
-
+  .marg{
     /deep/ .profile-wrapper{
       &--header{
-        background: #7900FF !important;
         margin-bottom: 0px;
       }
     }
