@@ -32,6 +32,14 @@
         </q-item-section>
         <q-item-label>{{ $t('SettingsView.exchange') }}</q-item-label>
       </q-item>
+      <q-item to="/cruxpay">
+        <q-item-section class="flex-center">
+          <q-avatar size="32px">
+            <img src="/statics/img/cruxpay.png" />
+          </q-avatar>
+        </q-item-section>
+        <q-item-label>{{ $t('SettingsView.cruxpay') }}</q-item-label>
+      </q-item>
       <q-item to="/settings">
         <q-item-section class="flex-center">
           <q-avatar icon="settings" size="65px"/>

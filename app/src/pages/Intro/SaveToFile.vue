@@ -239,7 +239,7 @@ export default {
         window.cordova.plugins.settings.open('airplane_mode')
       }
       try {
-        const result = await configManager.saveWalletAndKey(this.walletName, this.vertoPassword, this.password, this.publicKey, this.privateKey)
+        const result = await configManager.saveWalletAndKey(this.walletName, this.vertoPassword, this.password, this.publicKey, this.privateKey, 'verto')
         if (result.success) {
           this.walletName = ''
           this.vertoPassword = ''

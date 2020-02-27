@@ -37,7 +37,7 @@ To know more about Verto architecture, [please read this guide.](https://vertoho
 
 To install Verto you will need to have the following installed on your system:
 
-1. **NPM:** v6.4.1
+1. **Yarn:**
 2. **Node:** v10.15.0
 3. **Quasar:** v1.0.0 [Install Quasar Docs](https://quasar.dev/quasar-cli/installation). 
 
@@ -54,12 +54,12 @@ If you are looking to make contributions, you will need to fork the repository. 
 
 Once you have a copy locally, cd into the cloned directory:
 ```
-cd verto
+cd verto/app
 ```
 
 No install the dependancies:
 ```
-npm i
+yarn
 ```
 
 Thats it! Happy hacking!
@@ -74,6 +74,14 @@ Only a browser is required to run on web.
 
 ```
 quasar dev
+```
+
+### Tauri
+
+No additional tooling is required to run Verto as an electron app.
+
+```
+quasar dev -m tauri
 ```
 
 ### Electron
@@ -102,7 +110,7 @@ quasar dev -m ios
 
 ## Maintainers
 
-[rhys@volentixlabs.com](https://github.com/rhys@volentixlabs.com)
+[gregory@volentixlabs.com](mailto:gregory@volentixlabs.com)
 
 ## Contribute
 

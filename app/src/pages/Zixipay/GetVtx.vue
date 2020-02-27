@@ -216,8 +216,7 @@ export default {
           self.spinnervisible = false
         })
       }).catch((err) => {
-        console.log(err)
-        userError('There was a problem reaching the server')
+        userError('There was a problem reaching the server', err)
       })
     },
     getmorevtx: function () {

@@ -1,7 +1,11 @@
 import { Notify } from 'quasar'
 
 const cleanError = (message) => {
-  return message.replace(/^Error: /, '')
+  if (message.toString().includes('Error: ')) {
+    return message.replace(/^Error: /, '')
+  } else {
+    return message.message
+  }
 }
 
 class ErrorHandler extends Error {
@@ -26,5 +30,5 @@ export const devError = (message) => {
   if (process.env.PROD) return
   const error = new ErrorHandler(message)
   Notify.create({ message: error.customMessage })
-  throw error
+  // throw error
 }
