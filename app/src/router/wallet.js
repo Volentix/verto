@@ -1,5 +1,89 @@
 export default [
   {
+    path: '/new-skin',
+    component: () => import('layouts/Intro.vue'),
+    children: [
+      {
+        name: 'landing',
+        path: '/new-skin/landing',
+        component: () => import('pages/NewSkin/Landing.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'secret-words',
+        path: '/new-skin/secret-words',
+        component: () => import('pages/NewSkin/SecretWords.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'create-verto-password',
+        path: '/new-skin/create-verto-password',
+        component: () => import('pages/NewSkin/CreateVertoPassword.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'confirm-verto-password',
+        path: '/new-skin/confirm-verto-password',
+        component: () => import('pages/NewSkin/ConfirmVertoPassword.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'create-restore-secret-seed-phrase',
+        path: '/new-skin/create-restore-secret-seed-phrase',
+        component: () => import('pages/NewSkin/CreateRestoreSecret.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'recovery-seed',
+        path: '/new-skin/recovery-seed',
+        component: () => import('pages/NewSkin/RecoverySeed.vue'),
+        meta: {
+          authRequired: false
+        }
+      }
+    ]
+  },
+  {
+    path: '/new-skin',
+    component: () => import('layouts/IntroWithTabs.vue'),
+    children: [
+      {
+        name: 'dashboard',
+        path: '/new-skin/dashboard',
+        component: () => import('pages/NewSkin/Dashboard.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'profile',
+        path: '/new-skin/profile',
+        component: () => import('pages/NewSkin/Profile.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'wallets',
+        path: '/new-skin/wallets',
+        component: () => import('pages/NewSkin/Wallets.vue'),
+        meta: {
+          authRequired: false
+        }
+      }
+    ]
+  },
+  {
     path: '/',
     component: () => import('layouts/Default.vue'),
     children: [
@@ -69,6 +153,15 @@ export default [
         name: 'wallet',
         path: 'wallet',
         component: () => import('pages/Wallet/Wallet.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
+        name: 'wallets',
+        path: 'wallets',
+        component: () => import('pages/Wallet/Wallets.vue'),
         meta: {
           authRequired: true,
           needskeyscreated: true
