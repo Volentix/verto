@@ -56,14 +56,6 @@ export default [
         }
       },
       {
-        name: 'create-eos-account',
-        path: '/create-eos-account',
-        component: () => import('pages/Wallet/CreateEosAccount.vue'),
-        meta: {
-          authRequired: true
-        }
-      },
-      {
         name: 'exchange',
         path: '/exchange',
         component: () => import('pages/Exchange/CoinSwitch.vue'),

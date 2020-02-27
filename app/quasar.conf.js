@@ -30,6 +30,9 @@ module.exports = function (ctx) {
       // all: true, // --- includes everything; for dev only!
 
       components: [
+        'QBadge',
+        'QSlider',
+        'QToggle',
         'QAvatar',
         'QInnerLoading',
         'QBtn',

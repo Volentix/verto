@@ -141,6 +141,15 @@ export default [
         }
       },
       {
+        name: 'cruxpay',
+        path: '/cruxpay',
+        component: () => import('pages/CRUX/Dashboard.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
         name: 'wallet',
         path: 'wallet',
         component: () => import('pages/Wallet/Wallet.vue'),
@@ -153,6 +162,15 @@ export default [
         name: 'wallets',
         path: 'wallets',
         component: () => import('pages/Wallet/Wallets.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
+        name: 'mnemonic',
+        path: 'mnemonic',
+        component: () => import('pages/Intro/Mnemonic.vue'),
         meta: {
           authRequired: true,
           needskeyscreated: true
@@ -177,9 +195,54 @@ export default [
         }
       },
       {
+        name: 'hdwallets',
+        path: 'hdwallets',
+        component: () => import('pages/manager/HDWallets.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
         name: 'associations',
         path: '/associations',
         component: () => import('pages/Intro/Associations.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
+        name: 'stakeproxyeos',
+        path: '/stakeproxyeos',
+        component: () => import('pages/Wallet/StakeProxyEos.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
+        name: 'stakeeos',
+        path: '/stakeeos',
+        component: () => import('pages/Wallet/StakeEos.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
+        name: 'vtxconverter',
+        path: '/vtxconverter/:eosbalance',
+        component: () => import('pages/Wallet/VtxConverter.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
+        name: 'createaccounteos',
+        path: '/createaccounteos/:eosbalance',
+        component: () => import('pages/Wallet/CreateAccountEos.vue'),
         meta: {
           authRequired: true,
           needskeyscreated: true

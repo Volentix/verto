@@ -26,14 +26,10 @@
                 <span class="text-h3">
                   {{ currentBtcValue.toFixed(4) }}
                 </span>
-                <span class="q-subtilte">BTC</span>
+                <span class="q-subtilte">{{ $t('WalletManager.btc') }}</span>
               </div>
               <br>
               <div class="row justify-center q-col-gutter-sm">
-                <div class="float-left text-center q-ml-sm q-pa-xl">
-                  <p class="text-h3"> {{ balance }} </p>
-                  <p class="q-subtitle">VTX Promise</p>
-                </div>
                 <div class="float-left text-center q-ml-sm  q-pa-xl">
                   <p class="text-h3"> {{ vtxBalance }} </p>
                   <p class="q-subtitle">VTX Balance</p>
@@ -88,6 +84,46 @@
                   @click="$router.push({name: 'eos-make-payment', params: {vtxbalance: vtxBalance,eosbalance: eosBalance}})"
                 >
                   Make Payment
+              </q-btn>
+              </div>
+              <div>
+                <q-btn
+                  v-if="isEosWallet()"
+                  :disabled="spinnervisible"
+                  outline
+                  @click="$router.push({name: 'stakeproxyeos'})"
+                >
+                  Stake Proxy
+              </q-btn>
+              </div>
+              <div>
+                <q-btn
+                  v-if="isEosWallet()"
+                  :disabled="spinnervisible"
+                  outline
+                  @click="$router.push({name: 'createaccounteos', params: {eosbalance: eosBalance}})"
+                >
+                  Create Account
+              </q-btn>
+              </div>
+              <div>
+                <q-btn
+                  v-if="isEosWallet()"
+                  :disabled="spinnervisible"
+                  outline
+                  @click="$router.push({name: 'vtxconverter', params: {eosbalance: eosBalance}})"
+                >
+                  VTX Converter
+              </q-btn>
+              </div>
+              <div>
+                <q-btn
+                  v-if="isEosWallet()"
+                  :disabled="spinnervisible"
+                  outline
+                  @click="$router.push({name: 'stakeeos', params: {eosbalance: eosBalance}})"
+                >
+                  Stake EOS
               </q-btn>
               </div>
               <!-- <div>
@@ -275,10 +311,6 @@ export default {
       this.spinnervisible = true
       var self = this
       try {
-        // Getting the account balance from demux in case of the ledger contract
-        let result = await this.$axios.get(process.env[this.$store.state.settings.network].DEMUX_API + '/ledger/balance/' + this.walletKey)
-        self.balance = parseFloat(result.data.balance).toFixed(8)
-        self.vtxTotal = self.balance
         let vtxProm = 0
         let eosProm = 0
         if (this.$store.state.currentwallet.wallet.type === 'eos') {

@@ -10,3 +10,7 @@ export const setAirplaneMode = ({ commit }, data) => {
 export const toggleNetwork = ({ commit }, data) => {
   commit('toggleNetwork', data)
 }
+
+export const mnemonic = ({ commit }, data) => {
+  commit('mnemonic', data)
+}
