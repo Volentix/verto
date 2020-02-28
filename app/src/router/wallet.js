@@ -58,6 +58,22 @@ export default [
     component: () => import('layouts/IntroWithTabs.vue'),
     children: [
       {
+        name: 'crux-id-step1',
+        path: '/new-skin/crux-id-step1',
+        component: () => import('pages/NewSkin/CruxStep1.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'crux-id-step2',
+        path: '/new-skin/crux-id-step2',
+        component: () => import('pages/NewSkin/CruxStep2.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
         name: 'dashboard',
         path: '/new-skin/dashboard',
         component: () => import('pages/NewSkin/Dashboard.vue'),
