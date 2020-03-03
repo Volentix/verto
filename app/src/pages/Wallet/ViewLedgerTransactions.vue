@@ -1,6 +1,6 @@
 <template>
   <q-page class="flex flex-center text-white">
-    <q-card flat class="bg-black">
+    <q-card flat class="bg-black bg-black2">
       <!--
         1. Main
       -->
@@ -21,69 +21,69 @@
           </div>
         </q-card-section>
         <q-card-section class="text-center">
-        <div class="row items-cente q-pa-sm"
-            style="width:30vw;" >
-          <q-table
-            class="bg-black"
-            :dark="dark"
-            :data="tableData"
-            :columns="columns"
-            row-key="name"
-          >
-            <q-tr :id="props.row.id" slot="body" slot-scope="props" :props="props" class="cursor-pointer" @click.native="showTransactionDetails(props.row)">
-              <q-td
-                class="text-white"
-                v-for="col in props.cols"
-                :key="col.name"
-                :props="props"
-              >
-                <div v-if="col.name === 'icon'" class="text-center">
-                  <div v-if="props.row.amount < 0">
-                    <span class="fa-stack text-red" style="font-size: 15px;">
-                      <i class="text-red far fa-circle fa-stack-2x"></i>
-                      <i class="text-red fas fa-arrow-up fa-stack-1x text-primary" ></i>
-                    </span>
-                  </div>
-                  <div v-else>
-                    <span class="fa-stack" style="font-size: 15px;">
-                      <i class="text-blue far fa-circle fa-stack-2x"></i>
-                      <i class="text-blue fas fa-arrow-down fa-stack-1x text-primary"></i>
-                    </span>
-                  </div>
-                </div>
-                <div v-if="col.name === 'desc'" class="text-left text-weight-medium text-h6 text-uppercase">
-                  <div v-if="props.row.amount < 0">
-                    <div>
-                      Sent
+          <div class="row items-cente q-pa-sm"
+              style="width:30vw;" >
+            <q-table
+              class="bg-black"
+              :dark="dark"
+              :data="tableData"
+              :columns="columns"
+              row-key="name"
+            >
+              <q-tr :id="props.row.id" slot="body" slot-scope="props" :props="props" class="cursor-pointer" @click.native="showTransactionDetails(props.row)">
+                <q-td
+                  class="text-white"
+                  v-for="col in props.cols"
+                  :key="col.name"
+                  :props="props"
+                >
+                  <div v-if="col.name === 'icon'" class="text-center">
+                    <div v-if="props.row.amount < 0">
+                      <span class="fa-stack text-red" style="font-size: 15px;">
+                        <i class="text-red far fa-circle fa-stack-2x"></i>
+                        <i class="text-red fas fa-arrow-up fa-stack-1x text-primary" ></i>
+                      </span>
+                    </div>
+                    <div v-else>
+                      <span class="fa-stack" style="font-size: 15px;">
+                        <i class="text-blue far fa-circle fa-stack-2x"></i>
+                        <i class="text-blue fas fa-arrow-down fa-stack-1x text-primary"></i>
+                      </span>
                     </div>
                   </div>
-                  <div v-else>
-                    <div>
-                      Received
+                  <div v-if="col.name === 'desc'" class="text-left text-weight-medium text-h6 text-uppercase">
+                    <div v-if="props.row.amount < 0">
+                      <div>
+                        Sent
+                      </div>
+                    </div>
+                    <div v-else>
+                      <div>
+                        Received
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div v-if="col.name === 'vtx'" class="text-right text-weight-medium text-h6">
-                  <div v-if="col.value > 0">
-                    + {{ parseFloat(props.row.amount).toFixed(2) }} {{ props.row.currency || 'VTX' }}
+                  <div v-if="col.name === 'vtx'" class="text-right text-weight-medium text-h6">
+                    <div v-if="col.value > 0">
+                      + {{ parseFloat(props.row.amount).toFixed(2) }} {{ props.row.currency || 'VTX' }}
+                    </div>
+                    <div v-else>
+                      {{ parseFloat(props.row.amount).toFixed(2) }} {{ props.row.currency || 'VTX' }}
+                    </div>
                   </div>
-                  <div v-else>
-                    {{ parseFloat(props.row.amount).toFixed(2) }} {{ props.row.currency || 'VTX' }}
+                  <div v-if="col.name === 'date'" class="text-right text-weight-medium">
+                    <div class="text-h6">
+                      {{ col.value | formatDate }}
+                    </div>
+                    <div>
+                      {{ col.value | formatTime }}
+                    </div>
                   </div>
-                </div>
-                <div v-if="col.name === 'date'" class="text-right text-weight-medium">
-                  <div class="text-h6">
-                    {{ col.value | formatDate }}
-                  </div>
-                  <div>
-                    {{ col.value | formatTime }}
-                  </div>
-                </div>
-              </q-td>
-            </q-tr>
-          </q-table>
-        </div>
-      </q-card-section>
+                </q-td>
+              </q-tr>
+            </q-table>
+          </div>
+        </q-card-section>
       </div>
     </q-card>
     <q-dialog v-model="isCardModalActive">
