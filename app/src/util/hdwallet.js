@@ -28,6 +28,19 @@ class HD {
 
         return { publicKey, privateKey }
       },
+      crux () {
+        const bitcore = require('bitcore-lib')
+        const path = "m/889'/0'/0'"
+        const network = bitcoin.networks.livenet
+        const xpriv = bitcore.HDPrivateKey.fromSeed(seed, network) // BIP32 Root Key
+        const extPrivKey = xpriv.derive(path) // BIP32 Extended Private Key
+        const privKey = extPrivKey.privateKey
+        const privateKey = privKey.toWIF()
+        const pubKey = privKey.publicKey
+        const publicKey = bitcore.Address(pubKey, network).toString()
+
+        return { publicKey, privateKey }
+      },
       btc () {
         const bitcore = require('bitcore-lib')
         const path = "m/44'/0'/0'/0/0"
