@@ -58,6 +58,38 @@ export default [
     component: () => import('layouts/IntroWithTabs.vue'),
     children: [
       {
+        name: 'chain-tools',
+        path: '/new-skin/chain-tools',
+        component: () => import('pages/NewSkin/ChainTools.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'history',
+        path: '/new-skin/history',
+        component: () => import('pages/NewSkin/History.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'crux-id-step1',
+        path: '/new-skin/crux-id-step1',
+        component: () => import('pages/NewSkin/CruxStep1.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'crux-id-step2',
+        path: '/new-skin/crux-id-step2',
+        component: () => import('pages/NewSkin/CruxStep2.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
         name: 'dashboard',
         path: '/new-skin/dashboard',
         component: () => import('pages/NewSkin/Dashboard.vue'),
