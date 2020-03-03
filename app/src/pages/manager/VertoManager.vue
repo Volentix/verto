@@ -38,16 +38,16 @@
                 </div>
               </div>
               <div v-if="col.name === 'type'" class="text-center text-white">
-                <div v-if="col.value === 'eos'">
+                <div v-if="col.value === 'vtx' || col.value === 'verto' || col.value === undefined">
                   <img
-                    src="statics/icon.png"
-                    style="max-width:45px;"
+                    src="statics/vtx.png"
+                    style="max-width:30px;"
                   >
                 </div>
                 <div v-else>
                   <img
-                    src="statics/vtx.png"
-                    style="max-width:30px;"
+                    :src="getImages(col.value)"
+                    style="max-width:45px;"
                   />
                 </div>
               </div>
@@ -402,6 +402,9 @@ export default {
     }
   },
   methods: {
+    getImages (symbol) {
+      return 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png'
+    },
     async checkName () {
       this.inError = false
       if (this.accountNew.length === 12) {
