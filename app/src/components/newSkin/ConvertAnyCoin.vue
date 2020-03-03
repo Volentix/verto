@@ -108,12 +108,6 @@ export default {
               width: 50px;
               height: 50px;
             }
-            img{
-              // max-width: 40px;
-              // max-height: 40px;
-              // width: auto;
-              // height: auto;
-            }
           }
         }
         position: relative;

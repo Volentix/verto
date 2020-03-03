@@ -9,9 +9,9 @@
       >
         <!-- <q-tab name="mails" icon="mail" label="Mails" /> -->
         <q-route-tab class="tabs-menu--wrapper-tab" to="/new-skin/dashboard" name="dashboard" icon="movie" label="Dashboard" />
-        <q-route-tab class="tabs-menu--wrapper-tab" to="/new-skin/profile" name="chain" icon="movie" label="Chain Tools" />
+        <q-route-tab class="tabs-menu--wrapper-tab" to="/new-skin/chain-tools" name="chain" icon="movie" label="Chain Tools" />
         <q-route-tab class="tabs-menu--wrapper-tab" to="/new-skin/profile" name="earn" icon="movie" label="Earn" />
-        <q-route-tab class="tabs-menu--wrapper-tab" to="/new-skin/profile" name="history" icon="movie" label="History" />
+        <q-route-tab class="tabs-menu--wrapper-tab" to="/new-skin/history" name="history" icon="movie" label="History" />
         <q-route-tab class="tabs-menu--wrapper-tab" to="/new-skin/profile" name="profile" icon="movie" label="Profile" />
       </q-tabs>
   </div>
