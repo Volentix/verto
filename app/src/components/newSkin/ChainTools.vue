@@ -39,49 +39,136 @@
               animated
               flat
             >
-              <q-step
+              <q-step title="How many EOS"
                 :name="1"
-                title="How many EOS"
                 prefix="1"
                 :done="step > 1"
               >
-                For each ad campaign that you create, you can control how much you're willing to
-                spend on clicks and conversions, which networks and geographical locations you want
-                your ads to show on, and more.
+                <div class="text-center text-black">
+                  <div class="row">
+                    <div class="text-center">
+                      <span class="--title row text-h6 text-center"> EOS (Liquid) </span>
+                      <span class="--amount row text-h4"> {{ eosbalance }} </span>
+                    </div>
+                    <div class="col --progress">
+                      <q-linear-progress indeterminate rounded :reverse="progColor === 'red'" :color="progColor" size="xl" class="q-mt-md" />
+                    </div>
+                    <div class="col text-center">
+                      <span class="--title row text-h6 text-center">
+                        EOS (Staked)
+                      </span>
+                      <span class="--amount row text-h4">
+                        {{ stakedAmount }}
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <br>
+                    <q-slider
+                      v-model="slider"
+                      :label-value="slider + '%'"
+                      :min="-100"
+                      :max="100"
+                      :step="5"
+                      color="orange"
+                      :label-color="progColor"
+                      dark
+                      markers
+                      label
+                      class="--slider"
+                      label-always
+                      @input="changeSlider()"
+                    />
+                    <q-input
+                      type="number"
+                      v-model="sendAmount"
+                      light
+                      rounded
+                      outlined
+                      class="--input"
+                      color="green"
+                      label="Amount of EOS to convert to VTX"
+                      @input="checkAmount"
+                      @keyup.enter="goToPassword()"
+                    />
+                    </div>
+                    <div v-show="navigationButtons.amount" class="q-pa-sm" @click="step = 2" >
+                      <q-icon name="navigate_next" size="3.2rem" color="green"   >
+                        <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
+                      </q-icon>
+                    </div>
+                </div>
 
-                <q-stepper-navigation>
-                  <q-btn @click="step = 2" color="primary" label="Continue" />
+                <q-stepper-navigation class="flex justify-end">
+                  <q-btn @click="step = 2" color="primary" class="--next-btn" rounded label="Next" />
                 </q-stepper-navigation>
               </q-step>
 
-              <q-step
+              <q-step title="Sign & submit"
                 :name="2"
-                title="Sign & submit"
-                caption="Optional"
                 prefix="2"
                 :done="step > 2"
               >
-                An ad group contains one or more ads which target a shared set of keywords.
+                <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
 
-                <q-stepper-navigation>
-                  <q-btn @click="step = 4" color="primary" label="Continue" />
-                  <q-btn flat @click="step = 1" color="primary" label="Back" class="q-ml-sm" />
+                <div class="text-black">
+                  <div class="text-h4 --subtitle">Enter your password to sign the transaction.</div>
+                  <q-input
+                    v-model="privateKeyPassword"
+                    light
+                    rounded
+                    outlined
+                    class="--input"
+                    color="green"
+                    label="Private Key Password"
+                    debounce="500"
+                    :error="invalidPrivateKeyPassword"
+                    error-message="The password is incorrect"
+                    @input="checkPrivateKeyPassword"
+                    :type="isPwd ? 'password' : 'text'"
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="isPwd = !isPwd"
+                      />
+                    </template>
+                  </q-input>
+                </div>
+                <q-stepper-navigation class="flex justify-end">
+                  <q-btn @click="step = 4" color="primary" class="--next-btn" rounded label="Next" />
                 </q-stepper-navigation>
               </q-step>
 
-              <q-step
+              <q-step title="Result"
                 :name="4"
-                title="Result"
                 prefix="3"
               >
-                Try out different ad text to see what brings in the most customers, and learn how to
-                enhance your ads using features like ad extensions. If you run into any problems with
-                your ads, find out how to tell if they're running and how to resolve approval issues.
+                <q-btn flat @click="step = 2" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
 
-                <q-stepper-navigation>
+                <div class="text-black">
+                  <!-- change --subtitle__success to --subtitle__faild to get the appropriate style -->
+                  <div class="text-h4 --subtitle --subtitle__success">Success</div>
+                  <div class="text-h4 --subtitle --subtitle__transLink">Transaction link</div>
+                  <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
+                  <ul class="--subtitle__summary--list">
+                    <li>EOS nation is now your proxy.</li>
+                    <li>Amount of EOS stake 101</li>
+                  </ul>
+                  <hr>
+                  <div class="text-h4 --subtitle --subtitle__faild">Faild</div>
+                  <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
+                  <ul class="--subtitle__summary--list">
+                    <li>EOS nation is now your proxy.</li>
+                    <li>Amount of EOS stake 101</li>
+                  </ul>
+                </div>
+
+                <!-- <q-stepper-navigation>
                   <q-btn color="primary" label="Finish" />
                   <q-btn flat @click="step = 2" color="primary" label="Back" class="q-ml-sm" />
-                </q-stepper-navigation>
+                </q-stepper-navigation> -->
               </q-step>
             </q-stepper>
           </div>
@@ -94,27 +181,106 @@
 </template>
 
 <script>
+
+import EosWrapper from '@/util/EosWrapper'
+const eos = new EosWrapper()
+
 export default {
   name: 'ChainTools',
   data () {
     return {
-      step: 1,
+      step: 2,
       active: true,
       showWallet: false,
       showText: false,
-      menu: [
-        { date: '<b>27</b> Today  ', transID: 'chain-tools ID', to: '/chain-tools', desc: 'Sent to kkkljo...', amount: '-2.0084 VTX' },
-        { date: '<b>26</b> 5:15 AM', transID: 'chain-tools ID', to: '/chain-tools', desc: 'Received to kkkljo...', amount: '-2.0084 VTX' },
-        { date: '<b>24</b> 6:15 PM', transID: 'chain-tools ID', to: '/chain-tools', desc: 'Sent to kkkljo...', amount: '-2.0084 VTX' },
-        { date: '<b>23</b> 2:15 AM', transID: 'chain-tools ID', to: '/chain-tools', desc: 'Received to kkkljo...', amount: '-2.0084 VTX' },
-        { date: '<b>23</b> 2:15 AM', transID: 'chain-tools ID', to: '/chain-tools', desc: 'Received to kkkljo...', amount: '-2.0084 VTX' },
-        { date: '<b>21</b> 4:15 AM', transID: 'chain-tools ID', to: '/chain-tools', desc: 'Sent to kkkljo...', amount: '-2.0084 VTX' }
-      ]
+      slider: 0,
+      progColor: 'green',
+      eosbalance: 0,
+      vtxbalance: 0,
+      stakedAmount: 0,
+      vtxprice: 0,
+      sendAmount: null,
+      formatedAmount: null,
+      currentProxy: null,
+      ErrorMessage: null,
+      SuccessMessage: null,
+      invalidPrivateKeyPassword: false,
+      privateKey: {
+        success: null
+      },
+      transactionId: null,
+      transactionError: false,
+      spinnervisible: false,
+      isPwd: true,
+      account: null,
+      privateKeyPassword: null,
+      showSendModal: false,
+      navigationButtons: {
+        to: false,
+        token: false,
+        amount: false,
+        privateKeyPasswordBtn: false,
+        showNextButtonToPassword: false
+      }
+    }
+  },
+  computed: {
+    showNext: function () {
+      if (!this.voted && !this.proxyModel) {
+        return false
+      } else {
+        return true
+      }
+    }
+  },
+  async created () {
+    this.eosbalance = this.$route.params.eosbalance
+    this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
+  },
+  async mounted () {
+    this.walletName = this.$store.state.currentwallet.wallet.name
+    this.account = await eos.getAccount(this.walletName)
+
+    if (this.account.voter_info) {
+      this.stakedAmount = +this.account.voter_info.staked / 10000
+      this.currentProxy = this.account.voter_info.proxy
     }
   },
   methods: {
     showMore () {
 
+    },
+    changeSlider () {
+      if (this.slider >= 0) {
+        this.sendAmount = Math.round(10000 * this.eosbalance * (this.slider / 100)) / 10000
+      } else {
+        this.sendAmount = Math.round(10000 * this.stakedAmount * (this.slider / 100)) / 10000
+      }
+      this.checkAmount()
+    },
+    checkAmount () {
+      this.navigationButtons.amount = false
+
+      if (+this.sendAmount > 0.0 && +this.sendAmount <= +this.eosbalance) {
+        this.slider = Math.round(100 * (this.sendAmount / +this.eosbalance))
+        this.navigationButtons.amount = true
+        this.progColor = 'green'
+      } else if (+this.sendAmount < 0.0 && +this.sendAmount <= +this.stakedAmount) {
+        this.slider = Math.round(100 * (this.sendAmount / +this.stakedAmount))
+        console.log('this.slider', this.slider)
+        this.navigationButtons.amount = true
+        this.progColor = 'red'
+      }
+    },
+    checkPrivateKeyPassword () {
+      const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
+      this.privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+      if (this.privateKey.success) {
+        this.invalidPrivateKeyPassword = false
+      } else {
+        this.invalidPrivateKeyPassword = true
+        return false
+      }
     }
   }
 }
@@ -217,6 +383,150 @@ export default {
                 margin: 0px;
                 padding-left: 22px;
                 margin-top: 10px;
+              }
+              /deep/ .q-stepper__step{
+                position: relative;
+              }
+              /deep/ .q-stepper--vertical .q-stepper__dot:before,
+              /deep/ .q-stepper--vertical .q-stepper__dot:after {
+                content: '';
+                transform: translateX(-50%);
+                width: 18px;
+                background: #F3F3F3;
+                // margin-top: -4px;
+                // margin-bottom: -4px;
+              }
+              /deep/ .q-stepper__tab{
+                .q-stepper__title{
+                  font-size: 20px;
+                  font-family: $Titillium;
+                  font-weight: $bold;
+                  color: #2A2A2A;
+                }
+                &.q-stepper__tab--active,&.q-stepper__tab--done{
+                  .q-stepper__title{
+                    color: #7272FA;
+                  }
+                  .q-stepper__dot{
+                    background: #7272FA;
+                  }
+                }
+              }
+              .--input{
+                margin-top: 20px;
+                /deep/ .q-field{
+                  height: 40px;
+                }
+                /deep/ .q-field--labeled .q-field__native,
+                /deep/ .q-field--labeled .q-field__prefix,
+                /deep/ .q-field--labeled .q-field__suffix{
+                  padding-top: 7px;
+                  padding-bottom: 0px;
+                }
+                /deep/ .q-field__label{
+                  top: 10px;
+                  font-size: 12px;
+                  font-weight: $bold;
+                  font-family: $Titillium;
+                }
+                /deep/ .q-field__marginal{
+                  height: 40px;
+                }
+                /deep/ .q-field__control{
+                  height: 40px;
+                }
+              }
+              .--slider{
+                /deep/ &.q-slider--dark {
+                  .q-slider__track-container{
+                    background: rgba(0, 0, 0, 0.3);
+                  }
+                  .q-slider__pin-value-marker-text{
+                    font-weight: $bold;
+                    font-size: 11px;
+                  }
+                  .q-slider__pin-value-marker-bg{
+                    background: #FFB200 !important;
+                  }
+                  .text-green{
+                    background: #FFB200 !important;
+                  }
+                }
+              }
+              .--next-btn{
+                width: 100px;
+                text-transform: initial !important;
+              }
+              .--progress{
+                height: 20px;
+                /deep/ .q-linear-progress{
+                  margin-top: 8px;
+                  height: 5px !important;
+                  max-width: 90%;
+                  margin-left: auto;
+                  margin-right: auto;
+                  .q-linear-progress__track{
+                    background: #FFB200;
+                  }
+                  .q-linear-progress__model--indeterminate:before,
+                  .q-linear-progress__model--indeterminate:after{
+                    background: #FFB200;
+                  }
+                }
+              }
+              .--back-btn{
+                position: absolute;
+                right: 0px;
+                top: 6px;
+              }
+              .--subtitle{
+                font-size: 17px;
+                color: #000;
+                font-family: $Titillium;
+                font-weight: $regular;
+                line-height: 20px;
+                margin-top: 10px;
+                margin-bottom: 30px;
+                &__success{
+                  color: #00D0CA;
+                  font-weight: $bold;
+                  margin-bottom: 20px;
+                }
+                &__faild{
+                  color: #FFB200;
+                  font-weight: $bold;
+                  margin-bottom: 20px;
+                }
+                &__transLink{
+                  color: #2A2A2A;
+                  border-bottom: 1px solid;
+                  width: fit-content;
+                  font-weight: $bold;
+                  margin-bottom: 20px;
+                }
+                &__summary{
+                  margin-bottom: 20px;
+                  font-weight: $bold;
+                }
+                &__summary--list{
+                  list-style: disc;
+                  padding-left: 24px;
+                  margin-top: -10px;
+                  li{
+                    color: #B0B0B0;
+                  }
+                }
+              }
+              .--title,.--amount{
+                font-size: 15px;
+                font-family: $Titillium;
+                font-weight: $bold;
+                color: #B0B0B0;
+                text-transform: initial !important;
+                line-height: 20px;
+              }
+              .--amount{
+                color: #2A2A2A !important;
               }
             }
           }
