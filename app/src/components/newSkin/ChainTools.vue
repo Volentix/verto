@@ -30,8 +30,10 @@
           </ul>
         </div>
         <div class="list-wrapper--chain__eos-to-vtx-convertor">
-          <h3 class="list-wrapper--chain__eos-to-vtx-convertor--title">EOS to VTX Convertor</h3>
-          <div class="">
+          <h3 class="list-wrapper--chain__eos-to-vtx-convertor--title">
+            EOS to VTX Convertor
+            <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_down" color="primary" class="--back-btn"/></h3>
+          <div v-if="step > 0" class="">
             <q-stepper
               v-model="step"
               vertical
@@ -44,17 +46,17 @@
                 prefix="1"
                 :done="step > 1"
               >
-                <div class="text-center text-black">
+                <div class="text-black">
                   <div class="row">
-                    <div class="text-center">
-                      <span class="--title row text-h6 text-center"> EOS (Liquid) </span>
+                    <div class="">
+                      <span class="--title row text-h6"> EOS (Liquid) </span>
                       <span class="--amount row text-h4"> {{ eosbalance }} </span>
                     </div>
                     <div class="col --progress">
                       <q-linear-progress indeterminate rounded :reverse="progColor === 'red'" :color="progColor" size="xl" class="q-mt-md" />
                     </div>
-                    <div class="col text-center">
-                      <span class="--title row text-h6 text-center">
+                    <div class="col">
+                      <span class="--title row text-h6">
                         EOS (Staked)
                       </span>
                       <span class="--amount row text-h4">
@@ -189,7 +191,7 @@ export default {
   name: 'ChainTools',
   data () {
     return {
-      step: 2,
+      step: 0,
       active: true,
       showWallet: false,
       showText: false,
@@ -382,7 +384,8 @@ export default {
                 color: #2A2A2A;
                 margin: 0px;
                 padding-left: 22px;
-                margin-top: 10px;
+                margin-top: 3px;
+                position: relative;
               }
               /deep/ .q-stepper__step{
                 position: relative;
@@ -417,10 +420,10 @@ export default {
                 /deep/ .q-field{
                   height: 40px;
                 }
-                /deep/ .q-field--labeled .q-field__native,
-                /deep/ .q-field--labeled .q-field__prefix,
-                /deep/ .q-field--labeled .q-field__suffix{
-                  padding-top: 7px;
+                /deep/ .q-field__native,
+                /deep/ .q-field__prefix,
+                /deep/ .q-field__suffix{
+                  padding-top: 10px;
                   padding-bottom: 0px;
                 }
                 /deep/ .q-field__label{

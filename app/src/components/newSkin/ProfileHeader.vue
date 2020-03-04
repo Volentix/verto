@@ -4,8 +4,8 @@
     <h3 class="profile-wrapper--header__title text-white">Total Balance</h3>
     <h2 class="profile-wrapper--header__balance text-white">136.23 VTX</h2>
     <div class="profile-wrapper--header__action">
-      <q-btn unelevated color="indigo-12" text-color="white" label="Send" />
-      <q-btn unelevated color="indigo-12" text-color="white" label="Receive" />
+      <q-btn unelevated to="/new-skin/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
+      <q-btn unelevated to="/new-skin/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
     </div>
   </div>
 </div>
@@ -54,7 +54,8 @@ export default {
         &__action{
           text-align: center;
           width: 100%;
-          button{
+          &-btn{
+            background: #7272FA !important;
             margin: 0px 10px;
             width: 100px;
             border-radius: 30px;
