@@ -58,6 +58,22 @@ export default [
     component: () => import('layouts/IntroWithTabs.vue'),
     children: [
       {
+        name: 'send',
+        path: '/new-skin/send',
+        component: () => import('pages/NewSkin/Send.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'receive',
+        path: '/new-skin/receive',
+        component: () => import('pages/NewSkin/Receive.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
         name: 'chain-tools',
         path: '/new-skin/chain-tools',
         component: () => import('pages/NewSkin/ChainTools.vue'),
