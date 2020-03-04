@@ -11,12 +11,12 @@ export default [
       {
         name: 'login',
         path: '/login',
-        component: () => import('pages/Intro/Login.vue')
+        component: () => import('pages/NewSkin/Landing.vue')
       },
       {
         name: 'create-password',
         path: '/create-password',
-        component: () => import('pages/Intro/CreatePassword.vue')
+        component: () => import('pages/NewSkin/CreateVertoPassword.vue')
       },
       {
         name: 'keep-your-key-safe',
@@ -78,6 +78,12 @@ export default [
         meta: {
           authRequired: true
         }
+      },
+      {
+        name: 'newskin',
+        path: '/newskin',
+        component: () => import('pages/NewSkin/CreateVertoPassword.vue'),
+        meta: {}
       },
       {
         name: 'restore-wallet',
