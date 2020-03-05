@@ -19,9 +19,9 @@ export default [
         component: () => import('pages/NewSkin/CreateVertoPassword.vue')
       },
       {
-        name: 'keep-your-key-safe',
-        path: '/keep-your-key-safe',
-        component: () => import('pages/Intro/KeepYourKeysSafe.vue')
+        name: 'recovery-seed',
+        path: '/recovery-seed',
+        component: () => import('pages/NewSkin/RecoverySeed.vue')
       },
       {
         name: 'create-wallet-options',
