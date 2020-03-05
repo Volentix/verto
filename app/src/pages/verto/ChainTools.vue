@@ -1,13 +1,13 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
     <profile-header />
-    <history />
+    <chain-tools />
   </q-page>
 </template>
 
 <script>
-import History from '../../components/newSkin/History'
-import ProfileHeader from '../../components/newSkin/ProfileHeader'
+import ChainTools from '../../components/verto/ChainTools'
+import ProfileHeader from '../../components/verto/ProfileHeader'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
 let platformTools = require('../../util/platformTools')
@@ -15,7 +15,7 @@ if (platformTools.default) platformTools = platformTools.default
 
 export default {
   components: {
-    History,
+    ChainTools,
     ProfileHeader
   },
   data () {
@@ -58,6 +58,6 @@ export default {
 </script>
 <style lang="scss" scoped>
   /deep/ .profile-wrapper--header{
-    margin-bottom: 20px;
+    margin-bottom: 0px;
   }
 </style>
