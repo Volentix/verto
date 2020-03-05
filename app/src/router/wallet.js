@@ -6,7 +6,7 @@ export default [
       {
         name: 'landing',
         path: '/new-skin/landing',
-        component: () => import('pages/NewSkin/Landing.vue'),
+        component: () => import('pages/verto/Landing.vue'),
         meta: {
           authRequired: false
         }
@@ -14,7 +14,7 @@ export default [
       {
         name: 'secret-words',
         path: '/new-skin/secret-words',
-        component: () => import('pages/NewSkin/SecretWords.vue'),
+        component: () => import('pages/verto/SecretWords.vue'),
         meta: {
           authRequired: false
         }
@@ -22,7 +22,7 @@ export default [
       {
         name: 'create-verto-password',
         path: '/new-skin/create-verto-password',
-        component: () => import('pages/NewSkin/CreateVertoPassword.vue'),
+        component: () => import('pages/verto/CreateVertoPassword.vue'),
         meta: {
           authRequired: false
         }
@@ -30,7 +30,7 @@ export default [
       {
         name: 'confirm-verto-password',
         path: '/new-skin/confirm-verto-password',
-        component: () => import('pages/NewSkin/ConfirmVertoPassword.vue'),
+        component: () => import('pages/verto/ConfirmVertoPassword.vue'),
         meta: {
           authRequired: false
         }
@@ -38,7 +38,7 @@ export default [
       {
         name: 'create-restore-secret-seed-phrase',
         path: '/new-skin/create-restore-secret-seed-phrase',
-        component: () => import('pages/NewSkin/CreateRestoreSecret.vue'),
+        component: () => import('pages/verto/CreateRestoreSecret.vue'),
         meta: {
           authRequired: false
         }
@@ -46,7 +46,7 @@ export default [
       {
         name: 'recovery-seed',
         path: '/new-skin/recovery-seed',
-        component: () => import('pages/NewSkin/RecoverySeed.vue'),
+        component: () => import('pages/verto/RecoverySeed.vue'),
         meta: {
           authRequired: false
         }
@@ -58,9 +58,17 @@ export default [
     component: () => import('layouts/IntroWithTabs.vue'),
     children: [
       {
+        name: 'exchange',
+        path: '/new-skin/exchange',
+        component: () => import('pages/verto/Exchange.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
         name: 'send',
         path: '/new-skin/send',
-        component: () => import('pages/NewSkin/Send.vue'),
+        component: () => import('pages/verto/Send.vue'),
         meta: {
           authRequired: false
         }
@@ -68,7 +76,7 @@ export default [
       {
         name: 'receive',
         path: '/new-skin/receive',
-        component: () => import('pages/NewSkin/Receive.vue'),
+        component: () => import('pages/verto/Receive.vue'),
         meta: {
           authRequired: false
         }
@@ -76,7 +84,7 @@ export default [
       {
         name: 'chain-tools',
         path: '/new-skin/chain-tools',
-        component: () => import('pages/NewSkin/ChainTools.vue'),
+        component: () => import('pages/verto/ChainTools.vue'),
         meta: {
           authRequired: false
         }
@@ -84,7 +92,7 @@ export default [
       {
         name: 'history',
         path: '/new-skin/history',
-        component: () => import('pages/NewSkin/History.vue'),
+        component: () => import('pages/verto/History.vue'),
         meta: {
           authRequired: false
         }
@@ -92,7 +100,7 @@ export default [
       {
         name: 'crux-id-step1',
         path: '/new-skin/crux-id-step1',
-        component: () => import('pages/NewSkin/CruxStep1.vue'),
+        component: () => import('pages/verto/CruxStep1.vue'),
         meta: {
           authRequired: false
         }
@@ -100,7 +108,7 @@ export default [
       {
         name: 'crux-id-step2',
         path: '/new-skin/crux-id-step2',
-        component: () => import('pages/NewSkin/CruxStep2.vue'),
+        component: () => import('pages/verto/CruxStep2.vue'),
         meta: {
           authRequired: false
         }
@@ -108,7 +116,7 @@ export default [
       {
         name: 'dashboard',
         path: '/new-skin/dashboard',
-        component: () => import('pages/NewSkin/Dashboard.vue'),
+        component: () => import('pages/verto/Dashboard.vue'),
         meta: {
           authRequired: false
         }
@@ -116,7 +124,7 @@ export default [
       {
         name: 'profile',
         path: '/new-skin/profile',
-        component: () => import('pages/NewSkin/Profile.vue'),
+        component: () => import('pages/verto/Profile.vue'),
         meta: {
           authRequired: false
         }
@@ -124,7 +132,7 @@ export default [
       {
         name: 'wallets',
         path: '/new-skin/wallets',
-        component: () => import('pages/NewSkin/Wallets.vue'),
+        component: () => import('pages/verto/Wallets.vue'),
         meta: {
           authRequired: false
         }

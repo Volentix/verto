@@ -1,13 +1,13 @@
 <template>
-  <q-page class="column text-black bg-white" style="padding-bottom: 50px">
-    <profile-header />
-    <profile />
+  <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
+    <profile-header class="marg" />
+    <wallets />
   </q-page>
 </template>
 
 <script>
-import Profile from '../../components/newSkin/Profile'
-import ProfileHeader from '../../components/newSkin/ProfileHeader'
+import Wallets from '../../components/verto/Wallets'
+import ProfileHeader from '../../components/verto/ProfileHeader'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
 let platformTools = require('../../util/platformTools')
@@ -15,8 +15,8 @@ if (platformTools.default) platformTools = platformTools.default
 
 export default {
   components: {
-    Profile,
-    ProfileHeader
+    ProfileHeader,
+    Wallets
   },
   data () {
     return {
@@ -56,4 +56,12 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+  .marg{
+    /deep/ .profile-wrapper{
+      &--header{
+        margin-bottom: 0px;
+      }
+    }
+  }
+</style>

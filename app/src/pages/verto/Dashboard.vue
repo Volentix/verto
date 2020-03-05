@@ -1,13 +1,28 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
-    <profile-header />
-    <chain-tools />
+    <profile-header class="marg" />
+    <wallets />
+    <convert-any-coin />
+    <br>
+    <card-create-wallet />
+    <br>
+    <card-import-EOS-account />
+    <br><br>
+    <card-convert-any-to-VTX />
+    <br><br>
+    <card-make-VTX />
+    <br><br><br>
   </q-page>
 </template>
 
 <script>
-import ChainTools from '../../components/newSkin/ChainTools'
-import ProfileHeader from '../../components/newSkin/ProfileHeader'
+import ProfileHeader from '../../components/verto/ProfileHeader'
+import CardMakeVTX from '../../components/verto/CardMakeVTX'
+import CardConvertAnyToVTX from '../../components/verto/CardConvertAnyToVTX'
+import CardImportEOSAccount from '../../components/verto/CardImportEOSAccount'
+import CardCreateWallet from '../../components/verto/CardCreateWallet'
+import Wallets from '../../components/verto/Wallets'
+import ConvertAnyCoin from '../../components/verto/ConvertAnyCoin'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
 let platformTools = require('../../util/platformTools')
@@ -15,8 +30,13 @@ if (platformTools.default) platformTools = platformTools.default
 
 export default {
   components: {
-    ChainTools,
-    ProfileHeader
+    ConvertAnyCoin,
+    ProfileHeader,
+    Wallets,
+    CardCreateWallet,
+    CardImportEOSAccount,
+    CardConvertAnyToVTX,
+    CardMakeVTX
   },
   data () {
     return {
@@ -57,7 +77,15 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  /deep/ .profile-wrapper--header{
-    margin-bottom: 0px;
+  /deep/ .wallets-wrapper--list{
+    box-shadow: none;
+    margin-top: 0px;
+  }
+  .marg{
+    /deep/ .profile-wrapper{
+      &--header{
+        margin-bottom: 0px;
+      }
+    }
   }
 </style>

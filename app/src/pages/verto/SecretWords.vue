@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import WordsOrder from '../../components/newSkin/WordsOrder'
+import WordsOrder from '../../components/verto/WordsOrder'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
 let platformTools = require('../../util/platformTools')
