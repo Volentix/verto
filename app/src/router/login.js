@@ -11,17 +11,17 @@ export default [
       {
         name: 'login',
         path: '/login',
-        component: () => import('pages/verto/Landing.vue')
+        component: () => import('pages/Verto/Landing.vue')
       },
       {
         name: 'create-password',
         path: '/create-password',
-        component: () => import('pages/verto/CreateVertoPassword.vue')
+        component: () => import('pages/Verto/CreateVertoPassword.vue')
       },
       {
-        name: 'keep-your-key-safe',
-        path: '/keep-your-key-safe',
-        component: () => import('pages/Intro/KeepYourKeysSafe.vue')
+        name: 'recovery-seed',
+        path: '/recovery-seed',
+        component: () => import('pages/Verto/RecoverySeed.vue')
       },
       {
         name: 'create-wallet-options',
@@ -82,7 +82,7 @@ export default [
       {
         name: 'verto',
         path: '/verto',
-        component: () => import('pages/verto/CreateVertoPassword.vue'),
+        component: () => import('pages/Verto/CreateVertoPassword.vue'),
         meta: {}
       },
       {
