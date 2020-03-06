@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import TabsMenu from '../components/verto/TabsMenu'
+import TabsMenu from '../components/Verto/TabsMenu'
 export default {
   name: 'Intro',
   components: { TabsMenu }
