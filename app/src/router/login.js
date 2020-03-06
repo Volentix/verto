@@ -11,17 +11,17 @@ export default [
       {
         name: 'login',
         path: '/login',
-        component: () => import('pages/NewSkin/Landing.vue')
+        component: () => import('pages/Verto/Landing.vue')
       },
       {
         name: 'create-password',
         path: '/create-password',
-        component: () => import('pages/NewSkin/CreateVertoPassword.vue')
+        component: () => import('pages/Verto/CreateVertoPassword.vue')
       },
       {
         name: 'recovery-seed',
         path: '/recovery-seed',
-        component: () => import('pages/NewSkin/RecoverySeed.vue')
+        component: () => import('pages/Verto/RecoverySeed.vue')
       },
       {
         name: 'create-wallet-options',
@@ -80,9 +80,9 @@ export default [
         }
       },
       {
-        name: 'newskin',
-        path: '/newskin',
-        component: () => import('pages/NewSkin/CreateVertoPassword.vue'),
+        name: 'Verto',
+        path: '/Verto',
+        component: () => import('pages/Verto/CreateVertoPassword.vue'),
         meta: {}
       },
       {
