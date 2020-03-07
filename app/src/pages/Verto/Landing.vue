@@ -8,17 +8,7 @@
           <img src="statics/img/decahedron.png" alt="">
         </div>
         <div class="standard-content--body__form">
-          <q-input
-            ref="psswrd"
-            v-model="password"
-            @keyup.enter="login"
-            @input="checkPassword"
-            :error="passHasError"
-            rounded outlined color="purple"
-            :type="isPwd ? 'password' : 'text'"
-            label="Verto Password"
-            hint="*Minimum of 8 characters"
-          >
+          <q-input ref="psswrd" v-model="password" rounded outlined color="purple" :type="isPwd ? 'password' : 'text'" label="Verto Password" hint="*Minimum of 8 characters">
             <template v-slot:append>
               <q-icon
                 :name="isPwd ? 'visibility_off' : 'visibility'"
@@ -30,7 +20,7 @@
         </div>
       </div>
       <div class="standard-content--footer">
-         <q-btn flat class="action-link back" color="grey" text-color="white" label="Restore" :disable="!passHasError" @click="startRestoreConfig" />
+         <q-btn flat class="action-link back" color="grey" text-color="white" label="Restore" @click="startRestoreConfig" />
          <q-btn flat class="action-link next" color="black" text-color="white" label="Connect" @click="login"/>
       </div>
       <div class="landing--volentix-logo">
