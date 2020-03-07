@@ -1,6 +1,6 @@
 <template>
   <q-page class="text-black bg-white">
-    <div class="standard-content">
+    <div v-if="step===1" class="standard-content">
       <h2 class="standard-content--title">Create your Verto Password</h2>
       <h2 class="standard-content--desc">The seed phrase will now be added to your config after confirming the password.</h2>
       <div class="standard-content--body">
@@ -8,7 +8,15 @@
           <img src="statics/password_bg.png" alt="">
         </div>
         <div class="standard-content--body__form">
-          <q-input v-model="password" rounded outlined color="purple" :type="isPwd ? 'password' : 'text'" label="Create Verto Password" hint="*Minimum of 8 characters">
+          <q-input
+            ref="psswrd"
+            v-model="password"
+            @input="passwordCheck"
+            @keyup.enter="gotoSecondScreen"
+            rounded outlined color="purple"
+            :type="isPwd ? 'password' : 'text'"
+            label="Create Verto Password"
+            hint="*Minimum of 8 characters">
             <template v-slot:append>
               <q-icon
                 :name="isPwd ? 'visibility_off' : 'visibility'"
@@ -20,62 +28,130 @@
         </div>
       </div>
       <div class="standard-content--footer">
-         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" />
+         <q-btn flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" />
+         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="gotoSecondScreen" :disable="!passwordApproved" />
+      </div>
+    </div>
+    <div v-if="step===2" class="standard-content">
+      <h2 class="standard-content--title">Confirm your password to setup your HD wallet</h2>
+      <h2 class="standard-content--desc"></h2>
+      <div class="standard-content--body">
+        <div class="standard-content--body__img column flex-center">
+          <img src="statics/password_bg.png" alt="">
+        </div>
+        <div class="standard-content--body__form">
+          <q-input
+            ref="psswrdConfirm"
+            v-model="confirmPassword"
+            @input="confirmPasswordCheck"
+            @keyup.enter="submit"
+            rounded outlined color="purple"
+            :type="isPwd ? 'password' : 'text'"
+            label="Confirm"
+            hint="*Minimum of 8 characters">
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
+        </div>
+      </div>
+      <div class="standard-content--footer">
+         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="submit" :disable="!passwordsMatch" />
       </div>
     </div>
   </q-page>
 </template>
 
 <script>
+// app/src/pages/Intro/CreatePassword.vue
 import configManager from '@/util/ConfigManager'
-import { version } from '../../../package.json'
-let platformTools = require('../../util/platformTools')
-if (platformTools.default) platformTools = platformTools.default
+// import FileSelect from '@/components/FileSelect.vue'
 
 export default {
-  components: {},
+  name: 'CreatePassword',
+  components: {
+    // FileSelect
+  },
   data () {
     return {
-      text: '',
-      password: '',
       isPwd: true,
-      secrectWordsToken: 'voluptate velit esse cillum dolore eu fugiat nulla pariatur Excepteur ',
-      pword: '',
-      minimizedModal: false,
-      message: '',
-      version: {},
-      network: this.$store.state.settings.network,
-      configPath: ''
+      step: 1,
+      password: '',
+      passwordError: '',
+      confirmPassword: '',
+      wrongPasswordError: 'Password Incorrect',
+      confirmPasswordError: '',
+      doesNotMatch: false,
+      iunderstand: true,
+      passwordApproved: false,
+      applicationRefreshing: false,
+      confirmColor: 'white',
+      passwordsMatch: false,
+      file: null,
+      contractable: true
     }
   },
-  mounted () {
-    this.version = version
-    this.setupPlatformPath()
+  async mounted () {
+    this.$refs.psswrd.focus()
   },
   methods: {
-    async setupPlatformPath () {
-      this.configPath = await platformTools.filePath()
+    gotoSecondScreen () {
+      if (this.passwordApproved) {
+        this.step = 2
+        this.$nextTick(() => {
+          this.$refs.psswrdConfirm.focus()
+        })
+      }
     },
-    goChangePassword: function () {
-      this.$router.push({ path: '/change-password' })
+    async startRestoreConfig () {
+      this.$router.push({
+        name: 'restore-wallet',
+        params: { returnto: 'create-password' }
+      })
     },
-    setNetwork: function () {
-      this.$store.dispatch('settings/toggleNetwork', this.network)
-      this.$q.notify({ message: `Network changed to ${this.network}`, color: 'positive' })
+    confirmPasswordCheck () {
+      if (this.password === this.confirmPassword) {
+        this.passwordsMatch = true
+      } else {
+        this.passwordsMatch = false
+      }
     },
-    async backupConfig () {
+    passwordCheck: function () {
+      this.passwordApproved = false
+      if (this.password.length > 7) {
+        this.contains_long = true
+        this.passwordApproved = true
+      } else {
+        this.contains_long = false
+        this.passHasError = true
+        this.passwordError = 'Password should be more than 8 symbols'
+      }
+    },
+    submit: async function () {
+      if (!this.passwordsMatch) {
+        return
+      }
       try {
-        await configManager.backupConfig()
-        if (this.$q.platform.is.android) {
-          this.$q.notify({ color: 'positive', message: 'Config Saved' })
-        }
+        await configManager.createWallet(this.password)
+        this.$router.replace('/recovery-seed')
       } catch (e) {
-        // TODO: Exception handling
+      }
+    },
+    checked () {
+      if (this.iunderstand) {
+        this.buttonsAreDisabled = false
+      } else {
+        this.buttonsAreDisabled = true
       }
     }
   }
 }
 </script>
+
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
 .standard-content{
@@ -134,6 +210,7 @@ export default {
       height: 50px;
       text-transform: initial !important;
       font-size: 16px;
+      line-height: 15px;
       letter-spacing: .5px;
       border-radius: 40px;
       width: 110px;
