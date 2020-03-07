@@ -3,7 +3,7 @@
     <div class="standard-content">
       <h2 class="standard-content--title">Put the words in the right order</h2>
       <div class="standard-content--body">
-        <words-order :words="mnemonic" />
+        <words-order :words="secrectWordsToken" />
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link back" color="black" text-color="white" label="Back" />
@@ -81,6 +81,8 @@ export default {
     height: 100%;
     margin-top: 40px;
     margin-bottom: 40px;
+  }
+  &--body{
   }
   &--footer{
     display: flex;
