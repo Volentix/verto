@@ -58,6 +58,14 @@ export default [
     component: () => import('layouts/IntroWithTabs.vue'),
     children: [
       {
+        name: 'exchange',
+        path: '/new-skin/exchange',
+        component: () => import('pages/Verto/Exchange.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
         name: 'send',
         path: '/new-skin/send',
         component: () => import('pages/Verto/Send.vue'),
