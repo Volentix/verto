@@ -80,8 +80,8 @@ export default [
         }
       },
       {
-        name: 'Verto',
-        path: '/Verto',
+        name: 'verto',
+        path: '/verto',
         component: () => import('pages/Verto/CreateVertoPassword.vue'),
         meta: {}
       },
