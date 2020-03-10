@@ -60,7 +60,7 @@ export default [
       {
         name: 'exchange',
         path: '/new-skin/exchange',
-        component: () => import('pages/verto/Exchange.vue'),
+        component: () => import('pages/Verto/Exchange.vue'),
         meta: {
           authRequired: false
         }

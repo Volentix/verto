@@ -4,7 +4,7 @@
       <h2 class="standard-content--desc"></h2>
       <div class="standard-content--body">
         <div class="standard-content--body__img column flex-center">
-          <img src="statics/create_restore_bg.png" alt="">
+          <img src="statics/create_restore_bg.png" class="full-width" alt="">
         </div>
       </div>
       <h2 class="standard-content--title">Do you want to create or restore your 24 word mnemonic secret seed phrase?</h2>
@@ -18,7 +18,10 @@
       <h2 class="standard-content--desc">Save these words in the right order in a secure location.Nobody will be able to help if you lose them!</h2>
       <div class="standard-content--body">
         <div class="standard-content--body__mnemonic">
-          <h4 class="standard-content--body__mnemonic--title">Mnemonic</h4>
+          <h4 class="standard-content--body__mnemonic--title flex justify-between item-center content-center">
+            Mnemonic
+            <q-btn round flat unelevated @click="copy2clip(mnemonic)" text-color="grey" class="btn-copy" icon="o_file_copy" />
+          </h4>
           <q-input
             ref="mnemonic"
             type="textarea"
@@ -164,6 +167,13 @@ export default {
       }
 
       return array
+    },
+    copy2clip (value) {
+      this.$clipboardWrite(value)
+      this.$q.notify({
+        message: this.$t('Main.copied'),
+        color: 'positive'
+      })
     }
   }
 }
@@ -176,7 +186,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100vh !important;
+  min-height: 100vh !important;
   &--title{
     font-size: 35px;
     font-weight: $bold;
@@ -209,6 +219,10 @@ export default {
         font-family: $Titillium;
         margin-top: 0px;
         margin-bottom: 20px;
+        .btn-copy{
+          margin-top: -13px;
+          margin-right: -25px;
+        }
       }
       &--desc{
         font-size: 16px;
