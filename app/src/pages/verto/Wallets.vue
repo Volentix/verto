@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import Wallets from '../../components/verto/Wallets'
-import ProfileHeader from '../../components/verto/ProfileHeader'
+import Wallets from '../../components/Verto/Wallets'
+import ProfileHeader from '../../components/Verto/ProfileHeader'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
 let platformTools = require('../../util/platformTools')

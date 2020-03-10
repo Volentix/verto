@@ -3,7 +3,7 @@
     <div class="standard-content">
       <h2 class="standard-content--title">Put the words in the right order</h2>
       <div class="standard-content--body">
-        <words-order :words="secrectWordsToken" />
+        <words-order :words="mnemonic" />
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link back" color="black" text-color="white" label="Back" />
@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import WordsOrder from '../../components/verto/WordsOrder'
+import WordsOrder from '../../components/Verto/WordsOrder'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
 let platformTools = require('../../util/platformTools')
@@ -81,8 +81,6 @@ export default {
     height: 100%;
     margin-top: 40px;
     margin-bottom: 40px;
-  }
-  &--body{
   }
   &--footer{
     display: flex;

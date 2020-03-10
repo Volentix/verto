@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import ChainTools from '../../components/verto/ChainTools'
-import ProfileHeader from '../../components/verto/ProfileHeader'
+import ChainTools from '../../components/Verto/ChainTools'
+import ProfileHeader from '../../components/Verto/ProfileHeader'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
 let platformTools = require('../../util/platformTools')

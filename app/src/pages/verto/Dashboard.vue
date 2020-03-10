@@ -16,13 +16,13 @@
 </template>
 
 <script>
-import ProfileHeader from '../../components/verto/ProfileHeader'
-import CardMakeVTX from '../../components/verto/CardMakeVTX'
-import CardConvertAnyToVTX from '../../components/verto/CardConvertAnyToVTX'
-import CardImportEOSAccount from '../../components/verto/CardImportEOSAccount'
-import CardCreateWallet from '../../components/verto/CardCreateWallet'
-import Wallets from '../../components/verto/Wallets'
-import ConvertAnyCoin from '../../components/verto/ConvertAnyCoin'
+import ProfileHeader from '../../components/Verto/ProfileHeader'
+import CardMakeVTX from '../../components/Verto/CardMakeVTX'
+import CardConvertAnyToVTX from '../../components/Verto/CardConvertAnyToVTX'
+import CardImportEOSAccount from '../../components/Verto/CardImportEOSAccount'
+import CardCreateWallet from '../../components/Verto/CardCreateWallet'
+import Wallets from '../../components/Verto/Wallets'
+import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
 let platformTools = require('../../util/platformTools')
