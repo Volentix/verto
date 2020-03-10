@@ -7,7 +7,7 @@
         <span class="card-make-VTX--wrapper--header__holder_img"><img src="statics/make_vtx_bg.png" alt=""></span>
         <h3 class="text-black card-make-VTX--wrapper--header__holder_title">Convert any coin to VTX</h3>
       </div>
-      <q-btn unelevated class="card-make-VTX--wrapper--header_btn" color="black" text-color="white" label="Stake" />
+      <q-btn unelevated class="card-make-VTX--wrapper--header_btn" to="/new-skin/stake" color="black" text-color="white" label="Stake" />
     </div>
   </div>
 </div>
