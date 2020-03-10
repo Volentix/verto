@@ -37,8 +37,40 @@
         <words-order :words="mnemonic" />
       </div>
       <div class="standard-content--footer">
-         <q-btn flat class="action-link back" color="black" text-color="white" label="Back" />
-         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" />
+         <q-btn flat class="action-link back" color="black" text-color="white" label="Back" @click="step=2" />
+         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="step=4" />
+      </div>
+    </div>
+    <div v-if="step===4" class="standard-content">
+      <h2 class="standard-content--title">Enter your Verto Password</h2>
+      <h2 class="standard-content--desc">The seed phrase will now be added to your config after confirming the password.</h2>
+      <div class="standard-content--body">
+        <div class="standard-content--body__img column flex-center">
+          <img src="statics/password_bg.png" alt="">
+        </div>
+        <div class="standard-content--body__form">
+          <q-input
+            ref="psswrd"
+            v-model="vertoPassword"
+            @input="checkVertoPassword"
+            @keyup.enter="saveMnemonic()"
+            rounded outlined color="purple"
+            :type="isPwd ? 'password' : 'text'"
+            label="Enter Verto Password"
+            hint="*Minimum of 8 characters">
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
+        </div>
+      </div>
+      <div class="standard-content--footer">
+         <q-btn flat class="action-link back" color="grey" text-color="white" label="Back" @click="step=3" />
+         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="saveMnemonic()" :disable="!goodPassword" />
       </div>
     </div>
   </q-page>
@@ -46,7 +78,7 @@
 
 <script>
 const bip39 = require('bip39')
-import HD from '@/util/hdwallet'
+// import HD from '@/util/hdwallet'
 import WordsOrder from '../../components/Verto/WordsOrder'
 
 export default {
@@ -117,25 +149,25 @@ export default {
     async saveMnemonic () {
       if (this.goodPassword) {
         this.config.mnemonic = this.mnemonic
-        // this.$store.commit('settings/mnemonic', this.mnemonic)
         await this.$configManager.updateConfig(this.vertoPassword, this.config)
-        const keys = await HD.Wallet('eos')
+        // const keys = await HD.Wallet('eos')
         // Need to pass type? // private key gets saved if no pass?
-        const result = await this.$configManager.saveWalletAndKey('HD EOS Key', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
+        // const result = await this.$configManager.saveWalletAndKey('HD EOS Key', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
 
-        if (result && result.success) {
-          try {
-            await this.$configManager.backupConfig()
-            if (this.$q.platform.is.android) {
-              this.$q.notify({ color: 'positive', message: 'Config Saved' })
-            }
-          } catch (e) {
-            // TODO: Exception handling
-          }
-          this.vertoPassword = ''
-          this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
-          this.$router.push('wallet')
-        }
+        // if (result && result.success) {
+        //   try {
+        //     await this.$configManager.backupConfig()
+        //     if (this.$q.platform.is.android) {
+        //       this.$q.notify({ color: 'positive', message: 'Config Saved' })
+        //     }
+        //   } catch (e) {
+        //     // TODO: Exception handling
+        //   }
+        //   this.vertoPassword = ''
+        //   this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
+        //   this.$router.push('wallet')
+        // }
+        this.$router.push('cruxpay')
       }
     },
     async checkVertoPassword () {
