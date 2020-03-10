@@ -21,7 +21,18 @@ export default [
       {
         name: 'recovery-seed',
         path: '/recovery-seed',
-        component: () => import('pages/Verto/RecoverySeed.vue')
+        component: () => import('pages/Verto/RecoverySeed.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        name: 'cruxpay',
+        path: '/cruxpay',
+        component: () => import('pages/Verto/CruxStep1.vue'),
+        meta: {
+          authRequired: false
+        }
       },
       {
         name: 'create-wallet-options',

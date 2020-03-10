@@ -28,6 +28,14 @@ class HD {
 
         return { publicKey, privateKey }
       },
+      steem () {
+        const { PrivateKey, key } = require('steemjs-lib')
+        const pkey = PrivateKey.fromSeed(key.normalize_brainKey(mnemonic))
+        const publicKey = pkey.toPublicKey().toString()
+        const privateKey = pkey.toWif()
+
+        return { publicKey, privateKey }
+      },
       crux () {
         const bitcore = require('bitcore-lib')
         const path = "m/889'/0'/0'"
