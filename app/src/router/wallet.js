@@ -58,6 +58,14 @@ export default [
     component: () => import('layouts/IntroWithTabs.vue'),
     children: [
       {
+        name: 'stake',
+        path: '/new-skin/stake',
+        component: () => import('pages/Verto/Stake.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
         name: 'exchange',
         path: '/new-skin/exchange',
         component: () => import('pages/Verto/Exchange.vue'),
