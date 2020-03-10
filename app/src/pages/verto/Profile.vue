@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import Profile from '../../components/verto/Profile'
-import ProfileHeader from '../../components/verto/ProfileHeader'
+import Profile from '../../components/Verto/Profile'
+import ProfileHeader from '../../components/Verto/ProfileHeader'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
 let platformTools = require('../../util/platformTools')

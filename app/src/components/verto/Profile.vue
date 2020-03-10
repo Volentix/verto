@@ -26,7 +26,7 @@ export default {
       active: true,
       menu: [
         { name: 'Wallets', to: '/new-skin/wallets', icon: 'account_balance_wallet', info: '' },
-        { name: 'Exchange', to: '/new-skin/exchange', icon: 'bar_chart', info: '' },
+        { name: 'Exchange', to: '/new-skin/wallets', icon: 'bar_chart', info: '' },
         { name: 'Personalize your wallet', to: '/new-skin/wallets', icon: 'bubble_chart', info: '' },
         { name: 'Privacy', to: '/new-skin/wallets', icon: 'info', info: 'Backup is incomplete' },
         { name: 'Link to Verto ID', to: '/new-skin/wallets', icon: 'vtx', info: 'Not linked' },
