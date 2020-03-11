@@ -53,8 +53,8 @@ export default {
 
     cruxClient = new CruxPay.CruxClient({
       walletClientName: 'testwallet',
-      // privateKey: cruxKey.privateKey
-      privateKey: 'KyB21VpmpjXDTNi3DKC2ZnHJA8qYhGCMTk8FNjnXombYVDPyWXhc' //
+      privateKey: cruxKey.privateKey
+      // privateKey: 'KyB21VpmpjXDTNi3DKC2ZnHJA8qYhGCMTk8FNjnXombYVDPyWXhc' //
     })
 
     await cruxClient.init()

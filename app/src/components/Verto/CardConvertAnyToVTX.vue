@@ -7,7 +7,7 @@
         <span class="card-convert-any-to-VTX--wrapper--header__holder_img"><img src="statics/convert_bg.png" alt=""></span>
         <h3 class="text-black card-convert-any-to-VTX--wrapper--header__holder_title">Convert any coin to VTX</h3>
       </div>
-      <q-btn unelevated class="card-convert-any-to-VTX--wrapper--header_btn" color="black" to="/new-skin/exchange" text-color="white" label="Go to exchange" />
+      <q-btn unelevated class="card-convert-any-to-VTX--wrapper--header_btn" color="black" to="/verto/exchange" text-color="white" label="Go to exchange" />
     </div>
   </div>
 </div>
