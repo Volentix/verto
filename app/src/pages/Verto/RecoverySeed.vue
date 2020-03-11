@@ -82,7 +82,7 @@
 
 <script>
 const bip39 = require('bip39')
-// import HD from '@/util/hdwallet'
+import HD from '@/util/hdwallet'
 import WordsOrder from '../../components/Verto/WordsOrder'
 
 export default {
@@ -154,11 +154,10 @@ export default {
       if (this.goodPassword) {
         this.config.mnemonic = this.mnemonic
         await this.$configManager.updateConfig(this.vertoPassword, this.config)
-        // const keys = await HD.Wallet('eos')
-        // Need to pass type? // private key gets saved if no pass?
-        // const result = await this.$configManager.saveWalletAndKey('HD EOS Key', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
+        const keys = await HD.Wallet('eos')
+        const result = await this.$configManager.saveWalletAndKey('HD EOS Key', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
 
-        // if (result && result.success) {
+        if (result && result.success) {
         //   try {
         //     await this.$configManager.backupConfig()
         //     if (this.$q.platform.is.android) {
@@ -167,10 +166,10 @@ export default {
         //   } catch (e) {
         //     // TODO: Exception handling
         //   }
-        //   this.vertoPassword = ''
-        //   this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
+          this.vertoPassword = ''
+          this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
         //   this.$router.push('wallet')
-        // }
+        }
         this.$router.push('cruxpay')
       }
     },

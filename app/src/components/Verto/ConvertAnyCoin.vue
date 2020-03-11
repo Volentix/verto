@@ -23,7 +23,7 @@
           <span class="btn-title">Buy VTX</span>
         </template>
        </q-btn>
-       <q-btn color="white" to="/new-skin/stake" class="convert-any-coin--wrapper--body__btn" text-color="black">
+       <q-btn color="white" to="/verto/stake" class="convert-any-coin--wrapper--body__btn" text-color="black">
         <template v-slot>
           <div class="icon-wrapper">
             <img src="statics/stake-vtx.png" width="35px" alt="">
