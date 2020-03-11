@@ -1,7 +1,7 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
     <profile-header class="marg" />
-    <wallets />
+    <wallets :showWallets="false" :isWalletsPage="false" />
     <convert-any-coin />
     <br>
     <card-create-wallet />
