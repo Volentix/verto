@@ -1,12 +1,18 @@
 <template>
   <q-page class="column flex-center text-black bg-white">
     <div class="landing" style="background: url('statics/landing_bg.png');">
-      <h2 class="landing--title"><strong>VERTO</strong> Wallet</h2>
-      <h3 class="landing--title__sub">The easiest and most secure<br>crypto wallet</h3>
-      <div class="standard-content--body">
-        <div class="standard-content--body__img column flex-center">
-          <img src="statics/img/decahedron.png" alt="">
-        </div>
+      <transition
+        enter-active-class="animated fadeIn"
+        leave-active-class="animated fadeOut"
+      >
+        <h2 class="landing--title">
+          <strong>VERTO</strong> Wallet
+          <span>Multi-Currency wallet</span>
+          <b class="version">{{ version }}</b>
+          <img src="statics/picto_verto.svg" alt="">
+        </h2>
+      </transition>
+      <div class="standard-content--body full-width">
         <div class="standard-content--body__form">
           <q-input
             ref="psswrd"
@@ -29,15 +35,12 @@
           </q-input>
         </div>
       </div>
-      <div class="standard-content--footer">
+      <div class="standard-content--footer full-width">
          <q-btn flat class="action-link back" color="grey" text-color="white" label="Restore" :disable="!passHasError" @click="startRestoreConfig" />
          <q-btn flat class="action-link next" color="black" text-color="white" label="Connect" @click="login"/>
       </div>
       <div class="landing--volentix-logo">
           <img src="statics/vtx_black.svg" class="svg" />
-      </div>
-      <div class="text-h6 q-pa-lg">
-        {{ version }}
       </div>
       <span class="landing--bottom-bar"></span>
     </div>
@@ -134,13 +137,38 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 30px;
     &--title{
       font-size: 30px;
       font-weight: 100;
       position: relative;
       padding-left: 20px;
-      line-height: 40px;
+      line-height: 24px;
       font-family: $Titillium;
+      position: relative;
+      margin-left: 32%;
+      img{
+        position: absolute;
+        max-width: 170px;
+        right: 100%;
+        top: -60px;
+        width: 200px;
+        opacity: .6;
+      }
+      b.version{
+        position: absolute;
+        right: 0px;
+        bottom: -26px;
+        font-weight: $regular;
+        font-size: 15px;
+      }
+      span{
+        font-size: 20px;
+        margin-top: 8px;
+        display: block;
+        color: #000000;
+        font-weight: $regular;
+      }
       &__sub{
         font-size: 18px;
         text-align: center;
@@ -150,7 +178,7 @@ export default {
       strong{
         font-weight: bold;
       }
-      :before {
+      &:before {
         content: "";
         width: 14px;
         height: 100%;
@@ -165,7 +193,8 @@ export default {
       margin-top: 9px; text-decoration: none; color: #000 !important; font-size: 29px; position: relative; text-transform: uppercase;
       margin-top: 0px;color: #000 !important;
       position: absolute;
-      bottom: 50px;
+      bottom: 20px;
+      transform: scale(.55);
       img{top: 7px;position: relative; width: 40px;}
       &:after { content: "Volentix"; font-family: $Titillium; font-weight: $light; position: relative; left: 0px; top: 0px;margin-left: 10px; }
       &:after {top: -8px;}
@@ -180,73 +209,36 @@ export default {
     }
   }
   .standard-content{
-  padding: 5% 10%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100vh !important;
-  &--title{
-    font-size: 35px;
-    font-weight: $bold;
-    position: relative;
-    line-height: 50px;
-    font-family: $Titillium;
-    margin-top: 40px;
-    margin-bottom: 40px;
-  }
-  &--desc{
-    margin-top: -20px;
-    margin-bottom: 40px;
-    font-size: 18px;
-    font-weight: $regular;
-    position: relative;
-    line-height: 26px;
-    font-family: $Titillium;
-    color: $mainColor;
-  }
-  &--body{
-    &__img{
-      min-height: 250px;
-      img{
-        max-width: 90%;
-      }
-    }
-    &__form{
-      /deep/ .q-field__native{
-        padding-left: 8px;
-        font-size: 16px;
-        font-weight: $regular;
-      }
-      /deep/ .q-field__label{
-        font-family: $Titillium;
-        font-weight: $bold;
-        font-size: 18px;
-        padding-left: 10px;
-      }
-    }
-  }
-  &--footer{
+    padding: 5% 10%;
     display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: flex-end;
-    min-height: 100px;
-    .action-link{
-      height: 50px;
-      text-transform: initial !important;
-      font-size: 16px;
-      letter-spacing: .5px;
-      border-radius: 40px;
-      width: 110px;
-      margin-left: 10px;
-      &.next{
-        background-color: #7900FF !important;
-      }
-      &.back{
-        background-color: #B0B0B0 !important;
-      }
+    flex-direction: column;
+    justify-content: space-between;
+    &--body{
+      margin-top: 35%;
+      margin-bottom: -9%;
     }
+    &--footer{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-end;
+      min-height: 100px;
+      .action-link{
+        height: 50px;
+        text-transform: initial !important;
+        font-size: 16px;
+        letter-spacing: .5px;
+        border-radius: 40px;
+        width: 48%;
+        margin-left: 0px;
+        &.next{
+          background-color: #7900FF !important;
+        }
+        &.back{
+          background-color: #B0B0B0 !important;
+        }
+      }
 
-  }
+    }
 }
 </style>
