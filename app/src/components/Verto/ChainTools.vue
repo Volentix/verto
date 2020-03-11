@@ -521,7 +521,7 @@ export default {
                 }
               }
               .--title,.--amount{
-                font-size: 15px;
+                font-size: 13px;
                 font-family: $Titillium;
                 font-weight: $bold;
                 color: #B0B0B0;
