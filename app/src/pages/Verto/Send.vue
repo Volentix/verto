@@ -99,11 +99,36 @@ export default {
       to: '',
       amount: '',
       memo: '',
+      // { selected: false, slug: 'btc-xyz', name: 'BTC xyz', purcent: '1.02%', to: '/verto/wallets/btc-xyz', icon: 'statics/coins_icons/btc.png', amount: '0.023 BTC', amountUSD: '$235.21' },
+      // { selected: false, slug: 'vtx', name: 'VTX', purcent: '1.02%', to: '/verto/wallets/vtx', icon: 'statics/coins_icons/vtx.png', amount: '0.023 BTC', amountUSD: '$235.21' },
+      // { selected: false, slug: 'eth', name: 'ETH', purcent: '1.02%', to: '/verto/wallets/eth', icon: 'statics/coins_icons/eth.png', amount: '0.023 BTC', amountUSD: '$235.21' },
+      // { selected: false, slug: 'dash', name: 'DASH', purcent: '1.02%', to: '/verto/wallets/dash', icon: 'statics/coins_icons/dash.png', amount: '0.023 BTC', amountUSD: '$235.21' },
+      // { selected: false, slug: 'riple', name: 'Riple', purcent: '1.02%', to: '/verto/wallets/riple', icon: 'statics/coins_icons/ripple.png', amount: '0.023 BTC', amountUSD: '$235.21' }
       options: [
         {
-          label: 'Ethereum',
+          label: 'BTC xyz',
+          value: 'btc-xyz',
+          image: 'statics/coins_icons/btc.png'
+        },
+        {
+          label: 'VTX',
+          value: 'vtx',
+          image: 'statics/coins_icons/vtx.png'
+        },
+        {
+          label: 'ETH',
           value: 'eth',
-          image: 'https://files.coinswitch.co/public/coins/eth.png'
+          image: 'statics/coins_icons/eth.png'
+        },
+        {
+          label: 'DASH',
+          value: 'dash',
+          image: 'statics/coins_icons/dash.png'
+        },
+        {
+          label: 'Riple',
+          value: 'riple',
+          image: 'statics/coins_icons/ripple.png'
         }
       ],
       minimizedModal: false,
