@@ -82,6 +82,14 @@ export default [
         }
       },
       {
+        name: 'send',
+        path: '/verto/wallets/send/:walletID',
+        component: () => import('pages/Verto/Send.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
         name: 'receive',
         path: '/verto/receive',
         component: () => import('pages/Verto/Receive.vue'),
@@ -141,6 +149,14 @@ export default [
         name: 'wallets',
         path: '/verto/wallets',
         component: () => import('pages/Verto/Wallets.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'wallet',
+        path: '/verto/wallets/:walletID',
+        component: () => import('pages/Verto/WalletDetail.vue'),
         meta: {
           authRequired: false
         }
