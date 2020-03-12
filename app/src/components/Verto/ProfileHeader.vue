@@ -15,6 +15,14 @@
       </div>
       <p class="desc text-white full-width">For now, you can make EOS while you sleep.</p>
     </div>
+    <div v-else-if="version === 'type3'" class="column flex-center profile-wrapper--header" style="background: url('statics/header_bg.png');">
+      <h3 class="profile-wrapper--header__title text-white">{{ selectedWallet.name }}</h3>
+      <h2 class="profile-wrapper--header__balance text-white">{{ selectedWallet.amount }}</h2>
+      <div class="profile-wrapper--header__action">
+        <q-btn unelevated :to="'/verto/wallets/send/' + selectedWallet.slug" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
+        <q-btn unelevated :to="'/verto/wallets/receive/' + selectedWallet.slug" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
+      </div>
+    </div>
     <div v-else class="column flex-center profile-wrapper--header" style="background: url('statics/header_bg.png');">
       <h3 class="profile-wrapper--header__title text-white">Total Balance</h3>
       <h2 class="profile-wrapper--header__balance text-white">136.23 VTX</h2>
@@ -34,10 +42,24 @@ export default {
       type: String,
       required: false,
       default: 'type1'
+    },
+    walletID: {
+      type: String,
+      required: false,
+      default: ''
     }
   },
   data () {
     return {
+      selectedWallet: {
+        selected: false,
+        slug: 'btc-xyz',
+        name: 'BTC xyz',
+        purcent: '1.02%',
+        icon: 'statics/coins_icons/btc.png',
+        amount: '0.023 BTC',
+        amountUSD: '$235.21'
+      }
     }
   },
   methods: {

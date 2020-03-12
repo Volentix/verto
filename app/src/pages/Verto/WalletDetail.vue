@@ -1,28 +1,13 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
-    <profile-header class="marg" />
-    <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
-    <convert-any-coin />
-    <br>
-    <card-create-wallet />
-    <br>
-    <card-import-EOS-account />
-    <br><br>
-    <card-convert-any-to-VTX />
-    <br><br>
-    <card-make-VTX />
-    <br><br><br>
+    <profile-header class="marg" version="type3" :walletID="walletID" />
+    <wallets :walletID="walletID" />
   </q-page>
 </template>
 
 <script>
-import ProfileHeader from '../../components/Verto/ProfileHeader'
-import CardMakeVTX from '../../components/Verto/CardMakeVTX'
-import CardConvertAnyToVTX from '../../components/Verto/CardConvertAnyToVTX'
-import CardImportEOSAccount from '../../components/Verto/CardImportEOSAccount'
-import CardCreateWallet from '../../components/Verto/CardCreateWallet'
 import Wallets from '../../components/Verto/Wallets'
-import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
+import ProfileHeader from '../../components/Verto/ProfileHeader'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
 let platformTools = require('../../util/platformTools')
@@ -30,18 +15,14 @@ if (platformTools.default) platformTools = platformTools.default
 
 export default {
   components: {
-    ConvertAnyCoin,
     ProfileHeader,
-    Wallets,
-    CardCreateWallet,
-    CardImportEOSAccount,
-    CardConvertAnyToVTX,
-    CardMakeVTX
+    Wallets
   },
   data () {
     return {
       pword: '',
       minimizedModal: false,
+      walletID: this.$route.params.walletID,
       message: '',
       version: {},
       network: this.$store.state.settings.network,
@@ -51,6 +32,7 @@ export default {
   mounted () {
     this.version = version
     this.setupPlatformPath()
+    console.log('this.walletID', this.walletID)
   },
   methods: {
     async setupPlatformPath () {
@@ -77,10 +59,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  /deep/ .wallets-wrapper--list{
-    box-shadow: none;
-    margin-top: 0px;
-  }
   .marg{
     /deep/ .profile-wrapper{
       &--header{
