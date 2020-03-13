@@ -50,7 +50,13 @@ export default [
         meta: {
           authRequired: false
         }
+      },
+      {
+        name: 'mnemonic2',
+        path: '/intro/mnemonic2',
+        component: () => import('pages/Intro/Mnemonic.vue')
       }
+
     ]
   },
   {
