@@ -4,14 +4,14 @@
     <div class="words-order-wrapper--list">
       <div class="words-order-wrapper--list__empty">
         <ul>
-        <li v-for="(word, index) in wordsArray" :key="index">
-        <q-input v-if="word !== ''" :class="{'qfilled': userWordsArray[index] !== undefined }" outlined round readonly class="qinput" v-model="userWordsArray[index]"/>
+        <li v-for="(word, index) in wordsArray" :key="index" :class="{'d-none': userWordsArray[index] === undefined}">
+        <q-input v-if="word !== ''"  :class="{'qfilled': userWordsArray[index] !== undefined }" outlined round readonly class="qinput" v-model="userWordsArray[index]"/>
         </li>
         </ul>
       </div>
       <div class="words-order-wrapper--list__random">
         <ul>
-        <li v-for="(word, index) in wordsArray" :key="index">
+        <li v-for="(word, index) in wordsArray" :key="index" :class="{'d-none': existWord(word)}">
         <q-input v-if="word !== ''" @click.native="putWordsInOrder(word)" outlined round readonly class="qinput qoriginal" v-model="wordsArrayRandom[index]"/>
         </li>
         </ul>
@@ -45,6 +45,15 @@ export default {
     // console.log('wordsArray', this.wordsArray)
   },
   methods: {
+    existWord (word) {
+      let found = false
+      this.userWordsArray.map((w) => {
+        if (w === word) {
+          found = true
+        }
+      })
+      return found
+    },
     putWordsInOrder (word) {
       let found = false
       this.userWordsArray.map((w) => {
@@ -107,8 +116,19 @@ export default {
             }
         }
         &__empty{
+          li{
+            &.d-none{
+              display: none !important;
+            }
+          }
         }
-        &__random{}
+        &__random{
+          li{
+            &.d-none{
+              display: none !important;
+            }
+          }
+        }
       }
     }
 </style>
