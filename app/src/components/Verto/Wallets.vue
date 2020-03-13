@@ -78,9 +78,13 @@
               <div class="text-h6 wallet-name">BTC wallet</div>
               <div class="text-h6 wallet-amount">136.23 BTC</div>
             </div>
-            <div class="standard-content--footer">
+            <div v-if="!confirmed" class="standard-content--footer">
               <q-btn flat class="action-link next" color="black" text-color="white" @click="hideModalFun()" label="Cancel" />
-              <q-btn flat class="action-link next" color="black" text-color="white" label="Confirm" />
+              <q-btn flat class="action-link next" color="black" text-color="white" @click="confirmed = true" label="Confirm" />
+            </div>
+            <div v-else class="standard-content--footer confirmed">
+              <span class="confirmed-title">BTC has been removed.</span>
+              <q-btn flat class="action-link next" color="black" text-color="white" @click="hideModalFun()" label="Back to wallet" />
             </div>
           </div>
         <!-- </q-scroll-area> -->
@@ -119,6 +123,7 @@ export default {
     return {
       active: true,
       openModal: false,
+      confirmed: false,
       // showWallet: true,
       showText: false,
       menu: [
@@ -142,6 +147,7 @@ export default {
   methods: {
     hideModalFun: function () {
       this.openModal = false
+      this.confirmed = false
     },
     openModalFun: function (item) {
       this.openModal = true
@@ -392,8 +398,24 @@ export default {
       justify-content: flex-end;
       align-items: baseline;
       min-height: 100px;
+      &.confirmed{
+        background: #F3F3F3;
+        padding: 20px;
+        border-radius: 20px;
+        flex-direction: column;
+        align-items: flex-end;
+        .confirmed-title{
+          font-size: 19px;
+          color: #191818;
+          font-family: $Titillium;
+          font-weight: $bold;
+          width: 100%;
+          text-align: left;
+          margin-bottom: 20px;
+        }
+      }
       .action-link{
-        height: 50px;
+        height: 47px;
         text-transform: initial !important;
         font-size: 16px;
         letter-spacing: .5px;
