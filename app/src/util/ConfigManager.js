@@ -145,6 +145,7 @@ class ConfigManager {
           const payload = JSON.stringify(this.currentConfig)
           let filePath = await platformTools.filePath()
           await platformTools.writeFile(filePath, sjcl.encrypt(password, payload), 'utf-8')
+          store.commit('currentwallet/updateConfig', this.currentConfig)
           store.commit('currentwallet/setLoggedIn', true)
           resolve(true)
         } catch (e) {
