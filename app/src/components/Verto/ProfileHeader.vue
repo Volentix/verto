@@ -23,6 +23,12 @@
         <q-btn unelevated :to="'/verto/wallets/receive/' + selectedWallet.slug" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
       </div>
     </div>
+    <div v-else-if="version === 'type4'" class="profile-wrapper--header static" style="background: url(statics/eos-bg.png) #007086 no-repeat !important; background-size: contain !important; min-height: 260px;">
+      <div class="flex justify-between flex-row item-center content-center full-width">
+        <h3 class="flex flex-center text-white static__holder_title title2">Create EOS account</h3>
+        <span class="static__holder_img flex flex-center"></span>
+      </div>
+    </div>
     <div v-else class="column flex-center profile-wrapper--header" style="background: url('statics/header_bg.png');">
       <h3 class="profile-wrapper--header__title text-white">Total Balance</h3>
       <h2 class="profile-wrapper--header__balance text-white">136.23 VTX</h2>
@@ -98,6 +104,11 @@ export default {
             font-weight: $bold;
             font-family: $Titillium;
             margin: 0px;
+            &.title2{
+              margin-top: 15px;
+              font-size: 30px;
+              line-height: 45px;
+            }
           }
         }
         .desc{
