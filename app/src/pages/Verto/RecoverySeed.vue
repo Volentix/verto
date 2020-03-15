@@ -9,8 +9,8 @@
       </div>
       <h2 class="standard-content--title">Do you want to create or restore your 24 word mnemonic secret seed phrase?</h2>
       <div class="standard-content--footer">
-        <q-btn flat class="action-link restore purple" color="black" text-color="white" label="Restore" />
-        <q-btn flat class="action-link create purple" color="black" text-color="white" label="Create" @click="step=2" />
+        <q-btn flat class="action-link restore purple" color="black" text-color="white" label="Restore" @click="step=4"/>
+        <q-btn flat class="action-link create purple" color="black" text-color="white" label="Create" @click="createMnemonic()" />
       </div>
     </div>
     <div v-if="step===2" class="standard-content">
@@ -31,6 +31,7 @@
         </div>
       </div>
       <div class="standard-content--footer">
+         <q-btn flat class="action-link back" color="black" text-color="white" label="Back" @click="step=1" />
          <q-btn flat class="action-link next" color="black" text-color="white" label="Verify" @click="step=3" />
       </div>
     </div>
@@ -41,40 +42,30 @@
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link back" color="black" text-color="white" label="Back" @click="step=2" />
-         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="step=4" />
+         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="saveMnemonic()" />
       </div>
     </div>
     <div v-if="step===4" class="standard-content">
-      <h2 class="standard-content--title">Enter your Verto Password</h2>
-      <h2 class="standard-content--desc">The seed phrase will now be added to your config after confirming the password.</h2>
+      <h2 class="standard-content--title">Paste your 24 word recovery seed phrase.</h2>
+      <h2 class="standard-content--desc">If you do not have a recovery seed, go back and choose create.</h2>
       <div class="standard-content--body">
-        <div class="standard-content--body__img column flex-center">
-          <img src="statics/password_bg.png" class="full-width" alt="">
-          <br>
-        </div>
-        <div class="standard-content--body__form">
+        <div class="standard-content--body__mnemonic">
+          <h4 class="standard-content--body__mnemonic--title flex justify-between">
+            Mnemonic
+          </h4>
           <q-input
-            ref="psswrd"
-            v-model="vertoPassword"
-            @input="checkVertoPassword"
-            @keyup.enter="saveMnemonic()"
-            rounded outlined color="purple"
-            :type="isPwd ? 'password' : 'text'"
-            label="Enter Verto Password"
-            hint="*Minimum of 8 characters">
-            <template v-slot:append>
-              <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-          </q-input>
+            ref="mnemonic"
+            type="textarea"
+            @input="validateMnemonic()"
+            v-model="mnemonic"
+            error-message="The mnemonic seed is invalid"
+            :error="!mnemonicValidated"
+          />
         </div>
       </div>
       <div class="standard-content--footer">
-         <q-btn flat class="action-link back" color="grey" text-color="white" label="Back" @click="step=3" />
-         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="saveMnemonic()" :disable="!goodPassword" />
+         <q-btn flat class="action-link back" color="black" text-color="white" label="Back" @click="step=1" />
+         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="saveMnemonic()" :disable="!mnemonicValidated" />
       </div>
     </div>
   </q-page>
@@ -93,12 +84,13 @@ export default {
     return {
       step: 1,
       isPwd: true,
+      mnemonicValidated: '',
       goodPassword: false,
-      vertoPassword: null,
-      config: null,
+      vertoPassword: this.$store.state.settings.temporary,
+      config: this.$store.state.currentwallet.config,
       chip: null,
       spinnervisible: false,
-      mnemonic: this.$store.state.settings.mnemonic,
+      mnemonic: this.$store.state.currentwallet.config.mnemonic,
       arrayMnemonic: [],
       arrayShuffled: [],
       arrayOrdered: [],
@@ -112,12 +104,7 @@ export default {
   async created () {
   },
   async mounted () {
-    console.log('mne', this.mnemonic)
-    if (!this.mnemonic) {
-      this.createMnemonic()
-    } else {
-
-    }
+    console.log('mnemonic', this.mnemonic, 'config', this.config)
   },
   computed: {
     rightOrder () {
@@ -129,6 +116,9 @@ export default {
     }
   },
   methods: {
+    validateMnemonic () {
+      this.mnemonicValidated = bip39.validateMnemonic(this.mnemonic)
+    },
     chooseMe (word, index, show) {
       if (show) {
         this.arrayOrdered.push(word)
@@ -148,10 +138,10 @@ export default {
       this.arrayShuffled = [...this.arrayMnemonic]
       this.shuffle(this.arrayShuffled)
 
-      // this.step = 2
+      this.step = 2
     },
     async saveMnemonic () {
-      if (this.goodPassword) {
+      if (this.vertoPassword) {
         this.config.mnemonic = this.mnemonic
         await this.$configManager.updateConfig(this.vertoPassword, this.config)
         const keys = await HD.Wallet('eos')
