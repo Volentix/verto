@@ -10,6 +10,6 @@ export const toggleNetwork = (state, data) => {
   state.network = data
 }
 
-export const mnemonic = (state, data) => {
-  state.mnemonic = data
+export const temporary = (state, data) => {
+  state.temporary = data
 }
