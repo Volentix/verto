@@ -136,6 +136,7 @@ export default {
         return
       }
       try {
+        this.$store.commit('settings/temporary', this.password)
         await configManager.createWallet(this.password)
         this.$router.replace('/recovery-seed')
       } catch (e) {

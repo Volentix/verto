@@ -1,6 +1,6 @@
 <template>
   <q-page class="text-black bg-white">
-    <div class="standard-content" style="padding-bottom: 70px">
+    <div v-if="step===1" class="standard-content" style="padding-bottom: 70px">
       <div class="standard-content--body">
         <h2 class="standard-content--title">Create the Verto ID</h2>
         <div class="standard-content--body__img column flex-center">
@@ -8,9 +8,58 @@
         </div>
         <div class="standard-content--body__form">
           <label class="label">choose an ID</label>
-          <q-input v-model="cruxID" rounded outlined color="blue" type="text" label="example@verto.crux" hint="this is already taken." />
+          <q-input
+            v-model="cruxID"
+            ref="cruxID"
+            @input="getAvailable()"
+            rounded outlined color="blue"
+            type="text"
+            :loading="!cruxKey || loading"
+            :suffix="'@' + walletClientName + '.crux'"
+            :error="error"
+            :error-message="errorMessage"
+          />
           <div class="flex-end flex justify-end">
-            <q-btn flat class="action-link next" color="black" text-color="white" label="Next" />
+            <q-btn flat class="action-link next" color="black" text-color="white" @click="register()" label="Register" :disable="!available" />
+          </div>
+        </div>
+      </div>
+      <div class="standard-content--footer">
+        <p class="crux-label">Powered by cruxpay.</p>
+      </div>
+    </div>
+    <div v-if="step===2" class="standard-content" style="padding-bottom: 70px">
+      <div class="standard-content--body">
+        <h2 class="standard-content--title"> Registering your wallet addresses in your ID</h2>
+        <p class="diclaimer"> {{ status }} </p>
+        <div class="standard-content--body__form">
+          <q-circular-progress
+            :value="progress"
+            size="200px"
+            :thickness="0.5"
+            show-value
+            font-size="20px"
+            color="green"
+            center-color="grey-8"
+            track-color="transparent"
+            class="q-ma-md"
+          />
+          <div class="flex-end flex justify-end">
+            <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="step=3" :disable="!mapped" />
+          </div>
+        </div>
+      </div>
+      <div class="standard-content--footer">
+        <p class="crux-label">Powered by cruxpay.</p>
+      </div>
+    </div>
+    <div v-if="step===3" class="standard-content" style="padding-bottom: 70px">
+      <div class="standard-content--body">
+        <h2 class="standard-content--title">You're all set. <br> {{ existingCruxID }} <br>Enjoy using verto</h2>
+        <p class="diclaimer"><strong>Disclaimer</strong> These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.</p>
+        <div class="standard-content--body__form">
+          <div class="flex-end flex justify-end">
+            <q-btn flat class="action-link next" color="black" text-color="white" label="Next" to="/vertomanager" />
           </div>
         </div>
       </div>
@@ -33,6 +82,15 @@ let cruxClient
 export default {
   data () {
     return {
+      step: 1,
+      cruxKey: null,
+      existingCruxID: null,
+      error: false,
+      errorMessage: '',
+      walletClientName: 'testwallet', // should be 'verto' when in prod
+      vertoPassword: this.$store.state.settings.temporary,
+      loading: false,
+      mapped: false,
       cruxID: null,
       cruxIDRegistered: false,
       addressMap: null,
@@ -48,24 +106,28 @@ export default {
   async created () {
   },
   async mounted () {
-    let cruxKey = await HD.Wallet('crux')
-    console.log('crux privateKey', cruxKey.privateKey, 'menonic', this.$store.state.currentwallet.config.mnemonic)
+    this.$nextTick(() => {
+      this.$refs.cruxID.focus()
+    })
+
+    this.cruxKey = await HD.Wallet('crux')
+    console.log('crux privateKey', this.cruxKey.privateKey, 'menonic', this.$store.state.currentwallet.config.mnemonic)
 
     cruxClient = new CruxPay.CruxClient({
-      walletClientName: 'testwallet',
-      privateKey: cruxKey.privateKey
+      walletClientName: this.walletClientName,
+      privateKey: this.cruxKey.privateKey
       // privateKey: 'KyB21VpmpjXDTNi3DKC2ZnHJA8qYhGCMTk8FNjnXombYVDPyWXhc' //
     })
 
     await cruxClient.init()
-    this.cruxID = (await cruxClient.getCruxIDState()).cruxID
+    this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
     // Subdomain is queued for update and should be announced within the next few blocks.
     // Your subdomain was registered in transaction 6a24c1ad453a09a740f7792ca07f0f95cac530728cbfa35f32be6a0e0a550c01 -- it should propagate on the network once it has 6 confirmations."
 
-    if (this.cruxID) {
+    if (this.existingCruxID) {
       this.cruxIDRegistered = true
       this.addressMap = await cruxClient.getAddressMap()
-
+      this.step = 2
       this.showMap = !!this.addressMap
       console.log('addressMap', this.addressMap, 'show?', this.showMap)
     }
@@ -75,23 +137,39 @@ export default {
   methods: {
     async register () {
       if (this.available) {
+        this.loading = true
         cruxClient.registerCruxID(this.cruxID).then((res) => {
           // Deal with: keypair is already used in registration of CruxID: 'helo@testwallet.crux'
           this.cruxIDRegistered = true
-          console.log('res', res)
+          this.existingCruxID = this.cruxID + '@' + this.walletClientName + '.crux'
+          this.step = 2
+          this.putAddress()
+          console.log('response should be undef:', res)
+        }, err => {
+          // this.existingCruxID = err.split('CruxID: ')[1].replace(/'/g, '')
+          this.step = 2
+          console.log('err', err)
         })
       }
     },
     async getAvailable () {
-      this.$nextTick(async () => {
-        if (!this.$refs['cruxID'].hasError) {
-          this.available = await cruxClient.isCruxIDAvailable(this.cruxID)
+      if (this.cruxID.length >= 4 && this.cruxID.length <= 20) {
+        this.available = await cruxClient.isCruxIDAvailable(this.cruxID)
+        if (this.available) {
+          this.error = false
+        } else {
+          this.error = true
+          this.errorMessage = 'This ID is already taken'
         }
-      })
+      } else {
+        this.error = true
+        this.errorMessage = 'Must start with a letter & length must be between 4 to 20'
+      }
     },
     async putAddress () {
       this.assets = await cruxClient.getAssetMap()
-      delete this.assets['ada']
+      delete this.assets['ada'] // Key generation not working yet.
+      delete this.assets['eos'] // Need account to be created first!
       let count = Object.keys(this.assets).length
       let map = []
       let i = 0
@@ -101,11 +179,15 @@ export default {
         this.progress = Math.round(i / count * 10000) / 100
         this.status = 'creating keys for: ' + symbol
         let keys = await HD.Wallet(symbol)
+        let result = await this.$configManager.saveWalletAndKey(symbol, this.vertoPassword, null, keys.publicKey, keys.privateKey, symbol, 'mnemonic')
+        console.log('key creation', result)
         map[symbol] = { 'addressHash': keys.publicKey }
       })
 
       console.log('map', map)
       cruxClient.putAddressMap(map)
+      await this.$configManager.backupConfig()
+      this.mapped = true
     },
     async getAssets () {
       this.assets = await cruxClient.getAssetMap()
