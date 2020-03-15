@@ -64,6 +64,14 @@ export default [
     component: () => import('layouts/IntroWithTabs.vue'),
     children: [
       {
+        name: 'eos-account',
+        path: '/verto/eos-account',
+        component: () => import('pages/Verto/EOSAccount.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
         name: 'stake',
         path: '/verto/stake',
         component: () => import('pages/Verto/Stake.vue'),
