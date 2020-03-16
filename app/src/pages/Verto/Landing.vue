@@ -96,7 +96,8 @@ export default {
       }
       const results = await configManager.login(this.password)
       if (results.success) {
-        this.$router.push({ path: 'wallet' })
+        // this.$router.push({ path: '/verto/dashboard' })
+        this.$router.push({ path: 'vertomanager' })
       } else {
         if (results.message === 'no_default_key') {
           this.$router.push({ path: 'vertomanager' })
