@@ -4,15 +4,15 @@
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="wallets-wrapper--list" :class="{'open': showWallets}">
       <q-list v-if="walletID === ''" bordered separator class="list-wrapper">
-        <q-item v-for="(item, index) in menu" :key="index" clickable :active="active" :to="item.to">
+        <q-item v-for="(item, index) in tableData" :key="index" clickable :active="active" :to="item.to">
           <div class="header-wallet-wrapper culumn full-width">
             <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
               <q-item-section avatar>
-                <img class="coin-icon" width="35px" :src="item.icon" alt="">
+                <img class="coin-icon" width="35px" :src="getImages(item.type)" alt="">
               </q-item-section>
               <q-item-section class="item-name">
                 <span class="item-name--name">{{item.name}}</span>
-                <span class="item-name--purcent">{{item.purcent}}</span>
+                <span class="item-name--percent">{{item.percent}}</span>
               </q-item-section>
               <q-item-section class="item-info">
                 <span class="item-info--amount">{{item.amount}}</span>
@@ -27,11 +27,11 @@
           <div class="header-wallet-wrapper culumn full-width">
             <div class="header-wallet full-width flex justify-between">
               <q-item-section avatar>
-                <img class="coin-icon" width="35px" :src="selectedWallet.icon" alt="">
+                <img class="coin-icon" width="35px" :src="getImages(selectedWallet.type)" alt="">
               </q-item-section>
               <q-item-section class="item-name">
                 <span class="item-name--name">{{selectedWallet.name}}</span>
-                <span class="item-name--purcent">{{selectedWallet.purcent}}</span>
+                <span class="item-name--percent">{{selectedWallet.percent}}</span>
               </q-item-section>
               <q-item-section class="item-info">
                 <span class="item-info--amount">{{selectedWallet.amount}}</span>
@@ -127,24 +127,37 @@ export default {
       // showWallet: true,
       showText: false,
       menu: [
-        { selected: false, slug: 'btc-xyz', name: 'BTC xyz', purcent: '1.02%', to: '/verto/wallets/btc-xyz', icon: 'statics/coins_icons/btc.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-        { selected: false, slug: 'vtx', name: 'VTX', purcent: '1.02%', to: '/verto/wallets/vtx', icon: 'statics/coins_icons/vtx.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-        { selected: false, slug: 'eth', name: 'ETH', purcent: '1.02%', to: '/verto/wallets/eth', icon: 'statics/coins_icons/eth.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-        { selected: false, slug: 'dash', name: 'DASH', purcent: '1.02%', to: '/verto/wallets/dash', icon: 'statics/coins_icons/dash.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-        { selected: false, slug: 'riple', name: 'Riple', purcent: '1.02%', to: '/verto/wallets/riple', icon: 'statics/coins_icons/ripple.png', amount: '0.023 BTC', amountUSD: '$235.21' }
+        { selected: false, type: 'btc-xyz', name: 'BTC xyz', percent: '1.02%', to: '/verto/wallets/btc-xyz', icon: 'statics/coins_icons/btc.png', amount: '0.023 BTC', amountUSD: '$235.21' },
+        { selected: false, type: 'vtx', name: 'VTX', percent: '1.02%', to: '/verto/wallets/vtx', icon: 'statics/coins_icons/vtx.png', amount: '0.023 BTC', amountUSD: '$235.21' },
+        { selected: false, type: 'eth', name: 'ETH', percent: '1.02%', to: '/verto/wallets/eth', icon: 'statics/coins_icons/eth.png', amount: '0.023 BTC', amountUSD: '$235.21' },
+        { selected: false, type: 'dash', name: 'DASH', percent: '1.02%', to: '/verto/wallets/dash', icon: 'statics/coins_icons/dash.png', amount: '0.023 BTC', amountUSD: '$235.21' },
+        { selected: false, type: 'riple', name: 'Riple', percent: '1.02%', to: '/verto/wallets/riple', icon: 'statics/coins_icons/ripple.png', amount: '0.023 BTC', amountUSD: '$235.21' }
       ],
       selectedWallet: {
         selected: false,
-        slug: 'btc-xyz',
+        type: 'btc-xyz',
         name: 'BTC xyz',
-        purcent: '1.02%',
+        percent: '1.02%',
         icon: 'statics/coins_icons/btc.png',
         amount: '0.023 BTC',
         amountUSD: '$235.21'
       }
     }
   },
+  mounted () {
+    this.tableData = this.$store.state.currentwallet.config.keys
+    console.table(this.tableData)
+    console.table(this.menu)
+  },
   methods: {
+    getImages (symbol) {
+      console.log('symbol', symbol)
+      if (symbol === 'verto') {
+        return '/statics/icon.png'
+      } else {
+        return symbol ? 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png' : false
+      }
+    },
     hideModalFun: function () {
       this.openModal = false
       this.confirmed = false
@@ -323,7 +336,7 @@ export default {
         &--name{
           font-size: 14px;
         }
-        &--purcent{
+        &--percent{
           font-size: 12px;
         }
       }
