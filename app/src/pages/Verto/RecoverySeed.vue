@@ -4,7 +4,7 @@
       <h2 class="standard-content--desc"></h2>
       <div class="standard-content--body">
         <div class="standard-content--body__img column flex-center">
-          <img src="statics/create_restore_bg.png" class="full-width" alt="">
+          <img src="statics/create_restore_bg.svg" class="full-width" alt="">
         </div>
       </div>
       <h2 class="standard-content--title">Do you want to create or restore your 24 word mnemonic secret seed phrase?</h2>
@@ -229,6 +229,13 @@ export default {
     color: $mainColor;
   }
   &--body{
+    &__img{
+      min-height: 250px;
+      img{
+        max-width: 90%;
+        width: 100%;
+      }
+    }
     &__mnemonic{
       border-radius: 20px;
       border: 1px solid #B0B0B0;

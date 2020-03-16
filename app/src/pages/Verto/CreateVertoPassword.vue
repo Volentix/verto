@@ -5,7 +5,7 @@
       <h2 class="standard-content--desc">The seed phrase will now be added to your config after confirming the password.</h2>
       <div class="standard-content--body">
         <div class="standard-content--body__img column flex-center">
-          <img src="statics/password_bg.png" alt="">
+          <img src="statics/password_bg.svg" alt="">
         </div>
         <div class="standard-content--body__form">
           <q-input
@@ -37,7 +37,7 @@
       <h2 class="standard-content--desc"></h2>
       <div class="standard-content--body">
         <div class="standard-content--body__img column flex-center">
-          <img src="statics/password_bg.png" alt="">
+          <img src="statics/password_bg.svg" alt="">
         </div>
         <div class="standard-content--body__form">
           <q-input
@@ -185,6 +185,7 @@ export default {
       min-height: 250px;
       img{
         max-width: 90%;
+        width: 100%;
       }
     }
     &__form{
@@ -214,7 +215,9 @@ export default {
       line-height: 15px;
       letter-spacing: .5px;
       border-radius: 40px;
-      width: 110px;
+      min-width: 100px;
+      padding-left: 20px;
+      padding-right: 20px;
       margin-left: 10px;
       &.next{
         background-color: #7900FF !important;

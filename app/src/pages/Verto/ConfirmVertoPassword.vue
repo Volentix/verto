@@ -5,7 +5,7 @@
       <h2 class="standard-content--desc"></h2>
       <div class="standard-content--body">
         <div class="standard-content--body__img column flex-center">
-          <img src="statics/password_bg.png" alt="">
+          <img src="statics/password_bg.svg" alt="">
         </div>
         <div class="standard-content--body__form">
           <q-input v-model="password" rounded outlined color="purple" :type="isPwd ? 'password' : 'text'" label="Confirm" hint="*Minimum of 8 characters">
@@ -108,6 +108,7 @@ export default {
       min-height: 250px;
       img{
         max-width: 90%;
+        width: 100%;
       }
     }
     &__form{
