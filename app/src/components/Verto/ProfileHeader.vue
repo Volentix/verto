@@ -11,7 +11,7 @@
     <div v-else-if="version === 'type2'" class="profile-wrapper--header static">
       <div class="flex justify-between flex-row item-center content-center full-width">
         <h3 class="flex flex-center text-white static__holder_title">Making VTX while you sleep, will be available soon.</h3>
-        <span class="static__holder_img flex flex-center"><img src="statics/stake-vtx-bg.png" alt=""></span>
+        <span class="static__holder_img flex flex-center"><img src="statics/stake-vtx-bg.svg" alt=""></span>
       </div>
       <p class="desc text-white full-width">For now, you can make EOS while you sleep.</p>
     </div>
@@ -94,7 +94,8 @@ export default {
         .flex-row{
           .static__holder_img{
             img{
-              max-width: 120px;
+              max-width: 220px;
+              width: 100%;
             }
           }
           .static__holder_title{
