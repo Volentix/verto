@@ -128,22 +128,6 @@ export default [
         }
       },
       {
-        name: 'crux-id-step1',
-        path: '/verto/crux-id-step1',
-        component: () => import('pages/Verto/CruxStep1.vue'),
-        meta: {
-          authRequired: false
-        }
-      },
-      {
-        name: 'crux-id-step2',
-        path: '/verto/crux-id-step2',
-        component: () => import('pages/Verto/CruxStep2.vue'),
-        meta: {
-          authRequired: false
-        }
-      },
-      {
         name: 'dashboard',
         path: '/verto/dashboard',
         component: () => import('pages/Verto/Dashboard.vue'),
