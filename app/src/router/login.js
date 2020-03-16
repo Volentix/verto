@@ -29,7 +29,7 @@ export default [
       {
         name: 'cruxpay',
         path: '/cruxpay',
-        component: () => import('pages/Verto/CruxStep1.vue'),
+        component: () => import('pages/Verto/CruxPaySetup.vue'),
         meta: {
           authRequired: false
         }

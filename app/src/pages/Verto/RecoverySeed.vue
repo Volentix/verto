@@ -145,7 +145,7 @@ export default {
         this.config.mnemonic = this.mnemonic
         await this.$configManager.updateConfig(this.vertoPassword, this.config)
         const keys = await HD.Wallet('eos')
-        const result = await this.$configManager.saveWalletAndKey('HD EOS Key', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
+        const result = await this.$configManager.saveWalletAndKey('EOS Key - HD', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
 
         if (result && result.success) {
         //   try {

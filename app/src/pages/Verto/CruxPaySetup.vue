@@ -59,7 +59,7 @@
         <p class="diclaimer"><strong>Disclaimer</strong> These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.</p>
         <div class="standard-content--body__form">
           <div class="flex-end flex justify-end">
-            <q-btn flat class="action-link next" color="black" text-color="white" label="Next" to="/vertomanager" />
+            <q-btn flat class="action-link next" color="black" text-color="white" label="Next" to="/verto/dashboard" />
           </div>
         </div>
       </div>
@@ -100,7 +100,19 @@ export default {
       status: '',
       progress: 0,
       available: false,
-      assets: {}
+      assets: {},
+      names: [
+        { 'value': 'eos', 'label': 'EOS Key - HD' },
+        { 'value': 'btc', 'label': 'Bitcoin - HD' },
+        { 'value': 'eth', 'label': 'Ethereum - HD' },
+        { 'value': 'bnb', 'label': 'Binance Coin - HD' },
+        { 'value': 'ltc', 'label': 'Litecoin - HD' },
+        { 'value': 'dash', 'label': 'DASH - HD' },
+        { 'value': 'steem', 'label': 'STEEM Key - HD' },
+        { 'value': 'xrp', 'label': 'Ripple - HD' },
+        { 'value': 'xlm', 'label': 'Stellar Lumens - HD' },
+        { 'value': 'xtz', 'label': 'Tezos - HD' },
+        { 'value': 'ada', 'label': 'Cardano - HD' } ]
     }
   },
   async created () {
@@ -138,18 +150,19 @@ export default {
     async register () {
       if (this.available) {
         this.loading = true
-        cruxClient.registerCruxID(this.cruxID).then((res) => {
+        const res = await cruxClient.registerCruxID(this.cruxID)
+        console.log('response should be undef:', res)
+        if (!res) {
           // Deal with: keypair is already used in registration of CruxID: 'helo@testwallet.crux'
           this.cruxIDRegistered = true
           this.existingCruxID = this.cruxID + '@' + this.walletClientName + '.crux'
           this.step = 2
           this.putAddress()
-          console.log('response should be undef:', res)
-        }, err => {
+        } else {
           // this.existingCruxID = err.split('CruxID: ')[1].replace(/'/g, '')
           this.step = 2
-          console.log('err', err)
-        })
+          console.log('err', res)
+        }
       }
     },
     async getAvailable () {
@@ -174,16 +187,18 @@ export default {
       let map = []
       let i = 0
 
-      Object.keys(this.assets).forEach(async symbol => {
+      const allTheRequests = Object.keys(this.assets).map(async symbol => {
         i++
         this.progress = Math.round(i / count * 10000) / 100
         this.status = 'creating keys for: ' + symbol
         let keys = await HD.Wallet(symbol)
-        let result = await this.$configManager.saveWalletAndKey(symbol, this.vertoPassword, null, keys.publicKey, keys.privateKey, symbol, 'mnemonic')
+        let result = await this.$configManager.saveWalletAndKey(this.names.find(o => o.value === symbol).label, this.vertoPassword, null, keys.publicKey, keys.privateKey, symbol, 'mnemonic')
         console.log('key creation', result)
         map[symbol] = { 'addressHash': keys.publicKey }
+        return result
       })
 
+      await Promise.all(allTheRequests)
       console.log('map', map)
       cruxClient.putAddressMap(map)
       await this.$configManager.backupConfig()
