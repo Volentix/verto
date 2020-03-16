@@ -4,7 +4,7 @@
       <div class="standard-content--body">
         <h2 class="standard-content--title">Create the Verto ID</h2>
         <div class="standard-content--body__img column flex-center">
-          <img src="statics/crux_id_bg.png" alt="">
+          <img src="statics/crux_id_bg.svg" alt="">
         </div>
         <div class="standard-content--body__form">
           <label class="label">choose an ID</label>
