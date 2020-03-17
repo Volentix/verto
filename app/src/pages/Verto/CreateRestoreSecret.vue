@@ -4,7 +4,7 @@
       <h2 class="standard-content--desc"></h2>
       <div class="standard-content--body">
         <div class="standard-content--body__img column flex-center">
-          <img src="statics/create_restore_bg.png" alt="">
+          <img src="statics/create_restore_bg.svg" alt="">
         </div>
       </div>
       <h2 class="standard-content--title">Do you want to create or restore your 24 word mnemonic secret seed phrase?</h2>
@@ -98,6 +98,7 @@ export default {
       min-height: 250px;
       img{
         max-width: 90%;
+        width: 100%;
       }
     }
     &__form{
