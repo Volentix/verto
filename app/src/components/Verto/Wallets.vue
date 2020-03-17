@@ -15,7 +15,7 @@
                 <span class="item-name--percent">{{item.percent}}</span>
               </q-item-section>
               <q-item-section class="item-info">
-                <span class="item-info--amount">{{item.amount}}</span>
+                <span class="item-info--amount">{{item.amount}} {{ item.type.toUpperCase() }}</span>
                 <span class="item-info--amountUSD">{{item.amountUSD}}</span>
               </q-item-section>
             </div>
@@ -95,6 +95,8 @@
 </template>
 
 <script>
+import Lib from '@/util/walletlib'
+
 export default {
   name: 'Wallets',
   props: {
@@ -146,6 +148,17 @@ export default {
   },
   mounted () {
     this.tableData = this.$store.state.currentwallet.config.keys
+
+    this.tableData.forEach(async element => {
+      element.type = element.type ? element.type : 'verto'
+      if (element.type === 'eos') {
+        // eos as chain, account name, token name
+        element.amount = await Lib.Wallet('eos', element.name, 'vtx').balance
+      } else {
+        element.amount = 0.0
+      }
+    })
+
     console.table(this.tableData)
     console.table(this.menu)
   },
