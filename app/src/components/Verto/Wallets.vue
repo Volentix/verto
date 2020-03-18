@@ -156,6 +156,7 @@ export default {
       if (element.type === 'eos') {
         // eos as chain, account name, token name
         element.amount = await Lib.Wallet('eos', element.name, 'vtx').balance
+        console.log('balance', element.name, element.amount)
       } else {
         element.amount = 0.0
       }
