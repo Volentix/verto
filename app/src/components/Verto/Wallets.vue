@@ -143,7 +143,8 @@ export default {
         icon: 'statics/coins_icons/btc.png',
         amount: '0.023 BTC',
         amountUSD: '$235.21'
-      }
+      },
+      tableData: []
     }
   },
   mounted () {
