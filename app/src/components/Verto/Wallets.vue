@@ -137,7 +137,7 @@ export default {
       ],
       selectedWallet: {
         selected: false,
-        type: 'btc-xyz',
+        type: 'btc',
         name: 'BTC xyz',
         percent: '1.02%',
         icon: 'statics/coins_icons/btc.png',
@@ -150,6 +150,7 @@ export default {
     this.tableData = this.$store.state.currentwallet.config.keys
 
     this.tableData.forEach(async element => {
+      element.to = '/verto/wallets/' + element.type
       element.type = element.type ? element.type : 'verto'
       if (element.type === 'eos') {
         // eos as chain, account name, token name
@@ -219,7 +220,6 @@ export default {
         transform: translateY(0px);
         opacity: 1;
       }
-      &--content{}
     }
     &--list{
       background-color: #fff;
