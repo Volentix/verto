@@ -1,7 +1,7 @@
 import EosWrapper from '@/util/EosWrapper'
 
 class Lib {
-  Wallet = async (walletType) => {
+  Wallet = async (walletType, walletName, walletTo) => {
     const balance = {
       async eos (account, token) {
         const tokenContract = {
