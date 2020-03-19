@@ -15,7 +15,7 @@
                 <span class="item-name--percent">{{item.percent}}</span>
               </q-item-section>
               <q-item-section class="item-info">
-                <span class="item-info--amount">{{item.amount}}</span>
+                <span class="item-info--amount">{{item.amount}} {{ item.type.toUpperCase() }}</span>
                 <span class="item-info--amountUSD">{{item.amountUSD}}</span>
               </q-item-section>
             </div>
@@ -95,6 +95,8 @@
 </template>
 
 <script>
+import Lib from '@/util/walletlib'
+
 export default {
   name: 'Wallets',
   props: {
@@ -135,17 +137,31 @@ export default {
       ],
       selectedWallet: {
         selected: false,
-        type: 'btc-xyz',
+        type: 'btc',
         name: 'BTC xyz',
         percent: '1.02%',
         icon: 'statics/coins_icons/btc.png',
         amount: '0.023 BTC',
         amountUSD: '$235.21'
-      }
+      },
+      tableData: []
     }
   },
   mounted () {
     this.tableData = this.$store.state.currentwallet.config.keys
+
+    this.tableData.forEach(async element => {
+      element.to = '/verto/wallets/' + element.type
+      element.type = element.type ? element.type : 'verto'
+      if (element.type === 'eos') {
+        // eos as chain, account name, token name
+        element.amount = await Lib.Wallet('eos', element.name, 'vtx').balance
+        console.log('balance', element.name, element.amount)
+      } else {
+        element.amount = 0.0
+      }
+    })
+
     console.table(this.tableData)
     console.table(this.menu)
   },
@@ -206,7 +222,6 @@ export default {
         transform: translateY(0px);
         opacity: 1;
       }
-      &--content{}
     }
     &--list{
       background-color: #fff;
