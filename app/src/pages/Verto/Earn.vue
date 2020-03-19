@@ -16,7 +16,7 @@
             <span class="btn-title">Create referral link</span>
           </template>
         </q-btn>
-        <q-btn color="white" class="convert-any-coin--wrapper--body__btn" text-color="black">
+        <q-btn color="white" to="/verto/earn/use-referral-account" class="convert-any-coin--wrapper--body__btn" text-color="black">
           <template v-slot>
             <div class="icon-wrapper">
               <img src="statics/eos_icon.png" width="45px" alt="">

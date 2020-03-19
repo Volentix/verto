@@ -82,10 +82,10 @@ export default {
           }
           .svg-icon{
             fill: #B0B0B0;
-            width: 70px;
+            width: 48px;
             height: 50px;
             max-width: unset;
-            transform: scale(1.5);
+            transform: scale(1.9);
           }
           .text-tab-name{
             font-size: 14px;
