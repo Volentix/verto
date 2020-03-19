@@ -64,6 +64,22 @@ export default [
     component: () => import('layouts/IntroWithTabs.vue'),
     children: [
       {
+        name: 'use-referral-account',
+        path: '/verto/earn/use-referral-account',
+        component: () => import('pages/Verto/UseReferralAccount.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
+        name: 'use-referral',
+        path: '/verto/earn/use-referral',
+        component: () => import('pages/Verto/UseReferral.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
         name: 'refer-friend',
         path: '/verto/earn/refer-friend',
         component: () => import('pages/Verto/ReferFriend.vue'),

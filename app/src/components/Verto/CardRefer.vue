@@ -9,7 +9,7 @@
           <div class="desc">You will both receive 10 VTX</div>
         </div>
       </div>
-      <q-btn unelevated class="card-refer--wrapper--header_btn" color="black" text-color="white" label="Learn more" />
+      <q-btn unelevated class="card-refer--wrapper--header_btn" color="black" to="/verto/earn/use-referral" text-color="white" label="Learn more" />
     </div>
   </div>
 </template>
