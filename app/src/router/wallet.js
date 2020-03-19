@@ -76,7 +76,7 @@ export default [
         path: '/verto/eos-account',
         component: () => import('pages/Verto/EOSAccount.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
@@ -84,7 +84,7 @@ export default [
         path: '/verto/stake',
         component: () => import('pages/Verto/Stake.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
@@ -100,7 +100,7 @@ export default [
         path: '/verto/send',
         component: () => import('pages/Verto/Send.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
@@ -108,7 +108,7 @@ export default [
         path: '/verto/wallets/send/:walletID',
         component: () => import('pages/Verto/Send.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
@@ -116,7 +116,7 @@ export default [
         path: '/verto/receive',
         component: () => import('pages/Verto/Receive.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
@@ -124,7 +124,7 @@ export default [
         path: '/verto/chain-tools',
         component: () => import('pages/Verto/ChainTools.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
@@ -132,7 +132,7 @@ export default [
         path: '/verto/history',
         component: () => import('pages/Verto/History.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
@@ -140,7 +140,7 @@ export default [
         path: '/verto/dashboard',
         component: () => import('pages/Verto/Dashboard.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
@@ -148,7 +148,7 @@ export default [
         path: '/verto/profile',
         component: () => import('pages/Verto/Profile.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
@@ -156,7 +156,7 @@ export default [
         path: '/verto/wallets',
         component: () => import('pages/Verto/Wallets.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
@@ -164,7 +164,7 @@ export default [
         path: '/verto/wallets/:walletID',
         component: () => import('pages/Verto/WalletDetail.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       }
     ]
