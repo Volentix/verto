@@ -1,6 +1,5 @@
 <template>
-<div>
-  <div class="card-refer--wrapper">
+  <div class="card-refer--wrapper full-width">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="card-refer--wrapper--header">
       <div class="card-refer--wrapper--header__holder full-width">
@@ -13,7 +12,6 @@
       <q-btn unelevated class="card-refer--wrapper--header_btn" icon-right="share" color="black" text-color="white" label="Share" />
     </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -35,7 +33,7 @@ export default {
       &--wrapper{
         padding: 4% 7%;
         background-color: #FCFCFC;
-        max-width: 95%;
+        max-width: 100%;
         margin-left: auto;
         margin-right: auto;
         box-shadow: 0px 3px 6px 0px rgba(black, .19);
