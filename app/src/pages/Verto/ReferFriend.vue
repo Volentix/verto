@@ -1,6 +1,6 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
-    <profile-header version="type5" />
+    <profile-header version="type6" />
     <div class="plr10">
       <card-refer />
       <hr style="height:0px;opacity:0" />
@@ -8,7 +8,7 @@
     </div>
     <div class="convert-any-coin--wrapper" style="margin-top: -50px">
       <div class="convert-any-coin--wrapper--body">
-        <q-btn color="white" to="/verto/earn/refer-friend" class="convert-any-coin--wrapper--body__btn" text-color="black">
+        <q-btn color="white" class="convert-any-coin--wrapper--body__btn" text-color="black">
           <template v-slot>
             <div class="icon-wrapper">
               <img src="statics/share_icon.png" width="35px" alt="">

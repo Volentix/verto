@@ -257,7 +257,7 @@ export default {
         transition: ease transform .3s, ease opacity .4s;
       }
       &.open{
-        margin-bottom: -100px;
+        margin-bottom: -40px;
         .list-wrapper{
           visibility: visible;
           height: auto;

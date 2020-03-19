@@ -1,7 +1,7 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
     <profile-header class="marg" />
-    <wallets />
+    <wallets :showWallets="true" :isWalletsPage="false" :isWalletDetail="true" />
   </q-page>
 </template>
 

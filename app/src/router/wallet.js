@@ -64,6 +64,14 @@ export default [
     component: () => import('layouts/IntroWithTabs.vue'),
     children: [
       {
+        name: 'refer-friend',
+        path: '/verto/earn/refer-friend',
+        component: () => import('pages/Verto/ReferFriend.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
         name: 'earn',
         path: '/verto/earn',
         component: () => import('pages/Verto/Earn.vue'),
