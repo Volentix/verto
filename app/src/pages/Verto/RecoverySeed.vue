@@ -15,7 +15,7 @@
     </div>
     <div v-if="step===2" class="standard-content">
       <h2 class="standard-content--title">This is your 24 - word recovery seed phrase.</h2>
-      <h2 class="standard-content--desc">Save these words in the right order in a secure location.Nobody will be able to help if you lose them!</h2>
+      <h2 class="standard-content--desc">Save these words in the right order in a secure location. Nobody will be able to help if you lose them!</h2>
       <div class="standard-content--body">
         <div class="standard-content--body__mnemonic">
           <h4 class="standard-content--body__mnemonic--title flex justify-between">
