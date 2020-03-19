@@ -1,11 +1,14 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
     <profile-header version="type5" />
-    <card-refer />
-    <card-share />
-    <div class="convert-any-coin--wrapper">
+    <div class="plr10">
+      <card-refer />
+      <hr style="height:0px;opacity:0" />
+      <card-share />
+    </div>
+    <div class="convert-any-coin--wrapper" style="margin-top: -50px">
       <div class="convert-any-coin--wrapper--body">
-        <q-btn color="white" class="convert-any-coin--wrapper--body__btn" text-color="black">
+        <q-btn color="white" to="/verto/earn/refer-friend" class="convert-any-coin--wrapper--body__btn" text-color="black">
           <template v-slot>
             <div class="icon-wrapper">
               <img src="statics/share_icon.png" width="35px" alt="">
@@ -13,7 +16,7 @@
             <span class="btn-title">Create referral link</span>
           </template>
         </q-btn>
-        <q-btn color="white" class="convert-any-coin--wrapper--body__btn" text-color="black">
+        <q-btn color="white" to="/verto/earn/use-referral-account" class="convert-any-coin--wrapper--body__btn" text-color="black">
           <template v-slot>
             <div class="icon-wrapper">
               <img src="statics/eos_icon.png" width="45px" alt="">
@@ -429,6 +432,10 @@ export default {
         box-shadow: 0px 3px 6px 0px rgba(black, .19);
       }
     }
+  }
+  .plr10{
+    padding-left: 10px;
+    padding-right: 10px;
   }
 </style>
 <style lang="scss">

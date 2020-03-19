@@ -1,6 +1,5 @@
 <template>
-<div>
-  <div class="card-refer--wrapper">
+  <div class="card-refer--wrapper full-width">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="card-refer--wrapper--header">
       <div class="card-refer--wrapper--header__holder full-width">
@@ -10,10 +9,9 @@
           <div class="desc">You will both receive 10 VTX</div>
         </div>
       </div>
-      <q-btn unelevated class="card-refer--wrapper--header_btn" color="black" text-color="white" label="Learn more" />
+      <q-btn unelevated class="card-refer--wrapper--header_btn" color="black" to="/verto/earn/use-referral" text-color="white" label="Learn more" />
     </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -35,7 +33,7 @@ export default {
       &--wrapper{
         padding: 4% 7%;
         background-color: #ffffff;
-        max-width: 95%;
+        max-width: 100%;
         margin-left: auto;
         margin-right: auto;
         box-shadow: 0px 3px 6px 0px rgba(black, .19);
