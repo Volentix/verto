@@ -29,6 +29,12 @@
         <span class="static__holder_img flex flex-center"></span>
       </div>
     </div>
+    <div v-else-if="version === 'type5'" class="profile-wrapper--header static" style="background: url(statics/earn_bg.png) center bottom no-repeat rgb(255, 255, 255) !important; min-height: 360px; background-size: 80% !important; box-shadow: none !important; border-radius: 0px;">
+      <div class="flex justify-between flex-row item-center content-center full-width">
+        <h3 class="flex flex-center text-white static__holder_title title5">Venue<br>Refer & Earn</h3>
+        <span class="static__holder_img flex flex-center"></span>
+      </div>
+    </div>
     <div v-else class="column flex-center profile-wrapper--header" style="background: url('statics/header_bg.png');">
       <h3 class="profile-wrapper--header__title text-white">Total Balance</h3>
       <h2 class="profile-wrapper--header__balance text-white">136.23 VTX</h2>
@@ -109,6 +115,13 @@ export default {
               margin-top: 15px;
               font-size: 30px;
               line-height: 45px;
+            }
+            &.title5{
+              margin-top: 15px;
+              font-size: 30px;
+              line-height: 45px;
+              color: #6C0DCB !important;
+              margin-top: -40px;
             }
           }
         }

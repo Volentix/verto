@@ -64,6 +64,14 @@ export default [
     component: () => import('layouts/IntroWithTabs.vue'),
     children: [
       {
+        name: 'earn',
+        path: '/verto/earn',
+        component: () => import('pages/Verto/Earn.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
         name: 'eos-account',
         path: '/verto/eos-account',
         component: () => import('pages/Verto/EOSAccount.vue'),
