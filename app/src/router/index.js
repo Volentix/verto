@@ -45,7 +45,8 @@ export default function (/* { store, ssrContext } */) {
     if (to.matched.some(record => record.meta.needskeyscreated)) {
       if (!store.state.currentwallet || !store.state.currentwallet.config.keys || store.state.currentwallet.config.keys.length < 1) {
         next({
-          path: '/create-wallet-options'
+          // Password set but no wallet
+          path: '/create-password'
         })
       } else {
         next()

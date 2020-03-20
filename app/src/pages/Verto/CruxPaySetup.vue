@@ -157,7 +157,9 @@ export default {
           this.cruxIDRegistered = true
           this.existingCruxID = this.cruxID + '@' + this.walletClientName + '.crux'
           this.step = 2
-          this.putAddress()
+          this.$nextTick(() => {
+            this.putAddress()
+          })
         } else {
           // this.existingCruxID = err.split('CruxID: ')[1].replace(/'/g, '')
           this.step = 2
@@ -187,7 +189,7 @@ export default {
       let map = []
       let i = 0
 
-      const allTheRequests = Object.keys(this.assets).map(async symbol => {
+      for (const symbol of Object.keys(this.assets)) {
         i++
         this.progress = Math.round(i / count * 10000) / 100
         this.status = 'creating keys for: ' + symbol
@@ -195,10 +197,19 @@ export default {
         let result = await this.$configManager.saveWalletAndKey(this.names.find(o => o.value === symbol).label, this.vertoPassword, null, keys.publicKey, keys.privateKey, symbol, 'mnemonic')
         console.log('key creation', result)
         map[symbol] = { 'addressHash': keys.publicKey }
-        return result
-      })
+      }
 
-      await Promise.all(allTheRequests)
+      // const allTheRequests = Object.keys(this.assets).map(async symbol => {
+      //   i++
+      //   this.progress = Math.round(i / count * 10000) / 100
+      //   this.status = 'creating keys for: ' + symbol
+      //   let keys = await HD.Wallet(symbol)
+      //   let result = await this.$configManager.saveWalletAndKey(this.names.find(o => o.value === symbol).label, this.vertoPassword, null, keys.publicKey, keys.privateKey, symbol, 'mnemonic')
+      //   console.log('key creation', result)
+      //   map[symbol] = { 'addressHash': keys.publicKey }
+      //   return result
+      // })
+
       console.log('map', map)
       cruxClient.putAddressMap(map)
       await this.$configManager.backupConfig()
