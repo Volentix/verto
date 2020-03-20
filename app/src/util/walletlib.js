@@ -14,9 +14,9 @@ class Lib {
         console.log('walletlib', key, tokenContract[token], bal)
         if (bal) {
           float = bal[0].split(' ')[0]
-        }; debugger
+        }
 
-        return float
+        return { balance: float }
       }
     }[walletType]
 

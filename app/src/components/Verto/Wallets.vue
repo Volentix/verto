@@ -155,7 +155,8 @@ export default {
       element.type = element.type ? element.type : 'verto'
       if (element.type === 'eos') {
         // eos as chain, account name, token name
-        element.amount = await Lib.Wallet('eos', element.name, 'vtx').balance
+        element.amount = (await new Lib.Wallet('eos', element.name, 'vtx')).balance
+        console.log(element.amount)
         console.log('balance', element.name, element.amount)
       } else {
         element.amount = 0.0
