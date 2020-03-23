@@ -101,7 +101,7 @@
                   </q-select>
                   <div class="text-h4 --subtitle --subtitle__summary">or paste it below</div>
                   <q-input
-                    v-model="privateKeyPassword"
+                    v-model="publicKey"
                     light
                     rounded
                     outlined
@@ -112,7 +112,7 @@
                   />
                 </div>
                 <q-stepper-navigation class="flex justify-end">
-                  <q-btn @click="step = 3" color="deep-purple-14" class="--next-btn" rounded label="Next" />
+                  <q-btn @click="step = 3" v-if="wallet !== null || publicKey !== ''" color="deep-purple-14" class="--next-btn" rounded label="Next" />
                 </q-stepper-navigation>
               </q-step>
 
@@ -126,18 +126,20 @@
                 <div class="text-black">
                   <div class="text-h4 --subtitle">Enter your password to sign the transaction.</div>
                   <q-input
-                    v-model="privateKeyPassword"
+                    ref="psswrd"
+                    v-model="password"
+                    @keyup.enter="login"
+                    @input="checkPassword"
+                    :error="passHasError"
+                    rounded outlined
+                    :type="isPwd ? 'password' : 'text'"
+                    label="Private Key Password"
+                    hint="*Minimum of 8 characters"
                     light
-                    rounded
-                    outlined
+                    error-message="The password is incorrect"
                     class="--input"
                     color="green"
-                    label="Private Key Password"
                     debounce="500"
-                    :error="invalidPrivateKeyPassword"
-                    error-message="The password is incorrect"
-                    @input="checkPrivateKeyPassword"
-                    :type="isPwd ? 'password' : 'text'"
                   >
                     <template v-slot:append>
                       <q-icon
@@ -149,7 +151,7 @@
                   </q-input>
                 </div>
                 <q-stepper-navigation class="flex justify-end">
-                  <q-btn @click="step = 4" color="deep-purple-14" class="--next-btn" rounded label="Next" />
+                  <q-btn @click="login" v-if="showSubmit" color="deep-purple-14" class="--next-btn" rounded label="Next" />
                 </q-stepper-navigation>
               </q-step>
 
@@ -198,17 +200,23 @@ import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 import Lib from '@/util/walletlib'
 
+import configManager from '@/util/ConfigManager'
+
 export default {
   name: 'ChainTools',
   data () {
     return {
       walletName: '',
       accountNew: '',
+      password: '',
+      passHasError: false,
+      showSubmit: false,
       showNextButtonToVertoPassword: false,
       showNextButtonToPassword: false,
       inError: false,
       step: 1,
       active: true,
+      publicKey: '',
       wallet: null,
       options: [
         {
@@ -298,6 +306,29 @@ export default {
     console.table(this.tableData)
   },
   methods: {
+    async login () {
+      this.passHasError = false
+      if (!this.password) {
+        this.passHasError = true
+        return
+      }
+      const results = await configManager.login(this.password)
+      if (results.success) {
+        this.step = 4
+      } else {
+        if (results.message === 'no_default_key') {
+        } else {
+          this.passHasError = true
+        }
+      }
+    },
+    checkPassword () {
+      if (this.password.length > 2) {
+        this.showSubmit = true
+      } else {
+        this.showSubmit = false
+      }
+    },
     getImages (symbol) {
       console.log('symbol', symbol)
       if (symbol === 'verto') {
