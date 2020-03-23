@@ -62,7 +62,7 @@
         <span class="add-remove-wrapper--title text-black">Add Currency</span>
         <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" />
       </div>
-      <q-btn v-if="!isWalletDetail" @click="toggleWallets()" unelevated flat :icon-right="showText ? 'keyboard_arrow_up': 'keyboard_arrow_down'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showText ? 'Hide all wallets' : 'Show all wallets'" />
+      <q-btn v-if="!isWalletDetail" @click="toggleWallets()" unelevated flat :icon-right="showText ? 'keyboard_arrow_up': 'keyboard_arrow_down'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showText ? 'Hide all wallets' : 'Show all wallets'" :class="showText ? 'open': 'hide'" />
       <!-- <q-btn v-else @click="toggleWallets()" unelevated flat :icon-right="showText ? 'keyboard_arrow_up': 'keyboard_arrow_down'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showText ? 'Hide all wallets' : 'Show all wallets'" /> -->
     </div>
     <div class="modal-wrapper text-black bg-white" :class="{'open' : openModal}">
@@ -226,7 +226,7 @@ export default {
     }
     &--list{
       background-color: #fff;
-      padding: 4% 5%;
+      padding: 4% 0%;
       border-radius: 0px 0px 10px 10px;
       box-shadow: 0px 3px 6px 0px rgba(black, .19);
       .add-remove-wrapper{
@@ -262,6 +262,9 @@ export default {
         margin-top: 0px;
         margin-bottom: 10px;
         color: #7272FA !important;
+        &.hide{
+          margin-bottom: 13px;
+        }
       }
       .list-wrapper{
         overflow: hidden;
@@ -349,6 +352,7 @@ export default {
       .item-name{
         color: #000;
         font-weight: 700;
+        max-width: fit-content;
         &--name{
           font-size: 14px;
         }
@@ -361,8 +365,8 @@ export default {
         font-weight: 700;
         display: flex;
         flex-direction: column;
-        justify-content: flex-end;
-        align-items: center;
+        justify-content: center;
+        align-items: flex-end;
         &--amount{
           font-size: 16px;
         }
