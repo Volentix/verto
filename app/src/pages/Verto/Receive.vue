@@ -2,7 +2,7 @@
   <q-page class="text-black bg-white">
     <div class="standard-content">
       <h2 class="standard-content--title flex justify-center">
-        <q-btn flat unelevated class="btn-align-left" text-color="black" icon="keyboard_backspace" />
+        <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" />
         Receive
       </h2>
       <div class="standard-content--body">
@@ -50,7 +50,6 @@
               </q-item>
             </template>
           </q-select>
-          <br>
           <span class="lab-input">Or Via Verto ID (Cruxpay)</span>
           <q-input v-model="vertoID" class="input-input" rounded outlined color="purple" type="text"/>
           <br>
@@ -142,7 +141,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: calc(100vh + 100px) !important;
+  min-height: 100vh !important;
   padding-bottom: 100px;
   &--title{
     font-size: 35px;
@@ -151,7 +150,7 @@ export default {
     line-height: 50px;
     font-family: $Titillium;
     margin-top: 0px;
-    margin-bottom: 40px;
+    margin-bottom: 0px;
     .btn-align-left{
       position: absolute;
       left: -15px;
@@ -200,7 +199,7 @@ export default {
         .qrcode-widget{
           /deep/ canvas{
             height: auto !important;
-            width: 90% !important;
+            width: 60% !important;
             margin: auto;
             display: block;
           }
@@ -321,7 +320,7 @@ export default {
     flex-direction: row;
     justify-content: flex-end;
     align-items: flex-end;
-    min-height: 100px;
+    min-height: fit-content;
     .action-link{
       height: 50px;
       text-transform: initial !important;

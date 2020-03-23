@@ -7,7 +7,7 @@
         <span class="card-create-wallet--wrapper--header__holder_img"><img src="statics/coins_icons/eos_bg.png" alt=""></span>
         <h3 class="text-black card-create-wallet--wrapper--header__holder_title">Create your multi-currency Verto wallet</h3>
       </div>
-      <q-btn unelevated class="card-create-wallet--wrapper--header_btn" color="black" text-color="white" label="Create" />
+      <q-btn to="/verto/eos-account" unelevated class="card-create-wallet--wrapper--header_btn" color="black" text-color="white" label="Create" />
     </div>
   </div>
 </div>
