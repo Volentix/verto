@@ -26,7 +26,7 @@
                     </ul>
                   </div>
                   <q-input
-                    v-model="privateKeyPassword"
+                    v-model="accountNew"
                     light
                     rounded
                     outlined
@@ -34,10 +34,13 @@
                     color="deep-purple-14"
                     label="Account name"
                     debounce="500"
+                    :error="inError"
+                    :error-message="errorMessage"
+                    @input="checkName"
                   />
                 </div>
 
-                <q-stepper-navigation class="flex justify-end">
+                <q-stepper-navigation class="flex justify-end" v-show="showNextButtonToPassword">
                   <q-btn @click="step = 2" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
                 </q-stepper-navigation>
               </q-step>
@@ -193,11 +196,17 @@
 
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
+import Lib from '@/util/walletlib'
 
 export default {
   name: 'ChainTools',
   data () {
     return {
+      walletName: '',
+      accountNew: '',
+      showNextButtonToVertoPassword: false,
+      showNextButtonToPassword: false,
+      inError: false,
       step: 1,
       active: true,
       wallet: null,
@@ -238,7 +247,8 @@ export default {
         amount: false,
         privateKeyPasswordBtn: false,
         showNextButtonToPassword: false
-      }
+      },
+      tableData: []
     }
   },
   computed: {
@@ -254,16 +264,72 @@ export default {
     this.eosbalance = this.$route.params.eosbalance
     this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
   },
-  async mounted () {
+  mounted () {
     this.walletName = this.$store.state.currentwallet.wallet.name
-    this.account = await eos.getAccount(this.walletName)
+    this.account = eos.getAccount(this.walletName)
 
     if (this.account.voter_info) {
       this.stakedAmount = +this.account.voter_info.staked / 10000
       this.currentProxy = this.account.voter_info.proxy
     }
+
+    this.tableData = this.$store.state.currentwallet.config.keys
+    this.tableData.forEach(async element => {
+      element.to = '/verto/wallets/' + element.type
+      element.type = element.type ? element.type : 'verto'
+      if (element.type === 'eos') {
+        // eos as chain, account name, token name
+        element.amount = (await new Lib.Wallet('eos', element.name, 'vtx')).balance
+        // console.log(element.amount)
+        // console.log('balance', element.name, element.amount)
+      } else {
+        element.amount = 0.0
+      }
+      this.options.push({
+        label: element.name,
+        value: element.key,
+        image: this.getImages(element.type)
+      })
+      console.log('this.options', this.options)
+    }
+    )
+
+    console.log('this.tableData')
+    console.table(this.tableData)
   },
   methods: {
+    getImages (symbol) {
+      console.log('symbol', symbol)
+      if (symbol === 'verto') {
+        return '/statics/icon.png'
+      } else {
+        return symbol ? 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png' : false
+      }
+    },
+    async checkName () {
+      this.inError = false
+      if (this.accountNew.length === 12) {
+        if (/(^[a-z1-5]{1}([a-z1-5.]{0,10}[a-z1-5])?$)/g.test(this.accountNew)) {
+          this.showNextButtonToPassword = true
+          try {
+            await eos.getAccount(this.accountNew)
+            this.inError = true
+            this.errorMessage = 'Account Name Taken'
+          } catch (error) {
+            this.inError = false
+            this.showNextButtonToPassword = true
+          }
+        } else {
+          this.inError = true
+          this.errorMessage = 'Invalid Account Name'
+          this.showNextButtonToPassword = false
+        }
+      } else {
+        this.inError = true
+        this.errorMessage = 'You need exactly 12 characters'
+        this.showNextButtonToPassword = false
+      }
+    },
     showMore () {
 
     },
