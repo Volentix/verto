@@ -24,7 +24,7 @@
     </div>
     <div class="standard-content">
       <h2 class="standard-content--title flex justify-center">
-        <q-btn flat unelevated class="btn-align-left" text-color="black" icon="keyboard_backspace" />
+        <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" />
         Send
       </h2>
       <div class="standard-content--body">
@@ -75,10 +75,10 @@
               <q-btn round flat unelevated text-color="grey" @click.stop icon="o_file_copy" />
             </template>
           </q-select>
-          <br>
+
           <span class="lab-input">Amount</span>
           <q-input v-model="amount" class="input-input" rounded outlined color="purple" type="text"/>
-          <br>
+
           <span class="lab-input">To</span>
           <q-input v-model="to" rounded class="input-input pr80" outlined color="purple" type="text" label="Wallet address">
             <template v-slot:append>
@@ -90,7 +90,7 @@
               </div>
             </template>
           </q-input>
-          <br>
+
           <span class="lab-input">Memo</span>
           <q-input v-model="memo" rounded outlined class="" color="purple" type="textarea"/>
         </div>
@@ -206,7 +206,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: calc(100vh + 100px) !important;
+    min-height: 100vh !important;
     padding-bottom: 100px;
     &--title{
       font-size: 35px;
@@ -215,7 +215,7 @@ export default {
       line-height: 50px;
       font-family: $Titillium;
       margin-top: 0px;
-      margin-bottom: 40px;
+      margin-bottom: 0px;
       .btn-align-left{
         position: absolute;
         left: -15px;
@@ -353,7 +353,7 @@ export default {
       flex-direction: row;
       justify-content: flex-end;
       align-items: flex-end;
-      min-height: 100px;
+      min-height: fit-content;
       .action-link{
         height: 50px;
         text-transform: initial !important;
