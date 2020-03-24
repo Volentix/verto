@@ -73,7 +73,7 @@ You can run Verto on the following platforms:
 Only a browser is required to run on web.
 
 ```
-quasar dev
+QENV=development quasar dev
 ```
 
 ### Tauri
@@ -81,7 +81,7 @@ quasar dev
 No additional tooling is required to run Verto as an electron app.
 
 ```
-quasar dev -m tauri
+QENV=development quasar dev -m tauri
 ```
 
 ### Electron
@@ -89,7 +89,7 @@ quasar dev -m tauri
 No additional tooling is required to run Verto as an electron app.
 
 ```
-quasar dev -m electron
+QENV=development quasar dev -m electron
 ```
 
 ### Android
@@ -97,7 +97,7 @@ quasar dev -m electron
 You must install the android development environment for your platform. This is considered out of scope for this guide. Please refer to online documentation from official sources.
 
 ```
-quasar dev -m android
+QENV=development quasar dev -m android
 ```
 
 ### IOS
@@ -105,7 +105,7 @@ quasar dev -m android
 You must install the android development environment for your platform. This is considered out of scope for this guide. Please refer to online documentation from official sources.
 
 ```
-quasar dev -m ios
+QENV=development quasar dev -m ios
 ```
 
 ## Maintainers
