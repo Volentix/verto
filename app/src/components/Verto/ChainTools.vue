@@ -101,8 +101,8 @@
                     </div>
                 </div>
 
-                <q-stepper-navigation class="flex justify-end">
-                  <q-btn @click="step = 2" color="primary" class="--next-btn" rounded label="Next" />
+                <q-stepper-navigation v-show="navigationButtons.amount" class="flex justify-end">
+                  <q-btn @click="step = 2" color="deep-purple-14" class="--next-btn" rounded label="Next" />
                 </q-stepper-navigation>
               </q-step>
 
@@ -116,18 +116,20 @@
                 <div class="text-black">
                   <div class="text-h4 --subtitle">Enter your password to sign the transaction.</div>
                   <q-input
-                    v-model="privateKeyPassword"
+                    ref="psswrd"
+                    v-model="password"
+                    @keyup.enter="login"
+                    @input="checkPassword"
+                    :error="passHasError"
+                    rounded outlined
+                    :type="isPwd ? 'password' : 'text'"
+                    label="Private Key Password"
+                    hint="*Minimum of 8 characters"
                     light
-                    rounded
-                    outlined
+                    error-message="The password is incorrect"
                     class="--input"
                     color="green"
-                    label="Private Key Password"
                     debounce="500"
-                    :error="invalidPrivateKeyPassword"
-                    error-message="The password is incorrect"
-                    @input="checkPrivateKeyPassword"
-                    :type="isPwd ? 'password' : 'text'"
                   >
                     <template v-slot:append>
                       <q-icon
@@ -139,7 +141,7 @@
                   </q-input>
                 </div>
                 <q-stepper-navigation class="flex justify-end">
-                  <q-btn @click="step = 4" color="primary" class="--next-btn" rounded label="Next" />
+                  <q-btn @click="login" v-if="showSubmit" color="deep-purple-14" class="--next-btn" rounded label="Next" />
                 </q-stepper-navigation>
               </q-step>
 
@@ -151,20 +153,25 @@
 
                 <div class="text-black">
                   <!-- change --subtitle__success to --subtitle__faild to get the appropriate style -->
-                  <div class="text-h4 --subtitle --subtitle__success">Success</div>
-                  <div class="text-h4 --subtitle --subtitle__transLink">Transaction link</div>
-                  <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
-                  <ul class="--subtitle__summary--list">
-                    <li>EOS nation is now your proxy.</li>
-                    <li>Amount of EOS stake 101</li>
-                  </ul>
+                  <div class="text-h4 --subtitle --subtitle__summary">Processing the transaction</div>
+                  <!-- <div class="text-h4 --subtitle --subtitle__transLink">Transaction link</div> -->
+
+                  <div v-show="!transactionError">
+                    <div class="text-h4 --subtitle --subtitle__success">Success</div>
+                    <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
+                    <ul class="--subtitle__summary--list">
+                      <li>{{ SuccessMessage }}</li>
+                      <!-- <li>Amount of EOS stake 101</li> -->
+                    </ul>
+                  </div>
                   <hr>
-                  <div class="text-h4 --subtitle --subtitle__faild">Faild</div>
-                  <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
-                  <ul class="--subtitle__summary--list">
-                    <li>EOS nation is now your proxy.</li>
-                    <li>Amount of EOS stake 101</li>
-                  </ul>
+                  <div v-show="transactionError" class="text-h6 text-uppercase text-red q-pa-md">
+                    <div class="text-h4 --subtitle --subtitle__faild">Faild</div>
+                    <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
+                    <ul class="--subtitle__summary--list">
+                      <li>{{ ErrorMessage }}</li>
+                    </ul>
+                  </div>
                 </div>
 
                 <!-- <q-stepper-navigation>
@@ -184,6 +191,8 @@
 
 <script>
 
+import configManager from '@/util/ConfigManager'
+
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 
@@ -195,6 +204,9 @@ export default {
       active: true,
       showWallet: false,
       showText: false,
+      password: '',
+      showSubmit: false,
+      passHasError: false,
       slider: 0,
       progColor: 'green',
       eosbalance: 0,
@@ -252,6 +264,31 @@ export default {
     showMore () {
 
     },
+    checkPassword () {
+      if (this.password.length > 2) {
+        this.showSubmit = true
+      } else {
+        this.showSubmit = false
+      }
+    },
+    async login () {
+      this.passHasError = false
+      if (!this.password) {
+        this.passHasError = true
+        return
+      }
+      const results = await configManager.login(this.password)
+      if (results.success) {
+        this.step = 4
+        this.upgradeAccountName()
+        this.sendTransaction()
+      } else {
+        if (results.message === 'no_default_key') {
+        } else {
+          this.passHasError = true
+        }
+      }
+    },
     changeSlider () {
       if (this.slider >= 0) {
         this.sendAmount = Math.round(10000 * this.eosbalance * (this.slider / 100)) / 10000
@@ -283,6 +320,51 @@ export default {
         this.invalidPrivateKeyPassword = true
         return false
       }
+    },
+    formatAmountString () {
+      let numberOfDecimals = 0
+      let stringAmount = this.sendAmount.toString()
+      const amountParsed = stringAmount.split('.')
+      if (amountParsed && amountParsed.length > 1) {
+        numberOfDecimals = amountParsed[1].length
+      } else {
+        stringAmount += '.'
+      }
+      for (;numberOfDecimals < 4; numberOfDecimals++) {
+        stringAmount += '0'
+      }
+
+      return stringAmount + ' EOS'
+    },
+    async sendTransaction () {
+      try {
+        this.step = 3
+        // this.showSpinners(true)
+
+        this.formatedAmount = this.formatAmountString()
+        const transaction = await eos.transferToken(
+          'eosio.token',
+          this.walletName,
+          'newdexpublic',
+          this.formatedAmount,
+          '{"type":"buy-market","symbol":"volentixgsys-vtx-eos","price":"0.00000","channel":"dapp","ref":"verto"}',
+          this.privateKey.key
+        )
+        this.transactionId = transaction.transaction_id
+        // this.showSpinners(false)
+        this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '">block explorer</a>'
+      } catch (error) {
+        // this.showSpinners(false)
+        if (error.includes('maximum billable CPU time')) {
+          this.transactionError = true
+          this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
+        } else if (error.includes('Sorry, Newdex trade is pause')) {
+          this.transactionError = true
+          this.ErrorMessage = 'Convertion is suspended at the moment, it`s not your fault.  Try again later'
+        }
+      }
+
+      this.privateKey.key = null
     }
   }
 }
