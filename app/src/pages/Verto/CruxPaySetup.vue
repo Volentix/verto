@@ -31,19 +31,25 @@
     <div v-if="step===2" class="standard-content" style="padding-bottom: 70px">
       <div class="standard-content--body">
         <h2 class="standard-content--title"> Registering your wallet addresses in your ID</h2>
-        <p class="diclaimer"> {{ status }} </p>
+        <!-- <p class="diclaimer"> {{ status }} </p> -->
         <div class="standard-content--body__form">
-          <q-circular-progress
-            :value="progress"
-            size="200px"
-            :thickness="0.5"
-            show-value
-            font-size="20px"
-            color="green"
-            center-color="grey-8"
-            track-color="transparent"
-            class="q-ma-md"
-          />
+          <div class="send-modal__content--body column flex-center">
+            <q-circular-progress
+              :value="progress"
+              size="170px"
+              :thickness="0.05"
+              color="cyan-5"
+              track-color="grey-3"
+              class="q-ma-md"
+              show-value
+              font-size="20px"
+            />
+            <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58"><path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path></svg>
+            <div class="--label text-cyan-5 text-h6">{{ progress }} %</div>
+          </div>
+          <div class="send-modal__content--footer">
+            <div class="text-h4 --status">{{ status }}</div>
+          </div>
           <div class="flex-end flex justify-end">
             <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="step=3" :disable="!mapped" />
           </div>
@@ -55,16 +61,17 @@
     </div>
     <div v-if="step===3" class="standard-content" style="padding-bottom: 70px">
       <div class="standard-content--body">
-        <h2 class="standard-content--title">You're all set. <br> {{ existingCruxID }} <br>Enjoy using verto</h2>
+        <h2 class="standard-content--title">You're all set. <span class="cruxid">{{ existingCruxID }}</span> Enjoy using verto</h2>
         <p class="diclaimer"><strong>Disclaimer</strong> These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.</p>
-        <div class="standard-content--body__form">
-          <div class="flex-end flex justify-end">
-            <q-btn flat class="action-link next" color="black" text-color="white" label="Next" to="/verto/dashboard" />
-          </div>
-        </div>
+
       </div>
-      <div class="standard-content--footer">
-        <p class="crux-label">Powered by cruxpay.</p>
+      <div class="standard-content--body__form">
+        <div class="flex-end flex justify-end">
+          <q-btn flat class="action-link next" color="black" text-color="white" label="Next" to="/verto/dashboard" />
+        </div>
+        <div class="standard-content--footer">
+          <p class="crux-label">Powered by cruxpay.</p>
+        </div>
       </div>
     </div>
   </q-page>
@@ -192,7 +199,7 @@ export default {
       for (const symbol of Object.keys(this.assets)) {
         i++
         this.progress = Math.round(i / count * 10000) / 100
-        this.status = 'creating keys for: ' + symbol
+        this.status = 'Creating keys for: ' + symbol
         let keys = await HD.Wallet(symbol)
         let result = await this.$configManager.saveWalletAndKey(this.names.find(o => o.value === symbol).label, this.vertoPassword, null, keys.publicKey, keys.privateKey, symbol, 'mnemonic')
         console.log('key creation', result)
@@ -239,8 +246,17 @@ export default {
     position: relative;
     line-height: 50px;
     font-family: $Titillium;
-    margin-top: 40px;
-    margin-bottom: 40px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    word-break: break-all;
+    .cruxid{
+      font-size: 18px;
+      font-weight: $light;
+      display: block;
+      background-color: rgba(black, .02);
+      padding: 0px 20px;
+      border-radius: 10px;
+    }
   }
   &--desc{
     margin-top: -20px;
@@ -254,6 +270,15 @@ export default {
   }
   &--body{
     min-height: 62vh;
+    .diclaimer{
+      strong{
+        display: block;
+        font-size: 18px;
+        font-family: $Titillium;
+        font-weight: $bold;
+        margin-bottom: 10px;
+      }
+    }
     &__img{
       // min-height: 200px;
       $width: 170px;
@@ -321,4 +346,37 @@ export default {
     }
   }
 }
+.send-modal{
+    &__content{
+      &--body{
+        /deep/ .q-circular-progress__text{
+          display: none !important;
+        }
+        position: relative;
+        .svg_logo{
+          fill: #00D0CA;
+          position: absolute;
+          margin-top: 5px;
+          width: 90px;
+        }
+        .--label{
+          font-size: 20px;
+          font-weight: $light;
+          font-family: $Titillium;
+          position: absolute;
+          bottom: -20px;
+        }
+      }
+      &--footer{
+        .--status{
+          font-size: 20px;
+          font-weight: $bold;
+          font-family: $Titillium;
+          margin-top: 10px;
+          text-align: center;
+          margin-bottom: 70px;
+        }
+      }
+    }
+  }
 </style>

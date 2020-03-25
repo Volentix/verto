@@ -152,6 +152,7 @@
                 </div>
                 <q-stepper-navigation class="flex justify-end">
                   <q-btn @click="login" v-if="showSubmit" color="deep-purple-14" class="--next-btn" rounded label="Next" />
+                  <!-- <q-btn flat label="Ok" :disable="!vertoPassordValid" @click="upgradeAccountName()" v-close-popup /> -->
                 </q-stepper-navigation>
               </q-step>
 
@@ -246,6 +247,7 @@ export default {
       transactionError: false,
       spinnervisible: false,
       isPwd: true,
+      currentWallet: null,
       account: null,
       privateKeyPassword: null,
       showSendModal: false,
@@ -315,12 +317,24 @@ export default {
       const results = await configManager.login(this.password)
       if (results.success) {
         this.step = 4
+        this.upgradeAccountName()
       } else {
         if (results.message === 'no_default_key') {
         } else {
           this.passHasError = true
         }
       }
+    },
+    upgradeAccountName () {
+      this.currentWallet.type = 'eos'
+      this.currentWallet.name = this.accountName.value
+      this.$configManager.updateCurrentWallet(this.currentWallet)
+      this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
+      // reset form variables
+      this.vertoPassword = null
+      this.privateKeyPassword = null
+      this.accountName = null
+      this.step = 1
     },
     checkPassword () {
       if (this.password.length > 2) {
