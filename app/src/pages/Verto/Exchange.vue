@@ -2,7 +2,7 @@
   <q-page class="text-black bg-white">
     <div class="standard-content">
       <h2 class="standard-content--title flex justify-center">
-        <q-btn flat unelevated class="btn-align-left" text-color="black" icon="keyboard_backspace" />
+        <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" />
         Exchange
       </h2>
       <div class="standard-content--body">

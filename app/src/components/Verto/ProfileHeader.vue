@@ -10,6 +10,7 @@
     </div>
     <div v-else-if="version === 'type2'" class="profile-wrapper--header static">
       <div class="flex justify-between flex-row item-center content-center full-width">
+        <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="white" icon="keyboard_backspace" />
         <h3 class="flex flex-center text-white static__holder_title">Making VTX while you sleep, will be available soon.</h3>
         <span class="static__holder_img flex flex-center"><img src="statics/stake-vtx-bg.svg" alt=""></span>
       </div>
@@ -25,6 +26,7 @@
     </div>
     <div v-else-if="version === 'type4'" class="profile-wrapper--header static" style="background: url(statics/eos-bg.png) #007086 no-repeat !important; background-size: contain !important; min-height: 260px;">
       <div class="flex justify-between flex-row item-center content-center full-width">
+        <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="white" icon="keyboard_backspace" />
         <h3 class="flex flex-center text-white static__holder_title title2">Create EOS account</h3>
         <span class="static__holder_img flex flex-center"></span>
       </div>
@@ -98,6 +100,11 @@ export default {
         min-height: 240px;
         height: auto;
         padding-top: 70px;
+        .btn-align-left{
+          position: absolute;
+          left: 10px;
+          top: 3%;
+        }
         .flex-row{
           .static__holder_img{
             img{
