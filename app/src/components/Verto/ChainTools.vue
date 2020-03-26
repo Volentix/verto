@@ -57,7 +57,7 @@
                     </div>
                     <div class="col">
                       <span class="--title row text-h6">
-                        EOS (Staked)
+                        VTX (Staked)
                       </span>
                       <span class="--amount row text-h4">
                         {{ stakedAmount }}
