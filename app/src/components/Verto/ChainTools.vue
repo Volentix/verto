@@ -69,7 +69,7 @@
                     <q-slider
                       v-model="slider"
                       :label-value="slider + '%'"
-                      :min="-100"
+                      :min="0"
                       :max="100"
                       :step="5"
                       color="orange"
