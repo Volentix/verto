@@ -8,7 +8,7 @@
           <div class="header-wallet-wrapper culumn full-width">
             <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
               <q-item-section avatar>
-                <img class="coin-icon" width="35px" :src="getImages(item.type)" alt="">
+                <img class="coin-icon" width="35px" :src="getImages(item.type, item.chain, item.icon)" alt="">
               </q-item-section>
               <q-item-section class="item-name">
                 <span class="item-name--name">{{item.name}}</span>
@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import Lib from '@/util/walletlib'
+// import Lib from '@/util/walletlib'
 
 export default {
   name: 'Wallets',
@@ -147,29 +147,58 @@ export default {
       tableData: []
     }
   },
-  mounted () {
-    this.tableData = this.$store.state.currentwallet.config.keys
+  async created () {
+    const self = this
+    this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
 
-    this.tableData.forEach(async element => {
+    this.tableData.map(element => {
       element.to = '/verto/wallets/' + element.type
       element.type = element.type ? element.type : 'verto'
-      if (element.type === 'eos') {
-        // eos as chain, account name, token name
-        element.amount = (await new Lib.Wallet('eos', element.name, 'vtx')).balance
-        console.log(element.amount)
-        console.log('balance', element.name, element.amount)
-      } else {
-        element.amount = 0.0
+      element.amount = 0.0
+    })
+
+    for (var i = 0; i < this.tableData.length; i++) {
+      if (this.tableData[i].type === 'eos') {
+        let t = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': this.tableData[i].name })).data
+
+        t.map(t => {
+          console.log('token', t)
+
+          if (t.symbol.toLowerCase() !== 'eos') {
+            if (+t.amount !== 0) {
+              self.tableData.push({
+                selected: false,
+                type: t.symbol.toLowerCase(),
+                name: self.tableData[i].name,
+                amount: t.amount,
+                contract: t.code,
+                chain: 'eos',
+                to: '/verto/wallets/eos/' + t.symbol.toLowerCase(),
+                icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
+              })
+            }
+          } else {
+            this.tableData[i].amount = t.amount
+          }
+        })
       }
+    }
+
+    this.tableData.sort(function (a, b) {
+      if (a.name.toLowerCase() < b.name.toLowerCase()) {
+        return -1
+      }
+      return 1
     })
 
     console.table(this.tableData)
     console.table(this.menu)
   },
   methods: {
-    getImages (symbol) {
-      console.log('symbol', symbol)
-      if (symbol === 'verto') {
+    getImages (symbol, chain, icon) {
+      if (chain === 'eos') {
+        return icon
+      } else if (symbol === 'verto') {
         return '/statics/icon.png'
       } else {
         return symbol ? 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png' : false
