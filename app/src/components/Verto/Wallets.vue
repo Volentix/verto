@@ -95,7 +95,7 @@
 </template>
 
 <script>
-// import Lib from '@/util/walletlib'
+import Lib from '@/util/walletlib'
 
 export default {
   name: 'Wallets',
@@ -162,7 +162,7 @@ export default {
         let t = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': this.tableData[i].name })).data
 
         t.map(t => {
-          console.log('token', t)
+          console.log('eos token', t)
 
           if (t.symbol.toLowerCase() !== 'eos') {
             if (+t.amount !== 0) {
@@ -181,6 +181,31 @@ export default {
             this.tableData[i].amount = t.amount
           }
         })
+      } else if (this.tableData[i].type === 'eth') {
+        let t = (await this.$axios.get('https://api.ethplorer.io/getAddressInfo/' + this.tableData[i].key + '?apiKey=freekey')).data
+
+        // For eth
+        this.tableData[i].amount = t.ETH.balance
+        console.log('eth token', t)
+
+        if (t.tokens) {
+          t.tokens.map(t => {
+            console.log('eth token', t)
+
+            self.tableData.push({
+              selected: false,
+              type: t.tokenInfo.symbol.toLowerCase(),
+              name: self.tableData[i].name,
+              amount: t.balance.div(10 ** t.tokenInfo.decimals),
+              contract: t.tokenInfo.address,
+              chain: 'eth',
+              to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase(),
+              icon: t.tokenInfo.image ? t.tokenInfo.image : ''
+            })
+          })
+        }
+      } else if (this.tableData[i].type === 'btc') {
+        this.tableData[i].amount = (await Lib.Wallet(this.tableData[i].type, this.tableData[i].key)).balance
       }
     }
 
