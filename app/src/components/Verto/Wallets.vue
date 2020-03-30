@@ -236,6 +236,7 @@ export default {
   @import "~@/assets/styles/variables.scss";
   .wallets-wrapper{
     padding: 0px 6%;
+    padding-bottom: 70px;
     .modal-wrapper{
       position: fixed;
       width: 100vw;
