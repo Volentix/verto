@@ -116,6 +116,7 @@
 
 <script>
 import Lib from '@/util/walletlib'
+import Web3 from 'web3'
 
 export default {
   name: 'Wallets',
@@ -244,21 +245,36 @@ export default {
           }
         })
       } else if (this.tableData[i].type === 'eth') {
-        let t = (await this.$axios.get('https://api.ethplorer.io/getAddressInfo/' + this.tableData[i].key + '?apiKey=freekey')).data
+        this.tableData[i].key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
+        let ethplorer = (await this.$axios.get('https://api.ethplorer.io/getAddressInfo/' + this.tableData[i].key + '?apiKey=freekey')).data
+        let tokenSets = (await this.$axios.get('https://cors-anywhere.herokuapp.com/https://api.tokensets.com/public/v1/rebalancing_sets')).data.rebalancing_sets
+        console.log('tokenSets', tokenSets)
 
         // For eth
-        this.tableData[i].amount = t.ETH.balance
-        // console.log('eth token', t)
+        this.tableData[i].amount = ethplorer.ETH.balance
 
-        if (t.tokens) {
-          t.tokens.map(t => {
-            // console.log('eth token', t)
+        if (ethplorer.tokens) {
+          ethplorer.tokens.map(async t => {
+            // t.tokenInfo.image = t.tokenInfo.image ? t.tokenInfo.image : 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + Web3.utils.toChecksumAddress(t.tokenInfo.address) + '/logo.png'
+            const csa = Web3.utils.toChecksumAddress(t.tokenInfo.address)
+
+            if (!t.tokenInfo.image) {
+              try {
+                const status = (await this.$axios.get('https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + csa + '/logo.png')).status
+                if (status === 200) {
+                  t.tokenInfo.image = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + csa + '/logo.png'
+                }
+              } catch (error) {
+                t.tokenInfo.image = tokenSets.find(s => s.address === t.tokenInfo.address).image
+                console.log('eth token not on trustwallet', t, csa)
+              }
+            }
 
             self.tableData.push({
               selected: false,
               type: t.tokenInfo.symbol.toLowerCase(),
-              name: self.tableData[i].name,
-              amount: t.balance.div(10 ** t.tokenInfo.decimals),
+              name: t.tokenInfo.name,
+              amount: t.balance / (10 ** t.tokenInfo.decimals),
               contract: t.tokenInfo.address,
               chain: 'eth',
               to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase(),
@@ -312,7 +328,7 @@ export default {
       console.log('this.showPrivate', this.showPrivate)
     },
     getImages (symbol, chain, icon) {
-      if (chain === 'eos') {
+      if (chain === 'eos' || chain === 'eth') {
         return icon
       } else if (symbol === 'verto') {
         return '/statics/icon.png'
