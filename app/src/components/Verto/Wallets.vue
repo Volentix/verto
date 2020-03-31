@@ -96,6 +96,7 @@
 
 <script>
 import Lib from '@/util/walletlib'
+import Web3 from 'web3'
 
 export default {
   name: 'Wallets',
@@ -182,6 +183,7 @@ export default {
           }
         })
       } else if (this.tableData[i].type === 'eth') {
+        this.tableData[i].key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929'
         let t = (await this.$axios.get('https://api.ethplorer.io/getAddressInfo/' + this.tableData[i].key + '?apiKey=freekey')).data
 
         // For eth
@@ -190,13 +192,14 @@ export default {
 
         if (t.tokens) {
           t.tokens.map(t => {
-            console.log('eth token', t)
+            t.tokenInfo.image = t.tokenInfo.image ? t.tokenInfo.image : 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + Web3.utils.toChecksumAddress(t.tokenInfo.address) + '/logo.png'
+            console.log('eth token', t.tokenInfo.image)
 
             self.tableData.push({
               selected: false,
               type: t.tokenInfo.symbol.toLowerCase(),
-              name: self.tableData[i].name,
-              amount: t.balance.div(10 ** t.tokenInfo.decimals),
+              name: t.tokenInfo.name,
+              amount: t.balance / (10 ** t.tokenInfo.decimals),
               contract: t.tokenInfo.address,
               chain: 'eth',
               to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase(),
@@ -221,7 +224,7 @@ export default {
   },
   methods: {
     getImages (symbol, chain, icon) {
-      if (chain === 'eos') {
+      if (chain === 'eos' || chain === 'eth') {
         return icon
       } else if (symbol === 'verto') {
         return '/statics/icon.png'
