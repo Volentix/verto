@@ -1,9 +1,9 @@
 <template>
 <div>
-  <div class="wallets-wrapper">
+  <div class="wallets-wrapper" :class="{'padtop' : !isWalletsPage && !showWallets && !isWalletDetail}">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="wallets-wrapper--list" :class="{'open': showWallets}">
-      <q-list v-if="walletID === ''" bordered separator class="list-wrapper">
+      <q-list v-if="tokenID === '' || tokenID === undefined" bordered separator class="list-wrapper">
         <q-item v-for="(item, index) in tableData" :key="index" clickable :active="active" :to="item.to">
           <div class="header-wallet-wrapper culumn full-width">
             <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
@@ -27,7 +27,7 @@
           <div class="header-wallet-wrapper culumn full-width">
             <div class="header-wallet full-width flex justify-between">
               <q-item-section avatar>
-                <img class="coin-icon" width="35px" :src="getImages(selectedWallet.type)" alt="">
+                <img class="coin-icon" width="35px" :src="getImages(currentAccount.type, currentAccount.chain, currentAccount.icon)" alt="">
               </q-item-section>
               <q-item-section class="item-name">
                 <span class="item-name--name">{{selectedWallet.name}}</span>
@@ -54,7 +54,7 @@
         <span class="add-remove-wrapper--title text-black">Add Currency</span>
         <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" />
       </div>
-      <div v-if="isWalletsPage && walletID === ''" class="add-remove-wrapper flex justify-center item-center content-center">
+      <div v-if="isWalletsPage && tokenID === ''" class="add-remove-wrapper flex justify-center item-center content-center">
         <span class="add-remove-wrapper--title text-black">Add Currency</span>
         <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" />
       </div>
@@ -114,17 +114,14 @@ export default {
       type: Boolean,
       required: false,
       default: true
-    },
-    walletID: {
-      type: String,
-      required: false,
-      default: ''
     }
   },
   data () {
     return {
       active: true,
       openModal: false,
+      accountName: '',
+      tokenID: '',
       confirmed: false,
       // showWallet: true,
       showText: false,
@@ -144,7 +141,39 @@ export default {
         amount: '0.023 BTC',
         amountUSD: '$235.21'
       },
-      tableData: []
+      tableData: [],
+      currentAccount: null
+    }
+  },
+  async mounted () {
+    this.tokenID = this.$route.params.tokenID
+    if (this.tokenID !== '' && this.tokenID !== undefined) {
+      this.tableData.map(async account => {
+        if (this.tokenID === account.name.toLowerCase()) {
+          // if(/)
+          // if (account.type === 'eos') {
+          let t = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': account.name })).data
+          let _name = account.name.toLowerCase()
+          this.currentAccount = {
+            selected: account.selected,
+            type: account.type,
+            name: _name,
+            amount: t.amount,
+            contract: t.code,
+            chain: 'eos',
+            to: '/verto/wallets/eos/' + _name,
+            icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
+          }
+          // }
+        }
+      })
+      console.log(this.currentAccount)
+    }
+  },
+  updated () {
+    this.tokenID = this.$route.params.tokenID
+    if (this.tokenID !== '' && this.tokenID !== undefined) {
+      // console.error('this.tokenID', this.$route.params.tokenID)
     }
   },
   async created () {
@@ -152,9 +181,10 @@ export default {
     this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
 
     this.tableData.map(element => {
-      element.to = '/verto/wallets/' + element.type
       element.type = element.type ? element.type : 'verto'
+      element.to = '/verto/wallets/' + element.type + '/' + element.name.toLowerCase()
       element.amount = 0.0
+      // accountName: this.$route.params.accountName
     })
 
     for (var i = 0; i < this.tableData.length; i++) {
@@ -162,18 +192,19 @@ export default {
         let t = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': this.tableData[i].name })).data
 
         t.map(t => {
-          console.log('eos token', t)
+          // console.log('eos token', t)
 
           if (t.symbol.toLowerCase() !== 'eos') {
             if (+t.amount !== 0) {
+              let _name = self.tableData[i].name.toLowerCase()
               self.tableData.push({
                 selected: false,
                 type: t.symbol.toLowerCase(),
-                name: self.tableData[i].name,
+                name: _name,
                 amount: t.amount,
                 contract: t.code,
                 chain: 'eos',
-                to: '/verto/wallets/eos/' + t.symbol.toLowerCase(),
+                to: '/verto/wallets/eos/' + _name,
                 icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
               })
             }
@@ -186,11 +217,11 @@ export default {
 
         // For eth
         this.tableData[i].amount = t.ETH.balance
-        console.log('eth token', t)
+        // console.log('eth token', t)
 
         if (t.tokens) {
           t.tokens.map(t => {
-            console.log('eth token', t)
+            // console.log('eth token', t)
 
             self.tableData.push({
               selected: false,
@@ -216,8 +247,10 @@ export default {
       return 1
     })
 
-    console.table(this.tableData)
-    console.table(this.menu)
+    console.log(this.tableData)
+
+    // console.table(this.tableData)
+    // console.table(this.menu)
   },
   methods: {
     getImages (symbol, chain, icon) {
@@ -261,6 +294,10 @@ export default {
   @import "~@/assets/styles/variables.scss";
   .wallets-wrapper{
     padding: 0px 6%;
+    padding-bottom: 70px;
+    &.padtop{
+      padding-bottom: 0px;
+    }
     .modal-wrapper{
       position: fixed;
       width: 100vw;
@@ -314,7 +351,7 @@ export default {
       &__hide-wallets{
         text-transform: initial !important;
         margin-top: 0px;
-        margin-bottom: 10px;
+        margin-bottom: 25px;
         color: #7272FA !important;
         &.hide{
           margin-bottom: 13px;
