@@ -1,6 +1,6 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
-    <profile-header class="marg" />
+    <profile-header class="marg" version="type2222" />
     <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
     <convert-any-coin />
     <br>
