@@ -58,10 +58,25 @@ export default {
       required: false,
       default: 'type1'
     },
-    walletID: {
+    accountName: {
       type: String,
       required: false,
       default: ''
+    },
+    showWallets: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    isWalletsPage: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    isWalletDetail: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data () {

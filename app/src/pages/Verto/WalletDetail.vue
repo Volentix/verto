@@ -1,7 +1,7 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
-    <profile-header class="marg" version="type3" :walletID="walletID" />
-    <wallets :walletID="walletID" />
+    <profile-header class="marg" version="type3" :accountName="accountName" />
+    <wallets :accountName="tokenID" />
   </q-page>
 </template>
 
@@ -22,7 +22,9 @@ export default {
     return {
       pword: '',
       minimizedModal: false,
-      walletID: this.$route.params.walletID,
+      accountName: this.$route.params.accountName,
+      chainID: this.$route.params.chainID,
+      tokenID: this.$route.params.tokenID,
       message: '',
       version: {},
       network: this.$store.state.settings.network,
@@ -32,7 +34,7 @@ export default {
   mounted () {
     this.version = version
     this.setupPlatformPath()
-    console.log('this.walletID', this.walletID)
+    console.log('this.accountName', this.accountName)
   },
   methods: {
     async setupPlatformPath () {
