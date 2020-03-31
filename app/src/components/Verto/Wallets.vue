@@ -3,7 +3,7 @@
   <div class="wallets-wrapper" :class="{'padtop' : !isWalletsPage && !showWallets && !isWalletDetail}">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="wallets-wrapper--list" :class="{'open': showWallets}">
-      <q-list v-if="tokenID === '' || tokenID === undefined" bordered separator class="list-wrapper">
+      <q-list v-if="accountName === '' || accountName === undefined" bordered separator class="list-wrapper">
         <q-item v-for="(item, index) in tableData" :key="index" clickable :active="active" :to="item.to">
           <div class="header-wallet-wrapper culumn full-width">
             <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
@@ -30,21 +30,41 @@
                 <img class="coin-icon" width="35px" :src="getImages(currentAccount.type, currentAccount.chain, currentAccount.icon)" alt="">
               </q-item-section>
               <q-item-section class="item-name">
-                <span class="item-name--name">{{selectedWallet.name}}</span>
-                <span class="item-name--percent">{{selectedWallet.percent}}</span>
+                <span class="item-name--name">{{currentAccount.name}}</span>
+                <!-- <span class="item-name--percent">{{currentAccount.percent}}</span> -->
               </q-item-section>
               <q-item-section class="item-info">
-                <span class="item-info--amount">{{selectedWallet.amount}}</span>
-                <span class="item-info--amountUSD">{{selectedWallet.amountUSD}}</span>
+                <span class="item-info--amount">{{new Number(currentAccount.amount).toFixed(2)}} {{currentAccount.type.toUpperCase()}}</span>
+                <!-- <span class="item-info--amountUSD">{{currentAccount.amountUSD}}</span> -->
               </q-item-section>
             </div>
             <div class="menu-wallet">
               <q-list bordered separator class="sub-list-menu">
-                <q-item clickable v-ripple class="p-relative">View private key <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item clickable v-ripple class="p-relative">Transaction History <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item clickable v-ripple class="p-relative pr0" v-if="!showPrivate">
+                  <q-item-section class="p-relative no-column row flex flex-center justify-between" v-if="!showPrivate" @click="togglePrivateKey()">
+                    <q-item-label class="max200 ellipsis">View private key</q-item-label>
+                    <q-icon class="" name="keyboard_arrow_right" @click="togglePrivateKey()" style="font-size:1.5em" />
+                  </q-item-section>
+                </q-item>
+                <q-item v-ripple class="p-relative private-key justify-between" v-if="showPrivate">
+                  <q-item-section class="max260 ellipsis">
+                    <q-item-label class="ellipsis text-black">{{ currentAccount.key }}</q-item-label>
+                  </q-item-section>
+                  <q-item-section>
+                    <div class="flex justify-end">
+                      <q-icon class="copy" color="grey" name="o_file_copy" style="font-size:1.5em" />
+                      <q-icon class="close" color="grey" name="close" @click="togglePrivateKey()" style="font-size:1.5em" />
+                    </div>
+                  </q-item-section>
+                </q-item>
+                <q-item clickable v-ripple class="p-relative">
+                  Transaction History
+                  <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                </q-item>
                 <q-item clickable v-ripple class="p-relative">Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item clickable v-ripple class="p-relative">Vespucci score <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item clickable v-ripple class="p-relative" @click="openModalFun(selectedWallet)">Remove <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item clickable v-ripple class="p-relative" v-if="!showVespucciScore" @click="showVespucciScore = !showVespucciScore">Vespucci score <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item clickable v-ripple class="p-relative" v-if="showVespucciScore" @click="showVespucciScore = !showVespucciScore">{{ currentAsset.vespucciScore }} <q-icon class="p-abs" name="close" style="font-size:1.5em" /></q-item>
+                <q-item clickable v-ripple class="p-relative" @click="openModalFun(currentAccount)">Remove <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
               </q-list>
             </div>
           </div>
@@ -54,7 +74,7 @@
         <span class="add-remove-wrapper--title text-black">Add Currency</span>
         <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" />
       </div>
-      <div v-if="isWalletsPage && tokenID === ''" class="add-remove-wrapper flex justify-center item-center content-center">
+      <div v-if="isWalletsPage && accountName === ''" class="add-remove-wrapper flex justify-center item-center content-center">
         <span class="add-remove-wrapper--title text-black">Add Currency</span>
         <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" />
       </div>
@@ -118,10 +138,13 @@ export default {
   },
   data () {
     return {
+      showPrivate: false,
+      showVespucciScore: false,
       active: true,
       openModal: false,
       accountName: '',
       tokenID: '',
+      currentAsset: null,
       confirmed: false,
       // showWallet: true,
       showText: false,
@@ -146,39 +169,46 @@ export default {
     }
   },
   async mounted () {
-    this.tokenID = this.$route.params.tokenID
-    if (this.tokenID !== '' && this.tokenID !== undefined) {
+    if (this.accountName !== '' && this.accountName !== undefined) {
       this.tableData.map(async account => {
-        if (this.tokenID === account.name.toLowerCase()) {
+        if (this.accountName === account.name.toLowerCase()) {
           // if(/)
           // if (account.type === 'eos') {
-          let t = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': account.name })).data
+          let balances = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': account.name })).data
           let _name = account.name.toLowerCase()
-          this.currentAccount = {
-            selected: account.selected,
-            type: account.type,
-            name: _name,
-            amount: t.amount,
-            contract: t.code,
-            chain: 'eos',
-            to: '/verto/wallets/eos/' + _name,
-            icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
-          }
+          let self = this
+          balances.map(async t => {
+            console.log('t => ', t)
+            let symbol = t.symbol.toLowerCase()
+            self.currentAccount = {
+              selected: account.selected,
+              type: t.symbol.toLowerCase(),
+              key: account.key,
+              name: _name,
+              amount: t.amount,
+              contract: t.code,
+              chain: 'eos',
+              to: '/verto/wallets/eos/' + symbol + '/' + _name,
+              icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
+            }
+            console.log('this.currentAccount', this.currentAccount)
+            await this.getCoinScore(this.currentAccount.chain)
+          })
           // }
         }
       })
-      console.log(this.currentAccount)
     }
   },
   updated () {
-    this.tokenID = this.$route.params.tokenID
-    if (this.tokenID !== '' && this.tokenID !== undefined) {
-      // console.error('this.tokenID', this.$route.params.tokenID)
-    }
   },
   async created () {
+    this.chainID = this.$route.params.chainID
+    this.tokenID = this.$route.params.tokenID
+    this.accountName = this.$route.params.accountName
     const self = this
     this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
+
+    console.table(this.tableData)
 
     this.tableData.map(element => {
       element.type = element.type ? element.type : 'verto'
@@ -189,22 +219,23 @@ export default {
 
     for (var i = 0; i < this.tableData.length; i++) {
       if (this.tableData[i].type === 'eos') {
-        let t = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': this.tableData[i].name })).data
+        let balances = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': this.tableData[i].name })).data
 
-        t.map(t => {
+        balances.map(t => {
           // console.log('eos token', t)
 
           if (t.symbol.toLowerCase() !== 'eos') {
             if (+t.amount !== 0) {
               let _name = self.tableData[i].name.toLowerCase()
+              let symbol = t.symbol.toLowerCase()
               self.tableData.push({
                 selected: false,
-                type: t.symbol.toLowerCase(),
+                type: symbol,
                 name: _name,
                 amount: t.amount,
                 contract: t.code,
                 chain: 'eos',
-                to: '/verto/wallets/eos/' + _name,
+                to: '/verto/wallets/eos/' + symbol + '/' + _name,
                 icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
               })
             }
@@ -247,12 +278,39 @@ export default {
       return 1
     })
 
-    console.log(this.tableData)
+    // console.log(this.tableData)
 
     // console.table(this.tableData)
     // console.table(this.menu)
   },
   methods: {
+    getCoinScore (coin) {
+      let self = this
+      this.$axios.get('https://volentix.info/get_asset_data?asset=' + coin)
+        .then(response => {
+          let mydata = response.data.data
+          let scoreVespucci = 0
+          for (let accuracy of mydata.rating) {
+            if (accuracy.accuracy !== 0) {
+              scoreVespucci = accuracy.accuracy
+            }
+          }
+          let marketCap = mydata.marketcap.current_marketcap_usd
+          self.currentAsset = {
+            'buySupport': mydata.market_data.volume_last_24_hours,
+            'currentPrice': mydata.market_data.price_usd,
+            'marketCap': marketCap,
+            'c24hChange': mydata.market_data.percent_change_usd_last_24_hours,
+            'c24hChange2': (mydata.market_data.volume_last_24_hours_overstatement_multiple === undefined) ? 0 : mydata.market_data.volume_last_24_hours_overstatement_multiple,
+            'vespucciScore': scoreVespucci
+          }
+          console.log('self.currentAsset', self.currentAsset)
+        })
+    },
+    togglePrivateKey () {
+      this.showPrivate = !this.showPrivate
+      console.log('this.showPrivate', this.showPrivate)
+    },
     getImages (symbol, chain, icon) {
       if (chain === 'eos') {
         return icon
@@ -393,10 +451,17 @@ export default {
                 margin-top: 10px;
                 .p-relative{
                   position: relative;
+                  .copy{
+                    margin-right: 10px;
+                  }
+                  .close{
+                    margin-right: -15px;
+                  }
                   .p-abs{
                     position: absolute;
                     right: 0px;
                   }
+                  .private-key{}
                 }
                 .q-link{
                   border-top: 1px solid rgba(0,0,0,0.06);
@@ -549,5 +614,18 @@ export default {
         background-color: #7272FA !important;
       }
     }
+  }
+  .max200{
+    max-width: 200px;
+  }
+  .max260{
+    max-width: 260px;
+  }
+  .no-column{
+    flex-direction: row !important;
+    padding-right: 0px !important;
+  }
+  .pr0{
+    padding-right: 0px !important;
   }
 </style>
