@@ -57,14 +57,17 @@
                     </div>
                   </q-item-section>
                 </q-item>
-                <q-item clickable v-ripple class="p-relative">
-                  Transaction History
-                  <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                <q-item clickable v-ripple class="p-relative">Transaction History<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                 </q-item>
                 <q-item clickable v-ripple class="p-relative">Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item clickable v-ripple class="p-relative">Vespucci score <q-badge class="p-abs" style="padding-right: 7px" :color="currentAsset.vespucciScore > 50 ? 'teal': 'red'" :label="currentAsset.vespucciScore" /></q-item>
                 <!-- <q-item clickable v-ripple class="p-relative" v-if="showVespucciScore" @click="showVespucciScore = !showVespucciScore">{{ currentAsset.vespucciScore }} <q-icon class="p-abs" name="close" style="font-size:1.5em" /></q-item> -->
                 <q-item clickable v-ripple class="p-relative" @click="openModalFun(currentAccount)">Remove <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+
+                <q-item class="p-relative flex justify-end pr0">
+                <!-- Remove <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /> -->                <br>
+                 <q-btn color="indigo-12" class="mt10 lower" :to="'/verto/eos-account/' + currentAccount.name.toLowerCase()" text-color="white" label="Associate with EOS" />
+                </q-item>
               </q-list>
             </div>
           </div>
@@ -188,7 +191,6 @@ export default {
   },
   async mounted () {
     if (this.accountName !== '' && this.accountName !== undefined) {
-      console.log('this.tableData', this.tableData, this.tokenID)
       let foundIt = false
       let self = this
       this.tableData.map(async account => {
@@ -198,6 +200,7 @@ export default {
             balances.map(async t => {
               let symbol = t.symbol.toLowerCase()
               if (this.accountName === account.name.toLowerCase() && symbol === this.tokenID) {
+                console.log('******* balance found *******', account, t.code)
                 let _name = account.name.toLowerCase()
                 self.currentAccount = {
                   selected: account.selected,
@@ -216,6 +219,29 @@ export default {
                 await this.getCoinScore(scoreCoin)
               }
             })
+          } else {
+            if (this.accountName === account.name.toLowerCase()) {
+              console.log('******* no balance found *******', account)
+              let _name = account.name.toLowerCase()
+              let code = (account.type === 'verto') ? 'eos' : account.type
+              let symbol = (account.type === 'verto') ? 'vtx' : account.type
+              let icon = (account.type === 'verto') ? '/statics/icon.png' : 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + code + '/' + symbol + '.png'
+              self.currentAccount = {
+                selected: false,
+                type: account.type,
+                key: account.key,
+                name: _name,
+                amount: '0.00',
+                contract: '',
+                chain: 'eos',
+                to: '/verto/wallets/eos/' + symbol + '/' + _name,
+                icon: icon
+              }
+              foundIt = true
+              console.log(this.tokenID)
+              let scoreCoin = (this.tokenID.toLowerCase() === 'verto') ? 'volentix' : this.tokenID.toLowerCase()
+              await this.getCoinScore(scoreCoin)
+            }
           }
         }
       })
@@ -669,5 +695,11 @@ export default {
   }
   .pr0{
     padding-right: 0px !important;
+  }
+  .mt10{
+    margin-top: 10px;
+  }
+  .lower{
+    text-transform: initial !important;
   }
 </style>
