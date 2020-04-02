@@ -35,7 +35,7 @@
     <div v-else-if="version === 'type3'" class="column flex-center profile-wrapper--header wallet-detail" style="background: url('statics/header_bg.png');">
       <q-btn flat unelevated class="btn-align-left" to="/verto/wallets" text-color="white" icon="keyboard_backspace" />
       <h3 class="profile-wrapper--header__title text-white">{{ currentAccount.name.toUpperCase() }}</h3>
-      <h2 class="profile-wrapper--header__balance text-white">{{ new Number(currentAccount.amount).toFixed(2) }} {{ currentAccount.type.toLowerCase() }}</h2>
+      <h2 class="profile-wrapper--header__balance text-white">{{ new Number(currentAccount.amount).toFixed(2) }} {{ currentAccount.type.toUpperCase() }}</h2>
       <div class="profile-wrapper--header__action">
         <q-btn unelevated :to="'/verto/wallets/send/' + currentAccount.name.toLowerCase()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
         <q-btn unelevated :to="'/verto/wallets/receive/' + currentAccount.name.toLowerCase()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
@@ -202,29 +202,52 @@ export default {
     this.chainID = this.$route.params.chainID
     this.tokenID = this.$route.params.tokenID
     if (this.accountName !== '' && this.accountName !== undefined) {
+      console.log('this.tableData', this.tableData, this.tokenID)
+      let foundIt = false
+      let self = this
       this.tableData.map(async account => {
-        if (this.accountName === account.name.toLowerCase()) {
-          // if(/)
-          // if (account.type === 'eos') {
+        if (!foundIt) {
           let balances = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': account.name })).data
-          let _name = account.name.toLowerCase()
-          let self = this
-          balances.map(t => {
-            console.log('t => ', t)
-            let symbol = t.symbol.toLowerCase()
-            self.currentAccount = {
-              selected: account.selected,
-              type: t.symbol.toLowerCase(),
-              name: _name,
-              amount: t.amount,
-              contract: t.code,
-              chain: 'eos',
-              to: '/verto/wallets/eos/' + symbol + '/' + _name,
-              icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
+          if (balances.length > 0) {
+            balances.map(async t => {
+              let symbol = t.symbol.toLowerCase()
+              if (this.accountName === account.name.toLowerCase() && symbol === this.tokenID) {
+                let _name = account.name.toLowerCase()
+                self.currentAccount = {
+                  selected: account.selected,
+                  type: t.symbol.toLowerCase(),
+                  key: account.key,
+                  name: _name,
+                  amount: t.amount,
+                  contract: t.code,
+                  chain: 'eos',
+                  to: '/verto/wallets/eos/' + symbol + '/' + _name,
+                  icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
+                }
+                foundIt = true
+              }
+            })
+          } else {
+            if (this.accountName === account.name.toLowerCase()) {
+              console.log('******* no balance found *******', account)
+              let _name = account.name.toLowerCase()
+              let code = (account.type === 'verto') ? 'eos' : account.type
+              let symbol = (account.type === 'verto') ? 'vtx' : account.type
+              let icon = (account.type === 'verto') ? '/statics/icon.png' : 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + code + '/' + symbol + '.png'
+              self.currentAccount = {
+                selected: false,
+                type: account.type,
+                key: account.key,
+                name: _name,
+                amount: '0.00',
+                contract: '',
+                chain: 'eos',
+                to: '/verto/wallets/eos/' + symbol + '/' + _name,
+                icon: icon
+              }
+              foundIt = true
             }
-            console.log('this.currentAccount', this.currentAccount)
-          })
-          // }
+          }
         }
       })
     }
@@ -412,13 +435,15 @@ export default {
       }
       &--body{
         position: relative;
-        .qrcode-wrapper{
+        &.qrcode-wrapper{
           width: 200px;
           height: 150px;
           canvas{
             transform: scale3d(1.4, 1.4, 1.4);
-            border: 1px solid #e4e4e4;
-            border-radius: 10px;
+            border-radius: 5px;
+            border: 2px solid rgba(99, 62, 127, .1);
+            max-width: 120px;
+            max-height: 120px;
           }
         }
         .svg_logo{
