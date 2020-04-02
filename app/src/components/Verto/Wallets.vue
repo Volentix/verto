@@ -15,7 +15,7 @@
                 <span class="item-name--percent">{{item.percent}}</span>
               </q-item-section>
               <q-item-section class="item-info">
-                <span class="item-info--amount">{{item.amount}} {{ item.type.toUpperCase() }}</span>
+                <span class="item-info--amount">{{new Number(item.amount).toFixed(2)}} {{ item.type.toUpperCase() }}</span>
                 <span class="item-info--amountUSD">{{item.amountUSD}}</span>
               </q-item-section>
             </div>
@@ -62,8 +62,8 @@
                   <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                 </q-item>
                 <q-item clickable v-ripple class="p-relative">Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item clickable v-ripple class="p-relative" v-if="!showVespucciScore" @click="showVespucciScore = !showVespucciScore">Vespucci score <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item clickable v-ripple class="p-relative" v-if="showVespucciScore" @click="showVespucciScore = !showVespucciScore">{{ currentAsset.vespucciScore }} <q-icon class="p-abs" name="close" style="font-size:1.5em" /></q-item>
+                <q-item clickable v-ripple class="p-relative">Vespucci score <q-badge class="p-abs" style="padding-right: 7px" :color="currentAsset.vespucciScore > 50 ? 'teal': 'red'" :label="currentAsset.vespucciScore" /></q-item>
+                <!-- <q-item clickable v-ripple class="p-relative" v-if="showVespucciScore" @click="showVespucciScore = !showVespucciScore">{{ currentAsset.vespucciScore }} <q-icon class="p-abs" name="close" style="font-size:1.5em" /></q-item> -->
                 <q-item clickable v-ripple class="p-relative" @click="openModalFun(currentAccount)">Remove <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
               </q-list>
             </div>
@@ -145,7 +145,14 @@ export default {
       openModal: false,
       accountName: '',
       tokenID: '',
-      currentAsset: null,
+      currentAsset: {
+        'buySupport': '',
+        'currentPrice': '',
+        'marketCap': '',
+        'c24hChange': '',
+        'c24hChange2': '',
+        'vespucciScore': ''
+      },
       confirmed: false,
       // showWallet: true,
       showText: false,
@@ -166,36 +173,50 @@ export default {
         amountUSD: '$235.21'
       },
       tableData: [],
-      currentAccount: null
+      currentAccount: {
+        selected: false,
+        type: '',
+        key: '',
+        name: '',
+        amount: '',
+        contract: '',
+        chain: '',
+        to: '',
+        icon: ''
+      }
     }
   },
   async mounted () {
     if (this.accountName !== '' && this.accountName !== undefined) {
+      console.log('this.tableData', this.tableData, this.tokenID)
+      let foundIt = false
+      let self = this
       this.tableData.map(async account => {
-        if (this.accountName === account.name.toLowerCase()) {
-          // if(/)
-          // if (account.type === 'eos') {
+        if (!foundIt) {
           let balances = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': account.name })).data
-          let _name = account.name.toLowerCase()
-          let self = this
-          balances.map(async t => {
-            console.log('t => ', t)
-            let symbol = t.symbol.toLowerCase()
-            self.currentAccount = {
-              selected: account.selected,
-              type: t.symbol.toLowerCase(),
-              key: account.key,
-              name: _name,
-              amount: t.amount,
-              contract: t.code,
-              chain: 'eos',
-              to: '/verto/wallets/eos/' + symbol + '/' + _name,
-              icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
-            }
-            console.log('this.currentAccount', this.currentAccount)
-            await this.getCoinScore(this.currentAccount.chain)
-          })
-          // }
+          if (balances.length > 0) {
+            balances.map(async t => {
+              let symbol = t.symbol.toLowerCase()
+              if (this.accountName === account.name.toLowerCase() && symbol === this.tokenID) {
+                let _name = account.name.toLowerCase()
+                self.currentAccount = {
+                  selected: account.selected,
+                  type: t.symbol.toLowerCase(),
+                  key: account.key,
+                  name: _name,
+                  amount: t.amount,
+                  contract: t.code,
+                  chain: 'eos',
+                  to: '/verto/wallets/eos/' + symbol + '/' + _name,
+                  icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
+                }
+                foundIt = true
+                console.log(this.tokenID)
+                let scoreCoin = (this.tokenID.toLowerCase() === 'vtx') ? 'volentix' : this.tokenID.toLowerCase()
+                await this.getCoinScore(scoreCoin)
+              }
+            })
+          }
         }
       })
     }
@@ -209,13 +230,18 @@ export default {
     const self = this
     this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
 
-    console.table(this.tableData)
+    // console.table(this.tableData)
 
     this.tableData.map(element => {
       element.type = element.type ? element.type : 'verto'
-      element.to = '/verto/wallets/' + element.type + '/' + element.name.toLowerCase()
+      if (element.type === 'eos') {
+        element.to = '/verto/wallets/eos/eos/' + element.name.toLowerCase()
+      } else if (element.type === 'verto') {
+        element.to = '/verto/wallets/eos/verto/' + element.name.toLowerCase()
+      } else {
+        element.to = '/verto/wallets/' + element.type + '/' + element.name.toLowerCase()
+      }
       element.amount = 0.0
-      // accountName: this.$route.params.accountName
     })
 
     for (var i = 0; i < this.tableData.length; i++) {
@@ -320,7 +346,7 @@ export default {
             'c24hChange2': (mydata.market_data.volume_last_24_hours_overstatement_multiple === undefined) ? 0 : mydata.market_data.volume_last_24_hours_overstatement_multiple,
             'vespucciScore': scoreVespucci
           }
-          console.log('self.currentAsset', self.currentAsset)
+          // console.log('self.currentAsset', self.currentAsset)
         })
     },
     togglePrivateKey () {
