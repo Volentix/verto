@@ -209,6 +209,7 @@ export default {
     return {
       walletName: '',
       accountNew: '',
+      accountName: '',
       password: '',
       passHasError: false,
       showSubmit: false,
@@ -275,6 +276,7 @@ export default {
     this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
   },
   mounted () {
+    this.accountName = this.$route.params.accountName
     this.walletName = this.$store.state.currentwallet.wallet.name
     this.account = eos.getAccount(this.walletName)
 
@@ -283,7 +285,9 @@ export default {
       this.currentProxy = this.account.voter_info.proxy
     }
 
-    this.tableData = this.$store.state.currentwallet.config.keys
+    this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
+
+    console.log('this.tableData', this.tableData)
     this.tableData.forEach(async element => {
       element.to = '/verto/wallets/' + element.type
       element.type = element.type ? element.type : 'verto'
@@ -300,6 +304,13 @@ export default {
         value: element.key,
         image: this.getImages(element.type)
       })
+      if (this.accountName === element.name.toLowerCase()) {
+        this.wallet = {
+          label: element.name,
+          value: element.key,
+          image: this.getImages(element.type)
+        }
+      }
       console.log('this.options', this.options)
     }
     )
