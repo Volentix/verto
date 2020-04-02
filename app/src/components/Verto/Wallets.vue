@@ -247,7 +247,7 @@ export default {
       } else if (this.tableData[i].type === 'eth') {
         this.tableData[i].key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
         let ethplorer = (await this.$axios.get('https://api.ethplorer.io/getAddressInfo/' + this.tableData[i].key + '?apiKey=freekey')).data
-        let tokenSets = (await this.$axios.get('https://cors-anywhere.herokuapp.com/https://api.tokensets.com/public/v1/rebalancing_sets')).data.rebalancing_sets
+        let tokenSets = (await this.$axios.get('https://cors-anywhere.herokuapp.com/https://api.tokensets.com/v1/rebalancing_sets')).data.rebalancing_sets
         console.log('tokenSets', tokenSets)
 
         // For eth
