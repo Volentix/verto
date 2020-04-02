@@ -227,6 +227,26 @@ export default {
                 foundIt = true
               }
             })
+          } else {
+            if (this.accountName === account.name.toLowerCase()) {
+              console.log('******* no balance found *******', account)
+              let _name = account.name.toLowerCase()
+              let code = (account.type === 'verto') ? 'eos' : account.type
+              let symbol = (account.type === 'verto') ? 'vtx' : account.type
+              let icon = (account.type === 'verto') ? '/statics/icon.png' : 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + code + '/' + symbol + '.png'
+              self.currentAccount = {
+                selected: false,
+                type: account.type,
+                key: account.key,
+                name: _name,
+                amount: '0.00',
+                contract: '',
+                chain: 'eos',
+                to: '/verto/wallets/eos/' + symbol + '/' + _name,
+                icon: icon
+              }
+              foundIt = true
+            }
           }
         }
       })
@@ -422,6 +442,8 @@ export default {
             transform: scale3d(1.4, 1.4, 1.4);
             border-radius: 5px;
             border: 2px solid rgba(99, 62, 127, .1);
+            max-width: 120px;
+            max-height: 120px;
           }
         }
         .svg_logo{
