@@ -5,8 +5,8 @@
     <div class="chain-tools-wrapper--list open">
       <div class="list-wrapper">
         <div class="list-wrapper--chain__type flex justify-between item-center">
-          <div class="chain">Chain: <b>EOS</b></div>
-          <div class="token">Token: <b>VTX</b></div>
+          <div class="chain">Chain: <b> {{ params.chainID.toUpperCase() }} </b></div>
+          <div class="token">Token: <b> {{ params.tokenID.toUpperCase() }} </b></div>
         </div>
         <div class="list-wrapper--chain__coming-soon">
           <ul>
@@ -213,6 +213,7 @@ export default {
       vtxbalance: 0,
       stakedAmount: 0,
       vtxprice: 0,
+      params: {},
       sendAmount: null,
       formatedAmount: null,
       currentProxy: null,
@@ -248,6 +249,7 @@ export default {
     }
   },
   async created () {
+    this.params = this.$store.state.currentwallet.params
     this.eosbalance = this.$route.params.eosbalance
     this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
   },
