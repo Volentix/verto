@@ -181,7 +181,7 @@ export default {
               selected: false,
               type: t.tokenInfo.symbol.toLowerCase(),
               name: self.tableData[i].name,
-              amount: t.balance.div(10 ** t.tokenInfo.decimals),
+              amount: t.balance / (10 ** t.tokenInfo.decimals),
               contract: t.tokenInfo.address,
               chain: 'eth',
               to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase(),

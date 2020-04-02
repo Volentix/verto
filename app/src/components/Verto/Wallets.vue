@@ -253,6 +253,11 @@ export default {
     this.chainID = this.$route.params.chainID
     this.tokenID = this.$route.params.tokenID
     this.accountName = this.$route.params.accountName
+    this.$store.commit('currentwallet/updateParams', {
+      chainID: this.chainID,
+      tokenID: this.tokenID,
+      accountName: this.accountName
+    })
     const self = this
     this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
 

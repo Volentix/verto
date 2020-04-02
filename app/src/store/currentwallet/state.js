@@ -2,5 +2,6 @@
 export default {
   wallet: {},
   config: {},
+  params: {},
   loggedIn: false
 }
