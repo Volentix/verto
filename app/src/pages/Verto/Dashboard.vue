@@ -77,6 +77,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+  /deep/ .wallets-wrapper{
+    padding-bottom: 0px !important;
+  }
   /deep/ .wallets-wrapper--list{
     box-shadow: none;
     margin-top: 0px;
