@@ -363,8 +363,8 @@ export default {
       }
     },
     accountMemo () {
-      if (this.currentWallet) {
-        return this.accountNew + '-' + this.currentWallet.key
+      if (this.wallet) {
+        return this.accountNew + '-' + this.wallet.key
       } else {
         return false
       }
