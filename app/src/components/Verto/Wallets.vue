@@ -66,7 +66,7 @@
 
                 <q-item class="p-relative flex justify-end pr0">
                 <!-- Remove <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /> -->                <br>
-                 <q-btn color="indigo-12" class="mt10 lower" :to="'/verto/eos-account/' + currentAccount.name.toLowerCase()" text-color="white" label="Associate with EOS" />
+                 <q-btn v-if="currentAccount.type === 'verto'" color="indigo-12" class="mt10 lower" :to="'/verto/eos-account/' + currentAccount.name.toLowerCase()" text-color="white" label="Associate with EOS" />
                 </q-item>
               </q-list>
             </div>
