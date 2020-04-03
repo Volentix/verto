@@ -363,8 +363,8 @@ export default {
       }
     },
     accountMemo () {
-      if (this.currentWallet) {
-        return this.accountNew + '-' + this.currentWallet.key
+      if (this.wallet) {
+        return this.accountNew + '-' + this.wallet.key
       } else {
         return false
       }
@@ -373,21 +373,12 @@ export default {
   async created () {
     this.eosbalance = this.$route.params.eosbalance
     this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
-  },
-  mounted () {
-    this.accountName = this.$route.params.accountName
-    this.walletName = this.$store.state.currentwallet.wallet.name
-    this.account = eos.getAccount(this.walletName)
-
-    if (this.account.voter_info) {
-      this.stakedAmount = +this.account.voter_info.staked / 10000
-      this.currentProxy = this.account.voter_info.proxy
-    }
-
     this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
 
-    console.log('this.tableData', this.tableData)
-    this.tableData.forEach(async element => {
+    // console.log('this.tableData', this.tableData)
+    let self = this
+    this.accountName = this.$route.params.accountName
+    self.tableData.forEach(async element => {
       element.to = '/verto/wallets/' + element.type
       element.type = element.type ? element.type : 'verto'
       if (element.type === 'eos') {
@@ -398,24 +389,30 @@ export default {
       } else {
         element.amount = 0.0
       }
-      this.options.push({
+      self.options.push({
         label: element.name,
         value: element.key,
-        image: this.getImages(element.type)
+        image: self.getImages(element.type)
       })
-      if (this.accountName === element.name.toLowerCase()) {
-        this.wallet = {
+      if (self.accountName === element.name.toLowerCase()) {
+        self.wallet = {
           label: element.name,
           value: element.key,
-          image: this.getImages(element.type)
+          image: self.getImages(element.type)
         }
+        self.getAccountNames(self.wallet)
       }
-      console.log('this.options', this.options)
-    }
-    )
+      // console.log('self.options', self.options)
+    })
+  },
+  mounted () {
+    this.walletName = this.$store.state.currentwallet.wallet.name
+    this.account = eos.getAccount(this.walletName)
 
-    console.log('this.tableData')
-    console.table(this.tableData)
+    if (this.account.voter_info) {
+      this.stakedAmount = +this.account.voter_info.staked / 10000
+      this.currentProxy = this.account.voter_info.proxy
+    }
   },
   methods: {
     checkVertoPassword () {
@@ -465,15 +462,19 @@ export default {
       })
     },
     getAccountNames (row) {
+      console.log('-----------------row-----------------', row)
       this.currentWallet = row
       const self = this
-      eos.getAccountNamesFromPubKeyP(row.key)
+      let key = row.value
+      eos.getAccountNamesFromPubKeyP(key)
         .then(function (result) {
+          console.log('result', result)
           self.accountNames = []
           for (var i = 0; i < result.account_names.length; i++) {
             self.accountNames.push({ label: result.account_names[i], value: result.account_names[i] })
           }
           self.walletName = result.account_names[0]
+          this.step = 1
         }).catch((err) => {
           userError('There was a problem getting account names', err)
         })
