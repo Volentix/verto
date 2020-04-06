@@ -2,6 +2,10 @@
 export default {
   wallet: {},
   config: {},
-  params: {},
+  params: {
+    chainID: '',
+    tokenID: '',
+    accountName: ''
+  },
   loggedIn: false
 }
