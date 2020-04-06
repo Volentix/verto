@@ -41,8 +41,8 @@
       <h3 class="profile-wrapper--header__title text-white">{{ currentAccount.name.toUpperCase() }}</h3>
       <h2 class="profile-wrapper--header__balance text-white">{{ new Number(currentAccount.amount).toFixed(2) }} {{ currentAccount.type.toUpperCase() }}</h2>
       <div class="profile-wrapper--header__action">
-        <q-btn unelevated :to="'/verto/wallets/send/' + currentAccount.name.toLowerCase()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
-        <q-btn unelevated :to="'/verto/wallets/receive/' + currentAccount.name.toLowerCase()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
+        <q-btn unelevated to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
+        <q-btn unelevated to="/verto/wallets/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
         <q-btn flat unelevated round class="btn-qrcode" @click="openModal = !openModal">
           <span class="qr-btn"><img src="statics/qr-icon.png" alt=""></span>
         </q-btn>

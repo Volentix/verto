@@ -248,16 +248,15 @@ export default {
     }
   },
   updated () {
+    console.log('updated')
   },
   async created () {
+    console.log('created')
+    // this.params = this.$store.state.currentwallet.params
     this.chainID = this.$route.params.chainID
     this.tokenID = this.$route.params.tokenID
     this.accountName = this.$route.params.accountName
-    this.$store.commit('currentwallet/updateParams', {
-      chainID: this.chainID,
-      tokenID: this.tokenID,
-      accountName: this.accountName
-    })
+    let currentWalletBalance = 0
     const self = this
     this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
 
@@ -301,6 +300,14 @@ export default {
             this.tableData[i].amount = t.amount
           }
         })
+        if (balances.length > 0) {
+          balances.map(async t => {
+            let symbol = t.symbol.toLowerCase()
+            if (self.accountName === self.tableData[i].name.toLowerCase() && symbol === self.tokenID) {
+              currentWalletBalance = t.amount
+            }
+          })
+        }
       } else if (this.tableData[i].type === 'eth') {
         this.tableData[i].key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
         let ethplorer = (await this.$axios.get('https://api.ethplorer.io/getAddressInfo/' + this.tableData[i].key + '?apiKey=freekey')).data
@@ -355,6 +362,14 @@ export default {
 
     // console.table(this.tableData)
     // console.table(this.menu)
+
+    console.log('currentWalletBalance', currentWalletBalance)
+    this.$store.commit('currentwallet/updateParams', {
+      chainID: this.chainID,
+      tokenID: this.tokenID,
+      accountName: this.accountName,
+      balance: currentWalletBalance
+    })
   },
   methods: {
     getCoinScore (coin) {
