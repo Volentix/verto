@@ -36,7 +36,7 @@
               rounded
               outlined
               class="select-input"
-              v-model="wallet"
+              v-model="currentWallet"
               use-input
               :options="options"
           >
@@ -51,20 +51,20 @@
                 </q-item-section>
                 <q-item-section dark>
                   <q-item-label v-html="scope.opt.label" />
-                  <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                  <q-item-label class="ellipsis" caption>{{ scope.opt.value }}</q-item-label>
                 </q-item-section>
               </q-item>
             </template>
             <template v-slot:selected>
               <q-item
-                v-if="wallet"
+                v-if="currentWallet"
               >
                 <q-item-section avatar>
-                  <q-icon class="option--avatar" :name="`img:${wallet.image}`" />
+                  <q-icon class="option--avatar" :name="`img:${currentWallet.image}`" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label v-html="wallet.label" />
-                  <q-item-label caption>{{ wallet.value }}</q-item-label>
+                  <q-item-label v-html="currentWallet.label" />
+                  <q-item-label class="max200 ellipsis" caption>{{ currentWallet.value }}</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item
@@ -122,7 +122,7 @@ export default {
     return {
       progressValue: 20,
       openModal: false,
-      wallet: null,
+      currentWallet: null,
       to: '',
       amount: '',
       memo: '',
@@ -131,7 +131,8 @@ export default {
       // { selected: false, slug: 'eth', name: 'ETH', purcent: '1.02%', to: '/verto/wallets/eth', icon: 'statics/coins_icons/eth.png', amount: '0.023 BTC', amountUSD: '$235.21' },
       // { selected: false, slug: 'dash', name: 'DASH', purcent: '1.02%', to: '/verto/wallets/dash', icon: 'statics/coins_icons/dash.png', amount: '0.023 BTC', amountUSD: '$235.21' },
       // { selected: false, slug: 'riple', name: 'Riple', purcent: '1.02%', to: '/verto/wallets/riple', icon: 'statics/coins_icons/ripple.png', amount: '0.023 BTC', amountUSD: '$235.21' }
-      options: [
+      options: [],
+      optionsStatic: [
         {
           label: 'BTC xyz',
           value: 'btc-xyz',
@@ -162,14 +163,42 @@ export default {
       message: '',
       version: {},
       network: this.$store.state.settings.network,
-      configPath: ''
+      configPath: '',
+      tableData: []
     }
+  },
+  created () {
+    this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
+    let accountName = this.$route.params.accountName
+    let self = this
+    this.tableData.map(wallet => {
+      self.options.push({
+        label: wallet.name,
+        value: wallet.key,
+        image: self.getImages(wallet.type)
+      })
+      if (accountName === wallet.name.toLowerCase()) {
+        self.currentWallet = {
+          label: wallet.name,
+          value: wallet.key,
+          image: self.getImages(wallet.type)
+        }
+      }
+    })
   },
   mounted () {
     this.version = version
     this.setupPlatformPath()
   },
   methods: {
+    getImages (symbol) {
+      console.log('symbol', symbol)
+      if (symbol === 'verto') {
+        return '/statics/icon.png'
+      } else {
+        return symbol ? 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png' : false
+      }
+    },
     async setupPlatformPath () {
       this.configPath = await platformTools.filePath()
     },
@@ -454,5 +483,8 @@ export default {
         }
       }
     }
+  }
+  .max200{
+    max-width: 200px;
   }
 </style>

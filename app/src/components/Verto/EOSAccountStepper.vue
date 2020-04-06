@@ -196,15 +196,16 @@
               >
                 <q-step
                   :name="1"
-                  title="Select account name 22"
+                  title="Select account name"
                   icon="settings"
                   :done="step2 > 1"
                 >
                   <q-select
                     label="Select an EOS Account Name in the list"
                     separator
-                    filled
                     light
+                    rounded
+                    outlined
                     v-model="accountName"
                     :options="accountNames"
                     :error="accountNameError"
@@ -457,7 +458,7 @@ export default {
         message: copied ? copied + ' Copied' : 'Key Copied',
         timeout: 2000,
         icon: 'check',
-        textColor: 'black',
+        textColor: 'white',
         type: 'warning',
         position: 'top'
       })
