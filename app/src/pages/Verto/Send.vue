@@ -99,10 +99,10 @@
 
         </div>
         <br>
-        <div class="total-fee flex justify-between">
+        <!-- <div class="total-fee flex justify-between">
           <span class="label">Total Fee</span>
           <span class="value">0.03254 {{ params.tokenID }}</span>
-        </div>
+        </div> -->
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link next" color="black" @click="openModalFun()" text-color="white" label="Transfer" />
