@@ -188,7 +188,7 @@
               <q-stepper
                 light
                 flat
-                v-model="step"
+                v-model="step2"
                 vertical
                 ref="stepper"
                 color="primary"
@@ -196,9 +196,9 @@
               >
                 <q-step
                   :name="1"
-                  title="Select account name"
+                  title="Select account name 22"
                   icon="settings"
-                  :done="step > 1"
+                  :done="step2 > 1"
                 >
                   <q-select
                     label="Select an EOS Account Name in the list"
@@ -218,7 +218,7 @@
                   title="Validate Private Key"
                   icon="assignment"
                   :disable="noPrivateKey"
-                  :done="step > 2"
+                  :done="step2 > 2"
                 >
                   <q-input
                     v-model="privateKeyPassword"
@@ -244,7 +244,7 @@
                   :name="3"
                   title="Confirm Verto Password"
                   icon="add_comment"
-                  :done="step > 3"
+                  :done="step2 > 3"
                 >
                   <q-input
                     v-model="vertoPassword"
@@ -308,6 +308,7 @@ export default {
       showNextButtonToPassword: false,
       inError: true,
       step: 0,
+      step2: 1,
       active: true,
       publicKey: '',
       wallet: null,
