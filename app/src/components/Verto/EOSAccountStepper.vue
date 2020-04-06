@@ -441,7 +441,7 @@ export default {
         this.accountNameError = true
       } else {
         this.accountNameError = false
-        this.noPrivateKey ? this.step = 3 : this.step = 2
+        this.noPrivateKey ? this.step2 = 3 : this.step2 = 2
       }
     },
     cancelAccountName () {
