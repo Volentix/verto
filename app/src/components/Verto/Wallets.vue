@@ -270,7 +270,7 @@ export default {
       } else if (element.type === 'verto') {
         element.to = '/verto/wallets/eos/verto/' + element.name.toLowerCase()
       } else {
-        element.to = '/verto/wallets/' + element.type + '/' + element.name.toLowerCase()
+        element.to = '/verto/wallets/' + element.type + '/' + element.type + '/' + element.key
       }
       element.amount = 0.0
     })
@@ -334,7 +334,7 @@ export default {
               amount: t.balance / (10 ** t.tokenInfo.decimals),
               contract: t.tokenInfo.address,
               chain: 'eth',
-              to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase(),
+              to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase() + '/' + this.tableData[i].key,
               icon: t.tokenInfo.image ? t.tokenInfo.image : ''
             })
           })

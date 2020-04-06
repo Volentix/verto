@@ -191,22 +191,6 @@ export default [
           authRequired: true
         }
       },
-      // {
-      //   name: 'wallet',
-      //   path: '/verto/wallets/:chainID',
-      //   component: () => import('pages/Verto/WalletDetail.vue'),
-      //   meta: {
-      //     authRequired: true
-      //   }
-      // },
-      // {
-      //   name: 'wallet',
-      //   path: '/verto/wallets/:chainID/:tokenID',
-      //   component: () => import('pages/Verto/WalletDetail.vue'),
-      //   meta: {
-      //     authRequired: true
-      //   }
-      // }
       {
         name: 'wallet',
         path: '/verto/wallets/:chainID/:tokenID/:accountName',
@@ -215,14 +199,6 @@ export default [
           authRequired: true
         }
       }
-      // {
-      //   name: 'wallet',
-      //   path: '/verto/wallets/:chainID/:accountName',
-      //   component: () => import('pages/Verto/Wallets.vue'),
-      //   meta: {
-      //     authRequired: true
-      //   }
-      // }
     ]
   },
   {
