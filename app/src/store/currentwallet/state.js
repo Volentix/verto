@@ -5,7 +5,8 @@ export default {
   params: {
     chainID: '',
     tokenID: '',
-    accountName: ''
+    accountName: '',
+    balance: 0
   },
   loggedIn: false
 }
