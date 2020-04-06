@@ -1,7 +1,47 @@
 <template>
   <q-page class="text-black bg-white">
     <div class="send-modal flex flex-center" :class="{'open' : openModal}">
-      <div class="send-modal__content column flex-center">
+      <div v-if="getPassword" class="send-modal__content column flex-center">
+        <div class="send-modal__content--head">
+          <span class="text-h5 --amount">Private key password</span>
+          <q-btn color="white" rounded flat unelevated @click="hideModalFun()" class="close-btn" text-color="black" label="+" />
+        </div>
+        <div class="send-modal__content--body column flex-center full-width">
+          <q-input
+            v-model="privateKeyPassword"
+            light
+            rounded
+            outlined
+            class="full-width"
+            color="green"
+            label="Private Key Password"
+            @input="checkPrivateKeyPassword"
+            debounce="500"
+            @keyup.enter="toSummary"
+            :type="isPwd ? 'password' : 'text'"
+            :error="invalidPrivateKeyPassword"
+            error-message="The private key password is invalid"
+          >
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
+
+          <div class="flex justify-start full-width">
+            <q-btn @click="openModal = false" unelevated color="grey" class="--next-btn mr10" rounded label="Cancel" />
+            <q-btn @click="toSummary()" unelevated color="deep-purple-14" class="--next-btn" rounded label="Submit transaction" />
+          </div>
+
+        </div>
+        <div class="send-modal__content--footer">
+          <div class="text-h4 --error">{{ ErrorMessage }}</div>
+        </div>
+      </div>
+      <div v-else class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
           <span class="text-h5 --amount">25.5 VTX</span>
           <q-btn color="white" rounded flat unelevated @click="hideModalFun()" class="close-btn" text-color="black" label="+" />
@@ -23,81 +63,45 @@
       </div>
     </div>
     <div class="standard-content">
-      <h2 class="standard-content--title flex justify-center">
-        <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" />
-        Send
-      </h2>
+      <h2 class="standard-content--title flex justify-center"><q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" /> Send </h2>
       <div class="standard-content--body">
         <div class="standard-content--body__form">
           <span class="lab-input">From</span>
-          <q-select
-              light
-              separator
-              rounded
-              outlined
-              class="select-input"
-              v-model="wallet"
-              use-input
-              :options="options"
-          >
-            <template v-slot:option="scope">
-              <q-item
-                class="custom-menu"
-                v-bind="scope.itemProps"
-                v-on="scope.itemEvents"
-              >
-                <q-item-section avatar>
-                  <q-icon class="option--avatar" :name="`img:${scope.opt.image}`" />
-                </q-item-section>
-                <q-item-section dark>
-                  <q-item-label v-html="scope.opt.label" />
-                  <q-item-label caption>{{ scope.opt.value }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </template>
-            <template v-slot:selected>
-              <q-item
-                v-if="wallet"
-              >
-                <q-item-section avatar>
-                  <q-icon class="option--avatar" :name="`img:${wallet.image}`" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label v-html="wallet.label" />
-                  <q-item-label caption>{{ wallet.value }}</q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item
-                v-else>
-              </q-item>
-            </template>
-            <template v-slot:append>
-              <q-btn round flat unelevated text-color="grey" @click.stop icon="o_file_copy" />
-            </template>
-          </q-select>
-
-          <span class="lab-input">Amount</span>
-          <q-input v-model="amount" class="input-input" rounded outlined color="purple" type="text"/>
-
-          <span class="lab-input">To</span>
-          <q-input v-model="to" rounded class="input-input pr80" outlined color="purple" type="text" label="Wallet address">
+          <q-input v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" label="Current EOS Account">
             <template v-slot:append>
               <div class="flex justify-end">
-                <q-btn flat unelevated round class="btn-copy">
-                  <span class="qr-btn"><img src="statics/qr-icon.png" alt=""></span>
-                </q-btn>
+                <q-btn flat unelevated text-color="grey" round class="btn-copy" icon="o_file_copy" />
+              </div>
+            </template>
+          </q-input>
+          <span class="lab-input">Amount</span>
+          <q-input v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
+            <template v-slot:append>
+              <div class="flex justify-end">
+                <span class="tokenID">{{ params.tokenID }}</span>
+                <q-btn color="white" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat text-color="black" label="Max" />
+               </div>
+            </template>
+          </q-input>
+
+          <span class="lab-input">To</span>
+          <q-input ref="sendTo" v-model="sendTo" @input="checkTo()" rounded class="input-input pr80" outlined color="purple" type="text" label="Account name">
+            <template v-slot:append>
+              <div class="flex justify-end">
+                <!-- <q-btn flat unelevated round class="btn-copy"><span class="qr-btn"><img src="statics/qr-icon.png" alt=""></span> </q-btn> -->
                 <q-btn flat unelevated text-color="grey" round class="btn-copy" icon="o_file_copy" />
               </div>
             </template>
           </q-input>
 
           <span class="lab-input">Memo</span>
-          <q-input v-model="memo" rounded outlined class="" color="purple" type="textarea"/>
+          <q-input ref="sendMemo" v-model="sendMemo" @input="checkMemo" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+
         </div>
         <br>
         <div class="total-fee flex justify-between">
           <span class="label">Total Fee</span>
-          <span class="value">0.03254 VTX</span>
+          <span class="value">0.03254 {{ params.tokenID }}</span>
         </div>
       </div>
       <div class="standard-content--footer">
@@ -110,6 +114,8 @@
 <script>
 // import RadialProgressBar from 'vue-radial-progress'
 import configManager from '@/util/ConfigManager'
+import EosWrapper from '@/util/EosWrapper'
+// const eos = new EosWrapper()
 import { version } from '../../../package.json'
 let platformTools = require('../../util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
@@ -122,16 +128,20 @@ export default {
     return {
       progressValue: 20,
       openModal: false,
-      wallet: null,
+      currentWallet: null,
+      sendTo: 'volentixyiae',
       to: '',
-      amount: '',
-      memo: '',
+      from: '',
+      isPwd: true,
+      sendAmount: 1,
+      formatedAmount: '',
       // { selected: false, slug: 'btc-xyz', name: 'BTC xyz', purcent: '1.02%', to: '/verto/wallets/btc-xyz', icon: 'statics/coins_icons/btc.png', amount: '0.023 BTC', amountUSD: '$235.21' },
       // { selected: false, slug: 'vtx', name: 'VTX', purcent: '1.02%', to: '/verto/wallets/vtx', icon: 'statics/coins_icons/vtx.png', amount: '0.023 BTC', amountUSD: '$235.21' },
       // { selected: false, slug: 'eth', name: 'ETH', purcent: '1.02%', to: '/verto/wallets/eth', icon: 'statics/coins_icons/eth.png', amount: '0.023 BTC', amountUSD: '$235.21' },
       // { selected: false, slug: 'dash', name: 'DASH', purcent: '1.02%', to: '/verto/wallets/dash', icon: 'statics/coins_icons/dash.png', amount: '0.023 BTC', amountUSD: '$235.21' },
       // { selected: false, slug: 'riple', name: 'Riple', purcent: '1.02%', to: '/verto/wallets/riple', icon: 'statics/coins_icons/ripple.png', amount: '0.023 BTC', amountUSD: '$235.21' }
-      options: [
+      options: [],
+      optionsStatic: [
         {
           label: 'BTC xyz',
           value: 'btc-xyz',
@@ -162,14 +172,72 @@ export default {
       message: '',
       version: {},
       network: this.$store.state.settings.network,
-      configPath: ''
+      configPath: '',
+      tableData: [],
+      sendMemo: '',
+      chainID: '',
+      tokenID: '',
+      accountName: '',
+      params: null,
+      getPassword: false,
+      invalidPrivateKeyPassword: false,
+      privateKeyPassword: 'slkp98-$SjY',
+      unknownError: false,
+      ErrorMessage: '',
+      invalidEosName: false,
+      tokenPrecision:
+      {
+        'EOS': 4,
+        'VTX': 8
+      },
+      tokenContract:
+      {
+        'EOS': 'eosio.token',
+        'VTX': 'volentixgsys'
+      }
     }
+  },
+  created () {
+    this.params = this.$store.state.currentwallet.params
+    this.from = this.params.accountName
+    this.chainID = this.params.chainID
+    this.tokenID = this.params.tokenID
+    this.accountName = this.params.accountName
+    // let self = this
   },
   mounted () {
     this.version = version
     this.setupPlatformPath()
   },
   methods: {
+    checkMemo () {
+      if (this.sendMemo.length > 0) {
+        this.$refs.sendMemo.error = false
+      } else if (this.sendTo.toLowerCase() === 'stexofficial') {
+        this.$refs.sendMemo.error = true
+      }
+    },
+    checkTo () {
+      this.invalidEosName = false
+      if (this.sendTo.length === 12) {
+        if (this.sendTo.toLowerCase() === 'stexofficial') {
+          this.$refs.sendMemo.error = true
+        }
+      } else {
+        this.$refs.sendMemo.error = false
+      }
+    },
+    getMaxBalance () {
+      this.sendAmount = this.params.balance
+    },
+    getImages (symbol) {
+      console.log('symbol', symbol)
+      if (symbol === 'verto') {
+        return '/statics/icon.png'
+      } else {
+        return symbol ? 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png' : false
+      }
+    },
     async setupPlatformPath () {
       this.configPath = await platformTools.filePath()
     },
@@ -191,7 +259,96 @@ export default {
       }
     },
     openModalFun: function (item) {
-      this.openModal = true
+      if (this.$store.state.currentwallet.wallet.privateKey) {
+        this.sendTokens()
+      } else {
+        this.getPassword = true
+        this.openModal = true
+      }
+    },
+    checkPrivateKeyPassword () {
+      console.log('this.$store.state.currentwallet.wallet.privateKeyEncrypted', this.$store.state.currentwallet.wallet.privateKeyEncrypted)
+      console.log('this.privateKeyPassword', this.privateKeyPassword)
+      const privateKey = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
+      const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKey)
+
+      if (!result.success) {
+        this.invalidPrivateKeyPassword = true
+      }
+    },
+    async sendTokens () {
+      this.unknownError = false
+      this.invalidEosName = false
+      let privateKey = null
+      let result = null
+      if (this.$store.state.currentwallet.wallet.privateKey) {
+        result = {
+          success: true,
+          key: this.$store.state.currentwallet.wallet.privateKey
+        }
+      } else {
+        privateKey = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
+        result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKey)
+      }
+      // Remove the private key immediately so it
+      // does not stick around any longer than it has to
+
+      // this.showSpinners(true)
+      console.log('result', result)
+
+      try {
+        const transaction = await (new EosWrapper()).transferToken(
+          this.tokenContract[this.params.tokenID.toUpperCase()],
+          this.params.accountName,
+          this.sendTo.toLowerCase(),
+          this.formatedAmount,
+          this.sendMemo,
+          result.key
+        )
+        this.transactionId = transaction.transaction_id
+        // this.showSpinners(false)
+        // this.navigation.paymentSuccessful = true
+        this.getPassword = false
+      } catch (err) {
+        console.log('err', err)
+        if (err && err.message && err.message.startsWith('Invalid character')) {
+          this.invalidEosName = true
+        } else if (err.includes('account does not exist')) {
+          this.invalidEosName = true
+        } else if (err.includes('maximum billable CPU time')) {
+          this.unknownError = true
+          this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
+        } else if (err.includes('has insufficient ram')) {
+          this.unknownError = true
+          this.ErrorMessage = 'Your EOS account does not have enough RAM staked to process the transaction.'
+        } else {
+          this.unknownError = true
+          this.ErrorMessage = 'Unknown Error'
+        }
+        // this.showSpinners(false)
+        return false
+      }
+    },
+    toSummary () {
+      if (!this.invalidPrivateKeyPassword) {
+        this.formatedAmount = this.formatAmountString()
+        this.sendTokens()
+      }
+    },
+    formatAmountString () {
+      let numberOfDecimals = 0
+      let stringAmount = (Math.round(+this.sendAmount * Math.pow(10, this.tokenPrecision[this.params.tokenID.toUpperCase()])) / Math.pow(10, this.tokenPrecision[this.params.tokenID.toUpperCase()])).toString()
+
+      const amountParsed = stringAmount.split('.')
+      if (amountParsed && amountParsed.length > 1) {
+        numberOfDecimals = amountParsed[1].length
+      } else {
+        stringAmount += '.'
+      }
+      for (;numberOfDecimals < this.tokenPrecision[this.params.tokenID.toUpperCase()]; numberOfDecimals++) {
+        stringAmount += '0'
+      }
+      return stringAmount + ' ' + this.params.tokenID.toUpperCase()
     },
     hideModalFun: function () {
       this.openModal = false
@@ -247,6 +404,14 @@ export default {
         font-size: 16px;
       }
       &__form{
+        .tokenID{
+          text-transform: uppercase;
+          font-size: 20px;
+          font-weight: 900;
+          color: #7271fa;
+          padding-top: 0px;
+          margin-top: -2px;
+        }
         /deep/ .q-field__native{
           padding-left: 8px;
           font-size: 16px;
@@ -427,6 +592,8 @@ export default {
           font-weight: $bold;
           font-family: $Titillium;
           margin-top: 20px;
+          position: relative;
+          top: -9px;
         }
       }
       &--body{
@@ -452,7 +619,24 @@ export default {
           font-family: $Titillium;
           margin-top: 20px;
         }
+        .--error{
+          color: red;
+          font-size: 14px;
+          margin-top: 20px;
+          font-weight: $bold;
+          font-family: $Titillium;
+          line-height: 16px;
+        }
       }
     }
+  }
+  .max200{
+    max-width: 200px;
+  }
+  .mt-5{
+    margin-top: -5px;
+  }
+  .mr10{
+    margin-right: 10px;
   }
 </style>

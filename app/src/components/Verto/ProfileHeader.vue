@@ -8,9 +8,13 @@
         </div>
         <div class="send-modal__content--body qrcode-wrapper column flex-center">
           <qrcode :value="currentAccount.key" :options="{size: 200}"></qrcode>
+          <div class="--label text-cyan-5 text-h6">Scan the QR Code</div>
         </div>
         <div class="send-modal__content--footer">
-          <div class="text-h4 --email">Scan the QR Code</div>
+          <div class="text-h4 --email pl20">
+            Copy the address <q-btn round flat unelevated text-color="grey" @click="copyToClipboard(currentAccount.key, 'Address')" icon="o_file_copy" />
+          </div>
+          <!-- currentAccount.key -->
         </div>
       </div>
     </div>
@@ -37,8 +41,8 @@
       <h3 class="profile-wrapper--header__title text-white">{{ currentAccount.name.toUpperCase() }}</h3>
       <h2 class="profile-wrapper--header__balance text-white">{{ new Number(currentAccount.amount).toFixed(2) }} {{ currentAccount.type.toUpperCase() }}</h2>
       <div class="profile-wrapper--header__action">
-        <q-btn unelevated :to="'/verto/wallets/send/' + currentAccount.name.toLowerCase()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
-        <q-btn unelevated :to="'/verto/wallets/receive/' + currentAccount.name.toLowerCase()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
+        <q-btn unelevated to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
+        <q-btn unelevated to="/verto/wallets/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
         <q-btn flat unelevated round class="btn-qrcode" @click="openModal = !openModal">
           <span class="qr-btn"><img src="statics/qr-icon.png" alt=""></span>
         </q-btn>
@@ -253,6 +257,17 @@ export default {
     }
   },
   methods: {
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    }
   }
 }
 </script>
@@ -431,6 +446,8 @@ export default {
           font-weight: $bold;
           font-family: $Titillium;
           margin-top: 20px;
+          position: relative;
+          top: -5px;
         }
       }
       &--body{
@@ -453,13 +470,17 @@ export default {
           width: 50px;
         }
         .--label{
-          font-size: 14px;
+          font-size: 12px;
           font-weight: $regular;
           font-family: $Titillium;
           position: absolute;
           bottom: -15px;
+          line-height: 15px;
+          background: white;
+          padding: 4px 9px;
         }
       }
+
       &--footer{
         .--email{
           font-size: 16px;
@@ -469,5 +490,8 @@ export default {
         }
       }
     }
+  }
+  .pl20{
+    padding-left: 20px;
   }
 </style>
