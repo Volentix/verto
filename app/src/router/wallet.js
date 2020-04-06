@@ -137,7 +137,7 @@ export default [
       },
       {
         name: 'send',
-        path: '/verto/wallets/send/:walletID',
+        path: '/verto/wallets/send',
         component: () => import('pages/Verto/Send.vue'),
         meta: {
           authRequired: true
