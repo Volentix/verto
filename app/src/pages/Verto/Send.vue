@@ -99,10 +99,10 @@
 
         </div>
         <br>
-        <div class="total-fee flex justify-between">
+        <!-- <div class="total-fee flex justify-between">
           <span class="label">Total Fee</span>
           <span class="value">0.03254 {{ params.tokenID }}</span>
-        </div>
+        </div> -->
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link next" color="black" @click="openModalFun()" text-color="white" label="Transfer" />
@@ -129,7 +129,7 @@ export default {
       progressValue: 20,
       openModal: false,
       currentWallet: null,
-      sendTo: 'volentixyiae',
+      sendTo: '',
       to: '',
       from: '',
       isPwd: true,
@@ -181,7 +181,7 @@ export default {
       params: null,
       getPassword: false,
       invalidPrivateKeyPassword: false,
-      privateKeyPassword: 'slkp98-$SjY',
+      privateKeyPassword: '',
       unknownError: false,
       ErrorMessage: '',
       invalidEosName: false,
