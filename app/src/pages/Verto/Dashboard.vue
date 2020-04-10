@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import store from '../../store'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import CardMakeVTX from '../../components/Verto/CardMakeVTX'
 import CardConvertAnyToVTX from '../../components/Verto/CardConvertAnyToVTX'
@@ -25,7 +26,11 @@ import Wallets from '../../components/Verto/Wallets'
 import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
-let platformTools = require('../../util/platformTools')
+
+let wallets2Tokens = require('@/util/Wallets2Tokens')
+if (!store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
+
+let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 
 export default {
