@@ -11,6 +11,8 @@
     <card-convert-any-to-VTX />
     <br><br>
     <card-make-VTX />
+    <br><br>
+    <card-WPS />
     <br><br><br>
   </q-page>
 </template>
@@ -18,6 +20,7 @@
 <script>
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import CardMakeVTX from '../../components/Verto/CardMakeVTX'
+import CardWPS from '../../components/Verto/CardWPS'
 import CardConvertAnyToVTX from '../../components/Verto/CardConvertAnyToVTX'
 import CardImportEOSAccount from '../../components/Verto/CardImportEOSAccount'
 import CardCreateWallet from '../../components/Verto/CardCreateWallet'
@@ -36,7 +39,8 @@ export default {
     CardCreateWallet,
     CardImportEOSAccount,
     CardConvertAnyToVTX,
-    CardMakeVTX
+    CardMakeVTX,
+    CardWPS
   },
   data () {
     return {
