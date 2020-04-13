@@ -38,7 +38,6 @@ class Wallets2Tokens {
         axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': this.tableData[i].name }).then(balances => {
           balances.data.map(t => {
             console.log('eos token', i, t)
-
             if (t.symbol.toLowerCase() !== 'eos') {
               if (+t.amount !== 0) {
                 let name = wallet.name.toLowerCase()
@@ -50,15 +49,16 @@ class Wallets2Tokens {
                   amount: t.amount,
                   contract: t.code,
                   chain: 'eos',
+                  // vespucciScore:
                   to: '/verto/wallets/eos/' + type + '/' + name,
                   icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
                 })
               }
             } else {
-              console.log('else EOS self.tableData[i]', i - 1, t.symbol, self.tableData[i - 1])
-              self.tableData[i - 1].amount = t.amount
-              self.tableData[i - 1].chain = 'eos'
-              self.tableData[i - 1].contract = 'eosio.token'
+              console.log('else EOS self.tableData[i]', i, t.symbol, self.tableData[i])
+              self.tableData[i].amount = t.amount
+              self.tableData[i].chain = 'eos'
+              self.tableData[i].contract = 'eosio.token'
             }
           })
         })
