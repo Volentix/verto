@@ -1,14 +1,14 @@
 <template>
 <div>
-  <div class="wallets-wrapper" :class="{'padtop' : !isWalletsPage && !showWallets && !isWalletDetail}">
+  <div class="wallets-wrapper" :class="{'padtop' : !isWalletsPage && !walletShowHide && !isWalletDetail}">
     <!-- <q-toggle v-model="active" label="Active" /> -->
-    <div class="wallets-wrapper--list" :class="{'open': showWallets}">
+    <div class="wallets-wrapper--list" :class="{'open': walletShowHide}">
       <q-list v-if="accountName === '' || accountName === undefined" bordered separator class="list-wrapper">
         <q-item v-for="(item, index) in tableData" :key="index" clickable :active="active" :to="item.to">
           <div class="header-wallet-wrapper culumn full-width">
             <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
               <q-item-section avatar>
-                <img class="coin-icon" width="35px" :src="getImages(item.type, item.chain, item.icon)" alt="">
+                <img class="coin-icon" width="35px" :src="item.icon" alt="">
               </q-item-section>
               <q-item-section class="item-name">
                 <span class="item-name--name">{{item.name}}</span>
@@ -27,7 +27,7 @@
           <div class="header-wallet-wrapper culumn full-width">
             <div class="header-wallet full-width flex justify-between">
               <q-item-section avatar>
-                <img class="coin-icon" width="35px" :src="getImages(currentAccount.type, currentAccount.chain, currentAccount.icon)" alt="">
+                <img class="coin-icon" width="35px" :src="currentAccount.icon" alt="">
               </q-item-section>
               <q-item-section class="item-name">
                 <span class="item-name--name">{{currentAccount.name}}</span>
@@ -81,7 +81,7 @@
         <span class="add-remove-wrapper--title text-black">Add Currency</span>
         <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" />
       </div>
-      <div v-if="!isWalletsPage && showWallets" class="add-remove-wrapper flex justify-center item-center content-center">
+      <div v-if="!isWalletsPage && walletShowHide" class="add-remove-wrapper flex justify-center item-center content-center">
         <span class="add-remove-wrapper--title text-black">Add Currency</span>
         <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" />
       </div>
@@ -118,9 +118,6 @@
 </template>
 
 <script>
-import Lib from '@/util/walletlib'
-import Web3 from 'web3'
-
 export default {
   name: 'Wallets',
   props: {
@@ -142,6 +139,7 @@ export default {
   },
   data () {
     return {
+      toggled: false,
       showPrivate: false,
       showVespucciScore: false,
       active: true,
@@ -190,62 +188,6 @@ export default {
     }
   },
   async mounted () {
-    if (this.accountName !== '' && this.accountName !== undefined) {
-      let foundIt = false
-      let self = this
-      this.tableData.map(async account => {
-        if (!foundIt) {
-          let balances = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': account.name })).data
-          if (balances.length > 0) {
-            balances.map(async t => {
-              let symbol = t.symbol.toLowerCase()
-              if (this.accountName === account.name.toLowerCase() && symbol === this.tokenID) {
-                console.log('******* balance found *******', account, t.code)
-                let _name = account.name.toLowerCase()
-                self.currentAccount = {
-                  selected: account.selected,
-                  type: t.symbol.toLowerCase(),
-                  key: account.key,
-                  name: _name,
-                  amount: t.amount,
-                  contract: t.code,
-                  chain: 'eos',
-                  to: '/verto/wallets/eos/' + symbol + '/' + _name,
-                  icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
-                }
-                foundIt = true
-                console.log(this.tokenID)
-                let scoreCoin = (this.tokenID.toLowerCase() === 'vtx') ? 'volentix' : this.tokenID.toLowerCase()
-                await this.getCoinScore(scoreCoin)
-              }
-            })
-          } else {
-            if (this.accountName === account.name.toLowerCase()) {
-              console.log('******* no balance found *******', account)
-              let _name = account.name.toLowerCase()
-              let code = (account.type === 'verto') ? 'eos' : account.type
-              let symbol = (account.type === 'verto') ? 'vtx' : account.type
-              let icon = (account.type === 'verto') ? '/statics/icon.png' : 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + code + '/' + symbol + '.png'
-              self.currentAccount = {
-                selected: false,
-                type: account.type,
-                key: account.key,
-                name: _name,
-                amount: '0.00',
-                contract: '',
-                chain: 'eos',
-                to: '/verto/wallets/eos/' + symbol + '/' + _name,
-                icon: icon
-              }
-              foundIt = true
-              console.log(this.tokenID)
-              let scoreCoin = (this.tokenID.toLowerCase() === 'verto') ? 'volentix' : this.tokenID.toLowerCase()
-              await this.getCoinScore(scoreCoin)
-            }
-          }
-        }
-      })
-    }
   },
   updated () {
     console.log('updated')
@@ -256,157 +198,25 @@ export default {
     this.chainID = this.$route.params.chainID
     this.tokenID = this.$route.params.tokenID
     this.accountName = this.$route.params.accountName
-    let currentWalletBalance = 0
-    const self = this
-    this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
 
-    // console.table(this.tableData)
+    this.tableData = await this.$store.state.wallets.tokens
+    this.currentAccount = this.tableData.find(w => w.chain === this.chainID && w.type === this.tokenID && w.name === this.accountName)
 
-    this.tableData.map(element => {
-      element.type = element.type ? element.type : 'verto'
-      if (element.type === 'eos') {
-        element.to = '/verto/wallets/eos/eos/' + element.name.toLowerCase()
-      } else if (element.type === 'verto') {
-        element.to = '/verto/wallets/eos/verto/' + element.name.toLowerCase()
-      } else {
-        element.to = '/verto/wallets/' + element.type + '/' + element.type + '/' + element.key
-      }
-      element.amount = 0.0
-    })
-
-    for (var i = 0; i < this.tableData.length; i++) {
-      if (this.tableData[i].type === 'eos') {
-        let balances = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': this.tableData[i].name })).data
-
-        balances.map(t => {
-          // console.log('eos token', t)
-
-          if (t.symbol.toLowerCase() !== 'eos') {
-            if (+t.amount !== 0) {
-              let _name = self.tableData[i].name.toLowerCase()
-              let symbol = t.symbol.toLowerCase()
-              self.tableData.push({
-                selected: false,
-                type: symbol,
-                name: _name,
-                amount: t.amount,
-                contract: t.code,
-                chain: 'eos',
-                to: '/verto/wallets/eos/' + symbol + '/' + _name,
-                icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
-              })
-            }
-          } else {
-            this.tableData[i].amount = t.amount
-          }
-        })
-        if (balances.length > 0) {
-          balances.map(async t => {
-            let symbol = t.symbol.toLowerCase()
-            if (self.accountName === self.tableData[i].name.toLowerCase() && symbol === self.tokenID) {
-              currentWalletBalance = t.amount
-            }
-          })
-        }
-      } else if (this.tableData[i].type === 'eth') {
-        this.tableData[i].key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
-        let ethplorer = (await this.$axios.get('https://api.ethplorer.io/getAddressInfo/' + this.tableData[i].key + '?apiKey=freekey')).data
-        let tokenSets = (await this.$axios.get('https://cors-anywhere.herokuapp.com/https://api.tokensets.com/v1/rebalancing_sets')).data.rebalancing_sets
-        console.log('tokenSets', tokenSets)
-
-        // For eth
-        this.tableData[i].amount = ethplorer.ETH.balance
-
-        if (ethplorer.tokens) {
-          ethplorer.tokens.map(async t => {
-            // t.tokenInfo.image = t.tokenInfo.image ? t.tokenInfo.image : 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + Web3.utils.toChecksumAddress(t.tokenInfo.address) + '/logo.png'
-            const csa = Web3.utils.toChecksumAddress(t.tokenInfo.address)
-
-            if (!t.tokenInfo.image) {
-              try {
-                const status = (await this.$axios.get('https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + csa + '/logo.png')).status
-                if (status === 200) {
-                  t.tokenInfo.image = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + csa + '/logo.png'
-                }
-              } catch (error) {
-                t.tokenInfo.image = tokenSets.find(s => s.address === t.tokenInfo.address).image
-                console.log('eth token not on trustwallet', t, csa)
-              }
-            }
-
-            self.tableData.push({
-              selected: false,
-              type: t.tokenInfo.symbol.toLowerCase(),
-              name: t.tokenInfo.name,
-              amount: t.balance / (10 ** t.tokenInfo.decimals),
-              contract: t.tokenInfo.address,
-              chain: 'eth',
-              to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase() + '/' + this.tableData[i].key,
-              icon: t.tokenInfo.image ? t.tokenInfo.image : ''
-            })
-          })
-        }
-      } else if (this.tableData[i].type === 'btc') {
-        this.tableData[i].amount = (await Lib.Wallet(this.tableData[i].type, this.tableData[i].key)).balance
-      }
-    }
-
-    this.tableData.sort(function (a, b) {
-      if (a.name.toLowerCase() < b.name.toLowerCase()) {
-        return -1
-      }
-      return 1
-    })
-
-    // console.log(this.tableData)
-
-    // console.table(this.tableData)
-    // console.table(this.menu)
-
-    console.log('currentWalletBalance', currentWalletBalance)
     this.$store.commit('currentwallet/updateParams', {
       chainID: this.chainID,
       tokenID: this.tokenID,
-      accountName: this.accountName,
-      balance: currentWalletBalance
+      accountName: this.accountName
     })
   },
+  computed: {
+    walletShowHide () {
+      return this.toggled ? this.showWallets : !this.showWallets
+    }
+  },
   methods: {
-    getCoinScore (coin) {
-      let self = this
-      this.$axios.get('https://volentix.info/get_asset_data?asset=' + coin)
-        .then(response => {
-          let mydata = response.data.data
-          let scoreVespucci = 0
-          for (let accuracy of mydata.rating) {
-            if (accuracy.accuracy !== 0) {
-              scoreVespucci = accuracy.accuracy
-            }
-          }
-          let marketCap = mydata.marketcap.current_marketcap_usd
-          self.currentAsset = {
-            'buySupport': mydata.market_data.volume_last_24_hours,
-            'currentPrice': mydata.market_data.price_usd,
-            'marketCap': marketCap,
-            'c24hChange': mydata.market_data.percent_change_usd_last_24_hours,
-            'c24hChange2': (mydata.market_data.volume_last_24_hours_overstatement_multiple === undefined) ? 0 : mydata.market_data.volume_last_24_hours_overstatement_multiple,
-            'vespucciScore': scoreVespucci
-          }
-          // console.log('self.currentAsset', self.currentAsset)
-        })
-    },
     togglePrivateKey () {
       this.showPrivate = !this.showPrivate
       console.log('this.showPrivate', this.showPrivate)
-    },
-    getImages (symbol, chain, icon) {
-      if (chain === 'eos' || chain === 'eth') {
-        return icon
-      } else if (symbol === 'verto') {
-        return '/statics/icon.png'
-      } else {
-        return symbol ? 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png' : false
-      }
     },
     hideModalFun: function () {
       this.openModal = false
@@ -429,7 +239,7 @@ export default {
       }
     },
     toggleWallets () {
-      this.showWallets = !this.showWallets
+      this.toggled = !this.toggled
       this.showText = !this.showText
     }
   }

@@ -69,7 +69,7 @@
                 </q-stepper-navigation>
 
               </q-step>
-              <q-step title="How many EOS"
+              <q-step :title="`How many ${params.tokenID.toUpperCase()}`"
                 :name="1"
                 prefix="1"
                 :done="step > 1"
@@ -78,17 +78,17 @@
                 <div class="text-black">
                   <!-- <p class="text-h6 text-grey">Condition 1</p> -->
                   <div v-if="condition === 1" class="condition_1">
-                    <p class="--alert text-indigo-6 text-h6">You have no available EOS for staking.</p>
+                    <p class="--alert text-indigo-6 text-h6">You have no available {{ params.tokenID.toUpperCase() }} for staking.</p>
                     <div class="row">
                       <div class="">
-                        <span class="--title row text-h6"> EOS (Liquid) </span>
+                        <span class="--title row text-h6"> {{ params.tokenID.toUpperCase() }} (Liquid) </span>
                         <span class="--amount row text-h4"> {{ eosbalance }} </span>
                       </div>
                     </div>
                   </div>
                   <!-- <p class="text-h6 text-grey">Condition 2</p> -->
                   <div v-if="condition === 2" class="condition_2">
-                    <p class="--alert text-indigo-6 text-h6">Verto does not detect an EOS account</p>
+                    <p class="--alert text-indigo-6 text-h6">Verto does not detect an {{ params.tokenID.toUpperCase() }} account</p>
                     <div v-show="navigationButtons.amount" class="q-pa-sm" @click="step = 2" >
                       <q-icon name="navigate_next" size="3.2rem" color="green">
                         <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
@@ -100,14 +100,14 @@
                     <div class="text-black">
                       <div class="row">
                         <div class="">
-                          <span class="--title row text-h6"> Current Balance<br>EOS (Liquid) </span>
+                          <span class="--title row text-h6"> Current Balance<br>{{ params.tokenID.toUpperCase() }} (Liquid) </span>
                           <span class="--amount row text-h4"> {{ 85.3672 }} </span>
                         </div>
                         <div class="col --progress hr-vertical flex flex-center">
                           <span class="bar"></span>
                         </div>
                         <div class="col">
-                          <span class="--title row text-h6"> Current Stake<br>EOS (Staked) </span>
+                          <span class="--title row text-h6"> Current Stake<br>{{ params.tokenID.toUpperCase() }} (Staked) </span>
                           <span class="--amount row text-h4"> {{ 5.40 }} </span>
                         </div>
                       </div>
@@ -132,7 +132,7 @@
                       <div class="row full-width">
                         <div class="full-width">
                           <span class="--title row text-h6"> Amount to stake </span>
-                          <span class="--amount row text-h4"> EOS 8.5367 </span>
+                          <span class="--amount row text-h4"> {{ params.tokenID.toUpperCase() }} 8.5367 </span>
                           <br>
                           <span class="--title row text-h6"> Stake period </span>
                         </div>
@@ -159,7 +159,7 @@
                         <div class="full-width">
                           <br>
                           <span class="--title row text-h6 text-indigo-6"> Estimated stake reward </span>
-                          <span class="--amount row text-h4"> EOS 0.8536 </span>
+                          <span class="--amount row text-h4"> {{ params.tokenID.toUpperCase() }} 0.8536 </span>
                           <br>
                         </div>
                       </div>
@@ -174,7 +174,7 @@
 
                 <q-stepper-navigation class="flex justify-end">
                   <q-btn @click="step = 2" v-if="condition === 1" unelevated color="deep-purple-14" class="--next-btn" rounded label="Get EOS account" />
-                  <q-btn @click="step = 2" v-if="condition === 2" unelevated color="deep-purple-14" class="--next-btn" rounded label="Get EOS" />
+                  <q-btn @click="step = 2" v-if="condition === 2" unelevated color="deep-purple-14" class="--next-btn" rounded :label="`Get ${ params.tokenID.toUpperCase() }`" />
                   <q-btn @click="step = 2" v-if="condition === 3" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
                 </q-stepper-navigation>
               </q-step>
@@ -313,6 +313,7 @@ export default {
     }
   },
   async created () {
+    this.params = this.$store.state.currentwallet.params
     this.eosbalance = this.$route.params.eosbalance
     this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
 

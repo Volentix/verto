@@ -75,7 +75,6 @@
 </template>
 
 <script>
-import Lib from '@/util/walletlib'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import Vue from 'vue'
 
@@ -123,138 +122,21 @@ export default {
         amount: '',
         contract: '',
         chain: ''
-      },
-      selectedWallet: {
-        selected: false,
-        slug: 'btc-xyz',
-        name: 'BTC xyz',
-        purcent: '1.02%',
-        icon: 'statics/coins_icons/btc.png',
-        amount: '0.023 BTC',
-        amountUSD: '$235.21'
       }
     }
   },
   async mounted () {
   },
   async created () {
-    const self = this
-    this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
-
-    console.table(this.tableData)
-
-    this.tableData.map(element => {
-      element.type = element.type ? element.type : 'verto'
-      element.to = '/verto/wallets/' + element.type + '/' + element.name.toLowerCase()
-      element.amount = 0.0
-      // accountName: this.$route.params.accountName
-    })
-
-    for (var i = 0; i < this.tableData.length; i++) {
-      if (this.tableData[i].type === 'eos') {
-        let balances = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': this.tableData[i].name })).data
-
-        balances.map(t => {
-          // For eos
-          if (t.symbol.toLowerCase() !== 'eos') {
-            if (+t.amount !== 0) {
-              let _name = self.tableData[i].name.toLowerCase()
-              let symbol = t.symbol.toLowerCase()
-              self.tableData.push({
-                selected: false,
-                type: symbol,
-                name: _name,
-                amount: t.amount,
-                contract: t.code,
-                chain: 'eos',
-                to: '/verto/wallets/eos/' + symbol + '/' + _name,
-                icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
-              })
-            }
-          } else {
-            this.tableData[i].amount = t.amount
-          }
-        })
-      } else if (this.tableData[i].type === 'eth') {
-        let t = (await this.$axios.get('https://api.ethplorer.io/getAddressInfo/' + this.tableData[i].key + '?apiKey=freekey')).data
-        // For eth
-        this.tableData[i].amount = t.ETH.balance
-        if (t.tokens) {
-          t.tokens.map(t => {
-            self.tableData.push({
-              selected: false,
-              type: t.tokenInfo.symbol.toLowerCase(),
-              name: self.tableData[i].name,
-              amount: t.balance / (10 ** t.tokenInfo.decimals),
-              contract: t.tokenInfo.address,
-              chain: 'eth',
-              to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase(),
-              icon: t.tokenInfo.image ? t.tokenInfo.image : ''
-            })
-          })
-        }
-      } else if (this.tableData[i].type === 'btc') {
-        this.tableData[i].amount = (await Lib.Wallet(this.tableData[i].type, this.tableData[i].key)).balance
-      }
-    }
-    this.tableData.sort(function (a, b) {
-      if (a.name.toLowerCase() < b.name.toLowerCase()) {
-        return -1
-      }
-      return 1
-    })
     this.chainID = this.$route.params.chainID
     this.tokenID = this.$route.params.tokenID
-    if (this.accountName !== '' && this.accountName !== undefined) {
-      console.log('this.tableData', this.tableData, this.tokenID)
-      let foundIt = false
-      let self = this
-      this.tableData.map(async account => {
-        if (!foundIt) {
-          let balances = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': account.name })).data
-          if (balances.length > 0) {
-            balances.map(async t => {
-              let symbol = t.symbol.toLowerCase()
-              if (this.accountName === account.name.toLowerCase() && symbol === this.tokenID) {
-                let _name = account.name.toLowerCase()
-                self.currentAccount = {
-                  selected: account.selected,
-                  type: t.symbol.toLowerCase(),
-                  key: account.key,
-                  name: _name,
-                  amount: t.amount,
-                  contract: t.code,
-                  chain: 'eos',
-                  to: '/verto/wallets/eos/' + symbol + '/' + _name,
-                  icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
-                }
-                foundIt = true
-              }
-            })
-          } else {
-            if (this.accountName === account.name.toLowerCase()) {
-              console.log('******* no balance found *******', account)
-              let _name = account.name.toLowerCase()
-              let code = (account.type === 'verto') ? 'eos' : account.type
-              let symbol = (account.type === 'verto') ? 'vtx' : account.type
-              let icon = (account.type === 'verto') ? '/statics/icon.png' : 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + code + '/' + symbol + '.png'
-              self.currentAccount = {
-                selected: false,
-                type: account.type,
-                key: account.key,
-                name: _name,
-                amount: '0.00',
-                contract: '',
-                chain: 'eos',
-                to: '/verto/wallets/eos/' + symbol + '/' + _name,
-                icon: icon
-              }
-              foundIt = true
-            }
-          }
-        }
-      })
-    }
+    this.accountName = this.$route.params.accountName
+
+    this.currentAccount = await this.$store.state.wallets.tokens.find(
+      t => t.chain === this.$route.params.chainID &&
+        t.type === this.$route.params.tokenID &&
+        t.name === this.$route.params.accountName
+    )
   },
   methods: {
     copyToClipboard (key, copied) {
