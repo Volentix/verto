@@ -57,6 +57,8 @@ class Wallets2Tokens {
             } else {
               console.log('else EOS self.tableData[i]', i - 1, t.symbol, self.tableData[i - 1])
               self.tableData[i - 1].amount = t.amount
+              self.tableData[i - 1].chain = 'eos'
+              self.tableData[i - 1].contract = 'eosio.token'
             }
           })
         })

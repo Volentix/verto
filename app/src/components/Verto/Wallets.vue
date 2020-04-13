@@ -198,20 +198,22 @@ export default {
     this.chainID = this.$route.params.chainID
     this.tokenID = this.$route.params.tokenID
     this.accountName = this.$route.params.accountName
-    let currentWalletBalance = 0
 
     this.tableData = await this.$store.state.wallets.tokens
-    console.log('got table data?', this.tableData)
+    console.log('got accountname?', this.accountName)
+
+    // only works for eos at the moment
+    this.currentAccount = this.tableData.find(w => w.chain === this.chainID && w.type === this.tokenID && w.name === this.accountName)
+    console.log('got this.currentAccount?', this.tableData, this.currentAccount, this.chainID, this.tokenID, this.accountName)
 
     // console.table(this.tableData)
     // console.table(this.menu)
+    // console.log('currentWalletBalance', currentWalletBalance)
 
-    console.log('currentWalletBalance', currentWalletBalance)
     this.$store.commit('currentwallet/updateParams', {
       chainID: this.chainID,
       tokenID: this.tokenID,
-      accountName: this.accountName,
-      balance: currentWalletBalance
+      accountName: this.accountName
     })
   },
   computed: {
