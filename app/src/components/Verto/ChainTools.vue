@@ -12,7 +12,7 @@
           <ul>
             <li>
                <q-btn class="btn-soon full-width" unelevated flat color="white" text-color="black">
-                 <span class="title">Staking</span><span class="soon">Coming soon <q-icon class="icon" name="keyboard_arrow_right" /></span>
+                 <span class="title">Staking</span><q-btn flat class="icon" icon="keyboard_arrow_right" to="stake" />
                </q-btn>
             </li>
             <li>
