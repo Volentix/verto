@@ -3,7 +3,7 @@
   <div class="wallets-wrapper" :class="{'padtop' : !isWalletsPage && !walletShowHide && !isWalletDetail}">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="wallets-wrapper--list" :class="{'open': walletShowHide}">
-      <q-list v-if="accountName === '' || accountName === undefined" bordered separator class="list-wrapper">
+      <q-list v-if="currentAccount === undefined" bordered separator class="list-wrapper">
         <q-item v-for="(item, index) in tableData" :key="index" clickable :active="active" :to="item.to">
           <div class="header-wallet-wrapper culumn full-width">
             <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
@@ -201,6 +201,8 @@ export default {
 
     this.tableData = await this.$store.state.wallets.tokens
     this.currentAccount = this.tableData.find(w => w.chain === this.chainID && w.type === this.tokenID && w.name === this.accountName)
+
+    console.log('this.currentAccount', this.currentAccount)
 
     this.$store.commit('currentwallet/updateParams', {
       chainID: this.chainID,

@@ -88,11 +88,6 @@ export default {
       required: false,
       default: 'type1'
     },
-    accountName: {
-      type: String,
-      required: false,
-      default: ''
-    },
     showWallets: {
       type: Boolean,
       required: false,
