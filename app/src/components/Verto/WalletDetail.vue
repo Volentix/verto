@@ -139,27 +139,17 @@ export default {
     // console.log('updated')
   },
   async created () {
-    // console.log('created')
-    // this.params = this.$store.state.currentwallet.params
-    this.chainID = this.$route.params.chainID
-    this.tokenID = this.$route.params.tokenID
-    this.accountName = this.$route.params.accountName
-
     this.tableData = await this.$store.state.wallets.tokens
-    this.currentAccount = this.tableData.find(w => w.chain === this.chainID && w.type === this.tokenID && w.name === this.accountName)
-
-    // console.log('this.currentAccount', this.currentAccount)
-
-    // this.$store.commit('currentwallet/updateParams', {
-    //   chainID: this.chainID,
-    //   tokenID: this.tokenID,
-    //   accountName: this.accountName
-    // })
+    this.currentAccount = this.tableData.find(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)
+    )
+    this.$store.commit('currentwallet/updateParams', {
+      chainID: this.$route.params.chainID,
+      tokenID: this.$route.params.tokenID,
+      accountName: this.$route.params.accountName
+    })
   },
   computed: {
-    // walletShowHide () {
-    // return this.toggled ? this.showWallets : !this.showWallets
-    // }
   },
   methods: {
     togglePrivateKey () {

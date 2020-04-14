@@ -158,7 +158,6 @@ export default {
   methods: {
     togglePrivateKey () {
       this.showPrivate = !this.showPrivate
-      // console.log('this.showPrivate', this.showPrivate)
     },
     hideModalFun: function () {
       this.openModal = false
