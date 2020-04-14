@@ -127,11 +127,16 @@ export default {
     this.tokenID = this.$route.params.tokenID
     this.accountName = this.$route.params.accountName
 
-    this.currentAccount = await this.$store.state.wallets.tokens.find(
+    let currentToken = await this.$store.state.wallets.tokens.find(
       t => t.chain === this.$route.params.chainID &&
         t.type === this.$route.params.tokenID &&
         t.name === this.$route.params.accountName
     )
+    if (currentToken !== undefined) {
+      this.currentAccount = currentToken
+    }
+
+    console.log('this.currentAccount', this.currentAccount)
   },
   methods: {
     copyToClipboard (key, copied) {
