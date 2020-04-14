@@ -2,7 +2,7 @@
 <div>
   <div class="wallets-wrapper">
     <!-- <q-toggle v-model="active" label="Active" /> -->
-    <div class="wallets-wrapper--list" :class="{'open': showWallets}">
+    <div class="wallets-wrapper--list" :class="{'open': !walletShowHide}">
       <q-list bordered separator class="list-wrapper">
         <q-item v-for="(item, index) in tableData" :key="index" clickable :active="active" :to="item.to">
           <div class="header-wallet-wrapper culumn full-width">
@@ -22,7 +22,7 @@
           </div>
         </q-item>
       </q-list>
-      <div v-if="showWallets" class="add-remove-wrapper flex justify-center item-center content-center">
+      <div v-if="!walletShowHide" class="add-remove-wrapper flex justify-center item-center content-center">
         <span class="add-remove-wrapper--title text-black">Add Currency</span>
         <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" />
       </div>
