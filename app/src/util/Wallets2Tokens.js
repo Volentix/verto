@@ -46,6 +46,7 @@ class Wallets2Tokens {
                   selected: false,
                   type,
                   name,
+                  key: wallet.key,
                   amount: t.amount,
                   contract: t.code,
                   chain: 'eos',
