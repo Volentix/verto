@@ -123,20 +123,12 @@ export default {
   async mounted () {
   },
   async created () {
-    this.chainID = this.$route.params.chainID
-    this.tokenID = this.$route.params.tokenID
-    this.accountName = this.$route.params.accountName
-
-    let currentToken = await this.$store.state.wallets.tokens.find(
-      t => t.chain === this.$route.params.chainID &&
-        t.type === this.$route.params.tokenID &&
-        t.name === this.$route.params.accountName
+    this.tableData = await this.$store.state.wallets.tokens
+    this.currentAccount = this.tableData.find(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)
     )
-    if (currentToken !== undefined) {
-      this.currentAccount = currentToken
-    }
-
-    console.log('this.currentAccount', this.currentAccount)
+    console.log('this.params-----------', this.params)
+    console.log('this.currentAccount-----------', this.currentAccount)
   },
   methods: {
     copyToClipboard (key, copied) {
