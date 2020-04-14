@@ -1,7 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import Lib from '@/util/walletlib'
-// import Web3 from 'web3'
+import Web3 from 'web3'
 
 class Wallets2Tokens {
   constructor () {
@@ -33,12 +33,11 @@ class Wallets2Tokens {
       wallet.amount = 0.0
     })
 
-    store.state.currentwallet.config.keys.map((wallet, i) => {
-      // console.log('wallet', wallet)
-
+    store.state.currentwallet.config.keys.map((wallet) => {
       if (wallet.type.toLowerCase() === 'eos') {
-        axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': this.tableData[i].name }).then(balances => {
+        axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': wallet.name }).then(balances => {
           balances.data.map(t => {
+            console.log('eos token', t)
             if (t.symbol.toLowerCase() !== 'eos') {
               if (+t.amount !== 0) {
                 let name = wallet.name.toLowerCase()
@@ -57,52 +56,57 @@ class Wallets2Tokens {
                 })
               }
             } else {
-              console.log('else EOS self.tableData[i]', i, t.symbol, self.tableData[i])
-              self.tableData[i].amount = t.amount
-              self.tableData[i].chain = 'eos'
-              self.tableData[i].key = wallet.key
-              self.tableData[i].contract = 'eosio.token'
+              self.tableData.filter(w => w.key === wallet.key).map(eos => {
+                eos.amount = t.amount
+                eos.chain = 'eos'
+                eos.contract = 'eosio.token'
+              })
+              console.log('else EOS self.tableData', t.symbol, self.tableData)
             }
           })
         })
       } else if (wallet.type === 'eth') {
         wallet.key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
-        // let ethplorer = (await axios.get('https://api.ethplorer.io/getAddressInfo/' + this.tableData[i].key + '?apiKey=freekey')).data
-        // let tokenSets = (await axios.get('https://cors-anywhere.herokuapp.com/https://api.tokensets.com/v1/rebalancing_sets')).data.rebalancing_sets
-        // console.log('tokenSets', tokenSets)
+        axios.get('https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
+          let ethplorer = res.data
+          axios.get('https://cors-anywhere.herokuapp.com/https://api.tokensets.com/v1/rebalancing_sets').then(res => {
+            let tokenSets = res.data.rebalancing_sets
+            console.log('tokenSets', tokenSets)
 
-        // // For eth
-        // this.tableData[i].amount = ethplorer.ETH.balance
+            // For eth
+            self.tableData.filter(w => w.key === wallet.key).amount = ethplorer.ETH.balance
 
-        // if (ethplorer.tokens) {
-        //   ethplorer.tokens.map(async t => {
-        //     // t.tokenInfo.image = t.tokenInfo.image ? t.tokenInfo.image : 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + Web3.utils.toChecksumAddress(t.tokenInfo.address) + '/logo.png'
-        //     const csa = Web3.utils.toChecksumAddress(t.tokenInfo.address)
+            if (ethplorer.tokens) {
+              ethplorer.tokens.filter(t => t.balance > 0).map(t => {
+                t.tokenInfo.image = t.tokenInfo.image ? t.tokenInfo.image : 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + Web3.utils.toChecksumAddress(t.tokenInfo.address) + '/logo.png'
+                const csa = Web3.utils.toChecksumAddress(t.tokenInfo.address)
 
-        //     if (!t.tokenInfo.image) {
-        //       try {
-        //         const status = (await axios.get('https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + csa + '/logo.png')).status
-        //         if (status === 200) {
-        //           t.tokenInfo.image = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + csa + '/logo.png'
-        //         }
-        //       } catch (error) {
-        //         t.tokenInfo.image = tokenSets.find(s => s.address === t.tokenInfo.address).image
-        //         console.log('eth token not on trustwallet', t, csa)
-        //       }
-        //     }
+                if (!t.tokenInfo.image) {
+                  try {
+                    const status = (axios.get('https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + csa + '/logo.png')).status
+                    if (status === 200) {
+                      t.tokenInfo.image = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + csa + '/logo.png'
+                    }
+                  } catch (error) {
+                    t.tokenInfo.image = tokenSets.find(s => s.address === t.tokenInfo.address).image
+                    console.log('eth token not on trustwallet', t, csa)
+                  }
+                }
 
-        //     self.tableData.push({
-        //       selected: false,
-        //       type: t.tokenInfo.symbol.toLowerCase(),
-        //       name: t.tokenInfo.name,
-        //       amount: t.balance / (10 ** t.tokenInfo.decimals),
-        //       contract: t.tokenInfo.address,
-        //       chain: 'eth',
-        //       to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase() + '/' + this.tableData[i].key,
-        //       icon: t.tokenInfo.image ? t.tokenInfo.image : ''
-        //     })
-        //   })
-        // }
+                self.tableData.push({
+                  selected: false,
+                  type: t.tokenInfo.symbol.toLowerCase(),
+                  name: t.tokenInfo.name,
+                  amount: t.balance / (10 ** t.tokenInfo.decimals),
+                  contract: t.tokenInfo.address,
+                  chain: 'eth',
+                  to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase() + '/' + wallet.key,
+                  icon: t.tokenInfo.image ? t.tokenInfo.image : ''
+                })
+              })
+            }
+          })
+        })
       }
     })
 
@@ -138,16 +142,6 @@ class Wallets2Tokens {
         }
         // console.log('self.currentAsset', self.currentAsset)
       })
-  }
-
-  getImages (symbol, chain, icon) {
-    if (chain === 'eos' || chain === 'eth') {
-      return icon
-    } else if (symbol === 'verto') {
-      return '/statics/icon.png'
-    } else {
-      return symbol ? 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png' : false
-    }
   }
 }
 
