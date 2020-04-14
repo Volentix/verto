@@ -123,18 +123,12 @@ export default {
   async mounted () {
   },
   async created () {
-    this.chainID = this.$route.params.chainID
-    this.tokenID = this.$route.params.tokenID
-    this.accountName = this.$route.params.accountName
+    this.params = this.$store.state.currentwallet.params
 
-    let currentToken = await this.$store.state.wallets.tokens.find(
-      t => t.chain === this.$route.params.chainID &&
-        t.type === this.$route.params.tokenID &&
-        t.name === this.$route.params.accountName
+    this.tableData = await this.$store.state.wallets.tokens
+    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
-    if (currentToken !== undefined) {
-      this.currentAccount = currentToken
-    }
 
     console.log('this.currentAccount', this.currentAccount)
   },
