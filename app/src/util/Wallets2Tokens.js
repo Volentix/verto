@@ -16,11 +16,14 @@ class Wallets2Tokens {
       if (wallet.type === 'eos') {
         wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
+        wallet.chain = 'eos'
       } else if (wallet.type === 'verto') {
         wallet.to = '/verto/wallets/eos/verto/' + wallet.name.toLowerCase()
         wallet.icon = '/statics/icon.png'
+        wallet.chain = 'eos'
       } else {
         wallet.to = '/verto/wallets/' + wallet.type + '/' + wallet.type + '/' + wallet.key
+        wallet.chain = wallet.type
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
       }
 
@@ -58,7 +61,6 @@ class Wallets2Tokens {
             } else {
               self.tableData.filter(w => w.key === wallet.key).map(eos => {
                 eos.amount = t.amount
-                eos.chain = 'eos'
                 eos.contract = 'eosio.token'
               })
               console.log('else EOS self.tableData', t.symbol, self.tableData)
@@ -66,7 +68,7 @@ class Wallets2Tokens {
           })
         })
       } else if (wallet.type === 'eth') {
-        wallet.key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
+        // wallet.key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
         axios.get('https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
           let ethplorer = res.data
           axios.get('https://cors-anywhere.herokuapp.com/https://api.tokensets.com/v1/rebalancing_sets').then(res => {
