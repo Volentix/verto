@@ -185,6 +185,7 @@ export default {
       unknownError: false,
       ErrorMessage: '',
       invalidEosName: false,
+      currentAccount: null,
       tokenPrecision:
       {
         'EOS': 4,
@@ -197,13 +198,22 @@ export default {
       }
     }
   },
-  created () {
+  async created () {
     this.params = this.$store.state.currentwallet.params
-    this.from = this.params.accountName
-    this.chainID = this.params.chainID
-    this.tokenID = this.params.tokenID
-    this.accountName = this.params.accountName
-    // let self = this
+
+    console.log('this.params', this.params)
+
+    this.tableData = await this.$store.state.wallets.tokens
+    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+    )
+
+    console.log('this.currentAccount sur la page send', this.currentAccount)
+
+    this.from = this.currentAccount.amount
+    this.chainID = this.currentAccount.chainID
+    this.tokenID = this.currentAccount.tokenID
+    this.accountName = this.currentAccount.accountName
   },
   mounted () {
     this.version = version
@@ -228,7 +238,7 @@ export default {
       }
     },
     getMaxBalance () {
-      this.sendAmount = this.params.balance
+      this.sendAmount = this.currentAccount.amount
     },
     getImages (symbol) {
       console.log('symbol', symbol)

@@ -12,7 +12,7 @@
         </div>
         <div class="send-modal__content--footer">
           <div class="text-h4 --email pl20">
-            Copy the address <q-btn round flat unelevated text-color="grey" @click="copyToClipboard(currentAccount.key, 'Address')" icon="o_file_copy" />
+            Copy the address <q-btn round flat unelevated text-color="grey" @click="copyToClipboard(currentAccount.chain === 'eos' ? currentAccount.name : currentAccount.key  , 'Address')" icon="o_file_copy" />
           </div>
           <!-- currentAccount.key -->
         </div>
