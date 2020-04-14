@@ -201,8 +201,6 @@ export default {
   async created () {
     this.params = this.$store.state.currentwallet.params
 
-    console.log('this.params', this.params)
-
     this.tableData = await this.$store.state.wallets.tokens
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
@@ -210,7 +208,7 @@ export default {
 
     console.log('this.currentAccount sur la page send', this.currentAccount)
 
-    this.from = this.currentAccount.amount
+    this.from = this.currentAccount.name
     this.chainID = this.currentAccount.chainID
     this.tokenID = this.currentAccount.tokenID
     this.accountName = this.currentAccount.accountName
