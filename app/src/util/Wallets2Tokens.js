@@ -34,10 +34,11 @@ class Wallets2Tokens {
     })
 
     store.state.currentwallet.config.keys.map((wallet, i) => {
+      // console.log('wallet', wallet)
+
       if (wallet.type.toLowerCase() === 'eos') {
         axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': this.tableData[i].name }).then(balances => {
           balances.data.map(t => {
-            console.log('eos token', i, t)
             if (t.symbol.toLowerCase() !== 'eos') {
               if (+t.amount !== 0) {
                 let name = wallet.name.toLowerCase()
@@ -46,6 +47,7 @@ class Wallets2Tokens {
                   selected: false,
                   type,
                   name,
+                  key: wallet.key,
                   amount: t.amount,
                   contract: t.code,
                   chain: 'eos',
@@ -58,6 +60,7 @@ class Wallets2Tokens {
               console.log('else EOS self.tableData[i]', i, t.symbol, self.tableData[i])
               self.tableData[i].amount = t.amount
               self.tableData[i].chain = 'eos'
+              self.tableData[i].key = wallet.key
               self.tableData[i].contract = 'eosio.token'
             }
           })
