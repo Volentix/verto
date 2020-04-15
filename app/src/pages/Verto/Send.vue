@@ -70,7 +70,7 @@
           <q-input v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? 'Current ' + currentAccount.type.toUpperCase() + ' Address' : 'Current ' + currentAccount.type.toUpperCase() + ' Account'">
             <template v-slot:append>
               <div class="flex justify-end">
-                <q-btn flat unelevated text-color="grey" round class="btn-copy" icon="o_file_copy" />
+                <q-btn flat unelevated text-color="grey" @click="copyToClipboard(from , 'Address')" round class="btn-copy" icon="o_file_copy" />
               </div>
             </template>
           </q-input>
@@ -89,7 +89,7 @@
             <template v-slot:append>
               <div class="flex justify-end">
                 <!-- <q-btn flat unelevated round class="btn-copy"><span class="qr-btn"><img src="statics/qr-icon.png" alt=""></span> </q-btn> -->
-                <q-btn flat unelevated text-color="grey" round class="btn-copy" icon="o_file_copy" />
+                <q-btn flat unelevated @click="copyToClipboard(sendTo , 'Address')" text-color="grey" round class="btn-copy" icon="o_file_copy" />
               </div>
             </template>
           </q-input>
@@ -185,7 +185,14 @@ export default {
       unknownError: false,
       ErrorMessage: '',
       invalidEosName: false,
-      currentAccount: {},
+      currentAccount: {
+        selected: false,
+        type: '',
+        name: '',
+        amount: '',
+        contract: '',
+        chain: ''
+      },
       tokenPrecision:
       {
         'EOS': 4,
@@ -218,6 +225,17 @@ export default {
     this.setupPlatformPath()
   },
   methods: {
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    },
     checkMemo () {
       if (this.sendMemo.length > 0) {
         this.$refs.sendMemo.error = false
