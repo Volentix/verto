@@ -3,7 +3,7 @@
     <div class='standard-content'>
       <h2 class='standard-content--title flex justify-center'>
         <q-btn flat unelevated class='btn-align-left' to='/verto/dashboard' text-color='black' icon='keyboard_backspace' />
-        Worker proposals
+        Public proposals
       </h2>
 
       <q-btn @click="refresh"> Refresh </q-btn>

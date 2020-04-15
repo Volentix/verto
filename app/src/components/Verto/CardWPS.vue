@@ -5,7 +5,7 @@
     <div class="card-create-wallet--wrapper--header">
       <div class="card-create-wallet--wrapper--header__holder full-width">
         <span class="card-create-wallet--wrapper--header__holder_img"><img src="statics/coins_icons/eos_bg.png" alt=""></span>
-        <h3 class="text-black card-create-wallet--wrapper--header__holder_title">Worker Proposals</h3>
+        <h3 class="text-black card-create-wallet--wrapper--header__holder_title">Public proposals</h3>
       </div>
       <q-btn to="/verto/card-wps" unelevated class="card-create-wallet--wrapper--header_btn" color="black"
         text-color="white" label="Show" />
