@@ -185,7 +185,7 @@ export default {
       unknownError: false,
       ErrorMessage: '',
       invalidEosName: false,
-      currentAccount: null,
+      currentAccount: {},
       tokenPrecision:
       {
         'EOS': 4,
@@ -267,7 +267,7 @@ export default {
       }
     },
     openModalFun: function (item) {
-      if (this.$store.state.currentwallet.wallet.privateKey) {
+      if (this.currentAccount.privateKey) {
         this.sendTokens()
       } else {
         this.getPassword = true
@@ -275,9 +275,9 @@ export default {
       }
     },
     checkPrivateKeyPassword () {
-      console.log('this.$store.state.currentwallet.wallet.privateKeyEncrypted', this.$store.state.currentwallet.wallet.privateKeyEncrypted)
+      console.log('this.currentAccount.privateKeyEncrypted', this.currentAccount.privateKeyEncrypted)
       console.log('this.privateKeyPassword', this.privateKeyPassword)
-      const privateKey = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
+      const privateKey = JSON.stringify(this.currentAccount.privateKeyEncrypted)
       const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKey)
 
       if (!result.success) {
@@ -289,13 +289,13 @@ export default {
       this.invalidEosName = false
       let privateKey = null
       let result = null
-      if (this.$store.state.currentwallet.wallet.privateKey) {
+      if (this.currentAccount.privateKey) {
         result = {
           success: true,
-          key: this.$store.state.currentwallet.wallet.privateKey
+          key: this.currentAccount.privateKey
         }
       } else {
-        privateKey = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
+        privateKey = JSON.stringify(this.currentAccount.privateKeyEncrypted)
         result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKey)
       }
       // Remove the private key immediately so it
