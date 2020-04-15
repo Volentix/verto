@@ -23,8 +23,8 @@
               <q-list bordered separator class="sub-list-menu">
                 <q-item class="p-relative full-width">
                   <div class="vespucci-score--wrapper full-width flex justify-between items-center">
-                    <span class="label">Strong Sell</span>
-                    <span class="value">50</span>
+                    <span class="label">{{ currentAccount.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
+                    <span class="value">{{ currentAccount.vespucciScore }}</span>
                     <span class="powered">Powered by Vespucci</span>
                   </div>
                 </q-item>
@@ -261,13 +261,13 @@ export default {
         transition: ease transform .3s, ease opacity .4s;
       }
       &.open{
-        margin-bottom: -40px;
+        margin-bottom: 0px;
         .list-wrapper{
           visibility: visible;
           height: auto;
           opacity: 1;
           transform: translateY(0px) scaleY(1);
-          margin-bottom: 40px;
+          margin-bottom: 0px;
         }
       }
       /deep/ .q-list--bordered {
@@ -382,6 +382,7 @@ export default {
         max-width: fit-content;
         &--name{
           font-size: 14px;
+          margin-left: -13px;
         }
         &--percent{
           font-size: 12px;
@@ -396,6 +397,7 @@ export default {
         align-items: flex-end;
         &--amount{
           font-size: 16px;
+          margin-right: 16px;
         }
         &--amountUSD{
           font-size: 13px;
