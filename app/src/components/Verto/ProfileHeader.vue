@@ -44,7 +44,7 @@
         <q-btn unelevated to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
         <q-btn unelevated to="/verto/wallets/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
         <q-btn flat unelevated round class="btn-qrcode" @click="openModal = !openModal">
-          <span class="qr-btn"><img src="statics/qr-icon.png" alt=""></span>
+          <span class="qr-btn"><img src="statics/barcode.svg" alt=""></span>
         </q-btn>
         <!-- <qrcode :value="currentAccount.key" :options="{size: 200}"></qrcode> -->
       </div>
@@ -127,8 +127,17 @@ export default {
     this.currentAccount = this.tableData.find(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)
     )
-    console.log('this.params-----------', this.params)
-    console.log('this.currentAccount-----------', this.currentAccount)
+    if (this.currentAccount === undefined) {
+      this.currentAccount = {
+        selected: false,
+        type: 'verto',
+        name: 'test',
+        amount: 'test',
+        contract: 'test',
+        chain: 'test',
+        key: 'test'
+      }
+    }
   },
   methods: {
     copyToClipboard (key, copied) {
@@ -245,12 +254,12 @@ export default {
           width: 35px;
           height: 35px;
           padding: 5px;
-          background: #FFF;
+          border: 1px solid rgba(255, 255, 255, .2);
           border-radius: 26px;
           overflow: hidden;
           img{
             max-width: 100%;
-            transform: scale3d(1, 1, 1);
+            // transform: scale3d(1, 1, 1);
           }
         }
         &-btn{
