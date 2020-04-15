@@ -1,6 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import Lib from '@/util/walletlib'
+import coinsNames from '@/util/coinsNames'
 import Web3 from 'web3'
 
 class Wallets2Tokens {
@@ -13,6 +14,14 @@ class Wallets2Tokens {
     this.tableData.map(wallet => {
       wallet.type = wallet.type ? wallet.type : 'verto'
 
+      let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
+      let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === vtxCoin.toLowerCase())
+
+      let vespucciScore = 0
+      this.getCoinScore(coinSlug.slug).then(result => {
+        vespucciScore = result.vespucciScore
+        wallet.vespucciScore = vespucciScore
+      })
       if (wallet.type === 'eos') {
         wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
@@ -25,6 +34,7 @@ class Wallets2Tokens {
         wallet.to = '/verto/wallets/' + wallet.type + '/' + wallet.type + '/' + wallet.key
         wallet.chain = wallet.type
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
+        wallet.vespucciScore = vespucciScore
       }
 
       if (wallet.type === 'btc') {
@@ -36,7 +46,7 @@ class Wallets2Tokens {
       wallet.amount = 0.0
     })
 
-    store.state.currentwallet.config.keys.map((wallet) => {
+    store.state.currentwallet.config.keys.map(async (wallet) => {
       if (wallet.type.toLowerCase() === 'eos') {
         axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': wallet.name }).then(balances => {
           balances.data.map(t => {
@@ -53,7 +63,6 @@ class Wallets2Tokens {
                   amount: t.amount,
                   contract: t.code,
                   chain: 'eos',
-                  // vespucciScore:
                   to: '/verto/wallets/eos/' + type + '/' + name,
                   icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
                 })
@@ -121,10 +130,16 @@ class Wallets2Tokens {
 
     store.commit('wallets/updateTokens', this.tableData)
   }
-
-  getCoinScore (coin) {
-    let self = this
-    axios.get('https://volentix.info/get_asset_data?asset=' + coin)
+  async getAllAssets () {
+    await axios.get('https://volentix.info/get_assets')
+      .then(response => {
+        // console.log('this.getAllAssets()->response--------', response.data.data)
+        return response.data.data
+      })
+  }
+  async getCoinScore (coin) {
+    let currentAsset = null
+    await axios.get('https://volentix.info/get_asset_data?asset=' + coin)
       .then(response => {
         let mydata = response.data.data
         let scoreVespucci = 0
@@ -134,7 +149,7 @@ class Wallets2Tokens {
           }
         }
         let marketCap = mydata.marketcap.current_marketcap_usd
-        self.currentAsset = {
+        currentAsset = {
           'buySupport': mydata.market_data.volume_last_24_hours,
           'currentPrice': mydata.market_data.price_usd,
           'marketCap': marketCap,
@@ -144,6 +159,7 @@ class Wallets2Tokens {
         }
         // console.log('self.currentAsset', self.currentAsset)
       })
+    return currentAsset
   }
 }
 

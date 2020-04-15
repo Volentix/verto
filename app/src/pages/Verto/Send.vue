@@ -67,7 +67,7 @@
       <div class="standard-content--body">
         <div class="standard-content--body__form">
           <span class="lab-input">From</span>
-          <q-input v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" label="Current EOS Account">
+          <q-input v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? 'Current ' + currentAccount.type.toUpperCase() + ' Address' : 'Current ' + currentAccount.type.toUpperCase() + ' Account'">
             <template v-slot:append>
               <div class="flex justify-end">
                 <q-btn flat unelevated text-color="grey" round class="btn-copy" icon="o_file_copy" />
@@ -85,7 +85,7 @@
           </q-input>
 
           <span class="lab-input">To</span>
-          <q-input ref="sendTo" v-model="sendTo" @input="checkTo()" rounded class="input-input pr80" outlined color="purple" type="text" label="Account name">
+          <q-input ref="sendTo" v-model="sendTo" @input="checkTo()" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? currentAccount.type.toUpperCase() + ' Address' : 'Account name'">
             <template v-slot:append>
               <div class="flex justify-end">
                 <!-- <q-btn flat unelevated round class="btn-copy"><span class="qr-btn"><img src="statics/qr-icon.png" alt=""></span> </q-btn> -->
@@ -208,7 +208,7 @@ export default {
 
     console.log('this.currentAccount sur la page send', this.currentAccount)
 
-    this.from = this.currentAccount.name
+    this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
     this.chainID = this.currentAccount.chainID
     this.tokenID = this.currentAccount.tokenID
     this.accountName = this.currentAccount.accountName
