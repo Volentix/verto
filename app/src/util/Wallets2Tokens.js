@@ -60,6 +60,8 @@ class Wallets2Tokens {
                   type,
                   name,
                   key: wallet.key,
+                  privateKey: wallet.privateKey,
+                  privateKeyEncrypted: wallet.privateKeyEncrypted,
                   amount: t.amount,
                   contract: t.code,
                   chain: 'eos',
