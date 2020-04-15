@@ -34,24 +34,33 @@
                 <q-item clickable v-ripple class="p-relative">Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item clickable v-ripple class="p-relative">Transaction History<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                 </q-item>
-                <q-item clickable v-ripple class="p-relative">
+                <q-item clickable @click="alertSecurity = true" v-ripple class="p-relative">
                   Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                 </q-item>
                 <q-item clickable v-ripple class="p-relative" @click="openModalFun(currentAccount)">Remove <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <!-- <q-item clickable v-ripple class="p-relative">Vespucci score <q-badge class="p-abs" style="padding-right: 7px" :color="currentAsset.vespucciScore > 50 ? 'teal': 'red'" :label="currentAsset.vespucciScore" /></q-item> -->
-                <!-- <q-item clickable v-ripple class="p-relative" v-if="showVespucciScore" @click="showVespucciScore = !showVespucciScore">{{ currentAsset.vespucciScore }} <q-icon class="p-abs" name="close" style="font-size:1.5em" /></q-item> -->
-
-                <!-- <q-item class="p-relative flex justify-end pr0"> -->
-                <!-- Remove <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /> -->
-                <!-- <br> -->
-                 <!-- <q-btn v-if="currentAccount.type === 'verto'" color="indigo-12" class="mt10 lower" :to="'/verto/eos-account/' + currentAccount.name.toLowerCase()" text-color="white" label="Associate with EOS" /> -->
-                <!-- </q-item> -->
               </q-list>
             </div>
           </div>
         </q-item>
       </q-list>
     </div>
+    <q-dialog v-model="alertSecurity">
+      <q-card>
+        <q-card-section>
+          <div class="icon-alert flex flex-center">
+            <img src="statics/alert.svg" alt="">
+          </div>
+        </q-card-section>
+
+        <q-card-section class="q-pa-lg text-h6">
+          The private key is confidential. Aliquam a ipsum neque. Praesent sodales neque augue,
+        </q-card-section>
+
+        <q-card-actions align="right" class="q-pb-lg q-pr-lg">
+          <q-btn flat label="Got it" class="go-to-security" @click="goToSecurity()" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <div class="modal-wrapper text-black bg-white" :class="{'open' : openModal}">
       <div class="modal-wrapper--content">
         <!-- <q-scroll-area style="height: 100vh;max-height: 100vh;"> -->
@@ -103,6 +112,7 @@ export default {
   },
   data () {
     return {
+      alertSecurity: false,
       toggled: false,
       showPrivate: false,
       showVespucciScore: false,
@@ -152,6 +162,10 @@ export default {
   computed: {
   },
   methods: {
+    goToSecurity () {
+      console.log('test')
+      this.$router.push({ path: '/verto/wallets' })
+    },
     togglePrivateKey () {
       this.showPrivate = !this.showPrivate
       // console.log('this.showPrivate', this.showPrivate)
@@ -506,5 +520,24 @@ export default {
   }
   .lower{
     text-transform: initial !important;
+  }
+  .icon-alert{
+    padding-top: 25px;
+    padding-bottom: 0px;
+    img{
+      width: 50px;
+    }
+  }
+  .q-card{
+    border-radius: 25px;
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 35px rgba(0,0,0,0.14), 0 1px 10px rgba(0,0,0,0.12);
+  }
+  .go-to-security{
+    color: #FFF !important;
+    background-color: #00D0DF !important;
+    text-transform: initial !important;
+    padding: 10px 30px;
+    border-radius: 50px;
+    font-weight: $light;
   }
 </style>

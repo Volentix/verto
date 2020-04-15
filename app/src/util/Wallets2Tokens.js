@@ -55,10 +55,16 @@ class Wallets2Tokens {
               if (+t.amount !== 0) {
                 let name = wallet.name.toLowerCase()
                 let type = t.symbol.toLowerCase()
+                let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === type.toLowerCase())
+                let vespucciScore = 0
+                this.getCoinScore(coinSlug.slug).then(result => {
+                  vespucciScore = result.vespucciScore
+                })
                 self.tableData.push({
                   selected: false,
                   type,
                   name,
+                  vespucciScore,
                   key: wallet.key,
                   privateKey: wallet.privateKey,
                   privateKeyEncrypted: wallet.privateKeyEncrypted,
