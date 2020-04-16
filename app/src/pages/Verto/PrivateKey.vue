@@ -3,7 +3,7 @@
         <div class="chain-tools-wrapper">
             <div class="standard-content">
                 <h2 class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" to="/verto/wallets" text-color="black" icon="keyboard_backspace" />
+                    <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" />
                      Add Private Key
                 </h2>
                 <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
@@ -138,7 +138,9 @@ export default {
       invalidPrivateKeyPassword: false,
       vertoPassword: '',
       vertoPassordValid: false,
-      vertoPasswordWrong: false
+      vertoPasswordWrong: false,
+      goBack: '',
+      fetchCurrentWalletFromState: true
     }
   },
   async created () {
@@ -149,6 +151,8 @@ export default {
     this.wallet = tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
+    this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/wallets'
+
     console.log('this.wallet ------------- > ', this.wallet)
   },
   methods: {

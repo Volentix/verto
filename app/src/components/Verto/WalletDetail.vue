@@ -39,7 +39,7 @@
                 </q-item>
                 <q-item clickable v-ripple class="p-relative" @click="hideCurrency = !hideCurrency">
                   Hide Currency
-                  <q-toggle class="p-abs" color="blue" v-model="hideCurrency" />
+                  <q-toggle class="p-abs" color="red" v-model="hideCurrency" />
                   <!-- <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /> -->
                 </q-item>
               </q-list>
@@ -116,7 +116,7 @@ export default {
   },
   data () {
     return {
-      hideCurrency: true,
+      hideCurrency: false,
       alertSecurity: false,
       toggled: false,
       showPrivate: false,

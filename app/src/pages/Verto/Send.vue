@@ -63,7 +63,7 @@
       </div>
     </div>
     <div class="standard-content">
-      <h2 class="standard-content--title flex justify-center"><q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" /> Send </h2>
+      <h2 class="standard-content--title flex justify-center"><q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" /> Send </h2>
       <div class="standard-content--body">
         <div class="standard-content--body__form">
           <span class="lab-input">From</span>
@@ -131,6 +131,8 @@ export default {
       currentWallet: null,
       sendTo: '',
       to: '',
+      goBack: '',
+      fetchCurrentWalletFromState: true,
       from: '',
       isPwd: true,
       sendAmount: 1,
@@ -212,6 +214,8 @@ export default {
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
+
+    this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
 
     console.log('this.currentAccount sur la page send', this.currentAccount)
 
