@@ -5,7 +5,7 @@
     <div class="chain-tools-wrapper--list open">
       <div class="list-wrapper">
         <div class="list-wrapper--chain__eos-to-vtx-convertor">
-          <div v-if="step > 0" class="">
+          <div v-if="step >= 0" class="">
             <q-stepper
               v-model="step"
               vertical
@@ -13,108 +13,169 @@
               animated
               flat
             >
-              <q-step title="How many EOS"
+              <q-step title="Choose an account"
+                :name="0"
+                prefix="0"
+                :done="step > 0"
+              >
+                <q-select
+                    light
+                    separator
+                    rounded
+                    outlined
+                    class="select-input"
+                    v-model="wallet"
+                    use-input
+                    :options="tableData"
+                >
+                  <template v-slot:option="scope">
+                    <q-item
+                      class="custom-menu"
+                      v-bind="scope.itemProps"
+                      v-on="scope.itemEvents"
+                    >
+                      <q-item-section avatar>
+                        <q-icon class="option--avatar" :name="`img:${getImages(scope.opt.type, scope.opt.chain, scope.opt.icon)}`" />
+                      </q-item-section>
+                      <q-item-section dark>
+                        <q-item-label v-html="scope.opt.name" />
+                        <q-item-label caption class="ellipsis">{{ scope.opt.key }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                  <template v-slot:selected>
+                    <q-item
+                      v-if="wallet"
+                    >
+                      <q-item-section avatar>
+                        <q-icon class="option--avatar" :name="`img:${getImages(wallet.type, wallet.chain, wallet.icon)}`" />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label v-html="wallet.name" />
+                        <q-item-label caption class="ellipsis ellipsis_important">{{ wallet.key }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <q-item
+                      v-else>
+                    </q-item>
+                  </template>
+                  <template v-slot:append>
+                    <q-btn round flat unelevated text-color="grey" @click.stop icon="o_file_copy" />
+                  </template>
+                </q-select>
+
+                <q-stepper-navigation v-if="wallet" class="flex justify-end">
+                  <q-btn @click="step = 1" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
+                </q-stepper-navigation>
+
+              </q-step>
+              <q-step :title="`How many ${params.tokenID.toUpperCase()}`"
                 :name="1"
                 prefix="1"
                 :done="step > 1"
               >
+                <q-btn flat @click="step = 0" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
                 <div class="text-black">
-                  <p class="text-h6 text-grey">Condition 1</p>
-                  <p class="--alert text-indigo-6 text-h6">You have no available EOS for staking.</p>
-                  <div class="row">
-                    <div class="">
-                      <span class="--title row text-h6"> EOS (Liquid) </span>
-                      <span class="--amount row text-h4"> {{ eosbalance }} </span>
-                    </div>
-                  </div>
-                  <hr>
-                  <p class="text-h6 text-grey">Condition 2</p>
-                  <p class="--alert text-indigo-6 text-h6">Verto does not detect an EOS account</p>
-                  <div v-show="navigationButtons.amount" class="q-pa-sm" @click="step = 2" >
-                    <q-icon name="navigate_next" size="3.2rem" color="green">
-                      <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
-                    </q-icon>
-                  </div>
-                  <hr>
-                  <p class="text-h6 text-grey">Condition 3</p>
-                  <div class="text-black">
+                  <!-- <p class="text-h6 text-grey">Condition 1</p> -->
+                  <div v-if="condition === 1" class="condition_1">
+                    <p class="--alert text-indigo-6 text-h6">You have no available {{ params.tokenID.toUpperCase() }} for staking.</p>
                     <div class="row">
                       <div class="">
-                        <span class="--title row text-h6"> Current Balance<br>EOS (Liquid) </span>
-                        <span class="--amount row text-h4"> {{ 85.3672 }} </span>
-                      </div>
-                      <div class="col --progress hr-vertical flex flex-center">
-                        <span class="bar"></span>
-                      </div>
-                      <div class="col">
-                        <span class="--title row text-h6"> Current Stake<br>EOS (Staked) </span>
-                        <span class="--amount row text-h4"> {{ 5.40 }} </span>
+                        <span class="--title row text-h6"> {{ params.tokenID.toUpperCase() }} (Liquid) </span>
+                        <span class="--amount row text-h4"> {{ eosbalance }} </span>
                       </div>
                     </div>
-                    <div class="slider-holder">
-                      <br>
-                      <q-slider
-                        v-model="slider"
-                        :label-value="slider + '%'"
-                        :min="-100"
-                        :max="100"
-                        :step="5"
-                        color="orange"
-                        :label-color="progColor"
-                        dark
-                        markers
-                        label
-                        class="--slider"
-                        label-always
-                        @input="changeSlider()"
-                      />
-                    </div>
-                    <div class="row full-width">
-                      <div class="full-width">
-                        <span class="--title row text-h6"> Amount to stake </span>
-                        <span class="--amount row text-h4"> EOS 8.5367 </span>
-                        <br>
-                        <span class="--title row text-h6"> Stake period </span>
-                      </div>
-                    </div>
-                    <div class="slider-holder">
-                      <br>
-                      <q-slider
-                        v-model="slider"
-                        :label-value="slider + '%'"
-                        :min="-100"
-                        :max="100"
-                        :step="5"
-                        color="orange"
-                        :label-color="progColor"
-                        dark
-                        markers
-                        label
-                        class="--slider"
-                        label-always
-                        @input="changeSlider()"
-                      />
-                    </div>
-                    <div class="row full-width">
-                      <div class="full-width">
-                        <br>
-                        <span class="--title row text-h6 text-indigo-6"> Estimated stake reward </span>
-                        <span class="--amount row text-h4"> EOS 0.8536 </span>
-                        <br>
-                      </div>
-                    </div>
+                  </div>
+                  <!-- <p class="text-h6 text-grey">Condition 2</p> -->
+                  <div v-if="condition === 2" class="condition_2">
+                    <p class="--alert text-indigo-6 text-h6">Verto does not detect an {{ params.tokenID.toUpperCase() }} account</p>
                     <div v-show="navigationButtons.amount" class="q-pa-sm" @click="step = 2" >
-                      <q-icon name="navigate_next" size="3.2rem" color="green"   >
+                      <q-icon name="navigate_next" size="3.2rem" color="green">
                         <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
                       </q-icon>
+                    </div>
+                  </div>
+                  <!-- <p class="text-h6 text-grey">Condition 3</p> -->
+                  <div v-if="condition === 3" class="condition_3">
+                    <div class="text-black">
+                      <div class="row">
+                        <div class="">
+                          <span class="--title row text-h6"> Current Balance<br>{{ params.tokenID.toUpperCase() }} (Liquid) </span>
+                          <span class="--amount row text-h4"> {{ 85.3672 }} </span>
+                        </div>
+                        <div class="col --progress hr-vertical flex flex-center">
+                          <span class="bar"></span>
+                        </div>
+                        <div class="col">
+                          <span class="--title row text-h6"> Current Stake<br>{{ params.tokenID.toUpperCase() }} (Staked) </span>
+                          <span class="--amount row text-h4"> {{ 5.40 }} </span>
+                        </div>
+                      </div>
+                      <div class="slider-holder">
+                        <br>
+                        <q-slider
+                          v-model="slider"
+                          :label-value="slider + '%'"
+                          :min="-100"
+                          :max="100"
+                          :step="5"
+                          color="orange"
+                          :label-color="progColor"
+                          dark
+                          markers
+                          label
+                          class="--slider"
+                          label-always
+                          @input="changeSlider()"
+                        />
+                      </div>
+                      <div class="row full-width">
+                        <div class="full-width">
+                          <span class="--title row text-h6"> Amount to stake </span>
+                          <span class="--amount row text-h4"> {{ params.tokenID.toUpperCase() }} 8.5367 </span>
+                          <br>
+                          <span class="--title row text-h6"> Stake period </span>
+                        </div>
+                      </div>
+                      <div class="slider-holder">
+                        <br>
+                        <q-slider
+                          v-model="slider"
+                          :label-value="slider + '%'"
+                          :min="-100"
+                          :max="100"
+                          :step="5"
+                          color="orange"
+                          :label-color="progColor"
+                          dark
+                          markers
+                          label
+                          class="--slider"
+                          label-always
+                          @input="changeSlider()"
+                        />
+                      </div>
+                      <div class="row full-width">
+                        <div class="full-width">
+                          <br>
+                          <span class="--title row text-h6 text-indigo-6"> Estimated stake reward </span>
+                          <span class="--amount row text-h4"> {{ params.tokenID.toUpperCase() }} 0.8536 </span>
+                          <br>
+                        </div>
+                      </div>
+                      <div v-show="navigationButtons.amount" class="q-pa-sm" @click="step = 2" >
+                        <q-icon name="navigate_next" size="3.2rem" color="green"   >
+                          <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
+                        </q-icon>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 <q-stepper-navigation class="flex justify-end">
-                  <q-btn @click="step = 2" unelevated color="indigo-6" class="--next-btn" rounded label="Get EOS account" />
-                  <q-btn @click="step = 2" unelevated color="indigo-6" class="--next-btn" rounded label="Get EOS" />
-                  <q-btn @click="step = 2" unelevated color="indigo-6" class="--next-btn" rounded label="Next" />
+                  <q-btn @click="step = 2" v-if="condition === 1" unelevated color="deep-purple-14" class="--next-btn" rounded label="Get EOS account" />
+                  <q-btn @click="step = 2" v-if="condition === 2" unelevated color="deep-purple-14" class="--next-btn" rounded :label="`Get ${ params.tokenID.toUpperCase() }`" />
+                  <q-btn @click="step = 2" v-if="condition === 3" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
                 </q-stepper-navigation>
               </q-step>
 
@@ -151,7 +212,7 @@
                   </q-input>
                 </div>
                 <q-stepper-navigation class="flex justify-end">
-                  <q-btn @click="step = 4" color="primary" class="--next-btn" rounded label="Next" />
+                  <q-btn @click="step = 4" color="deep-purple-14" class="--next-btn" rounded label="Next" />
                 </q-stepper-navigation>
               </q-step>
 
@@ -203,7 +264,11 @@ export default {
   name: 'ChainTools',
   data () {
     return {
-      step: 1,
+      step: 0,
+      condition: 1,
+      wallet: null,
+      options: [],
+      tableData: [],
       active: true,
       showWallet: false,
       showText: false,
@@ -248,8 +313,46 @@ export default {
     }
   },
   async created () {
+    this.params = this.$store.state.currentwallet.params
     this.eosbalance = this.$route.params.eosbalance
     this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
+
+    this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
+    // for (var i = 0; i < this.tableData.length; i++) {
+    // if (this.tableData[i].type === 'eos') {
+    // let t = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': this.tableData[i].name })).data
+
+    // t.map(t => {
+    //   console.log('token', t)
+
+    //   if (t.symbol.toLowerCase() !== 'eos') {
+    //     if (+t.amount !== 0) {
+    //       self.tableData.push({
+    //         selected: false,
+    //         type: t.symbol.toLowerCase(),
+    //         name: self.tableData[i].name,
+    //         amount: t.amount,
+    //         contract: t.code,
+    //         chain: 'eos',
+    //         to: '/verto/wallets/eos/' + t.symbol.toLowerCase(),
+    //         icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
+    //       })
+    //     }
+    //   } else {
+    //     this.tableData[i].amount = t.amount
+    //   }
+    // })
+    // }
+    // }
+    // this.tableData.sort(function (a, b) {
+    //   if (a.name.toLowerCase() < b.name.toLowerCase()) {
+    //     return -1
+    //   }
+    //   return 1
+    // })
+    // this.tableData.map(element => {
+    //   console.log('element', element)
+    // })
   },
   async mounted () {
     this.walletName = this.$store.state.currentwallet.wallet.name
@@ -261,6 +364,15 @@ export default {
     }
   },
   methods: {
+    getImages (symbol, chain, icon) {
+      if (chain === 'eos') {
+        return icon
+      } else if (symbol === 'verto') {
+        return '/statics/icon.png'
+      } else {
+        return symbol ? 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png' : false
+      }
+    },
     showMore () {
 
     },
@@ -319,6 +431,40 @@ export default {
           transform: translateY(-20px) scaleY(.5);
           transform-origin: top;
           transition: ease transform .3s, ease opacity .4s;
+          .select-input{
+            border-radius: 100px !important;
+            $height: 50px;
+            height: $height;
+            /deep/ .q-field__marginal{
+              height: $height;
+              min-height: unset;
+            }
+            /deep/ .q-field__control{
+              height: $height;
+              min-height: unset;
+              .q-field__native{
+                padding-left: 0px;
+                padding-top: 0px;
+                padding-bottom: 0px;
+                height: $height;
+                min-height: unset;
+                .q-item{
+                  padding: 0px;
+                  padding-left: 18px;
+                  min-height: $height;
+                  padding-bottom: 0px;
+                  .q-item__section{
+                    padding-right: 21px;
+                    min-width: 36px;
+                    margin-left: -20px;
+                    .q-item__label + .q-item__label {
+                      margin-top: 0px;
+                    }
+                  }
+                }
+              }
+            }
+          }
           &--chain{
             &__type{
               background-color: #fff;
@@ -574,5 +720,12 @@ export default {
           }
         }
       }
+    }
+    /deep/ .ellipsis_important{
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 100%;
+      max-width: 145px;
     }
 </style>

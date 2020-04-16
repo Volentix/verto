@@ -1,33 +1,56 @@
 <template>
 <div>
-  <div class="wallets-wrapper">
+  <div class="wallets-wrapper padtop">
     <!-- <q-toggle v-model="active" label="Active" /> -->
-    <div class="wallets-wrapper--list" :class="{'open': !walletShowHide}">
+    <div class="wallets-wrapper--list open">
       <q-list bordered separator class="list-wrapper">
-        <q-item v-for="(item, index) in tableData" :key="index" clickable :active="active" :to="item.to">
+        <q-item class="selected" clickable>
           <div class="header-wallet-wrapper culumn full-width">
-            <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
+            <div class="header-wallet full-width flex justify-between">
               <q-item-section avatar>
-                <img class="coin-icon" width="35px" :src="item.icon" alt="">
+                <img class="coin-icon" width="35px" :src="currentAccount.icon" alt="">
               </q-item-section>
               <q-item-section class="item-name">
-                <span class="item-name--name">{{item.name}}</span>
-                <span class="item-name--percent">{{item.percent}}</span>
+                <span class="item-name--name">{{currentAccount.name}}</span>
+                <!-- <span class="item-name--percent">{{currentAccount.percent}}</span> -->
               </q-item-section>
               <q-item-section class="item-info">
-                <span class="item-info--amount">{{new Number(item.amount).toFixed(2)}} {{ item.type.toUpperCase() }}</span>
-                <span class="item-info--amountUSD">{{item.amountUSD}}</span>
+                <span class="item-info--amount">{{new Number(currentAccount.amount).toFixed(2)}} {{currentAccount.type.toUpperCase()}}</span>
+                <!-- <span class="item-info--amountUSD">{{currentAccount.amountUSD}}</span> -->
               </q-item-section>
+            </div>
+            <div class="menu-wallet">
+              <q-list bordered separator class="sub-list-menu">
+                <q-item class="p-relative full-width">
+                  <div class="vespucci-score--wrapper full-width flex justify-between items-center">
+                    <span class="label">{{ currentAccount.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
+                    <span class="value">{{ currentAccount.vespucciScore }}</span>
+                    <span class="powered">Powered by Vespucci</span>
+                  </div>
+                </q-item>
+                <br>
+                <q-separator />
+                <br>
+                <q-item clickable v-ripple class="p-relative">Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item clickable v-ripple class="p-relative">Transaction History<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                </q-item>
+                <q-item clickable v-ripple class="p-relative">
+                  Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                </q-item>
+                <q-item clickable v-ripple class="p-relative" @click="openModalFun(currentAccount)">Remove <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <!-- <q-item clickable v-ripple class="p-relative">Vespucci score <q-badge class="p-abs" style="padding-right: 7px" :color="currentAsset.vespucciScore > 50 ? 'teal': 'red'" :label="currentAsset.vespucciScore" /></q-item> -->
+                <!-- <q-item clickable v-ripple class="p-relative" v-if="showVespucciScore" @click="showVespucciScore = !showVespucciScore">{{ currentAsset.vespucciScore }} <q-icon class="p-abs" name="close" style="font-size:1.5em" /></q-item> -->
+
+                <!-- <q-item class="p-relative flex justify-end pr0"> -->
+                <!-- Remove <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /> -->
+                <!-- <br> -->
+                 <!-- <q-btn v-if="currentAccount.type === 'verto'" color="indigo-12" class="mt10 lower" :to="'/verto/eos-account/' + currentAccount.name.toLowerCase()" text-color="white" label="Associate with EOS" /> -->
+                <!-- </q-item> -->
+              </q-list>
             </div>
           </div>
         </q-item>
       </q-list>
-      <div v-if="!walletShowHide" class="add-remove-wrapper flex justify-center item-center content-center">
-        <span class="add-remove-wrapper--title text-black">Add Currency</span>
-        <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" />
-      </div>
-      <q-btn unelevated v-if="!showWallets" flat @click="toggleWallets()" :icon-right="showText ? 'keyboard_arrow_up': 'keyboard_arrow_down'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showText ? 'Hide all wallets' : 'Show all wallets'" :class="showText ? 'open': 'hide'" />
-      <!-- <q-btn v-else @click="toggleWallets()" unelevated flat :icon-right="showText ? 'keyboard_arrow_up': 'keyboard_arrow_down'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showText ? 'Hide all wallets' : 'Show all wallets'" /> -->
     </div>
     <div class="modal-wrapper text-black bg-white" :class="{'open' : openModal}">
       <div class="modal-wrapper--content">
@@ -96,24 +119,6 @@ export default {
         'vespucciScore': ''
       },
       confirmed: false,
-      // showWallet: true,
-      showText: false,
-      menu: [
-        { selected: false, type: 'btc-xyz', name: 'BTC xyz', percent: '1.02%', to: '/verto/wallets/btc-xyz', icon: 'statics/coins_icons/btc.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-        { selected: false, type: 'vtx', name: 'VTX', percent: '1.02%', to: '/verto/wallets/vtx', icon: 'statics/coins_icons/vtx.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-        { selected: false, type: 'eth', name: 'ETH', percent: '1.02%', to: '/verto/wallets/eth', icon: 'statics/coins_icons/eth.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-        { selected: false, type: 'dash', name: 'DASH', percent: '1.02%', to: '/verto/wallets/dash', icon: 'statics/coins_icons/dash.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-        { selected: false, type: 'riple', name: 'Riple', percent: '1.02%', to: '/verto/wallets/riple', icon: 'statics/coins_icons/ripple.png', amount: '0.023 BTC', amountUSD: '$235.21' }
-      ],
-      selectedWallet: {
-        selected: false,
-        type: 'btc',
-        name: 'BTC xyz',
-        percent: '1.02%',
-        icon: 'statics/coins_icons/btc.png',
-        amount: '0.023 BTC',
-        amountUSD: '$235.21'
-      },
       tableData: [],
       currentAccount: {
         selected: false,
@@ -134,30 +139,22 @@ export default {
     // console.log('updated')
   },
   async created () {
-    // console.log('created')
-    // this.params = this.$store.state.currentwallet.params
-    this.chainID = this.$route.params.chainID
-    this.tokenID = this.$route.params.tokenID
-    this.accountName = this.$route.params.accountName
-
     this.tableData = await this.$store.state.wallets.tokens
-
-    console.log('this.tableData', this.tableData)
-
+    this.currentAccount = this.tableData.find(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)
+    )
     this.$store.commit('currentwallet/updateParams', {
-      chainID: this.chainID,
-      tokenID: this.tokenID,
-      accountName: this.accountName
+      chainID: this.$route.params.chainID,
+      tokenID: this.$route.params.tokenID,
+      accountName: this.$route.params.accountName
     })
   },
   computed: {
-    walletShowHide () {
-      return this.toggled ? this.showWallets : !this.showWallets
-    }
   },
   methods: {
     togglePrivateKey () {
       this.showPrivate = !this.showPrivate
+      // console.log('this.showPrivate', this.showPrivate)
     },
     hideModalFun: function () {
       this.openModal = false
@@ -264,13 +261,13 @@ export default {
         transition: ease transform .3s, ease opacity .4s;
       }
       &.open{
-        margin-bottom: -40px;
+        margin-bottom: 0px;
         .list-wrapper{
           visibility: visible;
           height: auto;
           opacity: 1;
           transform: translateY(0px) scaleY(1);
-          margin-bottom: 40px;
+          margin-bottom: 0px;
         }
       }
       /deep/ .q-list--bordered {
@@ -278,12 +275,12 @@ export default {
           .q-item{
             &:not(:first-child){
               .q-link {
-                border-top: 1px solid rgba(0,0,0,0.02);
+                border-top: 1px solid rgba(0,0,0,0);
               }
             }
           }
           .q-link {
-            border-top: 1px solid rgba(0,0,0,0.06);
+            border-top: 1px solid rgba(0,0,0,0);
             .menu-wallet{
               display: none;
               .sub-list-menu{
@@ -303,7 +300,7 @@ export default {
                   .private-key{}
                 }
                 .q-link{
-                  border-top: 1px solid rgba(0,0,0,0.06);
+                  border-top: 1px solid rgba(0,0,0,0);
                   display: flex;
                   flex-direction: row;
                   align-items: center;
@@ -315,6 +312,41 @@ export default {
             &.selected{
               .menu-wallet{
                 display: block;
+                .vespucci-score--wrapper{
+                  min-height: 40px;
+                  background-color: #F3F3F3;
+                  background: transparent linear-gradient(180deg, #FFFFFF 0%, #F3F3F3 100%) 0% 0% no-repeat padding-box;
+                  border-radius: 8px;
+                  padding: 0px 10px;
+                  box-shadow: 0px 5px 8px 0px rgba(black, .1);
+                  position: relative;
+                  .powered{
+                    position: absolute;
+                    left: 0px;
+                    width: 100%;
+                    text-align: center;
+                    font-size: 10px;
+                    color: #2A2A2A;
+                    font-weight: $regular;
+                    opacity: .5;
+                    letter-spacing: .2px;
+                    padding-left: 30px;
+                  }
+                  .label{
+                    background-color: #6C0DCB;
+                    color: #FFF;
+                    font-size: 15px;
+                    font-family: $Titillium;
+                    font-weight: $regular;
+                    padding: 3px 10px;
+                    border-radius: 20px;
+                    background: transparent linear-gradient(270deg, #6C0DCB 0%, #00FFFF 100%) 0% 0% no-repeat;
+                    box-shadow: 0px 3px 6px 0px rgba(black, .1);
+                  }
+                  .value{
+                    @extend .label;
+                  }
+                }
               }
             }
           }
@@ -350,6 +382,7 @@ export default {
         max-width: fit-content;
         &--name{
           font-size: 14px;
+          margin-left: -13px;
         }
         &--percent{
           font-size: 12px;
@@ -364,6 +397,7 @@ export default {
         align-items: flex-end;
         &--amount{
           font-size: 16px;
+          margin-right: 16px;
         }
         &--amountUSD{
           font-size: 13px;

@@ -1,6 +1,26 @@
 <template>
   <div>
-    <div v-if="version === 'type1'" class="column flex-center profile-wrapper--header" style="background: url('statics/header_bg.png');">
+    <div class="send-modal flex flex-center" :class="{'open' : openModal}">
+      <div class="send-modal__content column flex-center">
+        <div class="send-modal__content--head">
+          <span class="text-h5 --amount">{{ currentAccount.name.toUpperCase() }}</span>
+          <q-btn color="white" rounded flat unelevated @click="openModal = false" class="close-btn" text-color="black" label="+" />
+        </div>
+        <div class="send-modal__content--body qrcode-wrapper column flex-center">
+          <qrcode :value="currentAccount.key" :options="{size: 200}"></qrcode>
+          <div class="--label text-cyan-5 text-h6">Scan the QR Code</div>
+        </div>
+        <div class="send-modal__content--footer">
+          <div class="text-h4 --email pl20">
+            Copy the address <q-btn round flat unelevated text-color="grey" @click="copyToClipboard(currentAccount.chain === 'eos' ? currentAccount.name : currentAccount.key  , 'Address')" icon="o_file_copy" />
+          </div>
+          <!-- currentAccount.key -->
+        </div>
+      </div>
+    </div>
+
+    <div v-if="version === 'type1'" class="p-relative column flex-center profile-wrapper--header wallets" style="background: url('statics/header_bg.png');">
+      <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="white" icon="keyboard_backspace" />
       <h3 class="profile-wrapper--header__title text-white">Total Balance</h3>
       <h2 class="profile-wrapper--header__balance text-white">136.23 VTX</h2>
       <div class="profile-wrapper--header__action">
@@ -16,12 +36,17 @@
       </div>
       <p class="desc text-white full-width">For now, you can make EOS while you sleep.</p>
     </div>
-    <div v-else-if="version === 'type3'" class="column flex-center profile-wrapper--header" style="background: url('statics/header_bg.png');">
-      <h3 class="profile-wrapper--header__title text-white">{{ selectedWallet.name }}</h3>
-      <h2 class="profile-wrapper--header__balance text-white">{{ selectedWallet.amount }}</h2>
+    <div v-else-if="version === 'type3'" class="column flex-center profile-wrapper--header wallet-detail" style="background: url('statics/header_bg.png');">
+      <q-btn flat unelevated class="btn-align-left" to="/verto/wallets" text-color="white" icon="keyboard_backspace" />
+      <h3 class="profile-wrapper--header__title text-white">{{ currentAccount.name.toUpperCase() }}</h3>
+      <h2 class="profile-wrapper--header__balance text-white">{{ new Number(currentAccount.amount).toFixed(2) }} {{ currentAccount.type.toUpperCase() }}</h2>
       <div class="profile-wrapper--header__action">
-        <q-btn unelevated :to="'/verto/wallets/send/' + selectedWallet.slug" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
-        <q-btn unelevated :to="'/verto/wallets/receive/' + selectedWallet.slug" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
+        <q-btn unelevated to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
+        <q-btn unelevated to="/verto/wallets/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
+        <q-btn flat unelevated round class="btn-qrcode" @click="openModal = !openModal">
+          <span class="qr-btn"><img src="statics/barcode.svg" alt=""></span>
+        </q-btn>
+        <!-- <qrcode :value="currentAccount.key" :options="{size: 200}"></qrcode> -->
       </div>
     </div>
     <div v-else-if="version === 'type4'" class="profile-wrapper--header static" style="background: url(statics/eos-bg.png) #007086 no-repeat !important; background-size: contain !important; min-height: 260px;">
@@ -50,6 +75,11 @@
 </template>
 
 <script>
+import VueQrcode from '@chenfengyuan/vue-qrcode'
+import Vue from 'vue'
+
+Vue.component(VueQrcode.name, VueQrcode)
+
 export default {
   name: 'ProfileHeader',
   props: {
@@ -58,26 +88,69 @@ export default {
       required: false,
       default: 'type1'
     },
-    walletID: {
-      type: String,
+    showWallets: {
+      type: Boolean,
       required: false,
-      default: ''
+      default: true
+    },
+    isWalletsPage: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    isWalletDetail: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data () {
     return {
-      selectedWallet: {
+      tableData: [],
+      chainID: '',
+      openModal: false,
+      tokenID: '',
+      currentAccount: {
         selected: false,
-        slug: 'btc-xyz',
-        name: 'BTC xyz',
-        purcent: '1.02%',
-        icon: 'statics/coins_icons/btc.png',
-        amount: '0.023 BTC',
-        amountUSD: '$235.21'
+        type: '',
+        name: '',
+        amount: '',
+        contract: '',
+        chain: ''
+      }
+    }
+  },
+  async mounted () {
+  },
+  async created () {
+    this.tableData = await this.$store.state.wallets.tokens
+    this.currentAccount = this.tableData.find(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)
+    )
+    if (this.currentAccount === undefined) {
+      this.currentAccount = {
+        selected: false,
+        type: 'verto',
+        name: 'test',
+        amount: 'test',
+        contract: 'test',
+        chain: 'test',
+        key: 'test'
       }
     }
   },
   methods: {
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    }
   }
 }
 </script>
@@ -93,6 +166,20 @@ export default {
       overflow: hidden;
       border-radius: 0px 0px 20px 20px;
       padding-bottom: 20px;
+      &.wallets{
+        .btn-align-left{
+          position: absolute;
+          left: 10px;
+          top: 3%;
+        }
+      }
+      &.wallet-detail{
+        .btn-align-left{
+          position: absolute;
+          left: 10px;
+          top: 3%;
+        }
+      }
       &.static{
         background: #0E163B !important;
         box-shadow: 0px 3px 6px 0px rgba(#000000, .29);
@@ -163,6 +250,18 @@ export default {
       &__action{
         text-align: center;
         width: 100%;
+        .qr-btn{
+          width: 35px;
+          height: 35px;
+          padding: 5px;
+          border: 1px solid rgba(255, 255, 255, .2);
+          border-radius: 26px;
+          overflow: hidden;
+          img{
+            max-width: 100%;
+            // transform: scale3d(1, 1, 1);
+          }
+        }
         &-btn{
           background: #7272FA !important;
           margin: 0px 10px;
@@ -175,5 +274,107 @@ export default {
         }
       }
     }
+  }
+  .send-modal{
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(black, .5);
+    left: 0px;
+    top: 0px;
+    z-index: 999999;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity ease .4s;
+    &.open{
+      visibility: visible;
+      opacity: 1;
+      .send-modal__content{
+        transform: scale(1);
+      }
+    }
+    &__content{
+      background-color: #fff;
+      border-radius: 20px;
+      max-width: 85%;
+      padding: 20px;
+      width: 100%;
+      box-shadow: 0px -2px 9px 0px rgba(black, .29);
+      position: relative;
+      transform: scale(0);
+      transition: ease transform .3s, opacity ease .2s;
+      &--head{
+        margin-bottom: 20px;
+        .close-btn{
+          position: absolute;
+          right: 10px;
+          top: 10px;
+          font-size: 40px;
+          font-weight: $light;
+          font-family: $Titillium;
+          height: 40px;
+          width: 40px;
+          min-height: unset;
+          opacity: .3;
+          /deep/ .q-btn__content{
+            transform: rotate(45deg);
+            min-height: unset;
+            line-height: 30px;
+            margin-left: 5px;
+            margin-top: -4px;
+          }
+        }
+        .--amount{
+          font-size: 25px;
+          font-weight: $bold;
+          font-family: $Titillium;
+          margin-top: 20px;
+          position: relative;
+          top: -5px;
+        }
+      }
+      &--body{
+        position: relative;
+        &.qrcode-wrapper{
+          width: 200px;
+          height: 150px;
+          canvas{
+            transform: scale3d(1.4, 1.4, 1.4);
+            border-radius: 5px;
+            border: 2px solid rgba(99, 62, 127, .1);
+            max-width: 120px;
+            max-height: 120px;
+          }
+        }
+        .svg_logo{
+          fill: #00D0CA;
+          position: absolute;
+          margin-top: 5px;
+          width: 50px;
+        }
+        .--label{
+          font-size: 12px;
+          font-weight: $regular;
+          font-family: $Titillium;
+          position: absolute;
+          bottom: -15px;
+          line-height: 15px;
+          background: white;
+          padding: 4px 9px;
+        }
+      }
+
+      &--footer{
+        .--email{
+          font-size: 16px;
+          font-weight: $bold;
+          font-family: $Titillium;
+          margin-top: 20px;
+        }
+      }
+    }
+  }
+  .pl20{
+    padding-left: 20px;
   }
 </style>
