@@ -22,7 +22,7 @@
           </div>
         </q-item>
       </q-list>
-      <div v-if="!walletShowHide" class="add-remove-wrapper flex justify-center item-center content-center">
+      <div v-if="!walletShowHide" class="add-remove-wrapper flex justify-evenly item-center content-center">
         <span class="add-remove-wrapper--title text-black">Add Currency</span>
         <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" />
       </div>
@@ -215,12 +215,13 @@ export default {
     &--list{
       background-color: #fff;
       padding: 4% 0%;
-      border-radius: 0px 0px 10px 10px;
+      border-radius: 0px 0px 25px 25px;
       box-shadow: 0px 3px 6px 0px rgba(black, .19);
       .add-remove-wrapper{
         align-items: center;
         margin-top: -20px;
         margin-bottom: 10px;
+        cursor: pointer;
         &--title{
           font-size: 16px;
           font-family: $Titillium;

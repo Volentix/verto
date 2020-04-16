@@ -1,31 +1,35 @@
 <template>
-<div>
-  <div class="transaction-wrapper">
-    <!-- <q-toggle v-model="active" label="Active" /> -->
-    <div class="transaction-wrapper--list open">
-      <q-list bordered separator class="list-wrapper">
-        <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="item.to">
-          <q-item-section class="item-date">
-            <span class="item-date--value" v-html="item.date" />
-          </q-item-section>
-          <q-item-section class="item-trans">
-            <span class="item-trans--transID">{{item.transID}}</span>
-            <span class="item-trans--desc">{{item.desc}}</span>
-          </q-item-section>
-          <q-item-section class="item-amount">
-            <span class="item-amount--value">{{item.amount}}</span>
-          </q-item-section>
-        </q-item>
-      </q-list>
-       <q-btn @click="showMore()" unelevated flat class="full-width transaction-wrapper--list__hide-transaction" color="white" text-color="black" label="See More..." />
+<q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
+    <profile-header class="marg" version="type3" :fetchCurrentWalletFromState="true" />
+    <div class="transaction-wrapper">
+        <div class="transaction-wrapper--list open">
+            <q-list bordered separator class="list-wrapper">
+                <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="item.to">
+                <q-item-section class="item-date">
+                    <span class="item-date--value" v-html="item.date" />
+                </q-item-section>
+                <q-item-section class="item-trans">
+                    <span class="item-trans--transID">{{item.transID}}</span>
+                    <span class="item-trans--desc">{{item.desc}}</span>
+                </q-item-section>
+                <q-item-section class="item-amount">
+                    <span class="item-amount--value">{{item.amount}}</span>
+                </q-item-section>
+                </q-item>
+            </q-list>
+            <q-btn @click="showMore()" unelevated flat class="full-width transaction-wrapper--list__hide-transaction" color="white" text-color="black" label="See More..." />
+        </div>
     </div>
-  </div>
-</div>
+</q-page>
 </template>
 
 <script>
+import ProfileHeader from '../../components/Verto/ProfileHeader'
 export default {
   name: 'History',
+  components: {
+    ProfileHeader
+  },
   data () {
     return {
       active: true,
@@ -53,7 +57,7 @@ export default {
   @import "~@/assets/styles/variables.scss";
   .transaction-wrapper{
     padding: 0px 6%;
-    margin-top: -20px;
+    margin-top: -30px;
     &--list{
       background-color: #fff;
       padding: 4% 5%;

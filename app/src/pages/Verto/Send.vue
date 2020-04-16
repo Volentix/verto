@@ -63,14 +63,14 @@
       </div>
     </div>
     <div class="standard-content">
-      <h2 class="standard-content--title flex justify-center"><q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" /> Send </h2>
+      <h2 class="standard-content--title flex justify-center"><q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" /> Send </h2>
       <div class="standard-content--body">
         <div class="standard-content--body__form">
           <span class="lab-input">From</span>
           <q-input v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? 'Current ' + currentAccount.type.toUpperCase() + ' Address' : 'Current ' + currentAccount.type.toUpperCase() + ' Account'">
             <template v-slot:append>
               <div class="flex justify-end">
-                <q-btn flat unelevated text-color="grey" round class="btn-copy" icon="o_file_copy" />
+                <q-btn flat unelevated text-color="grey" @click="copyToClipboard(from , 'Address')" round class="btn-copy" icon="o_file_copy" />
               </div>
             </template>
           </q-input>
@@ -89,7 +89,7 @@
             <template v-slot:append>
               <div class="flex justify-end">
                 <!-- <q-btn flat unelevated round class="btn-copy"><span class="qr-btn"><img src="statics/qr-icon.png" alt=""></span> </q-btn> -->
-                <q-btn flat unelevated text-color="grey" round class="btn-copy" icon="o_file_copy" />
+                <q-btn flat unelevated @click="copyToClipboard(sendTo , 'Address')" text-color="grey" round class="btn-copy" icon="o_file_copy" />
               </div>
             </template>
           </q-input>
@@ -131,6 +131,8 @@ export default {
       currentWallet: null,
       sendTo: '',
       to: '',
+      goBack: '',
+      fetchCurrentWalletFromState: true,
       from: '',
       isPwd: true,
       sendAmount: 1,
@@ -185,7 +187,14 @@ export default {
       unknownError: false,
       ErrorMessage: '',
       invalidEosName: false,
-      currentAccount: {},
+      currentAccount: {
+        selected: false,
+        type: '',
+        name: '',
+        amount: '',
+        contract: '',
+        chain: ''
+      },
       tokenPrecision:
       {
         'EOS': 4,
@@ -206,6 +215,8 @@ export default {
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
 
+    this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
+
     console.log('this.currentAccount sur la page send', this.currentAccount)
 
     this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
@@ -218,6 +229,17 @@ export default {
     this.setupPlatformPath()
   },
   methods: {
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    },
     checkMemo () {
       if (this.sendMemo.length > 0) {
         this.$refs.sendMemo.error = false

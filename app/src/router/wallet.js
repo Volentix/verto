@@ -145,7 +145,7 @@ export default [
       },
       {
         name: 'receive',
-        path: '/verto/receive',
+        path: '/verto/wallets/receive',
         component: () => import('pages/Verto/Receive.vue'),
         meta: {
           authRequired: true
@@ -195,6 +195,22 @@ export default [
         name: 'wallet',
         path: '/verto/wallets/:chainID/:tokenID/:accountName',
         component: () => import('pages/Verto/WalletDetail.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        name: 'privateKey',
+        path: '/verto/wallet/privateKey',
+        component: () => import('pages/Verto/PrivateKey.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        name: 'coinHistory',
+        path: '/verto/wallet/coinHistory',
+        component: () => import('pages/Verto/CoinHistory.vue'),
         meta: {
           authRequired: true
         }
