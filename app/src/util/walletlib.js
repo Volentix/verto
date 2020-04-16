@@ -1,4 +1,5 @@
 import EosWrapper from '@/util/EosWrapper'
+import axios from 'axios'
 
 class Lib {
   Wallet = async (walletType, key, token) => {
@@ -17,6 +18,17 @@ class Lib {
         }
 
         return { balance: float }
+      },
+      async eth (key, token) {
+        // const Web3 = require('web3')
+        // const web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/54b0a9c16bc94aeb908616525203c9da"))
+        // var balance = web3.eth.getBalance(key)
+
+        // return { balance: float }
+      },
+      async btc (key) {
+        const balance = (await axios.get('https://blockchain.info/q/addressbalance/' + key, { 'cors': 'true' })).data
+        return { balance }
       }
     }[walletType]
 

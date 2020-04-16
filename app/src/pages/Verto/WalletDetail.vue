@@ -1,12 +1,12 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
-    <profile-header class="marg" version="type3" :walletID="walletID" />
-    <wallets :walletID="walletID" />
+    <profile-header class="marg" version="type3" />
+    <wallet-detail />
   </q-page>
 </template>
 
 <script>
-import Wallets from '../../components/Verto/Wallets'
+import WalletDetail from '../../components/Verto/WalletDetail'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
@@ -16,13 +16,14 @@ if (platformTools.default) platformTools = platformTools.default
 export default {
   components: {
     ProfileHeader,
-    Wallets
+    WalletDetail
   },
   data () {
     return {
       pword: '',
       minimizedModal: false,
-      walletID: this.$route.params.walletID,
+      chainID: this.$route.params.chainID,
+      tokenID: this.$route.params.tokenID,
       message: '',
       version: {},
       network: this.$store.state.settings.network,
@@ -32,7 +33,6 @@ export default {
   mounted () {
     this.version = version
     this.setupPlatformPath()
-    console.log('this.walletID', this.walletID)
   },
   methods: {
     async setupPlatformPath () {

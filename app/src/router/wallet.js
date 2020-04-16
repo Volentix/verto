@@ -88,6 +88,14 @@ export default [
         }
       },
       {
+        name: 'eos-account-name',
+        path: '/verto/eos-account/:accountName',
+        component: () => import('pages/Verto/EOSAccount.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
         name: 'stake',
         path: '/verto/stake',
         component: () => import('pages/Verto/Stake.vue'),
@@ -121,7 +129,7 @@ export default [
       },
       {
         name: 'send',
-        path: '/verto/wallets/send/:walletID',
+        path: '/verto/wallets/send',
         component: () => import('pages/Verto/Send.vue'),
         meta: {
           authRequired: true
@@ -177,7 +185,7 @@ export default [
       },
       {
         name: 'wallet',
-        path: '/verto/wallets/:walletID',
+        path: '/verto/wallets/:chainID/:tokenID/:accountName',
         component: () => import('pages/Verto/WalletDetail.vue'),
         meta: {
           authRequired: true

@@ -13,3 +13,7 @@ export const updateConfig = (state, newconfig) => {
 export const setLoggedIn = (state, loggedIn) => {
   state.loggedIn = loggedIn
 }
+
+export const updateParams = (state, params) => {
+  state.params = params
+}
