@@ -198,6 +198,22 @@ export default [
         meta: {
           authRequired: true
         }
+      },
+      {
+        name: 'privateKey',
+        path: '/verto/wallet/privateKey',
+        component: () => import('pages/Verto/PrivateKey.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        name: 'coinHistory',
+        path: '/verto/wallet/coinHistory',
+        component: () => import('pages/Verto/CoinHistory.vue'),
+        meta: {
+          authRequired: true
+        }
       }
     ]
   },
