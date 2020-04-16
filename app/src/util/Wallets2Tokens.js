@@ -88,12 +88,16 @@ class Wallets2Tokens {
         // wallet.key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
         axios.get('https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
           let ethplorer = res.data
+          self.tableData.filter(w => w.key === wallet.key).map(eth => {
+            eth.amount = ethplorer.ETH.balance
+            eth.usd = ethplorer.ETH.balance * ethplorer.ETH.price.rate
+          })
+
+          console.log('ethplorer', ethplorer)
+
           axios.get('https://cors-anywhere.herokuapp.com/https://api.tokensets.com/v1/rebalancing_sets').then(res => {
             let tokenSets = res.data.rebalancing_sets
             console.log('tokenSets', tokenSets)
-
-            // For eth
-            self.tableData.filter(w => w.key === wallet.key).amount = ethplorer.ETH.balance
 
             if (ethplorer.tokens) {
               ethplorer.tokens.filter(t => t.balance > 0).map(t => {

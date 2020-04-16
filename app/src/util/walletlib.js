@@ -27,7 +27,7 @@ class Lib {
         // return { balance: float }
       },
       async btc (key) {
-        const balance = (await axios.get('https://blockchain.info/q/addressbalance/' + key, { 'cors': 'true' })).data
+        const balance = (await axios.get('https://blockchain.info/q/addressbalance/' + key, { 'cors': 'true' })).data / 100000000
         return { balance }
       }
     }[walletType]
