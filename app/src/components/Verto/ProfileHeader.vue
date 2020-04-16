@@ -37,7 +37,7 @@
       <p class="desc text-white full-width">For now, you can make EOS while you sleep.</p>
     </div>
     <div v-else-if="version === 'type3'" class="column flex-center profile-wrapper--header wallet-detail" style="background: url('statics/header_bg.png');">
-      <q-btn flat unelevated class="btn-align-left" to="/verto/wallets" text-color="white" icon="keyboard_backspace" />
+      <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="white" icon="keyboard_backspace" />
       <h3 class="profile-wrapper--header__title text-white">{{ currentAccount.name.toUpperCase() }}</h3>
       <h2 class="profile-wrapper--header__balance text-white">{{ new Number(currentAccount.amount).toFixed(2) }} {{ currentAccount.type.toUpperCase() }}</h2>
       <div class="profile-wrapper--header__action">
@@ -102,6 +102,11 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    fetchCurrentWalletFromState: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data () {
@@ -110,6 +115,7 @@ export default {
       chainID: '',
       openModal: false,
       tokenID: '',
+      goBack: '',
       currentAccount: {
         selected: false,
         type: '',
@@ -124,9 +130,14 @@ export default {
   },
   async created () {
     this.tableData = await this.$store.state.wallets.tokens
-    this.currentAccount = this.tableData.find(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)
+    console.log('this.fetchCurrentWalletFromState', this.fetchCurrentWalletFromState)
+    let params = this.fetchCurrentWalletFromState ? this.$store.state.currentwallet.params : this.$route.params
+
+    this.currentAccount = this.tableData.find(w => w.chain === params.chainID && w.type === params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === params.accountName : w.key === params.accountName)
     )
+    this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${params.chainID}/${params.tokenID}/${params.accountName}` : '/verto/wallets'
+
     if (this.currentAccount === undefined) {
       this.currentAccount = {
         selected: false,

@@ -2,7 +2,7 @@
   <q-page class="text-black bg-white">
     <div class="standard-content">
       <h2 class="standard-content--title flex justify-center">
-        <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" />
+        <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" />
         Receive
       </h2>
       <div class="standard-content--body">
@@ -14,7 +14,7 @@
               rounded
               outlined
               class="select-input"
-              v-model="wallet"
+              v-model="currentAccount"
               use-input
               :options="options"
           >
@@ -29,20 +29,20 @@
                 </q-item-section>
                 <q-item-section dark>
                   <q-item-label v-html="scope.opt.label" />
-                  <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                  <q-item-label caption class="ellipsis mw200">{{ scope.opt.value }}</q-item-label>
                 </q-item-section>
               </q-item>
             </template>
             <template v-slot:selected>
               <q-item
-                v-if="wallet"
+                v-if="currentAccount"
               >
                 <q-item-section avatar>
-                  <q-icon class="option--avatar" :name="`img:${wallet.image}`" />
+                  <q-icon class="option--avatar" :name="`img:${currentAccount.icon}`" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label v-html="wallet.label" />
-                  <q-item-label caption>{{ wallet.value }}</q-item-label>
+                  <q-item-label v-html="currentAccount.name" />
+                  <q-item-label caption class="ellipsis mw200">{{ currentAccount.key }}</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item
@@ -56,7 +56,7 @@
           <div class="qrcode-wrapper">
             <div class="wallet-address flex justify-between">
               <span class="title">Wallet address</span>
-              <q-btn round flat unelevated class="btn-copy" text-color="grey" icon="o_file_copy" />
+              <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy" text-color="grey" icon="o_file_copy" />
             </div>
             <span class="qrcode-widget">
               <qrcode :value="exchangeAddress" :options="{size: 200}"></qrcode>
@@ -87,18 +87,16 @@ export default {
   components: {},
   data () {
     return {
-      wallet: null,
+      currentAccount: null,
       to: '',
+      params: null,
+      tableData: [],
       vertoID: '',
+      goBack: '',
+      fetchCurrentWalletFromState: true,
       exchangeAddress: 'dsldkslk34JL309LKLKELKLF0934K34LK3L934LK',
       memo: '',
-      options: [
-        {
-          label: 'Ethereum',
-          value: 'eth',
-          image: 'https://files.coinswitch.co/public/coins/eth.png'
-        }
-      ],
+      options: [],
       minimizedModal: false,
       message: '',
       version: {},
@@ -106,11 +104,54 @@ export default {
       configPath: ''
     }
   },
+  async created () {
+    this.params = this.$store.state.currentwallet.params
+
+    this.tableData = await this.$store.state.wallets.tokens
+    let self = this
+    this.tableData.map(token => {
+      self.options.push({
+        label: token.name.toLowerCase(),
+        value: token.key.toLowerCase(),
+        image: token.icon
+      })
+    })
+    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+    )
+
+    this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
+
+    console.log('this.currentAccount sur la page send', this.currentAccount)
+
+    this.exchangeAddress = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
+    // this.chainID = this.currentAccount.chainID
+    // this.tokenID = this.currentAccount.tokenID
+    // this.accountName = this.currentAccount.accountName
+  },
   mounted () {
     this.version = version
     this.setupPlatformPath()
   },
   methods: {
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    },
+    getImages (symbol) {
+      if (symbol === 'verto') {
+        return '/statics/icon.png'
+      } else {
+        return symbol ? 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png' : false
+      }
+    },
     async setupPlatformPath () {
       this.configPath = await platformTools.filePath()
     },
@@ -339,5 +380,8 @@ export default {
     }
 
   }
+}
+.mw200{
+  max-width: 220px;
 }
 </style>

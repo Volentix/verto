@@ -145,7 +145,7 @@ export default [
       },
       {
         name: 'receive',
-        path: '/verto/receive',
+        path: '/verto/wallets/receive',
         component: () => import('pages/Verto/Receive.vue'),
         meta: {
           authRequired: true

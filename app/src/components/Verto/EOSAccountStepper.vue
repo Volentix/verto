@@ -373,9 +373,16 @@ export default {
     }
   },
   async created () {
-    this.eosbalance = this.$route.params.eosbalance
-    this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
-    this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
+    this.params = this.$store.state.currentwallet.params
+
+    this.tableData = await this.$store.state.wallets.tokens
+    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+    )
+
+    // this.eosbalance = this.$route.params.eosbalance
+    // this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
+    // this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
 
     // console.log('this.tableData', this.tableData)
     let self = this
