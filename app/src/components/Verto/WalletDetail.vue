@@ -32,12 +32,16 @@
                 <q-separator />
                 <br>
                 <q-item clickable v-ripple class="p-relative">Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item clickable v-ripple class="p-relative">Transaction History<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                <q-item clickable v-ripple class="p-relative" to="/verto/wallet/coinHistory">Transaction History<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                 </q-item>
                 <q-item clickable @click="alertSecurity = true" v-ripple class="p-relative">
                   Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                 </q-item>
-                <q-item clickable v-ripple class="p-relative" @click="openModalFun(currentAccount)">Remove <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item clickable v-ripple class="p-relative" @click="hideCurrency = !hideCurrency">
+                  Hide Currency
+                  <q-toggle class="p-abs" color="blue" v-model="hideCurrency" />
+                  <!-- <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /> -->
+                </q-item>
               </q-list>
             </div>
           </div>
@@ -112,6 +116,7 @@ export default {
   },
   data () {
     return {
+      hideCurrency: true,
       alertSecurity: false,
       toggled: false,
       showPrivate: false,
@@ -163,8 +168,7 @@ export default {
   },
   methods: {
     goToSecurity () {
-      console.log('test')
-      this.$router.push({ path: '/verto/wallets' })
+      this.$router.push({ path: '/verto/wallet/privateKey' })
     },
     togglePrivateKey () {
       this.showPrivate = !this.showPrivate
@@ -226,7 +230,7 @@ export default {
     &--list{
       background-color: #fff;
       padding: 4% 0%;
-      border-radius: 0px 0px 10px 10px;
+      border-radius: 0px 0px 30px 30px;
       box-shadow: 0px 3px 6px 0px rgba(black, .19);
       .add-remove-wrapper{
         align-items: center;
