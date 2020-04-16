@@ -82,9 +82,14 @@ const eos = new EosWrapper()
 let platformTools = require('../../util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 
-
 export default {
   components: {},
+  computed: {
+    wallet() {
+      return this.$store.state.currentwallet.wallet
+    }
+  },
+
   data () {
     return {
       proposals: [],
@@ -148,18 +153,21 @@ export default {
     },
 
     async refresh () {
+      const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted) // Is undefined
+      const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+
       try {
         await eos.transact({
           actions: [{
             account: 'volentixwork',
             name: 'refresh',
             authorization: [{
-              actor: this.walletName,
+              actor: this.wallet.name,
               permission: 'active'
             }],
             data: {}
           }]
-        })
+        }, privateKey.key)
         this.fetch()
       } catch (error) {
         console.log('err', error)
