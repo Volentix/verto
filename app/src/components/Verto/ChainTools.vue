@@ -5,8 +5,8 @@
     <div class="chain-tools-wrapper--list open">
       <div class="list-wrapper">
         <div class="list-wrapper--chain__type flex justify-between item-center">
-          <div class="chain">Chain: <b> {{ params.chainID.toUpperCase() }} </b></div>
-          <div class="token">Token: <b> {{ params.tokenID.toUpperCase() }} </b></div>
+          <div class="chain">Chain: <b> {{ currentAccount.chain.toUpperCase() }} </b></div>
+          <div class="token">Token: <b> {{ currentAccount.type.toUpperCase() }} </b></div>
         </div>
         <div class="list-wrapper--chain__coming-soon">
           <ul>
@@ -30,7 +30,7 @@
           </ul>
         </div>
         <div class="list-wrapper--chain__eos-to-vtx-convertor">
-          <h3 class="list-wrapper--chain__eos-to-vtx-convertor--title">
+          <h3 class="list-wrapper--chain__eos-to-vtx-convertor--title" @click="step = 1">
             EOS to VTX Convertor
             <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_down" color="primary" class="--back-btn"/>
           </h3>
@@ -95,11 +95,11 @@
                       @keyup.enter="goToPassword()"
                     />
                     </div>
-                    <div v-show="navigationButtons.amount" class="q-pa-sm" @click="step = 2" >
+                    <!-- <div v-show="navigationButtons.amount" class="q-pa-sm" @click="step = 2" >
                       <q-icon name="navigate_next" size="3.2rem" color="green"   >
                         <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
                       </q-icon>
-                    </div>
+                    </div> -->
                 </div>
 
                 <q-stepper-navigation v-show="navigationButtons.amount" class="flex justify-end">
@@ -117,20 +117,19 @@
                 <div class="text-black">
                   <div class="text-h4 --subtitle">Enter your password to sign the transaction.</div>
                   <q-input
-                    ref="psswrd"
-                    v-model="password"
-                    @keyup.enter="login"
-                    @input="checkPassword"
-                    :error="passHasError"
-                    rounded outlined
-                    :type="isPwd ? 'password' : 'text'"
-                    label="Private Key Password"
-                    hint="*Minimum of 8 characters"
+                    v-model="privateKeyPassword"
                     light
-                    error-message="The password is incorrect"
-                    class="--input"
+                    rounded
+                    outlined
+                    class="full-width"
                     color="green"
+                    label="Private Key Password"
+                    @input="checkPrivateKeyPassword"
                     debounce="500"
+                    @keyup.enter="toSummary"
+                    :type="isPwd ? 'password' : 'text'"
+                    :error="invalidPrivateKeyPassword"
+                    error-message="The private key password is invalid"
                   >
                     <template v-slot:append>
                       <q-icon
@@ -237,6 +236,12 @@ export default {
         amount: false,
         privateKeyPasswordBtn: false,
         showNextButtonToPassword: false
+      },
+      tableData: [],
+      currentAccount: {
+        chain: '',
+        token: '',
+        type: ''
       }
     }
   },
@@ -251,8 +256,14 @@ export default {
   },
   async created () {
     this.params = this.$store.state.currentwallet.params
-    this.eosbalance = this.$route.params.eosbalance
     this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
+
+    this.tableData = await this.$store.state.wallets.tokens
+    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+    )
+    this.eosbalance = this.currentAccount.amount
+    console.log('this.currentAccount ----------------- ', this.currentAccount)
   },
   async mounted () {
     this.walletName = this.$store.state.currentwallet.wallet.name
@@ -264,6 +275,23 @@ export default {
     }
   },
   methods: {
+    toSummary () {
+      if (!this.invalidPrivateKeyPassword) {
+        // this.formatedAmount = this.formatAmountString()
+        // this.sendTokens()
+        this.step = 4
+      }
+    },
+    checkPrivateKeyPassword () {
+      // console.log('this.currentAccount.privateKeyEncrypted', this.currentAccount.privateKeyEncrypted)
+      // console.log('this.privateKeyPassword', this.privateKeyPassword)
+      const privateKey = JSON.stringify(this.currentAccount.privateKeyEncrypted)
+      const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKey)
+
+      if (!result.success) {
+        this.invalidPrivateKeyPassword = true
+      }
+    },
     showMore () {
 
     },
@@ -314,16 +342,16 @@ export default {
         this.progColor = 'red'
       }
     },
-    checkPrivateKeyPassword () {
-      const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
-      this.privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
-      if (this.privateKey.success) {
-        this.invalidPrivateKeyPassword = false
-      } else {
-        this.invalidPrivateKeyPassword = true
-        return false
-      }
-    },
+    // checkPrivateKeyPassword () {
+    //   const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
+    //   this.privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+    //   if (this.privateKey.success) {
+    //     this.invalidPrivateKeyPassword = false
+    //   } else {
+    //     this.invalidPrivateKeyPassword = true
+    //     return false
+    //   }
+    // },
     formatAmountString () {
       let numberOfDecimals = 0
       let stringAmount = this.sendAmount.toString()
@@ -416,6 +444,7 @@ export default {
               padding: 0px;
               margin: 0px;
               padding: 5% 6%;
+              padding-top: 0px;
               li{
                 &:not(:last-child){
                   border-bottom: 1px solid #707070;
@@ -451,6 +480,7 @@ export default {
                     position: relative;
                     top: 2px;
                     margin-left: 20px;
+                    padding-right: 2px !important;
                   }
                 }
               }
