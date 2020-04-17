@@ -2,7 +2,7 @@
   <q-page class="text-black bg-white">
     <div class="standard-content">
       <h2 class="standard-content--title flex justify-center">
-        <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" />
+        <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" />
         Exchange
       </h2>
       <div class="standard-content--body">
@@ -14,9 +14,9 @@
               rounded
               outlined
               class="select-input"
-              v-model="fromCoin"
+              v-model="currentAccount"
               use-input
-              :options="optionsFrom"
+              :options="tableData"
           >
             <template v-slot:option="scope">
               <q-item
@@ -25,24 +25,24 @@
                 v-on="scope.itemEvents"
               >
                 <q-item-section avatar>
-                  <q-icon class="option--avatar option--avatar" :class="scope.opt.value" :name="`img:${scope.opt.image}`" />
+                  <q-icon class="option--avatar option--avatar" :class="scope.opt.type" :name="`img:${scope.opt.icon}`" />
                 </q-item-section>
                 <q-item-section dark>
-                  <q-item-label v-html="scope.opt.label" />
-                  <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                  <q-item-label v-html="scope.opt.name" />
+                  <q-item-label caption class="ellipsis mw200">{{ scope.opt.key }}</q-item-label>
                 </q-item-section>
               </q-item>
             </template>
             <template v-slot:selected>
               <q-item
-                v-if="fromCoin"
+                v-if="currentAccount"
               >
                 <q-item-section avatar>
-                  <q-icon class="option--avatar option--avatar__custom" :class="fromCoin.value" :name="`img:${fromCoin.image}`" />
+                  <q-icon class="option--avatar option--avatar__custom" :class="currentAccount.type" :name="`img:${currentAccount.icon}`" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label v-html="fromCoin.label" />
-                  <q-item-label caption>{{ fromCoin.value }}</q-item-label>
+                  <q-item-label v-html="currentAccount.name" />
+                  <q-item-label caption class="ellipsis mw200">{{ currentAccount.key }}</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item
@@ -175,8 +175,24 @@ export default {
       message: '',
       version: {},
       network: this.$store.state.settings.network,
-      configPath: ''
+      configPath: '',
+      params: null,
+      tableData: [],
+      currentAccount: null,
+      goBack: '',
+      fetchCurrentWalletFromState: true
     }
+  },
+  async created () {
+    console.log('created - created - created - created')
+    this.params = this.$store.state.currentwallet.params
+
+    this.tableData = await this.$store.state.wallets.tokens
+    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+    )
+
+    this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
   },
   mounted () {
     this.version = version
@@ -444,6 +460,9 @@ export default {
     }
 
   }
+}
+.mw200{
+  max-width: 220px;
 }
 </style>
 <style lang="scss">
