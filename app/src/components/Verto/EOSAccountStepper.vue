@@ -66,6 +66,7 @@
                         use-input
                         :options="tableData"
                     >
+
                       <template v-slot:option="scope">
                         <q-item
                           class="custom-menu"
@@ -376,9 +377,13 @@ export default {
     this.params = this.$store.state.currentwallet.params
 
     this.tableData = await this.$store.state.wallets.tokens
-    // this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-    //   w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
-    // )
+    console.log('this.params.chainID -----------------------', this.params.chainID)
+    // if (this.params.chainID !== undefined) {
+    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+    )
+    // }
+
     // // console.log('this.currentAccount -----------------', this.currentAccount)
     // this.options.push({
     //   label: this.currentAccount.name,
