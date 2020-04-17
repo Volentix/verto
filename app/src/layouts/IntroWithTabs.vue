@@ -1,6 +1,7 @@
 <template>
   <q-layout>
-    <tabs-menu class="mobile-only" />
+    <tabs-menu class="tabs-menu-component" />
+    <!-- mobile-only  -->
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -16,4 +17,9 @@ export default {
 </script>
 
 <style>
+@media screen and (min-width: 1024px) {
+  .tabs-menu-component{
+    display: none !important;
+  }
+}
 </style>
