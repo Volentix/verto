@@ -297,8 +297,8 @@ export default {
       }
     },
     checkPrivateKeyPassword () {
-      console.log('this.currentAccount.privateKeyEncrypted', this.currentAccount.privateKeyEncrypted)
-      console.log('this.privateKeyPassword', this.privateKeyPassword)
+      // console.log('this.currentAccount.privateKeyEncrypted', this.currentAccount.privateKeyEncrypted)
+      // console.log('this.privateKeyPassword', this.privateKeyPassword)
       const privateKey = JSON.stringify(this.currentAccount.privateKeyEncrypted)
       const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKey)
 
