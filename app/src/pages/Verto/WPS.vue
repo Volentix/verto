@@ -87,7 +87,12 @@ export default {
   computed: {
     wallet() {
       return this.$store.state.currentwallet.wallet
-    }
+    },
+
+    privateKey() {
+      // FIXME Use app state key manager system insted
+      return ''
+    },
   },
 
   data () {
@@ -153,8 +158,10 @@ export default {
     },
 
     async refresh () {
-      const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted) // Is undefined
-      const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+      //const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted) // Is undefined
+      //const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+      //console.log(this.$store.state.currentwallet)
+
 
       try {
         await eos.transact({
@@ -167,11 +174,11 @@ export default {
             }],
             data: {}
           }]
-        }, privateKey.key)
+        }, { keyProvider: this.privateKey })
         this.fetch()
       } catch (error) {
         console.log('err', error)
-        userError(error.message)
+        userError(error)
       }
     },
     async submitdraft () {
@@ -186,19 +193,19 @@ export default {
             account: 'volentixwork',
             name: 'submitdraft',
             authorization: [{
-              actor: this.walletName,
+              actor: this.wallet.name,
               permission: 'active'
             }],
             data: {
-              proposer: this.walletName,
+              proposer: this.wallet.name,
               proposal_name,
               title,
               monthly_budget,
-              duration,
-              proposal_json
+              duration: parseInt(duration),
+              proposal_json: JSON.parse(proposal_json)
             }
           }]
-        }, { keyProvider: privateKey.key })
+        }, { keyProvider: privateKey })
         this.fetch()
       } catch (error) {
         console.log('err', error)
