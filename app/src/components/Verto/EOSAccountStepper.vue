@@ -63,8 +63,8 @@
                         outlined
                         class="select-input"
                         v-model="currentAccount"
-                        use-input
                         :options="tableData"
+                        @input="checkVariable()"
                     >
 
                       <template v-slot:option="scope">
@@ -82,6 +82,7 @@
                           </q-item-section>
                         </q-item>
                       </template>
+
                       <template v-slot:selected>
                         <q-item
                           v-if="currentAccount"
@@ -98,6 +99,7 @@
                           v-else>
                         </q-item>
                       </template>
+
                       <template v-slot:append>
                         <q-btn round flat unelevated text-color="grey" @click.stop icon="o_file_copy" />
                       </template>
@@ -189,7 +191,7 @@
               <q-stepper
                 light
                 flat
-                v-model="step2"
+                v-model="step"
                 vertical
                 ref="stepper"
                 color="primary"
@@ -199,7 +201,7 @@
                   :name="1"
                   title="Select account name"
                   icon="settings"
-                  :done="step2 > 1"
+                  :done="step > 1"
                 >
                   <q-select
                     label="Select an EOS Account Name in the list"
@@ -220,7 +222,7 @@
                   title="Validate Private Key"
                   icon="assignment"
                   :disable="noPrivateKey"
-                  :done="step2 > 2"
+                  :done="step > 2"
                 >
                   <q-input
                     v-model="privateKeyPassword"
@@ -246,7 +248,7 @@
                   :name="3"
                   title="Confirm Verto Password"
                   icon="add_comment"
-                  :done="step2 > 3"
+                  :done="step > 3"
                 >
                   <q-input
                     v-model="vertoPassword"
@@ -268,6 +270,9 @@
                       />
                     </template>
                   </q-input>
+
+                  <q-btn color="white" text-color="black" label="Submit" @click="upgradeAccountName(); prompt=false" />
+
                 </q-step>
               </q-stepper>
             </div>
@@ -382,9 +387,11 @@ export default {
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
+
+    this.getAccountNames()
     // }
 
-    // // console.log('this.currentAccount -----------------', this.currentAccount)
+    console.log('this.currentAccount -----------------', this.currentAccount)
     // this.options.push({
     //   label: this.currentAccount.name,
     //   value: this.currentAccount.key,
@@ -401,6 +408,9 @@ export default {
     }
   },
   methods: {
+    checkVariable () {
+      console.log('this.currentAccount --------------- ', this.currentAccount)
+    },
     checkVertoPassword () {
       this.vertoPasswordWrong = false
       this.vertoPassordValid = false
@@ -447,14 +457,12 @@ export default {
         position: 'top'
       })
     },
-    getAccountNames (row) {
-      console.log('-----------------row-----------------', row)
-      this.currentWallet = row
+    getAccountNames () {
       const self = this
-      let key = row.value
+      let key = this.currentAccount.key
       eos.getAccountNamesFromPubKeyP(key)
         .then(function (result) {
-          console.log('result', result)
+          console.log('result pour getAccountNames ', result)
           self.accountNames = []
           for (var i = 0; i < result.account_names.length; i++) {
             self.accountNames.push({ label: result.account_names[i], value: result.account_names[i] })
@@ -484,15 +492,18 @@ export default {
       }
     },
     upgradeAccountName () {
-      this.currentWallet.type = 'eos'
-      this.currentWallet.name = this.accountName.value
-      this.$configManager.updateCurrentWallet(this.currentWallet)
+      this.currentAccount.type = 'eos'
+      this.currentAccount.name = this.accountName.value
+      this.currentAccount.to = `/verto/wallets/${this.currentAccount.chain}/${this.currentAccount.type}/${this.currentAccount.name}`
+      this.currentAccount.icon = 'https://files.coinswitch.co/public/coins/eos.png'
+      this.$configManager.updateCurrentWallet(this.currentAccount)
       this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
       // reset form variables
       this.vertoPassword = null
       this.privateKeyPassword = null
       this.accountName = null
-      this.step = 1
+      // this.step = 1
+      this.$router.push({ path: this.currentAccount.to })
     },
     checkPassword () {
       if (this.password.length > 2) {

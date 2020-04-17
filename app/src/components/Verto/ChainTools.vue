@@ -238,7 +238,11 @@ export default {
         showNextButtonToPassword: false
       },
       tableData: [],
-      currentAccount: null
+      currentAccount: {
+        chain: '',
+        token: '',
+        type: ''
+      }
     }
   },
   computed: {
