@@ -62,9 +62,9 @@
                         rounded
                         outlined
                         class="select-input"
-                        v-model="wallet"
+                        v-model="currentAccount"
                         use-input
-                        :options="options"
+                        :options="tableData"
                     >
                       <template v-slot:option="scope">
                         <q-item
@@ -73,24 +73,24 @@
                           v-on="scope.itemEvents"
                         >
                           <q-item-section avatar>
-                            <q-icon class="option--avatar" :name="`img:${scope.opt.image}`" />
+                            <q-icon class="option--avatar" :name="`img:${scope.opt.icon}`" />
                           </q-item-section>
                           <q-item-section dark>
-                            <q-item-label v-html="scope.opt.label" />
-                            <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                            <q-item-label v-html="scope.opt.name" />
+                            <q-item-label caption>{{ scope.opt.key }}</q-item-label>
                           </q-item-section>
                         </q-item>
                       </template>
                       <template v-slot:selected>
                         <q-item
-                          v-if="wallet"
+                          v-if="currentAccount"
                         >
                           <q-item-section avatar>
-                            <q-icon class="option--avatar" :name="`img:${wallet.image}`" />
+                            <q-icon class="option--avatar" :name="`img:${currentAccount.icon}`" />
                           </q-item-section>
                           <q-item-section>
-                            <q-item-label v-html="wallet.label" />
-                            <q-item-label caption>{{ wallet.value }}</q-item-label>
+                            <q-item-label v-html="currentAccount.name" />
+                            <q-item-label caption>{{ currentAccount.key }}</q-item-label>
                           </q-item-section>
                         </q-item>
                         <q-item
@@ -114,7 +114,7 @@
                     />
                   </div>
                   <q-stepper-navigation class="flex justify-end">
-                    <q-btn @click="step = 2" v-if="wallet !== null || publicKey !== ''" color="deep-purple-14" class="--next-btn" rounded label="Next" />
+                    <q-btn @click="step = 2" v-if="currentAccount !== null || publicKey !== ''" color="deep-purple-14" class="--next-btn" rounded label="Next" />
                   </q-stepper-navigation>
                 </q-step>
                 <q-step
@@ -283,7 +283,6 @@
 
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
-import Lib from '@/util/walletlib'
 import { userError } from '@/util/errorHandler'
 
 import configManager from '@/util/ConfigManager'
@@ -335,7 +334,7 @@ export default {
       transactionError: false,
       spinnervisible: false,
       isPwd: true,
-      currentWallet: null,
+      currentAccount: null,
       account: null,
       privateKeyPassword: null,
       showSendModal: false,
@@ -346,7 +345,8 @@ export default {
         privateKeyPasswordBtn: false,
         showNextButtonToPassword: false
       },
-      tableData: []
+      tableData: [],
+      params: null
     }
   },
   computed: {
@@ -365,8 +365,8 @@ export default {
       }
     },
     accountMemo () {
-      if (this.wallet) {
-        return this.accountNew + '-' + this.wallet.key
+      if (this.currentAccount) {
+        return this.accountNew + '-' + this.currentAccount.key
       } else {
         return false
       }
@@ -376,43 +376,15 @@ export default {
     this.params = this.$store.state.currentwallet.params
 
     this.tableData = await this.$store.state.wallets.tokens
-    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
-    )
-
-    // this.eosbalance = this.$route.params.eosbalance
-    // this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
-    // this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
-
-    // console.log('this.tableData', this.tableData)
-    let self = this
-    this.accountName = this.$route.params.accountName
-    self.tableData.forEach(async element => {
-      element.to = '/verto/wallets/' + element.type
-      element.type = element.type ? element.type : 'verto'
-      if (element.type === 'eos') {
-        // eos as chain, account name, token name
-        element.amount = (await new Lib.Wallet('eos', element.name, 'vtx')).balance
-        // console.log(element.amount)
-        // console.log('balance', element.name, element.amount)
-      } else {
-        element.amount = 0.0
-      }
-      self.options.push({
-        label: element.name,
-        value: element.key,
-        image: self.getImages(element.type)
-      })
-      if (self.accountName === element.name.toLowerCase()) {
-        self.wallet = {
-          label: element.name,
-          value: element.key,
-          image: self.getImages(element.type)
-        }
-        self.getAccountNames(self.wallet)
-      }
-      // console.log('self.options', self.options)
-    })
+    // this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+    //   w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+    // )
+    // // console.log('this.currentAccount -----------------', this.currentAccount)
+    // this.options.push({
+    //   label: this.currentAccount.name,
+    //   value: this.currentAccount.key,
+    //   image: this.currentAccount.icon
+    // })
   },
   mounted () {
     this.walletName = this.$store.state.currentwallet.wallet.name

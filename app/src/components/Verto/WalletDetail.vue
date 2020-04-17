@@ -28,14 +28,15 @@
                     <span class="powered">Powered by Vespucci</span>
                   </div>
                 </q-item>
-                <br>
-                <q-separator />
-                <br>
+                <q-separator style="margin-top: 10px" />
                 <q-item clickable v-ripple class="p-relative">Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item clickable v-ripple class="p-relative" to="/verto/wallet/coinHistory">Transaction History<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                 </q-item>
                 <q-item clickable @click="alertSecurity = true" v-ripple class="p-relative">
                   Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                </q-item>
+                <q-item v-if="currentAccount.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative">
+                  Associate with EOS <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                 </q-item>
                 <q-item clickable v-ripple class="p-relative" @click="hideCurrency = !hideCurrency">
                   Hide Currency
