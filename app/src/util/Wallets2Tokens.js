@@ -37,7 +37,7 @@ class Wallets2Tokens {
         wallet.vespucciScore = vespucciScore
       }
 
-      if (wallet.type === 'btc') {
+      if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'dash') {
         Lib.Wallet(wallet.type, wallet.key).then(result => {
           wallet.amount = result.balance
         })
