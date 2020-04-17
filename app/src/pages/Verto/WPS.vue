@@ -7,6 +7,8 @@
       </h2>
 
       <q-btn @click="refresh"> Refresh </q-btn>
+      <br>
+      <q-btn @click="complete"> Complete </q-btn>
 
       <h5> Active proposals: </h5>
 
@@ -34,6 +36,7 @@
       <h5> My draft proposals: </h5>
 
       <div v-for="proposal in drafts" :key="proposal.proposal_name">
+        <br>
         <p> {{ proposal.title }} </p>
         <p> proposer: {{ proposal.proposer }} </p>
         <p> budget: {{ proposal.monthly_budget }} ( duration: {{ proposal.duration }} ) </p>
@@ -53,20 +56,20 @@
         >
           Cancel
         </q-btn>
-
-        <hr>
-
-        <h5> Create draft proposal </h5>
-
-        <q-input v-model="proposal_name" color="deep-purple-14" label="Proposal name (id)" />
-        <q-input v-model="title" color="deep-purple-14" label="Proposal Titile" />
-        <q-input v-model="monthly_budget" color="deep-purple-14" label="Budget" />
-        <q-input v-model="duration" color="deep-purple-14" label="Duration" />
-        <q-input v-model="proposal_json" color="deep-purple-14" label="Proposal json" value="asdfasdf"/>
-
-        <br/>
-        <q-btn @click="submitdraft" outline > Sumbit draft </q-btn>
       </div>
+
+      <hr>
+
+      <h5> Create draft proposal </h5>
+
+      <q-input v-model="proposal_name" color="deep-purple-14" label="Proposal name (id)" />
+      <q-input v-model="title" color="deep-purple-14" label="Proposal Titile" />
+      <q-input v-model="monthly_budget" color="deep-purple-14" label="Budget" />
+      <q-input v-model="duration" color="deep-purple-14" label="Duration" />
+      <q-input v-model="proposal_json" color="deep-purple-14" label="Proposal json" value="asdfasdf"/>
+
+      <br/>
+      <q-btn @click="submitdraft" outline > Sumbit draft </q-btn>
     </div>
   </q-page>
 </template>
@@ -82,6 +85,7 @@ const eos = new EosWrapper()
 let platformTools = require('../../util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 
+// TODO Fix error handler, for actions: error is not appear
 export default {
   components: {},
   computed: {
@@ -124,12 +128,12 @@ export default {
             account: 'volentixwork',
             name: 'vote',
             authorization: [{
-              actor: this.walletName,
+              actor: this.wallet.name,
               permission: 'active'
             }],
-            data: { voter: this.walletName, proposal_name, vote }
+            data: { voter: this.wallet.name, proposal_name, vote }
           }]
-        })
+        }, { keyProvider: this.privateKey })
         this.fetch()
       } catch (error) {
         console.log('err', error)
@@ -144,12 +148,12 @@ export default {
             account: 'volentixwork',
             name: 'claim',
             authorization: [{
-              actor: this.walletName,
+              actor: this.wallet.name,
               permission: 'active'
             }],
             data: { proposal_name }
           }]
-        })
+        }, { keyProvider: this.privateKey })
         this.fetch()
       } catch (error) {
         console.log('err', error)
@@ -157,12 +161,27 @@ export default {
       }
     },
 
+    async complete () {
+      try {
+        await eos.transact({
+          actions: [{
+            account: 'volentixwork',
+            name: 'complete',
+            authorization: [{
+              actor: this.wallet.name,
+              permission: 'active'
+            }],
+            data: {}
+          }]
+        }, { keyProvider: this.privateKey })
+        this.fetch()
+      } catch (error) {
+        console.log('err', error)
+        userError(error)
+      }
+    },
+
     async refresh () {
-      //const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted) // Is undefined
-      //const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
-      //console.log(this.$store.state.currentwallet)
-
-
       try {
         await eos.transact({
           actions: [{
@@ -205,7 +224,7 @@ export default {
               proposal_json: JSON.parse(proposal_json)
             }
           }]
-        }, { keyProvider: privateKey })
+        }, { keyProvider: this.privateKey })
         this.fetch()
       } catch (error) {
         console.log('err', error)
@@ -222,15 +241,15 @@ export default {
             account: 'volentixwork',
             name: 'canceldraft',
             authorization: [{
-              actor: this.walletName,
+              actor: this.wallet.name,
               permission: 'active'
             }],
             data: {
-              proposer: this.walletName,
+              proposer: this.wallet.name,
               proposal_name: proposalName
             }
           }]
-        }, { keyProvider: privateKey.key })
+        }, { keyProvider: this.privateKey })
         this.fetch()
       } catch (error) {
         console.log('err', error)
@@ -248,16 +267,16 @@ export default {
             account: 'volentixwork',
             name: 'activate',
             authorization: [{
-              actor: this.walletName,
+              actor: this.wallet.name,
               permission: 'active'
             }],
             data: {
-              proposer: this.walletName,
+              proposer: this.wallet.name,
               proposal_name: proposalName,
               start_voting_period: null // Start voting period
             }
           }]
-        }, { keyProvider: privateKey.key })
+        }, { keyProvider: this.privateKey })
         this.fetch()
       } catch (error) {
         console.log('err', error)
@@ -270,9 +289,7 @@ export default {
         this.proposals = r
       })
 
-      // TODO Here should be current user account
-      // eos.getTable('volentixwork', this.walletName, 'drafts').then(r => {
-      eos.getTable('volentixwork', 'avral.pro', 'drafts').then(r => {
+      eos.getTable('volentixwork', this.wallet.name, 'drafts').then(r => {
         this.drafts = r
       })
     },
