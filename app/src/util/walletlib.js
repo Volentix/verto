@@ -29,6 +29,14 @@ class Lib {
       async btc (key) {
         const balance = (await axios.get('https://blockchain.info/q/addressbalance/' + key, { 'cors': 'true' })).data / 100000000
         return { balance }
+      },
+      async ltc (key) {
+        const balance = (await axios.get('https://chainz.cryptoid.info/ltc/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
+        return { balance }
+      },
+      async dash (key) {
+        const balance = (await axios.get('https://chainz.cryptoid.info/dash/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
+        return { balance }
       }
     }[walletType]
 
