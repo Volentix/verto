@@ -399,13 +399,6 @@ export default {
     // })
   },
   mounted () {
-    this.walletName = this.$store.state.currentwallet.wallet.name
-    this.account = eos.getAccount(this.walletName)
-
-    if (this.account.voter_info) {
-      this.stakedAmount = +this.account.voter_info.staked / 10000
-      this.currentProxy = this.account.voter_info.proxy
-    }
   },
   methods: {
     checkVariable () {
@@ -436,7 +429,7 @@ export default {
         this.accountNameError = true
       } else {
         this.accountNameError = false
-        this.noPrivateKey ? this.step2 = 3 : this.step2 = 2
+        this.noPrivateKey ? this.step = 3 : this.step = 2
       }
     },
     cancelAccountName () {
