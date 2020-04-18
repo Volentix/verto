@@ -14,8 +14,7 @@
               rounded
               outlined
               class="select-input"
-              v-model="currentAccount"
-              use-input
+              v-model="currentToken"
               :options="options"
           >
             <template v-slot:option="scope">
@@ -35,14 +34,14 @@
             </template>
             <template v-slot:selected>
               <q-item
-                v-if="currentAccount"
+                v-if="currentToken"
               >
                 <q-item-section avatar>
-                  <q-icon class="option--avatar" :name="`img:${currentAccount.icon}`" />
+                  <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label v-html="currentAccount.name" />
-                  <q-item-label caption class="ellipsis mw200">{{ currentAccount.key }}</q-item-label>
+                  <q-item-label v-html="currentToken.label" />
+                  <q-item-label caption class="ellipsis mw200">{{ currentToken.value }}</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item
@@ -87,6 +86,7 @@ export default {
   components: {},
   data () {
     return {
+      currentToken: null,
       currentAccount: null,
       to: '',
       params: null,
@@ -119,6 +119,11 @@ export default {
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
+    this.currentToken = {
+      label: this.currentAccount.name,
+      value: this.currentAccount.key,
+      image: this.currentAccount.icon
+    }
 
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
 
