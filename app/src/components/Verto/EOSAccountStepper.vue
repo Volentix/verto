@@ -39,7 +39,7 @@
                       :error="inError"
                       :error-message="errorMessage"
                       @input="checkName"
-                      @keyup.enter="goToStep(12)"
+                      @keyup.enter="step = 1"
                     >
                     </q-input>
                   </div>
@@ -52,7 +52,7 @@
                   prefix="1"
                   :done="step > 1"
                 >
-                  <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+                  <q-btn flat @click="step = 0" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
 
                   <div class="text-black">
                     <div class="text-h4 --subtitle --subtitle__summary">Select the public key for this account</div>
@@ -204,10 +204,11 @@
                 >
                   <q-select
                     label="Select an EOS Account Name in the list"
-                    separator
                     light
+                    separator
                     rounded
                     outlined
+                    class="select-input"
                     v-model="accountName"
                     :options="accountNames"
                     :error="accountNameError"
