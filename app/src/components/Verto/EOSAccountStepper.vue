@@ -62,9 +62,8 @@
                         rounded
                         outlined
                         class="select-input"
-                        v-model="currentAccount"
-                        :options="tableData"
-                        @input="checkVariable()"
+                        v-model="currentToken"
+                        :options="tokensOption"
                     >
 
                       <template v-slot:option="scope">
@@ -74,25 +73,25 @@
                           v-on="scope.itemEvents"
                         >
                           <q-item-section avatar>
-                            <q-icon class="option--avatar" :name="`img:${scope.opt.icon}`" />
+                            <q-icon class="option--avatar" :name="`img:${scope.opt.image}`" />
                           </q-item-section>
                           <q-item-section dark>
-                            <q-item-label v-html="scope.opt.name" />
-                            <q-item-label caption>{{ scope.opt.key }}</q-item-label>
+                            <q-item-label v-html="scope.opt.label" />
+                            <q-item-label caption>{{ scope.opt.value }}</q-item-label>
                           </q-item-section>
                         </q-item>
                       </template>
 
                       <template v-slot:selected>
                         <q-item
-                          v-if="currentAccount"
+                          v-if="currentToken"
                         >
                           <q-item-section avatar>
-                            <q-icon class="option--avatar" :name="`img:${currentAccount.icon}`" />
+                            <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
                           </q-item-section>
                           <q-item-section>
-                            <q-item-label v-html="currentAccount.name" />
-                            <q-item-label caption>{{ currentAccount.key }}</q-item-label>
+                            <q-item-label v-html="currentToken.label" />
+                            <q-item-label caption>{{ currentToken.value }}</q-item-label>
                           </q-item-section>
                         </q-item>
                         <q-item
@@ -341,6 +340,7 @@ export default {
       spinnervisible: false,
       isPwd: true,
       currentAccount: null,
+      currentToken: null,
       account: null,
       privateKeyPassword: null,
       showSendModal: false,
@@ -352,6 +352,7 @@ export default {
         showNextButtonToPassword: false
       },
       tableData: [],
+      tokensOption: [],
       params: null
     }
   },
@@ -371,8 +372,8 @@ export default {
       }
     },
     accountMemo () {
-      if (this.currentAccount) {
-        return this.accountNew + '-' + this.currentAccount.key
+      if (this.currentToken) {
+        return this.accountNew + '-' + this.currentToken.value
       } else {
         return false
       }
@@ -380,23 +381,31 @@ export default {
   },
   async created () {
     this.params = this.$store.state.currentwallet.params
-
     this.tableData = await this.$store.state.wallets.tokens
-    console.log('this.params.chainID -----------------------', this.params.chainID)
-    // if (this.params.chainID !== undefined) {
+    let self = this
+    this.tableData.map(token => {
+      if (token.type === 'verto') {
+        self.tokensOption.push({
+          label: token.name.toLowerCase(),
+          value: token.key.toLowerCase(),
+          image: token.icon
+        })
+      }
+    })
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
 
-    this.getAccountNames()
-    // }
+    this.currentToken = {
+      label: this.currentAccount.name,
+      value: this.currentAccount.key,
+      image: this.currentAccount.icon
+    }
 
-    console.log('this.currentAccount -----------------', this.currentAccount)
-    // this.options.push({
-    //   label: this.currentAccount.name,
-    //   value: this.currentAccount.key,
-    //   image: this.currentAccount.icon
-    // })
+    this.getAccountNames()
+  },
+  updated () {
+
   },
   mounted () {
     this.walletName = this.$store.state.currentwallet.wallet.name
@@ -408,9 +417,6 @@ export default {
     }
   },
   methods: {
-    checkVariable () {
-      console.log('this.currentAccount --------------- ', this.currentAccount)
-    },
     checkVertoPassword () {
       this.vertoPasswordWrong = false
       this.vertoPassordValid = false
@@ -459,7 +465,7 @@ export default {
     },
     getAccountNames () {
       const self = this
-      let key = this.currentAccount.key
+      let key = this.currentToken.value
       eos.getAccountNamesFromPubKeyP(key)
         .then(function (result) {
           console.log('result pour getAccountNames ', result)
@@ -492,6 +498,7 @@ export default {
       }
     },
     upgradeAccountName () {
+      this.currentAccount = this.tableData.find(w => w.key.toLowerCase() === this.currentToken.value.toLowerCase())
       this.currentAccount.type = 'eos'
       this.currentAccount.name = this.accountName.value
       this.currentAccount.to = `/verto/wallets/${this.currentAccount.chain}/${this.currentAccount.type}/${this.currentAccount.name}`
