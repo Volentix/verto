@@ -3,6 +3,8 @@ import store from '@/store'
 import Lib from '@/util/walletlib'
 import coinsNames from '@/util/coinsNames'
 import Web3 from 'web3'
+import EosWrapper from '@/util/EosWrapper'
+const EOS = new EosWrapper()
 
 class Wallets2Tokens {
   constructor () {
@@ -37,7 +39,7 @@ class Wallets2Tokens {
         wallet.vespucciScore = vespucciScore
       }
 
-      if (wallet.type === 'btc') {
+      if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'dash') {
         Lib.Wallet(wallet.type, wallet.key).then(result => {
           wallet.amount = result.balance
         })
@@ -76,9 +78,13 @@ class Wallets2Tokens {
                 })
               }
             } else {
-              self.tableData.filter(w => w.key === wallet.key).map(eos => {
-                eos.amount = t.amount
-                eos.contract = 'eosio.token'
+              EOS.getAccount(wallet.name).then(a => {
+                self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(eos => {
+                  eos.amount = t.amount
+                  eos.contract = 'eosio.token'
+                  eos.proxy = a.voter_info.proxy
+                  eos.staked = a.voter_info.staked / 10000
+                })
               })
               console.log('else EOS self.tableData', t.symbol, self.tableData)
             }
