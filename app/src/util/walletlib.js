@@ -40,6 +40,24 @@ class Lib {
       }
     }[walletType]
 
+    const send = {
+      async eos (key, token) {
+      },
+      async eth (key, token) {
+        // const Web3 = require('web3')
+        // const web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/54b0a9c16bc94aeb908616525203c9da"))
+        // var balance = web3.eth.getBalance(key)
+
+        return { send }
+      },
+      async btc (key) {
+      },
+      async ltc (key) {
+      },
+      async dash (key) {
+      }
+    }[walletType]
+
     return balance ? balance(key, token) : {}
   }
 }
