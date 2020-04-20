@@ -313,55 +313,25 @@ export default {
     }
   },
   async created () {
+    // this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
+
     this.params = this.$store.state.currentwallet.params
-    this.eosbalance = this.$route.params.eosbalance
-    this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
+    this.tableData = await this.$store.state.wallets.tokens
+    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+    )
+    this.wallet = this.currentAccount
+    this.eosbalance = this.currentAccount.amount
+    console.log('this.currentAccount ----------------- ', this.currentAccount)
 
-    this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
-    // for (var i = 0; i < this.tableData.length; i++) {
-    // if (this.tableData[i].type === 'eos') {
-    // let t = (await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': this.tableData[i].name })).data
-
-    // t.map(t => {
-    //   console.log('token', t)
-
-    //   if (t.symbol.toLowerCase() !== 'eos') {
-    //     if (+t.amount !== 0) {
-    //       self.tableData.push({
-    //         selected: false,
-    //         type: t.symbol.toLowerCase(),
-    //         name: self.tableData[i].name,
-    //         amount: t.amount,
-    //         contract: t.code,
-    //         chain: 'eos',
-    //         to: '/verto/wallets/eos/' + t.symbol.toLowerCase(),
-    //         icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
-    //       })
-    //     }
-    //   } else {
-    //     this.tableData[i].amount = t.amount
-    //   }
-    // })
-    // }
-    // }
-    // this.tableData.sort(function (a, b) {
-    //   if (a.name.toLowerCase() < b.name.toLowerCase()) {
-    //     return -1
-    //   }
-    //   return 1
-    // })
-    // this.tableData.map(element => {
-    //   console.log('element', element)
-    // })
-  },
-  async mounted () {
-    this.walletName = this.$store.state.currentwallet.wallet.name
+    this.walletName = this.currentAccount.name
     this.account = await eos.getAccount(this.walletName)
-
     if (this.account.voter_info) {
       this.stakedAmount = +this.account.voter_info.staked / 10000
       this.currentProxy = this.account.voter_info.proxy
     }
+  },
+  async mounted () {
   },
   methods: {
     getImages (symbol, chain, icon) {

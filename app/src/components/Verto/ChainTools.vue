@@ -12,7 +12,7 @@
           <ul>
             <li>
                <q-btn class="btn-soon full-width" unelevated flat color="white" text-color="black">
-                 <span class="title">Staking</span><q-btn flat class="icon" icon="keyboard_arrow_right" to="stake" />
+                 <span class="title">Staking</span><q-btn flat class="icon" icon="keyboard_arrow_right" to="/verto/stake" />
                </q-btn>
             </li>
             <li>
@@ -256,7 +256,6 @@ export default {
   },
   async created () {
     this.params = this.$store.state.currentwallet.params
-    this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
 
     this.tableData = await this.$store.state.wallets.tokens
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
@@ -266,7 +265,7 @@ export default {
     console.log('this.currentAccount ----------------- ', this.currentAccount)
   },
   async mounted () {
-    this.walletName = this.$store.state.currentwallet.wallet.name
+    this.walletName = this.currentAccount.name
     this.account = await eos.getAccount(this.walletName)
 
     if (this.account.voter_info) {
