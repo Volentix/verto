@@ -92,7 +92,7 @@ export default {
       params: null,
       tableData: [],
       vertoID: '',
-      goBack: '',
+      goBack: '/verto/dashboard',
       fetchCurrentWalletFromState: true,
       exchangeAddress: 'dsldkslk34JL309LKLKELKLF0934K34LK3L934LK',
       memo: '',
@@ -119,13 +119,14 @@ export default {
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
-    this.currentToken = {
-      label: this.currentAccount.name,
-      value: this.currentAccount.key,
-      image: this.currentAccount.icon
+    if (this.currentAccount !== null) {
+      this.currentToken = {
+        label: this.currentAccount.name,
+        value: this.currentAccount.key,
+        image: this.currentAccount.icon
+      }
+      this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
     }
-
-    this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
 
     console.log('this.currentAccount sur la page send', this.currentAccount)
 

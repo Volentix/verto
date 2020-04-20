@@ -4,6 +4,12 @@ export default [
     component: () => import('layouts/Intro.vue'),
     children: [
       {
+        name: 'restoreWallet',
+        path: '/verto/restore-wallet/:returnto',
+        component: () => import('pages/Verto/RestoreWallet.vue'),
+        meta: {}
+      },
+      {
         name: 'landing',
         path: '/verto/landing',
         component: () => import('pages/Verto/Landing.vue'),
@@ -121,14 +127,6 @@ export default [
       },
       {
         name: 'send',
-        path: '/verto/send',
-        component: () => import('pages/Verto/Send.vue'),
-        meta: {
-          authRequired: true
-        }
-      },
-      {
-        name: 'send',
         path: '/verto/wallets/send',
         component: () => import('pages/Verto/Send.vue'),
         meta: {
@@ -207,6 +205,7 @@ export default [
           authRequired: true
         }
       }
+
     ]
   },
   {

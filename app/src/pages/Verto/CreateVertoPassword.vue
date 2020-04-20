@@ -109,7 +109,7 @@ export default {
     },
     async startRestoreConfig () {
       this.$router.push({
-        name: 'restore-wallet',
+        name: 'restoreWallet',
         params: { returnto: 'create-password' }
       })
     },
