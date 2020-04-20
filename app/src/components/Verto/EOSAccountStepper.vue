@@ -417,13 +417,6 @@ export default {
 
   },
   mounted () {
-    this.walletName = this.$store.state.currentwallet.wallet.name
-    this.account = eos.getAccount(this.walletName)
-
-    if (this.account.voter_info) {
-      this.stakedAmount = +this.account.voter_info.staked / 10000
-      this.currentProxy = this.account.voter_info.proxy
-    }
   },
   methods: {
     checkVertoPassword () {
@@ -526,14 +519,6 @@ export default {
         this.showSubmit = true
       } else {
         this.showSubmit = false
-      }
-    },
-    getImages (symbol) {
-      console.log('symbol', symbol)
-      if (symbol === 'verto') {
-        return '/statics/icon.png'
-      } else {
-        return symbol ? 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png' : false
       }
     },
     async checkName () {

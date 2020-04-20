@@ -29,6 +29,32 @@ class Lib {
       async btc (key) {
         const balance = (await axios.get('https://blockchain.info/q/addressbalance/' + key, { 'cors': 'true' })).data / 100000000
         return { balance }
+      },
+      async ltc (key) {
+        const balance = (await axios.get('https://chainz.cryptoid.info/ltc/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
+        return { balance }
+      },
+      async dash (key) {
+        const balance = (await axios.get('https://chainz.cryptoid.info/dash/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
+        return { balance }
+      }
+    }[walletType]
+
+    const send = {
+      async eos (key, token) {
+      },
+      async eth (key, token) {
+        // const Web3 = require('web3')
+        // const web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/54b0a9c16bc94aeb908616525203c9da"))
+        // var balance = web3.eth.getBalance(key)
+
+        return { send }
+      },
+      async btc (key) {
+      },
+      async ltc (key) {
+      },
+      async dash (key) {
       }
     }[walletType]
 

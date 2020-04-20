@@ -9,7 +9,7 @@ class EosWrapper {
     this.eos = Eos(
       Object.assign({}, config, {
         chainId: process.env[store.state.settings.network].CHAIN_ID,
-        httpEndpoint: process.env[store.state.settings.network].EOS_HISTORYAPI.split(',')[Math.floor(Math.random() * 5)],
+        httpEndpoint: process.env[store.state.settings.network].EOS_HISTORYAPI,
         expireInSeconds: 60,
         verbose: true,
         debug: false,

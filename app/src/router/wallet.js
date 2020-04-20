@@ -87,22 +87,6 @@ export default [
       },
       {
         name: 'refer-friend',
-        path: '/verto/earn/refer-friend',
-        component: () => import('pages/Verto/ReferFriend.vue'),
-        meta: {
-          authRequired: false
-        }
-      },
-      {
-        name: 'earn',
-        path: '/verto/earn',
-        component: () => import('pages/Verto/Earn.vue'),
-        meta: {
-          authRequired: false
-        }
-      },
-      {
-        name: 'eos-account',
         path: '/verto/eos-account',
         component: () => import('pages/Verto/EOSAccount.vue'),
         meta: {
@@ -131,6 +115,14 @@ export default [
         component: () => import('pages/Verto/Exchange.vue'),
         meta: {
           authRequired: false
+        }
+      },
+      {
+        name: 'wps',
+        path: '/verto/card-wps',
+        component: () => import('pages/Verto/WPS.vue'),
+        meta: {
+          authRequired: false // TODO Enable
         }
       },
       {
