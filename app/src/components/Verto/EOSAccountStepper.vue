@@ -521,14 +521,6 @@ export default {
         this.showSubmit = false
       }
     },
-    getImages (symbol) {
-      console.log('symbol', symbol)
-      if (symbol === 'verto') {
-        return '/statics/icon.png'
-      } else {
-        return symbol ? 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png' : false
-      }
-    },
     async checkName () {
       this.inError = false
       if (this.accountNew.length === 12) {
