@@ -87,6 +87,7 @@
     "vue-social-sharing": "^2.4.6",
     "vue-template-compiler": "^2.6.10",
     "vuelidate": "^0.7.4",
+    "web3": "^1.2.6",
     "wif": "^2.0.6",
     "xlm-provider": "^0.0.3",
     "xrp-provider": "^0.0.5"
