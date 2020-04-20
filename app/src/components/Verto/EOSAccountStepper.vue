@@ -417,13 +417,6 @@ export default {
 
   },
   mounted () {
-    this.walletName = this.$store.state.currentwallet.wallet.name
-    this.account = eos.getAccount(this.walletName)
-
-    if (this.account.voter_info) {
-      this.stakedAmount = +this.account.voter_info.staked / 10000
-      this.currentProxy = this.account.voter_info.proxy
-    }
   },
   methods: {
     checkVertoPassword () {

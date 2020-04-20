@@ -8,10 +8,6 @@
 <script>
 import EOSAccountStepper from '../../components/Verto/EOSAccountStepper'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
-import configManager from '@/util/ConfigManager'
-import { version } from '../../../package.json'
-let platformTools = require('../../util/platformTools')
-if (platformTools.default) platformTools = platformTools.default
 
 export default {
   components: {
@@ -20,68 +16,11 @@ export default {
   },
   data () {
     return {
-      fromCoin: null,
-      toCoin: null,
-      progress: 0.2,
-      to: '',
-      amount: '',
-      memo: '',
-      optionsFrom: [
-        {
-          label: 'Ethereum',
-          value: 'eth',
-          image: 'https://files.coinswitch.co/public/coins/eth.png'
-        },
-        {
-          label: 'Bitcoin',
-          value: 'btc',
-          image: 'https://files.coinswitch.co/public/coins/btc.png'
-        }
-      ],
-      optionsTo: [
-        {
-          label: 'Volentix',
-          value: 'vtx',
-          image: 'statics/coins_icons/svg_logo_white.svg'
-        },
-        {
-          label: 'Bitcoin',
-          value: 'btc',
-          image: 'https://files.coinswitch.co/public/coins/btc.png'
-        }
-      ],
-      minimizedModal: false,
-      message: '',
-      version: {},
-      network: this.$store.state.settings.network,
-      configPath: ''
     }
   },
   mounted () {
-    this.version = version
-    this.setupPlatformPath()
   },
   methods: {
-    async setupPlatformPath () {
-      this.configPath = await platformTools.filePath()
-    },
-    goChangePassword: function () {
-      this.$router.push({ path: '/change-password' })
-    },
-    setNetwork: function () {
-      this.$store.dispatch('settings/toggleNetwork', this.network)
-      this.$q.notify({ message: `Network changed to ${this.network}`, color: 'positive' })
-    },
-    async backupConfig () {
-      try {
-        await configManager.backupConfig()
-        if (this.$q.platform.is.android) {
-          this.$q.notify({ color: 'positive', message: 'Config Saved' })
-        }
-      } catch (e) {
-        // TODO: Exception handling
-      }
-    }
   }
 }
 </script>
