@@ -22,12 +22,12 @@
           </div>
         </q-item>
       </q-list>
-      <div v-if="!walletShowHide" class="add-remove-wrapper flex justify-evenly item-center content-center">
-        <span class="add-remove-wrapper--title text-black">Add Currency</span>
-        <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" />
+      <div v-if="!walletShowHide" class="add-remove-wrapper flex column flex-center item-center content-center">
+        <span class="add-remove-wrapper--title text-black">Show all currencies</span>
+        <span class="add-remove-wrapper--desc text-black">Main chains and balances above zero will show in this list</span>
+        <!-- <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" /> -->
       </div>
       <q-btn unelevated v-if="!showWallets" flat @click="toggleWallets()" :icon-right="showText ? 'keyboard_arrow_up': 'keyboard_arrow_down'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showText ? 'Hide all wallets' : 'Show all wallets'" :class="showText ? 'open': 'hide'" />
-      <!-- <q-btn v-else @click="toggleWallets()" unelevated flat :icon-right="showText ? 'keyboard_arrow_up': 'keyboard_arrow_down'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showText ? 'Hide all wallets' : 'Show all wallets'" /> -->
     </div>
     <div class="modal-wrapper text-black bg-white" :class="{'open' : openModal}">
       <div class="modal-wrapper--content">
@@ -223,10 +223,23 @@ export default {
         margin-bottom: 10px;
         cursor: pointer;
         &--title{
-          font-size: 16px;
+          font-size: 18px;
           font-family: $Titillium;
           font-weight: $regular;
-          margin-right: 15px;
+          margin-right: 0px;
+          color: #7272FA !important;
+          margin-bottom: 10px;
+        }
+        &--desc{
+          font-size: 14px;
+          font-family: $Titillium;
+          font-weight: $regular;
+          margin-right: 0px;
+          box-shadow: 0px 5px 10px 0px rgba(black, .07);
+          border-radius: 10px;
+          max-width: 220px;
+          padding: 5px;
+          text-align: center;
         }
         &--btn{
           border-radius: 50px;

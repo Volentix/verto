@@ -18,10 +18,10 @@
                 animated
               >
                 <q-step
-                  :name="0"
+                  :name="1"
                   title="Select a new account name"
                   icon="settings"
-                  :done="step > 0"
+                  :done="step > 1"
                 >
                   <div class="text-black">
                     <div class="text-h4 --subtitle">
@@ -39,20 +39,20 @@
                       :error="inError"
                       :error-message="errorMessage"
                       @input="checkName"
-                      @keyup.enter="step = 1"
+                      @keyup.enter="step = 2"
                     >
                     </q-input>
                   </div>
                   <q-stepper-navigation class="flex justify-end" v-show="!inError" >
-                    <q-btn @click="step = 1" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
+                    <q-btn @click="step = 2" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
                   </q-stepper-navigation>
                 </q-step>
                 <q-step title="Select public key"
-                  :name="1"
-                  prefix="1"
-                  :done="step > 1"
+                  :name="2"
+                  prefix="2"
+                  :done="step > 2"
                 >
-                  <q-btn flat @click="step = 0" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+                  <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
 
                   <div class="text-black">
                     <div class="text-h4 --subtitle --subtitle__summary">Select the public key for this account</div>
@@ -116,16 +116,16 @@
                     />
                   </div>
                   <q-stepper-navigation class="flex justify-end">
-                    <q-btn @click="step = 2" v-if="currentAccount !== null || publicKey !== ''" color="deep-purple-14" class="--next-btn" rounded label="Next" />
+                    <q-btn @click="step = 3" v-if="currentAccount !== null || publicKey !== ''" color="deep-purple-14" class="--next-btn" rounded label="Next" />
                   </q-stepper-navigation>
                 </q-step>
                 <q-step
-                  :name="2"
+                  :name="3"
                   title="Send 0.35"
                   icon="money"
-                  :done="step > 2"
+                  :done="step > 3"
                 >
-                  <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+                  <q-btn flat @click="step = 2" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
                   <div class="text-black">
                     <div class="text-h4 --subtitle">
                       <ul>
@@ -168,16 +168,16 @@
                     </q-input>
                   </div>
                   <q-stepper-navigation class="flex justify-end" v-show="!inError" >
-                    <q-btn @click="step = 3" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
+                    <q-btn @click="step = 4" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
                   </q-stepper-navigation>
                 </q-step>
                 <q-step
-                  :name="3"
+                  :name="4"
                   title="Retry the Upgrade Account"
                   icon="restore"
-                  :done="step > 3"
+                  :done="step > 4"
                 >
-                <q-btn flat @click="step = 2" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+                <q-btn flat @click="step = 3" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
 
                   <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
                   <ul class="--subtitle__summary--list">
@@ -187,6 +187,7 @@
               </q-stepper>
             </div>
             <div v-show="Array.isArray(accountNames) && accountNames.length">
+              <div class="text-h6 --title">There is an EOS accounts to be attached to this public key.</div>
               <q-stepper
                 light
                 flat
@@ -202,20 +203,27 @@
                   icon="settings"
                   :done="step > 1"
                 >
-                  <q-select
-                    label="Select an EOS Account Name in the list"
-                    light
-                    separator
-                    rounded
-                    outlined
-                    class="select-input"
-                    v-model="accountName"
-                    :options="accountNames"
-                    :error="accountNameError"
-                    error-message='This account name is already in your wallet, upgrade the other one instead if you have not done so yet.'
-                    :loading="!accountNames"
-                    @input="validAccountName"
-                  />
+                  <div class="text-black">
+                    <div class="text-h4 --subtitle">
+                      <ul>
+                        <li><span>Choose EOS account</span></li>
+                      </ul>
+                    </div>
+                    <q-select
+                      label="Select an EOS Account Name in the list"
+                      light
+                      separator
+                      rounded
+                      outlined
+                      class="select-input"
+                      v-model="accountName"
+                      :options="accountNames"
+                      :error="accountNameError"
+                      error-message='This account name is already in your wallet, upgrade the other one instead if you have not done so yet.'
+                      :loading="!accountNames"
+                      @input="validAccountName"
+                    />
+                  </div>
                 </q-step>
                 <q-step
                   :name="2"
@@ -443,7 +451,7 @@ export default {
         this.accountNameError = true
       } else {
         this.accountNameError = false
-        this.noPrivateKey ? this.step2 = 3 : this.step2 = 2
+        this.noPrivateKey ? this.step = 3 : this.step = 2
       }
     },
     cancelAccountName () {
@@ -475,7 +483,7 @@ export default {
             self.accountNames.push({ label: result.account_names[i], value: result.account_names[i] })
           }
           self.walletName = result.account_names[0]
-          this.step = 1
+          self.step = 1
         }).catch((err) => {
           userError('There was a problem getting account names', err)
         })
