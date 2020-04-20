@@ -468,7 +468,7 @@ export default {
             self.accountNames.push({ label: result.account_names[i], value: result.account_names[i] })
           }
           self.walletName = result.account_names[0]
-          this.step = 1
+          self.step = 1
         }).catch((err) => {
           userError('There was a problem getting account names', err)
         })
