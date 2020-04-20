@@ -35,7 +35,7 @@
                       v-on="scope.itemEvents"
                     >
                       <q-item-section avatar>
-                        <q-icon class="option--avatar" :name="`img:${getImages(scope.opt.type, scope.opt.chain, scope.opt.icon)}`" />
+                        <q-icon class="option--avatar" :name="`img:${scope.opt.icon}`" />
                       </q-item-section>
                       <q-item-section dark>
                         <q-item-label v-html="scope.opt.name" />
@@ -48,7 +48,7 @@
                       v-if="wallet"
                     >
                       <q-item-section avatar>
-                        <q-icon class="option--avatar" :name="`img:${getImages(wallet.type, wallet.chain, wallet.icon)}`" />
+                        <q-icon class="option--avatar" :name="`img:${wallet.icon}`" />
                       </q-item-section>
                       <q-item-section>
                         <q-item-label v-html="wallet.name" />
@@ -334,18 +334,6 @@ export default {
   async mounted () {
   },
   methods: {
-    getImages (symbol, chain, icon) {
-      if (chain === 'eos') {
-        return icon
-      } else if (symbol === 'verto') {
-        return '/statics/icon.png'
-      } else {
-        return symbol ? 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png' : false
-      }
-    },
-    showMore () {
-
-    },
     changeSlider () {
       if (this.slider >= 0) {
         this.sendAmount = Math.round(10000 * this.eosbalance * (this.slider / 100)) / 10000
