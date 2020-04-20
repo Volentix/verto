@@ -61,7 +61,7 @@
                         VTX (Staked)
                       </span>
                       <span class="--amount row text-h4">
-                        {{ stakedAmount }}
+                        {{ vtxbalance }}
                       </span>
                     </div>
                   </div>
@@ -273,6 +273,8 @@ export default {
       this.stakedAmount = +this.account.voter_info.staked / 10000
       this.currentProxy = this.account.voter_info.proxy
     }
+    let result = await this.$axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')
+    this.vtxprice = result.data.data.price
   },
   methods: {
     toSummary () {
@@ -321,27 +323,31 @@ export default {
       }
     },
     changeSlider () {
-      if (this.slider >= 0) {
-        this.sendAmount = Math.round(10000 * this.eosbalance * (this.slider / 100)) / 10000
-      } else {
-        this.sendAmount = Math.round(10000 * this.stakedAmount * (this.slider / 100)) / 10000
-      }
+      this.sendAmount = Math.round(10000 * this.eosbalance * (this.slider / 100)) / 10000
       this.checkAmount()
     },
     checkAmount () {
       this.navigationButtons.amount = false
+      this.vtxbalance = Math.round(100000000 * (this.sendAmount / this.vtxprice)) / 100000000
 
-      if (+this.sendAmount > 0.0 && +this.sendAmount <= +this.eosbalance) {
-        this.slider = Math.round(100 * (this.sendAmount / +this.eosbalance))
+      if (this.sendAmount > 0.0 && this.sendAmount <= this.eosbalance) {
         this.navigationButtons.amount = true
-        this.progColor = 'green'
-      } else if (+this.sendAmount < 0.0 && +this.sendAmount <= +this.stakedAmount) {
-        this.slider = Math.round(100 * (this.sendAmount / +this.stakedAmount))
-        console.log('this.slider', this.slider)
-        this.navigationButtons.amount = true
-        this.progColor = 'red'
       }
     },
+    // checkAmount () {
+    //   this.navigationButtons.amount = false
+
+    //   if (+this.sendAmount > 0.0 && +this.sendAmount <= +this.eosbalance) {
+    //     this.slider = Math.round(100 * (this.sendAmount / +this.eosbalance))
+    //     this.navigationButtons.amount = true
+    //     this.progColor = 'green'
+    //   } else if (+this.sendAmount < 0.0 && +this.sendAmount <= +this.stakedAmount) {
+    //     this.slider = Math.round(100 * (this.sendAmount / +this.stakedAmount))
+    //     console.log('this.slider', this.slider)
+    //     this.navigationButtons.amount = true
+    //     this.progColor = 'red'
+    //   }
+    // },
     // checkPrivateKeyPassword () {
     //   const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
     //   this.privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
