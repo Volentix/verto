@@ -1,5 +1,5 @@
 <template>
-<q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
+<q-page class="column text-black bg-grey-12" style="padding-bottom: 0px">
     <profile-header class="marg" version="type3" :fetchCurrentWalletFromState="true" />
     <div class="transaction-wrapper">
         <div class="transaction-wrapper--list open">

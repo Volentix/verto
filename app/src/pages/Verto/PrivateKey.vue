@@ -1,85 +1,79 @@
 <template>
-    <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px;background: #f3f3f3 !important">
+  <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px;background: #f3f3f3 !important">
         <div class="chain-tools-wrapper">
             <div class="standard-content">
                 <h2 class="standard-content--title flex justify-center">
                     <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" />
-                     Add Private Key
+                     {{$t('SettingsView.restore_config')}}
                 </h2>
                 <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
             </div>
             <div class="chain-tools-wrapper--list open">
                 <div class="list-wrapper">
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                        <q-stepper v-model="step" vertical color="primary" animated flat >
+                        <q-stepper v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
                             <!--
                             1. Paid to
                             -->
                             <q-step title="Choose File" :name="1" prefix="1" :done="step > 1">
-                                <div class="text-center text-uppercase">
-                                    <!-- <div class="text-h6 text-uppercase q-pa-md">Choose Private Key Encrypted File</div> -->
-                                    <div class="flex flex-center q-pa-sm">
-                                        <!-- <file-select @input="checksFile" v-model="file"></file-select> -->
-                                        <q-uploader
-                                            @input="checksFile"
-                                            v-model="file"
-                                            accept=".json, .priv"
-                                            style="max-width: 300px"
-                                        />
-                                        <!-- url="http://localhost:4444/upload" -->
+                                <div class="text-black">
+                                    <div class="text-h4 --subtitle">
+                                        <ul>
+                                            <li><span>Choose Private Key Encrypted File</span></li>
+                                        </ul>
                                     </div>
-                                    <div v-show="passwordFileError" class="text-h6 text-uppercase text-red q-pa-md">Error Getting File</div>
-                                    <div class="q-pa-md" v-show="gotfile && !passwordFileError" @click="gottoFilePassword()">
-                                        <q-icon name="navigate_next" size="3.2rem" color="green" >
-                                        <q-tooltip>{{ $t('next') }}</q-tooltip>
-                                        </q-icon>
+                                    <div class="flex full-width file-select-wrapper flex-center q-pa-sm">
+                                        <file-select @input="checksFile" v-model="file" />
+                                        <q-icon name="cloud_upload" class="icon-upload" />
                                     </div>
+                                    <div v-show="passwordFileError" class="text-h6 text-uppercase text-red q-pa-md">
+                                        Error Getting File
+                                    </div>
+                                    <q-stepper-navigation v-show="gotfile && !passwordFileError" class="flex justify-end">
+                                        <q-btn @click="gottoFilePassword()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                                    </q-stepper-navigation>
                                 </div>
                             </q-step>
                             <!--
                             2
                             -->
-                            <q-step title="Validate" :name="2" prefix="2" :done="step > 2">
-                                <div class="text-h6 text-white text-center">
-                                    <q-input
-                                        v-model="privateKeyPassword"
-                                        light
-                                        color="green"
-                                        label="Private Key Password"
-                                        @input="checkPrivateKeyPassword"
-                                        @keyup.enter="gotoVertoPassword()"
-                                        :type="isPwd ? 'password' : 'text'"
-                                    >
-                                        <template v-slot:append>
-                                        <q-icon
-                                            :name="isPwd ? 'visibility_off' : 'visibility'"
-                                            class="cursor-pointer"
-                                            @click="isPwd = !isPwd"
-                                        />
-                                        </template>
-                                    </q-input>
-                                </div>
+                            <q-step :name="2" title="Validate" icon="fas fa-check-double" :done="step>2">
+                                <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+                                <q-input
+                                    v-model="privateKeyPassword"
+                                    light
+                                    debounce="500"
+                                    rounded outlined color="purple"
+                                    label="Private Key Password"
+                                    @input="checkPrivateKeyPassword"
+                                    @keyup.enter="gotoVertoPassword()"
+                                    :type="isPwd ? 'password' : 'text'"
+                                >
+                                    <template v-slot:append>
+                                    <q-icon
+                                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                                        class="cursor-pointer"
+                                        @click="isPwd = !isPwd"
+                                    />
+                                    </template>
+                                </q-input>
                                 <div v-show="invalidPrivateKeyPassword" class="text-h6 text-uppercase text-red q-pa-md text-center">
-                                Password Incorrect
+                                    Password Incorrect
                                 </div>
-                                <div class="q-pa-sm text-center" v-show="privateKeyPasswordValid" @click="gotoVertoPassword()" >
-                                <q-icon name="navigate_next" size="3.2rem" color="green"   >
-                                    <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
-                                </q-icon>
-                                </div>
-                                <div class="q-pa-sm text-center">
-                                <q-btn color="white" flat @click="$refs.stepper.previous()" label="Back" />
-                                </div>
+                                <q-stepper-navigation v-show="privateKeyPasswordValid" class="flex justify-end">
+                                    <q-btn @click="gotoVertoPassword()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
+                                </q-stepper-navigation>
                             </q-step>
                             <!--
                             3
                             -->
-                            <q-step title="Verto Password" :name="3" prefix="3" :done="step > 3">
-                                <div class="text-h6  text-white text-center">
+                            <q-step :name="3" title="Verto Password" icon="fas fa-lock" :done="step>3">
+                                <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
                                     <q-input
                                         v-model="vertoPassword"
                                         light
-                                        color="green"
+                                        debounce="500"
+                                        rounded outlined color="purple"
                                         label="Verto Password"
                                         @input="checkVertoPassword"
                                         @keyup.enter="submit()"
@@ -93,18 +87,13 @@
                                         />
                                         </template>
                                     </q-input>
-                                </div>
+
                                 <div v-show="vertoPasswordWrong" class="text-h6 text-uppercase text-red q-pa-md text-center">
-                                Password Incorrect
+                                    Password Incorrect
                                 </div>
-                                <div class="q-pa-sm text-center" v-show="vertoPassordValid" @click="submit()" >
-                                <q-icon name="navigate_next" size="3.2rem" color="green"   >
-                                    <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
-                                </q-icon>
-                                </div>
-                                <div class="q-pa-sm text-center">
-                                <q-btn color="white" flat @click="$refs.stepper.previous()" label="Back" />
-                                </div>
+                                <q-stepper-navigation v-show="vertoPassordValid" class="flex justify-end">
+                                    <q-btn @click="submit()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
+                                </q-stepper-navigation>
                             </q-step>
                         </q-stepper>
                     </div>
@@ -117,15 +106,16 @@
 
 <script>
 import sjcl from 'sjcl'
-// import FileSelect from '@/components/FileSelect.vue'
+import FileSelect from '@/components/FileSelect.vue'
 
 export default {
   components: {
-    // FileSelect
+    FileSelect
   },
   data () {
     return {
       step: 1,
+      goBack: '',
       file: null,
       isPwd: true,
       iunderstand: false,
@@ -138,22 +128,17 @@ export default {
       invalidPrivateKeyPassword: false,
       vertoPassword: '',
       vertoPassordValid: false,
-      vertoPasswordWrong: false,
-      goBack: '',
-      fetchCurrentWalletFromState: true
+      vertoPasswordWrong: false
     }
   },
   async created () {
-    // this.wallet = this.$store.state.currentwallet.wallet
-    this.params = this.$store.state.currentwallet.params
-
     let tableData = await this.$store.state.wallets.tokens
-    this.wallet = tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+    let params = this.$store.state.currentwallet.params
+    this.wallet = tableData.find(w => w.chain === params.chainID && w.type === params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === params.accountName : w.key === params.accountName)
     )
-    this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/wallets'
-
-    console.log('this.wallet ------------- > ', this.wallet)
+    // this.wallet = this.$store.state.currentwallet.wallet
+    this.goBack = `/verto/wallets/${params.chainID}/${params.tokenID}/${params.accountName}`
   },
   methods: {
     async submit () {
@@ -443,6 +428,50 @@ export default {
               line-height: 20px;
               margin-top: 10px;
               margin-bottom: 30px;
+              ul{
+                padding: 0px;
+                margin: 0px;
+                margin-left: 20px;
+                li{
+                  font-size: 15px;
+                  font-weight: $bold;
+                  margin-bottom: 10px;
+                  line-height: 15px;
+                  color: #FFB200;
+                  span{
+                    color: #2A2A2A;
+                  }
+                }
+              }
+              &__success{
+                color: #00D0CA;
+                font-weight: $bold;
+                margin-bottom: 20px;
+              }
+              &__faild{
+                color: #FFB200;
+                font-weight: $bold;
+                margin-bottom: 20px;
+              }
+              &__transLink{
+                color: #2A2A2A;
+                border-bottom: 1px solid;
+                width: fit-content;
+                font-weight: $bold;
+                margin-bottom: 20px;
+              }
+              &__summary{
+                margin-bottom: 20px;
+                font-weight: $bold;
+              }
+              &__summary--list{
+                list-style: disc;
+                padding-left: 24px;
+                margin-top: -10px;
+                li{
+                  color: #B0B0B0;
+                }
+              }
               &__success{
                 color: #00D0CA;
                 font-weight: $bold;
@@ -488,7 +517,7 @@ export default {
         }
       }
       &.open{
-        margin-bottom: -100px;
+        margin-bottom: 0px;
         padding-left: 6%;
         padding-right: 6%;
         .list-wrapper{
@@ -528,6 +557,36 @@ export default {
         position: absolute;
         left: -35px;
         top: 10px;
+      }
+    }
+  }
+  .file-select-wrapper{
+    border: 1px solid #CCC;
+    border-radius: 100px;
+    padding: 0px;
+    overflow: hidden;
+    position: relative;
+    .icon-upload{
+      font-size: 25px;
+      position: absolute;
+      right: 15px;
+      opacity: .3;
+    }
+    label{
+      width: 100%;
+    }
+    /deep/ .file-select > .select-button {
+      padding: .12rem;
+      color: transparent;
+      background-color: #fbfbfb !important;
+      padding: 10px 0px;
+      border: none;
+      flex-direction: row;
+      justify-content: flex-start;
+      display: flex;
+      span{
+        color: #000;
+        padding: 0px 15px;
       }
     }
   }
