@@ -171,6 +171,9 @@ yarn-debug.log*
 yarn-error.log*
 test
 
+# we use yarn, not npm
+package-lock.json
+
 # Editor directories and files
 .idea
 .vscode
