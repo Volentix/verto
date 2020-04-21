@@ -137,7 +137,7 @@ export default {
     )
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${params.chainID}/${params.tokenID}/${params.accountName}` : '/verto/wallets'
 
-    console.log('this.currentAccount****************', this.currentAccount)
+    console.log('this.currentAccount from ProfileHeader****************', this.currentAccount, params)
 
     if (this.currentAccount === undefined) {
       this.currentAccount = {
