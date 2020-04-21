@@ -29,24 +29,15 @@
                   </div>
                 </q-item>
                 <q-separator style="margin-top: 10px" />
-                <q-item clickable v-ripple class="p-relative" to="/verto/exchange">
-                  Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                </q-item>
-                <q-item clickable v-ripple class="p-relative" to="/verto/wallet/coinHistory">Transaction History<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item clickable @click="alertSecurity = true" v-ripple class="p-relative">
-                  Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                </q-item>
-                <q-item v-if="currentAccount.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative">
-                  Associate with EOS <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                </q-item>
-                <q-item clickable v-ripple class="p-relative" @click="hideCurrency = !hideCurrency">
-                  Hide Currency
-                  <q-toggle class="p-abs" color="red" v-model="hideCurrency" />
-                </q-item>
-                <q-item clickable v-ripple class="p-relative" to="/verto/stake">Staking<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item clickable v-ripple class="p-relative" to="">Lending<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item clickable v-ripple class="p-relative" to="">Voting<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item data-name='Trade' clickable v-ripple class="p-relative" to="/verto/exchange">Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item data-name='Transaction History' clickable v-ripple class="p-relative" to="/verto/wallet/coinHistory">Transaction History<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item data-name='Associate with EOS' v-if="currentAccount.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative">Associate with EOS <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item data-name='Staking' clickable v-ripple class="p-relative" to="/verto/stake">Staking<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item data-name='Voting' clickable v-ripple class="p-relative" to="/verto/card-wps">Voting<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item data-name='Lending' clickable v-ripple class="p-relative" to="">Lending<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item data-name='Hide Currency' clickable v-ripple class="p-relative" @click="hideCurrency = !hideCurrency">Hide Currency<q-toggle class="p-abs" color="red" v-model="hideCurrency" /></q-item>
               </q-list>
             </div>
           </div>

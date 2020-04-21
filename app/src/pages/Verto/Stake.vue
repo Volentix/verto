@@ -1,6 +1,6 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
-    <profile-header version="type2" />
+    <profile-header version="type2" :fetchCurrentWalletFromState="true" />
     <stake-stepper />
   </q-page>
 </template>

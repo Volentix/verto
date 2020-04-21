@@ -3,7 +3,7 @@
         <div class="chain-tools-wrapper">
             <div class="standard-content">
                 <h2 class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" to="/create-password" text-color="black" icon="keyboard_backspace" />
+                    <q-btn flat unelevated class="btn-align-left" to="/" text-color="black" icon="keyboard_backspace" />
                      {{$t('SettingsView.restore_config')}}
                 </h2>
                 <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
@@ -32,7 +32,7 @@
                                   @keyup.enter="restoreConfig"
                                   :type="isPwd ? 'password' : 'text'"
                                   rounded outlined color="purple"
-                                  label="Create Verto Password"
+                                  label="Config Verto password"
                                   hint="*Minimum of 8 characters">
                                   <template v-slot:append>
                                     <q-icon

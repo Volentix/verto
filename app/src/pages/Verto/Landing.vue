@@ -36,7 +36,8 @@
         </div>
       </div>
       <div class="standard-content--footer full-width">
-         <q-btn flat class="action-link back" color="grey" text-color="white" label="Restore" :disable="!passHasError" @click="startRestoreConfig" />
+        <!-- :disable="!passHasError" -->
+         <q-btn flat class="action-link back" color="grey" text-color="white" label="Restore" @click="startRestoreConfig" />
          <q-btn flat class="action-link next" color="black" text-color="white" label="Connect" @click="login"/>
       </div>
       <div class="landing--volentix-logo">
@@ -84,7 +85,7 @@ export default {
     },
     async startRestoreConfig () {
       this.$router.push({
-        name: 'restore-wallet',
+        name: 'restoreWallet',
         params: { returnto: 'settings' }
       })
     },
