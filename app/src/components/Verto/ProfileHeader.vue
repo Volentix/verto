@@ -130,13 +130,14 @@ export default {
   },
   async created () {
     this.tableData = await this.$store.state.wallets.tokens
-    console.log('this.fetchCurrentWalletFromState', this.fetchCurrentWalletFromState)
     let params = this.fetchCurrentWalletFromState ? this.$store.state.currentwallet.params : this.$route.params
 
     this.currentAccount = this.tableData.find(w => w.chain === params.chainID && w.type === params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === params.accountName : w.key === params.accountName)
     )
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${params.chainID}/${params.tokenID}/${params.accountName}` : '/verto/wallets'
+
+    console.log('this.currentAccount****************', this.currentAccount)
 
     if (this.currentAccount === undefined) {
       this.currentAccount = {
