@@ -24,7 +24,7 @@
                     rounded
                     outlined
                     class="select-input"
-                    v-model="wallet"
+                    v-model="currentAccount"
                     use-input
                     :options="tableData"
                 >
@@ -45,14 +45,14 @@
                   </template>
                   <template v-slot:selected>
                     <q-item
-                      v-if="wallet"
+                      v-if="currentAccount"
                     >
                       <q-item-section avatar>
-                        <q-icon class="option--avatar" :name="`img:${wallet.icon}`" />
+                        <q-icon class="option--avatar" :name="`img:${currentAccount.icon}`" />
                       </q-item-section>
                       <q-item-section>
-                        <q-item-label v-html="wallet.name" />
-                        <q-item-label caption class="ellipsis ellipsis_important">{{ wallet.key }}</q-item-label>
+                        <q-item-label v-html="currentAccount.name" />
+                        <q-item-label caption class="ellipsis ellipsis_important">{{ currentAccount.key }}</q-item-label>
                       </q-item-section>
                     </q-item>
                     <q-item
@@ -64,7 +64,7 @@
                   </template>
                 </q-select>
 
-                <q-stepper-navigation v-if="wallet" class="flex justify-end">
+                <q-stepper-navigation v-if="currentAccount" class="flex justify-end">
                   <q-btn @click="step = 1" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
                 </q-stepper-navigation>
 
@@ -78,37 +78,30 @@
                 <div class="text-black">
                   <!-- <p class="text-h6 text-grey">Condition 1</p> -->
                   <div v-if="condition === 1" class="condition_1">
-                    <p class="--alert text-indigo-6 text-h6">You have no available {{ params.tokenID.toUpperCase() }} for staking.</p>
+                    <p class="--alert text-indigo-6 text-h6">You do not have enough {{ params.tokenID.toUpperCase() }} available for staking.</p>
                     <div class="row">
                       <div class="">
                         <span class="--title row text-h6"> {{ params.tokenID.toUpperCase() }} (Liquid) </span>
-                        <span class="--amount row text-h4"> {{ eosbalance }} </span>
+                        <span class="--amount row text-h4"> {{ currentAccount.amount }} </span>
                       </div>
                     </div>
                   </div>
-                  <!-- <p class="text-h6 text-grey">Condition 2</p> -->
                   <div v-if="condition === 2" class="condition_2">
                     <p class="--alert text-indigo-6 text-h6">Verto does not detect an {{ params.tokenID.toUpperCase() }} account</p>
-                    <div v-show="navigationButtons.amount" class="q-pa-sm" @click="step = 2" >
-                      <q-icon name="navigate_next" size="3.2rem" color="green">
-                        <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
-                      </q-icon>
-                    </div>
                   </div>
-                  <!-- <p class="text-h6 text-grey">Condition 3</p> -->
                   <div v-if="condition === 3" class="condition_3">
                     <div class="text-black">
                       <div class="row">
                         <div class="">
                           <span class="--title row text-h6"> Current Balance<br>{{ params.tokenID.toUpperCase() }} (Liquid) </span>
-                          <span class="--amount row text-h4"> {{ 85.3672 }} </span>
+                          <span class="--amount row text-h4"> {{ currentAccount.amount }} </span>
                         </div>
                         <div class="col --progress hr-vertical flex flex-center">
                           <span class="bar"></span>
                         </div>
                         <div class="col">
                           <span class="--title row text-h6"> Current Stake<br>{{ params.tokenID.toUpperCase() }} (Staked) </span>
-                          <span class="--amount row text-h4"> {{ 5.40 }} </span>
+                          <span class="--amount row text-h4"> {{ currentAccount.staked }} </span>
                         </div>
                       </div>
                       <div class="slider-holder">
@@ -116,9 +109,9 @@
                         <q-slider
                           v-model="slider"
                           :label-value="slider + '%'"
-                          :min="-100"
+                          :min="0"
                           :max="100"
-                          :step="5"
+                          :step="1"
                           color="orange"
                           :label-color="progColor"
                           dark
@@ -132,7 +125,7 @@
                       <div class="row full-width">
                         <div class="full-width">
                           <span class="--title row text-h6"> Amount to stake </span>
-                          <span class="--amount row text-h4"> {{ params.tokenID.toUpperCase() }} 8.5367 </span>
+                          <span class="--amount row text-h4"> {{  sendAmount }} {{ params.tokenID.toUpperCase() }}</span>
                           <br>
                           <span class="--title row text-h6"> Stake period </span>
                         </div>
@@ -140,11 +133,11 @@
                       <div class="slider-holder">
                         <br>
                         <q-slider
-                          v-model="slider"
-                          :label-value="slider + '%'"
-                          :min="-100"
-                          :max="100"
-                          :step="5"
+                          v-model="stakePeriod"
+                          :label-value="`${stakePeriod * 30}` + ' days'"
+                          :min="1"
+                          :max="10"
+                          :step="1"
                           color="orange"
                           :label-color="progColor"
                           dark
@@ -159,22 +152,17 @@
                         <div class="full-width">
                           <br>
                           <span class="--title row text-h6 text-indigo-6"> Estimated stake reward </span>
-                          <span class="--amount row text-h4"> {{ params.tokenID.toUpperCase() }} 0.8536 </span>
+                          <span class="--amount row text-h4"> {{ estimatedReward }} {{ params.tokenID.toUpperCase() }} </span>
                           <br>
                         </div>
-                      </div>
-                      <div v-show="navigationButtons.amount" class="q-pa-sm" @click="step = 2" >
-                        <q-icon name="navigate_next" size="3.2rem" color="green"   >
-                          <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
-                        </q-icon>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <q-stepper-navigation class="flex justify-end">
-                  <q-btn @click="step = 2" v-if="condition === 1" unelevated color="deep-purple-14" class="--next-btn" rounded label="Get EOS account" />
-                  <q-btn @click="step = 2" v-if="condition === 2" unelevated color="deep-purple-14" class="--next-btn" rounded :label="`Get ${ params.tokenID.toUpperCase() }`" />
+                  <q-btn @click="step = 2" v-if="condition === 1" unelevated color="deep-purple-14" class="--next-btn" rounded :label="`Get ${ params.tokenID.toUpperCase() }`" />
+                  <q-btn @click="step = 2" v-if="condition === 2" unelevated color="deep-purple-14" class="--next-btn" rounded label="Get EOS account" />
                   <q-btn @click="step = 2" v-if="condition === 3" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
                 </q-stepper-navigation>
               </q-step>
@@ -240,10 +228,6 @@
                   </ul>
                 </div>
 
-                <!-- <q-stepper-navigation>
-                  <q-btn color="primary" label="Finish" />
-                  <q-btn flat @click="step = 2" color="primary" label="Back" class="q-ml-sm" />
-                </q-stepper-navigation> -->
               </q-step>
             </q-stepper>
           </div>
@@ -256,7 +240,7 @@
 </template>
 
 <script>
-
+import { userError } from '@/util/errorHandler'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 
@@ -265,8 +249,10 @@ export default {
   data () {
     return {
       step: 0,
-      condition: 1,
-      wallet: null,
+      condition: 3,
+      currentAccount: {},
+      stakePeriod: 1,
+      estimatedReward: 0,
       options: [],
       tableData: [],
       active: true,
@@ -274,7 +260,6 @@ export default {
       showText: false,
       slider: 0,
       progColor: 'green',
-      eosbalance: 0,
       vtxbalance: 0,
       stakedAmount: 0,
       vtxprice: 0,
@@ -291,16 +276,10 @@ export default {
       transactionError: false,
       spinnervisible: false,
       isPwd: true,
+      isPrivateKeyEncrypted: false,
       account: null,
       privateKeyPassword: null,
-      showSendModal: false,
-      navigationButtons: {
-        to: false,
-        token: false,
-        amount: false,
-        privateKeyPasswordBtn: false,
-        showNextButtonToPassword: false
-      }
+      showSendModal: false
     }
   },
   computed: {
@@ -317,18 +296,21 @@ export default {
 
     this.params = this.$store.state.currentwallet.params
     this.tableData = await this.$store.state.wallets.tokens
-    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+    this.currentAccount = await this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
-    this.wallet = this.currentAccount
-    this.eosbalance = this.currentAccount.amount
     console.log('this.currentAccount ----------------- ', this.currentAccount)
+    if (eos.isPrivKeyValid(this.currentAccount.privateKey)) {
+      this.privateKey.key = this.currentAccount.privateKey
+      this.isPrivateKeyEncrypted = false
+    } else {
+      this.isPrivateKeyEncrypted = true
+    }
 
-    this.walletName = this.currentAccount.name
-    this.account = await eos.getAccount(this.walletName)
-    if (this.account.voter_info) {
-      this.stakedAmount = +this.account.voter_info.staked / 10000
-      this.currentProxy = this.account.voter_info.proxy
+    if (this.params.tokenID === 'vtx' && this.currentAccount < 1000) {
+      this.condition = 1
+    } else if (this.params.tokenID === 'eos' && this.currentAccount <= 0) {
+      this.condition = 1
     }
   },
   async mounted () {
@@ -336,34 +318,55 @@ export default {
   methods: {
     changeSlider () {
       if (this.slider >= 0) {
-        this.sendAmount = Math.round(10000 * this.eosbalance * (this.slider / 100)) / 10000
+        this.sendAmount = Math.round(10000 * this.currentAccount.amount * (this.slider / 100)) / 10000
       } else {
         this.sendAmount = Math.round(10000 * this.stakedAmount * (this.slider / 100)) / 10000
       }
       this.checkAmount()
     },
     checkAmount () {
-      this.navigationButtons.amount = false
+      let stake_per = Math.round((0.1 + (0.01 * this.stakePeriod)) * 100) / 100
 
-      if (+this.sendAmount > 0.0 && +this.sendAmount <= +this.eosbalance) {
-        this.slider = Math.round(100 * (this.sendAmount / +this.eosbalance))
-        this.navigationButtons.amount = true
-        this.progColor = 'green'
-      } else if (+this.sendAmount < 0.0 && +this.sendAmount <= +this.stakedAmount) {
-        this.slider = Math.round(100 * (this.sendAmount / +this.stakedAmount))
-        console.log('this.slider', this.slider)
-        this.navigationButtons.amount = true
-        this.progColor = 'red'
+      if (+this.sendAmount > 0.0 && +this.sendAmount <= +this.currentAccount.amount) {
+        this.slider = Math.round(100 * (this.sendAmount / +this.currentAccount.amount))
+
+        if (this.sendAmount >= 1000) {
+          this.progColor = 'green'
+          this.estimatedReward = Math.round(this.sendAmount * stake_per * this.stakePeriod * 100) / 100
+          console.log('mul', stake_per)
+        } else {
+          this.estimatedReward = 0
+          this.progColor = 'red'
+        }
       }
     },
     checkPrivateKeyPassword () {
-      const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
+      const privateKeyEncrypted = JSON.stringify(this.currentAccount.privateKeyEncrypted)
       this.privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
       if (this.privateKey.success) {
         this.invalidPrivateKeyPassword = false
       } else {
         this.invalidPrivateKeyPassword = true
         return false
+      }
+    },
+    async stakeVTX () {
+      try {
+        await eos.transact({
+          actions: [{
+            account: 'proxy4nation',
+            name: 'claim',
+            authorization: [{
+              actor: this.walletName,
+              permission: 'active'
+            }],
+            data: {
+              owner: this.walletName
+            }
+          }]
+        }, { keyProvider: this.privateKey.key })
+      } catch (error) {
+        userError(error.message)
       }
     }
   }
