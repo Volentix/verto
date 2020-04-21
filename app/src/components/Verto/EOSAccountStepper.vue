@@ -321,7 +321,7 @@ export default {
       showNextButtonToVertoPassword: false,
       showNextButtonToPassword: false,
       inError: true,
-      step: 0,
+      step: 1,
       step2: 1,
       active: true,
       publicKey: '',
