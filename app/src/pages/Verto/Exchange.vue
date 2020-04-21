@@ -3,7 +3,7 @@
     <div class="standard-content">
       <h2 class="standard-content--title flex justify-center">
         <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" />
-        Exchange
+        Trade
       </h2>
       <div class="standard-content--body">
         <div class="standard-content--body__form">
@@ -14,9 +14,8 @@
               rounded
               outlined
               class="select-input"
-              v-model="currentAccount"
-              use-input
-              :options="tableData"
+              v-model="fromCoin"
+              :options="optionsFrom"
           >
             <template v-slot:option="scope">
               <q-item
@@ -25,24 +24,24 @@
                 v-on="scope.itemEvents"
               >
                 <q-item-section avatar>
-                  <q-icon class="option--avatar option--avatar" :class="scope.opt.type" :name="`img:${scope.opt.icon}`" />
+                  <q-icon class="option--avatar option--avatar" :class="scope.opt.value" :name="`img:${scope.opt.image}`" />
                 </q-item-section>
                 <q-item-section dark>
-                  <q-item-label v-html="scope.opt.name" />
-                  <q-item-label caption class="ellipsis mw200">{{ scope.opt.key }}</q-item-label>
+                  <q-item-label v-html="scope.opt.label" />
+                  <q-item-label caption class="ellipsis mw200">{{ scope.opt.value }}</q-item-label>
                 </q-item-section>
               </q-item>
             </template>
             <template v-slot:selected>
               <q-item
-                v-if="currentAccount"
+                v-if="fromCoin"
               >
                 <q-item-section avatar>
-                  <q-icon class="option--avatar option--avatar__custom" :class="currentAccount.type" :name="`img:${currentAccount.icon}`" />
+                  <q-icon class="option--avatar option--avatar__custom" :name="`img:${fromCoin.image}`" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label v-html="currentAccount.name" />
-                  <q-item-label caption class="ellipsis mw200">{{ currentAccount.key }}</q-item-label>
+                  <q-item-label v-html="fromCoin.label" />
+                  <q-item-label caption class="ellipsis mw200">{{ fromCoin.value }}</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item
@@ -73,7 +72,7 @@
                 </q-item-section>
                 <q-item-section dark>
                   <q-item-label v-html="scope.opt.label" />
-                  <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                  <q-item-label caption class="ellipsis mw200">{{ scope.opt.value }}</q-item-label>
                 </q-item-section>
               </q-item>
             </template>
@@ -86,7 +85,7 @@
                 </q-item-section>
                 <q-item-section>
                   <q-item-label v-html="toCoin.label" />
-                  <q-item-label caption>{{ toCoin.value }}</q-item-label>
+                  <q-item-label caption class="ellipsis mw200">{{ toCoin.value }}</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item
@@ -147,30 +146,8 @@ export default {
       to: '',
       amount: '',
       memo: '',
-      optionsFrom: [
-        {
-          label: 'Ethereum',
-          value: 'eth',
-          image: 'https://files.coinswitch.co/public/coins/eth.png'
-        },
-        {
-          label: 'Bitcoin',
-          value: 'btc',
-          image: 'https://files.coinswitch.co/public/coins/btc.png'
-        }
-      ],
-      optionsTo: [
-        {
-          label: 'Volentix',
-          value: 'vtx',
-          image: 'statics/coins_icons/svg_logo_white.svg'
-        },
-        {
-          label: 'Bitcoin',
-          value: 'btc',
-          image: 'https://files.coinswitch.co/public/coins/btc.png'
-        }
-      ],
+      optionsFrom: [],
+      optionsTo: [],
       minimizedModal: false,
       message: '',
       version: {},
@@ -179,20 +156,42 @@ export default {
       params: null,
       tableData: [],
       currentAccount: null,
-      goBack: '',
+      goBack: '/verto/dashboard',
       fetchCurrentWalletFromState: true
     }
+  },
+  updated () {
+    console.log('this.fromCoin ---------', this.fromCoin)
   },
   async created () {
     console.log('created - created - created - created')
     this.params = this.$store.state.currentwallet.params
-
     this.tableData = await this.$store.state.wallets.tokens
+    let self = this
+    this.tableData.map(token => {
+      self.optionsFrom.push({
+        label: token.name.toLowerCase(),
+        value: token.key.toLowerCase(),
+        image: token.icon
+      })
+      self.optionsTo.push({
+        label: token.name.toLowerCase(),
+        value: token.key.toLowerCase(),
+        image: token.icon
+      })
+    })
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
-
-    this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
+    console.log('this.currentAccount', this.currentAccount)
+    if (this.currentAccount !== null && this.currentAccount !== undefined) {
+      this.fromCoin = {
+        label: this.currentAccount.name,
+        value: this.currentAccount.key,
+        image: this.currentAccount.icon
+      }
+      this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
+    }
   },
   mounted () {
     this.version = version

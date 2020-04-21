@@ -8,27 +8,6 @@
           <div class="chain">Chain: <b> {{ currentAccount.chain.toUpperCase() }} </b></div>
           <div class="token">Token: <b> {{ currentAccount.type.toUpperCase() }} </b></div>
         </div>
-        <div class="list-wrapper--chain__coming-soon">
-          <ul>
-            <li>
-               <q-btn class="btn-soon full-width" unelevated flat color="white" text-color="black">
-                 <span class="title">Staking</span><q-btn flat class="icon" icon="keyboard_arrow_right" to="/verto/stake" />
-               </q-btn>
-            </li>
-            <li>
-              <!-- Lending Voting EOS to VTX Convertor -->
-               <q-btn class="btn-soon full-width" unelevated flat color="white" text-color="black">
-                 <span class="title">Lending</span><span class="soon">Coming soon <q-icon class="icon" name="keyboard_arrow_right" /></span>
-               </q-btn>
-            </li>
-            <li>
-              <!-- Lending Voting EOS to VTX Convertor -->
-               <q-btn class="btn-soon full-width" unelevated flat color="white" text-color="black">
-                 <span class="title">Voting</span><span class="soon">Coming soon <q-icon class="icon" name="keyboard_arrow_right" /></span>
-               </q-btn>
-            </li>
-          </ul>
-        </div>
         <div class="list-wrapper--chain__eos-to-vtx-convertor">
           <h3 class="list-wrapper--chain__eos-to-vtx-convertor--title" @click="step = 1">
             EOS to VTX Convertor
@@ -200,7 +179,7 @@ export default {
   name: 'ChainTools',
   data () {
     return {
-      step: 0,
+      step: 1,
       active: true,
       showWallet: false,
       showText: false,

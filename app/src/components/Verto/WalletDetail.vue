@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="wallets-wrapper padtop">
+  <div class="wallets-wrapper padtop" style="padding-bottom: 50px">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="wallets-wrapper--list open">
       <q-list bordered separator class="list-wrapper">
@@ -32,8 +32,7 @@
                 <q-item clickable v-ripple class="p-relative" to="/verto/exchange">
                   Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                 </q-item>
-                <q-item clickable v-ripple class="p-relative" to="/verto/wallet/coinHistory">Transaction History<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                </q-item>
+                <q-item clickable v-ripple class="p-relative" to="/verto/wallet/coinHistory">Transaction History<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item clickable @click="alertSecurity = true" v-ripple class="p-relative">
                   Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                 </q-item>
@@ -43,8 +42,11 @@
                 <q-item clickable v-ripple class="p-relative" @click="hideCurrency = !hideCurrency">
                   Hide Currency
                   <q-toggle class="p-abs" color="red" v-model="hideCurrency" />
-                  <!-- <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /> -->
                 </q-item>
+                <q-item clickable v-ripple class="p-relative" to="/verto/stake">Staking<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item clickable v-ripple class="p-relative" to="">Lending<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item clickable v-ripple class="p-relative" to="">Voting<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
               </q-list>
             </div>
           </div>

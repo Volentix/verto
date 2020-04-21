@@ -70,6 +70,14 @@ export default [
     component: () => import('layouts/IntroWithTabs.vue'),
     children: [
       {
+        name: 'earn',
+        path: '/verto/earn',
+        component: () => import('pages/Verto/Earn.vue'),
+        meta: {
+          authRequired: false
+        }
+      },
+      {
         name: 'use-referral-account',
         path: '/verto/earn/use-referral-account',
         component: () => import('pages/Verto/UseReferralAccount.vue'),
@@ -142,8 +150,8 @@ export default [
         }
       },
       {
-        name: 'chain-tools',
-        path: '/verto/chain-tools',
+        name: 'converter',
+        path: '/verto/converter',
         component: () => import('pages/Verto/ChainTools.vue'),
         meta: {
           authRequired: true

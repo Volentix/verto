@@ -1,6 +1,6 @@
 <template>
-  <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
-    <profile-header />
+  <q-page class="column text-black bg-grey-12" style="padding-bottom: 0px">
+    <profile-header class="marg" version="type3" :fetchCurrentWalletFromState="true" />
     <chain-tools />
   </q-page>
 </template>
