@@ -30,7 +30,7 @@
     </div>
     <div v-else-if="version === 'type2'" class="profile-wrapper--header static">
       <div class="flex justify-between flex-row item-center content-center full-width">
-        <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="white" icon="keyboard_backspace" />
+        <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="white" icon="keyboard_backspace" />
         <h3 class="flex flex-center text-white static__holder_title">Making VTX while you sleep, will be available soon.</h3>
         <span class="static__holder_img flex flex-center"><img src="statics/stake-vtx-bg.svg" alt=""></span>
       </div>
