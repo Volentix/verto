@@ -88,22 +88,14 @@ if (platformTools.default) platformTools = platformTools.default
 // TODO Fix error handler, for actions: error is not appear
 export default {
   components: {},
-  computed: {
-    wallet() {
-      return this.$store.state.currentwallet.wallet
-    },
-
-    privateKey() {
-      // FIXME Use app state key manager system insted
-      return ''
-    },
-  },
-
   data () {
     return {
       proposals: [],
       drafts: [],
-
+      privateKey: {
+        success: null
+      },
+      isPrivateKeyEncrypted: false, 
       proposal_name: 'mywps',
       title: 'My WPS Title',
       monthly_budget: '8.00000000 VTX',
@@ -112,11 +104,21 @@ export default {
     }
   },
   mounted () {
-    this.version = version
-    this.setupPlatformPath()
   },
-
   async created () {
+    this.params = this.$store.state.currentwallet.params
+    this.tableData = await this.$store.state.wallets.tokens
+    this.currentAccount = await this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+    )
+    console.log('this.currentAccount ----------------- ', this.currentAccount)
+    if (eos.isPrivKeyValid(this.currentAccount.privateKey)) {
+      this.privateKey.key = this.currentAccount.privateKey
+      this.isPrivateKeyEncrypted = false
+    } else {
+      this.isPrivateKeyEncrypted = true
+    }
+
     this.fetch()
   },
 
@@ -128,12 +130,12 @@ export default {
             account: 'volentixwork',
             name: 'vote',
             authorization: [{
-              actor: this.wallet.name,
+              actor: this.currentAccount.name,
               permission: 'active'
             }],
-            data: { voter: this.wallet.name, proposal_name, vote }
+            data: { voter: this.currentAccount.name, proposal_name, vote }
           }]
-        }, { keyProvider: this.privateKey })
+        }, { keyProvider: this.privateKey.key })
         this.fetch()
       } catch (error) {
         console.log('err', error)
@@ -148,12 +150,12 @@ export default {
             account: 'volentixwork',
             name: 'claim',
             authorization: [{
-              actor: this.wallet.name,
+              actor: this.currentAccount.name,
               permission: 'active'
             }],
             data: { proposal_name }
           }]
-        }, { keyProvider: this.privateKey })
+        }, { keyProvider: this.privateKey.key })
         this.fetch()
       } catch (error) {
         console.log('err', error)
@@ -168,12 +170,12 @@ export default {
             account: 'volentixwork',
             name: 'complete',
             authorization: [{
-              actor: this.wallet.name,
+              actor: this.currentAccount.name,
               permission: 'active'
             }],
             data: {}
           }]
-        }, { keyProvider: this.privateKey })
+        }, { keyProvider: this.privateKey.key })
         this.fetch()
       } catch (error) {
         console.log('err', error)
@@ -188,12 +190,12 @@ export default {
             account: 'volentixwork',
             name: 'refresh',
             authorization: [{
-              actor: this.wallet.name,
+              actor: this.currentAccount.name,
               permission: 'active'
             }],
             data: {}
           }]
-        }, { keyProvider: this.privateKey })
+        }, { keyProvider: this.privateKey.key })
         this.fetch()
       } catch (error) {
         console.log('err', error)
@@ -201,9 +203,6 @@ export default {
       }
     },
     async submitdraft () {
-      const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
-      const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
-
       const { proposal_name, title, monthly_budget, duration, proposal_json } = this
 
       try {
@@ -212,11 +211,11 @@ export default {
             account: 'volentixwork',
             name: 'submitdraft',
             authorization: [{
-              actor: this.wallet.name,
+              actor: this.currentAccount.name,
               permission: 'active'
             }],
             data: {
-              proposer: this.wallet.name,
+              proposer: this.currentAccount.name,
               proposal_name,
               title,
               monthly_budget,
@@ -224,7 +223,7 @@ export default {
               proposal_json: JSON.parse(proposal_json)
             }
           }]
-        }, { keyProvider: this.privateKey })
+        }, { keyProvider: this.privateKey.key })
         this.fetch()
       } catch (error) {
         console.log('err', error)
@@ -232,8 +231,6 @@ export default {
       }
     },
     async canceldraft (proposalName) {
-      const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
-      const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
 
       try {
         await eos.transact({
@@ -241,15 +238,15 @@ export default {
             account: 'volentixwork',
             name: 'canceldraft',
             authorization: [{
-              actor: this.wallet.name,
+              actor: this.currentAccount.name,
               permission: 'active'
             }],
             data: {
-              proposer: this.wallet.name,
+              proposer: this.currentAccount.name,
               proposal_name: proposalName
             }
           }]
-        }, { keyProvider: this.privateKey })
+        }, { keyProvider: this.privateKey.key })
         this.fetch()
       } catch (error) {
         console.log('err', error)
@@ -267,16 +264,16 @@ export default {
             account: 'volentixwork',
             name: 'activate',
             authorization: [{
-              actor: this.wallet.name,
+              actor: this.currentAccount.name,
               permission: 'active'
             }],
             data: {
-              proposer: this.wallet.name,
+              proposer: this.currentAccount.name,
               proposal_name: proposalName,
               start_voting_period: null // Start voting period
             }
           }]
-        }, { keyProvider: this.privateKey })
+        }, { keyProvider: this.privateKey.key })
         this.fetch()
       } catch (error) {
         console.log('err', error)
@@ -289,13 +286,9 @@ export default {
         this.proposals = r
       })
 
-      eos.getTable('volentixwork', this.wallet.name, 'drafts').then(r => {
+      eos.getTable('volentixwork', this.currentAccount.name, 'drafts').then(r => {
         this.drafts = r
       })
-    },
-
-    async setupPlatformPath () {
-      this.configPath = await platformTools.filePath()
     }
   }
 }
