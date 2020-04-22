@@ -4,7 +4,7 @@
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="profile-wrapper--list">
       <q-list bordered separator>
-        <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="(item.to !== 'backup' && item.to !== 'logout' && item.to !== 'restore' && item.to !== 'share') ? item.to : ''" @click="item.to === 'backup' ? backupConfig() : item.to === 'logout' ? confirmLogout = true : item.to === 'restore' ? startRestoreConfig() : item.to === 'share' ? toggleShare() : empty()">
+        <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="(item.to !== 'backup' && item.to !== 'logout' && item.to !== 'restore' && item.to !== 'share') ? item.to : ''" @click="item.to === 'backup' ? backupConfig() : item.to === 'logout' ? logout() : item.to === 'restore' ? startRestoreConfig() : item.to === 'share' ? toggleShare() : empty()">
           <q-item-section avatar>
             <q-icon class="icons" :class="{'reverse' : item.icon === 'exit_to_app'}" v-if="item.icon !== 'vtx'" :name="item.icon" />
             <img v-else class="vtx_logo" width="15px" src="statics/vtx_black.svg" alt="">
@@ -39,50 +39,106 @@
                 <div class="social_share">
                   <network network="email" class="span-wrapper">
                     <template>
-                      <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap"><div tabindex="-1" class="q-focus-helper"></div><div class="q-btn__wrapper col row q-anchor--skip"><div class="q-btn__content text-center col items-center q-anchor--skip justify-center row"><i aria-hidden="true" class="fas fa-at q-icon"></i></div></div></button>
+                      <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap">
+                        <div tabindex="-1" class="q-focus-helper"></div>
+                        <div class="q-btn__wrapper col row q-anchor--skip">
+                          <div class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+                            <!-- <i aria-hidden="true" class="fas fa-at q-icon"></i> -->
+                            <img src="/statics/social/mail.svg" alt="">
+                          </div>
+                        </div>
+                      </button>
                     </template>
                   </network>
                   <network network="skype">
                     <template>
-                      <button data-v-b854f566="" tabindex="0" type="button" class="border q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap"><div tabindex="-1" class="q-focus-helper"></div><div class="q-btn__wrapper col row q-anchor--skip"><div class="q-btn__content text-center col items-center q-anchor--skip justify-center row"><i aria-hidden="true" class="fab fa-skype q-icon"></i></div></div></button>
+                      <button data-v-b854f566="" tabindex="0" type="button" class="border q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap">
+                        <div tabindex="-1" class="q-focus-helper"></div>
+                          <div class="q-btn__wrapper col row q-anchor--skip">
+                            <div class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+                              <!-- <i aria-hidden="true" class="fab fa-skype q-icon"></i> -->
+                              <img src="/statics/social/skype.svg" alt="">
+                            </div>
+                          </div>
+                      </button>
                     </template>
                   </network>
                   <network network="sms">
                     <template>
-                      <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap"><div tabindex="-1" class="q-focus-helper"></div><div class="q-btn__wrapper col row q-anchor--skip"><div class="q-btn__content text-center col items-center q-anchor--skip justify-center row"><i aria-hidden="true" class="fas fa-sms q-icon"></i></div></div></button>
+                      <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap">
+                        <div tabindex="-1" class="q-focus-helper"></div>
+                          <div class="q-btn__wrapper col row q-anchor--skip">
+                            <div class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+                              <!-- <i aria-hidden="true" class="fas fa-sms q-icon"></i> -->
+                              <img src="/statics/social/sms.svg" alt="">
+                            </div>
+                          </div>
+                      </button>
                     </template>
                   </network>
                   <network network="telegram">
                     <template>
-                      <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap"><div tabindex="-1" class="q-focus-helper"></div><div class="q-btn__wrapper col row q-anchor--skip"><div class="q-btn__content text-center col items-center q-anchor--skip justify-center row"><i aria-hidden="true" class="fab fa-telegram q-icon"></i></div></div></button>
+                      <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap">
+                        <div tabindex="-1" class="q-focus-helper"></div>
+                          <div class="q-btn__wrapper col row q-anchor--skip">
+                            <div class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+                              <!-- <i aria-hidden="true" class="fab fa-telegram q-icon"></i> -->
+                              <img src="/statics/social/telegram.svg" alt="">
+                            </div>
+                          </div>
+                      </button>
                     </template>
                   </network>
                   <network network="reddit">
                     <template>
-                      <button data-v-b854f566="" tabindex="0" type="button" class="border q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap"><div tabindex="-1" class="q-focus-helper"></div><div class="q-btn__wrapper col row q-anchor--skip"><div class="q-btn__content text-center col items-center q-anchor--skip justify-center row"><i aria-hidden="true" class="fab fa-reddit-alien q-icon"></i></div></div></button>
+                      <button data-v-b854f566="" tabindex="0" type="button" class="border q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap">
+                        <div tabindex="-1" class="q-focus-helper"></div>
+                          <div class="q-btn__wrapper col row q-anchor--skip">
+                            <div class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+                              <!-- <i aria-hidden="true" class="fab fa-reddit-alien q-icon"></i> -->
+                              <img src="/statics/social/reddit.svg" alt="">
+                            </div>
+                          </div>
+                      </button>
                     </template>
                   </network>
                   <network network="twitter">
                     <template>
-                      <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap"><div tabindex="-1" class="q-focus-helper"></div><div class="q-btn__wrapper col row q-anchor--skip"><div class="q-btn__content text-center col items-center q-anchor--skip justify-center row"><i aria-hidden="true" class="fab fa-twitter q-icon"></i></div></div></button>
+                      <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap">
+                        <div tabindex="-1" class="q-focus-helper"></div>
+                          <div class="q-btn__wrapper col row q-anchor--skip">
+                            <div class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+                              <!-- <i aria-hidden="true" class="fab fa-twitter q-icon"></i> -->
+                              <img src="/statics/social/twitter.svg" alt="">
+                            </div>
+                          </div>
+                      </button>
                     </template>
                   </network>
                   <network network="whatsapp">
                     <template>
-                      <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap"><div tabindex="-1" class="q-focus-helper"></div><div class="q-btn__wrapper col row q-anchor--skip"><div class="q-btn__content text-center col items-center q-anchor--skip justify-center row"><i aria-hidden="true" class="fab fa-whatsapp q-icon"></i></div></div></button>
+                      <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap">
+                        <div tabindex="-1" class="q-focus-helper"></div>
+                          <div class="q-btn__wrapper col row q-anchor--skip">
+                            <div class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+                              <!-- <i aria-hidden="true" class="fab fa-whatsapp q-icon"></i> -->
+                              <img src="/statics/social/whatsapp.svg" alt="">
+                            </div>
+                          </div>
+                      </button>
                     </template>
                   </network>
-                  <network network="custom">
-                      Custom network
-                  </network>
                 </div>
+                <a href="#">
+                  Test tEstes SRestrsd
+                </a>
               </social-sharing>
             </span>
         </div>
       </q-card-section>
     </q-card>
   </q-dialog>
-  <q-dialog v-model="confirmLogout" persistent>
+  <!-- <q-dialog v-model="confirmLogout" persistent>
     <q-card class="q-pa-md" style="width: 700px; max-width: 90vw;">
       <q-card-section class="row items-center">
         <q-avatar icon="exit_to_app" color="deep-purple-14" text-color="white" />
@@ -94,7 +150,7 @@
         <q-btn flat rounded unelevated label="Logout" class="lower fsz16 pd20" color="grey" v-close-popup @click="logout()" />
       </q-card-actions>
     </q-card>
-  </q-dialog>
+  </q-dialog> -->
 </div>
 </template>
 
@@ -110,18 +166,17 @@ export default {
       vertoLink: 'https://verto.volentix.io',
       active: true,
       menu: [
-        { name: 'Wallets', to: '/verto/wallets', icon: 'account_balance_wallet', info: '' },
+        { name: 'Wallets', to: '/verto/wallets', icon: 'o_account_balance_wallet', info: '' },
         { name: 'Trade', to: '/verto/exchange', icon: 'compare_arrows', info: '' },
-        { name: 'Personalize your wallet', to: '', icon: 'bubble_chart', info: 'soon' },
-        { name: 'Backup Config', to: 'backup', icon: 'cloud_download', info: '' },
+        { name: 'Personalize your wallet', to: '', icon: 'o_perm_media', info: 'soon' },
+        { name: 'Backup Config', to: 'backup', icon: 'o_get_app', info: '' },
         { name: 'Restore Config', to: 'restore', icon: 'cloud_upload', info: '' },
         { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
         { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'Not linked' },
         { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' },
         { name: 'Log Out', to: 'logout', icon: 'exit_to_app', info: '' }
       ],
-      showShareWrapper: false,
-      confirmLogout: false
+      showShareWrapper: false
     }
   },
   methods: {
@@ -253,6 +308,10 @@ export default {
         box-shadow: none !important;
         width: 100%;
         border-radius: 0px !important;
+        img{
+          width: 55px;
+          height: 55px;
+        }
         &.border{
           border-right: 1px solid rgb(226, 226, 226);
           border-left: 1px solid rgb(226, 226, 226);
