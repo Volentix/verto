@@ -4,14 +4,10 @@
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="chain-tools-wrapper--list open">
       <div class="list-wrapper">
-        <div class="list-wrapper--chain__type flex justify-between item-center">
-          <div class="chain">Chain: <b> {{ currentAccount.chain.toUpperCase() }} </b></div>
-          <div class="token">Token: <b> {{ currentAccount.type.toUpperCase() }} </b></div>
-        </div>
+        <!-- <div class="list-wrapper--chain__type flex justify-between item-center"><div class="chain">Chain: <b> {{ currentAccount.chain.toUpperCase() }} </b></div><div class="token">Token: <b> {{ currentAccount.type.toUpperCase() }} </b></div></div> --><!-- <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_down" color="primary" class="--back-btn"/> -->
         <div class="list-wrapper--chain__eos-to-vtx-convertor">
           <h3 class="list-wrapper--chain__eos-to-vtx-convertor--title" @click="step = 1">
             EOS to VTX Convertor
-            <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_down" color="primary" class="--back-btn"/>
           </h3>
           <div v-if="step > 0" class="">
             <q-stepper

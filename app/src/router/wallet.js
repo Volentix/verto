@@ -182,6 +182,14 @@ export default [
         }
       },
       {
+        name: 'change-password-profile',
+        path: '/verto/profile/change-password',
+        component: () => import('pages/Verto/ChangePasswordProfile.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'wallets',
         path: '/verto/wallets',
         component: () => import('pages/Verto/Wallets.vue'),
