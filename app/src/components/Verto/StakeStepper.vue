@@ -167,7 +167,7 @@
                 </q-stepper-navigation>
               </q-step>
 
-              <q-step title="Sign & submit"
+              <q-step v-if="isPrivateKeyEncrypted" title="Sign & submit"
                 :name="2"
                 prefix="2"
                 :done="step > 2"
@@ -200,7 +200,23 @@
                   </q-input>
                 </div>
                 <q-stepper-navigation class="flex justify-end">
-                  <q-btn @click="step = 4" color="deep-purple-14" class="--next-btn" rounded label="Next" />
+                  <q-btn @click="sendTransaction()" color="deep-purple-14" class="--next-btn" rounded label="Submit" />
+                </q-stepper-navigation>
+              </q-step>
+
+              <q-step v-else title="Confirm & submit"
+                :name="2"
+                prefix="2"
+                :done="step > 2"
+              >
+                <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+
+                <div class="text-black">
+                  <div class="text-h4 --subtitle">Are you sure?</div>
+
+                </div>
+                <q-stepper-navigation class="flex justify-end">
+                  <q-btn @click="sendTransaction()" color="deep-purple-14" class="--next-btn" rounded label="Submit" />
                 </q-stepper-navigation>
               </q-step>
 
@@ -271,6 +287,16 @@ export default {
       invalidPrivateKeyPassword: false,
       privateKey: {
         success: null
+      },
+      tokenPrecision:
+      {
+        'EOS': 4,
+        'VTX': 8
+      },
+      tokenContract:
+      {
+        'EOS': 'eosio.token',
+        'VTX': 'volentixgsys'
       },
       transactionId: null,
       transactionError: false,
@@ -350,24 +376,66 @@ export default {
         return false
       }
     },
-    async stakeVTX () {
+    async sendTransaction () {
+      try {
+        this.step = 3
+
+        this.formatedAmount = this.formatAmountString()
+        const transaction = await eos.transferToken(
+          'volentixgsys',
+          this.currentAccount.name,
+          'vtxstake1111',
+          this.formatedAmount,
+          this.stakePeriod * 30,
+          this.privateKey.key
+        )
+        this.transactionId = transaction.transaction_id
+        this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '">block explorer</a>'
+      } catch (error) {
+        console.log('transaction errors', error)
+
+        if (error.includes('maximum billable CPU time')) {
+          this.transactionError = true
+          this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
+        } else if (error.includes('has insufficient ram')) {
+          this.transactionError = true
+          this.ErrorMessage = 'Your EOS account does not have enough RAM staked to process the transaction.'
+        }
+      }
+    },
+    async unStakeVTX () {
       try {
         await eos.transact({
           actions: [{
-            account: 'proxy4nation',
-            name: 'claim',
+            account: 'vtxstake1111',
+            name: 'unstake',
             authorization: [{
-              actor: this.walletName,
+              actor: this.currentAccount.name,
               permission: 'active'
             }],
             data: {
-              owner: this.walletName
+              owner: this.currentAccount.name
             }
           }]
         }, { keyProvider: this.privateKey.key })
       } catch (error) {
         userError(error.message)
       }
+    },
+    formatAmountString () {
+      let numberOfDecimals = 0
+      let stringAmount = (Math.round(+this.sendAmount * Math.pow(10, this.tokenPrecision[this.params.tokenID.toUpperCase()])) / Math.pow(10, this.tokenPrecision[this.params.tokenID.toUpperCase()])).toString()
+
+      const amountParsed = stringAmount.split('.')
+      if (amountParsed && amountParsed.length > 1) {
+        numberOfDecimals = amountParsed[1].length
+      } else {
+        stringAmount += '.'
+      }
+      for (;numberOfDecimals < this.tokenPrecision[this.params.tokenID.toUpperCase()]; numberOfDecimals++) {
+        stringAmount += '0'
+      }
+      return stringAmount + ' ' + this.params.tokenID.toUpperCase()
     }
   }
 }
