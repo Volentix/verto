@@ -3,7 +3,7 @@
         <div class="chain-tools-wrapper">
             <div class="standard-content">
                 <h2 class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" to="/" text-color="black" icon="keyboard_backspace" />
+                    <q-btn flat unelevated class="btn-align-left" :to="returnto === 'profile' ? '/verto/profile' : '/login'" text-color="black" icon="keyboard_backspace" />
                      {{$t('SettingsView.restore_config')}}
                 </h2>
                 <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
@@ -100,11 +100,14 @@ export default {
   },
   created () {
     this.returnto = this.$route.params.returnto
+    console.log('this.returnto', this.returnto)
   },
   methods: {
     goback () {
       if (this.returnto === 'settings') {
         this.$router.push('/settings')
+      } else if (this.returnto === 'profile') {
+        this.$router.push('/verto/profile')
       } else {
         this.$router.push(this.returnto)
       }
