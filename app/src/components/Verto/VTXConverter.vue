@@ -1,8 +1,8 @@
 <template>
 <div>
-  <div class="chain-tools-wrapper">
+  <div class="vtx-converter-wrapper">
     <!-- <q-toggle v-model="active" label="Active" /> -->
-    <div class="chain-tools-wrapper--list open">
+    <div class="vtx-converter-wrapper--list open">
       <div class="list-wrapper">
         <!-- <div class="list-wrapper--chain__type flex justify-between item-center"><div class="chain">Chain: <b> {{ currentAccount.chain.toUpperCase() }} </b></div><div class="token">Token: <b> {{ currentAccount.type.toUpperCase() }} </b></div></div> --><!-- <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_down" color="primary" class="--back-btn"/> -->
         <div class="list-wrapper--chain__eos-to-vtx-convertor">
@@ -365,10 +365,10 @@ export default {
 
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
-  .chain-tools-wrapper{
+  .vtx-converter-wrapper{
     padding: 0px 6%;
     &--list{
-      &__hide-chain-tools{
+      &__hide-vtx-converter{
         text-transform: initial !important;
         margin-top: 0px;
         margin-bottom: 10px;
@@ -397,8 +397,6 @@ export default {
               color: #7272FA;
               text-transform: uppercase;
             }
-            .chain{}
-            .token{}
           }
           &__coming-soon{
             ul{
