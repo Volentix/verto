@@ -261,7 +261,7 @@ import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 
 export default {
-  name: 'ChainTools',
+  name: 'VTXConverter',
   data () {
     return {
       step: 0,
