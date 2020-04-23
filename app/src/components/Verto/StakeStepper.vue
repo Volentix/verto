@@ -167,7 +167,7 @@
                 </q-stepper-navigation>
               </q-step>
 
-              <q-step v-if="isPrivateKeyEncrypted" title="Sign & submit"
+              <q-step v-if="isPrivateKeyEncrypted" title="Sign & Submit"
                 :name="2"
                 prefix="2"
                 :done="step > 2"
@@ -187,7 +187,7 @@
                     debounce="500"
                     :error="invalidPrivateKeyPassword"
                     error-message="The password is incorrect"
-                    @input="checkPrivateKeyPassword"
+                    @input="checkPrivateKeyPassword()"
                     :type="isPwd ? 'password' : 'text'"
                   >
                     <template v-slot:append>
@@ -204,7 +204,7 @@
                 </q-stepper-navigation>
               </q-step>
 
-              <q-step v-else title="Confirm & submit"
+              <q-step v-else title="Confirm & Submit"
                 :name="2"
                 prefix="2"
                 :done="step > 2"
@@ -226,21 +226,21 @@
               >
                 <q-btn flat @click="step = 2" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
 
-                <div class="text-black">
-                  <!-- change --subtitle__success to --subtitle__faild to get the appropriate style -->
+                <div v-if="!ErrorMessage" class="text-black">
+                  <q-spinner />
+                </div>
+                <div v-else-if="!transactionError" class="text-black">
                   <div class="text-h4 --subtitle --subtitle__success">Success</div>
-                  <div class="text-h4 --subtitle --subtitle__transLink">Transaction link</div>
                   <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
                   <ul class="--subtitle__summary--list">
-                    <li>EOS nation is now your proxy.</li>
-                    <li>Amount of EOS stake 101</li>
+                    <li v-html="SuccessMessage"> {{ SuccessMessage }}</li>
                   </ul>
-                  <hr>
-                  <div class="text-h4 --subtitle --subtitle__faild">Faild</div>
+                </div>
+                <div v-else class="text-black">
+                  <div class="text-h4 --subtitle --subtitle__faild">Failed</div>
                   <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
                   <ul class="--subtitle__summary--list">
-                    <li>EOS nation is now your proxy.</li>
-                    <li>Amount of EOS stake 101</li>
+                    <li>{{ ErrorMessage }}</li>
                   </ul>
                 </div>
 
@@ -299,7 +299,7 @@ export default {
         'VTX': 'volentixgsys'
       },
       transactionId: null,
-      transactionError: false,
+      transactionError: '',
       spinnervisible: false,
       isPwd: true,
       isPrivateKeyEncrypted: false,
@@ -309,23 +309,16 @@ export default {
     }
   },
   computed: {
-    showNext: function () {
-      if (!this.voted && !this.proxyModel) {
-        return false
-      } else {
-        return true
-      }
-    }
   },
   async created () {
-    // this.tableData = [ ...this.$store.state.currentwallet.config.keys ]
-
     this.params = this.$store.state.currentwallet.params
     this.tableData = await this.$store.state.wallets.tokens
     this.currentAccount = await this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
+
     console.log('this.currentAccount ----------------- ', this.currentAccount)
+
     if (eos.isPrivKeyValid(this.currentAccount.privateKey)) {
       this.privateKey.key = this.currentAccount.privateKey
       this.isPrivateKeyEncrypted = false
@@ -338,6 +331,11 @@ export default {
     } else if (this.params.tokenID === 'eos' && this.currentAccount <= 0) {
       this.condition = 1
     }
+
+    const result = await eos.getTable(
+      'vtxstake1111', 'vtxstake1111', 'stakeamounts'
+    )
+    console.log('stakeamounts', result)
   },
   async mounted () {
   },
@@ -378,7 +376,7 @@ export default {
     },
     async sendTransaction () {
       try {
-        this.step = 3
+        this.step = 4
 
         this.formatedAmount = this.formatAmountString()
         const transaction = await eos.transferToken(
@@ -389,17 +387,22 @@ export default {
           this.stakePeriod * 30,
           this.privateKey.key
         )
+
+        this.transactionError = false
         this.transactionId = transaction.transaction_id
         this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '">block explorer</a>'
       } catch (error) {
         console.log('transaction errors', error)
+        this.transactionError = true
 
-        if (error.includes('maximum billable CPU time')) {
-          this.transactionError = true
+        if (error.includes('stake amount is too low')) {
+          this.ErrorMessage = 'Your VTX stake amount is too low, you need at least 1000 VTX to stake.'
+        } else if (error.includes('maximum billable CPU time')) {
           this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
         } else if (error.includes('has insufficient ram')) {
-          this.transactionError = true
           this.ErrorMessage = 'Your EOS account does not have enough RAM staked to process the transaction.'
+        } else {
+          this.ErrorMessage = 'Unknown Error: ' + error
         }
       }
     },
