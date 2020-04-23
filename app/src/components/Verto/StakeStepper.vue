@@ -288,16 +288,6 @@ export default {
       privateKey: {
         success: null
       },
-      tokenPrecision:
-      {
-        'EOS': 4,
-        'VTX': 8
-      },
-      tokenContract:
-      {
-        'EOS': 'eosio.token',
-        'VTX': 'volentixgsys'
-      },
       transactionId: null,
       transactionError: '',
       spinnervisible: false,
@@ -427,7 +417,7 @@ export default {
     },
     formatAmountString () {
       let numberOfDecimals = 0
-      let stringAmount = (Math.round(+this.sendAmount * Math.pow(10, this.tokenPrecision[this.params.tokenID.toUpperCase()])) / Math.pow(10, this.tokenPrecision[this.params.tokenID.toUpperCase()])).toString()
+      let stringAmount = (Math.round(+this.sendAmount * Math.pow(10, this.currentAccount.precision)) / Math.pow(10, this.currentAccount.precision)).toString()
 
       const amountParsed = stringAmount.split('.')
       if (amountParsed && amountParsed.length > 1) {
@@ -435,7 +425,7 @@ export default {
       } else {
         stringAmount += '.'
       }
-      for (;numberOfDecimals < this.tokenPrecision[this.params.tokenID.toUpperCase()]; numberOfDecimals++) {
+      for (;numberOfDecimals < this.currentAccount.precision; numberOfDecimals++) {
         stringAmount += '0'
       }
       return stringAmount + ' ' + this.params.tokenID.toUpperCase()
