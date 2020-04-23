@@ -260,19 +260,36 @@ export default {
 
       try {
         await eos.transact({
-          actions: [{
-            account: 'volentixwork',
-            name: 'activate',
-            authorization: [{
-              actor: this.currentAccount.name,
-              permission: 'active'
-            }],
-            data: {
-              proposer: this.currentAccount.name,
-              proposal_name: proposalName,
-              start_voting_period: null // Start voting period
+          actions: [
+            {
+              account: 'volentixgsys',
+              name: 'transfer',
+              authorization: [{
+                actor: this.currentAccount.name,
+                permission: 'active'
+              }],
+              data: {
+                from: this.currentAccount.name,
+                to: 'volentixwork',
+                quantity: '1.00000000 VTX',
+                memo: ''
+              }
+            },
+
+            {
+              account: 'volentixwork',
+              name: 'activate',
+              authorization: [{
+                actor: this.currentAccount.name,
+                permission: 'active'
+              }],
+              data: {
+                proposer: this.currentAccount.name,
+                proposal_name: proposalName,
+                start_voting_period: null // Start voting period
+              }
             }
-          }]
+          ]
         }, { keyProvider: this.privateKey.key })
         this.fetch()
       } catch (error) {
