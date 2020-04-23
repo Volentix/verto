@@ -152,7 +152,7 @@ export default [
       {
         name: 'converter',
         path: '/verto/converter',
-        component: () => import('pages/Verto/ChainTools.vue'),
+        component: () => import('pages/Verto/VTXConverter.vue'),
         meta: {
           authRequired: true
         }
