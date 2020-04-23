@@ -302,7 +302,7 @@ import { userError } from '@/util/errorHandler'
 import configManager from '@/util/ConfigManager'
 
 export default {
-  name: 'ChainTools',
+  name: 'VTXConverter',
   data () {
     return {
       accountNames: null,

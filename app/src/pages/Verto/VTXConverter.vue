@@ -1,17 +1,17 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 0px">
     <profile-header class="marg" version="type3" :fetchCurrentWalletFromState="true" />
-    <chain-tools />
+    <VTXConverter />
   </q-page>
 </template>
 
 <script>
-import ChainTools from '../../components/Verto/ChainTools'
+import VTXConverter from '../../components/Verto/VTXConverter'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 
 export default {
   components: {
-    ChainTools,
+    VTXConverter,
     ProfileHeader
   },
   data () {
