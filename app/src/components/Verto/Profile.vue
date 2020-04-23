@@ -23,7 +23,7 @@
         <q-btn flat round dense icon="close" v-close-popup />
       </q-toolbar>
       <q-card-section class=" text-h6">
-        <span style="font-size: 1em">Select your prefered method</span>
+        <!-- <span style="font-size: 1em">Select your prefered method</span> -->
         <div class="social-media-wrapper">
            <span class="submenu-wrapper">
               <social-sharing
@@ -129,11 +129,13 @@
                     </template>
                   </network>
                 </div>
-                <a href="#">
-                  Test tEstes SRestrsd
-                </a>
               </social-sharing>
             </span>
+            <div id="copy-btn">
+              <q-btn color="white" text-color="black" @click="copyToClipboard(vertoLink , 'Link')" class="copy-link-button" flat label="Copy link">
+                <img src="/statics/social/copy.svg" alt="">
+              </q-btn>
+            </div>
         </div>
       </q-card-section>
     </q-card>
@@ -163,7 +165,7 @@ export default {
   name: 'Profile',
   data () {
     return {
-      vertoLink: 'https://verto.volentix.io',
+      vertoLink: 'https://volentix.io?verto-app',
       active: true,
       menu: [
         { name: 'Wallets', to: '/verto/wallets', icon: 'o_account_balance_wallet', info: '' },
@@ -179,7 +181,20 @@ export default {
       showShareWrapper: false
     }
   },
+  created () {
+  },
   methods: {
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    },
     toggleShare () {
       this.showShareWrapper = !this.showShareWrapper
     },
@@ -285,21 +300,26 @@ export default {
     font-weight: $light;
   }
   .social-media-wrapper{
-    margin-top: 20px;
+    margin-top: 0px;
     .share_wrapper{
       display: flex;
       flex-direction: row !important;
-      justify-content: space-between;
+      justify-content: flex-start;
       // background-color: #fff;
       // box-shadow: 0px 1px 1px 0px rgba(black, .04);
-      border-radius: 5px;
       padding: 10px 0px;
       margin-left: 0px;
       margin-right: 0px;
-      margin-bottom: -20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #efefef;
+      border-radius: 0px;
       // width: 33%;
       /deep/  & > span{
-        flex-basis: 33%;
+        flex-basis: 20%;
+        width: 100px;
+        max-width: 68px;
+        min-width: unset;
+        padding: 0px 2px;
       }
       /deep/ .q-btn.q-btn-item{
         color: #433afb !important;
@@ -308,18 +328,39 @@ export default {
         box-shadow: none !important;
         width: 100%;
         border-radius: 0px !important;
+        .q-btn__wrapper{
+          width: 55px;
+          height: 55px;
+          margin-left: -11px;
+        }
         img{
           width: 55px;
           height: 55px;
         }
-        &.border{
-          border-right: 1px solid rgb(226, 226, 226);
-          border-left: 1px solid rgb(226, 226, 226);
-        }
+        // &.border{
+        //   border-right: 1px solid rgb(226, 226, 226);
+        //   border-left: 1px solid rgb(226, 226, 226);
+        // }
         margin-bottom: 10px;
         /deep/ .q-btn__wrapper:before{
           box-shadow: none !important;
         }
+      }
+    }
+  }
+  /deep/ .copy-link-button{
+    border: 1px solid #f7f7f7;
+    background: #fdfdfd;
+    border-radius: 0px;
+    .q-btn__content{
+      flex-direction: row-reverse !important;
+      font-size: 18px;
+      text-transform: initial;
+      img{
+        width: 55px;
+        height: 46px;
+        margin-left: -20px;
+        margin-top: 2px;
       }
     }
   }
