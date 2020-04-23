@@ -72,6 +72,7 @@ class Wallets2Tokens {
                   privateKeyEncrypted: wallet.privateKeyEncrypted,
                   amount: t.amount,
                   contract: t.code,
+                  precision: t.amount.split('.')[1].length,
                   chain: 'eos',
                   to: '/verto/wallets/eos/' + type + '/' + name,
                   icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
@@ -82,6 +83,7 @@ class Wallets2Tokens {
                 self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(eos => {
                   eos.amount = t.amount
                   eos.contract = 'eosio.token'
+                  eos.precision = t.amount.split('.')[1].length
                   eos.proxy = a.voter_info.proxy
                   eos.staked = a.voter_info.staked / 10000
                 })
