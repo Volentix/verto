@@ -26,14 +26,14 @@
                   <div class="row">
                     <div class="">
                       <span class="--title row text-h6"> EOS (Liquid) </span>
-                      <span class="--amount row text-h4"> {{ eosbalance }} </span>
+                      <span class="--amount row text-h4"> {{ currentAccount.amount }} </span>
                     </div>
                     <div class="col --progress">
                       <q-linear-progress indeterminate rounded :reverse="progColor === 'red'" :color="progColor" size="xl" class="q-mt-md" />
                     </div>
                     <div class="col">
                       <span class="--title row text-h6">
-                        VTX (Staked)
+                        VTX (Liquid)
                       </span>
                       <span class="--amount row text-h4">
                         {{ vtxbalance }}
@@ -82,7 +82,7 @@
                 </q-stepper-navigation>
               </q-step>
 
-              <q-step title="Sign & submit"
+              <q-step v-if="isPrivateKeyEncrypted" title="Sign & Submit"
                 :name="2"
                 prefix="2"
                 :done="step > 2"
@@ -99,7 +99,7 @@
                     class="full-width"
                     color="green"
                     label="Private Key Password"
-                    @input="checkPrivateKeyPassword"
+                    @input="checkPrivateKeyPassword()"
                     debounce="500"
                     @keyup.enter="toSummary"
                     :type="isPwd ? 'password' : 'text'"
@@ -116,7 +116,23 @@
                   </q-input>
                 </div>
                 <q-stepper-navigation class="flex justify-end">
-                  <q-btn @click="login" v-if="showSubmit" color="deep-purple-14" class="--next-btn" rounded label="Next" />
+                  <q-btn @click="login()" v-if="showSubmit" color="deep-purple-14" class="--next-btn" rounded label="Next" />
+                </q-stepper-navigation>
+              </q-step>
+
+              <q-step v-else title="Confirm & Submit"
+                :name="2"
+                prefix="2"
+                :done="step > 2"
+              >
+                <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+
+                <div class="text-black">
+                  <div class="text-h4 --subtitle">Are you sure?</div>
+
+                </div>
+                <q-stepper-navigation class="flex justify-end">
+                  <q-btn @click="sendTransaction()" color="deep-purple-14" class="--next-btn" rounded label="Submit" />
                 </q-stepper-navigation>
               </q-step>
 
@@ -131,17 +147,18 @@
                   <div class="text-h4 --subtitle --subtitle__summary">Processing the transaction</div>
                   <!-- <div class="text-h4 --subtitle --subtitle__transLink">Transaction link</div> -->
 
-                  <div v-show="!transactionError">
+                  <div v-show="transactionError === ''" class="text-black">
+                    <q-spinner />
+                  </div>
+                  <div v-if="!transactionError">
                     <div class="text-h4 --subtitle --subtitle__success">Success</div>
                     <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
                     <ul class="--subtitle__summary--list">
-                      <li>{{ SuccessMessage }}</li>
-                      <!-- <li>Amount of EOS stake 101</li> -->
+                      <li v-html="SuccessMessage"> {{ SuccessMessage }}</li>
                     </ul>
                   </div>
-                  <hr>
-                  <div v-show="transactionError" class="text-h6 text-uppercase text-red q-pa-md">
-                    <div class="text-h4 --subtitle --subtitle__faild">Faild</div>
+                  <div v-else class="text-h6 text-uppercase text-red q-pa-md">
+                    <div class="text-h4 --subtitle --subtitle__faild">Failed</div>
                     <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
                     <ul class="--subtitle__summary--list">
                       <li>{{ ErrorMessage }}</li>
@@ -165,9 +182,7 @@
 </template>
 
 <script>
-
 import configManager from '@/util/ConfigManager'
-
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 
@@ -184,14 +199,12 @@ export default {
       passHasError: false,
       slider: 0,
       progColor: 'green',
-      eosbalance: 0,
       vtxbalance: 0,
-      stakedAmount: 0,
       vtxprice: 0,
       params: {},
       sendAmount: null,
       formatedAmount: null,
-      currentProxy: null,
+      isPrivateKeyEncrypted: false,
       ErrorMessage: null,
       SuccessMessage: null,
       invalidPrivateKeyPassword: false,
@@ -199,7 +212,7 @@ export default {
         success: null
       },
       transactionId: null,
-      transactionError: false,
+      transactionError: '',
       spinnervisible: false,
       isPwd: true,
       account: null,
@@ -231,24 +244,23 @@ export default {
   },
   async created () {
     this.params = this.$store.state.currentwallet.params
-
     this.tableData = await this.$store.state.wallets.tokens
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
-    this.eosbalance = this.currentAccount.amount
+
     console.log('this.currentAccount ----------------- ', this.currentAccount)
+
+    if (eos.isPrivKeyValid(this.currentAccount.privateKey)) {
+      this.privateKey.key = this.currentAccount.privateKey
+      this.isPrivateKeyEncrypted = false
+    } else {
+      this.isPrivateKeyEncrypted = true
+    }
+
+    this.vtxprice = (await this.$axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
   },
   async mounted () {
-    this.walletName = this.currentAccount.name
-    this.account = await eos.getAccount(this.walletName)
-
-    if (this.account.voter_info) {
-      this.stakedAmount = +this.account.voter_info.staked / 10000
-      this.currentProxy = this.account.voter_info.proxy
-    }
-    let result = await this.$axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')
-    this.vtxprice = result.data.data.price
   },
   methods: {
     toSummary () {
@@ -259,17 +271,14 @@ export default {
       }
     },
     checkPrivateKeyPassword () {
-      // console.log('this.currentAccount.privateKeyEncrypted', this.currentAccount.privateKeyEncrypted)
-      // console.log('this.privateKeyPassword', this.privateKeyPassword)
-      const privateKey = JSON.stringify(this.currentAccount.privateKeyEncrypted)
-      const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKey)
-
-      if (!result.success) {
+      const privateKeyEncrypted = JSON.stringify(this.currentAccount.privateKeyEncrypted)
+      this.privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+      if (this.privateKey.success) {
+        this.invalidPrivateKeyPassword = false
+      } else {
         this.invalidPrivateKeyPassword = true
+        return false
       }
-    },
-    showMore () {
-
     },
     checkPassword () {
       if (this.password.length > 2) {
@@ -297,41 +306,17 @@ export default {
       }
     },
     changeSlider () {
-      this.sendAmount = Math.round(10000 * this.eosbalance * (this.slider / 100)) / 10000
+      this.sendAmount = Math.round(10000 * this.currentAccount.amount * (this.slider / 100)) / 10000
       this.checkAmount()
     },
     checkAmount () {
       this.navigationButtons.amount = false
       this.vtxbalance = Math.round(100000000 * (this.sendAmount / this.vtxprice)) / 100000000
 
-      if (this.sendAmount > 0.0 && this.sendAmount <= this.eosbalance) {
+      if (this.sendAmount > 0.0 && this.sendAmount <= this.currentAccount.amount) {
         this.navigationButtons.amount = true
       }
     },
-    // checkAmount () {
-    //   this.navigationButtons.amount = false
-
-    //   if (+this.sendAmount > 0.0 && +this.sendAmount <= +this.eosbalance) {
-    //     this.slider = Math.round(100 * (this.sendAmount / +this.eosbalance))
-    //     this.navigationButtons.amount = true
-    //     this.progColor = 'green'
-    //   } else if (+this.sendAmount < 0.0 && +this.sendAmount <= +this.stakedAmount) {
-    //     this.slider = Math.round(100 * (this.sendAmount / +this.stakedAmount))
-    //     console.log('this.slider', this.slider)
-    //     this.navigationButtons.amount = true
-    //     this.progColor = 'red'
-    //   }
-    // },
-    // checkPrivateKeyPassword () {
-    //   const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
-    //   this.privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
-    //   if (this.privateKey.success) {
-    //     this.invalidPrivateKeyPassword = false
-    //   } else {
-    //     this.invalidPrivateKeyPassword = true
-    //     return false
-    //   }
-    // },
     formatAmountString () {
       let numberOfDecimals = 0
       let stringAmount = this.sendAmount.toString()
@@ -349,23 +334,22 @@ export default {
     },
     async sendTransaction () {
       try {
-        this.step = 3
-        // this.showSpinners(true)
+        this.step = 4
 
         this.formatedAmount = this.formatAmountString()
         const transaction = await eos.transferToken(
           'eosio.token',
-          this.walletName,
+          this.currentAccount.name,
           'newdexpublic',
           this.formatedAmount,
           '{"type":"buy-market","symbol":"volentixgsys-vtx-eos","price":"0.00000","channel":"dapp","ref":"verto"}',
           this.privateKey.key
         )
+
+        this.transactionError = false
         this.transactionId = transaction.transaction_id
-        // this.showSpinners(false)
         this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '">block explorer</a>'
       } catch (error) {
-        // this.showSpinners(false)
         if (error.includes('maximum billable CPU time')) {
           this.transactionError = true
           this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
@@ -374,8 +358,6 @@ export default {
           this.ErrorMessage = 'Convertion is suspended at the moment, it`s not your fault.  Try again later'
         }
       }
-
-      this.privateKey.key = null
     }
   }
 }
