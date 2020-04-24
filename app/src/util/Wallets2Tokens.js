@@ -51,6 +51,7 @@ class Wallets2Tokens {
     store.state.currentwallet.config.keys.map(async (wallet) => {
       if (wallet.type.toLowerCase() === 'eos') {
         axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': wallet.name }).then(balances => {
+          console.log('eos balances', balances)
           balances.data.map(t => {
             console.log('eos token', t)
             if (t.symbol.toLowerCase() !== 'eos') {
@@ -59,9 +60,11 @@ class Wallets2Tokens {
                 let type = t.symbol.toLowerCase()
                 let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === type.toLowerCase())
                 let vespucciScore = 0
-                this.getCoinScore(coinSlug.slug).then(result => {
-                  vespucciScore = result.vespucciScore
-                })
+                if (coinSlug) {
+                  this.getCoinScore(coinSlug.slug).then(result => {
+                    vespucciScore = result.vespucciScore
+                  })
+                }
                 self.tableData.push({
                   selected: false,
                   type,
@@ -72,6 +75,7 @@ class Wallets2Tokens {
                   privateKeyEncrypted: wallet.privateKeyEncrypted,
                   amount: t.amount,
                   contract: t.code,
+                  precision: t.amount.split('.')[1].length,
                   chain: 'eos',
                   to: '/verto/wallets/eos/' + type + '/' + name,
                   icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
@@ -79,9 +83,12 @@ class Wallets2Tokens {
               }
             } else {
               EOS.getAccount(wallet.name).then(a => {
-                self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(eos => {
+                self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(async eos => {
+                  let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
+                  eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
                   eos.amount = t.amount
                   eos.contract = 'eosio.token'
+                  eos.precision = t.amount.split('.')[1].length
                   eos.proxy = a.voter_info.proxy
                   eos.staked = a.voter_info.staked / 10000
                 })
