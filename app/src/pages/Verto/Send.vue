@@ -230,13 +230,20 @@ export default {
       }
     },
     async checkTo () {
+      this.toError = false
+
       if (this.validateEmail(this.sendTo)) {
         try {
-          this.sendToResolved = await cruxClient.resolveCurrencyAddressForCruxID(this.sendTo, this.currentAccount.chain)
+          this.sendToResolved = (await cruxClient.resolveCurrencyAddressForCruxID(this.sendTo, this.currentAccount.chain)).addressHash
         } catch (error) {
           console.log('checkTo:', error)
+          this.sendToResolved = ''
 
-          if (error.errorCode === 1005) {
+          if (error.errorCode === 1002) {
+            // ID does not exist
+            this.toError = true
+            this.toErrorMessage = 'This Verto ID does not exist'
+          } else if (error.errorCode === 1005) {
             // Currency address not available for user
             this.toError = true
             this.toErrorMessage = this.currentAccount.chain.toUpperCase() + ' address not set for that user'
