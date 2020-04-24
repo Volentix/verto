@@ -171,12 +171,9 @@ export default {
     )
 
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
+    this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
 
     console.log('this.currentAccount sur la page send', this.currentAccount)
-
-    this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
-    this.chainID = this.currentAccount.chainID
-    this.tokenID = this.currentAccount.tokenID
 
     if (this.currentAccount.privateKey) {
       this.privateKey.key = this.currentAccount.privateKey
