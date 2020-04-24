@@ -8,8 +8,8 @@
         <h3 class="text-black card-import-EOS-account--wrapper--header__holder_title">Import EOS account</h3>
       </div>
       <div class="card-import-EOS-account--wrapper--header_btns">
-        <q-btn unelevated class="card-import-EOS-account--wrapper--header_btn white" color="black" text-color="white" label="Public key" />
-        <q-btn unelevated class="card-import-EOS-account--wrapper--header_btn" color="black" text-color="white" label="Private key" />
+        <q-btn to="/verto/import-public-key" unelevated class="card-import-EOS-account--wrapper--header_btn white" color="black" text-color="white" label="Public key" />
+        <q-btn to="/verto/import-private-key" unelevated class="card-import-EOS-account--wrapper--header_btn" color="black" text-color="white" label="Private key" />
       </div>
     </div>
   </div>

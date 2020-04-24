@@ -27,8 +27,6 @@ import CardImportEOSAccount from '../../components/Verto/CardImportEOSAccount'
 import CardCreateWallet from '../../components/Verto/CardCreateWallet'
 import Wallets from '../../components/Verto/Wallets'
 import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
-import configManager from '@/util/ConfigManager'
-import { version } from '../../../package.json'
 
 let wallets2Tokens = require('@/util/Wallets2Tokens')
 if (!store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
@@ -49,39 +47,11 @@ export default {
   },
   data () {
     return {
-      pword: '',
-      minimizedModal: false,
-      message: '',
-      version: {},
-      network: this.$store.state.settings.network,
-      configPath: ''
     }
   },
   mounted () {
-    this.version = version
-    this.setupPlatformPath()
   },
   methods: {
-    async setupPlatformPath () {
-      this.configPath = await platformTools.filePath()
-    },
-    goChangePassword: function () {
-      this.$router.push({ path: '/change-password' })
-    },
-    setNetwork: function () {
-      this.$store.dispatch('settings/toggleNetwork', this.network)
-      this.$q.notify({ message: `Network changed to ${this.network}`, color: 'positive' })
-    },
-    async backupConfig () {
-      try {
-        await configManager.backupConfig()
-        if (this.$q.platform.is.android) {
-          this.$q.notify({ color: 'positive', message: 'Config Saved' })
-        }
-      } catch (e) {
-        // TODO: Exception handling
-      }
-    }
   }
 }
 </script>
