@@ -113,12 +113,8 @@
 
 <script>
 // import RadialProgressBar from 'vue-radial-progress'
-import configManager from '@/util/ConfigManager'
 import EosWrapper from '@/util/EosWrapper'
 // const eos = new EosWrapper()
-import { version } from '../../../package.json'
-let platformTools = require('../../util/platformTools')
-if (platformTools.default) platformTools = platformTools.default
 
 export default {
   components: {
@@ -137,43 +133,9 @@ export default {
       isPwd: true,
       sendAmount: 1,
       formatedAmount: '',
-      // { selected: false, slug: 'btc-xyz', name: 'BTC xyz', purcent: '1.02%', to: '/verto/wallets/btc-xyz', icon: 'statics/coins_icons/btc.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-      // { selected: false, slug: 'vtx', name: 'VTX', purcent: '1.02%', to: '/verto/wallets/vtx', icon: 'statics/coins_icons/vtx.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-      // { selected: false, slug: 'eth', name: 'ETH', purcent: '1.02%', to: '/verto/wallets/eth', icon: 'statics/coins_icons/eth.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-      // { selected: false, slug: 'dash', name: 'DASH', purcent: '1.02%', to: '/verto/wallets/dash', icon: 'statics/coins_icons/dash.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-      // { selected: false, slug: 'riple', name: 'Riple', purcent: '1.02%', to: '/verto/wallets/riple', icon: 'statics/coins_icons/ripple.png', amount: '0.023 BTC', amountUSD: '$235.21' }
       options: [],
-      optionsStatic: [
-        {
-          label: 'BTC xyz',
-          value: 'btc-xyz',
-          image: 'statics/coins_icons/btc.png'
-        },
-        {
-          label: 'VTX',
-          value: 'vtx',
-          image: 'statics/coins_icons/vtx.png'
-        },
-        {
-          label: 'ETH',
-          value: 'eth',
-          image: 'statics/coins_icons/eth.png'
-        },
-        {
-          label: 'DASH',
-          value: 'dash',
-          image: 'statics/coins_icons/dash.png'
-        },
-        {
-          label: 'Riple',
-          value: 'riple',
-          image: 'statics/coins_icons/ripple.png'
-        }
-      ],
       minimizedModal: false,
       message: '',
-      version: {},
-      network: this.$store.state.settings.network,
       configPath: '',
       tableData: [],
       sendMemo: '',
@@ -184,6 +146,10 @@ export default {
       getPassword: false,
       invalidPrivateKeyPassword: false,
       privateKeyPassword: '',
+      isPrivateKeyEncrypted: false,
+      privateKey: {
+        success: null
+      },
       unknownError: false,
       ErrorMessage: '',
       invalidEosName: false,
@@ -194,39 +160,29 @@ export default {
         amount: '',
         contract: '',
         chain: ''
-      },
-      tokenPrecision:
-      {
-        'EOS': 4,
-        'VTX': 8
-      },
-      tokenContract:
-      {
-        'EOS': 'eosio.token',
-        'VTX': 'volentixgsys'
       }
     }
   },
   async created () {
     this.params = this.$store.state.currentwallet.params
-
     this.tableData = await this.$store.state.wallets.tokens
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
 
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
+    this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
 
     console.log('this.currentAccount sur la page send', this.currentAccount)
 
-    this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
-    this.chainID = this.currentAccount.chainID
-    this.tokenID = this.currentAccount.tokenID
-    this.accountName = this.currentAccount.accountName
+    if (this.currentAccount.privateKey) {
+      this.privateKey.key = this.currentAccount.privateKey
+      this.isPrivateKeyEncrypted = false
+    } else {
+      this.isPrivateKeyEncrypted = true
+    }
   },
   mounted () {
-    this.version = version
-    this.setupPlatformPath()
   },
   methods: {
     copyToClipboard (key, copied) {
@@ -260,33 +216,8 @@ export default {
     getMaxBalance () {
       this.sendAmount = this.currentAccount.amount
     },
-    getImages (symbol) {
-      console.log('symbol', symbol)
-      if (symbol === 'verto') {
-        return '/statics/icon.png'
-      } else {
-        return symbol ? 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png' : false
-      }
-    },
-    async setupPlatformPath () {
-      this.configPath = await platformTools.filePath()
-    },
     goChangePassword: function () {
       this.$router.push({ path: '/change-password' })
-    },
-    setNetwork: function () {
-      this.$store.dispatch('settings/toggleNetwork', this.network)
-      this.$q.notify({ message: `Network changed to ${this.network}`, color: 'positive' })
-    },
-    async backupConfig () {
-      try {
-        await configManager.backupConfig()
-        if (this.$q.platform.is.android) {
-          this.$q.notify({ color: 'positive', message: 'Config Saved' })
-        }
-      } catch (e) {
-        // TODO: Exception handling
-      }
     },
     openModalFun: function (item) {
       if (this.currentAccount.privateKey) {
@@ -297,43 +228,28 @@ export default {
       }
     },
     checkPrivateKeyPassword () {
-      // console.log('this.currentAccount.privateKeyEncrypted', this.currentAccount.privateKeyEncrypted)
-      // console.log('this.privateKeyPassword', this.privateKeyPassword)
-      const privateKey = JSON.stringify(this.currentAccount.privateKeyEncrypted)
-      const result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKey)
-
-      if (!result.success) {
+      const privateKeyEncrypted = JSON.stringify(this.currentAccount.privateKeyEncrypted)
+      this.privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+      if (this.privateKey.success) {
+        this.invalidPrivateKeyPassword = false
+      } else {
         this.invalidPrivateKeyPassword = true
+        return false
       }
     },
     async sendTokens () {
       this.unknownError = false
       this.invalidEosName = false
-      let privateKey = null
-      let result = null
-      if (this.currentAccount.privateKey) {
-        result = {
-          success: true,
-          key: this.currentAccount.privateKey
-        }
-      } else {
-        privateKey = JSON.stringify(this.currentAccount.privateKeyEncrypted)
-        result = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKey)
-      }
-      // Remove the private key immediately so it
-      // does not stick around any longer than it has to
-
-      // this.showSpinners(true)
-      console.log('result', result)
+      this.formatedAmount = this.formatAmountString()
 
       try {
         const transaction = await (new EosWrapper()).transferToken(
-          this.tokenContract[this.params.tokenID.toUpperCase()],
+          this.currentAccount.contract,
           this.params.accountName,
           this.sendTo.toLowerCase(),
           this.formatedAmount,
           this.sendMemo,
-          result.key
+          this.privateKey.key
         )
         this.transactionId = transaction.transaction_id
         // this.showSpinners(false)
@@ -367,7 +283,7 @@ export default {
     },
     formatAmountString () {
       let numberOfDecimals = 0
-      let stringAmount = (Math.round(+this.sendAmount * Math.pow(10, this.tokenPrecision[this.params.tokenID.toUpperCase()])) / Math.pow(10, this.tokenPrecision[this.params.tokenID.toUpperCase()])).toString()
+      let stringAmount = (Math.round(+this.sendAmount * Math.pow(10, this.currentAccount.precision)) / Math.pow(10, this.currentAccount.precision)).toString()
 
       const amountParsed = stringAmount.split('.')
       if (amountParsed && amountParsed.length > 1) {
@@ -375,7 +291,7 @@ export default {
       } else {
         stringAmount += '.'
       }
-      for (;numberOfDecimals < this.tokenPrecision[this.params.tokenID.toUpperCase()]; numberOfDecimals++) {
+      for (;numberOfDecimals < this.currentAccount.precision; numberOfDecimals++) {
         stringAmount += '0'
       }
       return stringAmount + ' ' + this.params.tokenID.toUpperCase()

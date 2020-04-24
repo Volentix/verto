@@ -381,7 +381,6 @@ export default {
         padding: 0px 6%;
         padding-bottom: 10px;
         margin-bottom: 20px;
-        .pay-wrapper{}
         .exchange-btn{
           height: fit-content;
           align-self: flex-end;
@@ -409,7 +408,6 @@ export default {
           font-family: $Titillium;
           font-weight: $regular;
         }
-        .get-wrapper{}
       }
       /deep/ .q-field__native{
         padding-left: 8px;
