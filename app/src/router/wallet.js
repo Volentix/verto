@@ -70,11 +70,27 @@ export default [
     component: () => import('layouts/IntroWithTabs.vue'),
     children: [
       {
+        name: 'import-private-key',
+        path: '/verto/import-private-key',
+        component: () => import('pages/Verto/ImportPrivateKey.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        name: 'import-public-key',
+        path: '/verto/import-public-key',
+        component: () => import('pages/Verto/ImportPublicKey.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'earn',
         path: '/verto/earn',
         component: () => import('pages/Verto/Earn.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
@@ -82,7 +98,7 @@ export default [
         path: '/verto/earn/use-referral-account',
         component: () => import('pages/Verto/UseReferralAccount.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
@@ -90,7 +106,7 @@ export default [
         path: '/verto/earn/use-referral',
         component: () => import('pages/Verto/UseReferral.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
@@ -98,7 +114,7 @@ export default [
         path: '/verto/eos-account',
         component: () => import('pages/Verto/EOSAccount.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
@@ -106,7 +122,7 @@ export default [
         path: '/verto/eos-account/:accountName',
         component: () => import('pages/Verto/EOSAccount.vue'),
         meta: {
-          authRequired: false
+          authRequired: true
         }
       },
       {
