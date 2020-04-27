@@ -95,7 +95,7 @@ export default {
       error: false,
       errorMessage: '',
       walletClientName: 'testwallet', // should be 'verto' when in prod
-      vertoPassword: this.$store.state.settings.temporary,
+      vertoPassword: this.$store.state.settings.temporary, // TODO empty temporary
       loading: false,
       mapped: false,
       cruxID: null,
@@ -135,7 +135,6 @@ export default {
     cruxClient = new CruxPay.CruxClient({
       walletClientName: this.walletClientName,
       privateKey: this.cruxKey.privateKey
-      // privateKey: 'KyB21VpmpjXDTNi3DKC2ZnHJA8qYhGCMTk8FNjnXombYVDPyWXhc' //
     })
 
     await cruxClient.init()
