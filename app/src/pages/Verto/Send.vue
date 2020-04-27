@@ -115,7 +115,7 @@
         </div> -->
       </div>
       <div class="standard-content--footer">
-         <q-btn flat class="action-link next" color="black" @click="openModalFun()" text-color="white" label="Transfer" />
+         <q-btn flat class="action-link next" color="black" @click="openModalFun()" text-color="white" :disable="!sendToResolved" label="Transfer" />
       </div>
     </div>
   </q-page>
@@ -252,6 +252,7 @@ export default {
 
         console.log('sendToResolved', this.sendToResolved)
       } else {
+        // check for valid eos name
         this.sendToResolved = this.sendTo
         this.invalidEosName = false
         if (this.sendTo.length === 12) {

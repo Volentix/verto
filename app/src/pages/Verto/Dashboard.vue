@@ -27,6 +27,12 @@ import CardImportEOSAccount from '../../components/Verto/CardImportEOSAccount'
 import CardCreateWallet from '../../components/Verto/CardCreateWallet'
 import Wallets from '../../components/Verto/Wallets'
 import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
+import HD from '@/util/hdwallet'
+import { CruxPay } from '@cruxpay/js-sdk'
+let cruxClient
+
+import EosWrapper from '@/util/EosWrapper'
+const eos = new EosWrapper()
 
 let wallets2Tokens = require('@/util/Wallets2Tokens')
 if (!store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
@@ -47,9 +53,37 @@ export default {
   },
   data () {
     return {
+      cruxKey: {},
+      walletClientName: 'testwallet' // should be 'verto' when in prod
     }
   },
-  mounted () {
+  async created () {
+    // Adds the eos account name when it is found to the cruxID
+    this.tableData = await store.state.wallets.tokens
+    let eosAccount = this.tableData.find(w => w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
+
+    if (eosAccount) {
+      let accountNames = await eos.getAccountNamesFromPubKeyP(eosAccount.key)
+
+      if (accountNames.account_names.includes(eosAccount.name)) {
+        console.log('we have an upgraded account', accountNames, eosAccount.name)
+
+        this.cruxKey = await HD.Wallet('crux')
+        cruxClient = new CruxPay.CruxClient({
+          walletClientName: this.walletClientName,
+          privateKey: this.cruxKey.privateKey
+        })
+        await cruxClient.init()
+
+        let addressMap = await cruxClient.getAddressMap()
+        console.log('addressMap', addressMap)
+
+        if (!addressMap.hasOwnProperty('eos')) {
+          addressMap['eos'] = { 'addressHash': eosAccount.name }
+          cruxClient.putAddressMap(addressMap)
+        }
+      }
+    }
   },
   methods: {
   }
