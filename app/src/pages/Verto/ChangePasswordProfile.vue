@@ -48,16 +48,16 @@
                                 <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
                                 <div class="text-black">
                                     <div class="text-h4 --subtitle">
-                                    <ul>
-                                        <li>
-                                            <span>
-                                                <span v-show="!contains_long"><q-chip dense color="red" class="sm-circle shadow-1">&nbsp;</q-chip></span>
-                                                <span v-show="contains_long"><q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip></span>
-                                                Minimum of 8 characters
-                                            </span>
-                                        </li>
-                                        <!-- <li><span>0.35 EOS is required to be transferred to the new account</span></li> -->
-                                    </ul>
+                                      <ul>
+                                          <li>
+                                              <span>
+                                                  <span v-show="!contains_long"><q-chip dense color="red" class="sm-circle shadow-1">&nbsp;</q-chip></span>
+                                                  <span v-show="contains_long"><q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip></span>
+                                                  Minimum of 8 characters
+                                              </span>
+                                          </li>
+                                          <!-- <li><span>0.35 EOS is required to be transferred to the new account</span></li> -->
+                                      </ul>
                                     </div>
                                     <span class="">
                                         <q-input
