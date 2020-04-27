@@ -85,7 +85,17 @@
           </q-input>
 
           <span class="lab-input">To</span>
-          <q-input ref="sendTo" v-model="sendTo" @input="checkTo()" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? currentAccount.type.toUpperCase() + ' Address' : 'Account name'">
+          <q-input
+            ref="sendTo"
+            v-model="sendTo"
+            @input="checkTo()"
+            class="input-input pr80" outlined rounded color="purple"
+            type="text"
+            bottom-slots
+            :error="toError"
+            :error-message="toErrorMessage"
+            :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? currentAccount.type.toUpperCase() + ' Address' : 'Account name'"
+          >
             <template v-slot:append>
               <div class="flex justify-end">
                 <!-- <q-btn flat unelevated round class="btn-copy"><span class="qr-btn"><img src="statics/qr-icon.png" alt=""></span> </q-btn> -->
@@ -95,7 +105,7 @@
           </q-input>
 
           <span class="lab-input">Memo</span>
-          <q-input ref="sendMemo" v-model="sendMemo" @input="checkMemo" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+          <q-input ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
 
         </div>
         <br>
@@ -114,7 +124,9 @@
 <script>
 // import RadialProgressBar from 'vue-radial-progress'
 import EosWrapper from '@/util/EosWrapper'
-// const eos = new EosWrapper()
+import { CruxPay } from '@cruxpay/js-sdk'
+import HD from '@/util/hdwallet'
+let cruxClient
 
 export default {
   components: {
@@ -144,6 +156,12 @@ export default {
       accountName: '',
       params: null,
       getPassword: false,
+      walletClientName: 'testwallet', // should be 'verto' when in prod
+      cruxKey: {},
+      sendToResolved: {},
+      memoError: false,
+      toError: false,
+      toErrorMessage: '',
       invalidPrivateKeyPassword: false,
       privateKeyPassword: '',
       isPrivateKeyEncrypted: false,
@@ -181,6 +199,14 @@ export default {
     } else {
       this.isPrivateKeyEncrypted = true
     }
+
+    this.cruxKey = await HD.Wallet('crux')
+    console.log('crux privateKey', this.cruxKey.privateKey)
+    cruxClient = new CruxPay.CruxClient({
+      walletClientName: this.walletClientName,
+      privateKey: this.cruxKey.privateKey
+    })
+    await cruxClient.init()
   },
   mounted () {
   },
@@ -203,15 +229,43 @@ export default {
         this.$refs.sendMemo.error = true
       }
     },
-    checkTo () {
-      this.invalidEosName = false
-      if (this.sendTo.length === 12) {
-        if (this.sendTo.toLowerCase() === 'stexofficial') {
-          this.$refs.sendMemo.error = true
+    async checkTo () {
+      this.toError = false
+
+      if (this.validateEmail(this.sendTo)) {
+        try {
+          this.sendToResolved = (await cruxClient.resolveCurrencyAddressForCruxID(this.sendTo, this.currentAccount.chain)).addressHash
+        } catch (error) {
+          console.log('checkTo:', error)
+          this.sendToResolved = ''
+
+          if (error.errorCode === 1002) {
+            // ID does not exist
+            this.toError = true
+            this.toErrorMessage = 'This Verto ID does not exist'
+          } else if (error.errorCode === 1005) {
+            // Currency address not available for user
+            this.toError = true
+            this.toErrorMessage = this.currentAccount.chain.toUpperCase() + ' address not set for that user'
+          }
         }
+
+        console.log('sendToResolved', this.sendToResolved)
       } else {
-        this.$refs.sendMemo.error = false
+        this.sendToResolved = this.sendTo
+        this.invalidEosName = false
+        if (this.sendTo.length === 12) {
+          if (this.sendTo.toLowerCase() === 'stexofficial') {
+            this.memoError = true
+          }
+        } else {
+          this.memoError = false
+        }
       }
+    },
+    validateEmail (email) {
+      var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      return re.test(String(email).toLowerCase())
     },
     getMaxBalance () {
       this.sendAmount = this.currentAccount.amount
@@ -246,7 +300,7 @@ export default {
         const transaction = await (new EosWrapper()).transferToken(
           this.currentAccount.contract,
           this.params.accountName,
-          this.sendTo.toLowerCase(),
+          this.sendToResolved.toLowerCase(),
           this.formatedAmount,
           this.sendMemo,
           this.privateKey.key
