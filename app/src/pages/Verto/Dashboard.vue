@@ -7,13 +7,13 @@
     <card-create-wallet />
     <br>
     <card-import-EOS-account />
-    <br><br>
+    <br>
     <card-convert-any-to-VTX />
-    <br><br>
+    <br>
     <card-make-VTX />
-    <br><br>
+    <br>
     <card-WPS />
-    <br><br><br>
+    <br><br>
   </q-page>
 </template>
 
