@@ -110,7 +110,7 @@
 export default {
   data () {
     return {
-      step: 3,
+      step: 1,
       isPwd: true,
       contractable: true,
       wallet: {

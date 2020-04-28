@@ -144,25 +144,28 @@
 
                 <div class="text-black">
                   <!-- change --subtitle__success to --subtitle__faild to get the appropriate style -->
-                  <div class="text-h4 --subtitle --subtitle__summary">Processing the transaction</div>
+                  <div v-show="transactionError === ''" class="text-h4 --subtitle --subtitle__summary">Processing the transaction</div>
                   <!-- <div class="text-h4 --subtitle --subtitle__transLink">Transaction link</div> -->
-
                   <div v-show="transactionError === ''" class="text-black">
                     <q-spinner />
                   </div>
-                  <div v-if="!transactionError">
-                    <div class="text-h4 --subtitle --subtitle__success">Success</div>
-                    <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
-                    <ul class="--subtitle__summary--list">
-                      <li v-html="SuccessMessage"> {{ SuccessMessage }}</li>
-                    </ul>
+                  <div v-if="!transactionError" class="content__success">
+                    <img src="statics/success_icon.svg" class="success_icon" alt="">
+                    <div class="text-h4 --subtitle text-center --subtitle__success">Successful completion</div>
+                    <div class="text-h4 --subtitle text-center --subtitle__transLink" v-html="SuccessMessage"> {{ SuccessMessage }}</div>
+                    <!-- <div class="text-h4 --subtitle  text-center --subtitle__summary">Summary</div> -->
+                    <!-- <ul class="--subtitle__summary--list"> -->
+                      <!-- <li v-html="SuccessMessage"> {{ SuccessMessage }}</li> -->
+                    <!-- </ul> -->
                   </div>
-                  <div v-else class="text-h6 text-uppercase text-red q-pa-md">
-                    <div class="text-h4 --subtitle --subtitle__faild">Failed</div>
-                    <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
-                    <ul class="--subtitle__summary--list">
-                      <li>{{ ErrorMessage }}</li>
-                    </ul>
+                  <div v-else class="content__failed text-red q-pa-md">
+                    <img src="statics/fail_icon.svg" class="failed_icon" alt="">
+                    <div class="text-h4 --subtitle text-center --subtitle__faild">Something's wrong!</div>
+                    <div class="text-h4 --subtitle text-center --subtitle__transLink"> {{ ErrorMessage }}</div>
+                    <!-- <div class="text-h4 --subtitle --subtitle__summary">Summary</div> -->
+                    <!-- <ul class="--subtitle__summary--list"> -->
+                      <!-- <li>{{ ErrorMessage }}</li> -->
+                    <!-- </ul> -->
                   </div>
                 </div>
 
@@ -174,7 +177,7 @@
             </q-stepper>
           </div>
         </div>
-        <br><br><br>
+        <!-- <br><br><br> -->
       </div>
     </div>
   </div>
@@ -557,6 +560,44 @@ export default {
               right: 0px;
               top: 6px;
             }
+            .content__success{
+              border: 2px solid #00D0CA;
+              padding: 10px 15px;
+              border-radius: 20px;
+              background-color: #fff;
+              box-shadow: 0px 5px 10px 0px rgba(black, .1);
+              position: relative;
+              a{
+                display: block;
+                margin-top: 10px;
+              }
+              .success_icon{
+                display: block;
+                margin: auto;
+                margin-top: -50px;
+                margin-bottom: -10px;
+                width: 80px;
+              }
+            }
+            .content__failed{
+              border: 2px solid #FFB200;
+              padding: 10px 15px;
+              border-radius: 20px;
+              background-color: #fff;
+              box-shadow: 0px 5px 10px 0px rgba(black, .1);
+              position: relative;
+              a{
+                display: block;
+                margin-top: 10px;
+              }
+              .failed_icon{
+                display: block;
+                margin: auto;
+                margin-top: -50px;
+                margin-bottom: -10px;
+                width: 80px;
+              }
+            }
             .--subtitle{
               font-size: 17px;
               color: #000;
@@ -577,10 +618,11 @@ export default {
               }
               &__transLink{
                 color: #2A2A2A;
-                border-bottom: 1px solid;
-                width: fit-content;
-                font-weight: $bold;
+                // border-bottom: 1px solid;
+                // width: fit-content;
+                font-weight: $regular;
                 margin-bottom: 20px;
+                font-size: 16px;
               }
               &__summary{
                 margin-bottom: 20px;
@@ -610,7 +652,7 @@ export default {
         }
       }
       &.open{
-        margin-bottom: -100px;
+        margin-bottom: 0px;
         .list-wrapper{
           visibility: visible;
           height: auto;
