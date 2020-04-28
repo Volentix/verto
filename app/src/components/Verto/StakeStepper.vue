@@ -332,11 +332,15 @@ export default {
       this.condition = 1
     }
 
-    this.stakes = await eos.getTable('vtxstake1111', this.params.accountName, 'accounts')
-
-    this.stakes.map(s => {
-      this.stakedAmounts += s.stake_amount.split(' ')[0]
-    })
+    let stakedAmounts = 0
+    if (this.params.tokenID === 'vtx') {
+      this.stakes = await eos.getTable('vtxstake1111', this.params.accountName, 'accounts')
+      this.stakes.map(s => {
+        console.log('s', s)
+        stakedAmounts += +s.stake_amount.split(' ')[0]
+      })
+      this.currentAccount.staked = stakedAmounts
+    }
 
     console.log('stakes', this.stakes)
   },
@@ -352,8 +356,12 @@ export default {
       this.checkAmount()
     },
     changeAmount () {
+      if (this.sendAmount > +this.currentAccount.amount) {
+        this.sendAmount = +this.currentAccount.amount
+      }
+
       if (this.sendAmount >= 0) {
-        this.slider = this.sendAmount / this.currentAccount.amount
+        this.slider = Math.round(10000 * (this.sendAmount / +this.currentAccount.amount)) / 100
       } else {
         this.slider = Math.round(Math.pow(10, this.currentAccount.precision) * this.stakedAmount * (this.slider / 100)) / Math.pow(10, this.currentAccount.precision)
       }
@@ -363,7 +371,7 @@ export default {
       let stake_per = Math.round((0.01 + (0.001 * this.stakePeriod)) * 100) / 100
 
       if (+this.sendAmount > 0.0 && +this.sendAmount <= +this.currentAccount.amount) {
-        this.slider = Math.round(100 * (this.sendAmount / +this.currentAccount.amount))
+        this.slider = Math.round(10000 * (this.sendAmount / +this.currentAccount.amount)) / 100
 
         if (this.sendAmount >= 1000) {
           this.progColor = 'green'
@@ -389,13 +397,14 @@ export default {
       try {
         this.step = 4
 
+        let memo = this.stakePeriod * 30
         this.formatedAmount = this.formatAmountString()
         const transaction = await eos.transferToken(
           'volentixgsys',
           this.currentAccount.name,
           'vtxstake1111',
           this.formatedAmount,
-          this.stakePeriod * 30,
+          memo.toString(),
           this.privateKey.key
         )
 
