@@ -146,7 +146,7 @@ export default [
         path: '/verto/card-wps',
         component: () => import('pages/Verto/WPS.vue'),
         meta: {
-          authRequired: false // TODO Enable
+          authRequired: true
         }
       },
       {
