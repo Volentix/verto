@@ -15,7 +15,7 @@
             <div class="chain-tools-wrapper--list open">
                 <div class="list-wrapper">
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                        <div v-show="!showMainSteps">
+                        <div v-show="showMainSteps">
                             <q-stepper v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
                                 <!--
                                     1.Private key
@@ -144,7 +144,7 @@
                                 </q-step>
                             </q-stepper>
                         </div>
-                        <div v-show="showMainSteps">
+                        <div v-show="!showMainSteps">
                             <q-stepper v-model="step2" done-color="green" ref="stepperFilePassword" alternative-labels vertical color="primary" animated flat >
                                 <!--
                                 1.Private key
