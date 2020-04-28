@@ -1,6 +1,14 @@
 <template>
   <q-page class='text-black bg-white'>
-    <div class='standard-content'>
+    <div v-if="!wallet" class='standard-content'>
+      <h2 class='standard-content--title flex justify-center'>
+        <q-btn flat unelevated class='btn-align-left' to='/verto/dashboard' text-color='black' icon='keyboard_backspace' />
+        Public proposals
+      </h2>
+
+      <p> Please select wallet in "Show all wallets dropdown""</p>
+    </div>
+    <div v-else class='standard-content'>
       <h2 class='standard-content--title flex justify-center'>
         <q-btn flat unelevated class='btn-align-left' to='/verto/dashboard' text-color='black' icon='keyboard_backspace' />
         Public proposals
@@ -12,7 +20,7 @@
 
       <h5> Active proposals: </h5>
 
-      <div v-for="proposal in proposals" :key="proposal.proposal_name">
+      <div v-for="proposal in proposals" :key="proposal.proposal_name + proposal.proposer">
         <p> {{ proposal.title }} </p>
         <p> proposer: {{ proposal.proposer }} </p>
         <p> budget: {{ proposal.monthly_budget }} ( duration: {{ proposal.duration }} ) </p>
@@ -76,6 +84,7 @@
 
 <script>
 /* eslint-disable */ // FIXME camelcase
+import { Notify } from 'quasar'
 
 import { version } from '../../../package.json'
 import EosWrapper from '@/util/EosWrapper'
@@ -84,6 +93,7 @@ import { userError } from '@/util/errorHandler'
 const eos = new EosWrapper()
 let platformTools = require('../../util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
+
 
 // TODO Fix error handler, for actions: error is not appear
 export default {
@@ -100,202 +110,168 @@ export default {
       title: 'My WPS Title',
       monthly_budget: '8.00000000 VTX',
       duration: '2',
-      proposal_json: '[{"key":"somedata", "value":"text data here"}]'
+      proposal_json: '[{"key":"somedata", "value":"text data here"}]',
     }
   },
-  mounted () {
+  computed: {
+    wallet() {
+      return this.$store.state.currentwallet.wallet || {}
+    }
   },
   async created () {
-    this.params = this.$store.state.currentwallet.params
-    this.tableData = await this.$store.state.wallets.tokens
-    this.currentAccount = await this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
-    )
-    console.log('this.currentAccount ----------------- ', this.currentAccount)
-    if (eos.isPrivKeyValid(this.currentAccount.privateKey)) {
-      this.privateKey.key = this.currentAccount.privateKey
-      this.isPrivateKeyEncrypted = false
-    } else {
-      this.isPrivateKeyEncrypted = true
-    }
+    console.log('wall', this.wallet)
 
-    this.fetch()
+    if (this.wallet.name) {
+      this.fetch()
+    }
   },
 
   methods: {
-    async vote (proposal_name, vote) {
-      try {
-        await eos.transact({
-          actions: [{
-            account: 'volentixwork',
-            name: 'vote',
-            authorization: [{
-              actor: this.currentAccount.name,
-              permission: 'active'
-            }],
-            data: { voter: this.currentAccount.name, proposal_name, vote }
-          }]
-        }, { keyProvider: this.privateKey.key })
-        this.fetch()
-      } catch (error) {
-        console.log('err', error)
-        userError(error.message)
+    decryptPrivateKey() {
+      // TODO Decrypt key modal action here
+      const privateKeyEncrypted = JSON.stringify(this.wallet.privateKeyEncrypted)
+
+      const pwd = prompt("Private key encript password:")
+      const privateKey = this.$configManager.decryptPrivateKey(pwd, privateKeyEncrypted)
+
+      if (privateKey.success) {
+        return privateKey.key
+      } else {
+        throw new Error('Invalid password')
       }
+    },
+
+    async transact(actions) {
+      try {
+        const pk = this.decryptPrivateKey()
+
+        await eos.transact({ actions }, { keyProvider: pk })
+        setTimeout(() => this.fetch(), 1000) // FIXME Immediately do not update table(eos.getTable)
+      } catch (e) {
+        // FIXME with userError handler
+        // userError(JSON.parse(e).message)
+
+        Notify.create({ message: e.message ? e.message : e })
+
+        throw e
+      }
+    },
+
+    async vote (proposal_name, vote) {
+      await this.transact([{
+        account: 'volentixwork',
+        name: 'vote',
+        authorization: [{
+          actor: this.wallet.name,
+          permission: 'active'
+        }],
+        data: { voter: this.wallet.name, proposal_name, vote }
+      }])
     },
 
     async claim (proposal_name) {
-      try {
-        await eos.transact({
-          actions: [{
-            account: 'volentixwork',
-            name: 'claim',
-            authorization: [{
-              actor: this.currentAccount.name,
-              permission: 'active'
-            }],
-            data: { proposal_name }
-          }]
-        }, { keyProvider: this.privateKey.key })
-        this.fetch()
-      } catch (error) {
-        console.log('err', error)
-        userError(error.message)
-      }
+      await this.transact([{
+        account: 'volentixwork',
+        name: 'claim',
+        authorization: [{
+          actor: this.wallet.name,
+          permission: 'active'
+        }],
+        data: { proposal_name }
+      }])
     },
 
     async complete () {
-      try {
-        await eos.transact({
-          actions: [{
-            account: 'volentixwork',
-            name: 'complete',
-            authorization: [{
-              actor: this.currentAccount.name,
-              permission: 'active'
-            }],
-            data: {}
-          }]
-        }, { keyProvider: this.privateKey.key })
-        this.fetch()
-      } catch (error) {
-        console.log('err', error)
-        userError(error)
-      }
+      await this.transact([{
+        account: 'volentixwork',
+        name: 'complete',
+        authorization: [{
+          actor: this.wallet.name,
+          permission: 'active'
+        }],
+        data: {}
+      }]).then(() => Notify.create('Completed'))
     },
 
     async refresh () {
-      try {
-        await eos.transact({
-          actions: [{
-            account: 'volentixwork',
-            name: 'refresh',
-            authorization: [{
-              actor: this.currentAccount.name,
-              permission: 'active'
-            }],
-            data: {}
-          }]
-        }, { keyProvider: this.privateKey.key })
-        this.fetch()
-      } catch (error) {
-        console.log('err', error)
-        userError(error)
-      }
+      await this.transact([{
+        account: 'volentixwork',
+        name: 'refresh',
+        authorization: [{
+          actor: this.wallet.name,
+          permission: 'active'
+        }],
+        data: {}
+      }]).then(() => Notify.create('Refreshed'))
     },
+
     async submitdraft () {
       const { proposal_name, title, monthly_budget, duration, proposal_json } = this
 
-      try {
-        await eos.transact({
-          actions: [{
-            account: 'volentixwork',
-            name: 'submitdraft',
-            authorization: [{
-              actor: this.currentAccount.name,
-              permission: 'active'
-            }],
-            data: {
-              proposer: this.currentAccount.name,
-              proposal_name,
-              title,
-              monthly_budget,
-              duration: parseInt(duration),
-              proposal_json: JSON.parse(proposal_json)
-            }
-          }]
-        }, { keyProvider: this.privateKey.key })
-        this.fetch()
-      } catch (error) {
-        console.log('err', error)
-        userError(error.message)
-      }
+      await this.transact([{
+        account: 'volentixwork',
+        name: 'submitdraft',
+        authorization: [{
+          actor: this.wallet.name,
+          permission: 'active'
+        }],
+        data: {
+          proposer: this.wallet.name,
+          proposal_name,
+          title,
+          monthly_budget,
+          duration: parseInt(duration),
+          proposal_json: JSON.parse(proposal_json)
+        }
+      }])
     },
-    async canceldraft (proposalName) {
 
-      try {
-        await eos.transact({
-          actions: [{
-            account: 'volentixwork',
-            name: 'canceldraft',
-            authorization: [{
-              actor: this.currentAccount.name,
-              permission: 'active'
-            }],
-            data: {
-              proposer: this.currentAccount.name,
-              proposal_name: proposalName
-            }
-          }]
-        }, { keyProvider: this.privateKey.key })
-        this.fetch()
-      } catch (error) {
-        console.log('err', error)
-        userError(error.message)
-      }
+    async canceldraft (proposalName) {
+      await this.transact([{
+        account: 'volentixwork',
+        name: 'canceldraft',
+        authorization: [{
+          actor: this.wallet.name,
+          permission: 'active'
+        }],
+        data: {
+          proposer: this.wallet.name,
+          proposal_name: proposalName
+        }
+      }])
     },
 
     async activate (proposalName) {
-      const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)
-      const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+      await this.transact([
+        {
+          account: 'volentixgsys',
+          name: 'transfer',
+          authorization: [{
+            actor: this.wallet.name,
+            permission: 'active'
+          }],
+          data: {
+            from: this.wallet.name,
+            to: 'volentixwork',
+            quantity: '1.00000000 VTX',
+            memo: ''
+          }
+        },
 
-      try {
-        await eos.transact({
-          actions: [
-            {
-              account: 'volentixgsys',
-              name: 'transfer',
-              authorization: [{
-                actor: this.currentAccount.name,
-                permission: 'active'
-              }],
-              data: {
-                from: this.currentAccount.name,
-                to: 'volentixwork',
-                quantity: '1.00000000 VTX',
-                memo: ''
-              }
-            },
-
-            {
-              account: 'volentixwork',
-              name: 'activate',
-              authorization: [{
-                actor: this.currentAccount.name,
-                permission: 'active'
-              }],
-              data: {
-                proposer: this.currentAccount.name,
-                proposal_name: proposalName,
-                start_voting_period: null // Start voting period
-              }
-            }
-          ]
-        }, { keyProvider: this.privateKey.key })
-        this.fetch()
-      } catch (error) {
-        console.log('err', error)
-        userError(error.message)
-      }
+        {
+          account: 'volentixwork',
+          name: 'activate',
+          authorization: [{
+            actor: this.wallet.name,
+            permission: 'active'
+          }],
+          data: {
+            proposer: this.wallet.name,
+            proposal_name: proposalName,
+            start_voting_period: null // Start voting period
+          }
+        }
+      ])
     },
 
     fetch () {
@@ -303,7 +279,7 @@ export default {
         this.proposals = r
       })
 
-      eos.getTable('volentixwork', this.currentAccount.name, 'drafts').then(r => {
+      eos.getTable('volentixwork', this.wallet.name, 'drafts').then(r => {
         this.drafts = r
       })
     }
@@ -381,6 +357,7 @@ export default {
         padding: 0px 6%;
         padding-bottom: 10px;
         margin-bottom: 20px;
+        .pay-wrapper{}
         .exchange-btn{
           height: fit-content;
           align-self: flex-end;
@@ -408,6 +385,7 @@ export default {
           font-family: $Titillium;
           font-weight: $regular;
         }
+        .get-wrapper{}
       }
       /deep/ .q-field__native{
         padding-left: 8px;
