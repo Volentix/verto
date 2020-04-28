@@ -28,13 +28,16 @@
         <q-btn unelevated to="/verto/wallets/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
       </div>
     </div>
-    <div v-else-if="version === 'type2'" class="profile-wrapper--header static">
+    <div v-else-if="version === 'type2'" class="profile-wrapper--header static_with_image" style="background: url('statics/header_bg.png');">
       <div class="flex justify-between flex-row item-center content-center full-width">
         <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="white" icon="keyboard_backspace" />
         <h3 class="flex flex-center text-white static__holder_title">Making VTX while you sleep, will be available soon.</h3>
         <span class="static__holder_img flex flex-center"><img src="statics/stake-vtx-bg.svg" alt=""></span>
       </div>
-      <p class="desc text-white full-width">For now, you can make EOS while you sleep.</p>
+      <p class="desc text-white column full-width">
+        <span class="text-white">Total Staked amount: 1036 VTX</span>
+        <span class="text-white">Liquidity : 750 VTX</span>
+      </p>
     </div>
     <div v-else-if="version === 'type3'" class="column flex-center profile-wrapper--header wallet-detail" style="background: url('statics/header_bg.png');">
       <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="white" icon="keyboard_backspace" />
@@ -190,6 +193,56 @@ export default {
           position: absolute;
           left: 10px;
           top: 3%;
+        }
+      }
+      &.static_with_image{
+        // background: #0E163B !important;
+        box-shadow: 0px 3px 6px 0px rgba(#000000, .29);
+        padding: 30px;
+        min-height: 240px;
+        height: auto;
+        padding-top: 70px;
+        margin-bottom: 20px;
+        .btn-align-left{
+          position: absolute;
+          left: 10px;
+          top: 3%;
+        }
+        .flex-row{
+          .static__holder_img{
+            img{
+              max-width: 220px;
+              width: 100%;
+            }
+          }
+          .static__holder_title{
+            max-width: 200px;
+            font-size: 24px;
+            line-height: 35px;
+            font-weight: $bold;
+            font-family: $Titillium;
+            margin: 0px;
+            &.title2{
+              margin-top: 15px;
+              font-size: 30px;
+              line-height: 45px;
+            }
+            &.title5{
+              margin-top: 15px;
+              font-size: 30px;
+              line-height: 45px;
+              color: #6C0DCB !important;
+              margin-top: -40px;
+            }
+          }
+        }
+        .desc{
+          margin-bottom: -10px;
+          margin-top: 40px;
+          font-size: 17px;
+          line-height: 21px;
+          font-weight: $regular;
+          font-family: $Titillium;
         }
       }
       &.static{
