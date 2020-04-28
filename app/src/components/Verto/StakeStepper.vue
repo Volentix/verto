@@ -125,7 +125,16 @@
                       <div class="row full-width">
                         <div class="full-width">
                           <span class="--title row text-h6"> Amount to stake </span>
-                          <span class="--amount row text-h4"> {{  sendAmount }} {{ params.tokenID.toUpperCase() }}</span>
+                          <q-input
+                            v-model="sendAmount"
+                            type="number"
+                            :suffix="params.tokenID.toUpperCase()"
+                            light
+                            rounded
+                            outlined
+                            class="--input"
+                            @input="changeAmount()"
+                          />
                           <br>
                           <span class="--title row text-h6"> Stake period </span>
                         </div>
@@ -226,17 +235,17 @@
               >
                 <q-btn flat @click="step = 2" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
 
-                <div v-if="!ErrorMessage" class="text-black">
+                <div v-if="!ErrorMessage && !transactionId" class="text-black">
                   <q-spinner />
                 </div>
-                <div v-else-if="!transactionError" class="text-black">
+                <div v-if="transactionId" class="text-black">
                   <div class="text-h4 --subtitle --subtitle__success">Success</div>
                   <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
                   <ul class="--subtitle__summary--list">
                     <li v-html="SuccessMessage"> {{ SuccessMessage }}</li>
                   </ul>
                 </div>
-                <div v-else class="text-black">
+                <div v-if="ErrorMessage" class="text-black">
                   <div class="text-h4 --subtitle --subtitle__faild">Failed</div>
                   <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
                   <ul class="--subtitle__summary--list">
@@ -277,9 +286,10 @@ export default {
       slider: 0,
       progColor: 'green',
       vtxbalance: 0,
+      stakes: [],
       stakedAmount: 0,
       vtxprice: 0,
-      sendAmount: null,
+      sendAmount: 0,
       formatedAmount: null,
       currentProxy: null,
       ErrorMessage: null,
@@ -322,24 +332,35 @@ export default {
       this.condition = 1
     }
 
-    const result = await eos.getTable(
-      'vtxstake1111', 'vtxstake1111', 'stakeamounts'
-    )
-    console.log('stakeamounts', result)
+    this.stakes = await eos.getTable('vtxstake1111', this.params.accountName, 'accounts')
+
+    this.stakes.map(s => {
+      this.stakedAmounts += s.stake_amount.split(' ')[0]
+    })
+
+    console.log('stakes', this.stakes)
   },
   async mounted () {
   },
   methods: {
     changeSlider () {
       if (this.slider >= 0) {
-        this.sendAmount = Math.round(10000 * this.currentAccount.amount * (this.slider / 100)) / 10000
+        this.sendAmount = Math.round(Math.pow(10, this.currentAccount.precision) * this.currentAccount.amount * (this.slider / 100)) / Math.pow(10, this.currentAccount.precision)
       } else {
-        this.sendAmount = Math.round(10000 * this.stakedAmount * (this.slider / 100)) / 10000
+        this.sendAmount = Math.round(Math.pow(10, this.currentAccount.precision) * this.stakedAmount * (this.slider / 100)) / Math.pow(10, this.currentAccount.precision)
+      }
+      this.checkAmount()
+    },
+    changeAmount () {
+      if (this.sendAmount >= 0) {
+        this.slider = this.sendAmount / this.currentAccount.amount
+      } else {
+        this.slider = Math.round(Math.pow(10, this.currentAccount.precision) * this.stakedAmount * (this.slider / 100)) / Math.pow(10, this.currentAccount.precision)
       }
       this.checkAmount()
     },
     checkAmount () {
-      let stake_per = Math.round((0.1 + (0.01 * this.stakePeriod)) * 100) / 100
+      let stake_per = Math.round((0.01 + (0.001 * this.stakePeriod)) * 100) / 100
 
       if (+this.sendAmount > 0.0 && +this.sendAmount <= +this.currentAccount.amount) {
         this.slider = Math.round(100 * (this.sendAmount / +this.currentAccount.amount))
