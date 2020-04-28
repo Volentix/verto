@@ -268,8 +268,8 @@ export default {
       var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       return re.test(String(email).toLowerCase())
     },
-    getMaxBalance () {
-      this.sendAmount = this.currentAccount.amount
+    async getMaxBalance () {
+      this.sendAmount = await this.currentAccount.amount
     },
     goChangePassword: function () {
       this.$router.push({ path: '/change-password' })
