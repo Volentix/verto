@@ -298,19 +298,19 @@
 
               <q-tab-panel name="staked">
                 <div class="staked-wrapper">
-                  <div v-for="i in 10" :key="i" class="item-wrapper row flex">
+                  <div v-for="(stake, i) in stakes" :key="i" class="item-wrapper row flex">
                     <div class="col col-9 q-pr-sm">
                       <div class="border column justify-between">
-                        <span class="date">Staked date: Apr.24, 2020</span>
+                        <span class="date">Staked date: {{stake.stake_date.toDateString()}}</span>
                         <div class="row flex item-wrapper--row justify-between items-end">
-                          <div class="col">Amount: <br> <strong>1036 VTX</strong></div>
-                          <div class="col">Period: <br> <strong>200 Days</strong></div>
-                          <div class="col">Time left: <br> <strong>172 Days</strong></div>
+                          <div class="col">Amount: <br> <strong>{{stake.stake_amount}}</strong></div>
+                          <div class="col">Period: <br> <strong>{{stake.stake_period}} Days</strong></div>
+                          <div class="col">Time left: <br> <strong>{{stake.time_left}}</strong></div>
                         </div>
                       </div>
                     </div>
                     <div class="col col-3 column justify-end">
-                      <div class="border total column justify-end">Total Earning: <br> <strong>105.23 VTX</strong></div>
+                      <div class="border total column justify-end">Total Earning: <br> <strong>{{stake.subsidy}}</strong></div>
                     </div>
                   </div>
                 </div>
@@ -327,6 +327,7 @@
 </template>
 
 <script>
+import { date } from 'quasar'
 import { userError } from '@/util/errorHandler'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
@@ -400,6 +401,9 @@ export default {
       this.stakes = await eos.getTable('vtxstake1111', this.params.accountName, 'accounts')
       this.stakes.map(s => {
         console.log('s', s)
+        s.stake_date = new Date(s.stake_time * 1000)
+        s.stake_done = new Date((s.stake_time * 1000) + (s.stake_period * 86400000))
+        s.time_left = date.getDateDiff(s.stake_done, Date.now(), 'days')
         stakedAmounts += +s.stake_amount.split(' ')[0]
       })
       this.currentAccount.staked = stakedAmounts
@@ -595,8 +599,6 @@ export default {
               color: #7272FA;
               text-transform: uppercase;
             }
-            .chain{}
-            .token{}
           }
           &__coming-soon{
             ul{

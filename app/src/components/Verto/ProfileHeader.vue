@@ -35,8 +35,8 @@
         <span class="static__holder_img flex flex-center"><img src="statics/stake-vtx-bg.svg" alt=""></span>
       </div>
       <p class="desc text-white column full-width">
-        <span class="text-white">Total Staked amount: 1036 VTX</span>
-        <span class="text-white">Liquidity : 750 VTX</span>
+        <span class="text-white">Total Staked amount: {{currentAccount.staked}} {{currentAccount.type.toUpperCase()}}</span>
+        <span class="text-white">Liquidity: {{currentAccount.amount}} {{currentAccount.type.toUpperCase()}}</span>
       </p>
     </div>
     <div v-else-if="version === 'type3'" class="column flex-center profile-wrapper--header wallet-detail" style="background: url('statics/header_bg.png');">
