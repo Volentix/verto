@@ -58,6 +58,11 @@ export default {
     }
   },
   async created () {
+    // Check if mnemonic exists
+    if (!this.$store.state.currentwallet.config.mnemonic) {
+      this.$router.replace('/recovery-seed')
+    }
+
     // Adds the eos account name when it is found to the cruxID
     this.tableData = await store.state.wallets.tokens
     let eosAccount = this.tableData.find(w => w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
@@ -65,6 +70,7 @@ export default {
     if (eosAccount) {
       let accountNames = await eos.getAccountNamesFromPubKeyP(eosAccount.key)
 
+      // May be we could auto convert an eos key to an account if discovered here
       if (accountNames.account_names.includes(eosAccount.name)) {
         console.log('we have an upgraded account', accountNames, eosAccount.name)
 

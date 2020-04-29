@@ -65,24 +65,24 @@ class EosWrapper {
   //  ---- TRANSACTIONS ----
   // https://eosio.stackexchange.com/questions/3587/how-to-transfer-eos-token-using-scatter-js-or-eos-js
   async transferToken (contractName = 'eosio.token', from, to, quantity, memo = '', keyProvider) {
-    const tr = await this.eos.transaction({
-      actions: [
-        {
-          account: contractName,
-          name: 'transfer',
-          authorization: [{
-            actor: from,
-            permission: 'active'
-          }
-          ],
-          data: {
-            from,
-            to,
-            quantity,
-            memo
-          }
-        }]
-    }, { keyProvider })
+    const actions = [{
+      account: contractName,
+      name: 'transfer',
+      authorization: [{
+        actor: from,
+        permission: 'active'
+      }
+      ],
+      data: {
+        from,
+        to,
+        quantity,
+        memo
+      }
+    }]
+
+    console.log('actions', actions)
+    const tr = await this.eos.transaction({ actions }, { keyProvider })
     return tr
   }
 
