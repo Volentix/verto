@@ -95,17 +95,23 @@
           </q-select>
           <br>
           <div class="pay-get-wrapper flex justify-between item-center content-center">
-            <div class="pay-wrapper column flex-center">
+            <div class="pay-wrapper column">
               <span class="label">you pay</span>
-              <span class="value">0 EOS</span>
+              <span class="value">
+                <q-input rounded class="mw100 pl0" flat v-model="fromCoinAmount" type="number" />
+                {{ fromCoin !== null ? fromCoin.type.toUpperCase() : 'ESO' }}
+              </span>
             </div>
-            <q-btn flat unelevated class="exchange-btn" text-color="black">
+            <q-btn flat unelevated class="exchange-btn" @click="switchAmounts()" text-color="black">
               <q-icon name="keyboard_backspace" class="left-icon" />
               <q-icon name="keyboard_backspace" class="right-icon" />
             </q-btn>
-            <div class="get-wrapper column flex-center">
+            <div class="get-wrapper column">
               <span class="label">you get</span>
-              <span class="value">0 VTX</span>
+              <span class="value">
+                <q-input rounded class="mw100 pl0" flat v-model="toCoinAmount" type="number" />
+                {{ toCoin !== null ? toCoin.type.toUpperCase() : 'VTX' }}
+              </span>
             </div>
           </div>
         </div>
@@ -131,16 +137,14 @@
 </template>
 
 <script>
-import configManager from '@/util/ConfigManager'
-import { version } from '../../../package.json'
-let platformTools = require('../../util/platformTools')
-if (platformTools.default) platformTools = platformTools.default
 
 export default {
   components: {},
   data () {
     return {
       fromCoin: null,
+      fromCoinAmount: 0,
+      toCoinAmount: 0,
       toCoin: null,
       progress: 0.2,
       to: '',
@@ -149,10 +153,6 @@ export default {
       optionsFrom: [],
       optionsTo: [],
       minimizedModal: false,
-      message: '',
-      version: {},
-      network: this.$store.state.settings.network,
-      configPath: '',
       params: null,
       tableData: [],
       currentAccount: null,
@@ -161,7 +161,7 @@ export default {
     }
   },
   updated () {
-    console.log('this.fromCoin ---------', this.fromCoin)
+    console.log('this.toCoin ---------', this.toCoin)
   },
   async created () {
     console.log('created - created - created - created')
@@ -172,12 +172,14 @@ export default {
       self.optionsFrom.push({
         label: token.name.toLowerCase(),
         value: token.key.toLowerCase(),
-        image: token.icon
+        image: token.icon,
+        type: token.type
       })
       self.optionsTo.push({
         label: token.name.toLowerCase(),
         value: token.key.toLowerCase(),
-        image: token.icon
+        image: token.icon,
+        type: token.type
       })
     })
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
@@ -188,35 +190,24 @@ export default {
       this.fromCoin = {
         label: this.currentAccount.name,
         value: this.currentAccount.key,
-        image: this.currentAccount.icon
+        image: this.currentAccount.icon,
+        type: this.currentAccount.type
       }
       this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
     }
   },
   mounted () {
-    this.version = version
-    this.setupPlatformPath()
+
   },
   methods: {
-    async setupPlatformPath () {
-      this.configPath = await platformTools.filePath()
-    },
-    goChangePassword: function () {
-      this.$router.push({ path: '/change-password' })
-    },
-    setNetwork: function () {
-      this.$store.dispatch('settings/toggleNetwork', this.network)
-      this.$q.notify({ message: `Network changed to ${this.network}`, color: 'positive' })
-    },
-    async backupConfig () {
-      try {
-        await configManager.backupConfig()
-        if (this.$q.platform.is.android) {
-          this.$q.notify({ color: 'positive', message: 'Config Saved' })
-        }
-      } catch (e) {
-        // TODO: Exception handling
-      }
+    switchAmounts () {
+      let fromCoinVar = this.fromCoin
+      this.fromCoin = this.toCoin
+      this.toCoin = fromCoinVar
+
+      let fromCoinAmountVar = this.fromCoinAmount
+      this.fromCoinAmount = this.toCoinAmount
+      this.toCoinAmount = fromCoinAmountVar
     }
   }
 }
@@ -462,6 +453,15 @@ export default {
 }
 .mw200{
   max-width: 220px;
+}
+.mw100{
+  max-width: 80px;
+}
+.pl0{
+  padding-left: 0px !important;
+  /deep/ .q-field__native{
+    padding-left: 0px !important;
+  }
 }
 </style>
 <style lang="scss">
