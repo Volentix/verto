@@ -298,19 +298,19 @@
 
               <q-tab-panel name="staked">
                 <div class="staked-wrapper">
-                  <div v-for="i in 10" :key="i" class="item-wrapper row flex">
+                  <div v-for="(stake, i) in stakes" :key="i" class="item-wrapper row flex">
                     <div class="col col-9 q-pr-sm">
                       <div class="border column justify-between">
-                        <span class="date">Staked date: Apr.24, 2020</span>
+                        <span class="date">Staked date: {{stake.stake_date.toDateString()}}</span>
                         <div class="row flex item-wrapper--row justify-between items-end">
-                          <div class="col">Amount: <br> <strong>1036 VTX</strong></div>
-                          <div class="col">Period: <br> <strong>200 Days</strong></div>
-                          <div class="col">Time left: <br> <strong>172 Days</strong></div>
+                          <div class="col">Amount: <br> <strong>{{stake.stake_amount}}</strong></div>
+                          <div class="col">Period: <br> <strong>{{stake.stake_period}} Days</strong></div>
+                          <div class="col">Time left: <br> <strong>{{stake.time_left}}</strong></div>
                         </div>
                       </div>
                     </div>
                     <div class="col col-3 column justify-end">
-                      <div class="border total column justify-end">Total Earning: <br> <strong>105.23 VTX</strong></div>
+                      <div class="border total column justify-end">Total Earning: <br> <strong>{{stake.subsidy}}</strong></div>
                     </div>
                   </div>
                 </div>
@@ -327,6 +327,7 @@
 </template>
 
 <script>
+import { date } from 'quasar'
 import { userError } from '@/util/errorHandler'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
@@ -395,11 +396,18 @@ export default {
       this.condition = 1
     }
 
-    this.stakes = await eos.getTable('vtxstake1111', this.params.accountName, 'accounts')
-
-    this.stakes.map(s => {
-      this.stakedAmounts += s.stake_amount.split(' ')[0]
-    })
+    let stakedAmounts = 0
+    if (this.params.tokenID === 'vtx') {
+      this.stakes = await eos.getTable('vtxstake1111', this.params.accountName, 'accounts')
+      this.stakes.map(s => {
+        console.log('s', s)
+        s.stake_date = new Date(s.stake_time * 1000)
+        s.stake_done = new Date((s.stake_time * 1000) + (s.stake_period * 86400000))
+        s.time_left = date.getDateDiff(s.stake_done, Date.now(), 'days')
+        stakedAmounts += +s.stake_amount.split(' ')[0]
+      })
+      this.currentAccount.staked = stakedAmounts
+    }
 
     console.log('stakes', this.stakes)
   },
@@ -415,8 +423,12 @@ export default {
       this.checkAmount()
     },
     changeAmount () {
+      if (this.sendAmount > +this.currentAccount.amount) {
+        this.sendAmount = +this.currentAccount.amount
+      }
+
       if (this.sendAmount >= 0) {
-        this.slider = this.sendAmount / this.currentAccount.amount
+        this.slider = Math.round(10000 * (this.sendAmount / +this.currentAccount.amount)) / 100
       } else {
         this.slider = Math.round(Math.pow(10, this.currentAccount.precision) * this.stakedAmount * (this.slider / 100)) / Math.pow(10, this.currentAccount.precision)
       }
@@ -426,7 +438,7 @@ export default {
       let stake_per = Math.round((0.01 + (0.001 * this.stakePeriod)) * 100) / 100
 
       if (+this.sendAmount > 0.0 && +this.sendAmount <= +this.currentAccount.amount) {
-        this.slider = Math.round(100 * (this.sendAmount / +this.currentAccount.amount))
+        this.slider = Math.round(10000 * (this.sendAmount / +this.currentAccount.amount)) / 100
 
         if (this.sendAmount >= 1000) {
           this.progColor = 'green'
@@ -452,13 +464,14 @@ export default {
       try {
         this.step = 4
 
+        let memo = this.stakePeriod * 30
         this.formatedAmount = this.formatAmountString()
         const transaction = await eos.transferToken(
           'volentixgsys',
           this.currentAccount.name,
           'vtxstake1111',
           this.formatedAmount,
-          this.stakePeriod * 30,
+          memo.toString(),
           this.privateKey.key
         )
 
@@ -586,8 +599,6 @@ export default {
               color: #7272FA;
               text-transform: uppercase;
             }
-            .chain{}
-            .token{}
           }
           &__coming-soon{
             ul{
