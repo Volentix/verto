@@ -194,7 +194,7 @@ export default {
           self.goodPassword = true
           self.config = result.config
           self.vertoPassword = self.vertoPasswordTemp
-          this.$store.commit('settings/temporary', this.password)
+          self.$store.commit('settings/temporary', self.vertoPassword)
         }).catch(error => {
           self.goodPassword = false
           userError(error)
