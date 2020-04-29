@@ -39,10 +39,31 @@
       <h2 class="standard-content--title">Put the words in the right order</h2>
       <div class="standard-content--body">
         <words-order :words="mnemonic" />
+        <div v-if="!vertoPassword">
+          <q-input
+            v-model="vertoPasswordTemp"
+            light
+            color="green"
+            label="Verto Password"
+            debounce="500"
+            :error="!goodPassword"
+            error-message="The password is incorrect"
+            @input="checkVertoPassword"
+            :type="isPwd ? 'password' : 'text'"
+          >
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
+        </div>
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link back" color="black" text-color="white" label="Back" @click="step=2" />
-         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="saveMnemonic()" />
+         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="saveMnemonic()" :disable="!goodPassword" />
       </div>
     </div>
     <div v-if="step===4" class="standard-content">
@@ -75,6 +96,7 @@
 const bip39 = require('bip39')
 import HD from '@/util/hdwallet'
 import WordsOrder from '../../components/Verto/WordsOrder'
+import { userError } from '@/util/errorHandler'
 
 export default {
   components: {
@@ -87,6 +109,7 @@ export default {
       mnemonicValidated: '',
       goodPassword: false,
       vertoPassword: this.$store.state.settings.temporary,
+      vertoPasswordTemp: '',
       config: this.$store.state.currentwallet.config,
       chip: null,
       spinnervisible: false,
@@ -163,13 +186,22 @@ export default {
         this.$router.push('cruxpay')
       }
     },
-    async checkVertoPassword () {
-      const results = await this.$configManager.getConfig(this.vertoPassword)
-      if (results.success) {
-        this.goodPassword = true
-        this.config = results.config
-      } else {
-        this.goodPassword = false
+    checkVertoPassword () {
+      const self = this
+
+      try {
+        this.$configManager.getConfig(this.vertoPasswordTemp).then(result => {
+          self.goodPassword = true
+          self.config = result.config
+          self.vertoPassword = self.vertoPasswordTemp
+        }).catch(error => {
+          self.goodPassword = false
+          userError(error)
+          return false
+        })
+      } catch (error) {
+        self.goodPassword = false
+        userError(error)
         return false
       }
     },
