@@ -179,7 +179,7 @@ export default {
         //   } catch (e) {
         //     // TODO: Exception handling
         //   }
-          this.vertoPassword = ''
+
           this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
         //   this.$router.push('wallet')
         }
@@ -194,6 +194,7 @@ export default {
           self.goodPassword = true
           self.config = result.config
           self.vertoPassword = self.vertoPasswordTemp
+          this.$store.commit('settings/temporary', this.password)
         }).catch(error => {
           self.goodPassword = false
           userError(error)
