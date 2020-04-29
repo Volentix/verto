@@ -427,6 +427,7 @@ export default {
         }
         .input-input{
           height: 50px;
+          margin-bottom: 0px;
           /deep/ .q-field__control{
             height: 50px;
             min-height: unset;
@@ -494,7 +495,9 @@ export default {
           font-size: 16px;
           color: black;
           padding-left: 20px;
-          padding-bottom: 5px;
+          padding-bottom: 0px;
+          margin-top: 20px;
+          display: block;
         }
         /deep/ .option--avatar{
           border: 1px solid;
