@@ -34,9 +34,6 @@ let cruxClient
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 
-let wallets2Tokens = require('@/util/Wallets2Tokens')
-if (!store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
-
 let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 
@@ -61,6 +58,9 @@ export default {
     // Check if mnemonic exists
     if (!this.$store.state.currentwallet.config.mnemonic) {
       this.$router.replace('/recovery-seed')
+    } else {
+      let wallets2Tokens = require('@/util/Wallets2Tokens')
+      if (!store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
     }
 
     // Adds the eos account name when it is found to the cruxID
