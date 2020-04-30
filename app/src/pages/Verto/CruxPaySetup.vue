@@ -67,7 +67,7 @@
       </div>
       <div class="standard-content--body__form">
         <div class="flex-end flex justify-end">
-          <q-btn flat class="action-link next" color="black" text-color="white" label="Next" to="/verto/dashboard" />
+          <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="dataRefresh()" />
         </div>
         <div class="standard-content--footer">
           <p class="crux-label">Powered by cruxpay.</p>
@@ -96,6 +96,7 @@ export default {
       errorMessage: '',
       walletClientName: 'testwallet', // should be 'verto' when in prod
       vertoPassword: this.$store.state.settings.temporary, // TODO empty temporary
+      config: this.$store.state.currentwallet.config,
       loading: false,
       mapped: false,
       cruxID: null,
@@ -130,7 +131,7 @@ export default {
     })
 
     this.cruxKey = await HD.Wallet('crux')
-    console.log('crux privateKey', this.cruxKey.privateKey, 'menonic', this.$store.state.currentwallet.config.mnemonic)
+    console.log('crux privateKey', this.cruxKey.privateKey, 'mnenonic', this.$store.state.currentwallet.config.mnemonic, 'password', this.vertoPassword)
 
     cruxClient = new CruxPay.CruxClient({
       walletClientName: this.walletClientName,
@@ -162,6 +163,10 @@ export default {
           // Deal with: keypair is already used in registration of CruxID: 'helo@testwallet.crux'
           this.cruxIDRegistered = true
           this.existingCruxID = this.cruxID + '@' + this.walletClientName + '.crux'
+
+          this.config.cruxID = this.existingCruxID
+          await this.$configManager.updateConfig(this.vertoPassword, this.config)
+
           this.step = 2
           this.$nextTick(() => {
             this.putAddress()
@@ -225,8 +230,17 @@ export default {
       })
       console.log('post assets', this.assets)
     },
-    getImages (symbol) {
-      return 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png'
+    dataRefresh () {
+      const self = this
+      this.$store.state.wallets.tokens = null
+
+      let wallets2Tokens = require('@/util/Wallets2Tokens')
+      if (wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
+
+      this.$q.notify({ color: 'positive', message: 'Application refreshing' })
+      setTimeout(function () {
+        self.$router.push({ path: '/verto/dashboard' })
+      }, 300)
     }
   }
 }
