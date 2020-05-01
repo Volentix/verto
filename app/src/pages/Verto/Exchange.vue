@@ -1000,7 +1000,7 @@ export default {
 .pl0{
   padding-left: 0px !important;
   /deep/ .q-field__native{
-    padding-left: 0px !important;
+    padding-left: 1px !important;
   }
 }
 .--next-btn{
