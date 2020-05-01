@@ -384,7 +384,10 @@ export default {
       this.currentAccount.staked = stakedAmounts
     }
 
-    console.log('stakes', this.stakes)
+    // console.log('stakes', this.stakes)
+    if (this.stakes.length === 0) {
+      this.tab = 'stake'
+    }
   },
   async mounted () {
   },
