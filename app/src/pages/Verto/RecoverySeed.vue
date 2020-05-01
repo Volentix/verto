@@ -96,7 +96,7 @@
 const bip39 = require('bip39')
 import HD from '@/util/hdwallet'
 import WordsOrder from '../../components/Verto/WordsOrder'
-import { userError } from '@/util/errorHandler'
+// import { userError } from '@/util/errorHandler'
 
 export default {
   components: {
@@ -192,17 +192,17 @@ export default {
       try {
         this.$configManager.getConfig(this.vertoPasswordTemp).then(result => {
           self.goodPassword = true
-          self.config = result.config
+          // self.config = result.config
           self.vertoPassword = self.vertoPasswordTemp
           self.$store.commit('settings/temporary', self.vertoPassword)
         }).catch(error => {
           self.goodPassword = false
-          userError(error)
+          if (error) this.$q.notify({ color: 'negative', message: error })
           return false
         })
       } catch (error) {
         self.goodPassword = false
-        userError(error)
+        if (error) this.$q.notify({ color: 'negative', message: error })
         return false
       }
     },
