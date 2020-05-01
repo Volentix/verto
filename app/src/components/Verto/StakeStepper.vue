@@ -15,7 +15,7 @@
               narrow-indicator
             >
               <q-tab name="stake" label="Stake Now" class="full-width" />
-              <q-tab name="staked" label="Staked Amounts" class="full-width" />
+              <q-tab name="staked" label="Staked Amounts" :disable="stakes.length === 0" class="full-width" />
             </q-tabs>
 
             <q-separator />
@@ -143,6 +143,16 @@
                               <div class="full-width">
                                 <span class="--title row text-h6"> Amount to stake </span>
                                 <span class="--amount row text-h4"> {{  sendAmount }} {{ params.tokenID.toUpperCase() }}</span>
+                                <q-input
+                                  v-model="sendAmount"
+                                  type="number"
+                                  :suffix="params.tokenID.toUpperCase()"
+                                  light
+                                  rounded
+                                  outlined
+                                  class="--input"
+                                  @input="changeAmount()"
+                                />
                                 <br>
                                 <span class="--title row text-h6"> Stake period </span>
                               </div>
@@ -173,41 +183,6 @@
                                 <br>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                        <div class="slider-holder">
-                          <br>
-                          <q-slider
-                            v-model="slider"
-                            :label-value="slider + '%'"
-                            :min="0"
-                            :max="100"
-                            :step="1"
-                            color="orange"
-                            :label-color="progColor"
-                            dark
-                            markers
-                            label
-                            class="--slider"
-                            label-always
-                            @input="changeSlider()"
-                          />
-                        </div>
-                        <div class="row full-width">
-                          <div class="full-width">
-                            <span class="--title row text-h6"> Amount to stake </span>
-                            <q-input
-                              v-model="sendAmount"
-                              type="number"
-                              :suffix="params.tokenID.toUpperCase()"
-                              light
-                              rounded
-                              outlined
-                              class="--input"
-                              @input="changeAmount()"
-                            />
-                            <br>
-                            <span class="--title row text-h6"> Stake period </span>
                           </div>
                         </div>
                       </div>
@@ -775,7 +750,7 @@ export default {
               /deep/ .q-field__native,
               /deep/ .q-field__prefix,
               /deep/ .q-field__suffix{
-                padding-top: 10px;
+                padding-top: 0px;
                 padding-bottom: 0px;
               }
               /deep/ .q-field__label{
