@@ -58,6 +58,7 @@ export default {
       border-top: 1px solid rgba(#B0B0B0, .26);
       /deep/ .q-tabs__content{
         justify-content: space-evenly;
+        box-shadow: 0px -11px 31px 0px rgba(0, 0, 0, 0.15);
       }
       /deep/ .q-tab--inactive {
         opacity: 0.95;

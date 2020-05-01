@@ -3,20 +3,22 @@
     <div class="standard-content">
       <h2 class="standard-content--title flex justify-center">
         <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" />
-        Trade
+        Exchange
       </h2>
       <div class="standard-content--body">
         <div class="standard-content--body__form">
+
           <span class="lab-input">From</span>
           <q-select
-              light
-              separator
-              rounded
-              outlined
-              class="select-input"
-              v-model="fromCoin"
-              :options="optionsFrom"
-          >
+            light
+            separator
+            rounded
+            outlined
+            class="select-input"
+            @input="checkGetPairs()"
+            v-model="fromCoin"
+            :options="optionsFrom"
+            >
             <template v-slot:option="scope">
               <q-item
                 class="custom-menu"
@@ -49,6 +51,68 @@
               </q-item>
             </template>
           </q-select>
+          <!-- --------------------------------------- -->
+          <span v-show="fromCoin !== null && (fromCoin.type === 'new_public_key' || fromCoin.type === 'cruxpay')" class="lab-input">Select Coin to Send</span>
+          <q-select
+              v-show="fromCoin !== null && (fromCoin.type === 'new_public_key' || fromCoin.type === 'cruxpay')"
+              light
+              separator
+              rounded
+              outlined
+              class="select-input"
+              v-model="depositCoin"
+              use-input
+              @filter="filterDepositCoin"
+              @input="checkGetPairs()"
+              :disabled="!depositCoinOptions"
+              :loading="!depositCoinOptions"
+              :options="depositCoinOptions"
+            >
+            <template v-slot:option="scope">
+              <q-item
+                class="custom-menu"
+                v-bind="scope.itemProps"
+                v-on="scope.itemEvents"
+              >
+                <q-item-section avatar>
+                  <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
+                </q-item-section>
+                <q-item-section dark>
+                  <q-item-label v-html="scope.opt.label" />
+                  <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </template>
+            <template v-slot:selected>
+              <q-item
+                v-if="depositCoin"
+              >
+                <q-item-section avatar>
+                  <q-icon class="option--avatar option--avatar__custom" :name="`img:${depositCoin.image}`" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label v-html="depositCoin.label" />
+                  <q-item-label caption>{{ depositCoin.value }}</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item
+                v-else>
+              </q-item>
+            </template>
+          </q-select>
+          <!-- --------------------------------------- -->
+          <span v-show="fromCoin !== null && (fromCoin.type === 'new_public_key' || fromCoin.type === 'cruxpay')" class="lab-input">Your <strong>{{ depositCoin !== null ? depositCoin.value.toUpperCase() : '' }}</strong> return address <br>[in case the transaction does not complete]</span>
+          <q-input v-show="fromCoin !== null && (fromCoin.type === 'new_public_key' || fromCoin.type === 'cruxpay')" v-model="refundAddress.address" @input="verifyAddress()" class="input-input" rounded outlined color="purple" type="text" />
+          <span class="lab-input" v-show="fromCoinMemo" />
+          <q-input v-show="fromCoinMemo" class="input-input" rounded outlined color="purple" type="text" v-model="refundAddress.tag" label="Optional tag or memo" hint="some exchanges require this field">
+            <template v-slot:append>
+              <div class="flex justify-end">
+                <q-btn color="purple" rounded class="q-mb-sm" @click="fromCoinMemo = false" outlined unelevated flat text-color="black" label="Hide" />
+              </div>
+            </template>
+          </q-input>
+          <br v-show="fromCoinMemo">
+          <q-btn v-show="!fromCoinMemo" flat class="q-mt-sm q-mb-sm --next-btn" :icon-right="fromCoinMemo ? 'close':'add'" rounded :label="fromCoinMemo ? 'Hide Tag/Memo':'Add Tag/Memo'" @click="fromCoinMemo = !fromCoinMemo" />
           <br>
           <span class="lab-input">To</span>
           <q-select
@@ -58,9 +122,10 @@
               outlined
               class="select-input"
               v-model="toCoin"
+              @input="updateCoinName()"
               use-input
               :options="optionsTo"
-          >
+            >
             <template v-slot:option="scope">
               <q-item
                 class="custom-menu"
@@ -93,13 +158,78 @@
               </q-item>
             </template>
           </q-select>
+          <!-- --------------------------------------- -->
+          <span v-show="toCoin !== null && toCoin.type === 'new_public_key'" class="lab-input">Select Coin to receive</span>
+          <q-select
+              v-show="toCoin !== null && toCoin.type === 'new_public_key'"
+              light
+              separator
+              rounded
+              outlined
+              class="select-input"
+              v-model="destinationCoin"
+              use-input
+              @filter="filterDestinationCoin"
+              @input="updateCoinName()"
+              :disabled="!destinationCoinOptions"
+              :loading="!destinationCoinOptions"
+              :options="destinationCoinOptions"
+            >
+            <template v-slot:option="scope">
+              <q-item
+                class="custom-menu"
+                v-bind="scope.itemProps"
+                v-on="scope.itemEvents"
+              >
+                <q-item-section avatar>
+                  <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label v-html="scope.opt.label" />
+                  <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </template>
+            <template v-slot:selected>
+              <q-item
+                v-if="destinationCoin"
+              >
+                <q-item-section avatar>
+                  <q-icon class="option--avatar option--avatar__custom" :name="`img:${destinationCoin.image}`" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label v-html="destinationCoin.label" />
+                  <q-item-label caption>{{ destinationCoin.value }}</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item
+                v-else>
+              </q-item>
+            </template>
+          </q-select>
+          <!-- --------------------------------------- -->
+          <span v-show="toCoin !== null && toCoin.type === 'new_public_key'" class="lab-input">{{ destinationAddressLabel }}</span>
+          <q-input v-show="toCoin !== null && toCoin.type === 'new_public_key'" ref="destinationAddressAddress" v-model="destinationAddress.address" :rules="[ val => val.length >= 3 || 'Destination Address Cannot less than 3 characters' ]" @input="verifyAddress()" class="input-input" rounded outlined color="purple" type="text" />
+          <span class="lab-input" v-show="toCoinMemo" />
+          <q-input v-show="toCoinMemo" class="input-input" rounded outlined color="purple" type="text" v-model="destinationAddress.tag" label="Optional tag or memo" hint="some exchanges require this field">
+            <template v-slot:append>
+              <div class="flex justify-end">
+                <q-btn color="purple" rounded class="q-mb-sm" @click="toCoinMemo = false" outlined unelevated flat text-color="black" label="Hide" />
+              </div>
+            </template>
+          </q-input>
+          <br v-show="toCoinMemo">
+          <q-btn v-show="!toCoinMemo" flat class="q-mt-sm q-mb-sm --next-btn" :icon-right="toCoinMemo ? 'close':'add'" rounded :label="toCoinMemo ? 'Hide Tag/Memo':'Add Tag/Memo'" @click="toCoinMemo = !toCoinMemo" />
+
+          <q-btn color="white" text-color="black" label="Get Rate" @click="getRate()" />
+          <!-- --------------------------------------- -->
           <br>
           <div class="pay-get-wrapper flex justify-between item-center content-center">
             <div class="pay-wrapper column">
               <span class="label">you pay</span>
               <span class="value">
-                <q-input rounded class="mw100 pl0" flat v-model="fromCoinAmount" type="number" />
-                {{ fromCoin !== null ? fromCoin.type.toUpperCase() : 'ESO' }}
+                <q-input ref="depositQuantity" @input="quantityFromDeposit()" rounded class="mw100 pl0" flat v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']" />
+                {{ fromCoinType.toUpperCase() }}
               </span>
             </div>
             <q-btn flat unelevated class="exchange-btn" @click="switchAmounts()" text-color="black">
@@ -109,16 +239,16 @@
             <div class="get-wrapper column">
               <span class="label">you get</span>
               <span class="value">
-                <q-input rounded class="mw100 pl0" flat v-model="toCoinAmount" type="number" />
-                {{ toCoin !== null ? toCoin.type.toUpperCase() : 'VTX' }}
+                <q-input rounded class="mw100 pl0" flat ref="destinationQuantity" v-model="destinationQuantity" @input="quantityFromDestination()" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']" type="number" />
+                {{ toCoinType.toUpperCase() }}
               </span>
             </div>
           </div>
         </div>
         <br>
         <div class="rate-value flex justify-center">
-          <span class="label">Rate VTX=</span>
-          <span class="value"> 0.03254 XRP</span>
+          <span class="label">Rate {{fromCoinType.toUpperCase()}}=</span>
+          <span class="value"> {{ rateData !== null ? rateData.rate : '0.03254'}} {{toCoinType.toUpperCase()}}</span>
         </div>
         <br>
         <div class="standard-content--footer">
@@ -137,6 +267,21 @@
 </template>
 
 <script>
+import store from '@/store'
+import { userError } from '@/util/errorHandler'
+
+const url = 'https://api.coinswitch.co'
+let headers = {
+  'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
+}
+
+const typeUpper = function (thing) {
+  if (typeof thing === 'string' && thing.length >= 1) {
+    return thing.toUpperCase()
+  } else {
+    return ''
+  }
+}
 
 export default {
   components: {},
@@ -145,6 +290,8 @@ export default {
       fromCoin: null,
       fromCoinAmount: 0,
       toCoinAmount: 0,
+      fromCoinType: 'EOS',
+      toCoinType: 'VTX',
       toCoin: null,
       progress: 0.2,
       to: '',
@@ -157,11 +304,68 @@ export default {
       tableData: [],
       currentAccount: null,
       goBack: '/verto/dashboard',
-      fetchCurrentWalletFromState: true
+      fetchCurrentWalletFromState: true,
+      fromCoinMemo: false,
+      toCoinMemo: false,
+      // -------------------------
+      step: 1,
+      optionsSanitize: false,
+      spinnervisible: false,
+      lastChangedValue: 'deposit',
+      coins: [],
+      depositCoin: null,
+      depositQuantity: 0,
+      depositCoinOptions: null,
+      depositCoinUnfilter: null,
+      destinationCoin: null,
+      destinationQuantity: 0,
+      destinationCoinOptions: null,
+      destinationCoinUnfilter: null,
+      rateData: null,
+      rateDataTemplate: {
+        rate: 1,
+        minerFee: 0,
+        limitMinDepositCoin: 0,
+        limitMaxDepositCoin: 1,
+        limitMinDestinationCoin: 1,
+        limitMaxDestinationCoin: 2
+      },
+      destinationAddress: {
+        address: '',
+        tag: null
+      },
+      refundAddress: {
+        address: '',
+        tag: null
+      },
+      exchangeAddress: {
+        address: '',
+        tag: null
+      },
+      expectedDepositCoinAmount: 0,
+      expectedDestinationCoinAmount: 0,
+      orderId: null,
+      status: null,
+      requestStop: false
     }
   },
   updated () {
-    console.log('this.toCoin ---------', this.toCoin)
+  },
+  watch: {
+    fromCoin (val) {
+      if (val.type !== 'new_public_key') {
+        this.fromCoinType = this.fromCoin.type
+      } else {
+        return 'EOS'
+      }
+    },
+    toCoin (val) {
+      if (val.type !== 'new_public_key') {
+        this.toCoinType = this.toCoin.type
+      } else {
+        return 'VTX'
+      }
+    }
   },
   async created () {
     console.log('created - created - created - created')
@@ -182,6 +386,18 @@ export default {
         type: token.type
       })
     })
+    this.optionsFrom.unshift({
+      label: 'New Public Key',
+      value: '',
+      image: '/statics/img/door-key.png',
+      type: 'new_public_key'
+    })
+    this.optionsTo.unshift({
+      label: 'New Public Key',
+      value: '',
+      image: '/statics/img/door-key.png',
+      type: 'new_public_key'
+    })
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
@@ -196,10 +412,177 @@ export default {
       this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
     }
   },
-  mounted () {
+  computed: {
+    getStatus () {
+      let value = 0
 
+      switch (this.status) {
+        case null:
+        case 'no_deposit':
+        case 'failed':
+        case 'refunded':
+        case 'timeout':
+          value = 0
+          break
+        case 'confirming':
+          value = 25
+          break
+        case 'exchanging':
+          value = 50
+          break
+        case 'sending':
+          value = 75
+          break
+        case 'complete':
+          value = 100
+          break
+      }
+
+      return value
+    },
+    friendlyStatus () {
+      let value = ''
+
+      switch (this.status) {
+        case null:
+          value = ''
+          break
+        case 'no_deposit':
+          value = 'No deposit detected yet'
+          break
+        case 'failed':
+          value = 'The transaction has failed'
+          break
+        case 'refunded':
+          value = 'The transaction has been refunded'
+          break
+        case 'timeout':
+          value = 'The transaction has timed out'
+          break
+        case 'confirming':
+          value = 'The transaction is confirming'
+          break
+        case 'exchanging':
+          value = 'The transaction is exchanging'
+          break
+        case 'sending':
+          value = 'The coins are being sent'
+          break
+        case 'complete':
+          value = 'The transaction is complete'
+          break
+      }
+
+      return value
+    },
+    trackColor () {
+      let value = ''
+
+      switch (this.status) {
+        case null:
+        case 'no_deposit':
+        case 'confirming':
+        case 'exchanging':
+        case 'sending':
+        case 'complete':
+          value = 'white'
+          break
+        case 'failed':
+        case 'refunded':
+        case 'timeout':
+          value = 'red'
+          break
+      }
+
+      return value
+    },
+    logoUrl () {
+      if (this.destinationCoin != null) {
+        return this.coins.filter(coins => coins.symbol === this.destinationCoin.value)[0].logoUrl
+      } else {
+        return '/static/icon.png'
+      }
+    },
+    exchangeLabel () {
+      if (this.depositCoin != null) {
+        return 'Complete this exchange by sending ' + this.expectedDepositCoinAmount + ' ' + typeUpper(this.depositCoin.value) + ' to this address within the next 12 hours'
+      } else {
+        return 'Complete this exchange by sending the coins to this address within the next 12 hours'
+      }
+    },
+    depositQuantityLabel () {
+      if (this.depositCoin != null) {
+        return typeUpper(this.depositCoin.value) + ' to Send'
+      } else {
+        return 'Coin to Send'
+      }
+    },
+    destinationQuantityLabel () {
+      if (this.destinationCoin != null) {
+        return typeUpper(this.destinationCoin.value) + ' to Receive'
+      } else {
+        return 'Coin to Receive'
+      }
+    },
+    returnAddressLabel () {
+      if (this.depositCoin != null) {
+        return 'Your ' + typeUpper(this.depositCoin.value) + ' return address [in case the transaction does not complete]'
+      } else {
+        return 'Your return address [in case the transaction does not complete]'
+      }
+    },
+    destinationAddressLabel () {
+      if (this.destinationCoin != null) {
+        return 'Address to receive new ' + typeUpper(this.destinationCoin.value)
+      } else {
+        return 'Address to receive new coin'
+      }
+    }
+  },
+  mounted () {
+    const self = this
+    this.$axios.get(url + '/v2/coins', { headers }).then(function (result) {
+      // will be using this coins array later with the destination select
+      self.coins = result.data.data
+      self.depositCoinOptions = self.coins.map(function (coin) {
+        if (coin.isActive === true) {
+          let row = {
+            'label': coin.name,
+            'value': coin.symbol,
+            'image': coin.logoUrl
+          }
+          return row
+        }
+      }).filter(function (el) {
+        return el != null
+      }).sort(function (a, b) {
+        if (a.label.toLowerCase() < b.label.toLowerCase()) {
+          return -1
+        }
+        return 1
+      })
+
+      self.depositCoinUnfilter = self.depositCoinOptions
+      console.log('depositCoinOptions', self.depositCoinOptions)
+    })
   },
   methods: {
+    updateCoinName () {
+      if (this.destinationCoin !== null) {
+        this.toCoinType = this.destinationCoin.value
+        this.getPairs()
+      } else {
+        this.toCoinType = this.toCoin.type
+      }
+    },
+    checkGetPairs () {
+      if (this.depositCoin !== null) {
+        this.fromCoinType = this.depositCoin.value
+        this.getPairs()
+      } else {
+        this.fromCoinType = this.fromCoin.type
+      }
+    },
     switchAmounts () {
       let fromCoinVar = this.fromCoin
       this.fromCoin = this.toCoin
@@ -208,6 +591,159 @@ export default {
       let fromCoinAmountVar = this.fromCoinAmount
       this.fromCoinAmount = this.toCoinAmount
       this.toCoinAmount = fromCoinAmountVar
+    },
+    filterDepositCoin (val, update, abort) {
+      update(() => {
+        const needle = val.toLowerCase()
+        this.depositCoinOptions = this.depositCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+      })
+    },
+    filterDestinationCoin (val, update, abort) {
+      update(() => {
+        const needle = val.toLowerCase()
+        this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+      })
+    },
+    copy2clip (value) {
+      // more generic copy
+      this.$clipboardWrite(value)
+      this.$q.notify({
+        message: this.$t('Main.copied'),
+        color: 'positive'
+      })
+    },
+    checkToPostOrder () {
+      if (this.$refs.depositQuantity.hasError || this.$refs.destinationQuantity.hasError) {
+        userError('There is a problem with the quantities')
+      } else {
+        this.postOrder()
+        this.$refs.stepper.next()
+      }
+    },
+    checkToGetPairs () {
+      if (this.depositCoin === null) {
+        userError('There is a problem with the coin selection')
+      } else {
+        this.getPairs()
+        this.$refs.stepper.next()
+      }
+    },
+    checkToGetRate () {
+      if (this.$refs.destinationAddressAddress.hasError || this.destinationAddress.address === '' ||
+      this.destinationCoin === null) {
+        userError('There is a problem with the destination address or the coin is not selected')
+      } else {
+        this.getRate()
+        this.$refs.stepper.next()
+      }
+    },
+    verifyAddress () {
+      // check validity of all keys
+    },
+    quantityFromDeposit () {
+      // deal with precision
+      this.destinationQuantity = (+this.depositQuantity * +this.rateData.rate) - +this.rateData.minerFee
+      this.lastChangedValue = 'deposit'
+    },
+    quantityFromDestination () {
+      // deal with precision
+      this.depositQuantity = (+this.destinationQuantity + +this.rateData.minerFee) / +this.rateData.rate
+      this.lastChangedValue = 'destination'
+    },
+    orderStatus () {
+      const self = this
+      this.$axios.get(url + '/v2/order/' + this.orderId, { headers }).then(function (result) {
+        self.status = result.data.data.status
+
+        if (self.status === 'no_deposit' ||
+        self.status === 'confirming' ||
+        self.status === 'exchanging' ||
+        self.status === 'sending') {
+          setTimeout(() => { self.orderStatus() }, 30000)
+        }
+      })
+    },
+    postOrder () {
+      const self = this
+      let depositCoinAmount = null
+      let destinationCoinAmount = null
+
+      if (self.lastChangedValue === 'deposit') {
+        depositCoinAmount = self.depositQuantity
+      } else {
+        destinationCoinAmount = self.destinationQuantity
+      }
+
+      this.$axios.post(url + '/v2/order',
+        {
+          depositCoin: self.depositCoin.value,
+          destinationCoin: self.destinationCoin.value,
+          depositCoinAmount,
+          destinationCoinAmount,
+          destinationAddress: self.destinationAddress,
+          refundAddress: self.refundAddress
+        },
+        { headers })
+        .then((response) => {
+          self.orderId = response.data.data.orderId
+          self.exchangeAddress = response.data.data.exchangeAddress
+          self.expectedDepositCoinAmount = response.data.data.expectedDepositCoinAmount
+          self.expectedDestinationCoinAmount = response.data.data.expectedDestinationCoinAmount
+
+          this.orderStatus()
+        })
+        .catch((err) => {
+          userError('There was a problem posting the order', err)
+        })
+    },
+    getPairs () {
+      const self = this
+      this.$axios.post(url + '/v2/pairs',
+        {
+          depositCoin: self.depositCoin.value
+        },
+        { headers })
+        .then((response) => {
+          console.log('------------Response------------', response)
+          self.destinationCoinOptions = response.data.data.map(function (coin) {
+            if (coin.isActive === true) {
+              let row = {
+                'label': self.coins.filter(coins => coins.symbol === coin.destinationCoin)[0].name,
+                'value': coin.destinationCoin,
+                'image': self.coins.filter(coins => coins.symbol === coin.destinationCoin)[0].logoUrl
+              }
+              return row
+            } // deal with false, should not create empty option.
+          }).filter(function (el) {
+            return el != null
+          }).sort(function (a, b) {
+            if (a.label.toLowerCase() < b.label.toLowerCase()) {
+              return -1
+            }
+            return 1
+          })
+
+          self.destinationCoinUnfilter = self.destinationCoinOptions
+        })
+        .catch((err) => {
+          userError('There was a problem getting the destination coins', err)
+        })
+    },
+    getRate () {
+      const self = this
+      this.$axios.post(url + '/v2/rate',
+        {
+          depositCoin: self.depositCoin.value,
+          destinationCoin: self.destinationCoin.value
+        },
+        { headers })
+        .then((response) => {
+          self.rateData = response.data.data
+          // console.log('self.rateData -------------- ', self.rateData)
+        })
+        .catch((err) => {
+          userError('There was a problem getting the rate data', err)
+        })
     }
   }
 }
@@ -327,6 +863,7 @@ export default {
       }
       .input-input{
         height: 50px;
+        padding-bottom: 0px;
         /deep/ .q-field__control{
           height: 50px;
           min-height: unset;
@@ -395,6 +932,9 @@ export default {
         color: black;
         padding-left: 20px;
         padding-bottom: 5px;
+        display: block;
+        margin-top: 10px;
+        line-height: 17px;
       }
       /deep/ .option--avatar{
         border: 1px solid;
@@ -455,13 +995,16 @@ export default {
   max-width: 220px;
 }
 .mw100{
-  max-width: 80px;
+  max-width: 110px;
 }
 .pl0{
   padding-left: 0px !important;
   /deep/ .q-field__native{
     padding-left: 0px !important;
   }
+}
+.--next-btn{
+  text-transform: initial !important;
 }
 </style>
 <style lang="scss">
@@ -487,5 +1030,8 @@ export default {
       background-color: #000;
       padding: 3px;
     }
+  }
+  .q-field__messages{
+    margin-top: 5px;
   }
 </style>

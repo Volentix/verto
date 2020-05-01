@@ -36,7 +36,7 @@
                       :disabled="!depositCoinOptions"
                       :loading="!depositCoinOptions"
                       :options="depositCoinOptions"
-                  >
+                    >
                     <template v-slot:option="scope">
                       <q-item
                         class="custom-menu"
@@ -113,7 +113,7 @@
                       :disabled="!destinationCoinOptions"
                       :loading="!destinationCoinOptions"
                       :options="destinationCoinOptions"
-                  >
+                    >
                     <template v-slot:option="scope">
                       <q-item
                         class="custom-menu"
