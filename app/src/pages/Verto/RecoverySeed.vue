@@ -107,7 +107,7 @@ export default {
       step: 1,
       isPwd: true,
       mnemonicValidated: '',
-      goodPassword: false,
+      goodPassword: true,
       vertoPassword: this.$store.state.settings.temporary,
       vertoPasswordTemp: '',
       config: this.$store.state.currentwallet.config,
@@ -127,7 +127,7 @@ export default {
   async created () {
   },
   async mounted () {
-    console.log('mnemonic', this.mnemonic, 'config', this.config)
+    console.log('mnemonic', this.mnemonic, 'config', this.config, 'verto password', this.vertoPassword)
   },
   computed: {
     rightOrder () {
@@ -164,7 +164,9 @@ export default {
       this.step = 2
     },
     async saveMnemonic () {
+      console.log('in saveMnemonic')
       if (this.vertoPassword) {
+        console.log('in saveMnemonic with password')
         this.config.mnemonic = this.mnemonic
         await this.$configManager.updateConfig(this.vertoPassword, this.config)
         const keys = await HD.Wallet('eos')
