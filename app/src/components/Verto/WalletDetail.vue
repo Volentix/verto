@@ -37,7 +37,14 @@
                 <q-item data-name='Lending' clickable v-ripple class="p-relative" to="">Lending<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item v-if="currentAccount.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item data-name='Hide Currency' clickable v-ripple class="p-relative" @click="hideCurrency = !hideCurrency">Hide Currency<q-toggle class="p-abs" color="red" v-model="hideCurrency" /></q-item>
+                <q-item tag="label" @click="hideCurrency()" data-name='Hide Currency' v-ripple class="p-relative">
+                  <q-item-section>
+                    <q-item-label>Hide Currency</q-item-label>
+                  </q-item-section>
+                  <q-item-section avatar>
+                    <q-toggle class="p-abs" color="red" v-model="currentAccount.hidden" />
+                  </q-item-section>
+                </q-item>
               </q-list>
             </div>
           </div>
@@ -112,7 +119,6 @@ export default {
   },
   data () {
     return {
-      hideCurrency: false,
       alertSecurity: false,
       toggled: false,
       showPrivate: false,
@@ -160,9 +166,21 @@ export default {
       accountName: this.$route.params.accountName
     })
   },
-  computed: {
-  },
+  // watch: {
+  //   'currentAccount.hidden' () {
+  //     this.hideCurrency()
+  //   }
+  // },
   methods: {
+    hideCurrency () {
+      console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
+
+      this.$store.state.wallets.tokens.filter(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
+        w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)
+      ).map(t => {
+        t.hidden = this.currentAccount.hidden
+      })
+    },
     goToSecurity () {
       this.$router.push({ path: '/verto/wallet/privateKey' })
     },
