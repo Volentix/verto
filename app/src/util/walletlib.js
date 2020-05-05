@@ -43,12 +43,24 @@ class Lib {
     const send = {
       async eos (key, token) {
       },
-      async eth (key, token) {
+      async eth (from, to, value, token, key) {
         // const Web3 = require('web3')
-        // const web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/54b0a9c16bc94aeb908616525203c9da"))
-        // var balance = web3.eth.getBalance(key)
+        // const web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+        // const rawTransaction = {
+        //   from,
+        //   to,
+        //   value: web3.utils.toHex(web3.utils.toWei(value, 'ether')),
+        //   gas: 200000,
+        //   chainId: 3
+        // }
 
-        return { send }
+        // let send = ''
+        // web3.eth.accounts.signTransaction(rawTransaction, key)
+        //   .then(signedTx => web3.eth.sendSignedTransaction(signedTx.rawTransaction))
+        //   .then(receipt => send = receipt)
+        //   .catch(error => send = error)
+
+        // return { send }
       },
       async btc (key) {
       },
@@ -58,6 +70,7 @@ class Lib {
       }
     }[walletType]
 
+    console.log(send)
     return balance ? balance(key, token) : {}
   }
 }
