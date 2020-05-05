@@ -278,14 +278,14 @@
                       <div class="border column justify-between">
                         <span class="date">Staked date: {{stake.stake_date.toDateString()}}</span>
                         <div class="row flex item-wrapper--row justify-between items-end">
-                          <div class="col">Amount: <br> <strong>{{stake.stake_amount}}</strong></div>
+                          <div class="col">Amount: <br> <strong>{{stake.stake_amount}} VTX</strong></div>
                           <div class="col">Period: <br> <strong>{{stake.stake_period}} Days</strong></div>
                           <div class="col">Time left: <br> <strong>{{stake.time_left}}</strong></div>
                         </div>
                       </div>
                     </div>
                     <div class="col col-3 column justify-end">
-                      <div class="border total column justify-end">Total Earning: <br> <strong>{{stake.subsidy}}</strong></div>
+                      <div class="border total column justify-end">Total Earning: <br> <strong>{{stake.subsidy}} VTX</strong></div>
                     </div>
                   </div>
                 </div>
@@ -379,7 +379,9 @@ export default {
         s.stake_date = new Date(s.stake_time * 1000)
         s.stake_done = new Date((s.stake_time * 1000) + (s.stake_period * 86400000))
         s.time_left = date.getDateDiff(s.stake_done, Date.now(), 'days')
-        stakedAmounts += +s.stake_amount.split(' ')[0]
+        s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
+        s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+        stakedAmounts += +s.stake_amount
       })
       this.currentAccount.staked = stakedAmounts
     }
