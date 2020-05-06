@@ -13,7 +13,7 @@
             v-model="password"
             @input="passwordCheck"
             @keyup.enter="gotoSecondScreen"
-            rounded outlined color="purple"
+            rounded outlined color="deep-purple-14"
             :type="isPwd ? 'password' : 'text'"
             label="Create Verto Password"
             hint="*Minimum of 8 characters">
@@ -28,8 +28,8 @@
         </div>
       </div>
       <div class="standard-content--footer">
-         <q-btn flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" />
-         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="gotoSecondScreen" :disable="!passwordApproved" />
+         <q-btn class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" />
+         <q-btn class="action-link next" rounded color="deep-purple-14" text-color="white" label="Next" @click="gotoSecondScreen" :disable="!passwordApproved" />
       </div>
     </div>
     <div v-if="step===2" class="standard-content">
@@ -45,7 +45,7 @@
             v-model="confirmPassword"
             @input="confirmPasswordCheck"
             @keyup.enter="submit"
-            rounded outlined color="purple"
+            rounded outlined color="deep-purple-14"
             :type="isPwd ? 'password' : 'text'"
             label="Confirm"
             hint="*Minimum of 8 characters">
@@ -60,7 +60,7 @@
         </div>
       </div>
       <div class="standard-content--footer">
-         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="submit" :disable="!passwordsMatch" />
+         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="submit" :disable="!passwordsMatch" />
       </div>
     </div>
   </q-page>
@@ -162,7 +162,7 @@ export default {
   justify-content: space-between;
   height: 100vh !important;
   &--title{
-    font-size: 35px;
+    font-size: 27px;
     font-weight: $bold;
     position: relative;
     line-height: 50px;
@@ -219,9 +219,6 @@ export default {
       padding-left: 20px;
       padding-right: 20px;
       margin-left: 10px;
-      &.next{
-        background-color: #7900FF !important;
-      }
       &.back{
         background-color: #B0B0B0 !important;
       }
