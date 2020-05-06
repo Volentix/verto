@@ -85,16 +85,16 @@ class HD {
 
         return { publicKey, privateKey }
       },
-      xrp () {
-        const rippleBip32 = require('ripple-bip32')
-        const buffer = rippleBip32.fromSeedBuffer(seed)
-        const xrpPath = "m/44'/144'/0'/0/0"
-        const keyPair = buffer.derivePath(xrpPath).keyPair.getKeyPairs()
-        const privateKey = keyPair.privateKey.substring(2)
-        const publicKey = buffer.derivePath(xrpPath).getAddress()
+      // xrp () {
+      //   const rippleBip32 = require('ripple-bip32')
+      //   const buffer = rippleBip32.fromSeedBuffer(seed)
+      //   const xrpPath = "m/44'/144'/0'/0/0"
+      //   const keyPair = buffer.derivePath(xrpPath).keyPair.getKeyPairs()
+      //   const privateKey = keyPair.privateKey.substring(2)
+      //   const publicKey = buffer.derivePath(xrpPath).getAddress()
 
-        return { publicKey, privateKey }
-      },
+      //   return { publicKey, privateKey }
+      // },
       dash () {
         const dashcore = require('@dashevo/dashcore-lib')
         const path = "m/44'/5'/0'/0/0"
