@@ -90,8 +90,9 @@ class Wallets2Tokens {
                   eos.amount = t.amount
                   eos.contract = 'eosio.token'
                   eos.precision = t.amount.split('.')[1].length
-                  eos.proxy = a.voter_info.proxy
-                  eos.staked = a.voter_info.staked / 10000
+                  console.log('a ---------------------', a)
+                  eos.proxy = a.voter_info ? a.voter_info.proxy : ''
+                  eos.staked = a.voter_info ? a.voter_info.staked / 10000 : 0
                 })
               })
               console.log('else EOS self.tableData', t.symbol, self.tableData)
