@@ -14,6 +14,7 @@
             @input="getAvailable()"
             rounded outlined color="deep-purple-14"
             type="text"
+            class="text-lowercase"
             :loading="!cruxKey || loading"
             :suffix="'@' + walletClientName + '.crux'"
             :error="error"
@@ -124,7 +125,7 @@ export default {
         { 'value': 'ltc', 'label': 'Litecoin - HD' },
         { 'value': 'dash', 'label': 'DASH - HD' },
         { 'value': 'steem', 'label': 'STEEM Key - HD' },
-        { 'value': 'xrp', 'label': 'Ripple - HD' },
+        // { 'value': 'xrp', 'label': 'Ripple - HD' },
         { 'value': 'xlm', 'label': 'Stellar Lumens - HD' },
         { 'value': 'xtz', 'label': 'Tezos - HD' },
         { 'value': 'ada', 'label': 'Cardano - HD' } ]
@@ -175,12 +176,12 @@ export default {
     async register () {
       if (this.available) {
         this.loading = true
-        const res = await cruxClient.registerCruxID(this.cruxID)
+        const res = await cruxClient.registerCruxID(this.cruxID.toLowerCase())
         console.log('response should be undef:', res)
         if (!res) {
           // Deal with: keypair is already used in registration of CruxID: 'helo@testwallet.crux'
           this.cruxIDRegistered = true
-          this.existingCruxID = this.cruxID + '@' + this.walletClientName + '.crux'
+          this.existingCruxID = this.cruxID.toLowerCase() + '@' + this.walletClientName + '.crux'
 
           this.config.cruxID = this.existingCruxID
           await this.$configManager.updateConfig(this.vertoPassword, this.config)
@@ -198,7 +199,7 @@ export default {
     },
     async getAvailable () {
       if (this.cruxID.length >= 4 && this.cruxID.length <= 20) {
-        this.available = await cruxClient.isCruxIDAvailable(this.cruxID)
+        this.available = await cruxClient.isCruxIDAvailable(this.cruxID.toLowerCase())
         if (this.available) {
           this.error = false
         } else {
@@ -207,11 +208,12 @@ export default {
         }
       } else {
         this.error = true
-        this.errorMessage = 'Must start with a letter & length must be between 4 to 20'
+        this.errorMessage = 'Must start with a letter & length must be between 4 to 20, all lowercase.'
       }
     },
     async putAddress () {
       this.assets = await cruxClient.getAssetMap()
+      delete this.assets['xrp'] // Libs fails on Apple devices.
       delete this.assets['ada'] // Key generation not working yet.
       delete this.assets['eos'] // Need account to be created first!
       let count = Object.keys(this.assets).length
@@ -231,7 +233,7 @@ export default {
 
       console.log('map', map)
       cruxClient.putAddressMap(map)
-      await this.$configManager.backupConfig()
+      // await this.$configManager.backupConfig()
       this.mapped = true
     },
     async getAssets () {
