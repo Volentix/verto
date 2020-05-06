@@ -56,8 +56,9 @@ export default {
   },
   async created () {
     // Check if mnemonic exists
-    if (!this.$store.state.currentwallet.config.mnemonic) {
-      this.$router.replace('/recovery-seed')
+    console.log('store.state.currentwallet.config', store.state.currentwallet.config)
+    if (!store.state.currentwallet.config.mnemonic) {
+      this.$router.push('recovery-seed')
     } else {
       let wallets2Tokens = require('@/util/Wallets2Tokens')
       if (!store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default

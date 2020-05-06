@@ -50,8 +50,6 @@
 
 <script>
 import configManager from '@/util/ConfigManager'
-// import { userError } from '@/util/errorHandler'
-import { version } from '../../../package.json'
 
 export default {
   name: 'Login',
@@ -68,7 +66,6 @@ export default {
     }
   },
   async mounted () {
-    this.version = version
     this.hasConfig = !!await configManager.hasVertoConfig()
     if (!this.hasConfig) {
       this.$router.push({ name: 'create-password' })
