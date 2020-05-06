@@ -53,9 +53,9 @@ export default {
               font-size: 20px;
               font-family: $Titillium;
               font-weight: $bold;
-              margin-top: 20px;
+              margin-top: 0px;
               line-height: 26px;
-              margin-bottom: 30px;
+              margin-bottom: 10px;
               padding-left: 10px;
             }
             &_img{

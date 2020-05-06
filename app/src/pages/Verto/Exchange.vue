@@ -293,6 +293,9 @@
                         </div>
                       </div>
                       <q-stepper-navigation v-show="true" class="flex justify-end">
+                        <div class="row full-width" style="padding-left: 13px; margin-top: -20px;">
+                          <div class="q-gutter-sm"><q-checkbox label="I read the disclaimer" color="deep-purple-14" v-model="showDisclaimerWrapper" /></div>
+                        </div>
                         <div class="standard-content--footer">
                           <q-btn @click="checkAddressMatchCoins()" flat class="action-link next" color="black" text-color="white">
                             <span class="label">Exchange {{ fromCoinType.toUpperCase() }} <q-icon name="keyboard_backspace" color="white" class="left-icon" /> {{ toCoinType.toUpperCase() }}</span>
@@ -319,6 +322,24 @@
             </div>
         </div>
     </div>
+    <q-dialog v-model="showDisclaimerWrapper">
+      <q-card class="q-pa-md" style="width: 700px; max-width: 92vw;">
+        <q-toolbar>
+          <q-avatar><img src="statics/icon.png"></q-avatar>
+          <q-toolbar-title><span class="text-weight-bold">Disclaimer</span> </q-toolbar-title>
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-toolbar>
+        <q-card-section class="text-h6">
+          <div class="parg">
+            This transaction is carried out using an open API linked to various Exchanges.<br>
+            By sending coins to the above address, you agreed to <a href="https://coinswitch.co/terms" target="_blank">the terms and conditions</a> of the selected provider.
+          </div>
+        </q-card-section>
+        <q-card-actions align="right" class="q-pr-sm">
+          <q-btn flat label="Accept" class="accept-disclaimer" @click="disclaimer = true" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 
     <div class="standard-content" style="display: none">
       <h2 class="standard-content--title flex justify-center">
@@ -606,6 +627,8 @@ export default {
   components: {},
   data () {
     return {
+      disclaimer: false,
+      showDisclaimerWrapper: false,
       fromCoin: null,
       fromCoinAmount: 0,
       toCoinAmount: 0,
@@ -627,7 +650,7 @@ export default {
       fromCoinMemo: false,
       toCoinMemo: false,
       // -------------------------
-      step: 1,
+      step: 4,
       optionsSanitize: false,
       spinnervisible: false,
       lastChangedValue: 'deposit',
@@ -1691,6 +1714,29 @@ export default {
           margin-bottom: 10px;
         }
       }
+    }
+  }
+  .q-card{
+    border-radius: 25px;
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 35px rgba(0,0,0,0.14), 0 1px 10px rgba(0,0,0,0.12);
+  }
+  .accept-disclaimer{
+    color: #FFF !important;
+    background-color: #00D0DF !important;
+    text-transform: initial !important;
+    padding: 10px 30px;
+    border-radius: 50px;
+    font-weight: $light;
+  }
+  .parg{
+    font-size: 16px;
+    font-weight: $regular;
+    font-family: $Titillium;
+    line-height: 22px;
+    a{
+      font-weight: $bold;
+      border-bottom: 1px solid ;
+      text-decoration: none;
     }
   }
 </style>
