@@ -264,8 +264,10 @@ export default {
         margin-top: 0px;
         margin-bottom: 25px;
         color: #7272FA !important;
+        font-size: 17px;
         &.hide{
-          margin-bottom: 13px;
+          margin-bottom: 0px;
+          margin-top: -8px;
         }
       }
       .list-wrapper{

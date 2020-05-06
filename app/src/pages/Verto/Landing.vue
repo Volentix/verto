@@ -20,7 +20,7 @@
             @keyup.enter="login"
             @input="checkPassword"
             :error="passHasError"
-            rounded outlined color="purple"
+            rounded outlined color="deep-purple-14"
             :type="isPwd ? 'password' : 'text'"
             label="Verto Password"
             hint="*Minimum of 8 characters"
@@ -38,7 +38,7 @@
       <div class="standard-content--footer full-width">
         <!-- :disable="!passHasError" -->
          <q-btn flat class="action-link back" color="grey" text-color="white" label="Restore" @click="startRestoreConfig" />
-         <q-btn flat class="action-link next" color="black" text-color="white" label="Connect" @click="login"/>
+         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Connect" @click="login"/>
       </div>
       <div class="landing--volentix-logo">
           <img src="statics/vtx_black.svg" class="svg" />
@@ -230,9 +230,6 @@ export default {
         border-radius: 40px;
         width: 48%;
         margin-left: 0px;
-        &.next{
-          background-color: #7900FF !important;
-        }
         &.back{
           background-color: #B0B0B0 !important;
         }
