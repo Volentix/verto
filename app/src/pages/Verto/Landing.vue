@@ -97,6 +97,7 @@ export default {
       }
       const results = await configManager.login(this.password)
       if (results.success) {
+        this.$store.commit('settings/temporary', this.password)
         this.$router.push({ path: '/verto/dashboard' })
         // this.$router.push({ path: 'vertomanager' })
       } else {
