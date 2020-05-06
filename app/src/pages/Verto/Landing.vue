@@ -50,6 +50,7 @@
 
 <script>
 import configManager from '@/util/ConfigManager'
+import { version } from '../../../package.json'
 
 export default {
   name: 'Login',
@@ -66,6 +67,7 @@ export default {
     }
   },
   async mounted () {
+    this.version = version
     this.hasConfig = !!await configManager.hasVertoConfig()
     if (!this.hasConfig) {
       this.$router.push({ name: 'create-password' })
@@ -94,6 +96,7 @@ export default {
       }
       const results = await configManager.login(this.password)
       if (results.success) {
+        this.$store.commit('settings/temporary', this.password)
         this.$router.push({ path: '/verto/dashboard' })
         // this.$router.push({ path: 'vertomanager' })
       } else {
