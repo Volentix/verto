@@ -224,8 +224,8 @@ export default {
     margin-bottom: 25px;
   }
   &--desc{
-    margin-top: -20px;
-    margin-bottom: 10px;
+    margin-top: -10px;
+    margin-bottom: 25px;
     font-size: 18px;
     font-weight: $regular;
     position: relative;
@@ -273,6 +273,8 @@ export default {
     justify-content: flex-end;
     align-items: flex-end;
     min-height: 100px;
+    margin-bottom: 0px;
+    margin-top: auto;
     .action-link{
       height: 50px;
       text-transform: initial !important;
