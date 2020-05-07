@@ -40,7 +40,7 @@
     <div v-if="step===3" class="standard-content">
       <h2 class="standard-content--title">Put the words in the right order</h2>
       <div class="standard-content--body">
-        <words-order @right-order="rightOrder" :words="mnemonic" />
+        <words-order :words="mnemonic" />
         <div v-if="!vertoPassword">
           <q-input
             v-model="vertoPasswordTemp"
@@ -65,7 +65,7 @@
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link back" color="black" text-color="white" label="Back" @click="step=2" />
-         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="saveMnemonic()" :disable="!goodPassword  || !rightOrder" />
+         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="saveMnemonic()" />
       </div>
     </div>
     <div v-if="step===4" class="standard-content">
@@ -110,7 +110,6 @@ export default {
     return {
       step: 1,
       isPwd: true,
-      rightOrder: false,
       mnemonicValidated: '',
       goodPassword: true,
       vertoPassword: this.$store.state.settings.temporary,
@@ -134,6 +133,8 @@ export default {
   async mounted () {
     console.log('mnemonic', this.mnemonic, 'config', this.config, 'verto password', this.vertoPassword)
   },
+  watch: {
+  },
   computed: {
   },
   methods: {
@@ -147,28 +148,31 @@ export default {
       this.step = 2
     },
     async saveMnemonic () {
-      console.log('in saveMnemonic')
-      if (this.vertoPassword) {
-        console.log('in saveMnemonic with password')
-        this.config.mnemonic = this.mnemonic
-        await this.$configManager.updateConfig(this.vertoPassword, this.config)
-        const keys = await HD.Wallet('eos')
-        const result = await this.$configManager.saveWalletAndKey('EOS Key - HD', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
+      if (this.goodPassword && this.$store.state.settings.rightOrder) {
+        console.log('we are good with order')
 
-        if (result && result.success) {
-        //   try {
-        //     await this.$configManager.backupConfig()
-        //     if (this.$q.platform.is.android) {
-        //       this.$q.notify({ color: 'positive', message: 'Config Saved' })
-        //     }
-        //   } catch (e) {
-        //     // TODO: Exception handling
-        //   }
+        if (this.vertoPassword) {
+          console.log('in saveMnemonic with password')
+          this.config.mnemonic = this.mnemonic
+          await this.$configManager.updateConfig(this.vertoPassword, this.config)
+          const keys = await HD.Wallet('eos')
+          const result = await this.$configManager.saveWalletAndKey('EOS Key - HD', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
 
-          this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
-        //   this.$router.push('wallet')
+          if (result && result.success) {
+          //   try {
+          //     await this.$configManager.backupConfig()
+          //     if (this.$q.platform.is.android) {
+          //       this.$q.notify({ color: 'positive', message: 'Config Saved' })
+          //     }
+          //   } catch (e) {
+          //     // TODO: Exception handling
+          //   }
+
+            this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
+          //   this.$router.push('wallet')
+          }
+          this.$router.push('cruxpay')
         }
-        this.$router.push('cruxpay')
       }
     },
     checkVertoPassword () {
