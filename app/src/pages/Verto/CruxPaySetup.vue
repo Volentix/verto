@@ -69,7 +69,13 @@
           </span>
         Enjoy using verto</h2>
         <br>
-        <p class="diclaimer"><strong>Disclaimer</strong> These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.</p>
+        <p class="diclaimer"><strong>Disclaimer</strong>
+          Your 24 words are in very important! <br>
+          Keep them stored somewhere safe. <br>
+          The position of each word is critical and should be stored in the correct sequence order.<br>
+          Anyone with access to these 24 words will be able to recover this Verto app and the private keys it is associated with,
+          so keep in a safe place that only you have access to.
+        </p>
         <div class="standard-content--body__form">
           <div class="flex-end flex justify-end">
             <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="dataRefresh()" />

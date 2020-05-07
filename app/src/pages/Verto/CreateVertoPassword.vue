@@ -2,7 +2,14 @@
   <q-page class="text-black bg-white">
     <div v-if="step===1" class="standard-content">
       <h2 class="standard-content--title">Create your Verto Password</h2>
-      <h2 class="standard-content--desc">The seed phrase will now be added to your config after confirming the password.</h2>
+      <h2 class="standard-content--desc">
+        Please write down your password and store it somewhere safe.
+        Only you know your password.
+        There is no way to recover a Verto password.
+        If you lose your password you will be locked out of Verto.
+        No one will be able to help you recover a lost Verto password.
+      </h2>
+      <!-- The seed phrase will now be added to your config after confirming the password. -->
       <div class="standard-content--body">
         <div class="standard-content--body__img column flex-center">
           <img src="statics/password_bg.svg" alt="">
@@ -159,21 +166,22 @@ export default {
   padding: 5% 10%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 100vh !important;
+  min-height: 100vh;
+  // justify-content: space-between;
+  // height: 100vh !important;
   &--title{
     font-size: 27px;
     font-weight: $bold;
     position: relative;
-    line-height: 50px;
+    line-height: 40px;
     font-family: $Titillium;
-    margin-top: 40px;
-    margin-bottom: 40px;
+    margin-top: 20px;
+    margin-bottom: 30px;
   }
   &--desc{
     margin-top: -20px;
-    margin-bottom: 40px;
-    font-size: 18px;
+    margin-bottom: 0px;
+    font-size: 16px;
     font-weight: $regular;
     position: relative;
     line-height: 26px;
@@ -208,6 +216,8 @@ export default {
     justify-content: flex-end;
     align-items: flex-end;
     min-height: 100px;
+    margin-bottom: 0px;
+    margin-top: auto;
     .action-link{
       height: 50px;
       text-transform: initial !important;
