@@ -38,7 +38,7 @@
     <div v-if="step===3" class="standard-content">
       <h2 class="standard-content--title">Put the words in the right order</h2>
       <div class="standard-content--body">
-        <words-order :words="mnemonic" />
+        <words-order @right-order="rightOrder" :words="mnemonic" />
         <div v-if="!vertoPassword">
           <q-input
             v-model="vertoPasswordTemp"
@@ -63,7 +63,7 @@
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link back" color="black" text-color="white" label="Back" @click="step=2" />
-         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="saveMnemonic()" :disable="!goodPassword" />
+         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="saveMnemonic()" :disable="!goodPassword || !rightOrder" />
       </div>
     </div>
     <div v-if="step===4" class="standard-content">
@@ -106,6 +106,7 @@ export default {
     return {
       step: 1,
       isPwd: true,
+      rightOrder: false,
       mnemonicValidated: '',
       goodPassword: true,
       vertoPassword: this.$store.state.settings.temporary,
@@ -130,36 +131,14 @@ export default {
     console.log('mnemonic', this.mnemonic, 'config', this.config, 'verto password', this.vertoPassword)
   },
   computed: {
-    rightOrder () {
-      if (JSON.stringify(this.arrayMnemonic) === JSON.stringify(this.arrayOrdered)) {
-        return true
-      } else {
-        return false
-      }
-    }
   },
   methods: {
     validateMnemonic () {
       this.mnemonicValidated = bip39.validateMnemonic(this.mnemonic)
     },
-    chooseMe (word, index, show) {
-      if (show) {
-        this.arrayOrdered.push(word)
-        this.$set(this.arrayShuffleShow, index, show)
-      } else {
-        this.arrayOrdered = this.arrayOrdered.filter(e => e !== word)
-        let unset = this.arrayShuffled.indexOf(word)
-        this.$set(this.arrayShuffleShow, unset, show)
-      }
-
-      this.$set(this.arrayOrdered)
-    },
     async createMnemonic () {
       console.log('generating mnemonic')
       this.mnemonic = bip39.generateMnemonic(256)
-      this.arrayMnemonic = this.mnemonic.split(' ')
-      this.arrayShuffled = [...this.arrayMnemonic]
-      this.shuffle(this.arrayShuffled)
 
       this.step = 2
     },
@@ -207,23 +186,6 @@ export default {
         if (error) this.$q.notify({ color: 'negative', message: error })
         return false
       }
-    },
-    shuffle (array) {
-      var currentIndex = array.length, temporaryValue, randomIndex
-
-      // While there remain elements to shuffle...
-      while (currentIndex !== 0) {
-        // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex)
-        currentIndex -= 1
-
-        // And swap it with the current element.
-        temporaryValue = array[currentIndex]
-        array[currentIndex] = array[randomIndex]
-        array[randomIndex] = temporaryValue
-      }
-
-      return array
     },
     copy2clip (value) {
       this.$clipboardWrite(value)
