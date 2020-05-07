@@ -60,7 +60,7 @@
         </q-card-section>
 
         <q-card-section class="q-pa-lg text-h6">
-          The private key is confidential. Aliquam a ipsum neque. Praesent sodales neque augue,
+          The private key is confidential. Please make sure you do not share it with anyone. Your private keys control your funds.
         </q-card-section>
 
         <q-card-actions align="right" class="q-pb-lg q-pr-lg">
