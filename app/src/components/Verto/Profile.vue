@@ -336,6 +336,8 @@ export default {
         img{
           width: 55px;
           height: 55px;
+          min-width: 55px;
+          max-width: 55px;
         }
         // &.border{
         //   border-right: 1px solid rgb(226, 226, 226);

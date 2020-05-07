@@ -75,7 +75,7 @@ export default {
           }
           &_btn{
             background-color: #00D0DF !important;
-            width: 140px;
+            width: fit-content;
             font-size: 16px !important;
             text-transform: initial !important;
             border-radius: 40px;
