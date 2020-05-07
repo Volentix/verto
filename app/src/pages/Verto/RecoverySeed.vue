@@ -65,7 +65,7 @@
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link back" color="black" text-color="white" label="Back" @click="step=2" />
-         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="saveMnemonic()" :disable="!goodPassword" />
+         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="saveMnemonic()" />
       </div>
     </div>
     <div v-if="step===4" class="standard-content">
@@ -133,63 +133,46 @@ export default {
   async mounted () {
     console.log('mnemonic', this.mnemonic, 'config', this.config, 'verto password', this.vertoPassword)
   },
+  watch: {
+  },
   computed: {
-    rightOrder () {
-      if (JSON.stringify(this.arrayMnemonic) === JSON.stringify(this.arrayOrdered)) {
-        return true
-      } else {
-        return false
-      }
-    }
   },
   methods: {
     validateMnemonic () {
       this.mnemonicValidated = bip39.validateMnemonic(this.mnemonic)
     },
-    chooseMe (word, index, show) {
-      if (show) {
-        this.arrayOrdered.push(word)
-        this.$set(this.arrayShuffleShow, index, show)
-      } else {
-        this.arrayOrdered = this.arrayOrdered.filter(e => e !== word)
-        let unset = this.arrayShuffled.indexOf(word)
-        this.$set(this.arrayShuffleShow, unset, show)
-      }
-
-      this.$set(this.arrayOrdered)
-    },
     async createMnemonic () {
       console.log('generating mnemonic')
       this.mnemonic = bip39.generateMnemonic(256)
-      this.arrayMnemonic = this.mnemonic.split(' ')
-      this.arrayShuffled = [...this.arrayMnemonic]
-      this.shuffle(this.arrayShuffled)
 
       this.step = 2
     },
     async saveMnemonic () {
-      console.log('in saveMnemonic')
-      if (this.vertoPassword) {
-        console.log('in saveMnemonic with password')
-        this.config.mnemonic = this.mnemonic
-        await this.$configManager.updateConfig(this.vertoPassword, this.config)
-        const keys = await HD.Wallet('eos')
-        const result = await this.$configManager.saveWalletAndKey('EOS Key - HD', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
+      if (this.goodPassword && this.$store.state.settings.rightOrder) {
+        console.log('we are good with order')
 
-        if (result && result.success) {
-        //   try {
-        //     await this.$configManager.backupConfig()
-        //     if (this.$q.platform.is.android) {
-        //       this.$q.notify({ color: 'positive', message: 'Config Saved' })
-        //     }
-        //   } catch (e) {
-        //     // TODO: Exception handling
-        //   }
+        if (this.vertoPassword) {
+          console.log('in saveMnemonic with password')
+          this.config.mnemonic = this.mnemonic
+          await this.$configManager.updateConfig(this.vertoPassword, this.config)
+          const keys = await HD.Wallet('eos')
+          const result = await this.$configManager.saveWalletAndKey('EOS Key - HD', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
 
-          this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
-        //   this.$router.push('wallet')
+          if (result && result.success) {
+          //   try {
+          //     await this.$configManager.backupConfig()
+          //     if (this.$q.platform.is.android) {
+          //       this.$q.notify({ color: 'positive', message: 'Config Saved' })
+          //     }
+          //   } catch (e) {
+          //     // TODO: Exception handling
+          //   }
+
+            this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
+          //   this.$router.push('wallet')
+          }
+          this.$router.push('cruxpay')
         }
-        this.$router.push('cruxpay')
       }
     },
     checkVertoPassword () {
@@ -211,23 +194,6 @@ export default {
         if (error) this.$q.notify({ color: 'negative', message: error })
         return false
       }
-    },
-    shuffle (array) {
-      var currentIndex = array.length, temporaryValue, randomIndex
-
-      // While there remain elements to shuffle...
-      while (currentIndex !== 0) {
-        // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex)
-        currentIndex -= 1
-
-        // And swap it with the current element.
-        temporaryValue = array[currentIndex]
-        array[currentIndex] = array[randomIndex]
-        array[randomIndex] = temporaryValue
-      }
-
-      return array
     },
     copy2clip (value) {
       this.$clipboardWrite(value)
