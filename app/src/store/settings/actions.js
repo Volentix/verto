@@ -14,3 +14,7 @@ export const toggleNetwork = ({ commit }, data) => {
 export const temporary = ({ commit }, data) => {
   commit('temporary', data)
 }
+
+export const rightOrder = ({ commit }, data) => {
+  commit('rightOrder', data)
+}

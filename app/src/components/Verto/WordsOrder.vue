@@ -65,13 +65,6 @@ export default {
     this.shuffle(this.arrayShuffled)
   },
   computed: {
-    rightOrder () {
-      if (JSON.stringify(this.arrayMnemonic) === JSON.stringify(this.arrayOrdered)) {
-        return true
-      } else {
-        return false
-      }
-    }
   },
   methods: {
     chooseMe (word, index, show) {
@@ -85,7 +78,9 @@ export default {
       }
 
       this.$set(this.arrayOrdered)
-      this.$emit('right-order', this.rightOrder)
+
+      let rightOrder = (JSON.stringify(this.arrayMnemonic) === JSON.stringify(this.arrayOrdered))
+      this.$store.commit('settings/rightOrder', rightOrder)
     },
     shuffle (array) {
       var currentIndex = array.length, temporaryValue, randomIndex
