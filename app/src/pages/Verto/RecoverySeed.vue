@@ -225,7 +225,7 @@ export default {
   }
   &--desc{
     margin-top: -10px;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     font-size: 18px;
     font-weight: $regular;
     position: relative;
