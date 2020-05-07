@@ -70,7 +70,7 @@
         Enjoy using verto</h2>
         <br>
         <p class="diclaimer"><strong>Disclaimer</strong>
-          Your 24 words are in very important! <br>
+          Your 24 words are very important! <br>
           Keep them stored somewhere safe. <br>
           The position of each word is critical and should be stored in the correct sequence order.<br>
           Anyone with access to these 24 words will be able to recover this Verto app and the private keys it is associated with,
