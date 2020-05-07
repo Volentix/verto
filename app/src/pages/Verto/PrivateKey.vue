@@ -131,6 +131,9 @@ export default {
     return {
       step: 1,
       step2: 1,
+      currentWallet: {
+        privatekey: ''
+      },
       goBack: '',
       file: null,
       isPwd: true,
