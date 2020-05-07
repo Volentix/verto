@@ -9,13 +9,15 @@
       </div>
       <h2 class="standard-content--title">Do you want to create or restore your 24 word mnemonic secret seed phrase?</h2>
       <div class="standard-content--footer">
-        <q-btn flat class="action-link restore purple" color="black" text-color="white" label="Restore" @click="step=4"/>
-        <q-btn flat class="action-link create purple" color="black" text-color="white" label="Create" @click="createMnemonic()" />
+        <q-btn class="action-link restore purple" color="grey" text-color="white" label="Restore" @click="step=4"/>
+        <q-btn class="action-link create purple" color="deep-purple-14" text-color="white" label="Create" @click="createMnemonic()" />
       </div>
     </div>
     <div v-if="step===2" class="standard-content">
-      <h2 class="standard-content--title">This is your 24 - word recovery seed phrase.</h2>
-      <h2 class="standard-content--desc">Save these words in the right order in a secure location. Nobody will be able to help if you lose them!</h2>
+      <div>
+        <h2 class="standard-content--title">This is your 24 - word recovery seed phrase.</h2>
+        <h2 class="standard-content--desc">Save these words in the right order in a secure location. Nobody will be able to help if you lose them!</h2>
+      </div>
       <div class="standard-content--body">
         <div class="standard-content--body__mnemonic">
           <h4 class="standard-content--body__mnemonic--title flex justify-between">
@@ -32,7 +34,7 @@
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link back" color="black" text-color="white" label="Back" @click="step=1" />
-         <q-btn flat class="action-link next" color="black" text-color="white" label="Verify" @click="step=3" />
+         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Verify" @click="step=3" />
       </div>
     </div>
     <div v-if="step===3" class="standard-content">
@@ -63,12 +65,14 @@
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link back" color="black" text-color="white" label="Back" @click="step=2" />
-         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="saveMnemonic()" :disable="!goodPassword || !rightOrder" />
+         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="saveMnemonic()" :disable="!goodPassword  || !rightOrder" />
       </div>
     </div>
     <div v-if="step===4" class="standard-content">
-      <h2 class="standard-content--title">Paste your 24 word recovery seed phrase.</h2>
-      <h2 class="standard-content--desc">If you do not have a recovery seed, go back and choose create.</h2>
+      <div>
+        <h2 class="standard-content--title">Paste your 24 word recovery seed phrase.</h2>
+        <h2 class="standard-content--desc">If you do not have a recovery seed, go back and choose create.</h2>
+      </div>
       <div class="standard-content--body">
         <div class="standard-content--body__mnemonic">
           <h4 class="standard-content--body__mnemonic--title flex justify-between">
@@ -86,7 +90,7 @@
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link back" color="black" text-color="white" label="Back" @click="step=1" />
-         <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="saveMnemonic()" :disable="!mnemonicValidated" />
+         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="saveMnemonic()" :disable="!mnemonicValidated" />
       </div>
     </div>
   </q-page>
@@ -207,12 +211,12 @@ export default {
   justify-content: space-between;
   min-height: 100vh !important;
   &--title{
-    font-size: 35px;
+    font-size: 27px;
     font-weight: $bold;
     position: relative;
-    line-height: 50px;
+    line-height: 40px;
     font-family: $Titillium;
-    margin-top: 40px;
+    margin-top: 20px;
     margin-bottom: 40px;
   }
   &--desc{
@@ -273,15 +277,15 @@ export default {
       border-radius: 40px;
       width: 110px;
       margin-left: 10px;
-      &.next{
-        background-color: #7900FF !important;
-      }
+      // &.next{
+      //   background-color: #7900FF !important;
+      // }
       &.back{
         background-color: #B0B0B0 !important;
       }
-      &.purple{
-        background-color: #7900FF !important;
-      }
+      // &.purple{
+      //   background-color: #7900FF !important;
+      // }
     }
 
   }
