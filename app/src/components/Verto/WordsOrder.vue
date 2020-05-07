@@ -4,8 +4,7 @@
     <div class="words-order-wrapper--list">
       <div class="words-order-wrapper--list__empty">
         <ul>
-        <li v-for="(word, index) in arrayOrdered" :key="index"
-          :class="{'d-none': arrayTest3[index] !== undefined}">
+        <li v-for="(word, index) in arrayOrdered" :key="index">
           <q-input
             v-show="arrayOrdered[index]"
             @click="chooseMe(word, index, false)"
@@ -20,8 +19,7 @@
       </div>
       <div class="words-order-wrapper--list__random">
         <ul>
-        <li v-for="(word, index) in arrayShuffled"
-          :key="index" :class="{'d-none': arrayTest2[index] !== undefined}">
+        <li v-for="(word, index) in arrayShuffled" :key="index">
           <q-input
             v-show="!arrayShuffleShow[index]"
             @click="chooseMe(word, index, true)"
@@ -114,15 +112,14 @@ export default {
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
-            justify-content: space-between;
+            // justify-content: space-between;
             margin-bottom: 10px;
             padding-bottom: 0px;
             border-bottom: 1px solid #F3F3F3;
             li{
-                flex-basis: 26%;
-                // margin-right: 3%;
-                // margin-left: 3%;
+                flex-basis: 31%;
                 margin-bottom: 3%;
+                margin-right: 2%;
                 .qinput{
                     width: auto;
                     height: 35px;
@@ -143,7 +140,11 @@ export default {
                         box-sizing: content-box;
                         text-align: center;
                         .q-field__native{
-                            text-align: center;
+                          text-align: center;
+                        }
+                        .q-field__label{
+                          top: 5px;
+                          font-size: 14px;
                         }
                     }
                 }

@@ -212,16 +212,16 @@ export default {
   padding: 5% 10%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  // justify-content: space-between;
   min-height: 100vh !important;
   &--title{
-    font-size: 27px;
+    font-size: 22px;
     font-weight: $bold;
     position: relative;
     line-height: 40px;
     font-family: $Titillium;
     margin-top: 20px;
-    margin-bottom: 40px;
+    margin-bottom: 25px;
   }
   &--desc{
     margin-top: -20px;
