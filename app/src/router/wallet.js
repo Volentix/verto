@@ -150,6 +150,30 @@ export default [
         }
       },
       {
+        name: 'wps-public-proposals',
+        path: '/verto/card-wps/public-proposals',
+        component: () => import('pages/Verto/WPSPublicProposals.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        name: 'wps-public-proposals-create',
+        path: '/verto/card-wps/public-proposals/create',
+        component: () => import('pages/Verto/WPSPublicProposalsCreate.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        name: 'wps-public-proposals-draft',
+        path: '/verto/card-wps/public-proposals/draft',
+        component: () => import('pages/Verto/WPSPublicProposalsDraft.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'send',
         path: '/verto/wallets/send',
         component: () => import('pages/Verto/Send.vue'),

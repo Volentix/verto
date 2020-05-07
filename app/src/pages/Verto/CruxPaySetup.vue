@@ -1,18 +1,18 @@
 <template>
   <q-page class="text-black bg-white">
-    <div v-if="step===1" class="standard-content" style="padding-bottom: 70px">
-      <div class="standard-content--body">
+    <div v-if="step===1" class="standard-content" style="padding-bottom: 0px">
+      <div class="standard-content--body column">
         <h2 class="standard-content--title">Create the Verto ID</h2>
-        <div class="standard-content--body__img column flex-center">
-          <img src="statics/crux_id_bg.svg" alt="">
-        </div>
         <div class="standard-content--body__form">
-          <label class="label">Choose an ID</label>
+          <div class="standard-content--body__img column flex-center">
+            <img src="statics/crux_id_bg.svg" alt="">
+          </div>
+          <label class="label">choose an ID</label>
           <q-input
             v-model="cruxID"
             ref="cruxID"
             @input="getAvailable()"
-            rounded outlined color="blue"
+            rounded outlined color="deep-purple-14"
             type="text"
             class="text-lowercase"
             :loading="!cruxKey || loading"
@@ -21,7 +21,7 @@
             :error-message="errorMessage"
           />
           <div class="flex-end flex justify-end">
-            <q-btn flat class="action-link next" color="black" text-color="white" @click="register()" label="Register" :disable="!available" />
+            <q-btn class="action-link next" color="deep-purple-14" text-color="white" @click="register()" label="Register" :disable="!available" />
           </div>
         </div>
       </div>
@@ -29,7 +29,7 @@
         <p class="crux-label">Powered by cruxpay.</p>
       </div>
     </div>
-    <div v-if="step===2" class="standard-content" style="padding-bottom: 70px">
+    <div v-if="step===2" class="standard-content" style="padding-bottom: 0px">
       <div class="standard-content--body">
         <h2 class="standard-content--title"> Registering your wallet addresses in your ID</h2>
         <!-- <p class="diclaimer"> {{ status }} </p> -->
@@ -52,7 +52,7 @@
             <div class="text-h4 --status">{{ status }}</div>
           </div>
           <div class="flex-end flex justify-end">
-            <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="step=3" :disable="!mapped" />
+            <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="step=3" :disable="!mapped" />
           </div>
         </div>
       </div>
@@ -60,16 +60,23 @@
         <p class="crux-label">Powered by cruxpay.</p>
       </div>
     </div>
-    <div v-if="step===3" class="standard-content" style="padding-bottom: 70px">
+    <div v-if="step===3" class="standard-content" style="padding-bottom: 0px">
       <div class="standard-content--body">
-        <h2 class="standard-content--title">You're all set. <span class="cruxid">{{ existingCruxID }}</span> Enjoy using verto</h2>
+        <h2 class="standard-content--title">You're all set.
+          <span class="cruxid full-width flex justify-between items-center">
+            <q-input flat v-model="existingCruxID" class="cruxid-input" readonly color="deep-purple-14" />
+            <q-btn flat unelevated text-color="grey" @click="copyToClipboard(existingCruxID , 'VERTO ID')" round class="btn-copy" icon="o_file_copy" />
+          </span>
+        Enjoy using verto</h2>
+        <br>
         <p class="diclaimer"><strong>Disclaimer</strong> These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.These words are important. Write them down and store them safely.</p>
-
+        <div class="standard-content--body__form">
+          <div class="flex-end flex justify-end">
+            <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="dataRefresh()" />
+          </div>
+        </div>
       </div>
       <div class="standard-content--body__form">
-        <div class="flex-end flex justify-end">
-          <q-btn flat class="action-link next" color="black" text-color="white" label="Next" @click="dataRefresh()" />
-        </div>
         <div class="standard-content--footer">
           <p class="crux-label">Powered by cruxpay.</p>
         </div>
@@ -155,6 +162,17 @@ export default {
   computed: {
   },
   methods: {
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    },
     async register () {
       if (this.available) {
         this.loading = true
@@ -257,18 +275,18 @@ export default {
   justify-content: space-between;
   height: 100vh !important;
   &--title{
-    font-size: 35px;
+    font-size: 27px;
     font-weight: $bold;
     position: relative;
-    line-height: 50px;
+    line-height: 40px;
     font-family: $Titillium;
-    margin-top: 10px;
+    margin-top: 20px;
     margin-bottom: 30px;
-    word-break: break-all;
+    // word-break: break-all;
     .cruxid{
       font-size: 18px;
       font-weight: $light;
-      display: block;
+      // display: block;
       background-color: rgba(black, .02);
       padding: 0px 20px;
       border-radius: 10px;
@@ -285,7 +303,7 @@ export default {
     color: $mainColor;
   }
   &--body{
-    min-height: 62vh;
+    min-height: 90vh;
     .diclaimer{
       strong{
         display: block;
@@ -303,7 +321,7 @@ export default {
       border-radius: $width;
       overflow: hidden;
       margin: 0px auto;
-      margin-top: -10px;
+      margin-top: 30px;
       margin-bottom: 40px;
       img{
         max-width: 100%;
@@ -334,17 +352,17 @@ export default {
         padding-left: 10px;
       }
       .flex-end{
-        margin-top: 30px;
+        margin-top: 0px;
       }
       .action-link{
         height: 50px;
         text-transform: initial !important;
-        background-color: #7272FA !important;
         font-size: 16px;
         letter-spacing: .5px;
         border-radius: 40px;
         width: 110px;
         margin-left: 10px;
+        margin-top: 10px;
       }
     }
   }
@@ -388,11 +406,20 @@ export default {
           font-size: 20px;
           font-weight: $bold;
           font-family: $Titillium;
-          margin-top: 10px;
+          margin-top: 40px;
           text-align: center;
           margin-bottom: 70px;
         }
       }
+    }
+  }
+  .cruxid-input{
+    width: 81%;
+    /deep/ .q-field__native{
+      color: #6200ea !important;
+    }
+    /deep/ .q-field__control:before {
+      border: none;
     }
   }
 </style>

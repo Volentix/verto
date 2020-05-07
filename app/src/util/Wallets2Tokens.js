@@ -112,8 +112,7 @@ class Wallets2Tokens {
 
           axios.get('https://cors-anywhere.herokuapp.com/https://api.tokensets.com/v1/rebalancing_sets').then(res => {
             let tokenSets = res.data.rebalancing_sets
-            console.log('tokenSets', tokenSets)
-
+            // console.log('tokenSets', tokenSets)
             if (ethplorer.tokens) {
               ethplorer.tokens.filter(t => t.balance > 0).map(t => {
                 t.tokenInfo.image = t.tokenInfo.image ? t.tokenInfo.image : 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + Web3.utils.toChecksumAddress(t.tokenInfo.address) + '/logo.png'
