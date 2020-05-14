@@ -650,7 +650,7 @@ export default {
       fromCoinMemo: false,
       toCoinMemo: false,
       // -------------------------
-      step: 4,
+      step: 1,
       optionsSanitize: false,
       spinnervisible: false,
       lastChangedValue: 'deposit',
