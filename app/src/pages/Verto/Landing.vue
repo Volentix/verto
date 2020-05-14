@@ -211,6 +211,11 @@ export default {
       background-color: #555869;
       opacity: .2;
     }
+    @media screen and (min-width: 768px) {
+      &--title{
+        margin-left: 8%;
+      }
+    }
   }
   .standard-content{
     padding: 5% 10%;
@@ -220,6 +225,11 @@ export default {
     &--body{
       margin-top: 35%;
       margin-bottom: -9%;
+      @media screen and (min-width: 768px) {
+        margin-top: 5%;
+        margin-bottom: 0%;
+        max-width: 400px;
+      }
     }
     &--footer{
       display: flex;
@@ -227,6 +237,9 @@ export default {
       justify-content: space-between;
       align-items: flex-end;
       min-height: 100px;
+      @media screen and (min-width: 768px) {
+        max-width: 400px;
+      }
       .action-link{
         height: 50px;
         text-transform: initial !important;

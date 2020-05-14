@@ -361,7 +361,7 @@ export default {
     &__content{
       background-color: #fff;
       border-radius: 20px;
-      max-width: 85%;
+      max-width: 400px;
       padding: 20px;
       width: 100%;
       box-shadow: 0px -2px 9px 0px rgba(black, .29);
