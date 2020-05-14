@@ -4,11 +4,16 @@
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="card-create-wallet--wrapper--header">
       <div class="card-create-wallet--wrapper--header__holder full-width">
-        <span class="card-create-wallet--wrapper--header__holder_img"><img src="statics/coins_icons/eos_bg.png" alt=""></span>
-        <h3 class="text-black card-create-wallet--wrapper--header__holder_title">Public proposals</h3>
+        <span class="card-make-VTX--wrapper--header__holder_img">
+          <img src="statics/proposals_bg.png" alt="">
+        </span>
+        <span>
+          <h3 class="text-black card-create-wallet--wrapper--header__holder_title">Vote</h3>
+          <div class="desc">Vote and create proposals</div>
+        </span>
       </div>
       <q-btn to="/verto/card-wps" unelevated class="card-create-wallet--wrapper--header_btn" color="black"
-        text-color="white" label="Show" />
+        text-color="white" label="Get Started" />
     </div>
   </div>
 </div>
@@ -54,10 +59,10 @@ export default {
               font-size: 20px;
               font-family: $Titillium;
               font-weight: $bold;
-              margin-top: 20px;
+              margin-top: 0px;
               line-height: 26px;
-              margin-bottom: 30px;
-              padding-left: 10px;
+              margin-bottom: 0px;
+              padding-left: 0px;
             }
             &_img{
               img{
@@ -90,6 +95,11 @@ export default {
           border-radius: 0px 0px 20px 20px;
           box-shadow: 0px 3px 6px 0px rgba(black, .19);
         }
+      }
+    }
+    .card-make-VTX--wrapper--header__holder_img{
+      img{
+        max-width: 120px;
       }
     }
 </style>

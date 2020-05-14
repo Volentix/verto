@@ -17,9 +17,9 @@ export default {
 </script>
 
 <style>
-@media screen and (min-width: 1024px) {
-  .tabs-menu-component{
-    display: none !important;
-  }
-}
+  /* @media screen and (min-width: 1024px) {
+    .tabs-menu-component{
+      display: none !important;
+    }
+  } */
 </style>
