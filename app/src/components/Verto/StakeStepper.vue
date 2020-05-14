@@ -326,6 +326,7 @@ export default {
       progColor: 'green',
       vtxbalance: 0,
       stakes: [],
+      allocatable: 0,
       stakedAmount: 0,
       vtxprice: 0,
       sendAmount: 0,
@@ -373,6 +374,14 @@ export default {
 
     let stakedAmounts = 0
     if (this.params.tokenID === 'vtx') {
+      let totalBalance = (await eos.getCurrencyBalanceP('vtxstake1111', 'volentixgsys')).toString().split(' ')[0]
+      let globalAmnts = (await eos.getTable('vtxstake1111', 'vtxstake1111', 'globalamnts'))[0]
+      let totalStake = globalAmnts.stake.split(' ')[0]
+      let totalSubsidy = globalAmnts.subsidy.split(' ')[0]
+
+      this.allocatable = +totalBalance - (+totalStake + +totalSubsidy)
+      console.log('allocatable', this.allocatable)
+
       this.stakes = await eos.getTable('vtxstake1111', this.params.accountName, 'accounts')
       this.stakes.map(s => {
         console.log('s', s)
