@@ -3,17 +3,20 @@
     <profile-header class="marg" version="type2222" />
     <!-- <q-btn color="white" flat text-color="black" class="full-width" label="Public Proposals" to="/verto/card-wps/public-proposals" /> -->
     <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
-    <convert-any-coin />
-    <br>
-    <card-create-wallet />
-    <br>
-    <card-import-EOS-account />
-    <br>
-    <card-convert-any-to-VTX />
-    <br>
-    <card-make-VTX />
-    <br>
-    <card-WPS />
+
+    <div class="cards-wrapper--content">
+      <card-make-VTX />
+      <hr style="height:0px;opacity:0" />
+      <card-WPS />
+      <hr style="height:0px;opacity:0" />
+      <card-convert-any-to-VTX />
+      <hr style="height:0px;opacity:0" />
+      <card-import-EOS-account />
+      <hr style="height:0px;opacity:0" />
+      <card-create-wallet />
+      <!-- <hr style="height:0px;opacity:0" /> -->
+      <!-- <convert-any-coin /> -->
+    </div>
     <br><br>
   </q-page>
 </template>
@@ -27,7 +30,7 @@ import CardConvertAnyToVTX from '../../components/Verto/CardConvertAnyToVTX'
 import CardImportEOSAccount from '../../components/Verto/CardImportEOSAccount'
 import CardCreateWallet from '../../components/Verto/CardCreateWallet'
 import Wallets from '../../components/Verto/Wallets'
-import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
+// import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
 import HD from '@/util/hdwallet'
 import { CruxPay } from '@cruxpay/js-sdk'
 let cruxClient
@@ -40,7 +43,7 @@ if (platformTools.default) platformTools = platformTools.default
 
 export default {
   components: {
-    ConvertAnyCoin,
+    // ConvertAnyCoin,
     ProfileHeader,
     Wallets,
     CardCreateWallet,
@@ -98,6 +101,40 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+  .cards-wrapper--content{
+    @media screen and (min-width: 768px) {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: auto;
+      /deep/ .card-create-wallet--wrapper{
+        height: 100%;
+        &--header_btn{
+          margin-top: 60px;
+        }
+      }
+      /deep/ .card-convert-any-to-VTX--wrapper{
+        height: 100%;
+      }
+      /deep/ .card-make-VTX--wrapper{
+        height: 100%;
+        &--header_btn{
+          margin-top: 45px;
+        }
+      }
+      > div{
+        flex-basis: 33%;
+        max-width: 33%;
+        width: 100%;
+        margin-bottom: 2%;
+      }
+      br,hr{
+        display: none;
+      }
+    }
+  }
   /deep/ .wallets-wrapper{
     padding-bottom: 0px !important;
   }

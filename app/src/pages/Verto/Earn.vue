@@ -5,6 +5,9 @@
       <card-refer />
       <hr style="height:0px;opacity:0" />
       <card-share />
+      <hr style="height:0px;opacity:0" />
+      <card-create-proposal />
+      <hr style="height:0px;opacity:0" />
     </div>
     <div class="convert-any-coin--wrapper" style="margin-top: -50px">
       <div class="convert-any-coin--wrapper--body">
@@ -32,6 +35,7 @@
 
 <script>
 import CardShare from '../../components/Verto/CardShare'
+import CardCreateProposal from '../../components/Verto/CardCreateProposal'
 import CardRefer from '../../components/Verto/CardRefer'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import configManager from '@/util/ConfigManager'
@@ -42,6 +46,7 @@ if (platformTools.default) platformTools = platformTools.default
 export default {
   components: {
     CardRefer,
+    CardCreateProposal,
     CardShare,
     ProfileHeader
   },

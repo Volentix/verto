@@ -1,21 +1,21 @@
 <template>
-<div>
-  <div class="card-make-VTX--wrapper">
+  <div class="card-refer--wrapper full-width">
     <!-- <q-toggle v-model="active" label="Active" /> -->
-    <div class="card-make-VTX--wrapper--header">
-      <div class="card-make-VTX--wrapper--header__holder full-width">
-        <span class="card-make-VTX--wrapper--header__holder_img"><img src="statics/make_vtx_bg.png" alt=""></span>
-        <h3 class="text-black card-make-VTX--wrapper--header__holder_title">Make VTX while you’re sleeping</h3>
+    <div class="card-refer--wrapper--header">
+      <div class="card-refer--wrapper--header__holder full-width">
+        <span class="card-refer--wrapper--header__holder_img flex flex-center"><img src="statics/share_iphone_bg.png" alt=""></span>
+        <div class="text-black card-refer--wrapper--header__holder_title">
+          <div class="title">Create Proposal</div>
+        </div>
       </div>
-      <q-btn unelevated class="card-make-VTX--wrapper--header_btn" to="/verto/stake" color="black" text-color="white" label="Stake" />
+      <q-btn unelevated class="card-refer--wrapper--header_btn" icon-right="share" color="black" text-color="white" label="Share" />
     </div>
   </div>
-</div>
 </template>
 
 <script>
 export default {
-  name: 'CardMakeVTX',
+  name: 'CardCreateProposal',
   data () {
     return {
       active: true
@@ -28,11 +28,11 @@ export default {
 
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
-    .card-make-VTX{
+    .card-refer{
       &--wrapper{
-        padding: 5% 7%;
-        background-color: #FFFFFF;
-        max-width: 95%;
+        padding: 4% 7%;
+        background-color: #FCFCFC;
+        max-width: 100%;
         margin-left: auto;
         margin-right: auto;
         box-shadow: 0px 3px 6px 0px rgba(black, .19);
@@ -50,30 +50,38 @@ export default {
             align-items: center;
             &_title{
               margin: 0px;
-              font-size: 20px;
+              font-size: 21px;
               font-family: $Titillium;
               font-weight: $bold;
               margin-top: 20px;
               line-height: 26px;
               margin-bottom: 30px;
               padding-left: 10px;
+              text-align: right;
+              .desc{
+                font-weight: $regular;
+                font-size: 17px;
+              }
             }
             &_img{
+              width: 80px;
+              height: 80px;
               img{
-                max-width: 120px;
+                max-width: 95px;
+                margin-top: -11px;
               }
             }
           }
           &_btn{
-            background: #7272FA !important;
+            background-color: #00D0DF !important;
+            width: fit-content;
             font-size: 16px !important;
             text-transform: initial !important;
             border-radius: 40px;
             height: 45px;
             padding-left: 30px;
             padding-right: 30px;
-            margin-bottom: 10px;
-            margin-top: 0px;
+            margin-bottom: 0px;
           }
         }
         position: relative;
@@ -82,13 +90,12 @@ export default {
           width: 100%;
           display: block;
           height: 50px;
-          background-color: #F3F3F3;
           position: absolute;
           z-index: 0;
           bottom: 0px;
           left: 0px;
           border-radius: 0px 0px 20px 20px;
-          box-shadow: 0px 3px 6px 0px rgba(black, .19);
+          // box-shadow: 0px 3px 6px 0px rgba(black, .19);
         }
       }
     }
