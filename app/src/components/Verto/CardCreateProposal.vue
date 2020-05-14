@@ -3,12 +3,12 @@
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="card-refer--wrapper--header">
       <div class="card-refer--wrapper--header__holder full-width">
-        <span class="card-refer--wrapper--header__holder_img flex flex-center"><img src="statics/share_iphone_bg.png" alt=""></span>
+        <span class="card-refer--wrapper--header__holder_img flex flex-center"><img src="statics/proposal_img.svg" alt=""></span>
         <div class="text-black card-refer--wrapper--header__holder_title">
           <div class="title">Create Proposal</div>
         </div>
       </div>
-      <q-btn unelevated class="card-refer--wrapper--header_btn" icon-right="share" color="black" text-color="white" label="Share" />
+      <q-btn unelevated class="card-refer--wrapper--header_btn" to="/verto/card-wps/public-proposals" color="black" text-color="white" label="Create" />
     </div>
   </div>
 </template>
@@ -67,8 +67,9 @@ export default {
               width: 80px;
               height: 80px;
               img{
-                max-width: 95px;
-                margin-top: -11px;
+                max-width: 175px;
+                margin-top: -12px;
+                margin-left: 50px;
               }
             }
           }
