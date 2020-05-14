@@ -268,6 +268,10 @@ export default {
         &.hide{
           margin-bottom: 0px;
           margin-top: -8px;
+          @media screen and (min-width: 768px) {
+            margin-bottom: 35px;
+            margin-top: -38px;
+          }
         }
       }
       .list-wrapper{
@@ -351,7 +355,7 @@ export default {
         text-align: center;
       }
       .coin-icon{
-        margin-left: 10px;
+        margin-left: -3px;
         // opacity: .4;
       }
       .icons{

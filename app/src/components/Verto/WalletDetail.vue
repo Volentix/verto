@@ -52,7 +52,7 @@
       </q-list>
     </div>
     <q-dialog v-model="alertSecurity">
-      <q-card>
+      <q-card style="width: 100%; max-width: 400px">
         <q-card-section>
           <div class="icon-alert flex flex-center">
             <img src="statics/alert.svg" alt="">
