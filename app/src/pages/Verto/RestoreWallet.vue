@@ -6,7 +6,7 @@
                     <q-btn flat unelevated class="btn-align-left" :to="returnto === 'profile' ? '/verto/profile' : '/login'" text-color="black" icon="keyboard_backspace" />
                      {{$t('SettingsView.restore_config')}}
                 </h2>
-                <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
+                <div class="privatekey_bg flex flex-center"><img src="statics/restore_config.svg" alt=""></div>
             </div>
             <div class="chain-tools-wrapper--list open">
                 <div class="list-wrapper">
@@ -436,7 +436,7 @@ export default {
     justify-content: space-between;
     // padding-bottom: 100px;
     .privatekey_bg{
-        margin-top: -30px;
+        margin-top: -10px;
         img{
             width: 100%;
             max-width: 330px;
