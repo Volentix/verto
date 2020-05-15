@@ -52,14 +52,15 @@
         <!-- <qrcode :value="currentAccount.key" :options="{size: 200}"></qrcode> -->
       </div>
     </div>
-    <div v-else-if="version === 'type4'" class="profile-wrapper--header static" style="background: url(statics/eos-bg.png) #007086 no-repeat !important; background-size: contain !important; min-height: 260px;">
+    <div v-else-if="version === 'type4'" class="profile-wrapper--header static_with_image" style="background: url('statics/header_bg.png');min-height:260px">
       <div class="flex justify-between flex-row item-center content-center full-width">
-        <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="white" icon="keyboard_backspace" />
-        <h3 class="flex flex-center text-white static__holder_title title2">Create EOS account</h3>
-        <span class="static__holder_img flex flex-center"></span>
+        <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="white" icon="keyboard_backspace" />
+        <h3 class="flex flex-center text-white static__holder_title">Create EOS account</h3>
+        <span class="static__holder_img flex flex-center"><img src="statics/eos_account_bg.svg" style="max-width: 150px;" alt=""></span>
       </div>
+      <span class="static__holder_img flex flex-center"></span>
     </div>
-    <div v-else-if="version === 'type5'" class="profile-wrapper--header static" style="background: url(statics/earn_bg.png) center bottom no-repeat rgb(255, 255, 255) !important; min-height: 360px; background-size: 80% !important; box-shadow: none !important; border-radius: 0px;">
+    <div v-else-if="version === 'type5'" class="profile-wrapper--header static" style="background: url(statics/earn_venue.svg) center bottom no-repeat rgb(255, 255, 255) !important; min-height: 360px; background-size: 370px!important; box-shadow: none !important; border-radius: 0px;">
       <div class="flex justify-between flex-row item-center content-center full-width">
         <h3 class="flex flex-center text-white static__holder_title title5">Venue<br>Refer & Earn</h3>
         <span class="static__holder_img flex flex-center"></span>
@@ -294,6 +295,7 @@ export default {
           font-family: $Titillium;
         }
       }
+      &.eos-account{}
       &__title{
         margin: 0px;
         font-size: 18px;

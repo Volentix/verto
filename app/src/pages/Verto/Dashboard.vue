@@ -12,8 +12,8 @@
       <card-convert-any-to-VTX />
       <hr style="height:0px;opacity:0" />
       <card-import-EOS-account />
-      <hr style="height:0px;opacity:0" />
-      <card-create-wallet />
+      <!-- <hr style="height:0px;opacity:0" /> -->
+      <!-- <card-create-wallet /> -->
       <!-- <hr style="height:0px;opacity:0" /> -->
       <!-- <convert-any-coin /> -->
     </div>
@@ -28,7 +28,7 @@ import CardMakeVTX from '../../components/Verto/CardMakeVTX'
 import CardWPS from '../../components/Verto/CardWPS'
 import CardConvertAnyToVTX from '../../components/Verto/CardConvertAnyToVTX'
 import CardImportEOSAccount from '../../components/Verto/CardImportEOSAccount'
-import CardCreateWallet from '../../components/Verto/CardCreateWallet'
+// import CardCreateWallet from '../../components/Verto/CardCreateWallet'
 import Wallets from '../../components/Verto/Wallets'
 // import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
 import HD from '@/util/hdwallet'
@@ -46,7 +46,7 @@ export default {
     // ConvertAnyCoin,
     ProfileHeader,
     Wallets,
-    CardCreateWallet,
+    // CardCreateWallet,
     CardImportEOSAccount,
     CardConvertAnyToVTX,
     CardMakeVTX,
@@ -112,7 +112,7 @@ export default {
       /deep/ .card-create-wallet--wrapper{
         height: 100%;
         &--header_btn{
-          margin-top: 60px;
+          margin-top: 9px;
         }
       }
       /deep/ .card-convert-any-to-VTX--wrapper{
@@ -121,12 +121,12 @@ export default {
       /deep/ .card-make-VTX--wrapper{
         height: 100%;
         &--header_btn{
-          margin-top: 45px;
+          margin-top: 0px;
         }
       }
       > div{
-        flex-basis: 33%;
-        max-width: 33%;
+        flex-basis: 25%;
+        max-width: 25%;
         width: 100%;
         margin-bottom: 2%;
       }

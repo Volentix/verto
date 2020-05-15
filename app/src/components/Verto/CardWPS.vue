@@ -79,6 +79,9 @@ export default {
             padding-left: 30px;
             padding-right: 30px;
             margin-bottom: 10px;
+            @media screen and (min-width: 768px) {
+              margin-top: 25px !important;
+            }
           }
         }
         position: relative;
@@ -100,6 +103,12 @@ export default {
     .card-make-VTX--wrapper--header__holder_img{
       img{
         max-width: 120px;
+        @media screen and (min-width: 768px) {
+          max-width: 100px;
+          margin-right: 25px;
+          margin-top: 10px;
+          margin-bottom: 5px;
+        }
       }
     }
 </style>
