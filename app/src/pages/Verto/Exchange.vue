@@ -1,12 +1,12 @@
 <template>
-  <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px;background: #f3f3f3 !important">
+  <q-page class="column text-black bg-grey-12" style="padding-bottom: 100px;background: #f3f3f3 !important">
     <div class="chain-tools-wrapper">
         <div class="standard-content">
             <h2 class="standard-content--title flex justify-center">
                 <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" />
                   Exchange
             </h2>
-            <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
+            <div class="privatekey_bg flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div>
         </div>
         <div class="chain-tools-wrapper--list open">
             <div class="list-wrapper">
@@ -1146,6 +1146,13 @@ export default {
       img{
         width: 100%;
         max-width: 330px;
+      }
+      @media screen and (min-width: 768px) {
+        margin-top: -20px;
+        img{
+          width: 100%;
+          max-width: 380px;
+        }
       }
     }
     &--title{
