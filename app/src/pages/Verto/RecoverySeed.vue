@@ -173,6 +173,8 @@ export default {
           }
           this.$router.push('cruxpay')
         }
+      } else {
+        this.$q.notify({ color: 'negative', message: 'The words are not yet in the right order' })
       }
     },
     checkVertoPassword () {
