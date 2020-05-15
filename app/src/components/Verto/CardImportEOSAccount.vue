@@ -64,6 +64,11 @@ export default {
             &_img{
               img{
                 max-width: 120px;
+                @media screen and (min-width: 768px) {
+                  max-width: 100px;
+                  margin-right: 10px;
+                  margin-bottom: 12px;
+                }
               }
             }
           }
@@ -83,6 +88,11 @@ export default {
             padding-right: 20px;
             margin-bottom: 10px;
             margin-left: 10px;
+            @media screen and (min-width: 768px) {
+              padding-left: 13px;
+              padding-right: 13px;
+              font-size: 14px !important;
+            }
             &.white{
               border: 1px solid #B0B0B0 !important;
               color: #B0B0B0 !important;

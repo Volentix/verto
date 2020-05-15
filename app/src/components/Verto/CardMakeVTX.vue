@@ -61,6 +61,9 @@ export default {
             &_img{
               img{
                 max-width: 120px;
+                @media screen and (min-width: 768px) {
+                  max-width: 90px;
+                }
               }
             }
           }
@@ -74,6 +77,9 @@ export default {
             padding-right: 30px;
             margin-bottom: 10px;
             margin-top: 0px;
+            @media screen and (min-width: 768px) {
+              margin-top: 25px !important;
+            }
           }
         }
         position: relative;
