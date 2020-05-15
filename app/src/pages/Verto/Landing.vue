@@ -66,12 +66,14 @@ export default {
       showSubmit: false
     }
   },
-  async mounted () {
-    this.version = version
+  async created () {
     this.hasConfig = !!await configManager.hasVertoConfig()
     if (!this.hasConfig) {
       this.$router.push({ name: 'create-password' })
     }
+  },
+  async mounted () {
+    this.version = version
     this.$refs.psswrd.focus()
   },
   methods: {
