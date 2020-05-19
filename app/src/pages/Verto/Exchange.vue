@@ -6,7 +6,7 @@
                 <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" />
                   Exchange
             </h2>
-            <div class="privatekey_bg flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div>
+            <div class="exchange_picto flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div>
         </div>
         <div class="chain-tools-wrapper--list open">
             <div class="list-wrapper">
@@ -293,11 +293,16 @@
                         </div>
                       </div>
                       <q-stepper-navigation v-show="true" class="flex justify-end">
-                        <div class="row full-width" style="padding-left: 13px; margin-top: -20px;">
-                          <div class="q-gutter-sm"><q-checkbox label="I read the disclaimer" color="deep-purple-14" v-model="showDisclaimerWrapper" /></div>
+                        <div class="row full-width" style="padding-left: 6px; margin-top: -20px;">
+                          <div class="q-gutter-sm">
+                            <q-btn color="white" flat @click="showDisclaimerWrapper = true" class="lower bold" text-color="black" label="Read the disclaimer" />
+                          </div>
+                        </div>
+                        <div class="row full-width" style="padding-left: 13px; margin-top: 10px;">
+                          <div class="q-gutter-sm"><q-checkbox label="I accept" color="deep-purple-14" v-model="disclaimerCheck" /></div>
                         </div>
                         <div class="standard-content--footer">
-                          <q-btn @click="checkAddressMatchCoins()" flat class="action-link next" color="black" text-color="white">
+                          <q-btn @click="checkAddressMatchCoins()" :disable="!disclaimerCheck" flat class="action-link next" color="black" text-color="white">
                             <span class="label">Exchange {{ fromCoinType.toUpperCase() }} <q-icon name="keyboard_backspace" color="white" class="left-icon" /> {{ toCoinType.toUpperCase() }}</span>
                           </q-btn>
                         </div>
@@ -310,8 +315,23 @@
                         <div class="standard-content--body__form" style="margin-left: -35px;">
                           <div class="progress-custom-volentix column flex-center">
                             <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58"><path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path></svg>
-                            <span class="title">Processing</span>
-                            <q-linear-progress rounded size="md" :value="progress" class="q-mt-md" />
+                            <span class="title">{{ friendlyStatus }}</span>
+                            <q-linear-progress indeterminate stripe rounded size="md" :value="progress" class="q-mt-md" />
+                          </div>
+                          <hr style="height:15px;opacity:0" />
+                          <div class="text-black">
+                            <div class="text-h4 --subtitle">
+                              <ul>
+                                <li><span>{{exchangeLabel}}</span></li>
+                              </ul>
+                            </div>
+                            <q-input v-model="exchangeAddress.address" readonly rounded class="input-input pr80" outlined color="purple" type="text">
+                              <template v-slot:append>
+                                <div class="flex justify-end">
+                                  <q-btn flat unelevated text-color="grey" @click="copyToClipboard(exchangeAddress.address , 'Exchange Address')" round class="btn-copy" icon="o_file_copy" />
+                                </div>
+                              </template>
+                            </q-input>
                           </div>
                         </div>
                       </div>
@@ -322,12 +342,11 @@
             </div>
         </div>
     </div>
-    <q-dialog v-model="showDisclaimerWrapper">
+    <q-dialog persistent v-model="showDisclaimerWrapper">
       <q-card class="q-pa-md" style="width: 700px; max-width: 92vw;">
         <q-toolbar>
           <q-avatar><img src="statics/icon.png"></q-avatar>
           <q-toolbar-title><span class="text-weight-bold">Disclaimer</span> </q-toolbar-title>
-          <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
         <q-card-section class="text-h6">
           <div class="parg">
@@ -336,7 +355,7 @@
           </div>
         </q-card-section>
         <q-card-actions align="right" class="q-pr-sm">
-          <q-btn flat label="Accept" class="accept-disclaimer" @click="disclaimer = true" color="primary" v-close-popup />
+          <q-btn flat label="Accept" class="accept-disclaimer" @click="disclaimerCheck = true" color="primary" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -627,7 +646,7 @@ export default {
   components: {},
   data () {
     return {
-      disclaimer: false,
+      disclaimerCheck: false,
       showDisclaimerWrapper: false,
       fromCoin: null,
       fromCoinAmount: 0,
@@ -717,13 +736,13 @@ export default {
     this.tableData.map(token => {
       self.optionsFrom.push({
         label: token.name.toLowerCase(),
-        value: token.key.toLowerCase(),
+        value: token.key,
         image: token.icon,
         type: token.type
       })
       self.optionsTo.push({
         label: token.name.toLowerCase(),
-        value: token.key.toLowerCase(),
+        value: token.key,
         image: token.icon,
         type: token.type
       })
@@ -909,6 +928,17 @@ export default {
     })
   },
   methods: {
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    },
     checkAddressMatchCoins () {
       this.postOrder()
       this.$refs.stepper.next()
@@ -987,7 +1017,7 @@ export default {
         if (this.depositCoin.value.toLowerCase() === token.type) {
           self.optionsFrom.push({
             label: token.name.toLowerCase(),
-            value: token.key.toLowerCase(),
+            value: token.type === 'eos' ? token.name.toLowerCase() : token.key,
             image: token.icon,
             type: token.type
           })
@@ -995,7 +1025,7 @@ export default {
         if (this.destinationCoin.value.toLowerCase() === token.type) {
           self.optionsTo.push({
             label: token.name.toLowerCase(),
-            value: token.key.toLowerCase(),
+            value: token.type === 'eos' ? token.name.toLowerCase() : token.key,
             image: token.icon,
             type: token.type
           })
@@ -1057,6 +1087,10 @@ export default {
         destinationCoinAmount = self.destinationQuantity
       }
 
+      this.refundAddress.address = this.refundAddress.address === '' ? this.fromCoin.value : this.refundAddress.address
+      console.log('this.refundAddress', this.refundAddress)
+      this.destinationAddress.address = this.destinationAddress.address === '' ? this.toCoin.value : this.destinationAddress.address
+
       this.$axios.post(url + '/v2/order',
         {
           depositCoin: self.depositCoin.value,
@@ -1068,6 +1102,7 @@ export default {
         },
         { headers })
         .then((response) => {
+          console.log('response - order', response)
           self.orderId = response.data.data.orderId
           self.exchangeAddress = response.data.data.exchangeAddress
           self.expectedDepositCoinAmount = response.data.data.expectedDepositCoinAmount
@@ -1076,7 +1111,7 @@ export default {
           this.orderStatus()
         })
         .catch((err) => {
-          userError('There was a problem posting the order', err)
+          console.log('There was a problem posting the order', err)
         })
     },
     getPairs () {
@@ -1141,11 +1176,13 @@ export default {
     // justify-content: space-start;
     // min-height: calc(100vh + 100px) !important;
     // padding-bottom: 100px;
-    .privatekey_bg{
+    .exchange_picto{
       margin-top: -60px;
       img{
         width: 100%;
-        max-width: 330px;
+        max-width: 270px;
+        margin-top: 20px;
+        margin-bottom: -30px;
       }
       @media screen and (min-width: 768px) {
         margin-top: -20px;
@@ -1614,22 +1651,22 @@ export default {
               top: 6px;
             }
             .--subtitle{
-              font-size: 17px;
+              font-size: 16px;
               color: #000;
               font-family: $Titillium;
-              font-weight: $regular;
+              font-weight: $light;
               line-height: 20px;
               margin-top: 10px;
-              margin-bottom: 30px;
+              margin-bottom: 10px;
               ul{
                 padding: 0px;
                 margin: 0px;
                 margin-left: 20px;
                 li{
                   font-size: 15px;
-                  font-weight: $bold;
+                  font-weight: $light;
                   margin-bottom: 10px;
-                  line-height: 15px;
+                  line-height: 21px;
                   color: #FFB200;
                   span{
                     color: #2A2A2A;
@@ -1745,6 +1782,12 @@ export default {
       border-bottom: 1px solid ;
       text-decoration: none;
     }
+  }
+  .lower{
+    text-transform: initial !important;
+  }
+  .bold{
+    font-weight: $bold !important;
   }
 </style>
 <style lang="scss">
