@@ -55,7 +55,7 @@ export default {
   data () {
     return {
       cruxKey: {},
-      walletClientName: 'testwallet' // should be 'verto' when in prod
+      walletClientName: 'verto' // should be 'verto' when in prod
     }
   },
   async created () {
