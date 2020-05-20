@@ -5,10 +5,11 @@
       Create proposals </h2>
       <div class="standard-content--body">
         <div class="standard-content--body__form">
-          <q-input v-model="from" rounded class="input-input" outlined color="purple" type="text" label="Proposal name (id)" />
-          <q-input v-model="from" rounded class="input-input" outlined color="purple" type="text" label="Proposal Title" />
-          <q-input v-model="from" rounded class="input-input" outlined color="purple" type="text" label="Budget" />
-          <q-input v-model="from" rounded class="input-input" outlined color="purple" type="text" label="Duration" />
+          <q-input v-model="proposal_name" class="input-input" outlined rounded color="purple" label="Proposal name (id)" />
+          <q-input v-model="title" class="input-input" outlined rounded color="purple" label="Proposal Title" />
+          <q-input v-model="monthly_budget" class="input-input" outlined rounded color="purple" label="Budget" />
+          <q-input v-model="duration" class="input-input" outlined rounded color="purple" label="Duration" />
+          <q-input v-model="proposal_json" rounded outlined class="" color="purple" type="textarea" label="Proposal json"/>
         </div>
         <br>
         <!-- <div class="total-fee flex justify-between">
@@ -17,7 +18,7 @@
         </div> -->
       </div>
       <div class="standard-content--footer">
-         <q-btn flat class="action-link next" color="black" text-color="white" label="Submit Draft" />
+         <q-btn @click="submitdraft" flat class="action-link next" color="black" text-color="white" label="Submit Draft" />
       </div>
       <img src="statics/draft_bg.png" class="draft_bg" alt="">
     </div>
@@ -25,51 +26,39 @@
 </template>
 
 <script>
+import { Notify } from 'quasar'
+
+import EosWrapper from '@/util/EosWrapper'
+
+const eos = new EosWrapper()
+let platformTools = require('../../util/platformTools')
+if (platformTools.default) platformTools = platformTools.default
+
 export default {
   components: {
   },
   data () {
     return {
-      progressValue: 20,
-      openModal: false,
-      currentWallet: null,
-      sendTo: '',
-      to: '',
-      fetchCurrentWalletFromState: true,
-      from: '',
-      isPwd: true,
-      sendAmount: 1,
-      formatedAmount: '',
-      options: [],
-      minimizedModal: false,
-      message: '',
-      configPath: '',
-      tableData: [],
-      sendMemo: '',
-      chainID: '',
-      tokenID: '',
-      accountName: '',
-      params: null,
-      getPassword: false,
-      walletClientName: 'testwallet', // should be 'verto' when in prod
-      currentAccount: {
-        selected: false,
-        type: '',
-        name: '',
-        amount: '',
-        contract: '',
-        chain: ''
-      }
+      proposals: [],
+      drafts: [],
+      privateKey: {
+        success: null
+      },
+      isPrivateKeyEncrypted: false,
+      proposal_name: 'mywps',
+      title: 'My WPS Title',
+      monthly_budget: '8.00000000 VTX',
+      duration: '2',
+      proposal_json: '[{"key":"somedata", "value":"text data here"}]'
+    }
+  },
+  computed: {
+    wallet () {
+      return this.$store.state.currentwallet.wallet || {}
     }
   },
   async created () {
-    this.params = this.$store.state.currentwallet.params
-    this.tableData = await this.$store.state.wallets.tokens
-    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
-    )
-
-    this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
+    console.log('wall', this.wallet)
   },
   mounted () {
   },
@@ -84,6 +73,54 @@ export default {
         type: 'warning',
         position: 'top'
       })
+    },
+    decryptPrivateKey () {
+      // TODO Decrypt key modal action here
+      const privateKeyEncrypted = JSON.stringify(this.wallet.privateKeyEncrypted)
+
+      const pwd = prompt('Private key encript password:')
+      const privateKey = this.$configManager.decryptPrivateKey(pwd, privateKeyEncrypted)
+
+      if (privateKey.success) {
+        return privateKey.key
+      } else {
+        throw new Error('Invalid password')
+      }
+    },
+    async transact (actions) {
+      try {
+        const pk = this.decryptPrivateKey()
+
+        await eos.transact({ actions }, { keyProvider: pk })
+        setTimeout(() => this.fetch(), 1000) // FIXME Immediately do not update table(eos.getTable)
+      } catch (e) {
+        // FIXME with userError handler
+        // userError(JSON.parse(e).message)
+
+        Notify.create({ message: e.message ? e.message : e })
+
+        throw e
+      }
+    },
+    async submitdraft () {
+      const { proposal_name, title, monthly_budget, duration, proposal_json } = this
+
+      await this.transact([{
+        account: 'volentixwork',
+        name: 'submitdraft',
+        authorization: [{
+          actor: this.wallet.name,
+          permission: 'active'
+        }],
+        data: {
+          proposer: this.wallet.name,
+          proposal_name,
+          title,
+          monthly_budget,
+          duration: parseInt(duration),
+          proposal_json: JSON.parse(proposal_json)
+        }
+      }])
     }
   }
 }
@@ -164,6 +201,9 @@ export default {
         .input-input{
           height: 50px;
           margin-bottom: 10px;
+          &.q-textarea{
+            height: 150px;
+          }
           /deep/ .q-field__control{
             height: 50px;
             min-height: unset;
