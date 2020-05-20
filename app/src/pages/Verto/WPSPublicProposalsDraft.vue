@@ -11,19 +11,19 @@
             <div class="chain-tools-wrapper--list open">
                 <div class="list-wrapper">
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                      <div class="title">2 draft Proposals</div>
+                      <div class="title">{{drafts.length}} draft Proposals</div>
                       <!-- <div class="parag"></div> -->
                       <div class="list-proposals--wrapper">
-                        <div class="item" v-for="item in 2" :key="item">
+                        <div class="item" v-for="item in drafts" :key="item">
                           <div class="row flex justify-between">
                             <div class="">
-                              <strong>My worker proposal #1</strong> &nbsp; Proposer: <strong>verto123</strong>
+                              <strong>{{item.proposal_name}}</strong> &nbsp; Proposer: <strong>{{item.title}}</strong>
                             </div>
                           </div>
                           <div class="row full-width items-center q-mt-sm">
                             <div class="progress col col-6">
-                              Duration: <strong>2</strong>
-                              <br> Budget: <strong>80000000 VTX</strong>
+                              Duration: <strong>{{item.duration}}</strong><br>
+                              Budget: <strong>{{item.monthly_budget}} VTX</strong>
                             </div>
                             <div class="vote col col-6 flex justify-end items-center">
                               <q-btn unelevated color="deep-purple-14" class="q-mr-sm --next-btn" rounded label="Activate" />
@@ -42,24 +42,48 @@
 
 <script>
 
+import EosWrapper from '@/util/EosWrapper'
+
+const eos = new EosWrapper()
+let platformTools = require('../../util/platformTools')
+if (platformTools.default) platformTools = platformTools.default
+
 export default {
   components: {},
   data () {
     return {
+      proposals: [],
+      drafts: [],
+      privateKey: {
+        success: null
+      },
+      isPrivateKeyEncrypted: false,
       goBack: '',
       progress: 0.3
     }
   },
+  computed: {
+    wallet () {
+      return this.$store.state.currentwallet.wallet || {}
+    }
+  },
   async created () {
-    let tableData = await this.$store.state.wallets.tokens
-    let params = this.$store.state.currentwallet.params
-    this.currentWallet = tableData.find(w => w.chain === params.chainID && w.type === params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === params.accountName : w.key === params.accountName)
-    )
-    this.goBack = `/verto/wallets/${params.chainID}/${params.tokenID}/${params.accountName}`
+    console.log('wall', this.wallet)
+
+    if (this.wallet.name) {
+      this.fetch()
+    }
   },
   methods: {
+    fetch () {
+      // eos.getTable('volentixwork', 'volentixwork', 'proposals').then(r => {
+      //   this.proposals = r
+      // })
 
+      eos.getTable('volentixwork', this.wallet.name, 'drafts').then(r => {
+        this.drafts = r
+      })
+    }
   }
 }
 </script>
@@ -90,6 +114,7 @@ export default {
             border-radius: 10px;
             padding: 4% 5%;
             box-shadow: 0px 4px 16px 0px rgba(black, .09);
+            min-height: 37vh;
             &--title{
               font-size: 22px;
               font-family: $Titillium;
