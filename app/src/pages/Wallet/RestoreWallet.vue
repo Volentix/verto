@@ -159,7 +159,7 @@ export default {
           this.applicationRefreshing = true
           that.$q.notify({ color: 'positive', message: 'Application refreshing' })
           setTimeout(function () {
-            that.$router.push({ name: 'wallet' })
+            that.$router.push({ name: 'dashboard' })
             this.spinnervisible = false
           }, 300)
         } catch (e) {

@@ -50,7 +50,7 @@
             </template>
           </q-select>
           <span class="lab-input">Or Via Verto ID (Cruxpay)</span>
-          <q-input v-model="vertoID" class="input-input" rounded outlined color="purple" type="text"/>
+          <q-input v-model="vertoID" class="input-input" rounded readonly outlined color="purple" type="text"/>
           <br>
           <div class="qrcode-wrapper">
             <div class="wallet-address flex justify-between">
@@ -218,7 +218,7 @@ export default {
       to: '',
       params: null,
       tableData: [],
-      vertoID: '',
+      vertoID: this.$store.state.currentwallet.config.cruxID,
       goBack: '/verto/dashboard',
       fetchCurrentWalletFromState: true,
       exchangeAddress: 'dsldkslk34JL309LKLKELKLF0934K34LK3L934LK',

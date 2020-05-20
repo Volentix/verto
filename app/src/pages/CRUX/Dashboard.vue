@@ -89,9 +89,9 @@ export default {
     console.log('crux privateKey', cruxKey.privateKey, 'menonic', this.$store.state.currentwallet.config.mnemonic)
 
     cruxClient = new CruxPay.CruxClient({
-      walletClientName: 'testwallet',
+      walletClientName: 'verto'
       // privateKey: cruxKey.privateKey
-      privateKey: 'KyB21VpmpjXDTNi3DKC2ZnHJA8qYhGCMTk8FNjnXombYVDPyWXhc' //
+      // privateKey: 'KyB21VpmpjXDTNi3DKC2ZnHJA8qYhGCMTk8FNjnXombYVDPyWXhc' //
     })
 
     await cruxClient.init()
