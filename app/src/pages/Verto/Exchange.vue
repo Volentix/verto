@@ -729,7 +729,7 @@ export default {
     }
   },
   async created () {
-    console.log('created - created - created - created')
+    // console.log('created - created - created - created')
     this.params = this.$store.state.currentwallet.params
     this.tableData = await this.$store.state.wallets.tokens
     let self = this
@@ -762,7 +762,7 @@ export default {
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
-    console.log('this.currentAccount', this.currentAccount)
+    // console.log('this.currentAccount', this.currentAccount)
     if (this.currentAccount !== null && this.currentAccount !== undefined) {
       // this.fromCoin = {
       //   label: this.currentAccount.name,
@@ -1009,7 +1009,7 @@ export default {
     },
     checkToGetRate () {
       // if (this.$refs.destinationAddressAddress.hasError || this.destinationAddress.address === '' ||
-      console.log('this.depositCoin.value', this.depositCoin.value)
+      // console.log('this.depositCoin.value', this.depositCoin.value)
       let self = this
       this.optionsFrom = []
       this.optionsTo = []
@@ -1088,7 +1088,7 @@ export default {
       }
 
       this.refundAddress.address = this.refundAddress.address === '' ? this.fromCoin.value : this.refundAddress.address
-      console.log('this.refundAddress', this.refundAddress)
+      // console.log('this.refundAddress', this.refundAddress)
       this.destinationAddress.address = this.destinationAddress.address === '' ? this.toCoin.value : this.destinationAddress.address
 
       this.$axios.post(url + '/v2/order',
@@ -1102,7 +1102,7 @@ export default {
         },
         { headers })
         .then((response) => {
-          console.log('response - order', response)
+          // console.log('response - order', response)
           self.orderId = response.data.data.orderId
           self.exchangeAddress = response.data.data.exchangeAddress
           self.expectedDepositCoinAmount = response.data.data.expectedDepositCoinAmount
@@ -1111,7 +1111,7 @@ export default {
           this.orderStatus()
         })
         .catch((err) => {
-          console.log('There was a problem posting the order', err)
+          userError('There was a problem posting the order', err)
         })
     },
     getPairs () {
@@ -1122,7 +1122,7 @@ export default {
         },
         { headers })
         .then((response) => {
-          console.log('------------Response------------', response)
+          // console.log('------------Response------------', response)
           self.destinationCoinOptions = response.data.data.map(function (coin) {
             if (coin.isActive === true) {
               let row = {
