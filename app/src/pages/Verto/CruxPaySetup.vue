@@ -108,7 +108,7 @@ export default {
       existingCruxID: null,
       error: false,
       errorMessage: '',
-      walletClientName: 'testwallet', // should be 'verto' when in prod
+      walletClientName: 'verto', // should be 'verto' when in prod // testwallet
       vertoPassword: this.$store.state.settings.temporary, // TODO empty temporary
       config: this.$store.state.currentwallet.config,
       loading: false,

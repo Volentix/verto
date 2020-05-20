@@ -156,7 +156,7 @@ export default {
       accountName: '',
       params: null,
       getPassword: false,
-      walletClientName: 'testwallet', // should be 'verto' when in prod
+      walletClientName: 'verto', // should be 'verto' when in prod
       cruxKey: {},
       sendToResolved: {},
       memoError: false,
