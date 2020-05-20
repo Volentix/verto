@@ -11,14 +11,14 @@
             <div class="chain-tools-wrapper--list open">
                 <div class="list-wrapper">
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                      <div class="title">27 Active Proposals</div>
+                      <div class="title">{{proposals.length}} Active Proposals</div>
                       <div class="parag">Next budget payments will occur in 28 days and it will provide 20000 VTX of 56000 VTX of total available budget.</div>
                       <div class="flex justify-end q-mt-md q-mb-md">
                         <q-btn unelevated color="deep-purple-14" class="q-mr-sm --next-btn" rounded label="Create Proposals" to="/verto/card-wps/public-proposals/create" />
                         <q-btn unelevated color="deep-purple-14" class="--next-btn" rounded label="Draft Proposals" to="/verto/card-wps/public-proposals/draft" />
                       </div>
                       <div class="list-proposals--wrapper">
-                        <div class="item" v-for="item in 10" :key="item">
+                        <div class="item" v-for="item in proposals" :key="item">
                           <div class="row flex justify-between">
                             <div class="">
                               <strong>Etiam commodo by ABC</strong> &nbsp; Duration: <strong>2</strong>
@@ -47,24 +47,47 @@
 </template>
 
 <script>
+import EosWrapper from '@/util/EosWrapper'
+
+const eos = new EosWrapper()
+let platformTools = require('../../util/platformTools')
+if (platformTools.default) platformTools = platformTools.default
 
 export default {
   components: {},
   data () {
     return {
-      goBack: '',
-      progress: 0.3
+      proposals: [],
+      drafts: [],
+      privateKey: {
+        success: null
+      },
+      isPrivateKeyEncrypted: false,
+      proposal_name: 'mywps',
+      title: 'My WPS Title',
+      monthly_budget: '8.00000000 VTX',
+      duration: '2',
+      proposal_json: '[{"key":"somedata", "value":"text data here"}]'
+    }
+  },
+  computed: {
+    wallet () {
+      return this.$store.state.currentwallet.wallet || {}
     }
   },
   async created () {
-    let tableData = await this.$store.state.wallets.tokens
-    let params = this.$store.state.currentwallet.params
-    this.currentWallet = tableData.find(w => w.chain === params.chainID && w.type === params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === params.accountName : w.key === params.accountName)
-    )
+    console.log('wall', this.wallet)
+
+    if (this.wallet.name) {
+      this.fetch()
+    }
   },
   methods: {
-
+    fetch () {
+      eos.getTable('volentixwork', 'volentixwork', 'proposals').then(r => {
+        this.proposals = r
+      })
+    }
   }
 }
 </script>

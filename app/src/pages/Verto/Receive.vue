@@ -58,8 +58,8 @@
               <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy" text-color="grey" icon="o_file_copy" />
             </div>
             <span class="qrcode-widget">
-              <qrcode :value="exchangeAddress" :options="{size: 200}"></qrcode>
-              <span class="exchange-address full-width text-center">{{exchangeAddress}}</span>
+              <qrcode :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
+              <span class="exchange-address full-width text-center">{{currentToken.type === 'eos' ? currentToken.label : currentToken.value}}</span>
             </span>
           </div>
         </div>
@@ -208,7 +208,12 @@ export default {
   components: {},
   data () {
     return {
-      currentToken: null,
+      currentToken: {
+        label: '',
+        value: '',
+        image: '',
+        type: ''
+      },
       currentAccount: null,
       to: '',
       params: null,
@@ -230,30 +235,36 @@ export default {
 
     this.tableData = await this.$store.state.wallets.tokens
     let self = this
+    let firstItem = null
+    let count = 0
     this.tableData.map(token => {
+      if (count === 0) { firstItem = token }
       self.options.push({
         label: token.name.toLowerCase(),
         value: token.key.toLowerCase(),
-        image: token.icon
+        image: token.icon,
+        type: token.chain
       })
+      count++
     })
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
-    if (this.currentAccount !== null) {
-      this.currentToken = {
-        label: this.currentAccount.name,
-        value: this.currentAccount.key,
-        image: this.currentAccount.icon
-      }
-      this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
-    }
-
     console.log('this.currentAccount sur la page send', this.currentAccount)
+    this.currentToken = {
+      label: this.currentAccount !== undefined ? this.currentAccount.name : firstItem.name,
+      value: this.currentAccount !== undefined ? this.currentAccount.key : firstItem.key,
+      image: this.currentAccount !== undefined ? this.currentAccount.icon : firstItem.icon,
+      type: this.currentAccount !== undefined ? this.currentAccount.chain : firstItem.chain
+    }
+    this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
 
     this.exchangeAddress = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
   },
   mounted () {
+  },
+  updated () {
+    // this.exchangeAddress = this.exchangeAddress === '' ? this.currentToken.chain !== 'eos' ? this.currentToken.key : this.currentToken.name : ''
   },
   methods: {
     toggleShare () {
