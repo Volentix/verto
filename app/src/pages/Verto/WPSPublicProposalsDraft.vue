@@ -17,7 +17,7 @@
                         <div class="item" v-for="item in drafts" :key="item">
                           <div class="row flex justify-between">
                             <div class="">
-                              <strong>{{item.proposal_name}}</strong> &nbsp; Proposer: <strong>{{item.title}}</strong>
+                              <strong>{{item.title}}</strong> &nbsp; Proposer: <strong>{{item.proposer}}</strong>
                             </div>
                           </div>
                           <div class="row full-width items-center q-mt-sm">

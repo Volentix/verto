@@ -80,7 +80,8 @@ module.exports = function (ctx) {
         'QTabPanels',
         'QTabPanel',
         'QToggle',
-        'QUploader'
+        'QUploader',
+        'QEditor'
       ],
 
       directives: [
