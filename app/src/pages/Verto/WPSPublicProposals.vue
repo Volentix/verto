@@ -21,8 +21,8 @@
                         <div class="item" v-for="item in proposals" :key="item">
                           <div class="row flex justify-between">
                             <div class="">
-                              <strong>Etiam commodo by ABC</strong> &nbsp; Duration: <strong>2</strong>
-                              <br> Title: <strong>WPS</strong>
+                              <strong>{{item.proposal_name}} by {{item.proposer}}</strong> &nbsp; Duration: <strong>{{item.duration}}</strong>
+                              <br> Title: <strong>{{item.title}}</strong>
                             </div>
                             <div class=""><q-icon name="share" /> share</div>
                           </div>
