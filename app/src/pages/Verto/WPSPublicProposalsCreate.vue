@@ -9,7 +9,127 @@
           <q-input v-model="title" class="input-input" outlined rounded color="purple" label="Proposal Title" />
           <q-input v-model="monthly_budget" class="input-input" outlined rounded color="purple" label="Budget" />
           <q-input v-model="duration" class="input-input" outlined rounded color="purple" label="Duration" />
-          <q-input v-model="proposal_json" rounded outlined class="" color="purple" type="textarea" label="Proposal json"/>
+          <!-- <q-editor v-model="editor" min-height="5rem" /> -->
+          <!-- <q-editor v-model="proposal_json" rounded outlined min-height="5rem" color="purple" /> -->
+          <!-- <q-input v-model="proposal_json" rounded outlined class="" color="purple" type="textarea" label="Proposal json"/> -->
+          <div class="">
+            <span class="lab-input">Proposal description</span>
+            <span class="lab-input" style="font-size: .9em;opacity: .5;margin-top: 0px; margin-bottom: 10px;">Drag the toolbar to the right to see more options</span>
+            <q-editor
+              v-model="editor"
+              :dense="$q.screen.lt.md"
+              :toolbar="[
+                [
+                  {
+                    label: $q.lang.editor.align,
+                    icon: $q.iconSet.editor.align,
+                    fixedLabel: true,
+                    list: 'only-icons',
+                    options: ['left', 'center', 'right', 'justify']
+                  },
+                  {
+                    label: $q.lang.editor.align,
+                    icon: $q.iconSet.editor.align,
+                    fixedLabel: true,
+                    options: ['left', 'center', 'right', 'justify']
+                  }
+                ],
+                ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
+                ['token', 'hr', 'link', 'custom_btn'],
+                ['print', 'fullscreen'],
+                [
+                  {
+                    label: $q.lang.editor.formatting,
+                    icon: $q.iconSet.editor.formatting,
+                    list: 'no-icons',
+                    options: [
+                      'p',
+                      'h1',
+                      'h2',
+                      'h3',
+                      'h4',
+                      'h5',
+                      'h6',
+                      'code'
+                    ]
+                  },
+                  {
+                    label: $q.lang.editor.fontSize,
+                    icon: $q.iconSet.editor.fontSize,
+                    fixedLabel: true,
+                    fixedIcon: true,
+                    list: 'no-icons',
+                    options: [
+                      'size-1',
+                      'size-2',
+                      'size-3',
+                      'size-4',
+                      'size-5',
+                      'size-6',
+                      'size-7'
+                    ]
+                  },
+                  {
+                    label: $q.lang.editor.defaultFont,
+                    icon: $q.iconSet.editor.font,
+                    fixedIcon: true,
+                    list: 'no-icons',
+                    options: [
+                      'default_font',
+                      'arial',
+                      'arial_black',
+                      'comic_sans',
+                      'courier_new',
+                      'impact',
+                      'lucida_grande',
+                      'times_new_roman',
+                      'verdana'
+                    ]
+                  },
+                  'removeFormat'
+                ],
+                ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
+
+                ['undo', 'redo'],
+                ['viewsource']
+              ]"
+              :fonts="{
+                arial: 'Arial',
+                arial_black: 'Arial Black',
+                comic_sans: 'Comic Sans MS',
+                courier_new: 'Courier New',
+                impact: 'Impact',
+                lucida_grande: 'Lucida Grande',
+                times_new_roman: 'Times New Roman',
+                verdana: 'Verdana'
+              }"
+            />
+          </div>
+          <div class="q-mt-md" v-if="isPrivateKeyEncrypted">
+            <q-input
+              v-model="privateKeyPassword"
+              light
+              rounded
+              outlined
+              class="full-width"
+              color="green"
+              label="Private Key Password"
+              @input="checkPrivateKeyPassword"
+              debounce="500"
+              @keyup.enter="submitdraft"
+              :type="isPwd ? 'password' : 'text'"
+              :error="invalidPrivateKeyPassword"
+              error-message="The private key password is invalid"
+            >
+              <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+            </q-input>
+          </div>
         </div>
         <br>
         <!-- <div class="total-fee flex justify-between">
@@ -44,12 +164,18 @@ export default {
       privateKey: {
         success: null
       },
+      isPwd: true,
       isPrivateKeyEncrypted: false,
+      invalidPrivateKeyPassword: false,
+      privateKeyPassword: null,
+      vertoPasswordTemp: null,
       proposal_name: 'mywps',
       title: 'My WPS Title',
       monthly_budget: '8.00000000 VTX',
       duration: '2',
-      proposal_json: '[{"key":"somedata", "value":"text data here"}]'
+      editor: '<b>Proposal</b> description'
+      // proposal_json: '[{"key":"description", "value":""}]'
+      // [{"key":"description", "value":""}]
     }
   },
   computed: {
@@ -59,6 +185,14 @@ export default {
   },
   async created () {
     console.log('wall', this.wallet)
+    if (this.wallet.privateKey) {
+      this.privateKey.key = this.wallet.privateKey
+      this.isPrivateKeyEncrypted = false
+      console.log('this.isPrivateKeyEncrypted 1', this.isPrivateKeyEncrypted)
+    } else {
+      this.isPrivateKeyEncrypted = true
+      console.log('this.isPrivateKeyEncrypted 2', this.isPrivateKeyEncrypted)
+    }
   },
   mounted () {
   },
@@ -74,24 +208,9 @@ export default {
         position: 'top'
       })
     },
-    decryptPrivateKey () {
-      // TODO Decrypt key modal action here
-      const privateKeyEncrypted = JSON.stringify(this.wallet.privateKeyEncrypted)
-
-      const pwd = prompt('Private key encript password:')
-      const privateKey = this.$configManager.decryptPrivateKey(pwd, privateKeyEncrypted)
-
-      if (privateKey.success) {
-        return privateKey.key
-      } else {
-        throw new Error('Invalid password')
-      }
-    },
     async transact (actions) {
       try {
-        const pk = this.decryptPrivateKey()
-
-        await eos.transact({ actions }, { keyProvider: pk })
+        await eos.transact({ actions }, { keyProvider: this.privateKey.key })
         setTimeout(() => this.fetch(), 1000) // FIXME Immediately do not update table(eos.getTable)
       } catch (e) {
         // FIXME with userError handler
@@ -103,7 +222,7 @@ export default {
       }
     },
     async submitdraft () {
-      const { proposal_name, title, monthly_budget, duration, proposal_json } = this
+      const { proposal_name, title, monthly_budget, duration } = this
 
       await this.transact([{
         account: 'volentixwork',
@@ -118,9 +237,21 @@ export default {
           title,
           monthly_budget,
           duration: parseInt(duration),
-          proposal_json: JSON.parse(proposal_json)
+          proposal_json: JSON.parse(`[{"key":"description", "value":"${this.editor}"}]`)
         }
       }])
+    },
+    checkPrivateKeyPassword () {
+      const privateKeyEncrypted = JSON.stringify(this.wallet.privateKeyEncrypted)
+      console.log('privateKeyEncrypted', privateKeyEncrypted)
+      const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+      if (privateKey.success) {
+        this.invalidPrivateKeyPassword = false
+        this.privateKey = privateKey
+      } else {
+        this.invalidPrivateKeyPassword = true
+        return false
+      }
     }
   }
 }
