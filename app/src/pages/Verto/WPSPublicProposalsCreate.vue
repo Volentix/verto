@@ -130,6 +130,7 @@
               </template>
             </q-input>
           </div>
+          <div class="error text-h6 text-red" v-if="transactError">{{ErrorMessage}}</div>
         </div>
         <br>
         <!-- <div class="total-fee flex justify-between">
@@ -137,6 +138,7 @@
           <span class="value">0.03254 {{ params.tokenID }}</span>
         </div> -->
       </div>
+
       <div class="standard-content--footer">
          <q-btn @click="submitdraft" flat class="action-link next" color="black" text-color="white" label="Submit Draft" />
       </div>
@@ -146,7 +148,7 @@
 </template>
 
 <script>
-import { Notify } from 'quasar'
+// import { Notify } from 'quasar'
 
 import EosWrapper from '@/util/EosWrapper'
 
@@ -161,6 +163,8 @@ export default {
     return {
       proposals: [],
       drafts: [],
+      transactError: false,
+      ErrorMessage: '',
       privateKey: {
         success: null
       },
@@ -211,17 +215,29 @@ export default {
     async transact (actions) {
       try {
         await eos.transact({ actions }, { keyProvider: this.privateKey.key })
-        setTimeout(() => this.fetch(), 1000) // FIXME Immediately do not update table(eos.getTable)
-      } catch (e) {
+        this.$router.push({ path: '/verto/card-wps/public-proposals/draft' })
+      } catch (error) {
         // FIXME with userError handler
         // userError(JSON.parse(e).message)
+        console.log('error-----------------------------', error)
+        if (error.includes('maximum billable CPU time')) {
+          this.transactError = true
+          this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
+        } else if (error.includes('must be a minimum of 100.00000000 VTX')) {
+          this.transactError = true
+          this.ErrorMessage = 'You need a minimum of 100 VTX to create a draft'
+        } else if (error.includes('user must stake before they can vote')) {
+          this.transactError = true
+          this.ErrorMessage = 'You must stake before you can vote!'
+        }
 
-        Notify.create({ message: e.message ? e.message : e })
+        // Notify.create({ message: e.message ? e.message : e })
 
-        throw e
+        throw error
       }
     },
     async submitdraft () {
+      this.transactError = false
       const { proposal_name, title, monthly_budget, duration } = this
 
       await this.transact([{

@@ -10,11 +10,37 @@
             </div>
             <div class="chain-tools-wrapper--list open">
                 <div class="list-wrapper">
+
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
+                      <div class="q-mt-md" v-if="isPrivateKeyEncrypted">
+                        <q-input
+                          v-model="privateKeyPassword"
+                          light
+                          rounded
+                          outlined
+                          class="full-width"
+                          color="green"
+                          label="Private Key Password"
+                          @input="checkPrivateKeyPassword"
+                          debounce="500"
+                          :type="isPwd ? 'password' : 'text'"
+                          :error="invalidPrivateKeyPassword"
+                          error-message="The private key password is invalid"
+                        >
+                          <template v-slot:append>
+                            <q-icon
+                              :name="isPwd ? 'visibility_off' : 'visibility'"
+                              class="cursor-pointer"
+                              @click="isPwd = !isPwd"
+                            />
+                          </template>
+                        </q-input>
+                      </div>
+                      <div class="error text-h6 text-red" v-if="transactError">{{ErrorMessage}}</div>
                       <div class="title">{{drafts.length}} draft Proposals</div>
                       <!-- <div class="parag"></div> -->
                       <div class="list-proposals--wrapper">
-                        <div class="item" v-for="item in drafts" :key="item">
+                        <div class="item" v-for="(item, index) in drafts" :key="index">
                           <div class="row flex justify-between">
                             <div class="">
                               <strong>{{item.title}}</strong> &nbsp; Proposer: <strong>{{item.proposer}}</strong>
@@ -23,10 +49,10 @@
                           <div class="row full-width items-center q-mt-sm">
                             <div class="progress col col-6">
                               Duration: <strong>{{item.duration}}</strong><br>
-                              Budget: <strong>{{item.monthly_budget}} VTX</strong>
+                              Budget: <strong>{{item.monthly_budget}}</strong>
                             </div>
                             <div class="vote col col-6 flex justify-end items-center">
-                              <q-btn unelevated color="deep-purple-14" class="q-mr-sm --next-btn" rounded label="Activate" />
+                              <q-btn @click="activate(item.proposal_name)" :disable="isPrivateKeyEncrypted && invalidPrivateKeyPassword && privateKeyPassword !== null" unelevated color="deep-purple-14" class="q-mr-sm --next-btn" rounded label="Activate" />
                               <q-btn unelevated color="grey" class="--next-btn" rounded label="Cancel" />
                             </div>
                           </div>
@@ -54,11 +80,16 @@ export default {
     return {
       proposals: [],
       drafts: [],
+      privateKeyPassword: null,
+      isPwd: true,
+      invalidPrivateKeyPassword: false,
       privateKey: {
         success: null
       },
       isPrivateKeyEncrypted: false,
       goBack: '',
+      transactError: false,
+      ErrorMessage: '',
       progress: 0.3
     }
   },
@@ -69,12 +100,97 @@ export default {
   },
   async created () {
     console.log('wall', this.wallet)
-
+    if (this.wallet.privateKey) {
+      this.privateKey.key = this.wallet.privateKey
+      this.isPrivateKeyEncrypted = false
+      console.log('this.isPrivateKeyEncrypted 1', this.isPrivateKeyEncrypted)
+    } else {
+      this.isPrivateKeyEncrypted = true
+      console.log('this.isPrivateKeyEncrypted 2', this.isPrivateKeyEncrypted)
+    }
     if (this.wallet.name) {
-      this.fetch()
+      eos.getTable('volentixwork', this.wallet.name, 'drafts').then(r => {
+        this.drafts = r
+        console.log('drafts------', this.drafts)
+      })
     }
   },
   methods: {
+    checkPrivateKeyPassword () {
+      const privateKeyEncrypted = JSON.stringify(this.wallet.privateKeyEncrypted)
+      console.log('privateKeyEncrypted', privateKeyEncrypted)
+      const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+      if (privateKey.success) {
+        this.invalidPrivateKeyPassword = false
+        this.privateKey = privateKey
+      } else {
+        this.invalidPrivateKeyPassword = true
+        return false
+      }
+    },
+    async transact (actions) {
+      try {
+        await eos.transact({ actions }, { keyProvider: this.privateKey.key })
+        this.$router.push({ path: '/verto/card-wps/public-proposals' })
+      } catch (error) {
+        console.log('error-------', error)
+        // FIXME with userError handler
+        // userError(JSON.parse(e).message)
+        if (error.toString().includes('Required uint8')) {
+          this.transactError = true
+          this.ErrorMessage = error.toString()
+        } else if (error.includes('deposit balance does not meet minimum required amount')) {
+          this.transactError = true
+          this.ErrorMessage = error
+        } else if (error.includes('maximum billable CPU time')) {
+          this.transactError = true
+          this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
+        } else if (error.includes('must be a minimum of 100.00000000 VTX')) {
+          this.transactError = true
+          this.ErrorMessage = 'You need a minimum of 100 VTX to create a draft'
+        } else if (error.includes('user must stake before they can vote')) {
+          this.transactError = true
+          this.ErrorMessage = 'You must stake before you can vote!'
+        }
+
+        // Notify.create({ message: e.message ? e.message : e })
+
+        throw error
+      }
+    },
+    async activate (proposalName) {
+      await this.transact([
+        {
+          account: 'volentixgsys',
+          name: 'transfer',
+          authorization: [{
+            actor: this.wallet.name,
+            permission: 'active'
+          }],
+          data: {
+            from: this.wallet.name,
+            to: 'volentixwork',
+            quantity: '100.00000000 VTX',
+            memo: ''
+          }
+        },
+
+        {
+          account: 'volentixwork',
+          name: 'activate',
+          authorization: [{
+            actor: this.wallet.name,
+            permission: 'active'
+          }],
+          data: {
+            proposer: this.wallet.name,
+            proposal_name: proposalName,
+            activate_next: 1
+            // start_voting_period: null // Start voting period
+          }
+        }
+      ])
+    },
     fetch () {
       // eos.getTable('volentixwork', 'volentixwork', 'proposals').then(r => {
       //   this.proposals = r
