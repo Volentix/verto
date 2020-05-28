@@ -11,6 +11,32 @@
             <div class="chain-tools-wrapper--list open">
                 <div class="list-wrapper">
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
+                      <div class="q-mt-md" v-if="isPrivateKeyEncrypted">
+                        <q-input
+                          v-model="privateKeyPassword"
+                          light
+                          rounded
+                          outlined
+                          class="full-width"
+                          color="green"
+                          label="Private Key Password"
+                          @input="checkPrivateKeyPassword"
+                          debounce="500"
+                          :type="isPwd ? 'password' : 'text'"
+                          :error="invalidPrivateKeyPassword"
+                          error-message="The private key password is invalid"
+                        >
+                          <template v-slot:append>
+                            <q-icon
+                              :name="isPwd ? 'visibility_off' : 'visibility'"
+                              class="cursor-pointer"
+                              @click="isPwd = !isPwd"
+                            />
+                          </template>
+                        </q-input>
+                      </div>
+                      <div class="error text-h6 text-red" v-if="transactError">{{ErrorMessage}}</div>
+
                       <div class="title">{{proposals.length}} Active Proposals</div>
                       <div class="parag">Next budget payments will occur in 28 days and it will provide 20000 VTX of 56000 VTX of total available budget.</div>
                       <div class="flex justify-end q-mt-md q-mb-md">
@@ -18,7 +44,7 @@
                         <q-btn unelevated color="deep-purple-14" class="--next-btn" rounded label="Draft Proposals" to="/verto/card-wps/public-proposals/draft" />
                       </div>
                       <div class="list-proposals--wrapper">
-                        <div class="item" v-for="item in proposals" :key="item">
+                        <div class="item" v-for="(item, index) in proposals" :key="index">
                           <div class="row flex justify-between">
                             <div class="">
                               <strong>{{item.proposal_name}} by {{item.proposer}}</strong> &nbsp; Duration: <strong>{{item.duration}}</strong>
@@ -28,12 +54,12 @@
                           </div>
                           <div class="row full-width items-center" style="margin-top: -10px">
                             <div class="progress col col-6">
-                              <q-linear-progress :value="progress" rounded color="blue" size="md" class="" />
+                              <q-linear-progress :value=".3" rounded color="blue" size="md" class="" />
                             </div>
                             <div class="vote col col-6 flex justify-end items-center">
                               Vote &nbsp;
-                              <q-btn color="white" text-color="black" class="mw40" style="margin-right: -10px" rounded flat ><img class="full-width" src="statics/success_icon2.svg" alt=""></q-btn>
-                              <q-btn color="white" text-color="black" class="mw40" style="margin-right: -10px" rounded flat ><img class="full-width" src="statics/fail_icon2.svg" alt=""></q-btn>
+                              <q-btn @click="vote(item.proposal_name, 'yes')" color="white" text-color="black" class="mw40" style="margin-right: -10px" rounded flat ><img class="full-width" src="statics/success_icon2.svg" alt=""></q-btn>
+                              <q-btn @click="vote(item.proposal_name, 'no')" color="white" text-color="black" class="mw40" style="margin-right: -10px" rounded flat ><img class="full-width" src="statics/fail_icon2.svg" alt=""></q-btn>
                             </div>
                           </div>
                         </div>
@@ -58,10 +84,17 @@ export default {
   data () {
     return {
       proposals: [],
+      settings: [],
+      votes: [],
       drafts: [],
+      privateKeyPassword: null,
+      isPwd: true,
+      invalidPrivateKeyPassword: false,
       privateKey: {
         success: null
       },
+      transactError: false,
+      ErrorMessage: '',
       isPrivateKeyEncrypted: false,
       proposal_name: 'mywps',
       title: 'My WPS Title',
@@ -77,15 +110,88 @@ export default {
   },
   async created () {
     console.log('wall', this.wallet)
+    if (this.wallet.privateKey) {
+      this.privateKey.key = this.wallet.privateKey
+      this.isPrivateKeyEncrypted = false
+      console.log('this.isPrivateKeyEncrypted 1', this.isPrivateKeyEncrypted)
+    } else {
+      this.isPrivateKeyEncrypted = true
+      console.log('this.isPrivateKeyEncrypted 2', this.isPrivateKeyEncrypted)
+    }
 
     if (this.wallet.name) {
       this.fetch()
     }
   },
   methods: {
+    async transact (actions) {
+      try {
+        await eos.transact({ actions }, { keyProvider: this.privateKey.key })
+        this.$router.push({ path: '/verto/card-wps/public-proposals' })
+      } catch (error) {
+        console.log('error-------', error)
+        // FIXME with userError handler
+        // userError(JSON.parse(e).message)
+        if (error.toString().includes('Required uint8')) {
+          this.transactError = true
+          this.ErrorMessage = error.toString()
+        } else if (error.includes('[proposal_name] must be active')) {
+          this.transactError = true
+          this.ErrorMessage = error
+        } else if (error.includes('deposit balance does not meet minimum required amount')) {
+          this.transactError = true
+          this.ErrorMessage = error
+        } else if (error.includes('maximum billable CPU time')) {
+          this.transactError = true
+          this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
+        } else if (error.includes('must be a minimum of 100.00000000 VTX')) {
+          this.transactError = true
+          this.ErrorMessage = 'You need a minimum of 100 VTX to create a draft'
+        } else if (error.includes('user must stake before they can vote')) {
+          this.transactError = true
+          this.ErrorMessage = 'You must stake before you can vote!'
+        }
+
+        // Notify.create({ message: e.message ? e.message : e })
+
+        throw error
+      }
+    },
+    checkPrivateKeyPassword () {
+      const privateKeyEncrypted = JSON.stringify(this.wallet.privateKeyEncrypted)
+      console.log('privateKeyEncrypted', privateKeyEncrypted)
+      const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+      if (privateKey.success) {
+        this.invalidPrivateKeyPassword = false
+        this.privateKey = privateKey
+      } else {
+        this.invalidPrivateKeyPassword = true
+        return false
+      }
+    },
+    async vote (proposal_name, vote) {
+      await this.transact([{
+        account: 'volentixwork',
+        name: 'vote',
+        authorization: [{
+          actor: this.wallet.name,
+          permission: 'active'
+        }],
+        data: { voter: this.wallet.name, proposal_name, vote }
+      }])
+    },
     fetch () {
       eos.getTable('volentixwork', 'volentixwork', 'proposals').then(r => {
         this.proposals = r
+        console.log('proposals ---', this.proposals)
+      })
+      eos.getTable('volentixwork', 'volentixwork', 'settings').then(r => {
+        this.settings = r
+        console.log('settings ---', this.settings)
+      })
+      eos.getTable('volentixwork', 'volentixwork', 'votes').then(r => {
+        this.votes = r
+        console.log('votes ---', this.votes)
       })
     }
   }
