@@ -45,9 +45,9 @@ class EosWrapper {
 
   // If you look at the result value, you can see an array in the form of a string.
   // This is because there could be tokens with many different symbols in the account
-  getCurrencyBalanceP (accountName, contractName = 'eosio.token') {
+  getCurrencyBalanceP (accountName, contractName = 'eosio.token', token = 'VTX') {
     return new Promise((resolve, reject) => {
-      this.eos.getCurrencyBalance(contractName, accountName, (error, result) => {
+      this.eos.get_currency_balance(contractName, accountName, token, (error, result) => {
         if (error) reject(error)
         resolve(result)
       })
