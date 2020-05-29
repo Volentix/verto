@@ -341,9 +341,10 @@ export default {
         /deep/ .q-field__label{
           font-family: $Titillium;
           font-weight: $regular;
-          font-size: 18px;
+          font-size: 16px;
           padding-left: 10px;
           margin-top: -2px;
+
         }
         .input-input{
           height: 50px;
