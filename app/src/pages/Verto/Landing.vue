@@ -35,9 +35,9 @@
           </q-input>
         </div>
       </div>
-      <div class="standard-content--footer full-width">
-        <!-- :disable="!passHasError" -->
-         <q-btn flat class="action-link back" color="grey" text-color="white" label="Restore" @click="startRestoreConfig" />
+      <div class="standard-content--footer full-width justify-end">
+         <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore from 24 Words" @click="startRestoreConfig" />
+         <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" />
          <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Connect" @click="login"/>
       </div>
       <div class="landing--volentix-logo">
