@@ -1,21 +1,13 @@
-let Eos = require('eosjs')
+const { JsonRpc } = require('eosjs') // { Api, JsonRpc, RpcError }
+// const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig')
 import store from '@/store'
 
 // const floatRegex = /[^\d.-]/g
-const { ecc } = Eos.modules
+const ecc = require('elliptic')
 
 class EosWrapper {
-  constructor (config) {
-    this.eos = Eos(
-      Object.assign({}, config, {
-        chainId: process.env[store.state.settings.network].CHAIN_ID,
-        httpEndpoint: process.env[store.state.settings.network].EOS_HISTORYAPI,
-        expireInSeconds: 60,
-        verbose: true,
-        debug: false,
-        sign: true
-      })
-    )
+  constructor () {
+    this.eos = new JsonRpc(process.env[store.state.settings.network].EOS_HISTORYAPI, { fetch })
   }
 
   isPrivKeyValid (privKey) {
@@ -32,7 +24,7 @@ class EosWrapper {
   getAccountNamesFromPubKeyP (pubKey) {
     /* eslint-disable no-new */
     return new Promise((resolve, reject) => {
-      this.eos.getKeyAccounts(pubKey, (error, result) => {
+      this.eos.get_key_accounts(pubKey, (error, result) => {
         if (error) reject(error)
         resolve(result)
       // array of account names, can be multiples
@@ -47,7 +39,7 @@ class EosWrapper {
   }
 
   async getAccount (accountName) {
-    let account = (await this.eos.getAccount(accountName))
+    let account = (await this.eos.get_account(accountName))
     return account
   }
 
@@ -101,9 +93,8 @@ class EosWrapper {
     return result
   }
 
-  async getTable (code, scope, table, lowerBound,
-    limit) {
-    const result = await this.eos.getTableRows({
+  async getTable (code, scope, table, lowerBound, limit) {
+    const result = await this.eos.get_table_rows({
       code,
       scope,
       table,
