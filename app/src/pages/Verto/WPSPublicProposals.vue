@@ -58,8 +58,8 @@
                             </div>
                             <div class="vote col col-6 flex justify-end items-center">
                               Vote &nbsp;
-                              <q-btn @click="vote(item.proposal_name, 'yes')" color="white" text-color="black" class="mw40" style="margin-right: -10px" rounded flat ><img class="full-width" src="statics/success_icon2.svg" alt=""></q-btn>
-                              <q-btn @click="vote(item.proposal_name, 'no')" color="white" text-color="black" class="mw40" style="margin-right: -10px" rounded flat ><img class="full-width" src="statics/fail_icon2.svg" alt=""></q-btn>
+                              <q-btn @click="vote(item.proposal_name, 'yes')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/success_icon2.svg" alt=""></q-btn>
+                              <q-btn @click="vote(item.proposal_name, 'no')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/fail_icon2.svg" alt=""></q-btn>
                             </div>
                           </div>
                         </div>
@@ -499,5 +499,11 @@ export default {
   .mw40{
     max-width: 40px;
     padding: 0px;
+  }
+  .vote-btn{
+    margin-right: -10px;
+    /deep/ img{
+      min-width: 34px;
+    }
   }
 </style>

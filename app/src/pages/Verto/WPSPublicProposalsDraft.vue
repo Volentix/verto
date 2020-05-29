@@ -12,7 +12,7 @@
                 <div class="list-wrapper">
 
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                      <div class="q-mt-md" v-if="isPrivateKeyEncrypted">
+                      <!-- <div class="q-mt-md" v-if="isPrivateKeyEncrypted">
                         <q-input
                           v-model="privateKeyPassword"
                           light
@@ -35,7 +35,7 @@
                             />
                           </template>
                         </q-input>
-                      </div>
+                      </div> -->
                       <div class="error text-h6 text-red" v-if="transactError">{{ErrorMessage}}</div>
                       <div class="title">{{drafts.length}} draft Proposals</div>
                       <!-- <div class="parag"></div> -->
@@ -47,13 +47,65 @@
                             </div>
                           </div>
                           <div class="row full-width items-center q-mt-sm">
-                            <div class="progress col col-6">
+                            <div class="progress col col-3">
                               Duration: <strong>{{item.duration}}</strong><br>
+                            </div>
+                            <div class="progress col col-9">
                               Budget: <strong>{{item.monthly_budget}}</strong>
                             </div>
+                          </div>
+                          <hr style="height:0px;opacity:0" />
+                          <div class="row full-width items-center q-mt-sm">
+                            <div class="vote col col-6 flex justify-start items-center">
+                              Period: &nbsp;
+                              <q-btn-toggle
+                                v-model="item.activate_next"
+                                class="my-custom-toggle"
+                                no-caps
+                                rounded
+                                unelevated
+                                toggle-color="deep-purple-14"
+                                color="white"
+                                text-color="deep-purple-14"
+                                :options="[
+                                  {label: 'Current', value: '0'},
+                                  {label: 'Next', value: '1'}
+                                ]"
+                              />
+                            </div>
                             <div class="vote col col-6 flex justify-end items-center">
-                              <q-btn @click="activate(item.proposal_name)" :disable="isPrivateKeyEncrypted && invalidPrivateKeyPassword && privateKeyPassword !== null" unelevated color="deep-purple-14" class="q-mr-sm --next-btn" rounded label="Activate" />
+                              <q-btn @click="activate(item.proposal_name, parseInt(item.activate_next))" :disable="isPrivateKeyEncrypted && invalidPrivateKeyPassword && privateKeyPassword !== null && item.activate_next !== ''" unelevated color="deep-purple-14" class="q-mr-sm --next-btn" rounded label="Activate" />
                               <q-btn unelevated color="grey" class="--next-btn" rounded label="Cancel" />
+                            </div>
+                            <div class="col col-12">
+                              <span class="text-h6 activate_next">{{item.activate_next === '0' ? 'Days remaining : X Days':''}}</span>
+                              <span class="text-h6 activate_next">{{item.activate_next === '1' ? '30 days as of 24/06/2020' : ''}}</span>
+                            </div>
+                            <div class="col col-12 private_key_wrapper">
+                              <div class="q-pb-md" v-if="isPrivateKeyEncrypted">
+                                <q-input
+                                  v-model="privateKeyPassword"
+                                  light
+                                  rounded
+                                  outlined
+                                  class="full-width input-input"
+                                  color="green"
+                                  label="Private Key Password"
+                                  @input="checkPrivateKeyPassword"
+                                  debounce="500"
+                                  :type="isPwd ? 'password' : 'text'"
+                                  :error="invalidPrivateKeyPassword"
+                                  error-message="The private key password is invalid"
+                                >
+                                  <template v-slot:append>
+                                    <q-icon
+                                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                                      class="cursor-pointer"
+                                      @click="isPwd = !isPwd"
+                                    />
+                                  </template>
+                                </q-input>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -158,7 +210,7 @@ export default {
         throw error
       }
     },
-    async activate (proposalName) {
+    async activate (proposalName, activate_next) {
       await this.transact([
         {
           account: 'volentixgsys',
@@ -185,17 +237,13 @@ export default {
           data: {
             proposer: this.wallet.name,
             proposal_name: proposalName,
-            activate_next: 1
+            activate_next
             // start_voting_period: null // Start voting period
           }
         }
       ])
     },
     fetch () {
-      // eos.getTable('volentixwork', 'volentixwork', 'proposals').then(r => {
-      //   this.proposals = r
-      // })
-
       eos.getTable('volentixwork', this.wallet.name, 'drafts').then(r => {
         this.drafts = r
       })
@@ -310,6 +358,20 @@ export default {
               width: fit-content;
               text-transform: initial !important;
               font-size: 10px;
+            }
+            .activate_next{
+              font-size: 12px;
+              font-weight: $bold;
+              font-family: $Titillium;
+              color: #757575;
+            }
+            .my-custom-toggle{
+              border: 1px solid #CCC;
+              /deep/ button{
+                width: fit-content;
+                text-transform: initial !important;
+                font-size: 10px;
+              }
             }
             .--progress{
               height: 20px;
@@ -453,7 +515,7 @@ export default {
       margin-top: 0px;
       img{
         width: 100%;
-        max-width: 330px;
+        max-width: 300px;
       }
     }
     &--title{
@@ -506,5 +568,32 @@ export default {
   .mw40{
     max-width: 40px;
     padding: 0px;
+  }
+  .private_key_wrapper{
+    .input-input{
+      height: 40px;
+      margin-bottom: 0px;
+      padding-bottom: 0px;
+      /deep/ .q-field--error .q-field__bottom{
+        margin-bottom: 6px;
+      }
+      /deep/ .q-field__marginal{
+        min-height: unset;
+        height: 40px;
+      }
+      /deep/ .q-field__label{
+        top: 11px;
+        font-size: 12px;
+        font-weight: 600;
+        font-family: $Titillium;
+      }
+      /deep/ .q-field__control{
+        height: 40px;
+        min-height: unset;
+        .q-field__native{
+          padding-top: 14px;
+        }
+      }
+    }
   }
 </style>
