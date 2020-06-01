@@ -40,7 +40,7 @@
                       <div class="title">{{drafts.length}} draft Proposals</div>
                       <!-- <div class="parag"></div> -->
                       <div class="list-proposals--wrapper">
-                        <div class="item" v-for="(item, index) in drafts" :key="index">
+                        <div class="item q-pt-md" v-for="(item, index) in drafts" :key="index">
                           <div class="row flex justify-between">
                             <div class="">
                               <strong>{{item.title}}</strong> &nbsp; Proposer: <strong>{{item.proposer}}</strong>
@@ -82,6 +82,7 @@
                               <span class="text-h6 activate_next">{{item.activate_next === '1' ? '30 days as of 24/06/2020' : ''}}</span>
                             </div>
                             <div class="col col-12 private_key_wrapper">
+                              <hr style="height:0px;opacity:0" />
                               <div class="q-pb-md" v-if="isPrivateKeyEncrypted">
                                 <q-input
                                   v-model="privateKeyPassword"
@@ -298,9 +299,10 @@ export default {
             }
             .list-proposals--wrapper{
               .item{
-                border: 1px solid rgba(#707070, .09);
+                border: 1px solid rgba(#707070, .2);
                 border-radius: 15px;
                 padding: 10px;
+                padding-top: 15px;
                 margin-bottom: 10px;
                 font-size: 10px;
                 font-family: $Titillium;
