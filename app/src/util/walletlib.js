@@ -10,8 +10,8 @@ class Lib {
           eos: 'eosio.token',
           vtx: 'volentixgsys'
         }
-        const EOS = new EosWrapper()
-        const bal = await EOS.getCurrencyBalanceP(key, tokenContract[token])
+        const eos = new EosWrapper()
+        const bal = await eos.getCurrencyBalanceP(key, tokenContract[token])
         console.log('walletlib', key, tokenContract[token], bal)
         if (bal) {
           float = bal[0].split(' ')[0]
