@@ -4,7 +4,7 @@ import Lib from '@/util/walletlib'
 import coinsNames from '@/util/coinsNames'
 import Web3 from 'web3'
 import EosWrapper from '@/util/EosWrapper'
-const EOS = new EosWrapper()
+const eos = new EosWrapper()
 
 class Wallets2Tokens {
   constructor () {
@@ -92,7 +92,7 @@ class Wallets2Tokens {
                 })
               }
             } else {
-              EOS.getAccount(wallet.name).then(a => {
+              eos.getAccount(wallet.name).then(a => {
                 self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(async eos => {
                   let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
                   eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
@@ -176,10 +176,14 @@ class Wallets2Tokens {
       })
   }
   async getUSD (contract, coin) {
-    // 'https://api.coingecko.com/api/v3/simple/price?ids=' + +'&vs_currencies=usd'
-    let coinEOS = (await axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-usdt')).data.data.price
-    console.log('coinEOS * this.eosUSD', coinEOS, this.eosUSD)
-    return coinEOS * this.eosUSD
+    if (coin === 'usdt' || coin === 'eosdt') {
+      return this.eosUSD
+    } else {
+      // 'https://api.coingecko.com/api/v3/simple/price?ids=' + +'&vs_currencies=usd'
+      let coinEOS = (await axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
+      console.log('coinEOS * this.eosUSD', coinEOS, this.eosUSD)
+      return coinEOS * this.eosUSD
+    }
   }
   async getCoinScore (coin) {
     let currentAsset = null

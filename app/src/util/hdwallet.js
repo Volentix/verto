@@ -19,7 +19,7 @@ class HD {
       eos () {
         const hdkey = require('hdkey')
         const wif = require('wif')
-        const ecc = require('elliptic')
+        const ecc = require('eosjs-ecc')
         const hdwallet = hdkey.fromMasterSeed(seed)
         const eosPath = "m/44'/194'/0'/0/0"
         const eosNode = hdwallet.derive(eosPath)
