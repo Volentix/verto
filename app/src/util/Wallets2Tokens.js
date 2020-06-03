@@ -45,11 +45,11 @@ class Wallets2Tokens {
 
       if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'dash') {
         Lib.Wallet(wallet.type, wallet.key).then(result => {
-          wallet.amount = result.balance
+          console.log('libwallet', result)
+          wallet.amount = result.amount
+          wallet.usd = result.usd
         })
       }
-
-      wallet.amount = 0.0
     })
 
     store.state.currentwallet.config.keys.map(async (wallet) => {
@@ -70,10 +70,18 @@ class Wallets2Tokens {
                     vespucciScore = result.vespucciScore
                   })
                 }
+
                 let usdValue = 0
-                this.getUSD(t.code, t.symbol.toLowerCase()).then(result => {
-                  usdValue = result.price
-                })
+                if (type === 'usdt' || type === 'eosdt') {
+                  usdValue = t.amount
+                } else {
+                  this.getUSD(t.code, type).then(result => {
+                    usdValue = result
+                  })
+                }
+
+                console.log('usdValue', usdValue)
+
                 self.tableData.push({
                   selected: false,
                   type,
@@ -176,14 +184,12 @@ class Wallets2Tokens {
       })
   }
   async getUSD (contract, coin) {
-    if (coin === 'usdt' || coin === 'eosdt') {
-      return this.eosUSD
-    } else {
-      // 'https://api.coingecko.com/api/v3/simple/price?ids=' + +'&vs_currencies=usd'
-      let coinEOS = (await axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
-      console.log('coinEOS * this.eosUSD', coinEOS, this.eosUSD)
-      return coinEOS * this.eosUSD
-    }
+    // 'https://api.coingecko.com/api/v3/simple/price?ids=' + +'&vs_currencies=usd'
+    let coinEOS = (await axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
+    let coinUSD = coinEOS * this.eosUSD
+    console.log(coin, ' --> USD', coinUSD)
+
+    return coinUSD
   }
   async getCoinScore (coin) {
     let currentAsset = null

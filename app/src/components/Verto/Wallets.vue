@@ -16,7 +16,7 @@
               </q-item-section>
               <q-item-section class="item-info">
                 <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{ item.type.toUpperCase() }}</span>
-                <span class="item-info--amountUSD">{{item.amountUSD}}</span>
+                <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
               </q-item-section>
             </div>
           </div>
