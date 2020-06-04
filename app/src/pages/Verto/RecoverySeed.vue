@@ -148,7 +148,7 @@ export default {
       this.step = 2
     },
     async saveMnemonic () {
-      if (this.goodPassword && this.$store.state.settings.rightOrder) {
+      if (this.goodPassword && (this.$store.state.settings.rightOrder || this.step === 4)) {
         console.log('we are good with order')
 
         if (this.vertoPassword) {
