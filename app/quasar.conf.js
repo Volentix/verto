@@ -31,6 +31,8 @@ module.exports = function (ctx) {
       // all: true, // --- includes everything; for dev only!
 
       components: [
+        'QBanner',
+        'QPopupProxy',
         'QSpinner',
         'QBadge',
         'QSlider',
