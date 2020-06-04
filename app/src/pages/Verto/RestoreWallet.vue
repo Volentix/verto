@@ -146,11 +146,9 @@ export default {
         try {
           this.spinnervisible = true
           const results = await configManager.restoreConfig(reader.result, that.addWallet.vertoPassword)
-          console.log('restoreConfig', results)
           if (results.message === 'bad_password') {
             // that.startRestoreConfig()
             this.spinnervisible = false
-            this.$q.notify({ color: 'negative', message: results.message })
             throw new Error('Incorrect Password')
           }
           // updateProgress(1)
