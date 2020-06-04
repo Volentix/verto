@@ -184,7 +184,7 @@ export default {
             'type': 'verto'
           }
           this.$configManager.updateCurrentWallet(wallet)
-          this.$router.push({ path: '/wallet' })
+          this.$router.push({ path: '/verto/dashboard' })
         } else if (result.message === 'bad_password') {
           this.showSubmit.vertoPassword = false
           this.errors.badPassword = true

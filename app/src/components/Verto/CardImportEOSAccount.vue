@@ -84,8 +84,8 @@ export default {
             text-transform: initial !important;
             border-radius: 40px;
             height: 45px;
-            padding-left: 20px;
-            padding-right: 20px;
+            padding-left: 0px;
+            padding-right: 0px;
             margin-bottom: 10px;
             margin-left: 10px;
             @media screen and (min-width: 768px) {

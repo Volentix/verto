@@ -474,6 +474,7 @@ class ConfigManager {
 
     logout () {
       store.commit('currentwallet/updateCurrentWallet', null)
+      store.commit('wallets/updateTokens', null)
       store.commit('currentwallet/updateConfig', null)
       store.commit('currentwallet/setLoggedIn', false)
     }

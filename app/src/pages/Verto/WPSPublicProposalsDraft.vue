@@ -126,6 +126,13 @@ import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 let platformTools = require('../../util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
+import {
+  Loading,
+
+  // optional!, for example below
+  // with custom spinner
+  QSpinnerGears
+} from 'quasar'
 
 export default {
   components: {},
@@ -133,6 +140,8 @@ export default {
     return {
       proposals: [],
       drafts: [],
+      timer: null,
+      loadder: false,
       privateKeyPassword: null,
       isPwd: true,
       invalidPrivateKeyPassword: false,
@@ -183,8 +192,8 @@ export default {
     },
     async transact (actions) {
       try {
+        this.showLoading()
         await eos.transact({ actions }, { keyProvider: this.privateKey.key })
-        this.$router.push({ path: '/verto/card-wps/public-proposals' })
       } catch (error) {
         console.log('error-------', error)
         // FIXME with userError handler
@@ -248,6 +257,22 @@ export default {
       eos.getTable('volentixwork', this.wallet.name, 'drafts').then(r => {
         this.drafts = r
       })
+    },
+    showLoading () {
+      Loading.show({
+        spinner: QSpinnerGears
+      })
+      this.timer = setTimeout(() => {
+        Loading.hide()
+        this.timer = void 0
+        this.$router.push({ path: '/verto/card-wps/public-proposals' })
+      }, 5000)
+    }
+  },
+  beforeDestroy () {
+    if (this.timer !== void 0) {
+      clearTimeout(this.timer)
+      Loading.hide()
     }
   }
 }
