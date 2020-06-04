@@ -36,9 +36,18 @@
         </div>
       </div>
       <div class="standard-content--footer full-width justify-end">
-         <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore from 24 Words" @click="startRestoreConfig" />
-         <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" />
-         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Connect" @click="login"/>
+        <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore from 24 Words">
+          <q-popup-proxy ref="popup">
+            <q-banner inline-actions rounded>
+            Are you sure?  This is irrivesible!  Current config will be errased and Restore process will begin after selecting a new verto password.
+            <template v-slot:action>
+              <q-btn label="Yes" @click="destroyData()"/>
+            </template>
+            </q-banner>
+          </q-popup-proxy>
+        </q-btn>
+        <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" />
+        <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Connect" @click="login"/>
       </div>
       <div class="landing--volentix-logo">
           <img src="statics/vtx_black.svg" class="svg" />
