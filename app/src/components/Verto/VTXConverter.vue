@@ -529,8 +529,11 @@ export default {
                 .q-slider__pin-value-marker-bg{
                   background: #FFB200 !important;
                 }
-                .text-green{
+                .q-slider__pin-text-container{
                   background: #FFB200 !important;
+                }
+                .q-slider__arrow.text-green{
+                  color: #FFB200 !important;
                 }
               }
             }
