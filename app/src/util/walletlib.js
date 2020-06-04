@@ -10,8 +10,8 @@ class Lib {
           eos: 'eosio.token',
           vtx: 'volentixgsys'
         }
-        const EOS = new EosWrapper()
-        const bal = await EOS.getCurrencyBalanceP(key, tokenContract[token])
+        const eos = new EosWrapper()
+        const bal = await eos.getCurrencyBalanceP(key, tokenContract[token])
         console.log('walletlib', key, tokenContract[token], bal)
         if (bal) {
           float = bal[0].split(' ')[0]
@@ -27,16 +27,19 @@ class Lib {
         // return { balance: float }
       },
       async btc (key) {
-        const balance = (await axios.get('https://blockchain.info/q/addressbalance/' + key, { 'cors': 'true' })).data / 100000000
-        return { balance }
+        const amount = (await axios.get('https://blockchain.info/q/addressbalance/' + key, { 'cors': 'true' })).data / 100000000
+        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')).data.bitcoin.usd
+        return { amount, usd }
       },
       async ltc (key) {
-        const balance = (await axios.get('https://chainz.cryptoid.info/ltc/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
-        return { balance }
+        const amount = (await axios.get('https://chainz.cryptoid.info/ltc/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
+        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd')).data.litecoin.usd
+        return { amount, usd }
       },
       async dash (key) {
-        const balance = (await axios.get('https://chainz.cryptoid.info/dash/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
-        return { balance }
+        const amount = (await axios.get('https://chainz.cryptoid.info/dash/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
+        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=dash&vs_currencies=usd')).data.dash.usd
+        return { amount, usd }
       }
     }[walletType]
 
