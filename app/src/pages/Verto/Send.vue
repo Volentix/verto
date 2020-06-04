@@ -434,7 +434,7 @@ export default {
             min-height: unset;
           }
           .btn-copy{
-            height: 30px;
+            // height: 30px;
             position: relative;
             top: -3px;
             margin-right: 0px;
