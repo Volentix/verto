@@ -156,6 +156,14 @@ const eos = new EosWrapper()
 let platformTools = require('../../util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 
+import {
+  Loading,
+
+  // optional!, for example below
+  // with custom spinner
+  QSpinnerGears
+} from 'quasar'
+
 export default {
   components: {
   },
@@ -163,6 +171,7 @@ export default {
     return {
       proposals: [],
       drafts: [],
+      // timer: null,
       transactError: false,
       ErrorMessage: '',
       privateKey: {
@@ -214,8 +223,8 @@ export default {
     },
     async transact (actions) {
       try {
+        this.showLoading()
         await eos.transact({ actions }, { keyProvider: this.privateKey.key })
-        this.$router.push({ path: '/verto/card-wps/public-proposals/draft' })
       } catch (error) {
         // FIXME with userError handler
         // userError(JSON.parse(e).message)
@@ -268,6 +277,22 @@ export default {
         this.invalidPrivateKeyPassword = true
         return false
       }
+    },
+    showLoading () {
+      Loading.show({
+        spinner: QSpinnerGears
+      })
+      this.timer = setTimeout(() => {
+        Loading.hide()
+        this.timer = void 0
+        this.$router.push({ path: '/verto/card-wps/public-proposals/draft' })
+      }, 10000)
+    }
+  },
+  beforeDestroy () {
+    if (this.timer !== void 0) {
+      clearTimeout(this.timer)
+      Loading.hide()
     }
   }
 }
