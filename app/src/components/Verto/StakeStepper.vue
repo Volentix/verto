@@ -425,7 +425,7 @@ export default {
       this.checkAmount()
     },
     checkAmount () {
-      let stake_per = Math.round((0.01 + (0.001 * this.stakePeriod)) * 100) / 100
+      let stake_per = Math.round((0.01 + (0.001 * this.stakePeriod)) * 1000) / 1000
 
       if (+this.sendAmount > 0.0 && +this.sendAmount <= +this.currentAccount.amount) {
         this.slider = Math.round(10000 * (this.sendAmount / +this.currentAccount.amount)) / 100

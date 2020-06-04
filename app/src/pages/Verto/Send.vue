@@ -319,6 +319,9 @@ export default {
         } else if (err.includes('maximum billable CPU time')) {
           this.unknownError = true
           this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
+        } else if (err.includes('overdrawn balance')) {
+          this.unknownError = true
+          this.ErrorMessage = 'Your EOS account does not have enough funds.'
         } else if (err.includes('has insufficient ram')) {
           this.unknownError = true
           this.ErrorMessage = 'Your EOS account does not have enough RAM staked to process the transaction.'
