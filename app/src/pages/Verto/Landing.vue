@@ -36,24 +36,35 @@
         </div>
       </div>
       <div class="standard-content--footer full-width justify-end">
-        <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore from 24 Words">
-          <q-popup-proxy ref="popup">
-            <q-banner inline-actions rounded>
-            Are you sure?  This is irrivesible!  Current config will be errased and Restore process will begin after selecting a new verto password.
-            <template v-slot:action>
-              <q-btn label="Yes" @click="destroyData()"/>
-            </template>
-            </q-banner>
-          </q-popup-proxy>
-        </q-btn>
+        <span></span>
         <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" />
         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Connect" @click="login"/>
+      </div>
+      <div class="standard-content--footer auto full-width justify-center">
+        <span></span>
+        <q-btn flat v-show="passHasError" @click="restoreFromWords = true" outline class="back" text-color="deep-purple-14" label="Restore from 24 Words" />
+        <span></span>
       </div>
       <div class="landing--volentix-logo">
           <img src="statics/vtx_black.svg" class="svg" />
       </div>
       <span class="landing--bottom-bar"></span>
     </div>
+    <q-dialog v-model="restoreFromWords">
+    <q-card class="q-pa-lg">
+      <q-toolbar>
+        <q-avatar><img src="statics/icon.png"></q-avatar>
+        <q-toolbar-title><span class="text-weight-bold">Restore from</span> 24 Words</q-toolbar-title>
+        <q-btn flat round dense icon="close" v-close-popup />
+      </q-toolbar>
+      <q-card-section class="text-h6">
+        Are you sure?  This is irrivesible!  Current config will be errased and Restore process will begin after selecting a new verto password.
+      </q-card-section>
+      <q-card-actions align="right" class="q-pr-sm">
+        <q-btn label="Yes" flat @click="destroyData()" class="yes-btn" color="primary" v-close-popup/>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
   </q-page>
 </template>
 
@@ -72,6 +83,7 @@ export default {
       deleteConfigFail: false,
       deleteConfig: false,
       version: {},
+      restoreFromWords: false,
       showSubmit: false
     }
   },
@@ -233,7 +245,7 @@ export default {
     justify-content: space-between;
     &--body{
       margin-top: 35%;
-      margin-bottom: -9%;
+      margin-bottom: 5%;
       @media screen and (min-width: 768px) {
         margin-top: 5%;
         margin-bottom: 0%;
@@ -244,8 +256,11 @@ export default {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      align-items: flex-end;
+      align-items: flex-center;
       min-height: 100px;
+      &.auto{
+        min-height: unset;
+      }
       @media screen and (min-width: 768px) {
         max-width: 400px;
       }
@@ -264,4 +279,16 @@ export default {
 
     }
 }
+.q-card{
+    border-radius: 25px;
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 35px rgba(0,0,0,0.14), 0 1px 10px rgba(0,0,0,0.12);
+  }
+  .yes-btn{
+    color: #FFF !important;
+    background-color: #00D0DF !important;
+    text-transform: initial !important;
+    padding: 10px 30px;
+    border-radius: 50px;
+    font-weight: $light;
+  }
 </style>
