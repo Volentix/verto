@@ -471,6 +471,7 @@ export default {
       justify-content: flex-end;
       align-items: flex-end;
       min-height: fit-content;
+      margin-top: 20px;
       .action-link{
         height: 50px;
         text-transform: initial !important;
