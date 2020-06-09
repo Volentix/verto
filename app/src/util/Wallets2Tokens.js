@@ -57,6 +57,12 @@ class Wallets2Tokens {
         // If tokens are missing from this API, anyone can add them using this contract: https://bloks.io/account/customtokens?loadContract=true&tab=Actions&account=customtokens&scope=customtokens&limit=100&action=set
         axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': wallet.name }).then(balances => {
           console.log('eos balances', balances)
+          // let balances = balancesArray.data.length === 0 ?
+          if (balances.data.length === 0) {
+            balances.data = [
+              { amount: '0.0000', code: 'eosio.token', symbol: 'EOS' }
+            ]
+          }
           balances.data.map(t => {
             console.log('eos token', t)
             if (t.symbol.toLowerCase() !== 'eos') {
@@ -104,7 +110,7 @@ class Wallets2Tokens {
                 self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(async eos => {
                   let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
                   eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
-                  eos.amount = t.amount
+                  eos.amount = t.amount ? t.amount : 0
                   eos.usd = this.eosUSD
                   eos.contract = 'eosio.token'
                   eos.precision = t.amount.split('.')[1].length
