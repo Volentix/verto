@@ -51,20 +51,20 @@
       <span class="landing--bottom-bar"></span>
     </div>
     <q-dialog v-model="restoreFromWords">
-    <q-card class="q-pa-lg">
-      <q-toolbar>
-        <q-avatar><img src="statics/icon.png"></q-avatar>
-        <q-toolbar-title><span class="text-weight-bold">Restore from</span> 24 Words</q-toolbar-title>
-        <q-btn flat round dense icon="close" v-close-popup />
-      </q-toolbar>
-      <q-card-section class="text-h6">
-        Are you sure?  This is irrivesible!  Current config will be errased and Restore process will begin after selecting a new verto password.
-      </q-card-section>
-      <q-card-actions align="right" class="q-pr-sm">
-        <q-btn label="Yes" flat @click="destroyData()" class="yes-btn" color="primary" v-close-popup/>
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
+      <q-card class="q-pa-lg">
+        <q-toolbar>
+          <q-avatar><img src="statics/icon.png"></q-avatar>
+          <q-toolbar-title><span class="text-weight-bold">Restore from</span> 24 Words</q-toolbar-title>
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-toolbar>
+        <q-card-section class="text-h6">
+          Are you sure?  This is irrivesible!  Current config will be errased and Restore process will begin after selecting a new verto password.
+        </q-card-section>
+        <q-card-actions align="right" class="q-pr-sm">
+          <q-btn label="Yes" flat @click="destroyData()" class="yes-btn" color="primary" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 

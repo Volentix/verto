@@ -1,7 +1,7 @@
 <template>
   <q-page class="text-black bg-white">
-    <div class="send-modal flex flex-center" :class="{'open' : openModal}">
-      <div v-if="getPassword" class="send-modal__content column flex-center">
+    <div v-if="getPassword" class="send-modal flex flex-center" :class="{'open' : openModal}">
+      <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
           <span class="text-h5 --amount">Private key password</span>
           <q-btn color="white" rounded flat unelevated @click="hideModalFun()" class="close-btn" text-color="black" label="+" />
@@ -41,13 +41,16 @@
           <div class="text-h4 --error">{{ ErrorMessage }}</div>
         </div>
       </div>
-      <div v-else class="send-modal__content column flex-center">
+    </div>
+    <div class="send-modal flex flex-center" :class="{'open' : openModalProgress}">
+      <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
-          <span class="text-h5 --amount">25.5 VTX</span>
+          <span class="text-h5 --amount">{{sendAmount + ' ' + currentAccount.type.toUpperCase()}}</span>
           <q-btn color="white" rounded flat unelevated @click="hideModalFun()" class="close-btn" text-color="black" label="+" />
         </div>
         <div class="send-modal__content--body column flex-center">
           <q-circular-progress
+              indeterminate
               :value="progressValue"
               size="100px"
               :thickness="0.05"
@@ -55,13 +58,26 @@
               track-color="grey-3"
               class="q-ma-md" />
           <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58"><path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path></svg>
-          <div class="--label text-cyan-5 text-h6">Sent Successfully</div>
+          <div class="--label text-cyan-5 text-h6">{{transStatus}}</div>
         </div>
         <div class="send-modal__content--footer">
-          <div class="text-h4 --email">To Mojgan@verto.crux</div>
+          <div class="text-h4 --email">To {{sendTo}}</div>
         </div>
       </div>
     </div>
+    <q-dialog v-model="transErrorDialog">
+      <q-card class="q-pa-lg">
+        <q-toolbar>
+          <q-avatar><q-icon name="error_outline" size="md" color="red" /></q-avatar>
+          <q-toolbar-title><span class="text-weight-bold">Error</span></q-toolbar-title>
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-toolbar>
+        <q-card-section class="text-h6">{{ErrorMessage}}</q-card-section>
+        <q-card-actions align="right" class="q-pr-sm">
+          <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <div class="standard-content">
       <h2 class="standard-content--title flex justify-center"><q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" /> Send </h2>
       <div class="standard-content--body">
@@ -136,6 +152,9 @@ export default {
     return {
       progressValue: 20,
       openModal: false,
+      openModalProgress: false,
+      transErrorDialog: false,
+      transStatus: 'Sent Successfully',
       currentWallet: null,
       sendTo: '',
       to: '',
@@ -277,6 +296,7 @@ export default {
     openModalFun: function (item) {
       if (this.currentAccount.privateKey) {
         this.sendTokens()
+        this.openModalProgress = true
       } else {
         this.getPassword = true
         this.openModal = true
@@ -296,7 +316,7 @@ export default {
       this.unknownError = false
       this.invalidEosName = false
       this.formatedAmount = this.formatAmountString()
-
+      this.transStatus = 'Transaction in progress'
       try {
         const transaction = await (new EosWrapper()).transferToken(
           this.currentAccount.contract,
@@ -310,25 +330,40 @@ export default {
         // this.showSpinners(false)
         // this.navigation.paymentSuccessful = true
         this.getPassword = false
+        this.transStatus = 'Sent Successfully'
       } catch (err) {
-        console.log('err', err)
+        // console.log('err', err)
+        // console.log('err', err.message)
         if (err && err.message && err.message.startsWith('Invalid character')) {
           this.invalidEosName = true
-        } else if (err.includes('account does not exist')) {
+        } else if (err.message.includes('account does not exist')) {
           this.invalidEosName = true
-        } else if (err.includes('maximum billable CPU time')) {
+        } else if (err.message.includes('maximum billable CPU time')) {
           this.unknownError = true
           this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
-        } else if (err.includes('overdrawn balance')) {
+        } else if (err.message.includes('overdrawn balance')) {
           this.unknownError = true
           this.ErrorMessage = 'Your EOS account does not have enough funds.'
-        } else if (err.includes('has insufficient ram')) {
+        } else if (err.message.includes('no balance object')) {
+          this.unknownError = true
+          this.ErrorMessage = 'Your EOS account does not have any balance.'
+        } else if (err.message.includes('has insufficient ram')) {
           this.unknownError = true
           this.ErrorMessage = 'Your EOS account does not have enough RAM staked to process the transaction.'
+        } else if (err.message.includes('transfer positive quantity')) {
+          this.unknownError = true
+          this.ErrorMessage = 'Amount to send must be a positive number.'
+        } else if (err.message.includes('account does not exist')) {
+          this.unknownError = true
+          this.ErrorMessage = 'The destination account does not exist.'
         } else {
           this.unknownError = true
-          this.ErrorMessage = 'Unknown Error'
+          this.ErrorMessage = err.message
         }
+        this.transErrorDialog = true
+        this.openModal = false
+        this.openModalProgress = false
+
         // this.showSpinners(false)
         return false
       }
@@ -337,6 +372,7 @@ export default {
       if (!this.invalidPrivateKeyPassword) {
         this.formatedAmount = this.formatAmountString()
         this.sendTokens()
+        this.openModalProgress = true
       }
     },
     formatAmountString () {
@@ -356,6 +392,7 @@ export default {
     },
     hideModalFun: function () {
       this.openModal = false
+      this.openModalProgress = false
     }
   }
 }
@@ -614,10 +651,13 @@ export default {
         }
         .--label{
           font-size: 14px;
-          font-weight: $regular;
+          font-weight: $light;
           font-family: $Titillium;
           position: absolute;
           bottom: -15px;
+          width: 150%;
+          text-align: center;
+          letter-spacing: 1.5px;
         }
       }
       &--footer{
@@ -646,5 +686,8 @@ export default {
   }
   .mr10{
     margin-right: 10px;
+  }
+  /deep/ .q-btn__wrapper{
+    min-height: 30px !important;
   }
 </style>
