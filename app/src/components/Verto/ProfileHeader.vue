@@ -186,14 +186,14 @@ export default {
         .btn-align-left{
           position: absolute;
           left: 10px;
-          top: 3%;
+          top: 30px;
         }
       }
       &.wallet-detail{
         .btn-align-left{
           position: absolute;
           left: 10px;
-          top: 3%;
+          top: 30px;
         }
       }
       &.static_with_image{
