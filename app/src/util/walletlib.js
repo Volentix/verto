@@ -47,8 +47,40 @@ class Lib {
       async eos (key, token) {
       },
       async eth (from, to, value, token, key) {
-        // const Web3 = require('web3')
-        // const web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+        const Web3 = require('web3')
+        const EthereumTx = require('ethereumjs-tx')
+        const web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+
+        let gasPrices = await getCurrentGasPrices()
+        let nonce = web3.eth.getTransactionCount(from)
+
+        let details = {
+          from,
+          to,
+          value: web3.toHex(web3.toWei(value, 'ether')),
+          gas: 21000,
+          gasPrice: gasPrices.low * 1000000000, // converts the gwei price to wei
+          nonce,
+          chainId: 1 // EIP 155 chainId - mainnet: 1, rinkeby: 4,  Ropsten: 3
+        }
+
+        const transaction = new EthereumTx(details)
+        transaction.sign(Buffer.from(key, 'hex'))
+        const serializedTransaction = transaction.serialize()
+
+        web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex'), (message, id) => {
+          let success = true
+
+          if (message) {
+            console.log(message)
+            success = false
+          } else {
+            message = `https://etherscan.io/tx/${id}`
+          }
+
+          return { success, message }
+        })
+
         // const rawTransaction = {
         //   from,
         //   to,
@@ -62,6 +94,16 @@ class Lib {
         //   .then(signedTx => web3.eth.sendSignedTransaction(signedTx.rawTransaction))
         //   .then(receipt => send = receipt)
         //   .catch(error => send = error)
+
+        async function getCurrentGasPrices () {
+          let response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json')
+          let prices = {
+            low: response.data.safeLow / 10,
+            medium: response.data.average / 10,
+            high: response.data.fast / 10
+          }
+          return prices
+        }
 
         // return { send }
       },
