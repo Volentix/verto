@@ -65,6 +65,28 @@
         </div>
       </div>
     </div>
+    <q-dialog v-model="transSuccessDialog">
+      <q-card class="q-pa-lg" style="width: 700px; max-width: 90vw;">
+        <q-toolbar>
+          <q-avatar><q-icon name="done_all" size="md" color="green" /></q-avatar>
+          <q-toolbar-title><span class="text-weight-bold">Success</span></q-toolbar-title>
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-toolbar>
+        <q-card-section class="text-h6">
+          <div class="text-h6 q-mb-md q-pl-sm">Transaction done Successfully.</div>
+          <q-input readonly class="input-input" rounded outlined color="purple" v-model="transactionLink">
+            <template v-slot:append>
+              <div class="flex justify-end">
+                <q-btn flat unelevated @click="copyToClipboard(transactionLink , 'Transaction link')" text-color="grey" round class="btn-copy" icon="o_file_copy" />
+              </div>
+            </template>
+          </q-input>
+        </q-card-section>
+        <q-card-actions align="right" class="q-pr-sm">
+          <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <q-dialog v-model="transErrorDialog">
       <q-card class="q-pa-lg">
         <q-toolbar>
@@ -154,6 +176,8 @@ export default {
       openModal: false,
       openModalProgress: false,
       transErrorDialog: false,
+      transSuccessDialog: false,
+      transactionLink: '',
       transStatus: 'Sent Successfully',
       currentWallet: null,
       sendTo: '',
@@ -330,6 +354,11 @@ export default {
         // this.showSpinners(false)
         // this.navigation.paymentSuccessful = true
         this.getPassword = false
+        this.transErrorDialog = false
+        this.openModal = false
+        this.openModalProgress = false
+        this.transSuccessDialog = true
+        this.transactionLink = `https://bloks.io/transaction/${this.transactionId}`
         this.transStatus = 'Sent Successfully'
       } catch (err) {
         // console.log('err', err)
@@ -451,7 +480,7 @@ export default {
           font-weight: 900;
           color: #7271fa;
           padding-top: 0px;
-          margin-top: -2px;
+          margin-top: -5px;
         }
         /deep/ .q-field__native{
           padding-left: 8px;
@@ -677,6 +706,10 @@ export default {
         }
       }
     }
+  }
+  .q-card{
+    border-radius: 25px;
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 35px rgba(0,0,0,0.14), 0 1px 10px rgba(0,0,0,0.12);
   }
   .max200{
     max-width: 200px;
