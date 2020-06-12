@@ -44,7 +44,7 @@ class Wallets2Tokens {
       }
 
       if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'dash') {
-        Lib.Wallet(wallet.type, wallet.key).then(result => {
+        Lib.balance(wallet.type, wallet.key).then(result => {
           console.log('libwallet', result)
           wallet.amount = result.amount
           wallet.usd = result.usd
