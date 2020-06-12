@@ -2,8 +2,8 @@ import EosWrapper from '@/util/EosWrapper'
 import axios from 'axios'
 
 class Lib {
-  Wallet = async (walletType, key, token) => {
-    const balance = {
+  balance = async (walletType, key, token) => {
+    const wallet = {
       async eos (key, token) {
         let float = 0
         const tokenContract = {
@@ -43,58 +43,56 @@ class Lib {
       }
     }[walletType]
 
-    const send = {
-      async eos (key, token) {
+    return wallet ? wallet(key, token) : {}
+  }
+
+  send = async (walletType, token, from, to, value, memo, key, contract) => {
+    const wallet = {
+      async eos (token, from, to, value, memo, key, contract) {
       },
-      async eth (from, to, value, token, key) {
+      async eth (token, from, to, value, memo, key) {
         const Web3 = require('web3')
-        const EthereumTx = require('ethereumjs-tx')
+        const EthereumTx = require('ethereumjs-tx').Transaction
         const web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
 
+        let nonce = await web3.eth.getTransactionCount(from)
         let gasPrices = await getCurrentGasPrices()
-        let nonce = web3.eth.getTransactionCount(from)
 
-        let details = {
-          from,
-          to,
-          value: web3.toHex(web3.toWei(value, 'ether')),
-          gas: 21000,
-          gasPrice: gasPrices.low * 1000000000, // converts the gwei price to wei
-          nonce,
-          chainId: 1 // EIP 155 chainId - mainnet: 1, rinkeby: 4,  Ropsten: 3
-        }
-
-        const transaction = new EthereumTx(details)
-        transaction.sign(Buffer.from(key, 'hex'))
-        const serializedTransaction = transaction.serialize()
-
-        web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex'), (message, id) => {
-          let success = true
-
-          if (message) {
-            console.log(message)
-            success = false
-          } else {
-            message = `https://etherscan.io/tx/${id}`
+        try {
+          let details = {
+            from,
+            to,
+            value: web3.utils.toHex(web3.utils.toWei(value.toString())),
+            gas: 21000,
+            gasPrice: gasPrices.low * 1000000000, // converts the gwei price to wei
+            nonce,
+            chainId: 1 // EIP 155 chainId - mainnet: 1, rinkeby: 4,  Ropsten: 3
           }
 
+          console.log('details', details)
+
+          const transaction = new EthereumTx(details)
+          transaction.sign(Buffer.from(key.substring(2), 'hex'))
+          const serializedTransaction = transaction.serialize()
+
+          return new Promise(async (resolve, reject) => {
+            web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, id) => {
+              if (err) {
+                console.log(err)
+                return reject()
+              }
+              resolve({
+                message: `https://etherscan.io/tx/${id}`,
+                success: true
+              })
+            })
+          })
+        } catch (err) {
+          let message = err
+          let success = false
+
           return { success, message }
-        })
-
-        // const rawTransaction = {
-        //   from,
-        //   to,
-        //   value: web3.utils.toHex(web3.utils.toWei(value, 'ether')),
-        //   gas: 200000,
-        //   chainId: 3
-        // }
-
-        // let send = ''
-        // web3.eth.accounts.signTransaction(rawTransaction, key)
-        //   .then(signedTx => web3.eth.sendSignedTransaction(signedTx.rawTransaction))
-        //   .then(receipt => send = receipt)
-        //   .catch(error => send = error)
-
+        }
         async function getCurrentGasPrices () {
           let response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json')
           let prices = {
@@ -115,8 +113,7 @@ class Lib {
       }
     }[walletType]
 
-    console.log(send)
-    return balance ? balance(key, token) : {}
+    return wallet ? wallet(token, from, to, value, memo, key, contract) : {}
   }
 }
 window.Lib = new Lib()
