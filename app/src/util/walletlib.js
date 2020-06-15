@@ -1,5 +1,6 @@
 import EosWrapper from '@/util/EosWrapper'
 import axios from 'axios'
+import store from '@/store'
 
 class Lib {
   balance = async (walletType, key, token) => {
@@ -49,6 +50,45 @@ class Lib {
   send = async (walletType, token, from, to, value, memo, key, contract) => {
     const wallet = {
       async eos (token, from, to, value, memo, key, contract) {
+        let message, success
+        try {
+          const formatedAmount = await formatAmountString(value, token, key)
+          const transaction = await (new EosWrapper()).transferToken(
+            contract,
+            from.toLowerCase(),
+            to.toLowerCase(),
+            formatedAmount,
+            memo,
+            key
+          )
+
+          message = `https://bloks.io/transaction/${transaction.transaction_id}`
+          success = true
+        } catch (err) {
+          message = err
+          success = false
+        }
+
+        return { success, message }
+
+        async function formatAmountString (value, token, key) {
+          let numberOfDecimals = 0
+          let tableData = await store.state.wallets.tokens
+          let currentAccount = tableData.find(w => w.privateKey === key && w.type === token)
+          let stringAmount = (Math.round(+value * Math.pow(10, currentAccount.precision)) / Math.pow(10, currentAccount.precision)).toString()
+
+          const amountParsed = stringAmount.split('.')
+          if (amountParsed && amountParsed.length > 1) {
+            numberOfDecimals = amountParsed[1].length
+          } else {
+            stringAmount += '.'
+          }
+          for (;numberOfDecimals < currentAccount.precision; numberOfDecimals++) {
+            stringAmount += '0'
+          }
+
+          return stringAmount + ' ' + token.toUpperCase()
+        }
       },
       async eth (token, from, to, value, memo, key) {
         const Web3 = require('web3')
