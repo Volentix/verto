@@ -158,6 +158,14 @@ export default [
         }
       },
       {
+        name: 'wps-public-proposal-detail',
+        path: '/verto/card-wps/public-proposals/:proposalName',
+        component: () => import('pages/Verto/WPSPublicProposalDetail.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'wps-public-proposals-create',
         path: '/verto/card-wps/public-proposals/create',
         component: () => import('pages/Verto/WPSPublicProposalsCreate.vue'),
