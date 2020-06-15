@@ -1,9 +1,10 @@
 import EosWrapper from '@/util/EosWrapper'
 import axios from 'axios'
+import store from '@/store'
 
 class Lib {
-  Wallet = async (walletType, key, token) => {
-    const balance = {
+  balance = async (walletType, key, token) => {
+    const wallet = {
       async eos (key, token) {
         let float = 0
         const tokenContract = {
@@ -43,25 +44,104 @@ class Lib {
       }
     }[walletType]
 
-    const send = {
-      async eos (key, token) {
-      },
-      async eth (from, to, value, token, key) {
-        // const Web3 = require('web3')
-        // const web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
-        // const rawTransaction = {
-        //   from,
-        //   to,
-        //   value: web3.utils.toHex(web3.utils.toWei(value, 'ether')),
-        //   gas: 200000,
-        //   chainId: 3
-        // }
+    return wallet ? wallet(key, token) : {}
+  }
 
-        // let send = ''
-        // web3.eth.accounts.signTransaction(rawTransaction, key)
-        //   .then(signedTx => web3.eth.sendSignedTransaction(signedTx.rawTransaction))
-        //   .then(receipt => send = receipt)
-        //   .catch(error => send = error)
+  send = async (walletType, token, from, to, value, memo, key, contract) => {
+    const wallet = {
+      async eos (token, from, to, value, memo, key, contract) {
+        let message, success
+        try {
+          const formatedAmount = await formatAmountString(value, token, key)
+          const transaction = await (new EosWrapper()).transferToken(
+            contract,
+            from.toLowerCase(),
+            to.toLowerCase(),
+            formatedAmount,
+            memo,
+            key
+          )
+
+          message = `https://bloks.io/transaction/${transaction.transaction_id}`
+          success = true
+        } catch (err) {
+          message = err
+          success = false
+        }
+
+        return { success, message }
+
+        async function formatAmountString (value, token, key) {
+          let numberOfDecimals = 0
+          let tableData = await store.state.wallets.tokens
+          let currentAccount = tableData.find(w => w.privateKey === key && w.type === token)
+          let stringAmount = (Math.round(+value * Math.pow(10, currentAccount.precision)) / Math.pow(10, currentAccount.precision)).toString()
+
+          const amountParsed = stringAmount.split('.')
+          if (amountParsed && amountParsed.length > 1) {
+            numberOfDecimals = amountParsed[1].length
+          } else {
+            stringAmount += '.'
+          }
+          for (;numberOfDecimals < currentAccount.precision; numberOfDecimals++) {
+            stringAmount += '0'
+          }
+
+          return stringAmount + ' ' + token.toUpperCase()
+        }
+      },
+      async eth (token, from, to, value, memo, key) {
+        const Web3 = require('web3')
+        const EthereumTx = require('ethereumjs-tx').Transaction
+        const web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+
+        let nonce = await web3.eth.getTransactionCount(from)
+        let gasPrices = await getCurrentGasPrices()
+
+        try {
+          let details = {
+            from,
+            to,
+            value: web3.utils.toHex(web3.utils.toWei(value.toString())),
+            gas: 21000,
+            gasPrice: gasPrices.low * 1000000000, // converts the gwei price to wei
+            nonce,
+            chainId: 1 // EIP 155 chainId - mainnet: 1, rinkeby: 4,  Ropsten: 3
+          }
+
+          console.log('details', details)
+
+          const transaction = new EthereumTx(details)
+          transaction.sign(Buffer.from(key.substring(2), 'hex'))
+          const serializedTransaction = transaction.serialize()
+
+          return new Promise(async (resolve, reject) => {
+            web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, id) => {
+              if (err) {
+                console.log(err)
+                return reject()
+              }
+              resolve({
+                message: `https://etherscan.io/tx/${id}`,
+                success: true
+              })
+            })
+          })
+        } catch (err) {
+          let message = err
+          let success = false
+
+          return { success, message }
+        }
+        async function getCurrentGasPrices () {
+          let response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json')
+          let prices = {
+            low: response.data.safeLow / 10,
+            medium: response.data.average / 10,
+            high: response.data.fast / 10
+          }
+          return prices
+        }
 
         // return { send }
       },
@@ -73,8 +153,7 @@ class Lib {
       }
     }[walletType]
 
-    console.log(send)
-    return balance ? balance(key, token) : {}
+    return wallet ? wallet(token, from, to, value, memo, key, contract) : {}
   }
 }
 window.Lib = new Lib()

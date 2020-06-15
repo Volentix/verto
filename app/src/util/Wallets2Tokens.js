@@ -44,7 +44,7 @@ class Wallets2Tokens {
       }
 
       if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'dash') {
-        Lib.Wallet(wallet.type, wallet.key).then(result => {
+        Lib.balance(wallet.type, wallet.key).then(result => {
           console.log('libwallet', result)
           wallet.amount = result.amount
           wallet.usd = result.usd
@@ -78,31 +78,26 @@ class Wallets2Tokens {
                 }
 
                 let usdValue = 0
-                if (type === 'usdt' || type === 'eosdt') {
-                  usdValue = t.amount
-                } else {
-                  this.getUSD(t.code, type).then(result => {
-                    usdValue = result
+                this.getUSD(t.code, type).then(result => {
+                  usdValue = result
+                  console.log('usdValue', usdValue, t.amount, usdValue * t.amount)
+
+                  self.tableData.push({
+                    selected: false,
+                    type,
+                    name,
+                    vespucciScore,
+                    key: wallet.key,
+                    privateKey: wallet.privateKey,
+                    privateKeyEncrypted: wallet.privateKeyEncrypted,
+                    amount: t.amount,
+                    usd: usdValue * t.amount,
+                    contract: t.code,
+                    precision: t.amount.split('.')[1].length,
+                    chain: 'eos',
+                    to: '/verto/wallets/eos/' + type + '/' + name,
+                    icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
                   })
-                }
-
-                console.log('usdValue', usdValue)
-
-                self.tableData.push({
-                  selected: false,
-                  type,
-                  name,
-                  vespucciScore,
-                  key: wallet.key,
-                  privateKey: wallet.privateKey,
-                  privateKeyEncrypted: wallet.privateKeyEncrypted,
-                  amount: t.amount,
-                  usd: usdValue,
-                  contract: t.code,
-                  precision: t.amount.split('.')[1].length,
-                  chain: 'eos',
-                  to: '/verto/wallets/eos/' + type + '/' + name,
-                  icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
                 })
               }
             } else {
@@ -111,7 +106,7 @@ class Wallets2Tokens {
                   let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
                   eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
                   eos.amount = t.amount ? t.amount : 0
-                  eos.usd = this.eosUSD
+                  eos.usd = this.eosUSD * t.amount
                   eos.contract = 'eosio.token'
                   eos.precision = t.amount.split('.')[1].length
                   console.log('a ---------------------', a)
@@ -190,6 +185,10 @@ class Wallets2Tokens {
       })
   }
   async getUSD (contract, coin) {
+    if (coin === 'usdt' || coin === 'eosdt') {
+      return 1
+    }
+
     // 'https://api.coingecko.com/api/v3/simple/price?ids=' + +'&vs_currencies=usd'
     let coinEOS = (await axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
     let coinUSD = coinEOS * this.eosUSD
