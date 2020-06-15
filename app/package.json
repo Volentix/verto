@@ -66,6 +66,7 @@
     "elliptic": "^6.5.2",
     "eosjs": "^21.0.1-rc2",
     "eosjs-ecc": "^4.0.7",
+    "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^6.2.0",
     "ethereumjs-wallet": "^0.6.3",
     "file-saver": "^2.0.1",

@@ -161,9 +161,11 @@
 
 <script>
 // import RadialProgressBar from 'vue-radial-progress'
-import EosWrapper from '@/util/EosWrapper'
+// import EosWrapper from '@/util/EosWrapper'
 import { CruxPay } from '@cruxpay/js-sdk'
 import HD from '@/util/hdwallet'
+import Lib from '@/util/walletlib'
+
 let cruxClient
 
 export default {
@@ -339,63 +341,44 @@ export default {
     async sendTokens () {
       this.unknownError = false
       this.invalidEosName = false
-      this.formatedAmount = this.formatAmountString()
       this.transStatus = 'Transaction in progress'
-      try {
-        const transaction = await (new EosWrapper()).transferToken(
-          this.currentAccount.contract,
-          this.params.accountName,
-          this.sendToResolved.toLowerCase(),
-          this.formatedAmount,
-          this.sendMemo,
-          this.privateKey.key
-        )
-        this.transactionId = transaction.transaction_id
-        // this.showSpinners(false)
-        // this.navigation.paymentSuccessful = true
-        this.getPassword = false
-        this.transErrorDialog = false
-        this.openModal = false
-        this.openModalProgress = false
-        this.transSuccessDialog = true
-        this.transactionLink = `https://bloks.io/transaction/${this.transactionId}`
-        this.transStatus = 'Sent Successfully'
-      } catch (err) {
-        // console.log('err', err)
-        // console.log('err', err.message)
-        if (err && err.message && err.message.startsWith('Invalid character')) {
-          this.invalidEosName = true
-        } else if (err.message.includes('account does not exist')) {
-          this.invalidEosName = true
-        } else if (err.message.includes('maximum billable CPU time')) {
-          this.unknownError = true
-          this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
-        } else if (err.message.includes('overdrawn balance')) {
-          this.unknownError = true
-          this.ErrorMessage = 'Your EOS account does not have enough funds.'
-        } else if (err.message.includes('no balance object')) {
-          this.unknownError = true
-          this.ErrorMessage = 'Your EOS account does not have any balance.'
-        } else if (err.message.includes('has insufficient ram')) {
-          this.unknownError = true
-          this.ErrorMessage = 'Your EOS account does not have enough RAM staked to process the transaction.'
-        } else if (err.message.includes('transfer positive quantity')) {
-          this.unknownError = true
-          this.ErrorMessage = 'Amount to send must be a positive number.'
-        } else if (err.message.includes('account does not exist')) {
-          this.unknownError = true
-          this.ErrorMessage = 'The destination account does not exist.'
+
+      console.log(
+        'chainID', this.params.chainID,
+        'tokenID', this.params.tokenID,
+        'name', this.params.accountName,
+        'to', this.sendToResolved,
+        'value', this.sendAmount,
+        'memo', this.sendMemo,
+        'key', this.privateKey.key,
+        'contract', this.currentAccount.contract)
+
+      Lib.send(
+        this.params.chainID,
+        this.params.tokenID,
+        this.params.accountName,
+        this.sendToResolved,
+        this.sendAmount,
+        this.sendMemo,
+        this.privateKey.key,
+        this.currentAccount.contract
+      ).then(result => {
+        if (result.success) {
+          this.getPassword = false
+          this.transErrorDialog = false
+          this.openModal = false
+          this.openModalProgress = false
+          this.transSuccessDialog = true
+          this.transactionLink = result.message
+          this.transStatus = 'Sent Successfully'
         } else {
           this.unknownError = true
-          this.ErrorMessage = err.message
+          this.ErrorMessage = result.message
+          this.transErrorDialog = true
+          this.openModal = false
+          this.openModalProgress = false
         }
-        this.transErrorDialog = true
-        this.openModal = false
-        this.openModalProgress = false
-
-        // this.showSpinners(false)
-        return false
-      }
+      })
     },
     toSummary () {
       if (!this.invalidPrivateKeyPassword) {
@@ -403,21 +386,6 @@ export default {
         this.sendTokens()
         this.openModalProgress = true
       }
-    },
-    formatAmountString () {
-      let numberOfDecimals = 0
-      let stringAmount = (Math.round(+this.sendAmount * Math.pow(10, this.currentAccount.precision)) / Math.pow(10, this.currentAccount.precision)).toString()
-
-      const amountParsed = stringAmount.split('.')
-      if (amountParsed && amountParsed.length > 1) {
-        numberOfDecimals = amountParsed[1].length
-      } else {
-        stringAmount += '.'
-      }
-      for (;numberOfDecimals < this.currentAccount.precision; numberOfDecimals++) {
-        stringAmount += '0'
-      }
-      return stringAmount + ' ' + this.params.tokenID.toUpperCase()
     },
     hideModalFun: function () {
       this.openModal = false
