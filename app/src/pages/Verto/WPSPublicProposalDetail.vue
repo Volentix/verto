@@ -3,10 +3,10 @@
         <div class="chain-tools-wrapper">
             <div class="standard-content">
                 <h2 class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" />
-                     Public proposals
+                    <q-btn flat unelevated class="btn-align-left" to="/verto/card-wps/public-proposals" text-color="black" icon="keyboard_backspace" />
+                     Active proposal
                 </h2>
-                <div class="privatekey_bg flex flex-center"><img src="statics/proposals_bg.png" alt=""></div>
+                <!-- <div class="privatekey_bg flex flex-center"><img src="statics/proposals_bg.png" alt=""></div> -->
             </div>
             <div class="chain-tools-wrapper--list open">
                 <div class="list-wrapper">
@@ -36,31 +36,68 @@
                         </q-input>
                       </div>
                       <div class="error text-h6 text-red" v-if="transactError">{{ErrorMessage}}</div>
-
-                      <div class="title">{{proposals.length}} Active Proposals</div>
-                      <div class="parag">Next budget payments will occur in 28 days and it will provide 20000 VTX of 56000 VTX of total available budget.</div>
-                      <div class="flex justify-end q-mt-md q-mb-md">
-                        <q-btn unelevated color="deep-purple-14" class="q-mr-sm --next-btn" rounded label="Create Proposals" to="/verto/card-wps/public-proposals/create" />
-                        <q-btn unelevated color="deep-purple-14" class="--next-btn" rounded label="Draft Proposals" to="/verto/card-wps/public-proposals/draft" />
+                      <div class="title flex justify-between">
+                        {{currentProposal.title}}
+                        <div class=""><q-icon name="share" /></div>
                       </div>
+                      <!-- <div class="parag">Next budget payments will occur in 28 days and it will provide 20000 VTX of 56000 VTX of total available budget.</div> -->
                       <div class="list-proposals--wrapper">
-                        <div class="item" v-for="(item, index) in proposals" :key="index">
-                          <div class="row flex justify-between" @click="goToDetail(item)">
-                            <div class="">
-                              <strong>{{item.proposal_name}} by {{item.proposer}}</strong> &nbsp; Duration: <strong>{{item.duration}}</strong>
-                              <br> Title: <strong>{{item.title}}</strong>
-                            </div>
-                            <div class=""><q-icon name="share" /> share</div>
-                          </div>
-                          <div class="row full-width items-center" style="margin-top: -10px">
-                            <div class="progress col col-6">
-                              <q-linear-progress :value=".3" rounded color="blue" size="md" class="" />
-                            </div>
-                            <div class="vote col col-6 flex justify-end items-center">
+                        <div class="item">
+                          <div class="row ">
+                            <div class="col col-6 parag">Title</div>
+                            <div class="col col-6 parag">{{currentProposal.title}}</div>
+                            <div class="col col-6 parag bg">claimed</div>
+                            <div class="col col-6 parag bg">{{currentProposal.claimed}}</div>
+                            <div class="col col-6 parag">created</div>
+                            <div class="col col-6 parag">{{currentProposal.created}}</div>
+                            <div class="col col-6 parag bg">duration</div>
+                            <div class="col col-6 parag bg">{{currentProposal.duration}}</div>
+                            <div class="col col-6 parag">eligible</div>
+                            <div class="col col-6 parag">{{currentProposal.eligible}}</div>
+                            <div class="col col-6 parag bg">proposal_name</div>
+                            <div class="col col-6 parag bg">{{currentProposal.proposal_name}}</div>
+                            <div class="col col-6 parag">proposer</div>
+                            <div class="col col-6 parag">{{currentProposal.proposer}}</div>
+                            <div class="col col-6 parag bg">remaining_voting_periods</div>
+                            <div class="col col-6 parag bg">{{currentProposal.remaining_voting_periods}}</div>
+                            <div class="col col-6 parag">start_voting_period</div>
+                            <div class="col col-6 parag">{{currentProposal.start_voting_period}}</div>
+                            <div class="col col-6 parag bg">status</div>
+                            <div class="col col-6 parag bg">{{currentProposal.status}}</div>
+                            <div class="col col-6 parag">total_budget</div>
+                            <div class="col col-6 parag">{{currentProposal.total_budget}}</div>
+                            <div class="col col-6 parag bg">total_net_votes</div>
+                            <div class="col col-6 parag bg">{{currentProposal.total_net_votes}}</div>
+                            <div class="col col-6 parag">monthly_budget</div>
+                            <div class="col col-6 parag">{{currentProposal.monthly_budget}}</div>
+                            <hr class="col-12">
+                            <div class="vote col col-12 flex justify-between items-center" style="margin-top:-10px">
                               Vote &nbsp;
-                              <q-btn @click="vote(item.proposal_name, 'yes')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/success_icon2.svg" alt=""></q-btn>
-                              <q-btn @click="vote(item.proposal_name, 'no')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/fail_icon2.svg" alt=""></q-btn>
+                              <span>
+                                <q-btn @click="vote(currentProposal.proposal_name, 'yes')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/success_icon2.svg" alt=""></q-btn>
+                                <q-btn @click="vote(currentProposal.proposal_name, 'no')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/fail_icon2.svg" alt=""></q-btn>
+                              </span>
                             </div>
+                            <div class="parag col col-12">
+                              <strong>Description</strong>
+                              <div v-html="currentProposal.proposal_json[0].value" />
+                              <br>
+                            </div>
+                            <!-- claimed: "0.00000000 VTX"
+                            created: "2020-06-01T11:56:19"
+                            duration: 2
+                            eligible: 0
+                            monthly_budget: "100.00000000 VTX"
+                            payouts: "0.00000000 VTX"
+                            proposal_json: Array(1)
+                            proposal_name: "propdraftu"
+                            proposer: "volentixqkxd"
+                            remaining_voting_periods: 2
+                            start_voting_period: "2020-05-25T20:11:12"
+                            status: "active"
+                            title: "Proposal Draft Today Test"
+                            total_budget: "200.00000000 VTX"
+                            total_net_votes: 0 -->
                           </div>
                         </div>
                       </div>
@@ -86,6 +123,7 @@ export default {
       proposals: [],
       settings: [],
       votes: [],
+      currentProposal: null,
       drafts: [],
       privateKeyPassword: null,
       isPwd: true,
@@ -118,7 +156,6 @@ export default {
       this.isPrivateKeyEncrypted = true
       console.log('this.isPrivateKeyEncrypted 2', this.isPrivateKeyEncrypted)
     }
-
     if (this.wallet.name) {
       this.fetch()
     }
@@ -189,7 +226,8 @@ export default {
     fetch () {
       eos.getTable('volentixwork', 'volentixwork', 'proposals').then(r => {
         this.proposals = r
-        console.log('proposals ---', this.proposals)
+        this.currentProposal = this.proposals.find(p => p.proposal_name === this.$route.params.proposalName ? p : null)
+        console.log('currentProposal ---', this.currentProposal)
       })
       eos.getTable('volentixwork', 'volentixwork', 'settings').then(r => {
         this.settings = r
@@ -254,10 +292,17 @@ export default {
                 padding: 10px;
                 padding-bottom: 0px;
                 margin-bottom: 10px;
-                font-size: 10px;
                 font-family: $Titillium;
                 font-weight: $regular;
-                color: #B0B0B0;
+                font-size: 12px;
+                color: #040404;
+                .row{
+                  .col{
+                    &.bg{
+                      background-color: rgba(#707070, .09);
+                    }
+                  }
+                }
                 strong{
                   color: #333;
                   font-size: 11px;
@@ -507,9 +552,9 @@ export default {
     padding: 0px;
   }
   .vote-btn{
-    margin-right: -10px;
+    margin-right: 0px;
     /deep/ img{
-      min-width: 34px;
+      min-width: 44px;
     }
   }
 </style>
