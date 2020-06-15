@@ -12,7 +12,7 @@
           <div class="desc">Vote and create proposals</div>
         </span>
       </div>
-      <q-btn to="/verto/card-wps" unelevated class="card-create-wallet--wrapper--header_btn" color="black"
+      <q-btn to="/verto/card-wps/public-proposals" unelevated class="card-create-wallet--wrapper--header_btn" color="black"
         text-color="white" label="Get Started" />
     </div>
   </div>
