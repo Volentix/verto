@@ -33,7 +33,7 @@
                 <q-item data-name='Transaction History' clickable v-ripple class="p-relative" to="/verto/wallet/coinHistory">Transaction History<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item data-name='Associate with EOS' v-if="currentAccount.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative">Associate with EOS <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item data-name='Staking' clickable v-ripple class="p-relative" to="/verto/stake">Staking<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item data-name='Voting' clickable v-ripple class="p-relative" to="/verto/card-wps">Voting<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <q-item data-name='Voting' clickable v-ripple class="p-relative" to="/verto/card-wps/public-proposals">Voting<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item data-name='Lending' clickable v-ripple class="p-relative" to="">Lending<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item v-if="currentAccount.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
@@ -165,6 +165,7 @@ export default {
       tokenID: this.$route.params.tokenID,
       accountName: this.$route.params.accountName
     })
+    this.$store.state.currentwallet.wallet = this.currentAccount
   },
   // watch: {
   //   'currentAccount.hidden' () {
