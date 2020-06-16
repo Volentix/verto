@@ -7,13 +7,37 @@
         <div class="standard-content--body__form">
           <q-input v-model="proposal_name" class="input-input" outlined rounded color="purple" label="Proposal name (id)" />
           <q-input v-model="title" class="input-input" outlined rounded color="purple" label="Proposal Title" />
-          <q-input v-model="monthly_budget" class="input-input" outlined rounded color="purple" label="Budget" />
-          <q-input v-model="duration" class="input-input" outlined rounded color="purple" label="Duration" />
+          <!-- <q-input v-model="description" class="input-input" outlined rounded color="purple" label="Short description" /> -->
+          <hr style="height:0px;opacity:0" />
+          <q-input
+            ref="inputDesc"
+            outlined rounded color="purple" label="Description"
+            v-model="description"
+            class="input-input"
+            bottom-slots
+            maxlength="31"
+            :error="!isValid"
+            hint="Max 30 characters"
+          >
+            <template v-slot:error>
+              Please use maximum 50 characters.
+            </template>
+          </q-input>
+          <q-input v-model="monthly_budget" class="input-input" outlined rounded color="purple" label="Budget">
+            <div class="flex justify-end q-pr-sm">
+              <span style="line-height: 50px">VTX</span>
+            </div>
+          </q-input>
+          <q-input v-model="duration" class="input-input" outlined rounded color="purple" label="Duration">
+            <div class="flex justify-end q-pr-sm">
+              <span style="line-height: 50px">Month</span>
+            </div>
+          </q-input>
           <!-- <q-editor v-model="editor" min-height="5rem" /> -->
           <!-- <q-editor v-model="proposal_json" rounded outlined min-height="5rem" color="purple" /> -->
           <!-- <q-input v-model="proposal_json" rounded outlined class="" color="purple" type="textarea" label="Proposal json"/> -->
           <div class="">
-            <span class="lab-input">Proposal description</span>
+            <span class="lab-input">Proposal</span>
             <span class="lab-input" style="font-size: .9em;opacity: .5;margin-top: 0px; margin-bottom: 10px;">Drag the toolbar to the right to see more options</span>
             <q-editor
               v-model="editor"
@@ -184,9 +208,10 @@ export default {
       vertoPasswordTemp: null,
       proposal_name: 'mywps',
       title: 'My WPS Title',
-      monthly_budget: '8.00000000 VTX',
+      monthly_budget: '100',
       duration: '2',
-      editor: '<b>Proposal</b> description'
+      editor: '<b>Proposal</b> text goes here <ol><li>Item 1</li><li>Item 2</li></ol>',
+      description: 'short brief goes here'
       // proposal_json: '[{"key":"description", "value":""}]'
       // [{"key":"description", "value":""}]
     }
@@ -194,6 +219,9 @@ export default {
   computed: {
     wallet () {
       return this.$store.state.currentwallet.wallet || {}
+    },
+    isValid () {
+      return this.description.length <= 30
     }
   },
   async created () {
@@ -262,7 +290,7 @@ export default {
           title,
           monthly_budget,
           duration: parseInt(duration),
-          proposal_json: JSON.parse(`[{"key":"description", "value":"${this.editor}"}]`)
+          proposal_json: JSON.parse(`[{"key":"description", "value":"${this.description}"},{"key":"proposal", "value":"${this.editor}"}]`)
         }
       }])
     },
@@ -374,6 +402,9 @@ export default {
         .input-input{
           height: 50px;
           margin-bottom: 10px;
+          /deep/ .q-field__bottom{
+            transform: translateY(24px);
+          }
           &.q-textarea{
             height: 150px;
           }

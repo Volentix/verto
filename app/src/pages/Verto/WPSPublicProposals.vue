@@ -36,7 +36,6 @@
                         </q-input>
                       </div>
                       <div class="error text-h6 text-red" v-if="transactError">{{ErrorMessage}}</div>
-
                       <div class="title">{{proposals.length}} Active Proposals</div>
                       <div class="parag">Next budget payments will occur in 28 days and it will provide 20000 VTX of 56000 VTX of total available budget.</div>
                       <div class="flex justify-end q-mt-md q-mb-md">
@@ -45,21 +44,27 @@
                       </div>
                       <div class="list-proposals--wrapper">
                         <div class="item" v-for="(item, index) in proposals" :key="index">
-                          <div class="row flex justify-between" @click="goToDetail(item)">
-                            <div class="">
-                              <strong>{{item.proposal_name}} by {{item.proposer}}</strong> &nbsp; Duration: <strong>{{item.duration}}</strong>
-                              <br> Title: <strong>{{item.title}}</strong>
+                          <div class="row q-pb-sm flex justify-between" @click="goToDetail(item)">
+                            <div class="col-10">
+                              <strong>{{item.title}}</strong> by <strong>{{item.proposer}}</strong>
+                              <br> Lorem ipsum dolor sit amet.
                             </div>
-                            <div class=""><q-icon name="share" /> share</div>
+                            <div class="col-2 flex justify-end items-center" style="margin-top: -15px">
+                              <q-btn color="black" text-color="black" flat icon="share" @click="showShareWrapper = true" style="font-size: 10px;margin-right: -15px" />
+                            </div>
+                            <div class="col-12">Duration: <strong>{{item.duration}} Month(s)</strong></div>
                           </div>
-                          <div class="row full-width items-center" style="margin-top: -10px">
+                          <div class="row q-pb-sm full-width items-center">
                             <div class="progress col col-6">
-                              <q-linear-progress :value=".3" rounded color="blue" size="md" class="" />
+                              <q-linear-progress :value="item.total_net_votes/100" rounded color="blue" size="md" class="" />
+                              <span>{{item.total_net_votes/100}}/100 votes</span>
                             </div>
-                            <div class="vote col col-6 flex justify-end items-center">
-                              Vote &nbsp;
-                              <q-btn @click="vote(item.proposal_name, 'yes')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/success_icon2.svg" alt=""></q-btn>
-                              <q-btn @click="vote(item.proposal_name, 'no')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/fail_icon2.svg" alt=""></q-btn>
+                            <div class="vote col col-6 flex justify-end items-center" style="margin-top: -15px">
+                              <span class="q-mr-sm">Vote</span>
+                              <q-btn @click="vote(currentProposal.proposal_name, 'yes')" color="black" label="Yes" text-color="green" class="strong q-mr-sm vote-btn" rounded outline />
+                              <q-btn @click="vote(currentProposal.proposal_name, 'no')" color="orange" label="No" text-color="orange" class="strong vote-btn" rounded outline />
+                              <!-- <q-btn @click="vote(item.proposal_name, 'yes')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/success_icon2.svg" alt=""></q-btn>
+                              <q-btn @click="vote(item.proposal_name, 'no')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/fail_icon2.svg" alt=""></q-btn> -->
                             </div>
                           </div>
                         </div>
@@ -127,7 +132,7 @@ export default {
     goToDetail (item) {
       console.log('--item--', item.proposal_name)
       this.$router.push({
-        path: `/verto/card-wps/public-proposals/${item.proposal_name}`
+        path: `/verto/card-wps/public-proposals/proposal/${item.proposal_name}`
       })
     },
     async transact (actions) {
@@ -506,9 +511,18 @@ export default {
     max-width: 40px;
     padding: 0px;
   }
-  .vote-btn{
-    margin-right: -10px;
-    /deep/ img{
+  /deep/ .vote-btn{
+    height: 30px;
+    .q-btn__wrapper{
+      padding: 0px 5px;
+      min-height: unset;
+      width: 40px;
+    }
+    .q-btn__content{
+      font-size: 12px;
+      text-transform: initial;
+    }
+    img{
       min-width: 34px;
     }
   }
