@@ -15,7 +15,7 @@
                 <!-- <span class="item-name--percent">{{currentAccount.percent}}</span> -->
               </q-item-section>
               <q-item-section class="item-info">
-                <span class="item-info--amount">{{new Number(currentAccount.amount).toFixed(2)}} {{currentAccount.type.toUpperCase()}}</span>
+                <span class="item-info--amount">{{new Number(currentAccount.amount).toFixed(8)}} {{currentAccount.type.toUpperCase()}}</span>
                 <!-- <span class="item-info--amountUSD">{{currentAccount.amountUSD}}</span> -->
               </q-item-section>
             </div>
@@ -160,6 +160,9 @@ export default {
     this.currentAccount = this.tableData.find(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)
     )
+
+    console.log('walletDetail currentAccount', this.currentAccount)
+
     this.$store.commit('currentwallet/updateParams', {
       chainID: this.$route.params.chainID,
       tokenID: this.$route.params.tokenID,

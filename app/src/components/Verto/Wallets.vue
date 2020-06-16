@@ -98,22 +98,7 @@ export default {
       confirmed: false,
       // showWallet: true,
       showText: false,
-      menu: [
-        { selected: false, type: 'btc-xyz', name: 'BTC xyz', percent: '1.02%', to: '/verto/wallets/btc-xyz', icon: 'statics/coins_icons/btc.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-        { selected: false, type: 'vtx', name: 'VTX', percent: '1.02%', to: '/verto/wallets/vtx', icon: 'statics/coins_icons/vtx.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-        { selected: false, type: 'eth', name: 'ETH', percent: '1.02%', to: '/verto/wallets/eth', icon: 'statics/coins_icons/eth.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-        { selected: false, type: 'dash', name: 'DASH', percent: '1.02%', to: '/verto/wallets/dash', icon: 'statics/coins_icons/dash.png', amount: '0.023 BTC', amountUSD: '$235.21' },
-        { selected: false, type: 'riple', name: 'Riple', percent: '1.02%', to: '/verto/wallets/riple', icon: 'statics/coins_icons/ripple.png', amount: '0.023 BTC', amountUSD: '$235.21' }
-      ],
-      selectedWallet: {
-        selected: false,
-        type: 'btc',
-        name: 'BTC xyz',
-        percent: '1.02%',
-        icon: 'statics/coins_icons/btc.png',
-        amount: '0.023 BTC',
-        amountUSD: '$235.21'
-      },
+      menu: [],
       tableData: [],
       currentAccount: {
         selected: false,
@@ -142,7 +127,7 @@ export default {
 
     this.tableData = await this.$store.state.wallets.tokens
 
-    console.log('this.tableData', this.tableData)
+    console.log('this.tableData in wallets', this.tableData)
 
     this.$store.commit('currentwallet/updateParams', {
       chainID: this.chainID,
