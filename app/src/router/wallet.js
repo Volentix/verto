@@ -159,7 +159,7 @@ export default [
       },
       {
         name: 'wps-public-proposal-detail',
-        path: '/verto/card-wps/public-proposals/:proposalName',
+        path: '/verto/card-wps/public-proposals/proposal/:proposalName',
         component: () => import('pages/Verto/WPSPublicProposalDetail.vue'),
         meta: {
           authRequired: true

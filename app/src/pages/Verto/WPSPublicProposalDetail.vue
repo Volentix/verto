@@ -36,24 +36,35 @@
                         </q-input>
                       </div>
                       <div class="error text-h6 text-red" v-if="transactError">{{ErrorMessage}}</div>
-                      <div class="title flex justify-between">
-                        {{currentProposal.title}}
-                        <div class=""><q-icon name="share" /></div>
+                      <div class="title flex justify-between row items-center">
+                        <span class="col-10">{{currentProposal.title}}</span>
+                        <div class="col-2 flex justify-end">
+                           <q-btn color="black" text-color="black" flat icon="share" @click="showShareWrapper = true" style="font-size: 12px" />
+                        </div>
                       </div>
-                      <!-- <div class="parag">Next budget payments will occur in 28 days and it will provide 20000 VTX of 56000 VTX of total available budget.</div> -->
+                      <div class="parag">
+                        Lorem ipsum dolor sit amet.
+                        <div><strong> Amount : {{ currentProposal.monthly_budget }}</strong></div>
+                      </div>
+                      <div class="text-h6 strong vote full-width flex justify-between items-center q-pa-sm q-mt-sm q-mb-md vote-wrapper">
+                        Vote &nbsp;
+                        <span>
+                          <!-- :icon-right="`img:statics/success_icon2.svg`"  -->
+                          <q-btn @click="vote(currentProposal.proposal_name, 'yes')" color="black" label="Yes" text-color="green" class="strong q-mr-sm vote-btn" rounded outline />
+                          <q-btn @click="vote(currentProposal.proposal_name, 'no')" color="orange" label="No" text-color="orange" class="strong vote-btn" rounded outline />
+                        </span>
+                      </div>
                       <div class="list-proposals--wrapper">
                         <div class="item">
                           <div class="row ">
-                            <div class="col col-6 parag">Title</div>
-                            <div class="col col-6 parag">{{currentProposal.title}}</div>
-                            <div class="col col-6 parag bg">claimed</div>
-                            <div class="col col-6 parag bg">{{currentProposal.claimed}}</div>
                             <div class="col col-6 parag">created</div>
                             <div class="col col-6 parag">{{currentProposal.created}}</div>
                             <div class="col col-6 parag bg">duration</div>
                             <div class="col col-6 parag bg">{{currentProposal.duration}}</div>
                             <div class="col col-6 parag">eligible</div>
                             <div class="col col-6 parag">{{currentProposal.eligible}}</div>
+                            <div class="col col-6 parag bg">claimed</div>
+                            <div class="col col-6 parag bg">{{currentProposal.claimed}}</div>
                             <div class="col col-6 parag bg">proposal_name</div>
                             <div class="col col-6 parag bg">{{currentProposal.proposal_name}}</div>
                             <div class="col col-6 parag">proposer</div>
@@ -70,16 +81,9 @@
                             <div class="col col-6 parag bg">{{currentProposal.total_net_votes}}</div>
                             <div class="col col-6 parag">monthly_budget</div>
                             <div class="col col-6 parag">{{currentProposal.monthly_budget}}</div>
-                            <hr class="col-12">
-                            <div class="vote col col-12 flex justify-between items-center" style="margin-top:-10px">
-                              Vote &nbsp;
-                              <span>
-                                <q-btn @click="vote(currentProposal.proposal_name, 'yes')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/success_icon2.svg" alt=""></q-btn>
-                                <q-btn @click="vote(currentProposal.proposal_name, 'no')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/fail_icon2.svg" alt=""></q-btn>
-                              </span>
-                            </div>
                             <div class="parag col col-12">
-                              <strong>Description</strong>
+                              <hr class="q-mt-md">
+                              <div class="title flex justify-between">Proposal</div>
                               <div v-html="currentProposal.proposal_json[0].value" />
                               <br>
                             </div>
@@ -105,6 +109,131 @@
                     <br><br><br>
                 </div>
             </div>
+            <q-dialog v-model="showShareWrapper">
+              <q-card class="q-pa-lg">
+                <q-toolbar>
+                  <q-avatar><img src="statics/icon.png"></q-avatar>
+                  <q-toolbar-title><span class="text-weight-bold">Share</span> Proposal</q-toolbar-title>
+                  <q-btn flat round dense icon="close" v-close-popup />
+                </q-toolbar>
+                <q-card-section class=" text-h6">
+                  <!-- <span style="font-size: 1em">Select your prefered method</span> -->
+                  <div class="social-media-wrapper">
+                    <span class="submenu-wrapper">
+                        <social-sharing
+                          class="share_wrapper text-black flex column justify-even content-start item-start"
+                          :url="proposalLink"
+                          title="Verto | Multi-currency wallet"
+                          description="DOWNLOAD VERTO WALLET THE SECURE USER FRIENDLY WALLET"
+                          quote=""
+                          media="http://localhost:8080/statics/screens/screen_iphone.png"
+                          hashtags=""
+                          twitter-user=""
+                          inline-template>
+                          <div class="social_share">
+                            <network network="email" class="span-wrapper">
+                              <template>
+                                <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap">
+                                  <div tabindex="-1" class="q-focus-helper"></div>
+                                  <div class="q-btn__wrapper col row q-anchor--skip">
+                                    <div class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+                                      <!-- <i aria-hidden="true" class="fas fa-at q-icon"></i> -->
+                                      <img src="/statics/social/mail.svg" alt="">
+                                    </div>
+                                  </div>
+                                </button>
+                              </template>
+                            </network>
+                            <network network="skype">
+                              <template>
+                                <button data-v-b854f566="" tabindex="0" type="button" class="border q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap">
+                                  <div tabindex="-1" class="q-focus-helper"></div>
+                                    <div class="q-btn__wrapper col row q-anchor--skip">
+                                      <div class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+                                        <!-- <i aria-hidden="true" class="fab fa-skype q-icon"></i> -->
+                                        <img src="/statics/social/skype.svg" alt="">
+                                      </div>
+                                    </div>
+                                </button>
+                              </template>
+                            </network>
+                            <network network="sms">
+                              <template>
+                                <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap">
+                                  <div tabindex="-1" class="q-focus-helper"></div>
+                                    <div class="q-btn__wrapper col row q-anchor--skip">
+                                      <div class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+                                        <!-- <i aria-hidden="true" class="fas fa-sms q-icon"></i> -->
+                                        <img src="/statics/social/sms.svg" alt="">
+                                      </div>
+                                    </div>
+                                </button>
+                              </template>
+                            </network>
+                            <network network="telegram">
+                              <template>
+                                <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap">
+                                  <div tabindex="-1" class="q-focus-helper"></div>
+                                    <div class="q-btn__wrapper col row q-anchor--skip">
+                                      <div class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+                                        <!-- <i aria-hidden="true" class="fab fa-telegram q-icon"></i> -->
+                                        <img src="/statics/social/telegram.svg" alt="">
+                                      </div>
+                                    </div>
+                                </button>
+                              </template>
+                            </network>
+                            <network network="reddit">
+                              <template>
+                                <button data-v-b854f566="" tabindex="0" type="button" class="border q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap">
+                                  <div tabindex="-1" class="q-focus-helper"></div>
+                                    <div class="q-btn__wrapper col row q-anchor--skip">
+                                      <div class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+                                        <!-- <i aria-hidden="true" class="fab fa-reddit-alien q-icon"></i> -->
+                                        <img src="/statics/social/reddit.svg" alt="">
+                                      </div>
+                                    </div>
+                                </button>
+                              </template>
+                            </network>
+                            <network network="twitter">
+                              <template>
+                                <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap">
+                                  <div tabindex="-1" class="q-focus-helper"></div>
+                                    <div class="q-btn__wrapper col row q-anchor--skip">
+                                      <div class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+                                        <!-- <i aria-hidden="true" class="fab fa-twitter q-icon"></i> -->
+                                        <img src="/statics/social/twitter.svg" alt="">
+                                      </div>
+                                    </div>
+                                </button>
+                              </template>
+                            </network>
+                            <network network="whatsapp">
+                              <template>
+                                <button data-v-b854f566="" tabindex="0" type="button" class="q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-accent text-white q-btn--actionable q-focusable q-hoverable q-btn--wrap">
+                                  <div tabindex="-1" class="q-focus-helper"></div>
+                                    <div class="q-btn__wrapper col row q-anchor--skip">
+                                      <div class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+                                        <!-- <i aria-hidden="true" class="fab fa-whatsapp q-icon"></i> -->
+                                        <img src="/statics/social/whatsapp.svg" alt="">
+                                      </div>
+                                    </div>
+                                </button>
+                              </template>
+                            </network>
+                          </div>
+                        </social-sharing>
+                      </span>
+                      <div id="copy-btn">
+                        <q-btn color="white" text-color="black" @click="copyToClipboard(proposalLink , 'Link')" class="copy-link-button" flat label="Copy link">
+                          <img src="/statics/social/copy.svg" alt="">
+                        </q-btn>
+                      </div>
+                  </div>
+                </q-card-section>
+              </q-card>
+            </q-dialog>
         </div>
     </q-page>
 </template>
@@ -116,10 +245,16 @@ const eos = new EosWrapper()
 let platformTools = require('../../util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 
+import Vue from 'vue'
+var SocialSharing = require('vue-social-sharing')
+Vue.use(SocialSharing)
+
 export default {
   components: {},
   data () {
     return {
+      showShareWrapper: false,
+      proposalLink: 'https://volentix.io?verto-app',
       proposals: [],
       settings: [],
       votes: [],
@@ -161,6 +296,17 @@ export default {
     }
   },
   methods: {
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    },
     goToDetail (item) {
       console.log('--item--', item.proposal_name)
       this.$router.push({
@@ -280,6 +426,7 @@ export default {
             }
             .title{
               font-size: 20px;
+              line-height: 20px;
               font-family: $Titillium;
               font-weight: $bold;
               color: #2A2A2A;
@@ -552,9 +699,92 @@ export default {
     padding: 0px;
   }
   .vote-btn{
-    margin-right: 0px;
-    /deep/ img{
-      min-width: 44px;
+    // margin-right: 0px;
+    // /deep/ img{
+    //   max-width: 40px;
+    //   min-width: 44px;
+    // }
+  }
+  .strong{
+    font-weight: $bold;
+  }
+  .vote-wrapper{
+    background-color: #F3F3F3;
+    background: transparent linear-gradient(180deg, #FFFFFF 0%, #F3F3F3 100%) 0% 0% no-repeat padding-box;
+    border-radius: 8px;
+    padding: 5px 10px;
+    box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.1);
+  }
+  .social-media-wrapper{
+    margin-top: 0px;
+    .share_wrapper{
+      display: flex;
+      flex-direction: row !important;
+      justify-content: flex-start;
+      // background-color: #fff;
+      // box-shadow: 0px 1px 1px 0px rgba(black, .04);
+      padding: 10px 0px;
+      margin-left: 0px;
+      margin-right: 0px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #efefef;
+      border-radius: 0px;
+      // width: 33%;
+      /deep/  & > span{
+        flex-basis: 20%;
+        width: 100px;
+        max-width: 68px;
+        min-width: unset;
+        padding: 0px 2px;
+      }
+      /deep/ .q-btn.q-btn-item{
+        color: #433afb !important;
+        background: rgba(239, 239, 239, 0.13) !important;
+        // transform: scale3d(.7,.7,.7);
+        box-shadow: none !important;
+        width: 100%;
+        border-radius: 0px !important;
+        .q-btn__wrapper{
+          width: 55px;
+          height: 55px;
+          margin-left: -11px;
+        }
+        img{
+          width: 55px;
+          height: 55px;
+          min-width: 55px;
+          max-width: 55px;
+          margin-right: -19px;
+        }
+        // &.border{
+        //   border-right: 1px solid rgb(226, 226, 226);
+        //   border-left: 1px solid rgb(226, 226, 226);
+        // }
+        margin-bottom: 10px;
+        /deep/ .q-btn__wrapper:before{
+          box-shadow: none !important;
+        }
+      }
     }
+  }
+  /deep/ .copy-link-button{
+    border: 1px solid #f7f7f7;
+    background: #fdfdfd;
+    border-radius: 0px;
+    .q-btn__content{
+      flex-direction: row-reverse !important;
+      font-size: 18px;
+      text-transform: initial;
+      img{
+        width: 55px;
+        height: 46px;
+        margin-left: -20px;
+        margin-top: 2px;
+      }
+    }
+  }
+  .q-card{
+    border-radius: 25px;
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 35px rgba(0,0,0,0.14), 0 1px 10px rgba(0,0,0,0.12);
   }
 </style>

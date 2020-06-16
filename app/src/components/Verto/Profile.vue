@@ -366,16 +366,4 @@ export default {
       }
     }
   }
-  .lower{
-    text-transform: initial !important;
-  }
-  .fsz16{
-    font-size: 16px;
-    font-weight: $regular;
-    font-family: $Titillium;
-  }
-  .pd20{
-    padding-left: 20px;
-    padding-right: 20px;
-  }
 </style>
