@@ -1,62 +1,10 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px;background: #f3f3f3 !important">
-    <q-dialog v-model="privateKeyDialog">
-      <q-card class="q-pa-md">
-        <q-toolbar>
-          <q-avatar><q-icon name="error_outline" size="md" color="red" /></q-avatar>
-          <q-toolbar-title><span class="text-weight-bold">Private key password</span></q-toolbar-title>
-          <q-btn flat round dense icon="close" v-close-popup />
-        </q-toolbar>
-        <q-card-section class="text-h6">
-          <div class="q-mt-md" v-if="isPrivateKeyEncrypted">
-            <q-input
-              v-model="privateKeyPassword"
-              light
-              rounded
-              outlined
-              class="full-width"
-              color="green"
-              label="Private Key Password"
-              @input="checkPrivateKeyPassword"
-              debounce="500"
-              :type="isPwd ? 'password' : 'text'"
-              :error="invalidPrivateKeyPassword"
-              error-message="The private key password is invalid"
-            >
-              <template v-slot:append>
-                <q-icon
-                  :name="isPwd ? 'visibility_off' : 'visibility'"
-                  class="cursor-pointer"
-                  @click="isPwd = !isPwd"
-                />
-              </template>
-            </q-input>
-          </div>
-        </q-card-section>
-        <q-card-actions align="right" class="q-pr-sm">
-          <q-btn flat label="Cancel" color="primary" v-close-popup />
-          <q-btn @click="vote(currentProposal.proposal_name, yesNoVar)" flat class="action-link next auto-width" color="black" text-color="white" label="Confirm" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-    <q-dialog v-model="transErrorDialog">
-      <q-card class="q-pa-md">
-        <q-toolbar>
-          <q-avatar><q-icon name="error_outline" size="md" color="red" /></q-avatar>
-          <q-toolbar-title><span class="text-weight-bold">Error</span></q-toolbar-title>
-          <q-btn flat round dense icon="close" v-close-popup />
-        </q-toolbar>
-        <q-card-section class="text-h6">{{ErrorMessage}}</q-card-section>
-        <q-card-actions align="right" class="q-pr-sm">
-          <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
     <div class="chain-tools-wrapper">
         <div class="standard-content">
             <h2 class="standard-content--title flex justify-center">
-                <q-btn flat unelevated class="btn-align-left" to="/verto/card-wps/public-proposals" text-color="black" icon="keyboard_backspace" />
-                  Active proposal
+                <q-btn flat unelevated class="btn-align-left" to="/verto/card-wps/public-proposals/draft" text-color="black" icon="keyboard_backspace" />
+                  Draft proposal
             </h2>
             <!-- <div class="privatekey_bg flex flex-center"><img src="statics/proposals_bg.png" alt=""></div> -->
         </div>
@@ -66,54 +14,30 @@
                   <div class="title flex justify-between row items-center">
                     <span class="col-10">{{currentProposal.title}}</span>
                     <div class="col-2 flex justify-end">
-                        <q-btn color="black" text-color="black" flat icon="share" @click="showShareWrapper = true" style="font-size: 12px" />
+                        <q-btn color="orange" label="Edit" text-color="orange" :to="'/verto/card-wps/draft-proposals/proposal/edit/' + currentProposal.proposal_name" class="strong vote-btn" rounded outline />
                     </div>
                   </div>
-                  <div class="parag">
+                  <div class="parag q-mb-md">
                     <div v-for="(json, index) in currentProposal.proposal_json" :key="index">
                       <div v-if="json.key === 'description'">{{json.value}}</div>
                     </div>
                     <div><strong> Amount : {{ currentProposal.monthly_budget }}</strong></div>
                   </div>
-                  <div class="text-h6 strong vote full-width flex justify-between items-center q-pa-sm q-mt-sm q-mb-md vote-wrapper">
-                    Vote &nbsp;
-                    <span>
-                      <!-- :icon-right="`img:statics/success_icon2.svg`"  -->
-                      <!-- <q-btn @click="vote(currentProposal.proposal_name, 'yes')" color="black" label="Yes" text-color="green" class="strong q-mr-sm vote-btn" rounded outline /> -->
-                      <!-- <q-btn @click="vote(currentProposal.proposal_name, 'no')" color="orange" label="No" text-color="orange" class="strong vote-btn" rounded outline /> -->
-                      <q-btn @click="isPrivateKeyEncrypted ? funOpenDialogPrivateKey('yes') : vote(currentProposal.proposal_name, 'yes')" color="black" label="Yes" text-color="green" class="strong q-mr-sm vote-btn" rounded outline />
-                      <q-btn @click="isPrivateKeyEncrypted ? funOpenDialogPrivateKey('no') : vote(currentProposal.proposal_name, 'no')" color="orange" label="No" text-color="orange" class="strong vote-btn" rounded outline />
-                    </span>
-                  </div>
                   <div class="list-proposals--wrapper">
                     <div class="item">
-                      <div class="row ">
-                        <div class="col col-6 parag capitalize q-pl-sm">created</div>
-                        <div class="col col-6 parag">{{currentProposal.created}}</div>
-                        <div class="col col-6 parag capitalize q-pl-sm bg">duration</div>
-                        <div class="col col-6 parag bg">{{currentProposal.duration}}</div>
-                        <div class="col col-6 parag capitalize q-pl-sm">eligible</div>
-                        <div class="col col-6 parag">{{currentProposal.eligible}}</div>
-                        <div class="col col-6 parag capitalize q-pl-sm bg">claimed</div>
-                        <div class="col col-6 parag bg">{{currentProposal.claimed}}</div>
-                        <div class="col col-6 parag capitalize q-pl-sm">proposal name</div>
-                        <div class="col col-6 parag">{{currentProposal.proposal_name}}</div>
-                        <div class="col col-6 parag bg capitalize q-pl-sm">proposer</div>
-                        <div class="col col-6 parag bg">{{currentProposal.proposer}}</div>
-                        <div class="col col-6 parag capitalize q-pl-sm">remaining voting periods</div>
-                        <div class="col col-6 parag">{{currentProposal.remaining_voting_periods}}</div>
-                        <div class="col col-6 parag bg capitalize q-pl-sm">start voting period</div>
-                        <div class="col col-6 parag bg">{{currentProposal.start_voting_period}}</div>
-                        <div class="col col-6 parag capitalize q-pl-sm">status</div>
-                        <div class="col col-6 parag">{{currentProposal.status}}</div>
-                        <div class="col col-6 parag bg capitalize q-pl-sm">total budget</div>
+                      <div class="row">
+                        <div class="col col-6 parag capitalize q-pl-sm">duration</div>
+                        <div class="col col-6 parag">{{currentProposal.duration}}</div>
+                        <div class="col col-6 parag capitalize q-pl-sm bg">Proposal name</div>
+                        <div class="col col-6 parag bg">{{currentProposal.proposal_name}}</div>
+                        <div class="col col-6 parag capitalize q-pl-sm">proposer</div>
+                        <div class="col col-6 parag">{{currentProposal.proposer}}</div>
+                        <div class="col col-6 parag capitalize q-pl-sm bg">total budget</div>
                         <div class="col col-6 parag bg">{{currentProposal.total_budget}}</div>
-                        <div class="col col-6 parag capitalize q-pl-sm">total net votes</div>
-                        <div class="col col-6 parag">{{currentProposal.total_net_votes}}</div>
-                        <div class="col col-6 parag bg capitalize q-pl-sm">monthly budget</div>
-                        <div class="col col-6 parag bg">{{currentProposal.monthly_budget}}</div>
+                        <div class="col col-6 parag capitalize q-pl-sm">monthly budget</div>
+                        <div class="col col-6 parag">{{currentProposal.monthly_budget}}</div>
                         <div class="col-12 row-wrapper">
-                          <!-- <div class="row"></div> -->
+                          <div class="row"></div>
                           <div class="row items-center" v-for="(json, index) in currentProposal.proposal_json" :key="index">
                             <div class="col col-6 parag capitalize q-pl-sm" v-if="json.key !== 'description' && json.key !== 'proposal'">{{json.key}}</div>
                             <div class="col col-6 parag q-pr-md" v-if="json.key !== 'description' && json.key !== 'proposal'">
@@ -124,15 +48,16 @@
                                   snap
                                   readonly
                                   :min="1"
-                                  :max="json.key === 'security.rop4' ? 4 : 10"
-                                  :color="json.key === 'security' ? 'purple' : json.key === 'decentralizad' ? 'orange' : json.key === 'financial' ? 'green' : json.key === 'anonymity' ? 'blue' : 'purple' "
+                                  :max="json.key === 'security' ? 4 : 10"
                                   label
+                                  :color="json.key === 'security' ? 'purple' : json.key === 'decentralizad' ? 'orange' : json.key === 'financial' ? 'green' : json.key === 'anonymity' ? 'blue' : 'purple' "
                                 />
                               </span>
                               <span v-else v-html="json.value" />
                             </div>
                           </div>
                         </div>
+                        <!-- <div class="col-12">{{currentProposal.proposal_json}}</div> -->
                         <div class="parag col col-12">
                           <hr class="q-mt-md">
                           <div v-for="(json, index) in currentProposal.proposal_json" :key="index">
@@ -311,7 +236,6 @@ export default {
     return {
       showShareWrapper: false,
       proposalLink: 'https://venue.volentix.io/proposal-name/',
-      proposals: [],
       settings: [],
       transErrorDialog: false,
       privateKeyDialog: false,
@@ -470,11 +394,11 @@ export default {
       }])
     },
     fetch () {
-      eos.getTable('volentixwork', 'volentixwork', 'proposals').then(r => {
-        this.proposals = r
-        this.currentProposal = this.proposals.find(p => p.proposal_name === this.$route.params.proposalName ? p : null)
+      eos.getTable('volentixwork', this.wallet.name, 'drafts').then(r => {
+        this.drafts = r
+        this.currentProposal = this.drafts.find(p => p.proposal_name === this.$route.params.proposalName ? p : null)
         this.proposalLink += this.currentProposal.proposal_name
-        console.log('currentProposal ---', this.currentProposal)
+        console.log('drafts ---', this.settings)
       })
       eos.getTable('volentixwork', 'volentixwork', 'settings').then(r => {
         this.settings = r

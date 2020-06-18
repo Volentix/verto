@@ -54,8 +54,8 @@
       </q-card>
     </q-dialog>
     <div class="standard-content">
-      <h2 class="standard-content--title flex flex-center"><q-btn flat unelevated class="btn-align-left" to="/verto/card-wps/public-proposals" text-color="black" icon="keyboard_backspace" />
-      Create proposal draft </h2>
+      <h2 class="standard-content--title flex flex-center"><q-btn flat unelevated class="btn-align-left" :to="'/verto/card-wps/draft-proposals/proposal/' + currentProposal.proposal_name" text-color="black" icon="keyboard_backspace" />
+      Edit proposal draft </h2>
       <div class="standard-content--body">
         <div class="standard-content--body__form">
           <q-input v-model="proposal_name" class="input-input" outlined rounded color="purple" label="Proposal name (id)" />
@@ -72,7 +72,7 @@
             hint="Max 30 characters"
           >
             <template v-slot:error>
-              Please use maximum 50 characters.
+              Please use maximum 30 characters.
             </template>
           </q-input>
           <q-input v-model="monthly_budget" class="input-input" outlined rounded color="purple" label="Budget">
@@ -250,7 +250,7 @@
       </div>
 
       <div class="standard-content--footer">
-         <q-btn @click="isPrivateKeyEncrypted ? privateKeyDialog = true : submitdraft()" flat class="action-link next" color="black" text-color="white" label="Submit Draft" />
+         <q-btn @click="isPrivateKeyEncrypted ? privateKeyDialog = true : submitdraft()" flat class="action-link next" color="black" text-color="white" label="Edit Draft" />
       </div>
       <img src="statics/draft_bg.png" class="draft_bg" alt="">
     </div>
@@ -280,6 +280,15 @@ export default {
     return {
       proposals: [],
       drafts: [],
+      currentProposal: {
+        duration: 0,
+        monthly_budget: '',
+        proposal_json: [{ description: 'desc', value: 'value' }],
+        proposal_name: '',
+        proposer: '',
+        title: '',
+        total_budget: ''
+      },
       transErrorDialog: false,
       privateKeyDialog: false,
       typeProposal: '',
@@ -326,10 +335,33 @@ export default {
       this.isPrivateKeyEncrypted = true
       console.log('this.isPrivateKeyEncrypted 2', this.isPrivateKeyEncrypted)
     }
+    if (this.wallet.name) {
+      this.fetch()
+    }
   },
   mounted () {
   },
   methods: {
+    fetch () {
+      eos.getTable('volentixwork', this.wallet.name, 'drafts').then(r => {
+        this.drafts = r
+        this.currentProposal = this.drafts.find(p => p.proposal_name === this.$route.params.proposalName ? p : null)
+        this.proposal_name = this.currentProposal.proposal_name
+        this.title = this.currentProposal.title
+        this.monthly_budget = this.currentProposal.monthly_budget
+        this.duration = this.currentProposal.duration
+        this.description = this.currentProposal.proposal_json.find(d => d.key === 'description' ? d.value : '').value
+        let proposalType = this.currentProposal.proposal_json.find(d => d.key === 'type' ? d.value : '').value
+        console.log('proposalType', proposalType)
+        this.typeProposal = proposalType === 'undefined' ? '' : proposalType
+        this.securityProposal = this.currentProposal.proposal_json.find(d => d.key === 'security' ? d.value : '').value
+        this.financialProposal = this.currentProposal.proposal_json.find(d => d.key === 'financial' ? d.value : '').value
+        this.decentralizationProposal = this.currentProposal.proposal_json.find(d => d.key === 'decentralizad' ? d.value : '').value
+        this.anonymityProposal = this.currentProposal.proposal_json.find(d => d.key === 'anonymity' ? d.value : '').value
+        this.editor = this.currentProposal.proposal_json.find(d => d.key === 'proposal' ? d.value : '').value
+        console.log('this.currentProposal ---', this.currentProposal)
+      })
+    },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({

@@ -1,80 +1,108 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px;background: #f3f3f3 !important">
-        <div class="chain-tools-wrapper">
-            <div class="standard-content">
-                <h2 class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" />
-                     Public proposals
-                </h2>
-                <div class="privatekey_bg flex flex-center"><img src="statics/proposals_bg.png" alt=""></div>
-            </div>
-            <div class="chain-tools-wrapper--list open">
-                <div class="list-wrapper">
-                    <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                      <div class="q-mt-md" v-if="isPrivateKeyEncrypted">
-                        <q-input
-                          v-model="privateKeyPassword"
-                          light
-                          rounded
-                          outlined
-                          class="full-width"
-                          color="green"
-                          label="Private Key Password"
-                          @input="checkPrivateKeyPassword"
-                          debounce="500"
-                          :type="isPwd ? 'password' : 'text'"
-                          :error="invalidPrivateKeyPassword"
-                          error-message="The private key password is invalid"
-                        >
-                          <template v-slot:append>
-                            <q-icon
-                              :name="isPwd ? 'visibility_off' : 'visibility'"
-                              class="cursor-pointer"
-                              @click="isPwd = !isPwd"
-                            />
-                          </template>
-                        </q-input>
+    <q-dialog v-model="privateKeyDialog">
+      <q-card class="q-pa-md">
+        <q-toolbar>
+          <q-avatar><q-icon name="error_outline" size="md" color="red" /></q-avatar>
+          <q-toolbar-title><span class="text-weight-bold">Private key password</span></q-toolbar-title>
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-toolbar>
+        <q-card-section class="text-h6">
+          <div class="q-mt-md" v-if="isPrivateKeyEncrypted">
+            <q-input
+              v-model="privateKeyPassword"
+              light
+              rounded
+              outlined
+              class="full-width"
+              color="green"
+              label="Private Key Password"
+              @input="checkPrivateKeyPassword"
+              debounce="500"
+              :type="isPwd ? 'password' : 'text'"
+              :error="invalidPrivateKeyPassword"
+              error-message="The private key password is invalid"
+            >
+              <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+            </q-input>
+          </div>
+        </q-card-section>
+        <q-card-actions align="right" class="q-pr-sm">
+          <q-btn flat label="Cancel" color="primary" v-close-popup />
+          <q-btn @click="vote(selectedProposalName, yesNoVar)" flat class="action-link next auto-width" color="black" text-color="white" label="Confirm" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="transErrorDialog">
+      <q-card class="q-pa-md">
+        <q-toolbar>
+          <q-avatar><q-icon name="error_outline" size="md" color="red" /></q-avatar>
+          <q-toolbar-title><span class="text-weight-bold">Error</span></q-toolbar-title>
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-toolbar>
+        <q-card-section class="text-h6">{{ErrorMessage}}</q-card-section>
+        <q-card-actions align="right" class="q-pr-sm">
+          <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <div class="chain-tools-wrapper">
+        <div class="standard-content">
+            <h2 class="standard-content--title flex justify-center">
+                <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" />
+                  Public proposals
+            </h2>
+            <div class="privatekey_bg flex flex-center"><img src="statics/proposals_bg.png" alt=""></div>
+        </div>
+        <div class="chain-tools-wrapper--list open">
+            <div class="list-wrapper">
+                <div class="list-wrapper--chain__eos-to-vtx-convertor">
+                  <!-- <div class="error text-h6 text-red" v-if="transactError">{{ErrorMessage}}</div> -->
+                  <div class="title">{{proposals.length}} Active Proposals</div>
+                  <div class="parag">Next budget payments will occur in 28 days and it will provide 20000 VTX of 56000 VTX of total available budget.</div>
+                  <div class="flex justify-end q-mt-md q-mb-md">
+                    <q-btn unelevated color="deep-purple-14" class="q-mr-sm --next-btn" rounded label="New Proposal" to="/verto/card-wps/public-proposals/create" />
+                    <q-btn unelevated color="deep-purple-14" class="--next-btn" rounded label="Drafts" to="/verto/card-wps/public-proposals/draft" />
+                  </div>
+                  <div class="list-proposals--wrapper">
+                    <div class="item" v-for="(item, index) in proposals" :key="index">
+                      <div class="row q-pb-sm flex justify-between" @click="goToDetail(item)">
+                        <div class="col-10">
+                          <strong>{{item.title}}</strong> by <strong>{{item.proposer}}</strong>
+                          <br> Lorem ipsum dolor sit amet.
+                        </div>
+                        <div class="col-2 flex justify-end items-center" style="margin-top: -15px">
+                          <q-btn color="black" text-color="black" flat icon="share" @click="showShareWrapper = true" style="font-size: 10px;margin-right: -15px" />
+                        </div>
+                        <div class="col-12">Duration: <strong>{{item.duration}} Month(s)</strong></div>
                       </div>
-                      <div class="error text-h6 text-red" v-if="transactError">{{ErrorMessage}}</div>
-                      <div class="title">{{proposals.length}} Active Proposals</div>
-                      <div class="parag">Next budget payments will occur in 28 days and it will provide 20000 VTX of 56000 VTX of total available budget.</div>
-                      <div class="flex justify-end q-mt-md q-mb-md">
-                        <q-btn unelevated color="deep-purple-14" class="q-mr-sm --next-btn" rounded label="Create Proposals" to="/verto/card-wps/public-proposals/create" />
-                        <q-btn unelevated color="deep-purple-14" class="--next-btn" rounded label="Draft Proposals" to="/verto/card-wps/public-proposals/draft" />
-                      </div>
-                      <div class="list-proposals--wrapper">
-                        <div class="item" v-for="(item, index) in proposals" :key="index">
-                          <div class="row q-pb-sm flex justify-between" @click="goToDetail(item)">
-                            <div class="col-10">
-                              <strong>{{item.title}}</strong> by <strong>{{item.proposer}}</strong>
-                              <br> Lorem ipsum dolor sit amet.
-                            </div>
-                            <div class="col-2 flex justify-end items-center" style="margin-top: -15px">
-                              <q-btn color="black" text-color="black" flat icon="share" @click="showShareWrapper = true" style="font-size: 10px;margin-right: -15px" />
-                            </div>
-                            <div class="col-12">Duration: <strong>{{item.duration}} Month(s)</strong></div>
-                          </div>
-                          <div class="row q-pb-sm full-width items-center">
-                            <div class="progress col col-6">
-                              <q-linear-progress :value="item.total_net_votes/100" rounded color="blue" size="md" class="" />
-                              <span>{{item.total_net_votes/100}}/100 votes</span>
-                            </div>
-                            <div class="vote col col-6 flex justify-end items-center" style="margin-top: -15px">
-                              <span class="q-mr-sm">Vote</span>
-                              <q-btn @click="vote(currentProposal.proposal_name, 'yes')" color="black" label="Yes" text-color="green" class="strong q-mr-sm vote-btn" rounded outline />
-                              <q-btn @click="vote(currentProposal.proposal_name, 'no')" color="orange" label="No" text-color="orange" class="strong vote-btn" rounded outline />
-                              <!-- <q-btn @click="vote(item.proposal_name, 'yes')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/success_icon2.svg" alt=""></q-btn>
-                              <q-btn @click="vote(item.proposal_name, 'no')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/fail_icon2.svg" alt=""></q-btn> -->
-                            </div>
-                          </div>
+                      <div class="row q-pb-sm full-width items-center">
+                        <div class="progress col col-6">
+                          <q-linear-progress :value="item.total_net_votes/100" rounded color="blue" size="md" class="" />
+                          <span>{{item.total_net_votes/100}}/100 votes</span>
+                        </div>
+                        <div class="vote col col-6 flex justify-end items-center" style="margin-top: -15px">
+                          <span class="q-mr-sm">Vote</span>
+                          <q-btn @click="isPrivateKeyEncrypted ? funOpenDialogPrivateKey('yes' , item.proposal_name) : vote(item.proposal_name, 'yes')" color="black" label="Yes" text-color="green" class="strong q-mr-sm vote-btn" rounded outline />
+                          <q-btn @click="isPrivateKeyEncrypted ? funOpenDialogPrivateKey('no' , item.proposal_name) : vote(item.proposal_name, 'no')" color="orange" label="No" text-color="orange" class="strong vote-btn" rounded outline />
+                          <!-- <q-btn @click="vote(item.proposal_name, 'yes')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/success_icon2.svg" alt=""></q-btn>
+                          <q-btn @click="vote(item.proposal_name, 'no')" color="white" text-color="black" class="vote-btn mw40" rounded flat ><img class="full-width" src="statics/fail_icon2.svg" alt=""></q-btn> -->
                         </div>
                       </div>
                     </div>
-                    <br><br><br>
+                  </div>
                 </div>
+                <br><br><br>
             </div>
         </div>
-    </q-page>
+    </div>
+  </q-page>
 </template>
 
 <script>
@@ -84,14 +112,21 @@ const eos = new EosWrapper()
 let platformTools = require('../../util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 
+import { Loading, QSpinnerGears } from 'quasar'
+
 export default {
   components: {},
   data () {
     return {
       proposals: [],
       settings: [],
+      selectedProposalName: '',
+      transErrorDialog: false,
+      privateKeyDialog: false,
       votes: [],
+      yesNoVar: '',
       drafts: [],
+      goBack: '/verto/dashboard',
       privateKeyPassword: null,
       isPwd: true,
       invalidPrivateKeyPassword: false,
@@ -125,10 +160,16 @@ export default {
     }
 
     if (this.wallet.name) {
+      this.goBack = `/verto/wallets/${this.wallet.chain}/${this.wallet.type}/${this.wallet.name}`
       this.fetch()
     }
   },
   methods: {
+    funOpenDialogPrivateKey (rep, name) {
+      this.privateKeyDialog = true
+      this.yesNoVar = rep
+      this.selectedProposalName = name
+    },
     goToDetail (item) {
       console.log('--item--', item.proposal_name)
       this.$router.push({
@@ -137,35 +178,48 @@ export default {
     },
     async transact (actions) {
       try {
-        await eos.transact({ actions }, { keyProvider: this.privateKey.key })
-        this.$router.push({ path: '/verto/card-wps/public-proposals' })
+        console.log('this.checkPrivateKeyPassword()', this.checkPrivateKeyPassword())
+        if (this.checkPrivateKeyPassword()) {
+          this.showLoading()
+          await eos.transact({ actions }, { keyProvider: this.privateKey.key })
+        } else if (!this.isPrivateKeyEncrypted) {
+          this.showLoading()
+          await eos.transact({ actions }, { keyProvider: this.privateKey.key })
+        }
       } catch (error) {
         console.log('error-------', error)
         // FIXME with userError handler
         // userError(JSON.parse(e).message)
-        if (error.toString().includes('Required uint8')) {
+        if (error.message.toString().includes('Required uint8')) {
           this.transactError = true
-          this.ErrorMessage = error.toString()
-        } else if (error.includes('[proposal_name] must be active')) {
+          this.ErrorMessage = error.message.toString()
+        } else if (error.message.includes('registered as a producer')) {
           this.transactError = true
-          this.ErrorMessage = error
-        } else if (error.includes('deposit balance does not meet minimum required amount')) {
+          this.ErrorMessage = error.message
+        } else if (error.message.includes('[proposal_name] must be active')) {
           this.transactError = true
-          this.ErrorMessage = error
-        } else if (error.includes('maximum billable CPU time')) {
+          this.ErrorMessage = error.message
+        } else if (error.message.includes('deposit balance does not meet minimum required amount')) {
+          this.transactError = true
+          this.ErrorMessage = error.message
+        } else if (error.message.includes('maximum billable CPU time')) {
           this.transactError = true
           this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
-        } else if (error.includes('must be a minimum of 100.00000000 VTX')) {
+        } else if (error.message.includes('must be a minimum of 100.00000000 VTX')) {
           this.transactError = true
           this.ErrorMessage = 'You need a minimum of 100 VTX to create a draft'
-        } else if (error.includes('user must stake before they can vote')) {
+        } else if (error.message.includes('user must stake before they can vote')) {
           this.transactError = true
           this.ErrorMessage = 'You must stake before you can vote!'
         }
 
+        clearTimeout(this.timer)
+        Loading.hide()
+        this.privateKeyDialog = false
+        this.transErrorDialog = true
         // Notify.create({ message: e.message ? e.message : e })
 
-        throw error
+        // throw error
       }
     },
     checkPrivateKeyPassword () {
@@ -175,6 +229,7 @@ export default {
       if (privateKey.success) {
         this.invalidPrivateKeyPassword = false
         this.privateKey = privateKey
+        return true
       } else {
         this.invalidPrivateKeyPassword = true
         return false
@@ -191,6 +246,15 @@ export default {
         data: { voter: this.wallet.name, proposal_name, vote }
       }])
     },
+    showLoading () {
+      Loading.show({
+        spinner: QSpinnerGears
+      })
+      this.timer = setTimeout(() => {
+        Loading.hide()
+        this.timer = void 0
+      }, 10000)
+    },
     fetch () {
       eos.getTable('volentixwork', 'volentixwork', 'proposals').then(r => {
         this.proposals = r
@@ -204,6 +268,12 @@ export default {
         this.votes = r
         console.log('votes ---', this.votes)
       })
+    }
+  },
+  beforeDestroy () {
+    if (this.timer !== void 0) {
+      clearTimeout(this.timer)
+      Loading.hide()
     }
   }
 }
@@ -524,6 +594,27 @@ export default {
     }
     img{
       min-width: 34px;
+    }
+  }
+  .action-link{
+    height: 50px;
+    text-transform: initial !important;
+    font-size: 16px;
+    letter-spacing: .5px;
+    border-radius: 40px;
+    width: 150px;
+    margin-left: 10px;
+    background-color: #7272FA !important;
+    // &.next{
+    //   background-color: #7900FF !important;
+    // }
+    // &.back{
+    //   background-color: #B0B0B0 !important;
+    // }
+    &.auto-width{
+      width: auto;
+      padding-left: 10px;
+      padding-right: 10px;
     }
   }
 </style>
