@@ -1,122 +1,122 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px;background: #f3f3f3 !important">
-        <div class="chain-tools-wrapper">
-            <div class="standard-content">
-                <h2 class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" to="/verto/card-wps/public-proposals" text-color="black" icon="keyboard_backspace" />
-                     Draft proposals
-                </h2>
-                <div class="privatekey_bg flex flex-center"><img src="statics/draft_proposals_bg.png" alt=""></div>
-            </div>
-            <div class="chain-tools-wrapper--list open">
-                <div class="list-wrapper">
+    <q-dialog v-model="privateKeyDialog">
+      <q-card class="q-pa-md">
+        <q-toolbar>
+          <q-avatar><q-icon name="error_outline" size="md" color="red" /></q-avatar>
+          <q-toolbar-title><span class="text-weight-bold">Private key password</span></q-toolbar-title>
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-toolbar>
+        <q-card-section class="text-h6">
+          <div class="q-pb-md" v-if="isPrivateKeyEncrypted">
+            <q-input
+              v-model="privateKeyPassword"
+              light
+              rounded
+              outlined
+              class="full-width input-input"
+              color="green"
+              label="Private Key Password"
+              @input="checkPrivateKeyPassword"
+              debounce="500"
+              :type="isPwd ? 'password' : 'text'"
+              :error="invalidPrivateKeyPassword"
+              error-message="The private key password is invalid"
+            >
+              <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+            </q-input>
+          </div>
+        </q-card-section>
+        <q-card-actions align="right" class="q-pr-sm">{{selectedProposalName}} , {{selectedProposalNameActivateNext}}
+          <q-btn flat label="Cancel" color="primary" v-close-popup />
+          <q-btn @click="activate(selectedProposalName, parseInt(selectedProposalNameActivateNext))" flat class="action-link next auto-width" color="black" text-color="white" label="Confirm" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="transErrorDialog">
+      <q-card class="q-pa-md">
+        <q-toolbar>
+          <q-avatar><q-icon name="error_outline" size="md" color="red" /></q-avatar>
+          <q-toolbar-title><span class="text-weight-bold">Error</span></q-toolbar-title>
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-toolbar>
+        <q-card-section class="text-h6">{{ErrorMessage}}</q-card-section>
+        <q-card-actions align="right" class="q-pr-sm">
+          <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <div class="chain-tools-wrapper">
+        <div class="standard-content">
+            <h2 class="standard-content--title flex justify-center">
+                <q-btn flat unelevated class="btn-align-left" to="/verto/card-wps/public-proposals" text-color="black" icon="keyboard_backspace" />
+                  Draft proposals
+            </h2>
+            <div class="privatekey_bg flex flex-center"><img src="statics/draft_proposals_bg.png" alt=""></div>
+        </div>
+        <div class="chain-tools-wrapper--list open">
+            <div class="list-wrapper">
 
-                    <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                      <!-- <div class="q-mt-md" v-if="isPrivateKeyEncrypted">
-                        <q-input
-                          v-model="privateKeyPassword"
-                          light
-                          rounded
-                          outlined
-                          class="full-width"
-                          color="green"
-                          label="Private Key Password"
-                          @input="checkPrivateKeyPassword"
-                          debounce="500"
-                          :type="isPwd ? 'password' : 'text'"
-                          :error="invalidPrivateKeyPassword"
-                          error-message="The private key password is invalid"
-                        >
-                          <template v-slot:append>
-                            <q-icon
-                              :name="isPwd ? 'visibility_off' : 'visibility'"
-                              class="cursor-pointer"
-                              @click="isPwd = !isPwd"
-                            />
-                          </template>
-                        </q-input>
-                      </div> -->
-                      <div class="error text-h6 text-red" v-if="transactError">{{ErrorMessage}}</div>
-                      <div class="title">{{drafts.length}} draft Proposals</div>
-                      <!-- <div class="parag"></div> -->
-                      <div class="list-proposals--wrapper">
-                        <div class="item q-pt-md" v-for="(item, index) in drafts" :key="index">
-                          <div class="row flex justify-between">
-                            <div class="">
-                              <strong>{{item.title}}</strong> &nbsp; Proposer: <strong>{{item.proposer}}</strong>
-                            </div>
-                          </div>
-                          <div class="row full-width items-center q-mt-sm">
-                            <div class="progress col col-3">
-                              Duration: <strong>{{item.duration}}</strong><br>
-                            </div>
-                            <div class="progress col col-9">
-                              Budget: <strong>{{item.monthly_budget}}</strong>
-                            </div>
-                          </div>
-                          <hr style="height:0px;opacity:0" />
-                          <div class="row full-width items-center q-mt-sm">
-                            <div class="vote col col-6 flex justify-start items-center">
-                              Period: &nbsp;
-                              <q-btn-toggle
-                                v-model="item.activate_next"
-                                class="my-custom-toggle"
-                                no-caps
-                                rounded
-                                unelevated
-                                toggle-color="deep-purple-14"
-                                color="white"
-                                text-color="deep-purple-14"
-                                :options="[
-                                  {label: 'Current', value: '0'},
-                                  {label: 'Next', value: '1'}
-                                ]"
-                              />
-                            </div>
-                            <div class="vote col col-6 flex justify-end items-center">
-                              <q-btn @click="activate(item.proposal_name, parseInt(item.activate_next))" :disable="isPrivateKeyEncrypted && invalidPrivateKeyPassword && privateKeyPassword !== null && item.activate_next !== ''" unelevated color="deep-purple-14" class="q-mr-sm --next-btn" rounded label="Activate" />
-                              <q-btn unelevated color="grey" class="--next-btn" rounded label="Cancel" />
-                            </div>
-                            <div class="col col-12">
-                              <span class="text-h6 activate_next">{{item.activate_next === '0' ? 'Days remaining : X Days':''}}</span>
-                              <span class="text-h6 activate_next">{{item.activate_next === '1' ? '30 days as of 24/06/2020' : ''}}</span>
-                            </div>
-                            <div class="col col-12 private_key_wrapper">
-                              <hr style="height:0px;opacity:0" />
-                              <div class="q-pb-md" v-if="isPrivateKeyEncrypted">
-                                <q-input
-                                  v-model="privateKeyPassword"
-                                  light
-                                  rounded
-                                  outlined
-                                  class="full-width input-input"
-                                  color="green"
-                                  label="Private Key Password"
-                                  @input="checkPrivateKeyPassword"
-                                  debounce="500"
-                                  :type="isPwd ? 'password' : 'text'"
-                                  :error="invalidPrivateKeyPassword"
-                                  error-message="The private key password is invalid"
-                                >
-                                  <template v-slot:append>
-                                    <q-icon
-                                      :name="isPwd ? 'visibility_off' : 'visibility'"
-                                      class="cursor-pointer"
-                                      @click="isPwd = !isPwd"
-                                    />
-                                  </template>
-                                </q-input>
-                              </div>
-                            </div>
-                          </div>
+                <div class="list-wrapper--chain__eos-to-vtx-convertor">
+                  <div class="title">{{drafts.length}} draft Proposals</div>
+                  <div class="list-proposals--wrapper">
+                    <div class="item q-pt-md" v-for="(item, index) in drafts" :key="index">
+                      <div class="row flex justify-between" @click="goToDetail(item)">
+                        <div class="">
+                          <strong>{{item.title}}</strong> &nbsp; Proposer: <strong>{{item.proposer}}</strong>
+                        </div>
+                      </div>
+                      <div class="row full-width items-center q-mt-sm">
+                        <div class="progress col col-3">
+                          Duration: <strong>{{item.duration}}</strong><br>
+                        </div>
+                        <div class="progress col col-9">
+                          Budget: <strong>{{item.monthly_budget}}</strong>
+                        </div>
+                      </div>
+                      <hr style="height:0px;opacity:0" />
+                      <div class="row full-width items-center q-mt-sm">
+                        <div class="vote col col-6 flex justify-start items-center">
+                          Period: &nbsp;
+                          <q-btn-toggle
+                            v-model="item.activate_next"
+                            class="my-custom-toggle"
+                            no-caps
+                            rounded
+                            unelevated
+                            toggle-color="deep-purple-14"
+                            color="white"
+                            text-color="deep-purple-14"
+                            :options="[
+                              {label: 'Current', value: '0'},
+                              {label: 'Next', value: '1'}
+                            ]"
+                          />
+                        </div>
+                        <div class="vote col col-6 flex justify-end items-center">
+                          <q-btn @click="isPrivateKeyEncrypted ? funOpenDialogPrivateKey(item.proposal_name, parseInt(item.activate_next)) : activate(item.proposal_name, parseInt(item.activate_next))" :disable="isPrivateKeyEncrypted && invalidPrivateKeyPassword && privateKeyPassword !== null && item.activate_next !== ''" unelevated color="deep-purple-14" class="q-mr-sm --next-btn" rounded label="Activate" />
+                          <!-- <q-btn @click="isPrivateKeyEncrypted ? privateKeyDialog = true : activate(item.proposal_name, parseInt(item.activate_next))" flat class="action-link next" color="black" text-color="white" label="Submit Draft" /> -->
+                          <q-btn unelevated color="grey" class="--next-btn" @click="canceldraft(item.proposal_name)" rounded label="Cancel" />
+                        </div>
+                        <div class="col col-12 q-mb-sm">
+                          <span class="text-h6 activate_next">{{item.activate_next === '0' ? 'Days remaining : X Days':''}}</span>
+                          <span class="text-h6 activate_next">{{item.activate_next === '1' ? '30 days as of 24/06/2020' : ''}}</span>
                         </div>
                       </div>
                     </div>
-                    <br><br><br>
+                  </div>
                 </div>
+                <br><br><br>
             </div>
         </div>
-    </q-page>
+    </div>
+  </q-page>
 </template>
 
 <script>
@@ -140,6 +140,10 @@ export default {
     return {
       proposals: [],
       drafts: [],
+      transErrorDialog: false,
+      privateKeyDialog: false,
+      selectedProposalName: '',
+      selectedProposalNameActivateNext: '',
       timer: null,
       loadder: false,
       privateKeyPassword: null,
@@ -178,6 +182,17 @@ export default {
     }
   },
   methods: {
+    goToDetail (item) {
+      console.log('--item--', item.proposal_name)
+      this.$router.push({
+        path: `/verto/card-wps/draft-proposals/proposal/${item.proposal_name}`
+      })
+    },
+    funOpenDialogPrivateKey (proposalName, activateNext) {
+      this.privateKeyDialog = true
+      this.selectedProposalName = proposalName
+      this.selectedProposalNameActivateNext = activateNext
+    },
     checkPrivateKeyPassword () {
       const privateKeyEncrypted = JSON.stringify(this.wallet.privateKeyEncrypted)
       console.log('privateKeyEncrypted', privateKeyEncrypted)
@@ -185,39 +200,67 @@ export default {
       if (privateKey.success) {
         this.invalidPrivateKeyPassword = false
         this.privateKey = privateKey
+        return true
       } else {
         this.invalidPrivateKeyPassword = true
         return false
       }
     },
+    async canceldraft (proposalName) {
+      await this.transact([{
+        account: 'volentixwork',
+        name: 'canceldraft',
+        authorization: [{
+          actor: this.wallet.name,
+          permission: 'active'
+        }],
+        data: {
+          proposer: this.wallet.name,
+          proposal_name: proposalName
+        }
+      }])
+    },
     async transact (actions) {
       try {
-        this.showLoading()
-        await eos.transact({ actions }, { keyProvider: this.privateKey.key })
+        console.log('this.checkPrivateKeyPassword()', this.checkPrivateKeyPassword())
+        if (this.checkPrivateKeyPassword()) {
+          this.showLoading()
+          await eos.transact({ actions }, { keyProvider: this.privateKey.key })
+        } else if (!this.isPrivateKeyEncrypted) {
+          this.showLoading()
+          await eos.transact({ actions }, { keyProvider: this.privateKey.key })
+        }
       } catch (error) {
         console.log('error-------', error)
         // FIXME with userError handler
         // userError(JSON.parse(e).message)
         if (error.toString().includes('Required uint8')) {
           this.transactError = true
-          this.ErrorMessage = error.toString()
-        } else if (error.includes('deposit balance does not meet minimum required amount')) {
+          this.ErrorMessage = error.message.toString()
+        } else if (error.message.includes('Expected boolean or number')) {
           this.transactError = true
-          this.ErrorMessage = error
-        } else if (error.includes('maximum billable CPU time')) {
+          this.ErrorMessage = 'You must chose a period.'
+        } else if (error.message.includes('deposit balance does not meet minimum required amount')) {
+          this.transactError = true
+          this.ErrorMessage = error.message
+        } else if (error.message.includes('maximum billable CPU time')) {
           this.transactError = true
           this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
-        } else if (error.includes('must be a minimum of 100.00000000 VTX')) {
+        } else if (error.message.includes('must be a minimum of 100.00000000 VTX')) {
           this.transactError = true
           this.ErrorMessage = 'You need a minimum of 100 VTX to create a draft'
-        } else if (error.includes('user must stake before they can vote')) {
+        } else if (error.message.includes('user must stake before they can vote')) {
           this.transactError = true
-          this.ErrorMessage = 'You must stake before you can vote!'
+          this.ErrorMessage = 'You must stake before you can vote.'
         }
 
+        clearTimeout(this.timer)
+        Loading.hide()
+        this.privateKeyDialog = false
+        this.transErrorDialog = true
         // Notify.create({ message: e.message ? e.message : e })
 
-        throw error
+        // throw error
       }
     },
     async activate (proposalName, activate_next) {
@@ -265,7 +308,11 @@ export default {
       this.timer = setTimeout(() => {
         Loading.hide()
         this.timer = void 0
-        this.$router.push({ path: '/verto/card-wps/public-proposals' })
+        if (this.checkPrivateKeyPassword()) {
+          this.$router.push({ path: '/verto/card-wps/public-proposals' })
+        } else if (!this.isPrivateKeyEncrypted) {
+          this.$router.push({ path: '/verto/card-wps/public-proposals' })
+        }
       }, 5000)
     }
   },
@@ -621,6 +668,27 @@ export default {
           padding-top: 14px;
         }
       }
+    }
+  }
+  .action-link{
+    height: 50px;
+    text-transform: initial !important;
+    font-size: 16px;
+    letter-spacing: .5px;
+    border-radius: 40px;
+    width: 150px;
+    margin-left: 10px;
+    background-color: #7272FA !important;
+    // &.next{
+    //   background-color: #7900FF !important;
+    // }
+    // &.back{
+    //   background-color: #B0B0B0 !important;
+    // }
+    &.auto-width{
+      width: auto;
+      padding-left: 10px;
+      padding-right: 10px;
     }
   }
 </style>

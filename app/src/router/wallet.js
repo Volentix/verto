@@ -166,6 +166,22 @@ export default [
         }
       },
       {
+        name: 'wps-draft-proposal-detail',
+        path: '/verto/card-wps/draft-proposals/proposal/:proposalName',
+        component: () => import('pages/Verto/WPSDraftProposalDetail.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        name: 'wps-draft-proposal-edit',
+        path: '/verto/card-wps/draft-proposals/proposal/edit/:proposalName',
+        component: () => import('pages/Verto/WPSPublicProposalsEdit.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'wps-public-proposals-create',
         path: '/verto/card-wps/public-proposals/create',
         component: () => import('pages/Verto/WPSPublicProposalsCreate.vue'),
