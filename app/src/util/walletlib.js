@@ -37,6 +37,22 @@ class Lib {
         const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd')).data.litecoin.usd
         return { amount, usd }
       },
+      async bnb (key) {
+        let amount = 0
+        try {
+          const balances = (await axios.get('https://dex.binance.org/api/v1/account/' + key)).data.balances
+          if (balances) {
+            balances.filter(b => b.symbol === 'BNB').map(b => {
+              amount = +b.free + +b.frozen + +b.locked
+            })
+          }
+          console.log('bnb', balances, amount)
+        } catch (err) {
+          console.log('', err)
+        }
+        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')).data.binancecoin.usd
+        return { amount, usd }
+      },
       async dash (key) {
         const amount = (await axios.get('https://chainz.cryptoid.info/dash/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
         const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=dash&vs_currencies=usd')).data.dash.usd
@@ -49,6 +65,51 @@ class Lib {
 
   send = async (walletType, token, from, to, value, memo, key, contract) => {
     const wallet = {
+      async btc (token, from, to, value, memo, key) {
+        // const bitcore = require('bitcore-lib')
+        const bitcore = require('bitcore-lib')
+        const explorers = require('bitcore-explorers')
+        const insight = new explorers.Insight()
+
+        let message, success
+        try {
+          let privateKey = new bitcore.PrivateKey(key)
+
+          insight.getUnspentUtxos(from, function (error, utxos) {
+            if (error) {
+              console.log(error)
+            } else {
+              console.log(utxos)
+              var tx = new bitcore.Transaction()
+                .from(utxos)
+                .to(to, value * 100000000)
+                .change(from)
+                .sign(privateKey)
+                .serialize()
+
+              return new Promise(async (resolve, reject) => {
+                insight.broadcast(tx, function (error, transactionId) {
+                  if (error) {
+                    console.log(error)
+                    return reject()
+                  } else {
+                    console.log(transactionId)
+                    resolve({
+                      message: `https://www.blockchain.com/btc/tx/${transactionId}`,
+                      success: true
+                    })
+                  }
+                })
+              })
+            }
+          })
+        } catch (err) {
+          message = err
+          success = false
+        }
+
+        return { success, message }
+      },
       async eos (token, from, to, value, memo, key, contract) {
         let message, success
         try {
@@ -144,8 +205,6 @@ class Lib {
         }
 
         // return { send }
-      },
-      async btc (key) {
       },
       async ltc (key) {
       },
