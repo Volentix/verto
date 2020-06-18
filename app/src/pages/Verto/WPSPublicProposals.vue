@@ -257,16 +257,22 @@ export default {
     },
     fetch () {
       eos.getTable('volentixwork', 'volentixwork', 'proposals').then(r => {
-        this.proposals = r
-        console.log('proposals ---', this.proposals)
+        r.map((p) => {
+          p.created = new Date(p.created)
+        })
+        const sortedProposals = r.slice().sort(function (a, b) {
+          return b.created - a.created
+        })
+        this.proposals = sortedProposals
+        // console.log('this.proposals ---', this.proposals)
       })
       eos.getTable('volentixwork', 'volentixwork', 'settings').then(r => {
         this.settings = r
-        console.log('settings ---', this.settings)
+        // console.log('settings ---', this.settings)
       })
       eos.getTable('volentixwork', 'volentixwork', 'votes').then(r => {
         this.votes = r
-        console.log('votes ---', this.votes)
+        // console.log('votes ---', this.votes)
       })
     }
   },
