@@ -37,6 +37,22 @@ class Lib {
         const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd')).data.litecoin.usd
         return { amount, usd }
       },
+      async bnb (key) {
+        let amount = 0
+        try {
+          const balances = (await axios.get('https://dex.binance.org/api/v1/account/' + key)).data.balances
+          if (balances) {
+            balances.filter(b => b.symbol === 'BNB').map(b => {
+              amount = +b.free + +b.frozen + +b.locked
+            })
+          }
+          console.log('bnb', balances, amount)
+        } catch (err) {
+          console.log('', err)
+        }
+        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')).data.binancecoin.usd
+        return { amount, usd }
+      },
       async dash (key) {
         const amount = (await axios.get('https://chainz.cryptoid.info/dash/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
         const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=dash&vs_currencies=usd')).data.dash.usd
