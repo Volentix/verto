@@ -37,12 +37,12 @@
                 <q-item data-name='Lending' clickable v-ripple class="p-relative" to="">Lending<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item v-if="currentAccount.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item tag="label" @click="hideCurrency()" data-name='Hide Currency' v-ripple class="p-relative">
+                <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
                   <q-item-section>
-                    <q-item-label>Hide Currency</q-item-label>
+                    <q-item-label>Hide Currency Chain</q-item-label>
                   </q-item-section>
                   <q-item-section avatar>
-                    <q-toggle class="p-abs" color="red" v-model="currentAccount.hidden" />
+                    <q-toggle class="p-abs" color="red" @input="hideCurrency()" v-model="currentAccount.hidden" />
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -176,7 +176,7 @@ export default {
   //   }
   // },
   methods: {
-    hideCurrency () {
+    async hideCurrency () {
       console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
 
       this.$store.state.wallets.tokens.filter(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
@@ -184,6 +184,9 @@ export default {
       ).map(t => {
         t.hidden = this.currentAccount.hidden
       })
+
+      await this.$configManager.updateConfig(this.$store.state.settings.temporary, this.$store.state.currentwallet.config)
+      console.log('hidden', this.currentAccount.hidden)
     },
     goToSecurity () {
       this.$router.push({ path: '/verto/wallet/privateKey' })

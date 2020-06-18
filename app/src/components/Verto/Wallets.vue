@@ -4,7 +4,7 @@
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="wallets-wrapper--list" :class="{'open': !walletShowHide}">
       <q-list bordered separator class="list-wrapper">
-        <q-item v-for="(item, index) in tableData" :key="index" clickable :active="active" :to="item.to">
+        <q-item v-for="(item, index) in tableData.filter(f => !f.hidden || this.showHidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
           <div class="header-wallet-wrapper culumn full-width">
             <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
               <q-item-section avatar>
@@ -23,7 +23,7 @@
         </q-item>
       </q-list>
       <div v-if="!walletShowHide" class="add-remove-wrapper flex column flex-center item-center content-center">
-        <span class="add-remove-wrapper--title text-black">Show all currencies</span>
+        <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showHidden ? 'Conceal Hidden Currencies' : 'Reveal Hidden Currencies'" :class="showText ? 'open': 'hide'" />
         <span class="add-remove-wrapper--desc text-black">Main chains and balances above zero will show in this list</span>
         <!-- <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" /> -->
       </div>
@@ -81,6 +81,7 @@ export default {
   data () {
     return {
       toggled: false,
+      showHidden: false,
       showPrivate: false,
       showVespucciScore: false,
       active: true,
@@ -141,6 +142,9 @@ export default {
     }
   },
   methods: {
+    revealHide () {
+      this.showHidden = !this.showHidden
+    },
     togglePrivateKey () {
       this.showPrivate = !this.showPrivate
     },
@@ -305,7 +309,6 @@ export default {
                     position: absolute;
                     right: 0px;
                   }
-                  .private-key{}
                 }
                 .q-link{
                   border-top: 1px solid rgba(0,0,0,0.06);
