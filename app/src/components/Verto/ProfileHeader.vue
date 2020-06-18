@@ -22,7 +22,7 @@
     <div v-if="version === 'type1'" class="p-relative column flex-center profile-wrapper--header wallets" style="background: url('statics/header_bg.png');">
       <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="white" icon="keyboard_backspace" />
       <h3 class="profile-wrapper--header__title text-white">Total Balance</h3>
-      <h2 class="profile-wrapper--header__balance text-white">136.23 VTX</h2>
+      <h2 class="profile-wrapper--header__balance text-white">${{ new Number(totalBalance).toFixed(2) }} USD</h2>
       <div class="profile-wrapper--header__action">
         <q-btn unelevated to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
         <q-btn unelevated to="/verto/wallets/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
@@ -42,7 +42,7 @@
     <div v-else-if="version === 'type3'" class="column flex-center profile-wrapper--header wallet-detail" style="background: url('statics/header_bg.png');">
       <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="white" icon="keyboard_backspace" />
       <h3 class="profile-wrapper--header__title text-white">{{ currentAccount.name.toUpperCase() }}</h3>
-      <h2 class="profile-wrapper--header__balance text-white">{{ new Number(currentAccount.amount).toFixed(2) }} {{ currentAccount.type.toUpperCase() }}</h2>
+      <h2 class="profile-wrapper--header__balance text-white">{{ new Number(currentAccount.amount).toFixed(8) }} {{ currentAccount.type.toUpperCase() }}</h2>
       <div class="profile-wrapper--header__action">
         <q-btn unelevated to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
         <q-btn unelevated to="/verto/wallets/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
@@ -69,7 +69,7 @@
     <div v-else-if="version === 'type6'" class="profile-wrapper--header static" style="background: url(statics/refer_friend_bg.png) center bottom / cover no-repeat rgb(255, 255, 255) !important; min-height: 390px; box-shadow: none !important; border-radius: 0px;" />
     <div v-else class="column flex-center profile-wrapper--header" style="background: url('statics/header_bg.png');">
       <h3 class="profile-wrapper--header__title text-white">Total Balance</h3>
-      <h2 class="profile-wrapper--header__balance text-white">136.23 VTX</h2>
+      <h2 class="profile-wrapper--header__balance text-white">${{ new Number(totalBalance).toFixed(2) }} USD</h2>
       <div class="profile-wrapper--header__action">
         <q-btn unelevated to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
         <q-btn unelevated to="/verto/wallets/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
@@ -116,6 +116,7 @@ export default {
   data () {
     return {
       tableData: [],
+      totalBalance: 0,
       chainID: '',
       openModal: false,
       tokenID: '',
@@ -141,6 +142,9 @@ export default {
     )
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${params.chainID}/${params.tokenID}/${params.accountName}` : '/verto/wallets'
 
+    this.tableData.map(token => {
+      this.totalBalance = this.totalBalance + (token.usd ? token.usd : 0)
+    })
     console.log('this.currentAccount from ProfileHeader****************', this.currentAccount, params)
 
     if (this.currentAccount === undefined) {
