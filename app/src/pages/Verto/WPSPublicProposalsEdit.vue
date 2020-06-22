@@ -58,7 +58,7 @@
       Edit proposal draft </h2>
       <div class="standard-content--body">
         <div class="standard-content--body__form">
-          <q-input v-model="proposal_name" class="input-input" outlined rounded color="purple" label="Proposal name (id)" />
+          <q-input v-model="proposal_name" readonly class="input-input" outlined rounded color="purple" label="Proposal name (id)" />
           <q-input v-model="title" class="input-input" outlined rounded color="purple" label="Proposal Title" />
           <hr style="height:0px;opacity:0" />
           <q-input
