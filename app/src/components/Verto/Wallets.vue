@@ -4,7 +4,7 @@
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="wallets-wrapper--list" :class="{'open': !walletShowHide}">
       <q-list bordered separator class="list-wrapper">
-        <q-item v-for="(item, index) in tableData.filter(f => !f.hidden || this.showHidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
+        <q-item v-for="(item, index) in tableData.filter(f => !f.hidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
           <div class="header-wallet-wrapper culumn full-width">
             <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
               <q-item-section avatar>
@@ -17,6 +17,24 @@
               <q-item-section class="item-info">
                 <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{ item.type.toUpperCase() }}</span>
                 <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
+              </q-item-section>
+            </div>
+          </div>
+        </q-item>
+        <q-item v-for="(item, index) in tableData.filter(f => f.hidden && this.showHidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
+          <div class="header-wallet-wrapper culumn full-width" style="opacity: .4">
+            <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
+              <q-item-section avatar>
+                <img class="coin-icon" width="35px" :src="item.icon" alt="">
+              </q-item-section>
+              <q-item-section class="item-name">
+                <span class="item-name--name">{{item.name}}</span>
+                <span class="item-name--percent">{{item.percent}}</span>
+              </q-item-section>
+              <q-item-section class="item-info" style="font-size: 1.6em;">
+                <q-icon name="visibility_off" />
+                <!-- <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{ item.type.toUpperCase() }}</span>
+                <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span> -->
               </q-item-section>
             </div>
           </div>
@@ -273,7 +291,7 @@ export default {
         transition: ease transform .3s, ease opacity .4s;
       }
       &.open{
-        margin-bottom: -40px;
+        margin-bottom: -260px;
         .list-wrapper{
           visibility: visible;
           height: auto;

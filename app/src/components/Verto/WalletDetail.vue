@@ -2,7 +2,7 @@
 <div>
   <div class="wallets-wrapper padtop" style="padding-bottom: 50px">
     <!-- <q-toggle v-model="active" label="Active" /> -->
-    <div class="wallets-wrapper--list open">
+    <div class="wallets-wrapper--list open" :class="{'opacity' : currentAccount.hidden}">
       <q-list bordered separator class="list-wrapper">
         <q-item class="selected" clickable>
           <div class="header-wallet-wrapper culumn full-width">
@@ -39,10 +39,10 @@
                 <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
                   <q-item-section>
-                    <q-item-label>Hide Currency Chain</q-item-label>
+                    <q-item-label>{{currentAccount.hidden ? 'Reveal' : 'Hide'}} Currency Chain</q-item-label>
                   </q-item-section>
                   <q-item-section avatar>
-                    <q-toggle class="p-abs" color="red" @input="hideCurrency()" v-model="currentAccount.hidden" />
+                    <q-toggle class="p-abs" color="blue" @input="hideCurrency()" v-model="currentAccount.hidden" />
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -253,6 +253,9 @@ export default {
       padding: 4% 0%;
       border-radius: 0px 0px 30px 30px;
       box-shadow: 0px 3px 6px 0px rgba(black, .19);
+      &.opacity{
+        opacity: .7;
+      }
       .add-remove-wrapper{
         align-items: center;
         margin-top: -20px;
