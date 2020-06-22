@@ -84,6 +84,7 @@
     "steemjs-lib": "^0.3.7",
     "stellar-sdk": "^3.3.0",
     "ual-ledger": "^0.1.3",
+    "v-markdown-editor": "^1.2.5",
     "volentix-ledger": "^0.2.71",
     "vue-apexcharts": "^1.5.0",
     "vue-filter-number-format": "^1.0.3",
