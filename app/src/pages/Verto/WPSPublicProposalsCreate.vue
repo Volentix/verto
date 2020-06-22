@@ -155,7 +155,7 @@
           <div class="">
             <span class="lab-input">Proposal</span>
             <span class="lab-input" style="font-size: .9em;opacity: .5;margin-top: 0px; margin-bottom: 10px;">Drag the toolbar to the right to see more options</span>
-            <q-editor
+            <!-- <q-editor
               v-model="editor"
               :dense="$q.screen.lt.md"
               :toolbar="[
@@ -243,7 +243,12 @@
                 times_new_roman: 'Times New Roman',
                 verdana: 'Verdana'
               }"
-            />
+            /> -->
+            <div class="container editor-wrapper">
+              <!-- <markdown-editor v-model="editor"></markdown-editor> -->
+              <!-- <markdown-editor toolbar="bold italic upload" @command:upload="upload" :extend="custom"> </markdown-editor> -->
+              <markdown-editor v-model="editor" toolbar="bold italic heading | image link | numlist bullist code quote | preview fullscreen"></markdown-editor>
+            </div>
           </div>
         </div>
         <br>
@@ -273,11 +278,25 @@ import {
   // with custom spinner
   QSpinnerGears
 } from 'quasar'
+import 'v-markdown-editor/dist/v-markdown-editor.css'
+
+import Vue from 'vue'
+import Editor from 'v-markdown-editor'
+
+// global register
+Vue.use(Editor)
 
 export default {
   components: {},
   data () {
     return {
+      custom: {
+        'upload': {
+          cmd: 'upload',
+          ico: 'fas fa-upload',
+          title: 'Upload File'
+        }
+      },
       proposals: [],
       drafts: [],
       transErrorDialog: false,
@@ -302,7 +321,8 @@ export default {
       title: 'My WPS Title',
       monthly_budget: '100.00000000 VTX',
       duration: '1',
-      editor: '<b>Proposal</b> text goes here <ol><li>Item 1</li><li>Item 2</li></ol>',
+      editor: '**Proposal text goes here** ' + '* Item 1 ' + '* Item 2 ',
+      // editor: '<b>Proposal</b> text goes here <ol><li>Item 1</li><li>Item 2</li></ol>',
       description: 'short brief goes here'
       // proposal_json: '[{"key":"description", "value":""}]'
       // [{"key":"description", "value":""}]
@@ -330,6 +350,9 @@ export default {
   mounted () {
   },
   methods: {
+    upload (md) {
+      md.drawImage({ url: 'https://i.imgur.com/CbCXhBe.png', title: 'this image title' })
+    },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({
@@ -383,6 +406,7 @@ export default {
     },
     async submitdraft () {
       this.transactError = false
+      console.log('this.editor-- ', this.editor)
       const { proposal_name, title, monthly_budget, duration } = this
       await this.transact([{
         account: 'volentixwork',
@@ -737,6 +761,19 @@ export default {
       width: auto;
       padding-left: 10px;
       padding-right: 10px;
+    }
+  }
+  .editor-wrapper{
+    /deep/ .v-md-toolbar{
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      .btn-group{
+        .btn{
+          margin-right: 5px;
+          margin-bottom: 5px;
+        }
+      }
     }
   }
 </style>

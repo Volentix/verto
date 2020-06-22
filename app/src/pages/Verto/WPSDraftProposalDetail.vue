@@ -53,7 +53,7 @@
                                   :color="json.key === 'security' ? 'purple' : json.key === 'decentralizad' ? 'orange' : json.key === 'financial' ? 'green' : json.key === 'anonymity' ? 'blue' : 'purple' "
                                 />
                               </span>
-                              <span v-else v-html="json.value" />
+                              <span v-else v-html="json.value !== 'undefined' ? json.value : '-'" />
                             </div>
                           </div>
                         </div>
