@@ -413,6 +413,19 @@ export default {
         // throw error
       }
     },
+    // void wps::editproposal(
+    // const name proposer,
+    // const name proposal_name,
+    // const string title,
+    // const uint8_t type,
+    // const uint8_t security,
+    // const uint8_t impact,
+    // const asset monthly_budget,
+    // const uint8_t duration,
+    // const map<name, string> proposal_json )
+    async editdraft () {
+
+    },
     async submitdraft () {
       this.transactError = false
       const { proposal_name, title, monthly_budget, duration } = this
