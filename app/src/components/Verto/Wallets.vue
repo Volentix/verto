@@ -2,54 +2,102 @@
 <div>
   <div class="wallets-wrapper">
     <!-- <q-toggle v-model="active" label="Active" /> -->
-    <div class="wallets-wrapper--list" :class="{'open': !walletShowHide}">
-      <q-list bordered separator class="list-wrapper">
-        <q-item v-for="(item, index) in tableData.filter(f => !f.hidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
-          <div class="header-wallet-wrapper culumn full-width">
-            <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
-              <q-item-section avatar>
-                <img class="coin-icon" width="35px" :src="item.icon" alt="">
-              </q-item-section>
-              <q-item-section class="item-name">
-                <span class="item-name--name">{{item.name}}</span>
-                <span class="item-name--percent">{{item.percent}}</span>
-              </q-item-section>
-              <q-item-section class="item-info">
-                <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{ item.type.toUpperCase() }}</span>
-                <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
-              </q-item-section>
+    <div v-if="isMobile" class="wallets-wrapper--list" :class="{'open': !walletShowHide}">
+      <q-scroll-area :visible="true" class="scrollarea" :class="{'height' : !walletShowHide}">
+        <q-list bordered separator class="list-wrapper">
+          <q-item v-for="(item, index) in tableData.filter(f => !f.hidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
+            <div class="header-wallet-wrapper culumn full-width">
+              <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
+                <q-item-section avatar>
+                  <img class="coin-icon" width="35px" :src="item.icon" alt="">
+                </q-item-section>
+                <q-item-section class="item-name">
+                  <span class="item-name--name">{{item.name}}</span>
+                  <span class="item-name--percent">{{item.percent}}</span>
+                </q-item-section>
+                <q-item-section class="item-info">
+                  <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{ item.type.toUpperCase() }}</span>
+                  <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
+                </q-item-section>
+              </div>
             </div>
-          </div>
-        </q-item>
-        <q-item v-for="(item, index) in tableData.filter(f => f.hidden && this.showHidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
-          <div class="header-wallet-wrapper culumn full-width" style="opacity: .4">
-            <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
-              <q-item-section avatar>
-                <img class="coin-icon" width="35px" :src="item.icon" alt="">
-              </q-item-section>
-              <q-item-section class="item-name">
-                <span class="item-name--name">{{item.name}}</span>
-                <span class="item-name--percent">{{item.percent}}</span>
-              </q-item-section>
-              <q-item-section class="item-info" style="font-size: 1.6em;">
-                <q-icon name="visibility_off" />
-                <!-- <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{ item.type.toUpperCase() }}</span>
-                <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span> -->
-              </q-item-section>
+          </q-item>
+          <q-item v-for="(item, index) in tableData.filter(f => f.hidden && this.showHidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
+            <div class="header-wallet-wrapper culumn full-width" style="opacity: .4">
+              <div @click="showMenu(item)" class="header-wallet full-width flex justify-between items-center">
+                <q-item-section avatar>
+                  <img class="coin-icon" width="35px" :src="item.icon" alt="">
+                </q-item-section>
+                <q-item-section class="item-name">
+                  <span class="item-name--name">{{item.name}}</span>
+                  <span class="item-name--percent">{{item.percent}}</span>
+                </q-item-section>
+                <q-item-section class="item-info" style="font-size: 1.6em;">
+                  <q-icon name="visibility_off" />
+                  <!-- <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{ item.type.toUpperCase() }}</span>
+                  <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span> -->
+                </q-item-section>
+              </div>
             </div>
-          </div>
-        </q-item>
-      </q-list>
+          </q-item>
+        </q-list>
+      </q-scroll-area>
       <div v-if="!walletShowHide" class="add-remove-wrapper flex column flex-center item-center content-center">
-        <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showHidden ? 'Conceal Hidden Currencies' : 'Reveal Hidden Currencies'" :class="showText ? 'open': 'hide'" />
+        <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Conceal Hidden Currencies' : 'Reveal Hidden Currencies'" :class="showText ? 'open': 'hide'" />
         <span class="add-remove-wrapper--desc text-black">Main chains and balances above zero will show in this list</span>
         <!-- <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" /> -->
       </div>
       <q-btn unelevated v-if="!showWallets" flat @click="toggleWallets()" :icon-right="showText ? 'keyboard_arrow_up': 'keyboard_arrow_down'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showText ? 'Hide all wallets' : 'Show all wallets'" :class="showText ? 'open': 'hide'" />
     </div>
-    <div class="modal-wrapper text-black bg-white" :class="{'open' : openModal}">
+    <div v-else class="else-is-desktop wallets-wrapper--list open">
+      <h2 class="wallets-wrapper--list_title q-pa-md q-ml-md flex items-center"><q-icon name="o_account_balance_wallet"/> Wallets</h2>
+      <q-scroll-area :visible="true" class="q-mr-sm" style="height: 300px;">
+        <q-list bordered separator class="list-wrapper">
+          <q-item v-for="(item, index) in tableData.filter(f => !f.hidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
+            <div class="header-wallet-wrapper culumn full-width">
+              <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
+                <q-item-section avatar>
+                  <img class="coin-icon" width="35px" :src="item.icon" alt="">
+                </q-item-section>
+                <q-item-section class="item-name">
+                  <span class="item-name--name">{{item.name}}</span>
+                  <span class="item-name--percent">{{item.percent}}</span>
+                </q-item-section>
+                <q-item-section class="item-info">
+                  <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{ item.type.toUpperCase() }}</span>
+                  <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
+                </q-item-section>
+              </div>
+            </div>
+          </q-item>
+          <q-item v-for="(item, index) in tableData.filter(f => f.hidden && this.showHidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
+            <div class="header-wallet-wrapper culumn full-width" style="opacity: .4">
+              <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
+                <q-item-section avatar>
+                  <img class="coin-icon" width="35px" :src="item.icon" alt="">
+                </q-item-section>
+                <q-item-section class="item-name">
+                  <span class="item-name--name">{{item.name}}</span>
+                  <span class="item-name--percent">{{item.percent}}</span>
+                </q-item-section>
+                <q-item-section class="item-info" style="font-size: 1.6em;">
+                  <q-icon name="visibility_off" />
+                  <!-- <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{ item.type.toUpperCase() }}</span>
+                  <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span> -->
+                </q-item-section>
+              </div>
+            </div>
+          </q-item>
+        </q-list>
+      </q-scroll-area>
+      <div class="add-remove-wrapper flex column flex-center item-center content-center">
+        <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Conceal Hidden Currencies' : 'Reveal Hidden Currencies'" :class="showText ? 'open': 'hide'" />
+        <span class="add-remove-wrapper--desc text-black">Main chains and balances above zero will show in this list</span>
+      </div>
+    </div>
+    <!-- <div class="modal-wrapper text-black bg-white" :class="{'open' : openModal}">
       <div class="modal-wrapper--content">
-        <!-- <q-scroll-area style="height: 100vh;max-height: 100vh;"> -->
+         <q-scroll-area style="height: 100vh;max-height: 100vh;">
           <div class="standard-content">
             <div class="standard-content--body">
               <h2 class="standard-content--title flex justify-center">
@@ -69,15 +117,20 @@
               <q-btn flat class="action-link next" color="black" text-color="white" @click="hideModalFun()" label="Back to wallet" />
             </div>
           </div>
-        <!-- </q-scroll-area> -->
+         </q-scroll-area>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>
 </template>
 
 <script>
+
+import { QScrollArea } from 'quasar'
 export default {
+  components: {
+    QScrollArea
+  },
   name: 'Wallets',
   props: {
     showWallets: {
@@ -91,6 +144,11 @@ export default {
       default: true
     },
     isWalletDetail: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    isMobile: {
       type: Boolean,
       required: false,
       default: true
@@ -199,6 +257,13 @@ export default {
   .wallets-wrapper{
     padding: 0px 6%;
     padding-bottom: 70px;
+    @media screen and (min-width: 768px) {
+      background: #FFF;
+      padding: 5% 0px;
+      margin-top: -10px;
+      margin-right: 10px;
+      border-radius: 0px 0px 10px 10px;
+    }
     &.padtop{
       padding-bottom: 0px;
     }
@@ -223,7 +288,24 @@ export default {
       background-color: #fff;
       padding: 4% 0%;
       border-radius: 0px 0px 25px 25px;
-      box-shadow: 0px 3px 6px 0px rgba(black, .19);
+      @media screen and (min-width: 768px) {
+        box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.19) !important;
+        border-radius: 0px 0px 8px 8px !important;
+      }
+
+      &_title{
+        font-size: 16px;
+        font-family: $Titillium;
+        font-weight: $bold;
+        line-height: 30px;
+        margin-top: -20px;
+        margin-bottom: 0px;
+        color: #494949;
+        i{
+          font-size: 20px;
+          margin-right: 10px;
+        }
+      }
       .add-remove-wrapper{
         align-items: center;
         margin-top: -20px;
@@ -247,6 +329,9 @@ export default {
           max-width: 220px;
           padding: 5px;
           text-align: center;
+          @media screen and (min-width: 768px) {
+            font-size: 12px;
+          }
         }
         &--btn{
           border-radius: 50px;
@@ -272,14 +357,27 @@ export default {
         margin-bottom: 25px;
         color: #7272FA !important;
         font-size: 17px;
+        &--reveal{
+          margin-top: 50px;
+          @media screen and (min-width: 768px) {
+            margin-top: 30px !important;
+            margin-bottom: 5px !important;
+            max-width: 90%;
+          }
+        }
         &.hide{
           margin-bottom: 0px;
           margin-top: -8px;
           @media screen and (min-width: 768px) {
             margin-bottom: 35px;
-            margin-top: -38px;
+            margin-top: 0px;
+            font-size: 14px;
           }
         }
+        // @media screen and (min-width: 768px) {
+        //   margin-bottom: 35px;
+        //   margin-top: 0px;
+        // }
       }
       .list-wrapper{
         overflow: hidden;
@@ -291,13 +389,16 @@ export default {
         transition: ease transform .3s, ease opacity .4s;
       }
       &.open{
-        margin-bottom: -260px;
+        // margin-bottom: -260px;
         .list-wrapper{
           visibility: visible;
           height: auto;
           opacity: 1;
           transform: translateY(0px) scaleY(1);
           margin-bottom: 40px;
+          @media screen and (min-width: 768px) {
+            margin-bottom: 0px;
+          }
         }
       }
       /deep/ .q-list--bordered {
@@ -311,6 +412,10 @@ export default {
           }
           .q-link {
             border-top: 1px solid rgba(0,0,0,0.06);
+            @media screen and (min-width: 768px) {
+              max-width: 90%;
+              margin: auto;
+            }
             .menu-wallet{
               display: none;
               .sub-list-menu{
@@ -362,6 +467,9 @@ export default {
       }
       .coin-icon{
         margin-left: -3px;
+        @media screen and (min-width: 768px) {
+          max-width: 20px;
+        }
         // opacity: .4;
       }
       .icons{
@@ -376,9 +484,15 @@ export default {
         max-width: fit-content;
         &--name{
           font-size: 14px;
+          @media screen and (min-width: 768px) {
+            font-size: 12px;
+          }
         }
         &--percent{
           font-size: 12px;
+        }
+        @media screen and (min-width: 768px) {
+          margin-left: -27px;
         }
       }
       .item-info{
@@ -390,6 +504,10 @@ export default {
         align-items: flex-end;
         &--amount{
           font-size: 16px;
+          @media screen and (min-width: 768px) {
+            font-size: 12px;
+            margin-bottom: -5px;
+          }
         }
         &--amountUSD{
           font-size: 13px;
@@ -498,5 +616,10 @@ export default {
   }
   .lower{
     text-transform: initial !important;
+  }
+  .scrollarea{
+    &.height{
+      height: 300px;
+    }
   }
 </style>
