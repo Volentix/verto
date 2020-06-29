@@ -1,23 +1,52 @@
 <template>
-  <q-page class="column text-black bg-white" style="padding-bottom: 50px">
-    <profile-header class="marg" version="type2222" />
-    <!-- <q-btn color="white" flat text-color="black" class="full-width" label="Public Proposals" to="/verto/card-wps/public-proposals" /> -->
-    <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
-
-    <div class="cards-wrapper--content">
-      <card-make-VTX />
-      <hr style="height:0px;opacity:0" />
-      <card-WPS />
-      <hr style="height:0px;opacity:0" />
-      <card-convert-any-to-VTX />
-      <hr style="height:0px;opacity:0" />
-      <card-import-EOS-account />
-      <!-- <hr style="height:0px;opacity:0" /> -->
-      <!-- <card-create-wallet /> -->
-      <!-- <hr style="height:0px;opacity:0" /> -->
-      <!-- <convert-any-coin /> -->
+  <q-page class="column text-black bg-white" :class="osName.toLowerCase() === 'windows' ? 'desktop-marg': 'mobile-pad'">
+    <div class="desktop-version" v-if="osName.toLowerCase() === 'windows'">
+      <div class="row">
+        <div class="col col-md-3">
+          <div class="wallets-container">
+            <profile-header :isMobile="false" class="marg" version="type2222" />
+            <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+            <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+          </div>
+        </div>
+        <div class="col col-md-5">
+          <appsSection />
+          <startNodeSection />
+          <chainToolsSection />
+          <TransactionsSection />
+          <venueSection />
+          <!-- <img src="statics/prototype_screens/apps.jpg" alt=""> -->
+          <!-- <img src="statics/prototype_screens/start_node.jpg" alt=""> -->
+          <!-- <img src="statics/prototype_screens/chain_tools.jpg" alt=""> -->
+          <!-- <img src="statics/prototype_screens/transactions.jpg" alt=""> -->
+          <!-- <img src="statics/prototype_screens/venue.jpg" alt=""> -->
+        </div>
+        <div class="col col-md-4">
+          <img src="statics/prototype_screens/vespucci.jpg" class="q-ml-lg" alt="">
+          <img src="statics/prototype_screens/make_VTX.jpg" class="q-ml-lg" alt="">
+          <img src="statics/prototype_screens/convert_any.jpg" class="q-ml-lg" alt="">
+        </div>
+      </div>
     </div>
-    <br><br>
+    <div class="mobile-version" v-else>
+      <profile-header class="marg" version="type2222" />
+      <!-- <q-btn color="white" flat text-color="black" class="full-width" label="Public Proposals" to="/verto/card-wps/public-proposals" /> -->
+      <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+      <div class="cards-wrapper--content">
+        <card-make-VTX />
+        <hr style="height:0px;opacity:0" />
+        <card-WPS />
+        <hr style="height:0px;opacity:0" />
+        <card-convert-any-to-VTX />
+        <hr style="height:0px;opacity:0" />
+        <card-import-EOS-account />
+        <!-- <hr style="height:0px;opacity:0" /> -->
+        <!-- <card-create-wallet /> -->
+        <!-- <hr style="height:0px;opacity:0" /> -->
+        <!-- <convert-any-coin /> -->
+      </div>
+      <br><br>
+    </div>
   </q-page>
 </template>
 
@@ -30,6 +59,12 @@ import CardConvertAnyToVTX from '../../components/Verto/CardConvertAnyToVTX'
 import CardImportEOSAccount from '../../components/Verto/CardImportEOSAccount'
 // import CardCreateWallet from '../../components/Verto/CardCreateWallet'
 import Wallets from '../../components/Verto/Wallets'
+import AppsSection from '../../components/Verto/AppsSection'
+import StartNodeSection from '../../components/Verto/StartNodeSection'
+import ChainToolsSection from '../../components/Verto/ChainToolsSection'
+import TransactionsSection from '../../components/Verto/TransactionsSection'
+import VenueSection from '../../components/Verto/VenueSection'
+
 // import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
 import HD from '@/util/hdwallet'
 import { CruxPay } from '@cruxpay/js-sdk'
@@ -41,6 +76,8 @@ const eos = new EosWrapper()
 let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 
+import { osName } from 'mobile-device-detect'
+
 export default {
   components: {
     // ConvertAnyCoin,
@@ -50,16 +87,26 @@ export default {
     CardImportEOSAccount,
     CardConvertAnyToVTX,
     CardMakeVTX,
-    CardWPS
+    CardWPS,
+    // desktop components
+    AppsSection,
+    StartNodeSection,
+    ChainToolsSection,
+    TransactionsSection,
+    VenueSection
+
   },
   data () {
     return {
       cruxKey: {},
+      osName: '',
       walletClientName: 'verto' // should be 'verto' when in prod
     }
   },
   async created () {
     // Check if mnemonic exists
+    this.osName = osName
+    console.log('this.osName', this.osName)
     console.log('store.state.currentwallet.config', store.state.currentwallet.config)
     if (!store.state.currentwallet.config.mnemonic) {
       this.$router.push('recovery-seed')
@@ -148,5 +195,26 @@ export default {
         margin-bottom: 0px;
       }
     }
+  }
+</style>
+
+<style lang="scss" scoped>
+  .desktop-version{
+    background: #E7E8E8;
+    padding-top: 13vh;
+    padding-left: 12vh;
+    padding-bottom: 50px
+  }
+  .mobile-pad{
+    padding-bottom: 50px
+  }
+</style>
+<style>
+  .q-scrollarea__bar--v, .q-scrollarea__thumb--v{
+    width: 6px !important;
+    border-radius: 10px;
+  }
+  .q-scrollarea__bar{
+    background: rgb(183, 183, 183) !important;
   }
 </style>
