@@ -30,3 +30,12 @@ $mainColor: #7900FF;
     border-radius: 8px;
     position: relative;
 }
+.shad{
+    box-shadow: 1px 2px 9px rgba(0, 0, 0, 0.09);
+}
+.desktop-card-style{
+    &.disabled{
+        pointer-events: none;
+        cursor: not-allowed;
+    }
+}

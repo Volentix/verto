@@ -142,6 +142,14 @@ export default [
         }
       },
       {
+        name: 'exchange-v2',
+        path: '/verto/exchange/:selectedCoin',
+        component: () => import('pages/Verto/Exchange.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'wps',
         path: '/verto/card-wps',
         component: () => import('pages/Verto/WPS.vue'),

@@ -1,6 +1,6 @@
 <template>
   <div class="campaigns full-width q-pl-md q-pr-md">
-    <q-scroll-area :visible="true" class="q-pr-md q-pb-sm" style="height: 118px;">
+    <q-scroll-area :visible="true" class="q-pr-md q-pb-sm" style="height: 96px;">
       <ul>
         <li v-for="(campaign, index) in campaigns" :key="index">
           <router-link :to="campaign.to">
@@ -81,14 +81,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  @import url('https://fonts.googleapis.com/css?family=Titillium+Web:100,200,300,400,700,900&display=swap');
-  // variables
-  $Titillium: 'Titillium Web', sans-serif;
-  $lighter: 100;
-  $light: 300;
-  $regular: 400;
-  $bold: 700;
-  $black: 900;
+  @import "~@/assets/styles/variables.scss";
   .campaigns{
     // padding: 0px 0px;
     max-width: 100%;
