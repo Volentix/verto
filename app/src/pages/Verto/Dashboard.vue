@@ -9,11 +9,11 @@
             <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
           </div>
         </div>
-        <div class="col col-md-5">
+        <div class="col col-md-6">
           <appsSection />
           <startNodeSection />
           <chainToolsSection />
-          <TransactionsSection />
+          <transactionsSection />
           <venueSection />
           <!-- <img src="statics/prototype_screens/apps.jpg" alt=""> -->
           <!-- <img src="statics/prototype_screens/start_node.jpg" alt=""> -->
@@ -21,10 +21,13 @@
           <!-- <img src="statics/prototype_screens/transactions.jpg" alt=""> -->
           <!-- <img src="statics/prototype_screens/venue.jpg" alt=""> -->
         </div>
-        <div class="col col-md-4">
-          <img src="statics/prototype_screens/vespucci.jpg" class="q-ml-lg" alt="">
-          <img src="statics/prototype_screens/make_VTX.jpg" class="q-ml-lg" alt="">
-          <img src="statics/prototype_screens/convert_any.jpg" class="q-ml-lg" alt="">
+        <div class="col q-pl-sm q-pr-md col-md-3">
+          <makeVTXSection />
+          <ExchangeSection />
+          <!-- <vespucciRatingSection /> -->
+          <!-- <img src="statics/prototype_screens/vespucci.jpg" class="q-ml-lg" alt=""> -->
+          <!-- <img src="statics/prototype_screens/make_VTX.jpg" class="full-width" alt=""> -->
+          <!-- <img src="statics/prototype_screens/convert_any.jpg" class="full-width" alt=""> -->
         </div>
       </div>
     </div>
@@ -64,6 +67,10 @@ import StartNodeSection from '../../components/Verto/StartNodeSection'
 import ChainToolsSection from '../../components/Verto/ChainToolsSection'
 import TransactionsSection from '../../components/Verto/TransactionsSection'
 import VenueSection from '../../components/Verto/VenueSection'
+import MakeVTXSection from '../../components/Verto/MakeVTXSection'
+import ExchangeSection from '../../components/Verto/ExchangeSection'
+
+// import VespucciRatingSection from '../../components/Verto/VespucciRatingSection'
 
 // import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
 import HD from '@/util/hdwallet'
@@ -93,7 +100,10 @@ export default {
     StartNodeSection,
     ChainToolsSection,
     TransactionsSection,
-    VenueSection
+    VenueSection,
+    MakeVTXSection,
+    ExchangeSection
+    // VespucciRatingSection
 
   },
   data () {
