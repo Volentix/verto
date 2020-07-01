@@ -1,7 +1,7 @@
 <template>
   <div class="desktop-card-style apps-section q-mb-sm">
     <div class="row flex justify-between q-pt-sm q-pb-sm">
-      <div class="col col-12 flex items-center history-icon"><q-icon :name="'img:statics/history_icon-black.svg'" />Transaction History of &nbsp;<span class="text-blue">Wallet ABC</span></div>
+      <div class="col col-12 flex items-center history-icon"><q-icon :name="'img:statics/history_icon-black.svg'" />Transaction History of &nbsp;<span class="text-blue">{{wallet.name}}</span></div>
     </div>
     <history :isMobile="false" />
   </div>
@@ -18,6 +18,11 @@ export default {
   data () {
     return {
       chainToolModel: 'Chain Tools'
+    }
+  },
+  computed: {
+    wallet () {
+      return this.$store.state.currentwallet.wallet || {}
     }
   },
   methods: {

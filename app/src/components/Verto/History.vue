@@ -71,6 +71,11 @@ export default {
       ]
     }
   },
+  computed: {
+    wallet () {
+      return this.$store.state.currentwallet.wallet || {}
+    }
+  },
   methods: {
     showMore () {
 
