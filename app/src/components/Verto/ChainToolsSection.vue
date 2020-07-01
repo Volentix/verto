@@ -1,18 +1,22 @@
 <template>
-  <div class="desktop-card-style apps-section q-mb-sm">
+  <div class="desktop-card-style apps-section q-mb-sm" :class="{'disabled' : wallet.chain !== 'eos'}">
     <div class="row flex justify-between q-pt-sm q-pb-sm">
-      <div class="col col-4 flex items-center chain-icon"><q-icon :name="'img:statics/chain-tools_icon-black.svg'" />Chain Tools</div>
-      <div class="col col-2 flex items-center justify-end chain-token q-pr-sm">
+      <div class="col col-3 flex items-center chain-icon"><q-icon :name="'img:statics/chain-tools_icon-black.svg'" />Chain Tools</div>
+      <div class="col col-4 flex items-center justify-end chain-token q-pr-sm">
+        <div class="column q-mr-md">
+          <span class="label">Account:</span>
+          <strong>{{wallet.name}}</strong>
+        </div>
         <div class="column q-mr-md">
           <span class="label">Chain:</span>
-          <strong>EOS</strong>
+          <strong>{{wallet.chain}}</strong>
         </div>
         <div class="column">
           <span class="label">Token:</span>
-          <strong>VTX</strong>
+          <strong>{{wallet.type}}</strong>
         </div>
       </div>
-      <div class="col col-6 flex items-center justify-end dropdown q-pr-sm">
+      <div class="col col-5 flex items-center justify-end dropdown q-pr-sm">
         <q-select
           light
           separator
@@ -20,6 +24,7 @@
           outlined
           class="select-input"
           v-model="chainToolModel"
+          @input="goToChainTool"
           :options="['Staking', 'Voting', 'Lending']" />
         <!-- <strong>Start Your Node</strong> -->
         <!-- <q-btn unelevated class="qbtn-start" color="black" text-color="white" label="Get started" /> -->
@@ -36,7 +41,21 @@ export default {
       chainToolModel: 'Chain Tools'
     }
   },
+  updated () {
+
+  },
+  computed: {
+    wallet () {
+      return this.$store.state.currentwallet.wallet || {}
+    }
+  },
   methods: {
+    goToChainTool (val) {
+      if (val.toLowerCase() === 'staking') {
+        this.$router.push({ path: '/verto/stake' })
+      }
+      console.log(val)
+    }
   }
 }
 </script>

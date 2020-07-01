@@ -794,7 +794,7 @@ export default {
                   background: #FFB200 !important;
                 }
                 .text-green{
-                  background: #FFB200 !important;
+                  // background: #FFB200 !important;
                 }
               }
             }

@@ -3,10 +3,10 @@
     <div class="row">
       <div class="col col-3 flex flex-center items-center logo-vtx"><img src="statics/vtx_black.svg" alt=""> Volentix</div>
       <div class="col column item-start shape-app" style="flex-basis: 10px"><img src="statics/picto_verto.svg" alt=""><strong>verto</strong>Multi- Currency Wallet</div>
-      <div class="col column item-start shape-app"><img src="statics/picto_verto.svg" alt=""><strong>vespucci</strong>Exchange</div>
-      <div class="col column item-start shape-app"><img src="statics/picto_verto.svg" alt=""><strong>vdex</strong>Market Data Analysis</div>
-      <div class="col column item-start shape-app"><img src="statics/picto_verto.svg" alt=""><strong>venue</strong>Community platform</div>
-      <div class="col column item-start shape-app"><img src="statics/picto_verto.svg" alt=""><strong>vtx</strong>Volentix Currency</div>
+      <div class="col column item-start shape-app"><img src="statics/picto_stex5.svg" alt=""><strong>vespucci</strong>Exchange</div>
+      <div class="col column item-start shape-app"><img src="statics/picto_stex3.svg" alt=""><strong>vdex</strong>Market Data Analysis</div>
+      <div class="col column item-start shape-app"><img src="statics/picto_stex4.svg" alt=""><strong>venue</strong>Community platform</div>
+      <div class="col column item-start shape-app"><img src="statics/picto_stex7.svg" alt=""><strong>vtx</strong>Volentix Currency</div>
     </div>
   </div>
 </template>
@@ -51,8 +51,8 @@ export default {
           font-weight: $bold;
           font-family: $Titillium;
           text-transform: uppercase;
-          padding-right: 20px;
-          flex-basis: 130px;
+          padding-right: 40px;
+          flex-basis: 160px;
           position: relative;
           &:after{
             display: none;
@@ -63,7 +63,7 @@ export default {
             height: 70%;
             position: absolute;
             left: 0;
-            left: 115px;
+            left: 132px;
             background: #07f;
             background: linear-gradient(180deg,#0fe 0%,#07f);
           }
