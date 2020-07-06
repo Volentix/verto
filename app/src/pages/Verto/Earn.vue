@@ -1,32 +1,80 @@
 <template>
   <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
-    <profile-header version="type5" />
-    <div class="plr10">
-      <card-refer />
-      <hr style="height:0px;opacity:0" />
-      <card-share />
-      <hr style="height:0px;opacity:0" />
-      <card-create-proposal />
-      <hr style="height:0px;opacity:0" />
+    <div class="desktop-version" v-if="osName.toLowerCase() === 'windows'">
+      <div class="row">
+        <div class="col col-md-3">
+          <div class="wallets-container">
+            <profile-header :isMobile="false" class="marg" version="type2222" />
+            <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+            <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+          </div>
+        </div>
+        <div class="col col-md-9">
+          <div class="desktop-card-style apps-section q-mb-sm">
+            <div>
+              <profile-header version="type5" />
+              <div class="plr10">
+                <card-refer />
+                <hr style="height:0px;opacity:0" />
+                <card-share />
+                <hr style="height:0px;opacity:0" />
+                <card-create-proposal />
+                <hr style="height:0px;opacity:0" />
+              </div>
+              <div class="convert-any-coin--wrapper" style="margin-top: -50px">
+                <div class="convert-any-coin--wrapper--body">
+                  <q-btn color="white" to="/verto/earn/use-referral-account" class="convert-any-coin--wrapper--body__btn" text-color="black">
+                    <template v-slot>
+                      <div class="icon-wrapper">
+                        <img src="statics/share_icon.png" width="35px" alt="">
+                      </div>
+                      <span class="btn-title">Create referral link</span>
+                    </template>
+                  </q-btn>
+                  <q-btn color="white" to="/verto/eos-account" class="convert-any-coin--wrapper--body__btn" text-color="black">
+                    <template v-slot>
+                      <div class="icon-wrapper">
+                        <img src="statics/eos_icon.png" width="45px" alt="">
+                      </div>
+                      <span class="btn-title">Create an EOS account</span>
+                    </template>
+                  </q-btn>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="convert-any-coin--wrapper" style="margin-top: -50px">
-      <div class="convert-any-coin--wrapper--body">
-        <q-btn color="white" to="/verto/earn/use-referral-account" class="convert-any-coin--wrapper--body__btn" text-color="black">
-          <template v-slot>
-            <div class="icon-wrapper">
-              <img src="statics/share_icon.png" width="35px" alt="">
-            </div>
-            <span class="btn-title">Create referral link</span>
-          </template>
-        </q-btn>
-        <q-btn color="white" to="/verto/eos-account" class="convert-any-coin--wrapper--body__btn" text-color="black">
-          <template v-slot>
-            <div class="icon-wrapper">
-              <img src="statics/eos_icon.png" width="45px" alt="">
-            </div>
-            <span class="btn-title">Create an EOS account</span>
-          </template>
-        </q-btn>
+    <div v-else>
+      <profile-header version="type5" />
+      <div class="plr10">
+        <card-refer />
+        <hr style="height:0px;opacity:0" />
+        <card-share />
+        <hr style="height:0px;opacity:0" />
+        <card-create-proposal />
+        <hr style="height:0px;opacity:0" />
+      </div>
+      <div class="convert-any-coin--wrapper" style="margin-top: -50px">
+        <div class="convert-any-coin--wrapper--body">
+          <q-btn color="white" to="/verto/earn/use-referral-account" class="convert-any-coin--wrapper--body__btn" text-color="black">
+            <template v-slot>
+              <div class="icon-wrapper">
+                <img src="statics/share_icon.png" width="35px" alt="">
+              </div>
+              <span class="btn-title">Create referral link</span>
+            </template>
+          </q-btn>
+          <q-btn color="white" to="/verto/eos-account" class="convert-any-coin--wrapper--body__btn" text-color="black">
+            <template v-slot>
+              <div class="icon-wrapper">
+                <img src="statics/eos_icon.png" width="45px" alt="">
+              </div>
+              <span class="btn-title">Create an EOS account</span>
+            </template>
+          </q-btn>
+        </div>
       </div>
     </div>
     <br><br>
@@ -38,6 +86,8 @@ import CardShare from '../../components/Verto/CardShare'
 import CardCreateProposal from '../../components/Verto/CardCreateProposal'
 import CardRefer from '../../components/Verto/CardRefer'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
+import Wallets from '../../components/Verto/Wallets'
+
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
 let platformTools = require('../../util/platformTools')
@@ -48,6 +98,7 @@ export default {
     CardRefer,
     CardCreateProposal,
     CardShare,
+    Wallets,
     ProfileHeader
   },
   data () {
