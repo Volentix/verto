@@ -11,34 +11,39 @@
         </div>
         <div class="col col-md-9">
           <div class="desktop-card-style apps-section q-mb-sm">
-            <div>
+            <div class="q-pb-lg">
               <profile-header version="type5" />
-              <div class="plr10">
-                <card-refer />
-                <hr style="height:0px;opacity:0" />
-                <card-share />
-                <hr style="height:0px;opacity:0" />
-                <card-create-proposal />
-                <hr style="height:0px;opacity:0" />
-              </div>
-              <div class="convert-any-coin--wrapper" style="margin-top: -50px">
-                <div class="convert-any-coin--wrapper--body">
-                  <q-btn color="white" to="/verto/earn/use-referral-account" class="convert-any-coin--wrapper--body__btn" text-color="black">
-                    <template v-slot>
-                      <div class="icon-wrapper">
-                        <img src="statics/share_icon.png" width="35px" alt="">
-                      </div>
-                      <span class="btn-title">Create referral link</span>
-                    </template>
-                  </q-btn>
-                  <q-btn color="white" to="/verto/eos-account" class="convert-any-coin--wrapper--body__btn" text-color="black">
-                    <template v-slot>
-                      <div class="icon-wrapper">
-                        <img src="statics/eos_icon.png" width="45px" alt="">
-                      </div>
-                      <span class="btn-title">Create an EOS account</span>
-                    </template>
-                  </q-btn>
+              <div class="row">
+                <div class="col col-6 q-pa-md">
+                  <card-refer />
+                </div>
+                <div class="col col-6 q-pa-md">
+                  <card-share />
+                </div>
+                <div class="col col-5 q-pa-md">
+                  <card-create-proposal />
+                </div>
+                <div class="col col-7 q-pt-md q-pl-sm">
+                  <div class="convert-any-coin--wrapper">
+                    <div class="convert-any-coin--wrapper--body">
+                      <q-btn color="white" to="/verto/earn/use-referral-account" class="convert-any-coin--wrapper--body__btn" text-color="black">
+                        <template v-slot>
+                          <div class="icon-wrapper">
+                            <img src="statics/share_icon.png" width="35px" alt="">
+                          </div>
+                          <span class="btn-title">Create referral link</span>
+                        </template>
+                      </q-btn>
+                      <q-btn color="white" to="/verto/eos-account" class="convert-any-coin--wrapper--body__btn" text-color="black">
+                        <template v-slot>
+                          <div class="icon-wrapper">
+                            <img src="statics/eos_icon.png" width="45px" alt="">
+                          </div>
+                          <span class="btn-title">Create an EOS account</span>
+                        </template>
+                      </q-btn>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -82,6 +87,7 @@
 </template>
 
 <script>
+import { osName } from 'mobile-device-detect'
 import CardShare from '../../components/Verto/CardShare'
 import CardCreateProposal from '../../components/Verto/CardCreateProposal'
 import CardRefer from '../../components/Verto/CardRefer'
@@ -103,6 +109,7 @@ export default {
   },
   data () {
     return {
+      osName: '',
       fromCoin: null,
       toCoin: null,
       progress: 0.2,
@@ -140,6 +147,9 @@ export default {
       configPath: ''
     }
   },
+  created () {
+    this.osName = osName
+  },
   mounted () {
     this.version = version
     this.setupPlatformPath()
@@ -170,6 +180,30 @@ export default {
 </script>
 <style lang="scss" scoped>
   @import "~@/assets/styles/variables.scss";
+  /deep/ .wallets-wrapper{
+    padding-bottom: 0px !important;
+  }
+  /deep/ .wallets-wrapper--list{
+    box-shadow: none;
+    margin-top: 0px;
+  }
+  .marg{
+    /deep/ .profile-wrapper{
+      &--header{
+        margin-bottom: 0px;
+      }
+    }
+  }
+  .desktop-version{
+    background: #E7E8E8;
+    padding-top: 13vh;
+    padding-left: 12vh;
+    padding-bottom: 50px;
+    padding-right: 2%;
+  }
+  .desktop-card-style{
+    height: 100%;
+  }
   .standard-content{
     padding: 5% 10%;
     display: flex;

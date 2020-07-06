@@ -1,131 +1,271 @@
 <template>
-  <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px;background: #f3f3f3 !important">
-        <div class="chain-tools-wrapper">
-            <div class="standard-content">
-                <h2 class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" to="/verto/profile" text-color="black" icon="keyboard_backspace" />
-                     {{ $t('ChangeVertoPassword.header') }}
-                </h2>
-                <div class="privatekey_bg flex flex-center"><img src="statics/password_picto.svg" alt=""></div>
-            </div>
-            <div class="chain-tools-wrapper--list open">
-                <div class="list-wrapper">
-                    <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                        <q-stepper v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
-                            <!--
-                                1. Current Password
-                            -->
-                            <q-step title="Current Password" :name="1" prefix="1" :done="step > 1">
-                                <q-input
-                                    v-model="passwords.current"
-                                    light
-                                    debounce="500"
-                                    rounded outlined color="purple"
-                                    @input="checkCurrent"
-                                    @keyup.enter="showNewPassword"
-                                    :label="$t('ChangeVertoPassword.current')"
-                                    :type="isPwd ? 'password' : 'text'"
-                                >
-                                    <template v-slot:append>
-                                        <q-icon
-                                        :name="isPwd ? 'visibility_off' : 'visibility'"
-                                        class="cursor-pointer"
-                                        @click="isPwd = !isPwd"
-                                        />
-                                    </template>
-                                </q-input>
-                                <div v-show="errors.orgPasswordIncorrect" class="text-h6 text-uppercase text-red q-pa-md">
-                                    {{ $t('SaveToFile.password_incorrect') }}
+  <q-page class="column text-black bg-grey-12" :class="osName.toLowerCase() === 'windows' ? 'desktop-marg': 'mobile-pad'">
+    <div class="desktop-version" v-if="osName.toLowerCase() === 'windows'">
+      <div class="row">
+        <div class="col col-md-3">
+          <div class="wallets-container">
+            <profile-header :isMobile="false" class="marg" version="type2222" />
+            <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+            <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+          </div>
+        </div>
+        <div class="col col-md-9">
+          <div class="desktop-card-style apps-section q-mb-sm">
+            <div class="chain-tools-wrapper">
+              <div class="standard-content">
+                  <h2 class="standard-content--title flex justify-start">{{ $t('ChangeVertoPassword.header') }}</h2>
+                  <div class="privatekey_bg flex flex-center"><img src="statics/password_picto.svg" alt=""></div>
+              </div>
+              <div class="chain-tools-wrapper--list open">
+                  <div class="list-wrapper">
+                      <div class="list-wrapper--chain__eos-to-vtx-convertor">
+                          <q-stepper v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
+                              <!--
+                                  1. Current Password
+                              -->
+                              <q-step title="Current Password" :name="1" prefix="1" :done="step > 1">
+                                  <q-input
+                                      v-model="passwords.current"
+                                      light
+                                      debounce="500"
+                                      rounded outlined color="purple"
+                                      @input="checkCurrent"
+                                      @keyup.enter="showNewPassword"
+                                      :label="$t('ChangeVertoPassword.current')"
+                                      :type="isPwd ? 'password' : 'text'"
+                                  >
+                                      <template v-slot:append>
+                                          <q-icon
+                                          :name="isPwd ? 'visibility_off' : 'visibility'"
+                                          class="cursor-pointer"
+                                          @click="isPwd = !isPwd"
+                                          />
+                                      </template>
+                                  </q-input>
+                                  <div v-show="errors.orgPasswordIncorrect" class="text-h6 text-uppercase text-red q-pa-md">
+                                      {{ $t('SaveToFile.password_incorrect') }}
+                                  </div>
+                                  <q-stepper-navigation v-show="showSubmit.current" class="flex justify-end">
+                                      <q-btn @click="showNewPassword()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
+                                  </q-stepper-navigation>
+                              </q-step>
+                              <!--
+                                  2. New Password
+                              -->
+                              <q-step title="New Password" :name="2" prefix="2" :done="step > 2">
+                                  <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+                                  <div class="text-black">
+                                      <div class="text-h4 --subtitle">
+                                        <ul>
+                                            <li>
+                                                <span>
+                                                    <span v-show="!contains_long"><q-chip dense color="red" class="sm-circle shadow-1">&nbsp;</q-chip></span>
+                                                    <span v-show="contains_long"><q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip></span>
+                                                    Minimum of 8 characters
+                                                </span>
+                                            </li>
+                                            <!-- <li><span>0.35 EOS is required to be transferred to the new account</span></li> -->
+                                        </ul>
+                                      </div>
+                                      <span class="">
+                                          <q-input
+                                              light
+                                              debounce="500"
+                                              rounded outlined color="purple"
+                                              v-model="passwords.new"
+                                              @input="passwordCheck"
+                                              :label="$t('ChangeVertoPassword.new')"
+                                              @keyup.enter="gotoConfirmScreen"
+                                              ref="passwordInput"
+                                              :type="isPwd ? 'password' : 'text'"
+                                          >
+                                              <template v-slot:append>
+                                                  <q-icon
+                                                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                                                  class="cursor-pointer"
+                                                  @click="isPwd = !isPwd"
+                                                  />
+                                              </template>
+                                          </q-input>
+                                      </span>
+                                  </div>
+                                  <q-stepper-navigation v-show="showSubmit.new" class="flex justify-end">
+                                      <q-btn @click="gotoConfirmScreen()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                                  </q-stepper-navigation>
+                              </q-step>
+                              <!--
+                                  3. Confirm Password
+                              -->
+                              <q-step title="Confirm Password" :name="3" prefix="3" :done="step > 3">
+                                  <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+                                  <q-input
+                                      v-model="passwords.confirm"
+                                      light
+                                      debounce="500"
+                                      rounded outlined color="purple"
+                                      @input="checkConfirm"
+                                      @keyup.enter="submit"
+                                      :label="$t('ChangeVertoPassword.confirm')"
+                                      :type="isPwd ? 'password' : 'text'"
+                                  >
+                                      <template v-slot:append>
+                                          <q-icon
+                                          :name="isPwd ? 'visibility_off' : 'visibility'"
+                                          class="cursor-pointer"
+                                          @click="isPwd = !isPwd"
+                                          />
+                                      </template>
+                                  </q-input>
+                                  <q-inner-loading :visible="progress" />
+                                  <q-stepper-navigation v-show="showSubmit.confirm" class="flex justify-end">
+                                      <q-btn @click="submit()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
+                                  </q-stepper-navigation>
+                              </q-step>
+                          </q-stepper>
+                      </div>
+                      <br><br><br>
+                  </div>
+              </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else class="chain-tools-wrapper">
+        <div class="standard-content">
+            <h2 class="standard-content--title flex justify-center">
+                <q-btn flat unelevated class="btn-align-left" to="/verto/profile" text-color="black" icon="keyboard_backspace" />
+                  {{ $t('ChangeVertoPassword.header') }}
+            </h2>
+            <div class="privatekey_bg flex flex-center"><img src="statics/password_picto.svg" alt=""></div>
+        </div>
+        <div class="chain-tools-wrapper--list open">
+            <div class="list-wrapper">
+                <div class="list-wrapper--chain__eos-to-vtx-convertor">
+                    <q-stepper v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
+                        <!--
+                            1. Current Password
+                        -->
+                        <q-step title="Current Password" :name="1" prefix="1" :done="step > 1">
+                            <q-input
+                                v-model="passwords.current"
+                                light
+                                debounce="500"
+                                rounded outlined color="purple"
+                                @input="checkCurrent"
+                                @keyup.enter="showNewPassword"
+                                :label="$t('ChangeVertoPassword.current')"
+                                :type="isPwd ? 'password' : 'text'"
+                            >
+                                <template v-slot:append>
+                                    <q-icon
+                                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                                    class="cursor-pointer"
+                                    @click="isPwd = !isPwd"
+                                    />
+                                </template>
+                            </q-input>
+                            <div v-show="errors.orgPasswordIncorrect" class="text-h6 text-uppercase text-red q-pa-md">
+                                {{ $t('SaveToFile.password_incorrect') }}
+                            </div>
+                            <q-stepper-navigation v-show="showSubmit.current" class="flex justify-end">
+                                <q-btn @click="showNewPassword()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
+                            </q-stepper-navigation>
+                        </q-step>
+                        <!--
+                            2. New Password
+                        -->
+                        <q-step title="New Password" :name="2" prefix="2" :done="step > 2">
+                            <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+                            <div class="text-black">
+                                <div class="text-h4 --subtitle">
+                                  <ul>
+                                      <li>
+                                          <span>
+                                              <span v-show="!contains_long"><q-chip dense color="red" class="sm-circle shadow-1">&nbsp;</q-chip></span>
+                                              <span v-show="contains_long"><q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip></span>
+                                              Minimum of 8 characters
+                                          </span>
+                                      </li>
+                                      <!-- <li><span>0.35 EOS is required to be transferred to the new account</span></li> -->
+                                  </ul>
                                 </div>
-                                <q-stepper-navigation v-show="showSubmit.current" class="flex justify-end">
-                                    <q-btn @click="showNewPassword()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
-                                </q-stepper-navigation>
-                            </q-step>
-                            <!--
-                                2. New Password
-                            -->
-                            <q-step title="New Password" :name="2" prefix="2" :done="step > 2">
-                                <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
-                                <div class="text-black">
-                                    <div class="text-h4 --subtitle">
-                                      <ul>
-                                          <li>
-                                              <span>
-                                                  <span v-show="!contains_long"><q-chip dense color="red" class="sm-circle shadow-1">&nbsp;</q-chip></span>
-                                                  <span v-show="contains_long"><q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip></span>
-                                                  Minimum of 8 characters
-                                              </span>
-                                          </li>
-                                          <!-- <li><span>0.35 EOS is required to be transferred to the new account</span></li> -->
-                                      </ul>
-                                    </div>
-                                    <span class="">
-                                        <q-input
-                                            light
-                                            debounce="500"
-                                            rounded outlined color="purple"
-                                            v-model="passwords.new"
-                                            @input="passwordCheck"
-                                            :label="$t('ChangeVertoPassword.new')"
-                                            @keyup.enter="gotoConfirmScreen"
-                                            ref="passwordInput"
-                                            :type="isPwd ? 'password' : 'text'"
-                                        >
-                                            <template v-slot:append>
-                                                <q-icon
-                                                :name="isPwd ? 'visibility_off' : 'visibility'"
-                                                class="cursor-pointer"
-                                                @click="isPwd = !isPwd"
-                                                />
-                                            </template>
-                                        </q-input>
-                                    </span>
-                                </div>
-                                <q-stepper-navigation v-show="showSubmit.new" class="flex justify-end">
-                                    <q-btn @click="gotoConfirmScreen()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
-                                </q-stepper-navigation>
-                            </q-step>
-                            <!--
-                                3. Confirm Password
-                            -->
-                            <q-step title="Confirm Password" :name="3" prefix="3" :done="step > 3">
-                                <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
-                                <q-input
-                                    v-model="passwords.confirm"
-                                    light
-                                    debounce="500"
-                                    rounded outlined color="purple"
-                                    @input="checkConfirm"
-                                    @keyup.enter="submit"
-                                    :label="$t('ChangeVertoPassword.confirm')"
-                                    :type="isPwd ? 'password' : 'text'"
-                                >
-                                    <template v-slot:append>
-                                        <q-icon
-                                        :name="isPwd ? 'visibility_off' : 'visibility'"
-                                        class="cursor-pointer"
-                                        @click="isPwd = !isPwd"
-                                        />
-                                    </template>
-                                </q-input>
-                                <q-inner-loading :visible="progress" />
-                                <q-stepper-navigation v-show="showSubmit.confirm" class="flex justify-end">
-                                    <q-btn @click="submit()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
-                                </q-stepper-navigation>
-                            </q-step>
-                        </q-stepper>
-                    </div>
-                    <br><br><br>
+                                <span class="">
+                                    <q-input
+                                        light
+                                        debounce="500"
+                                        rounded outlined color="purple"
+                                        v-model="passwords.new"
+                                        @input="passwordCheck"
+                                        :label="$t('ChangeVertoPassword.new')"
+                                        @keyup.enter="gotoConfirmScreen"
+                                        ref="passwordInput"
+                                        :type="isPwd ? 'password' : 'text'"
+                                    >
+                                        <template v-slot:append>
+                                            <q-icon
+                                            :name="isPwd ? 'visibility_off' : 'visibility'"
+                                            class="cursor-pointer"
+                                            @click="isPwd = !isPwd"
+                                            />
+                                        </template>
+                                    </q-input>
+                                </span>
+                            </div>
+                            <q-stepper-navigation v-show="showSubmit.new" class="flex justify-end">
+                                <q-btn @click="gotoConfirmScreen()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                            </q-stepper-navigation>
+                        </q-step>
+                        <!--
+                            3. Confirm Password
+                        -->
+                        <q-step title="Confirm Password" :name="3" prefix="3" :done="step > 3">
+                            <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+                            <q-input
+                                v-model="passwords.confirm"
+                                light
+                                debounce="500"
+                                rounded outlined color="purple"
+                                @input="checkConfirm"
+                                @keyup.enter="submit"
+                                :label="$t('ChangeVertoPassword.confirm')"
+                                :type="isPwd ? 'password' : 'text'"
+                            >
+                                <template v-slot:append>
+                                    <q-icon
+                                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                                    class="cursor-pointer"
+                                    @click="isPwd = !isPwd"
+                                    />
+                                </template>
+                            </q-input>
+                            <q-inner-loading :visible="progress" />
+                            <q-stepper-navigation v-show="showSubmit.confirm" class="flex justify-end">
+                                <q-btn @click="submit()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
+                            </q-stepper-navigation>
+                        </q-step>
+                    </q-stepper>
                 </div>
+                <br><br><br>
             </div>
         </div>
-    </q-page>
+    </div>
+  </q-page>
 </template>
 
 <script>
+import { osName } from 'mobile-device-detect'
+import Wallets from '../../components/Verto/Wallets'
+import ProfileHeader from '../../components/Verto/ProfileHeader'
 export default {
+  components: {
+    // desktop components
+    ProfileHeader,
+    Wallets
+  },
   data () {
     return {
+      osName: '',
       step: 1,
       isPwd: true,
       passwords: {
@@ -151,6 +291,9 @@ export default {
       newPasswordNull: false,
       newPasswordDontMatch: false
     }
+  },
+  created () {
+    this.osName = osName
   },
   methods: {
     checkCurrent () {
@@ -229,9 +372,54 @@ export default {
 
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
+  /deep/ .wallets-wrapper{
+    padding-bottom: 0px !important;
+  }
+  /deep/ .wallets-wrapper--list{
+    box-shadow: none;
+    margin-top: 0px;
+  }
+  .marg{
+    /deep/ .profile-wrapper{
+      &--header{
+        margin-bottom: 0px;
+      }
+    }
+  }
+  .mobile-pad{
+    padding-bottom: 50px
+  }
+  .desktop-version{
+    background: #E7E8E8;
+    padding-top: 13vh;
+    padding-left: 12vh;
+    padding-bottom: 50px;
+    padding-right: 2%;
+  }
+  .desktop-card-style{
+    height: 100%;
+  }
+  .standard-content{
+    @media screen and (min-width: 768px) {
+      padding-left: 2% !important;
+      padding-right: 2% !important;
+    }
+    &--title{
+      @media screen and (min-width: 768px) {
+        margin-top: -40px !important;
+        font-size: 25px !important;
+      }
+    }
+  }
   .chain-tools-wrapper{
     // padding: 0px 6%;
     &--list{
+      &.open{
+        @media screen and (min-width: 768px) {
+          padding-left: 0% !important;
+          padding-right: 0% !important;
+        }
+      }
       &__hide-chain-tools{
         text-transform: initial !important;
         margin-top: 0px;
@@ -316,6 +504,9 @@ export default {
             border-radius: 10px;
             padding: 1% 2%;
             box-shadow: 0px 4px 16px 0px rgba(black, .09);
+            @media screen and (min-width: 768px) {
+              box-shadow: none;
+            }
             &--title{
               font-size: 22px;
               font-family: $Titillium;
@@ -325,6 +516,10 @@ export default {
               padding-left: 22px;
               margin-top: 3px;
               position: relative;
+              @media screen and (min-width: 768px) {
+                margin-top: -20px;
+                font-size: 25px;
+              }
             }
             /deep/ .q-stepper__step{
               position: relative;
