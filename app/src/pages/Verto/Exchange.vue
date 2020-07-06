@@ -730,6 +730,7 @@ export default {
   },
   async created () {
     // console.log('created - created - created - created')
+    // console.log('this.$route.params', this.$route.params.coin)
     this.params = this.$store.state.currentwallet.params
     this.tableData = await this.$store.state.wallets.tokens
     let self = this
@@ -926,6 +927,18 @@ export default {
       self.depositCoinUnfilter = self.depositCoinOptions
       // console.log('depositCoinOptions', self.depositCoinOptions)
     })
+    if (this.$route.params.coin !== undefined) {
+      this.depositCoin = {
+        image: '',
+        label: '',
+        value: this.$route.params.coin
+      }
+      this.step = 2
+      this.checkGetPairs()
+      this.checkToGetPairs()
+      console.log('this.step', this.step)
+      // console.log('this.$route.params', this.$route.params.coin)
+    }
   },
   methods: {
     copyToClipboard (key, copied) {

@@ -5,6 +5,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'App',
   computed: {
@@ -20,7 +21,9 @@ body {
   font-family: Tittilium;
   background: black;
 }
-::-webkit-scrollbar { display: none; }
+@media screen and (max-width: 768px) {
+  ::-webkit-scrollbar { display: none; }
+}
 .modal-content {
   background: black;
   border: 0.1rem solid white;

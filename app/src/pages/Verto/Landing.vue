@@ -6,9 +6,8 @@
         leave-active-class="animated fadeOut"
       >
         <h2 class="landing--title">
-          <strong>VERTO</strong> Wallet
+          <strong>VERTO</strong> <b class="version">{{ version }}</b>
           <span>Multi-Currency wallet</span>
-          <b class="version">{{ version }}</b>
           <img src="statics/picto_verto.svg" alt="">
         </h2>
       </transition>
@@ -46,7 +45,7 @@
         <span></span>
       </div>
       <div class="landing--volentix-logo">
-          <img src="statics/vtx_black.svg" class="svg" />
+          <a href="https://www.volentix.io" target="_blank"><img src="statics/vtx_black.svg" class="svg" /></a>
       </div>
       <span class="landing--bottom-bar"></span>
     </div>
@@ -181,11 +180,12 @@ export default {
         opacity: .6;
       }
       b.version{
-        position: absolute;
-        right: 0px;
-        bottom: -26px;
+        // position: absolute;
+        // right: 0px;
+        // bottom: -26px;
         font-weight: $regular;
         font-size: 15px;
+        margin-left: 10px;
       }
       span{
         font-size: 20px;
