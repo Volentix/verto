@@ -1,5 +1,5 @@
 <template>
-  <q-page class="text-black bg-white">
+  <q-page class="text-black bg-white" :class="osName.toLowerCase() === 'windows' ? 'desktop-marg': 'mobile-pad'">
     <div v-if="getPassword" class="send-modal flex flex-center" :class="{'open' : openModal}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
@@ -100,7 +100,84 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <div class="standard-content">
+
+    <div class="desktop-version" v-if="osName.toLowerCase() === 'windows'">
+      <div class="row">
+        <div class="col col-md-3">
+          <div class="wallets-container">
+            <profile-header :isMobile="false" class="marg" version="type2222" />
+            <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+            <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+          </div>
+        </div>
+        <div class="col col-md-9">
+          <div class="desktop-card-style apps-section q-mb-sm">
+            <div class="standard-content">
+              <h2 class="standard-content--title flex justify-start">Send </h2>
+              <div class="standard-content--body">
+                <div class="standard-content--body__form">
+                  <div class="row">
+                    <div class="col col-8 q-pr-lg">
+                      <span class="lab-input">From</span>
+                      <q-input v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? 'Current ' + currentAccount.type.toUpperCase() + ' Address' : 'Current ' + currentAccount.type.toUpperCase() + ' Account'">
+                        <template v-slot:append>
+                          <div class="flex justify-end">
+                            <q-btn flat unelevated text-color="grey" @click="copyToClipboard(from , 'Address')" round class="btn-copy" icon="o_file_copy" />
+                          </div>
+                        </template>
+                      </q-input>
+                    </div>
+                    <div class="col col-4">
+                      <span class="lab-input">Amount</span>
+                      <q-input v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
+                        <template v-slot:append>
+                          <div class="flex justify-end">
+                            <span class="tokenID">{{ params.tokenID }}</span>
+                            <q-btn color="white" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat text-color="black" label="Max" />
+                          </div>
+                        </template>
+                      </q-input>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col col-12">
+                      <span class="lab-input">To</span>
+                      <q-input
+                        ref="sendTo"
+                        v-model="sendTo"
+                        @input="checkTo()"
+                        class="input-input pr80" outlined rounded color="purple"
+                        type="text"
+                        bottom-slots
+                        :error="toError"
+                        :error-message="toErrorMessage"
+                        :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? currentAccount.type.toUpperCase() + ' Address' : 'Account name'"
+                      >
+                        <template v-slot:append>
+                          <div class="flex justify-end">
+                            <!-- <q-btn flat unelevated round class="btn-copy"><span class="qr-btn"><img src="statics/qr-icon.png" alt=""></span> </q-btn> -->
+                            <q-btn flat unelevated @click="copyToClipboard(sendTo , 'Address')" text-color="grey" round class="btn-copy" icon="o_file_copy" />
+                          </div>
+                        </template>
+                      </q-input>
+                    </div>
+                    <div class="col col-12">
+                      <span class="lab-input">Memo</span>
+                      <q-input ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+                    </div>
+                  </div>
+                </div>
+                <br>
+              </div>
+              <div class="standard-content--footer">
+                <q-btn flat class="action-link next" color="black" @click="openModalFun()" text-color="white" :disable="!sendToResolved" label="Transfer" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else class="standard-content">
       <h2 class="standard-content--title flex justify-center"><q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" /> Send </h2>
       <div class="standard-content--body">
         <div class="standard-content--body__form">
@@ -165,15 +242,21 @@
 import { CruxPay } from '@cruxpay/js-sdk'
 import HD from '@/util/hdwallet'
 import Lib from '@/util/walletlib'
+import { osName } from 'mobile-device-detect'
+import Wallets from '../../components/Verto/Wallets'
+import ProfileHeader from '../../components/Verto/ProfileHeader'
 
 let cruxClient
 
 export default {
   components: {
-    // RadialProgressBar
+    // desktop components
+    ProfileHeader,
+    Wallets
   },
   data () {
     return {
+      osName: '',
       progressValue: 20,
       openModal: false,
       openModalProgress: false,
@@ -227,7 +310,10 @@ export default {
     }
   },
   async created () {
+    this.osName = osName
+    console.log('this.osName', this.osName)
     this.params = this.$store.state.currentwallet.params
+    console.log('this.params', this.params)
     this.tableData = await this.$store.state.wallets.tokens
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
@@ -396,6 +482,30 @@ export default {
 </script>
 <style lang="scss" scoped>
   @import "~@/assets/styles/variables.scss";
+  /deep/ .wallets-wrapper{
+    padding-bottom: 0px !important;
+  }
+  /deep/ .wallets-wrapper--list{
+    box-shadow: none;
+    margin-top: 0px;
+  }
+  .marg{
+    /deep/ .profile-wrapper{
+      &--header{
+        margin-bottom: 0px;
+      }
+    }
+  }
+  .desktop-version{
+    background: #E7E8E8;
+    padding-top: 13vh;
+    padding-left: 12vh;
+    padding-bottom: 50px;
+    padding-right: 2%;
+  }
+  .desktop-card-style{
+    height: 100%;
+  }
   .standard-content{
     padding: 5% 10%;
     display: flex;
@@ -403,6 +513,13 @@ export default {
     justify-content: space-between;
     min-height: 100vh !important;
     padding-bottom: 100px;
+    @media screen and (min-width: 768px) {
+      padding: 2%;
+      flex-direction: column;
+      justify-content: flex-start;
+      min-height: unset !important;
+      padding-bottom: 20px;
+    }
     &--title{
       font-size: 35px;
       font-weight: $bold;
@@ -411,6 +528,10 @@ export default {
       font-family: $Titillium;
       margin-top: 0px;
       margin-bottom: 0px;
+      @media screen and (min-width: 768px) {
+        margin-top: -20px;
+        font-size: 25px;
+      }
       .btn-align-left{
         position: absolute;
         left: -15px;

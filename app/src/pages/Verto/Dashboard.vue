@@ -15,19 +15,10 @@
           <chainToolsSection />
           <transactionsSection />
           <venueSection />
-          <!-- <img src="statics/prototype_screens/apps.jpg" alt=""> -->
-          <!-- <img src="statics/prototype_screens/start_node.jpg" alt=""> -->
-          <!-- <img src="statics/prototype_screens/chain_tools.jpg" alt=""> -->
-          <!-- <img src="statics/prototype_screens/transactions.jpg" alt=""> -->
-          <!-- <img src="statics/prototype_screens/venue.jpg" alt=""> -->
         </div>
         <div class="col q-pl-sm q-pr-md col-md-3">
           <makeVTXSection />
           <ExchangeSection />
-          <!-- <vespucciRatingSection /> -->
-          <!-- <img src="statics/prototype_screens/vespucci.jpg" class="q-ml-lg" alt=""> -->
-          <!-- <img src="statics/prototype_screens/make_VTX.jpg" class="full-width" alt=""> -->
-          <!-- <img src="statics/prototype_screens/convert_any.jpg" class="full-width" alt=""> -->
         </div>
       </div>
     </div>
@@ -116,8 +107,8 @@ export default {
   async created () {
     // Check if mnemonic exists
     this.osName = osName
-    console.log('this.osName', this.osName)
-    console.log('store.state.currentwallet.config', store.state.currentwallet.config)
+    // console.log('this.osName', this.osName)
+    // console.log('store.state.currentwallet.config', store.state.currentwallet.config)
     if (!store.state.currentwallet.config.mnemonic) {
       this.$router.push('recovery-seed')
     } else {
