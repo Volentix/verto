@@ -63,6 +63,7 @@
     "bn": "^1.0.5",
     "clipboard-polyfill": "^2.8.0",
     "conseiljs": "^0.3.1",
+    "conseiljs-softsigner": "^5.0.0-alpha.0",
     "electron-log": "^3.0.5",
     "electron-updater": "^4.0.6",
     "elliptic": "^6.5.2",
@@ -128,6 +129,7 @@
     "last 1 version, not dead, ie >= 11"
   ],
   "resolutions": {
+    "bitcore-lib/**/bn.js": "=2.0.4",
     "ajv": "6.8.1"
   }
 }
