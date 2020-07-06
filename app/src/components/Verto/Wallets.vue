@@ -290,6 +290,12 @@ export default {
           tokenID: this.selectedCoin.type,
           accountName: this.selectedCoin.name
         })
+        this.$store.commit('currentwallet/updateParams', {
+          chainID: this.$route.params.chainID,
+          tokenID: this.$route.params.tokenID,
+          accountName: this.$route.params.accountName
+        })
+        this.$store.state.currentwallet.wallet = this.currentAccount
       } else {
         menu.selected = false
       }
