@@ -67,7 +67,7 @@
       </div>
     </div>
     <div v-else-if="version === 'type6'" class="profile-wrapper--header static" style="background: url(statics/refer_friend_bg.png) center bottom / cover no-repeat rgb(255, 255, 255) !important; min-height: 390px; box-shadow: none !important; border-radius: 0px;" />
-    <div v-else class="column flex-center profile-wrapper--header" style="background: url('statics/header_bg.png');">
+    <div v-else class="column flex-center profile-wrapper--header" :class="{'desktop-ui' : !isMobile}" style="background: url('statics/header_bg.png');">
       <h3 class="profile-wrapper--header__title text-white">Total Balance</h3>
       <h2 class="profile-wrapper--header__balance text-white">${{ new Number(totalBalance).toFixed(2) }} USD</h2>
       <div class="profile-wrapper--header__action">
@@ -111,6 +111,11 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    isMobile: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data () {
@@ -186,6 +191,28 @@ export default {
       overflow: hidden;
       border-radius: 0px 0px 20px 20px;
       padding-bottom: 20px;
+      position: relative;
+      z-index: 3;
+      &.desktop-ui{
+        border-radius: 10px;
+        height: 200px;
+        margin-right: 10px;
+        .profile-wrapper--header{
+          &__title{
+            color: #EDEDED !important;
+            font-size: 14px;
+          }
+          &__balance{
+            font-size: 32px;
+          }
+          &__action-btn{
+            margin-bottom: -20px;
+            margin-top: 10px;
+            font-size: 14px;
+            height: 36px;
+          }
+        }
+      }
       &.wallets{
         .btn-align-left{
           position: absolute;
