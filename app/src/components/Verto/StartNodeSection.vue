@@ -1,6 +1,9 @@
 <template>
   <div class="desktop-card-style apps-section q-mb-sm">
-    <div class="row flex justify-between q-pt-sm q-pb-sm">
+    <div v-if="banner === 1" class="banner-wrapper">
+      <img src="statics/node-banners/ban1.png" class="full-width scale3d" alt="">
+    </div>
+    <div v-else class="row flex justify-between q-pt-sm q-pb-sm">
       <div class="col col-6 flex items-center node-icon"><q-icon name="apps" />VDEX node</div>
       <div class="col col-6 flex items-center justify-end start_node q-pr-sm">
         <strong>Start Your Node</strong>
@@ -12,6 +15,7 @@
 
 <script>
 export default {
+  props: ['banner'],
   name: 'StartNodeSection',
   data () {
     return {
@@ -66,5 +70,15 @@ export default {
         }
       }
     }
+  }
+  .scale3d{
+    transform: scale3d(1,1,1);
+  }
+  .banner-wrapper{
+    margin-left: -8px;
+    margin-right: -8px;
+    margin-top: -8px;
+    margin-bottom: -11px;
+    cursor: pointer;
   }
 </style>

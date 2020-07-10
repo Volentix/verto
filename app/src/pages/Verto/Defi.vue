@@ -1,237 +1,127 @@
 <template>
   <q-page class="text-black bg-white" :class="osName.toLowerCase() === 'windows' ? 'desktop-marg': 'mobile-pad'">
-    <div v-if="getPassword" class="send-modal flex flex-center" :class="{'open' : openModal}">
-      <div class="send-modal__content column flex-center">
-        <div class="send-modal__content--head">
-          <span class="text-h5 --amount">Private key password</span>
-          <q-btn color="white" rounded flat unelevated @click="hideModalFun()" class="close-btn" text-color="black" label="+" />
-        </div>
-        <div class="send-modal__content--body column flex-center full-width">
-          <q-input
-            v-model="privateKeyPassword"
-            light
-            rounded
-            outlined
-            class="full-width"
-            color="green"
-            label="Private Key Password"
-            @input="checkPrivateKeyPassword"
-            debounce="500"
-            @keyup.enter="toSummary"
-            :type="isPwd ? 'password' : 'text'"
-            :error="invalidPrivateKeyPassword"
-            error-message="The private key password is invalid"
-          >
-            <template v-slot:append>
-              <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-          </q-input>
-
-          <div class="flex justify-start full-width">
-            <q-btn @click="openModal = false" unelevated color="grey" class="--next-btn mr10" rounded label="Cancel" />
-            <q-btn @click="toSummary()" unelevated color="deep-purple-14" class="--next-btn" rounded label="Submit transaction" />
-          </div>
-
-        </div>
-        <div class="send-modal__content--footer">
-          <div class="text-h4 --error">{{ ErrorMessage }}</div>
-        </div>
-      </div>
-    </div>
-    <div class="send-modal flex flex-center" :class="{'open' : openModalProgress}">
-      <div class="send-modal__content column flex-center">
-        <div class="send-modal__content--head">
-          <span class="text-h5 --amount">{{sendAmount + ' ' + currentAccount.type.toUpperCase()}}</span>
-          <q-btn color="white" rounded flat unelevated @click="hideModalFun()" class="close-btn" text-color="black" label="+" />
-        </div>
-        <div class="send-modal__content--body column flex-center">
-          <q-circular-progress
-              indeterminate
-              :value="progressValue"
-              size="100px"
-              :thickness="0.05"
-              color="cyan-5"
-              track-color="grey-3"
-              class="q-ma-md" />
-          <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58"><path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path></svg>
-          <div class="--label text-cyan-5 text-h6">{{transStatus}}</div>
-        </div>
-        <div class="send-modal__content--footer">
-          <div class="text-h4 --email">To {{sendTo}}</div>
-        </div>
-      </div>
-    </div>
-    <q-dialog v-model="transSuccessDialog">
-      <q-card class="q-pa-lg" style="width: 700px; max-width: 90vw;">
-        <q-toolbar>
-          <q-avatar><q-icon name="done_all" size="md" color="green" /></q-avatar>
-          <q-toolbar-title><span class="text-weight-bold">Success</span></q-toolbar-title>
-          <q-btn flat round dense icon="close" v-close-popup />
-        </q-toolbar>
-        <q-card-section class="text-h6">
-          <div class="text-h6 q-mb-md q-pl-sm">Transaction done Successfully.</div>
-          <q-input readonly class="input-input" rounded outlined color="purple" v-model="transactionLink">
-            <template v-slot:append>
-              <div class="flex justify-end">
-                <q-btn flat unelevated @click="copyToClipboard(transactionLink , 'Transaction link')" text-color="grey" round class="btn-copy" icon="o_file_copy" />
-              </div>
-            </template>
-          </q-input>
-        </q-card-section>
-        <q-card-actions align="right" class="q-pr-sm">
-          <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-    <q-dialog v-model="transErrorDialog">
-      <q-card class="q-pa-lg">
-        <q-toolbar>
-          <q-avatar><q-icon name="error_outline" size="md" color="red" /></q-avatar>
-          <q-toolbar-title><span class="text-weight-bold">Error</span></q-toolbar-title>
-          <q-btn flat round dense icon="close" v-close-popup />
-        </q-toolbar>
-        <q-card-section class="text-h6">{{ErrorMessage}}</q-card-section>
-        <q-card-actions align="right" class="q-pr-sm">
-          <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
     <div class="desktop-version" v-if="osName.toLowerCase() === 'windows'">
       <div class="row">
-        <div class="col col-md-3">
-          <div class="wallets-container">
-            <profile-header :isMobile="false" class="marg" version="type2222" />
-            <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
-            <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+        <div class="col-12 col-title">
+          <h4>Liquidity pool</h4>
+        </div>
+        <div class="col col-12">
+          <div class="desktop-card-style current-investments explore-opportunities">
+            <h4 class="q-pl-md">Explore Opportunities</h4>
+            <div class="header-table-col row q-pl-md">
+              <div class="col-1"><h3>#</h3></div>
+              <div class="col-3"><h3>Available pools</h3></div>
+              <div class="col-2"><h3>Liquidity</h3></div>
+              <div class="col-2"><h3>Net ROI(1mo)</h3></div>
+              <div class="col-2"><h3>Net ROI(1mo)</h3></div>
+              <div class="col-2"></div>
+            </div>
+            <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 350px;">
+              <div v-for="i in 10" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+                <div class="col-1 flex items-center">
+                  <strong>{{i}}</strong>
+                </div>
+                <div class="col-3 flex items-center">
+                  <span class="imgs q-mr-lg">
+                    <img src="statics/coins_icons/eth2.png" alt="">
+                    <img src="statics/coins_icons/bat.png" alt="">
+                  </span>
+                  <span class="column pairs">
+                    <span class="pair">ETH / BAT</span>
+                    <span class="value">Uniswap V1</span>
+                  </span>
+                </div>
+                <div class="col-2 q-pl-sm">
+                  <span class="column pairs">
+                    <span class="pair">$10,918,987</span>
+                  </span>
+                </div>
+                <div class="col-2 q-pl-md">
+                  <span class="column pairs">
+                    <span class="value">N/A</span>
+                  </span>
+                </div>
+                <div class="col-2 q-pl-lg">
+                  <span class="column pairs">
+                    <span class="value">N/A</span>
+                  </span>
+                </div>
+                <div class="col-2 flex justify-end">
+                  <q-btn unelevated @click="openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
+                </div>
+              </div>
+            </q-scroll-area>
           </div>
         </div>
-        <div class="col col-md-9">
-          <div class="desktop-card-style apps-section q-mb-sm">
-            <div class="standard-content">
-              <h2 class="standard-content--title flex justify-start">Send </h2>
-              <div class="standard-content--body">
-                <div class="standard-content--body__form">
-                  <div class="row">
-                    <div class="col col-8 q-pr-lg">
-                      <span class="lab-input">From</span>
-                      <q-input v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? 'Current ' + currentAccount.type.toUpperCase() + ' Address' : 'Current ' + currentAccount.type.toUpperCase() + ' Account'">
-                        <template v-slot:append>
-                          <div class="flex justify-end">
-                            <q-btn flat unelevated text-color="grey" @click="copyToClipboard(from , 'Address')" round class="btn-copy" icon="o_file_copy" />
-                          </div>
-                        </template>
-                      </q-input>
-                    </div>
-                    <div class="col col-4">
-                      <span class="lab-input">Amount</span>
-                      <q-input v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
-                        <template v-slot:append>
-                          <div class="flex justify-end">
-                            <span class="tokenID">{{ params.tokenID }}</span>
-                            <q-btn color="white" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat text-color="black" label="Max" />
-                          </div>
-                        </template>
-                      </q-input>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col col-12">
-                      <span class="lab-input">To</span>
-                      <q-input
-                        ref="sendTo"
-                        v-model="sendTo"
-                        @input="checkTo()"
-                        class="input-input pr80" outlined rounded color="purple"
-                        type="text"
-                        bottom-slots
-                        :error="toError"
-                        :error-message="toErrorMessage"
-                        :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? currentAccount.type.toUpperCase() + ' Address' : 'Account name'"
-                      >
-                        <template v-slot:append>
-                          <div class="flex justify-end">
-                            <!-- <q-btn flat unelevated round class="btn-copy"><span class="qr-btn"><img src="statics/qr-icon.png" alt=""></span> </q-btn> -->
-                            <q-btn flat unelevated @click="copyToClipboard(sendTo , 'Address')" text-color="grey" round class="btn-copy" icon="o_file_copy" />
-                          </div>
-                        </template>
-                      </q-input>
-                    </div>
-                    <div class="col col-12">
-                      <span class="lab-input">Memo</span>
-                      <q-input ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
-                    </div>
-                  </div>
-                </div>
-                <br>
+        <div class="col col-md-5 q-pr-md">
+          <!-- <div class="desktop-card-style account-overview q-mb-sm">
+            <div class="row">
+              <div class="col-8">
+                <h4 class="q-pl-md">Account overview</h4>
+                <div class="q-pl-md">Total Assets : $343.3482</div>
+                <div class="q-pl-md">Net Worth : $343.3482</div>
               </div>
-              <div class="standard-content--footer">
-                <q-btn flat class="action-link next" color="black" @click="openModalFun()" text-color="white" :disable="!sendToResolved" label="Transfer" />
+              <div class="col-4">
+                <img src="statics/liquidity_pool.png" class="full-width q-pt-sm" alt="">
               </div>
             </div>
-          </div>
+          </div> -->
+          <!-- <div class="desktop-card-style wallet-snapshot q-mb-sm" style="background: url(statics/header_bg.png) no-repeat; background-position: 20% 72%; background-size: 100%;">
+            <div class="flex justify-between items-center q-pt-sm q-pb-sm">
+              <h3 class="text-white q-pl-md">Wallet Snapshot</h3>
+              <div class="text-white q-pr-md amount flex items-center">
+                <span class="vtx q-pr-md">425.17 VTX</span>
+                <span>28.35 USD</span>
+              </div>
+            </div>
+          </div> -->
+          <!-- <div class="desktop-card-style transaction-history q-mb-sm">
+            <h4 class="q-pl-md q-pt-md flex justify-between items-center">
+              Transaction History of pool
+              <q-btn unelevated class="qbtn-download q-mr-md" color="black" text-color="white" label="Download CSV" />
+            </h4>
+            <transactionsSection />
+          </div> -->
+        </div>
+        <div class="col col-md-7">
+          <!-- <div class="desktop-card-style current-investments q-mb-sm">
+            <h4 class="q-pl-md">Current Investments</h4>
+            <div class="header-table-col row q-pl-md">
+              <div class="col-3"><h3>Liquidity Pools</h3></div>
+              <div class="col-4"><h3>Value</h3></div>
+            </div>
+            <q-scroll-area :visible="true" class="q-pr-lg q-mb-md q-mr-sm" style="height: 200px;">
+              <div v-for="i in 10" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+                <div class="col-3 flex items-center">
+                  <span class="imgs q-mr-lg">
+                    <img src="statics/coins_icons/eth2.png" alt="">
+                    <img src="statics/coins_icons/bat.png" alt="">
+                  </span>
+                  <span class="column pairs">
+                    <span class="pair">ETH / BAT</span>
+                    <span class="value">Uniswap V1</span>
+                  </span>
+                </div>
+                <div class="col-5">
+                  <span class="column pairs">
+                    <span class="pair">ETH / BAT</span>
+                    <span class="value">0.12 ETH / 87.37 BAT</span>
+                  </span>
+                </div>
+                <div class="col-4 q">
+                  <q-btn unelevated class="qbtn-custom q-mr-sm" color="black" text-color="white" label="Rebalance" />
+                  <q-btn unelevated class="qbtn-custom q-mr-sm" color="black" text-color="white" label="Withdraw" />
+                  <q-btn unelevated class="qbtn-custom" color="black" text-color="white" label="Add" />
+                </div>
+              </div>
+            </q-scroll-area>
+          </div> -->
         </div>
       </div>
+      <AddLiquidityDialog :open="openDialog" />
     </div>
     <div v-else class="standard-content">
-      <h2 class="standard-content--title flex justify-center"><q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" /> Send </h2>
-      <div class="standard-content--body">
-        <div class="standard-content--body__form">
-          <span class="lab-input">From</span>
-          <q-input v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? 'Current ' + currentAccount.type.toUpperCase() + ' Address' : 'Current ' + currentAccount.type.toUpperCase() + ' Account'">
-            <template v-slot:append>
-              <div class="flex justify-end">
-                <q-btn flat unelevated text-color="grey" @click="copyToClipboard(from , 'Address')" round class="btn-copy" icon="o_file_copy" />
-              </div>
-            </template>
-          </q-input>
-          <span class="lab-input">Amount</span>
-          <q-input v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
-            <template v-slot:append>
-              <div class="flex justify-end">
-                <span class="tokenID">{{ params.tokenID }}</span>
-                <q-btn color="white" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat text-color="black" label="Max" />
-               </div>
-            </template>
-          </q-input>
-
-          <span class="lab-input">To</span>
-          <q-input
-            ref="sendTo"
-            v-model="sendTo"
-            @input="checkTo()"
-            class="input-input pr80" outlined rounded color="purple"
-            type="text"
-            bottom-slots
-            :error="toError"
-            :error-message="toErrorMessage"
-            :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? currentAccount.type.toUpperCase() + ' Address' : 'Account name'"
-          >
-            <template v-slot:append>
-              <div class="flex justify-end">
-                <!-- <q-btn flat unelevated round class="btn-copy"><span class="qr-btn"><img src="statics/qr-icon.png" alt=""></span> </q-btn> -->
-                <q-btn flat unelevated @click="copyToClipboard(sendTo , 'Address')" text-color="grey" round class="btn-copy" icon="o_file_copy" />
-              </div>
-            </template>
-          </q-input>
-
-          <span class="lab-input">Memo</span>
-          <q-input ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
-
-        </div>
-        <br>
-        <!-- <div class="total-fee flex justify-between">
-          <span class="label">Total Fee</span>
-          <span class="value">0.03254 {{ params.tokenID }}</span>
-        </div> -->
-      </div>
-      <div class="standard-content--footer">
-         <q-btn flat class="action-link next" color="black" @click="openModalFun()" text-color="white" :disable="!sendToResolved" label="Transfer" />
-      </div>
+      <h2 class="standard-content--title flex justify-center"><q-btn flat unelevated class="btn-align-left" text-color="black" icon="keyboard_backspace" /> Liquidity pool </h2>
     </div>
   </q-page>
 </template>
@@ -243,19 +133,21 @@ import { CruxPay } from '@cruxpay/js-sdk'
 import HD from '@/util/hdwallet'
 import Lib from '@/util/walletlib'
 import { osName } from 'mobile-device-detect'
-import Wallets from '../../components/Verto/Wallets'
-import ProfileHeader from '../../components/Verto/ProfileHeader'
+// import TransactionsSection from '../../components/Verto/TransactionsSection'
+import AddLiquidityDialog from '../../components/Verto/AddLiquidityDialog'
+import { QScrollArea } from 'quasar'
 
 let cruxClient
 
 export default {
   components: {
+    QScrollArea,
     // desktop components
-    ProfileHeader,
-    Wallets
+    AddLiquidityDialog
   },
   data () {
     return {
+      openDialog: false,
       osName: '',
       progressValue: 20,
       openModal: false,
@@ -308,6 +200,9 @@ export default {
         chain: ''
       }
     }
+  },
+  updated () {
+    console.log('openDialog', this.openDialog)
   },
   async created () {
     this.osName = osName
@@ -505,9 +400,132 @@ export default {
     padding-left: 12vh;
     padding-bottom: 50px;
     padding-right: 2%;
+    // height: fit-content;
   }
   .desktop-card-style{
-    height: 100%;
+    // height: 100%;
+    &.current-investments{
+      h4{
+        margin-bottom: -20px;
+      }
+      .header-table-col{
+        h3{
+          font-weight: $bold;
+          color: #7272FA;
+          font-size: 16px;
+        }
+      }
+      .body-table-col{
+        &:hover{
+          background-color: rgba(black, .01);
+        }
+        &.border{
+          border-bottom: 1px solid rgba(black, .04);
+        }
+        .pairs{
+          .pair{
+            font-weight: $bold;
+            color: #2A2A2A;
+            margin-bottom: -2px;
+          }
+          .value{
+            color: #627797;
+          }
+        }
+        .imgs{
+          margin-top: 5px;
+          img{
+            border-radius: 40px;
+            height: 25px;
+          }
+          &:first-child{
+            img{
+              margin-right: -10px;
+            }
+          }
+        }
+      }
+      .qbtn-custom{
+        border-radius: 30px;
+        height: 34px;
+        background: #EFF5F9 !important;
+        /deep/ .q-btn__wrapper{
+          min-height: unset;
+          padding: 0px 10px;
+          .q-btn__content{
+            text-transform: initial;
+            font-size: 14px;
+            color: #627797;
+          }
+        }
+      }
+    }
+    &.transaction-history{
+      h4{
+        margin-bottom: 0px;
+      }
+      .qbtn-download{
+        border-radius: 30px;
+        height: 34px;
+        background: #EFF5F9 !important;
+        /deep/ .q-btn__wrapper{
+          min-height: unset;
+          padding: 0px 10px;
+          .q-btn__content{
+            text-transform: initial;
+            font-size: 14px;
+            color: #627797;
+          }
+        }
+      }
+      /deep/ .transaction-section{
+        box-shadow: none;
+        .history-icon{
+          display: none;
+        }
+      }
+    }
+    &.wallet-snapshot{
+      h3{
+        font-size: 16px;
+        font-weight: $bold;
+        position: relative;
+        line-height: 40px;
+        font-family: $Titillium;
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+      .amount{
+        font-size: 16px;
+        font-weight: $bold;
+        position: relative;
+        line-height: 40px;
+        font-family: $Titillium;
+        .vtx{
+          font-size: 20px;
+        }
+      }
+    }
+    h4{
+      font-size: 16px;
+      font-weight: $bold;
+      position: relative;
+      line-height: 40px;
+      font-family: $Titillium;
+      margin-top: 0px;
+      margin-bottom: 20px;
+    }
+  }
+  .col-title{
+    h4{
+      font-size: 22px;
+      font-weight: $bold;
+      position: relative;
+      line-height: 50px;
+      font-family: $Titillium;
+      margin-top: -10px;
+      margin-bottom: 10px;
+    }
   }
   .standard-content{
     padding: 5% 10%;
