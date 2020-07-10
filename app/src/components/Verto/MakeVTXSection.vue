@@ -2,11 +2,12 @@
   <div class="desktop-card-style make-vtx q-mb-sm">
     <div class="row flex justify-between q-pb-lg q-pt-lg">
       <div class="col col-4 flex items-center"><img src="statics/make_vtx_bg.png" class="full-width" alt=""></div>
-      <div class="col col-8 flex items-center">
-        <strong>Make 2000 VTX now! (The Revenue)</strong>
+      <div class="col col-8 flex items-center justify-end">
+        <strong>Make x amount of VTX now!</strong>
         <div class="call-action">
-          <q-btn unelevated class="qbtn-start q-mr-sm" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Buy with BTC / ETH" />
-          <q-btn unelevated class="qbtn-start" color="black" @click="modalBuyWithEOS = true" text-color="white" label="Buy with EOS" />
+          <q-btn unelevated class="qbtn-start q-mr-md" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Stake now" />
+          <!-- <q-btn unelevated class="qbtn-start q-mr-sm" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Buy with BTC / ETH" /> -->
+          <!-- <q-btn unelevated class="qbtn-start" color="black" @click="modalBuyWithEOS = true" text-color="white" label="Buy with EOS" /> -->
         </div>
       </div>
     </div>
@@ -82,7 +83,7 @@ export default {
           transform: translateX(10px);
         }
         strong{
-          margin-bottom: 10px;
+          margin-bottom: -10px;
           line-height: 16px;
           font-size: 12px;
           padding-right: 20px;
