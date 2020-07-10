@@ -11,12 +11,13 @@
         </div>
         <div class="col col-md-6">
           <appsSection />
-          <startNodeSection />
+          <startNodeSection :banner="1" />
           <chainToolsSection />
           <transactionsSection />
-          <venueSection />
+          <!-- <venueSection /> -->
         </div>
         <div class="col q-pl-sm q-pr-md col-md-3">
+          <LiquidityPoolsSection />
           <makeVTXSection />
           <ExchangeSection />
         </div>
@@ -57,7 +58,7 @@ import AppsSection from '../../components/Verto/AppsSection'
 import StartNodeSection from '../../components/Verto/StartNodeSection'
 import ChainToolsSection from '../../components/Verto/ChainToolsSection'
 import TransactionsSection from '../../components/Verto/TransactionsSection'
-import VenueSection from '../../components/Verto/VenueSection'
+import LiquidityPoolsSection from '../../components/Verto/LiquidityPoolsSection'
 import MakeVTXSection from '../../components/Verto/MakeVTXSection'
 import ExchangeSection from '../../components/Verto/ExchangeSection'
 
@@ -91,7 +92,7 @@ export default {
     StartNodeSection,
     ChainToolsSection,
     TransactionsSection,
-    VenueSection,
+    LiquidityPoolsSection,
     MakeVTXSection,
     ExchangeSection
     // VespucciRatingSection

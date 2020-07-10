@@ -142,6 +142,14 @@ export default [
         }
       },
       {
+        name: 'defi',
+        path: '/verto/defi',
+        component: () => import('pages/Verto/Defi.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'exchange-v2',
         path: '/verto/exchange/:selectedCoin',
         component: () => import('pages/Verto/Exchange.vue'),

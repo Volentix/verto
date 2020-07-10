@@ -55,7 +55,7 @@ class Wallets2Tokens {
     store.state.currentwallet.config.keys.map(async (wallet) => {
       if (wallet.type.toLowerCase() === 'eos') {
         // If tokens are missing from this API, anyone can add them using this contract: https://bloks.io/account/customtokens?loadContract=true&tab=Actions&account=customtokens&scope=customtokens&limit=100&action=set
-        axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': wallet.name }).then(balances => {
+        axios.post('https://api.eossweden.org/v1/chain/get_currency_balances', { 'account': wallet.name }).then(balances => {
           console.log('eos balances', balances)
           // let balances = balancesArray.data.length === 0 ?
           if (balances.data.length === 0) {

@@ -1,7 +1,7 @@
 <template>
   <div class="desktop-card-style make-vtx q-mb-sm">
     <div class="row flex justify-between q-pb-lg q-pt-lg">
-      <div class="col col-8 flex items-center q-pl-md">
+      <div class="col col-8 flex items-center q-pl-md" style="min-height: 120px">
         <strong>Convert any to any coin</strong>
         <i class="step-1-lab flex ">Step<b>1</b> Select coin to send</i>
         <div class="call-action">
@@ -17,6 +17,55 @@
             :disabled="!depositCoinOptions"
             :loading="!depositCoinOptions"
             :options="depositCoinOptions"
+            >
+            <template v-slot:option="scope">
+              <q-item
+                class="custom-menu"
+                v-bind="scope.itemProps"
+                v-on="scope.itemEvents"
+              >
+                <q-item-section avatar>
+                  <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
+                </q-item-section>
+                <q-item-section dark>
+                  <q-item-label v-html="scope.opt.label" />
+                  <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </template>
+            <template v-slot:selected>
+              <q-item
+                v-if="depositCoin"
+              >
+                <q-item-section avatar>
+                  <q-icon class="option--avatar option--avatar__custom" :name="`img:${depositCoin.image}`" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label v-html="depositCoin.label" />
+                  <q-item-label caption>{{ depositCoin.value }}</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item
+                v-else>
+              </q-item>
+            </template>
+          </q-select>
+        </div>
+        <i class="step-2-lab step-1-lab flex ">Step<b>2</b> Select coin to receive</i>
+        <div class="call-action">
+          <q-select
+            light
+            separator
+            rounded
+            outlined
+            class="select-input"
+            v-model="destinationCoin"
+            use-input
+            @filter="filterDestinationCoin"
+            @input="updateCoinName()"
+            :disabled="!destinationCoinOptions"
+            :loading="!destinationCoinOptions"
+            :options="destinationCoinOptions"
           >
           <template v-slot:option="scope">
             <q-item
@@ -27,7 +76,7 @@
               <q-item-section avatar>
                 <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
               </q-item-section>
-              <q-item-section dark>
+              <q-item-section>
                 <q-item-label v-html="scope.opt.label" />
                 <q-item-label caption>{{ scope.opt.value }}</q-item-label>
               </q-item-section>
@@ -35,14 +84,14 @@
           </template>
           <template v-slot:selected>
             <q-item
-              v-if="depositCoin"
+              v-if="destinationCoin"
             >
               <q-item-section avatar>
-                <q-icon class="option--avatar option--avatar__custom" :name="`img:${depositCoin.image}`" />
+                <q-icon class="option--avatar option--avatar__custom" :name="`img:${destinationCoin.image}`" />
               </q-item-section>
               <q-item-section>
-                <q-item-label v-html="depositCoin.label" />
-                <q-item-label caption>{{ depositCoin.value }}</q-item-label>
+                <q-item-label v-html="destinationCoin.label" />
+                <q-item-label caption>{{ destinationCoin.value }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-item
@@ -75,7 +124,10 @@ export default {
       depositCoin: null,
       depositQuantity: 0,
       depositCoinOptions: null,
-      depositCoinUnfilter: null
+      depositCoinUnfilter: null,
+      destinationCoin: null,
+      destinationCoinOptions: null,
+      destinationCoinUnfilter: null
     }
   },
   methods: {
@@ -132,7 +184,7 @@ export default {
           font-style: normal;
           background: #FFF;
           font-weight: $regular;
-          margin-bottom: -28px;
+          margin-bottom: -8px;
           margin-left: 8px;
           position: relative;
           z-index: 2;
@@ -150,6 +202,7 @@ export default {
             margin: 0px 2px;
             font-size: 8px;
           }
+          &.step-2-lab{}
         }
         img{
           max-width: 80px;
