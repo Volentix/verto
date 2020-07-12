@@ -3,7 +3,7 @@
     <div class="row flex justify-between q-pb-lg q-pt-lg">
       <div class="header-col col-12 flex justify-between items-center">
         <h4>Liquidity pools</h4>
-        <q-btn unelevated class="qbtn-new" color="black" text-color="white" label="New" />
+        <q-btn unelevated class="qbtn-new" @click="openDialog = true" color="black" text-color="white" label="New" />
       </div>
       <div class="col col-8 flex items-center q-pl-md" style="min-height: 120px">
         <p>You can invest to earn exchange fees and pool rewards</p>
@@ -13,7 +13,9 @@
         <q-btn unelevated class="qbtn-start" @click="openDialog = true" color="black" text-color="white" label="Add liquidity" />
       </div>
     </div>
-    <AddLiquidityDialog :open="openDialog" />
+    <q-dialog v-model="openDialog">
+      <AddLiquidityDialog />
+    </q-dialog>
   </div>
 </template>
 
@@ -27,9 +29,6 @@ export default {
     return {
       openDialog: false
     }
-  },
-  updated () {
-    console.log('this.openDialog', this.openDialog)
   },
   methods: {
   },

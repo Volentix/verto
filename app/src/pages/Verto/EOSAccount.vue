@@ -1,22 +1,50 @@
 <template>
-  <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
-    <profile-header version="type4" />
-    <EOS-account-stepper />
+  <q-page class="column text-black bg-grey-12" :class="osName.toLowerCase() === 'windows' ? 'desktop-marg': 'mobile-pad'">
+    <div class="desktop-version" v-if="osName.toLowerCase() === 'windows'">
+      <div class="row">
+        <div class="col col-md-3">
+          <div class="wallets-container">
+            <profile-header :isMobile="false" class="marg" version="type2222" />
+            <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+            <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+          </div>
+        </div>
+        <div class="col col-md-9">
+          <div class="desktop-card-style apps-section q-mb-sm">
+            <div class="standard-content">
+              <h2 class="standard-content--title flex justify-start">Create EOS Account</h2>
+              <EOS-account-stepper />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else>
+      <profile-header version="type4" />
+      <EOS-account-stepper />
+    </div>
   </q-page>
 </template>
 
 <script>
 import EOSAccountStepper from '../../components/Verto/EOSAccountStepper'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
+import { osName } from 'mobile-device-detect'
+import Wallets from '../../components/Verto/Wallets'
 
 export default {
   components: {
     EOSAccountStepper,
-    ProfileHeader
+    ProfileHeader,
+    Wallets
   },
   data () {
     return {
+      osName: ''
     }
+  },
+  created () {
+    this.osName = osName
   },
   mounted () {
   },
@@ -25,7 +53,34 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import "~@/assets/styles/variables.scss";
+  @import "~@/assets/styles/variables.scss";
+  /deep/ .wallets-wrapper{
+    padding-bottom: 0px !important;
+  }
+  /deep/ .wallets-wrapper--list{
+    box-shadow: none;
+    margin-top: 0px;
+  }
+  .marg{
+    /deep/ .profile-wrapper{
+      &--header{
+        margin-bottom: 0px;
+      }
+    }
+  }
+  .mobile-pad{
+    padding-bottom: 50px
+  }
+  .desktop-version{
+    background: #E7E8E8;
+    padding-top: 13vh;
+    padding-left: 12vh;
+    padding-bottom: 50px;
+    padding-right: 2%;
+  }
+  .desktop-card-style{
+    height: 100%;
+  }
 .standard-content{
   padding: 5% 10%;
   display: flex;
@@ -33,6 +88,21 @@ export default {
   justify-content: space-start;
   min-height: calc(100vh + 100px) !important;
   padding-bottom: 100px;
+  @media screen and (min-width: 768px) {
+    padding: 2%;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: unset !important;
+    padding-bottom: 20px;
+    /deep/ .chain-tools-wrapper{
+      padding: 0px !important;
+      margin-left: -40px;
+      margin-right: -20px;
+      .list-wrapper--chain__eos-to-vtx-convertor{
+        box-shadow: none;
+      }
+    }
+  }
   &--title{
     font-size: 35px;
     font-weight: $bold;
@@ -41,6 +111,11 @@ export default {
     font-family: $Titillium;
     margin-top: 0px;
     margin-bottom: 40px;
+    @media screen and (min-width: 768px) {
+      margin-top: -20px;
+      font-size: 25px;
+      margin-bottom: 0px;
+    }
     .btn-align-left{
       position: absolute;
       left: -15px;
