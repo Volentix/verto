@@ -59,46 +59,45 @@
             rounded
             outlined
             class="select-input"
-            v-model="destinationCoin"
+            v-model="depositCoin"
             use-input
-            @filter="filterDestinationCoin"
-            @input="updateCoinName()"
-            :disabled="!destinationCoinOptions"
-            :loading="!destinationCoinOptions"
-            :options="destinationCoinOptions"
-          >
-          <template v-slot:option="scope">
-            <q-item
-              class="custom-menu"
-              v-bind="scope.itemProps"
-              v-on="scope.itemEvents"
+            @filter="filterDepositCoin"
+            :disabled="!depositCoinOptions"
+            :loading="!depositCoinOptions"
+            :options="depositCoinOptions"
             >
-              <q-item-section avatar>
-                <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label v-html="scope.opt.label" />
-                <q-item-label caption>{{ scope.opt.value }}</q-item-label>
-              </q-item-section>
-            </q-item>
-          </template>
-          <template v-slot:selected>
-            <q-item
-              v-if="destinationCoin"
-            >
-              <q-item-section avatar>
-                <q-icon class="option--avatar option--avatar__custom" :name="`img:${destinationCoin.image}`" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label v-html="destinationCoin.label" />
-                <q-item-label caption>{{ destinationCoin.value }}</q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-item
-              v-else>
-            </q-item>
-          </template>
-        </q-select>
+            <template v-slot:option="scope">
+              <q-item
+                class="custom-menu"
+                v-bind="scope.itemProps"
+                v-on="scope.itemEvents"
+              >
+                <q-item-section avatar>
+                  <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
+                </q-item-section>
+                <q-item-section dark>
+                  <q-item-label v-html="scope.opt.label" />
+                  <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </template>
+            <template v-slot:selected>
+              <q-item
+                v-if="depositCoin"
+              >
+                <q-item-section avatar>
+                  <q-icon class="option--avatar option--avatar__custom" :name="`img:${depositCoin.image}`" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label v-html="depositCoin.label" />
+                  <q-item-label caption>{{ depositCoin.value }}</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item
+                v-else>
+              </q-item>
+            </template>
+          </q-select>
         </div>
       </div>
       <div class="col col-4 flex items-center">
