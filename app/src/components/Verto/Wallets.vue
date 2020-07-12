@@ -55,15 +55,18 @@
         <q-list bordered separator class="list-wrapper">
           <q-item v-for="(item, index) in tableData.filter(f => !f.hidden)" :class="{'selected' : item.selected}" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
             <div class="header-wallet-wrapper culumn full-width">
-              <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
+              <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                 <q-item-section avatar>
                   <img class="coin-icon" width="35px" :src="item.icon" alt="">
                 </q-item-section>
                 <q-item-section class="item-name">
                   <span class="item-name--name">{{item.name}}</span>
                 </q-item-section>
-                <q-item-section class="item-info">
-                  <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{item.type.toUpperCase()}}</span>
+                <q-item-section class="item-info" v-if="!item.disabled">
+                  <span class="item-info--amount">{{item.amount ? new Number(item.amount).toFixed(8) : 0 }} {{item.type.toUpperCase()}}</span>
+                </q-item-section>
+                <q-item-section class="item-info" v-else>
+                  <span class="item-info--amount">in progress</span>
                 </q-item-section>
               </div>
               <div class="menu-wallet">
@@ -77,7 +80,7 @@
                   </q-item>
                   <q-separator style="margin-top: 10px" />
                   <q-item data-name='Trade' clickable v-ripple class="p-relative" to="/verto/exchange">Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                  <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative">Associate with EOS <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                  <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                   <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                   <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                   <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
@@ -242,9 +245,17 @@ export default {
     this.tokenID = this.$route.params.tokenID
     this.accountName = this.$route.params.accountName
 
-    this.tableData = await this.$store.state.wallets.tokens
-    this.tableData.map((c) => {
+    let tableDatas = await this.$store.state.wallets.tokens
+    this.tableData = tableDatas.map((c) => {
       c.selected = false
+    })
+    this.tableData = tableDatas.filter((c) => {
+      if (c.chain === 'eos' || c.chain === 'eth') {
+        c.disabled = false
+      } else {
+        c.disabled = true
+      }
+      return c
     })
 
     console.log('this.tableData in wallets', this.tableData)
@@ -327,6 +338,11 @@ export default {
 
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
+  .header-wallet{
+    &.disable-coin{
+      opacity: .45
+    }
+  }
   .wallets-wrapper{
     padding: 0px 6%;
     padding-bottom: 70px;
@@ -494,6 +510,12 @@ export default {
             }
             .menu-wallet{
               display: none;
+              .bold-btn{
+                font-family: $Titillium;
+                font-weight: $bold;
+                font-size: 15px !important;
+                color:#627797 !important;
+              }
               .sub-list-menu{
                 margin-top: 10px;
                 .p-relative{
