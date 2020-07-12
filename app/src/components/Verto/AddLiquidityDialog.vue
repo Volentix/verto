@@ -1,85 +1,71 @@
 <template>
-    <q-dialog v-model="openDialog">
-      <q-card class="q-pa-lg modal-dialog-wrapper" style="width: 800px; max-width: 90vw;">
+    <q-card class="q-pa-lg modal-dialog-wrapper" style="width: 800px; max-width: 90vw;">
         <q-toolbar>
-          <q-toolbar-title><span class="text-weight-bold q-pl-sm">Add Liquidity</span></q-toolbar-title>
-          <q-btn flat round dense icon="close" v-close-popup />
+            <q-toolbar-title><span class="text-weight-bold q-pl-sm">Add Liquidity</span></q-toolbar-title>
+            <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
         <q-card-section class="text-h6">
-          <div class="text-h6 q-mb-md q-pl-sm flex items-center"><h4 class="lab-title q-pr-md">Available ETH:</h4> 0.3482</div>
-          <div class="row">
+            <div class="text-h6 q-mb-md q-pl-sm flex items-center"><h4 class="lab-title q-pr-md">Available ETH:</h4> 0.3482</div>
+            <div class="row">
             <div class="col col-3">
-              <q-input class="input-input" filled rounded outlined color="purple" value="0.1" suffix="MAX" />
+                <q-input class="input-input" filled rounded outlined color="purple" value="0.1" suffix="MAX" />
             </div>
             <div class="col col-3 q-ml-md">
-              <q-select class="select-input" filled rounded outlined color="purple" value="ETH" :options="['ETH','VTX','EOS']" />
+                <q-select class="select-input" filled rounded outlined color="purple" value="ETH" :options="['ETH','VTX','EOS']" />
             </div>
-          </div>
-          <hr style="opacity: .1" class="q-mt-lg">
-          <h4 class="lab-title">Choose your Allocation</h4>
-          <div class="row">
+            </div>
+            <hr style="opacity: .1" class="q-mt-lg">
+            <h4 class="lab-title">Choose your Allocation</h4>
+            <div class="row">
             <div class="col col-3 q-pr-md">
-              <strong class="lab-sub q-pl-md">Platform</strong>
-              <q-select class="select-input" filled rounded outlined color="purple" value="Balancer" :options="['Balancer','Balancer1','Balancer2']" />
+                <strong class="lab-sub q-pl-md">Platform</strong>
+                <q-select class="select-input" filled rounded outlined color="purple" value="Balancer" :options="['Balancer','Balancer1','Balancer2']" />
             </div>
             <div class="col col-3 q-pr-md">
-              <strong class="lab-sub q-pl-md">Pool</strong>
-              <q-select class="select-input" filled rounded outlined color="purple" value="Balancer" :options="['RPL/WETH','Balancer1','Balancer2']" />
+                <strong class="lab-sub q-pl-md">Pool</strong>
+                <q-select class="select-input" filled rounded outlined color="purple" value="Balancer" :options="['RPL/WETH','Balancer1','Balancer2']" />
             </div>
             <div class="col col-3 q-pr-md text-center">
-              <strong class="lab-sub q-pl-md text-center">Allocation</strong>
-              <div class="lab-value flex flex-center text-center q-pl-lg q-pr-sm">90 % RPL 10% WETH</div>
+                <strong class="lab-sub q-pl-md text-center">Allocation</strong>
+                <div class="lab-value flex flex-center text-center q-pl-lg q-pr-sm">90 % RPL 10% WETH</div>
             </div>
             <div class="col col-3 q-pr-md text-center">
-              <strong class="lab-sub q-pl-md text-center">Output</strong>
-              <div class="lab-value flex flex-center text-center q-pl-lg q-pr-sm">11.5765 RPL 0.0099 WETH</div>
+                <strong class="lab-sub q-pl-md text-center">Output</strong>
+                <div class="lab-value flex flex-center text-center q-pl-lg q-pr-sm">11.5765 RPL 0.0099 WETH</div>
             </div>
-          </div>
-          <hr style="opacity: .1" class="q-mt-lg">
-          <h4 class="lab-title q-pb-md">Select Gas Setting</h4>
-          <div class="row">
+            </div>
+            <hr style="opacity: .1" class="q-mt-lg">
+            <h4 class="lab-title q-pb-md">Select Gas Setting</h4>
+            <div class="row">
             <div class="col col-4">
-               <q-btn color="white" flat class="btn-gas full-width" outlined rounded size="lg" text-color="black" label="Slow (36 Gwei ~ 12.3 Min)" />
+                <q-btn color="white" flat class="btn-gas full-width" outlined rounded size="lg" text-color="black" label="Slow (36 Gwei ~ 12.3 Min)" />
             </div>
             <div class="col col-4 q-pl-md q-pr-md">
-               <q-btn color="white" flat class="btn-gas full-width" outlined rounded size="lg" text-color="black" label="Slow (36 Gwei ~ 12.3 Min)" />
+                <q-btn color="white" flat class="btn-gas full-width" outlined rounded size="lg" text-color="black" label="Slow (36 Gwei ~ 12.3 Min)" />
             </div>
             <div class="col col-4">
-               <q-btn color="white" flat class="btn-gas full-width" outlined rounded size="lg" text-color="black" label="Slow (36 Gwei ~ 12.3 Min)" />
+                <q-btn color="white" flat class="btn-gas full-width" outlined rounded size="lg" text-color="black" label="Slow (36 Gwei ~ 12.3 Min)" />
             </div>
-          </div>
+            </div>
         </q-card-section>
         <q-card-actions align="right" class="q-pr-sm q-mb-sm">
-          <!-- <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/> -->
-          <q-btn unelevated class="qbtn-start" @click="openDialog = false" color="black" text-color="white" label="Confirm" />
+            <!-- <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/> -->
+            <q-btn unelevated class="qbtn-start" color="black" text-color="white" label="Confirm" />
         </q-card-actions>
-      </q-card>
-    </q-dialog>
+    </q-card>
 </template>
 
 <script>
 export default {
-  props: ['open'],
   name: 'AddLiquidityDialog',
   data () {
     return {
 
     }
   },
-  computed: {
-    function () {
-      if (this.open) {
-        return true
-      } else {
-        return false
-      }
-    }
-  },
   updated () {
-    console.log('updated() openDialog', this.open)
   },
   created () {
-    console.log('created() openDialog', this.open)
   },
   methods: {
   }
