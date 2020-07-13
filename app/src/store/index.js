@@ -5,6 +5,7 @@ import Vuex from 'vuex'
 import currentwallet from './currentwallet'
 import settings from './settings'
 import wallets from './wallets'
+import signingrequests from './signingrequests'
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
@@ -12,7 +13,8 @@ const store = new Vuex.Store({
     // then we reference it
     currentwallet,
     settings,
-    wallets
+    wallets,
+    signingrequests
   }
 })
 
@@ -21,12 +23,13 @@ const store = new Vuex.Store({
 // code with "process.env.DEV" -- so this doesn't
 // get into our production build (and it shouldn't).
 if (process.env.DEV && module.hot) {
-  module.hot.accept(['./currentwallet', './settings'], () => {
+  module.hot.accept(['./signingrequests', './currentwallet', './settings'], () => {
+  // module.hot.accept(['./currentwallet', './settings'], () => {
     const newCurrentwallet = require('./currentwallet').default
     const newSettings = require('./settings').default
     const newWallets = require('./wallets').default
-    store.hotUpdate({ modules: { currentwallet: newCurrentwallet, settings: newSettings, wallets: newWallets } })
+    const newSigningrequests = require('./signingrequests').default
+    store.hotUpdate({ modules: { newsigningrequests: newSigningrequests, currentwallet: newCurrentwallet, settings: newSettings, wallets: newWallets } })
   })
 }
-
 export default store

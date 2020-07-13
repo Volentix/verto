@@ -8,6 +8,7 @@ module.exports = function (ctx) {
       'axios',
       'clipboard',
       'configManager',
+      'signingRequests',
       'documentationManger',
       'i18n',
       'vuelidate'
