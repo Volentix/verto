@@ -2398,6 +2398,11 @@
     "@types/istanbul-lib-coverage" "*"
     "@types/istanbul-lib-report" "*"
 
+"@types/jest@^23.3.1":
+  version "23.3.14"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.3.14.tgz#37daaf78069e7948520474c87b80092ea912520a"
+  integrity sha512-Q5hTcfdudEL2yOmluA1zaSyPbzWPmJ3XfSWeP3RyoYvS9hnje1ZyagrZOuQ6+1nQC1Gw+7gap3pLNL3xL6UBug==
+
 "@types/jest@^25.2.3":
   version "25.2.3"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-25.2.3.tgz#33d27e4c4716caae4eced355097a47ad363fdcaf"
@@ -3647,6 +3652,15 @@ babel-plugin-transform-strict-mode@^6.24.1:
     babel-runtime "^6.22.0"
     babel-types "^6.24.1"
 
+babel-polyfill@^6.26.0:
+  version "6.26.0"
+  resolved "https://registry.yarnpkg.com/babel-polyfill/-/babel-polyfill-6.26.0.tgz#379937abc67d7895970adc621f284cd966cf2153"
+  integrity sha1-N5k3q8Z9eJWXCtxiHyhM2WbPIVM=
+  dependencies:
+    babel-runtime "^6.26.0"
+    core-js "^2.5.0"
+    regenerator-runtime "^0.10.5"
+
 babel-preset-current-node-syntax@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/babel-preset-current-node-syntax/-/babel-preset-current-node-syntax-0.1.2.tgz#fb4a4c51fe38ca60fede1dc74ab35eb843cb41d6"
@@ -4518,15 +4532,7 @@ builder-util-runtime@8.2.5:
     fs-extra-p "^8.0.2"
     sax "^1.2.4"
 
-builder-util-runtime@8.6.2:
-  version "8.6.2"
-  resolved "https://registry.yarnpkg.com/builder-util-runtime/-/builder-util-runtime-8.6.2.tgz#8270e15b012d8d3b110f3e327b0fd8b0e07b1686"
-  integrity sha512-9QnIBISfhgQ2BxtRLidVqf/v5HD73vSKZDllpUmGd2L6VORGQk7cZAPmPtw4HQM3gPBelyVJ5yIjMNZ8xjmd1A==
-  dependencies:
-    debug "^4.1.1"
-    sax "^1.2.4"
-
-builder-util-runtime@^8.2.5:
+builder-util-runtime@8.7.0, builder-util-runtime@^8.2.5:
   version "8.7.0"
   resolved "https://registry.yarnpkg.com/builder-util-runtime/-/builder-util-runtime-8.7.0.tgz#e48ad004835c8284662e8eaf47a53468c66e8e8d"
   integrity sha512-G1AqqVM2vYTrSFR982c1NNzwXKrGLQjVjaZaWQdn4O6Z3YKjdMDofw88aD9jpyK9ZXkrCxR0tI3Qe9wNbyTlXg==
@@ -5517,7 +5523,7 @@ core-js@^1.0.0:
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-1.2.7.tgz#652294c14651db28fa93bd2d5ff2983a4f08c636"
   integrity sha1-ZSKUwUZR2yj6k70tX/KYOk8IxjY=
 
-core-js@^2.4.0, core-js@^2.6.5:
+core-js@^2.4.0, core-js@^2.5.0, core-js@^2.6.5:
   version "2.6.11"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.11.tgz#38831469f9922bded8ee21c9dc46985e0399308c"
   integrity sha512-5wjnpaT/3dV+XB4borEsnAYQchn00XSgTAWKDkEqv+K8KevjbzmofK6hfJ9TZIlpj2N0xQpazy7PiRQiWHqzWg==
@@ -6448,6 +6454,11 @@ domutils@^1.5.1, domutils@^1.7.0:
     dom-serializer "0"
     domelementtype "1"
 
+dot-prop-immutable@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/dot-prop-immutable/-/dot-prop-immutable-2.1.0.tgz#aa08d57b7b4c8ba1aac1b8f9b058bb3f37027af6"
+  integrity sha512-8IIkxeXjLkKbhbqwmqCdFzRup1wFwH4tuY7/s5ScVpzYXgjZ+lw5ocvtDG1KR9VG+/AIGgGpWBdzmq+QUFANoA==
+
 dot-prop@5.2.0, dot-prop@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/dot-prop/-/dot-prop-5.2.0.tgz#c34ecc29556dc45f1f4c22697b6f4904e0cc4fcb"
@@ -6718,18 +6729,17 @@ electron-to-chromium@^1.3.413:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.453.tgz#758a8565a64b7889b27132a51d2abb8b135c9d01"
   integrity sha512-IQbCfjJR0NDDn/+vojTlq7fPSREcALtF8M1n01gw7nQghCtfFYrJ2dfhsp8APr8bANoFC8vRTFVXMOGpT0eetw==
 
-electron-updater@^4.0.6:
-  version "4.2.5"
-  resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-4.2.5.tgz#dbced8da6f8c6fc2dc662f2776131f5a49ce018d"
-  integrity sha512-ir8SI3capF5pN4LTQY79bP7oqiBKjgtdDW378xVId5VcGUZ+Toei2j+fgx1mq3y4Qg19z4HqLxEZ9FqMD0T0RA==
+electron-updater@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-4.3.1.tgz#9d485b6262bc56fcf7ee62b1dc1b3b105a3e96a7"
+  integrity sha512-UDC5AHCgeiHJYDYWZG/rsl1vdAFKqI/Lm7whN57LKAk8EfhTewhcEHzheRcncLgikMcQL8gFo1KeX51tf5a5Wg==
   dependencies:
     "@types/semver" "^7.1.0"
-    builder-util-runtime "8.6.2"
-    fs-extra "^8.1.0"
+    builder-util-runtime "8.7.0"
+    fs-extra "^9.0.0"
     js-yaml "^3.13.1"
     lazy-val "^1.0.4"
     lodash.isequal "^4.5.0"
-    pako "^1.0.11"
     semver "^7.1.3"
 
 electron@4.0.5:
@@ -6935,7 +6945,7 @@ eosjs-ecc@4.0.4:
     ecurve "^1.0.5"
     randombytes "^2.0.5"
 
-eosjs-ecc@4.0.7, eosjs-ecc@^4.0.7:
+eosjs-ecc@4.0.7, eosjs-ecc@^4.0.1, eosjs-ecc@^4.0.7:
   version "4.0.7"
   resolved "https://registry.yarnpkg.com/eosjs-ecc/-/eosjs-ecc-4.0.7.tgz#f5246da3b84839fcc237204768ef6e5ea56cc814"
   integrity sha512-uuqhqnrDy9XTpKfkhiZqRDUTCCI9oWBalVK5IosL7kpYwA9I3lm68INYFLyWsHpF2xwHqPql8MrMYJ3zfOn5Qg==
@@ -6965,6 +6975,16 @@ eosjs-ledger-signature-provider@0.1.2:
     buffer "5.2.1"
     eosjs "20.0.0"
     eosjs-ecc "4.0.4"
+
+eosjs2@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/eosjs2/-/eosjs2-1.0.0.tgz#3fe419000bd6e819c61cc4a65ae48fa05871778a"
+  integrity sha512-LtpJx/UdbzSLtwv3bh2MYTjvYkMcFpy0HPKwmBh0yABLPkUjHDTBIkEdf1hO64tZ6GscgDBWBxBxItiEBWcvAw==
+  dependencies:
+    "@types/jest" "^23.3.1"
+    babel-polyfill "^6.26.0"
+    eosjs-ecc "^4.0.1"
+    text-encoding "^0.6.4"
 
 eosjs@20.0.0:
   version "20.0.0"
@@ -7573,6 +7593,11 @@ eventemitter3@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.0.tgz#d65176163887ee59f386d64c82610b696a4a74eb"
   integrity sha512-qerSRB0p+UDEssxTtm6EDKcE7W4OaoisfIMl4CngyEhjpYglocpNg6UEqCvemdGhosAsg4sO2dXJOdyBifPGCg==
+
+eventemitter3@^4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.4.tgz#b5463ace635a083d018bdc7c917b4c5f10a85384"
+  integrity sha512-rlaVLnVxtxvoyLsQQFBx53YmXHDxRIzzTLbdfxqi4yocpSjAxXwkU0cScM5JgSKMqEhrZpnvQ2D9gjylR0AimQ==
 
 events@1.1.1:
   version "1.1.1"
@@ -12649,6 +12674,14 @@ p-map@^4.0.0:
   dependencies:
     aggregate-error "^3.0.0"
 
+p-queue@^6.5.0:
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/p-queue/-/p-queue-6.5.0.tgz#40d6bafdd3bb0c8eaa03e0649ba6fa3ce7249947"
+  integrity sha512-FLaTTD9Am6TeDfNuN0d+INeyVJoICoBS+OVP5K1S84v4w51LN3nRkCT+WC7xLBepV2s+N4LibM7Ys7xcSc0+1A==
+  dependencies:
+    eventemitter3 "^4.0.4"
+    p-timeout "^3.1.0"
+
 p-retry@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/p-retry/-/p-retry-3.0.1.tgz#316b4c8893e2c8dc1cfa891f406c4b422bebf328"
@@ -12660,6 +12693,13 @@ p-timeout@^1.1.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/p-timeout/-/p-timeout-1.2.1.tgz#5eb3b353b7fce99f101a1038880bb054ebbea386"
   integrity sha1-XrOzU7f86Z8QGhA4iAuwVOu+o4Y=
+  dependencies:
+    p-finally "^1.0.0"
+
+p-timeout@^3.1.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/p-timeout/-/p-timeout-3.2.0.tgz#c7e17abc971d2a7962ef83626b35d635acf23dfe"
+  integrity sha512-rhIwUycgwwKcP9yTOOFK/AKsAopjjCakVqLHePO3CC6Mir1Z99xT+R63jZxAT5lFZLa2inS5h+ZS2GvR99/FBg==
   dependencies:
     p-finally "^1.0.0"
 
@@ -12718,7 +12758,7 @@ package-json@^6.3.0:
     registry-url "^5.0.0"
     semver "^6.2.0"
 
-pako@1.0.11, pako@^1.0.11, pako@~1.0.2, pako@~1.0.5:
+pako@1.0.11, pako@~1.0.2, pako@~1.0.5:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
   integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
@@ -14073,6 +14113,11 @@ regenerate@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/regenerate/-/regenerate-1.4.0.tgz#4a856ec4b56e4077c557589cae85e7a4c8869a11"
   integrity sha512-1G6jJVDWrt0rK99kBjvEtziZNCICAuvIPkSiUFIQxVP06RCVpq3dmDo2oi6ABpYaDYaTRr67BEhL8r1wgEZZKg==
+
+regenerator-runtime@^0.10.5:
+  version "0.10.5"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.10.5.tgz#336c3efc1220adcedda2c9fab67b5a7955a33658"
+  integrity sha1-M2w+/BIgrc7dosn6tntaeVWjNlg=
 
 regenerator-runtime@^0.11.0:
   version "0.11.1"
@@ -16507,6 +16552,11 @@ text-encoding@0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/text-encoding/-/text-encoding-0.7.0.tgz#f895e836e45990624086601798ea98e8f36ee643"
   integrity sha512-oJQ3f1hrOnbRLOcwKz0Liq2IcrvDeZRHXhd9RgLrsT+DjWY/nty1Hi7v3dtkaEYbPYe0mUoOfzRrMwfXXwgPUA==
+
+text-encoding@^0.6.4:
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/text-encoding/-/text-encoding-0.6.4.tgz#e399a982257a276dae428bb92845cb71bdc26d19"
+  integrity sha1-45mpgiV6J22uQou5KEXLcb3CbRk=
 
 text-table@^0.2.0:
   version "0.2.0"
