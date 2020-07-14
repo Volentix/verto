@@ -1,6 +1,6 @@
 <template>
-  <div class="desktop-card-style apps-section q-mb-sm">
-    <div class="row flex justify-between q-pt-sm q-pb-sm">
+  <div class="desktop-card-style transaction-section q-mb-sm">
+    <div class="row flex justify-between q-pt-lg">
       <div class="col col-12 flex items-center history-icon"><q-icon :name="'img:statics/history_icon-black.svg'" />Transaction History of &nbsp;<span class="text-blue">{{wallet.name}}</span></div>
     </div>
     <history :isMobile="false" />
@@ -32,7 +32,7 @@ export default {
 
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
-  .apps-section{
+  .transaction-section{
     .row{
       .text-blue{
         color: #7272FA !important;
@@ -105,6 +105,11 @@ export default {
           }
         }
       }
+    }
+  }
+  .transaction-section{
+    /deep/ .transaction-wrapper--list{
+      padding-bottom: 15px;
     }
   }
 </style>

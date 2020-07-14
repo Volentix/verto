@@ -11,23 +11,15 @@
         </div>
         <div class="col col-md-6">
           <appsSection />
-          <startNodeSection />
+          <startNodeSection :banner="1" />
           <chainToolsSection />
           <transactionsSection />
-          <venueSection />
-          <!-- <img src="statics/prototype_screens/apps.jpg" alt=""> -->
-          <!-- <img src="statics/prototype_screens/start_node.jpg" alt=""> -->
-          <!-- <img src="statics/prototype_screens/chain_tools.jpg" alt=""> -->
-          <!-- <img src="statics/prototype_screens/transactions.jpg" alt=""> -->
-          <!-- <img src="statics/prototype_screens/venue.jpg" alt=""> -->
+          <!-- <venueSection /> -->
         </div>
         <div class="col q-pl-sm q-pr-md col-md-3">
+          <LiquidityPoolsSection />
           <makeVTXSection />
           <ExchangeSection />
-          <!-- <vespucciRatingSection /> -->
-          <!-- <img src="statics/prototype_screens/vespucci.jpg" class="q-ml-lg" alt=""> -->
-          <!-- <img src="statics/prototype_screens/make_VTX.jpg" class="full-width" alt=""> -->
-          <!-- <img src="statics/prototype_screens/convert_any.jpg" class="full-width" alt=""> -->
         </div>
       </div>
     </div>
@@ -66,7 +58,7 @@ import AppsSection from '../../components/Verto/AppsSection'
 import StartNodeSection from '../../components/Verto/StartNodeSection'
 import ChainToolsSection from '../../components/Verto/ChainToolsSection'
 import TransactionsSection from '../../components/Verto/TransactionsSection'
-import VenueSection from '../../components/Verto/VenueSection'
+import LiquidityPoolsSection from '../../components/Verto/LiquidityPoolsSection'
 import MakeVTXSection from '../../components/Verto/MakeVTXSection'
 import ExchangeSection from '../../components/Verto/ExchangeSection'
 
@@ -100,7 +92,7 @@ export default {
     StartNodeSection,
     ChainToolsSection,
     TransactionsSection,
-    VenueSection,
+    LiquidityPoolsSection,
     MakeVTXSection,
     ExchangeSection
     // VespucciRatingSection
@@ -116,8 +108,8 @@ export default {
   async created () {
     // Check if mnemonic exists
     this.osName = osName
-    console.log('this.osName', this.osName)
-    console.log('store.state.currentwallet.config', store.state.currentwallet.config)
+    // console.log('this.osName', this.osName)
+    // console.log('store.state.currentwallet.config', store.state.currentwallet.config)
     if (!store.state.currentwallet.config.mnemonic) {
       this.$router.push('recovery-seed')
     } else {
