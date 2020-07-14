@@ -28,7 +28,7 @@ export default {
   },
   created () {
     this.osName = osName
-    console.log('this.osName', this.osName)
+    // console.log('this.osName', this.osName)
   }
 }
 </script>
