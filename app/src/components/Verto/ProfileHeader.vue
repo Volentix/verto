@@ -18,7 +18,6 @@
         </div>
       </div>
     </div>
-
     <div v-if="version === 'type1'" class="p-relative column flex-center profile-wrapper--header wallets" style="background: url('statics/header_bg.png');">
       <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="white" icon="keyboard_backspace" />
       <h3 class="profile-wrapper--header__title text-white">Total Balance</h3>
@@ -69,7 +68,7 @@
     <div v-else-if="version === 'type6'" class="profile-wrapper--header static" style="background: url(statics/refer_friend_bg.png) center bottom / cover no-repeat rgb(255, 255, 255) !important; min-height: 390px; box-shadow: none !important; border-radius: 0px;" />
     <div v-else class="column flex-center profile-wrapper--header" :class="{'desktop-ui' : !isMobile}" style="background: url('statics/header_bg.png');">
       <h3 class="profile-wrapper--header__title text-white">Total Balance</h3>
-      <h2 class="profile-wrapper--header__balance text-white">${{ new Number(totalBalance).toFixed(2) }} USD</h2>
+      <h2 class="profile-wrapper--header__balance text-white">${{ new Number(totalBalance).toFixed(2) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <div class="profile-wrapper--header__action">
         <q-btn unelevated to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
         <q-btn unelevated to="/verto/wallets/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
@@ -193,6 +192,14 @@ export default {
       padding-bottom: 20px;
       position: relative;
       z-index: 3;
+      &__equivalent{
+        position: absolute;
+        bottom: -25px;
+        right: 0px;
+        color: #FFF;
+        font-size: 10px;
+        font-weight: $light;
+      }
       &.desktop-ui{
         border-radius: 10px;
         height: 200px;
@@ -204,6 +211,8 @@ export default {
           }
           &__balance{
             font-size: 32px;
+            position: relative;
+            width: fit-content;
           }
           &__action-btn{
             margin-bottom: -20px;

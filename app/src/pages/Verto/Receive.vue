@@ -1,6 +1,96 @@
 <template>
   <q-page class="text-black bg-white">
-    <div class="standard-content">
+    <div class="desktop-version" v-if="osName.toLowerCase() === 'windows'">
+      <div class="row">
+        <div class="col col-md-3">
+          <div class="wallets-container">
+            <profile-header :isMobile="false" class="marg" version="type2222" />
+            <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+            <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+          </div>
+        </div>
+        <div class="col col-md-9">
+          <div class="desktop-card-style apps-section q-mb-sm">
+            <div class="standard-content">
+              <h2 class="standard-content--title flex">Receive</h2>
+              <div class="standard-content--body">
+                <div class="standard-content--body__form">
+                  <div class="row">
+                    <div class="col col-6 q-pr-md">
+                      <span class="lab-input">To</span>
+                      <q-select
+                          light
+                          separator
+                          rounded
+                          outlined
+                          class="select-input"
+                          v-model="currentToken"
+                          :options="options"
+                      >
+                        <template v-slot:option="scope">
+                          <q-item
+                            class="custom-menu"
+                            v-bind="scope.itemProps"
+                            v-on="scope.itemEvents"
+                          >
+                            <q-item-section avatar>
+                              <q-icon class="option--avatar" :name="`img:${scope.opt.image}`" />
+                            </q-item-section>
+                            <q-item-section dark>
+                              <q-item-label v-html="scope.opt.label" />
+                              <q-item-label caption class="ellipsis mw200">{{ scope.opt.value }}</q-item-label>
+                            </q-item-section>
+                          </q-item>
+                        </template>
+                        <template v-slot:selected>
+                          <q-item
+                            v-if="currentToken"
+                          >
+                            <q-item-section avatar>
+                              <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
+                            </q-item-section>
+                            <q-item-section>
+                              <q-item-label v-html="currentToken.label" />
+                              <q-item-label caption class="ellipsis mw200">{{ currentToken.value }}</q-item-label>
+                            </q-item-section>
+                          </q-item>
+                          <q-item
+                            v-else>
+                          </q-item>
+                        </template>
+                      </q-select>
+                    </div>
+                    <div class="col col-6">
+                      <span class="lab-input">Or Via Verto ID (Cruxpay)</span>
+                      <q-input v-model="vertoID" class="input-input" rounded readonly outlined color="purple" type="text"/>
+                    </div>
+                    <div class="col col-6 q-pr-md q-pt-md">
+                      <div class="qrcode-wrapper">
+                        <div class="wallet-address flex justify-between">
+                          <span class="title">Wallet address</span>
+                          <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy" text-color="grey" icon="o_file_copy" />
+                        </div>
+                        <span class="qrcode-widget">
+                          <qrcode :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
+                          <span class="exchange-address full-width text-center">{{currentToken.type === 'eos' ? currentToken.label : currentToken.value}}</span>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="col col-6 column justify-end items-end items-end">
+                      <div class="standard-content--footer">
+                        <q-btn flat class="action-link next" @click="toggleShare()" color="black" text-color="white" label="Share" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else class="standard-content">
       <h2 class="standard-content--title flex justify-center">
         <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" />
         Receive
@@ -197,7 +287,9 @@
 </template>
 
 <script>
-
+import { osName } from 'mobile-device-detect'
+import Wallets from '../../components/Verto/Wallets'
+import ProfileHeader from '../../components/Verto/ProfileHeader'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import Vue from 'vue'
 Vue.component(VueQrcode.name, VueQrcode)
@@ -205,9 +297,14 @@ var SocialSharing = require('vue-social-sharing')
 Vue.use(SocialSharing)
 
 export default {
-  components: {},
+  components: {
+    // desktop components
+    ProfileHeader,
+    Wallets
+  },
   data () {
     return {
+      osName: '',
       currentToken: {
         label: '',
         value: '',
@@ -231,6 +328,7 @@ export default {
     }
   },
   async created () {
+    this.osName = osName
     this.params = this.$store.state.currentwallet.params
 
     this.tableData = await this.$store.state.wallets.tokens
@@ -286,6 +384,30 @@ export default {
 </script>
 <style lang="scss" scoped>
   @import "~@/assets/styles/variables.scss";
+  /deep/ .wallets-wrapper{
+    padding-bottom: 0px !important;
+  }
+  /deep/ .wallets-wrapper--list{
+    box-shadow: none;
+    margin-top: 0px;
+  }
+  .marg{
+    /deep/ .profile-wrapper{
+      &--header{
+        margin-bottom: 0px;
+      }
+    }
+  }
+  .desktop-version{
+    background: #E7E8E8;
+    padding-top: 13vh;
+    padding-left: 12vh;
+    padding-bottom: 50px;
+    padding-right: 2%;
+  }
+  .desktop-card-style{
+    height: 100%;
+  }
   .standard-content{
     padding: 5% 10%;
     display: flex;
@@ -293,6 +415,13 @@ export default {
     justify-content: space-between;
     min-height: 100vh !important;
     padding-bottom: 100px;
+    @media screen and (min-width: 768px) {
+      padding: 2%;
+      flex-direction: column;
+      justify-content: flex-start;
+      min-height: unset !important;
+      padding-bottom: 20px;
+    }
     &--title{
       font-size: 35px;
       font-weight: $bold;
@@ -301,6 +430,10 @@ export default {
       font-family: $Titillium;
       margin-top: 0px;
       margin-bottom: 0px;
+      @media screen and (min-width: 768px) {
+        margin-top: -20px;
+        font-size: 25px;
+      }
       .btn-align-left{
         position: absolute;
         left: -15px;

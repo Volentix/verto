@@ -20,7 +20,7 @@
        <q-btn @click="showMore()" unelevated flat class="full-width transaction-wrapper--list__hide-transaction" color="white" text-color="black" label="See More..." />
     </div>
     <div class="transaction-wrapper--list open" v-else>
-      <q-scroll-area :visible="true" class="q-pr-md" style="height: 200px;">
+      <q-scroll-area :visible="true" class="q-pr-md" style="height: 316px;">
         <q-list bordered separator class="list-wrapper">
           <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="item.to">
             <q-item-section class="item-date">
@@ -28,7 +28,7 @@
             </q-item-section>
             <q-item-section class="item-trans flex">
               <span class="item-trans--transID">{{item.transID}}</span>
-              <span class="item-trans--desc">{{item.desc}}</span>
+              <span class="item-trans--desc"> <span class="type" :class="item.typeTran">{{item.typeTran}}</span> {{item.desc}}</span>
             </q-item-section>
             <q-item-section class="item-amount">
               <span class="item-amount--value">{{item.amount}}</span>
@@ -62,12 +62,16 @@ export default {
       showWallet: false,
       showText: false,
       menu: [
-        { date: '<b>27</b> Today  ', transID: 'Transaction ID', to: '/transaction', desc: 'Sent to kkkljo...', amount: '-2.0084 VTX' },
-        { date: '<b>26</b> 5:15 AM', transID: 'Transaction ID', to: '/transaction', desc: 'Received to kkkljo...', amount: '-2.0084 VTX' },
-        { date: '<b>24</b> 6:15 PM', transID: 'Transaction ID', to: '/transaction', desc: 'Sent to kkkljo...', amount: '-2.0084 VTX' },
-        { date: '<b>23</b> 2:15 AM', transID: 'Transaction ID', to: '/transaction', desc: 'Received to kkkljo...', amount: '-2.0084 VTX' },
-        { date: '<b>23</b> 2:15 AM', transID: 'Transaction ID', to: '/transaction', desc: 'Received to kkkljo...', amount: '-2.0084 VTX' },
-        { date: '<b>21</b> 4:15 AM', transID: 'Transaction ID', to: '/transaction', desc: 'Sent to kkkljo...', amount: '-2.0084 VTX' }
+        { date: '<b>27</b> Today  ', transID: 'Transaction ID', to: '/transaction', typeTran: 'sent', desc: ' to kkkljo...', amount: '-2.0084 VTX' },
+        { date: '<b>26</b> 5:15 AM', transID: 'Transaction ID', to: '/transaction', typeTran: 'received', desc: ' to kkkljo...', amount: '-2.0084 VTX' },
+        { date: '<b>24</b> 6:15 PM', transID: 'Transaction ID', to: '/transaction', typeTran: 'sent', desc: ' to kkkljo...', amount: '-2.0084 VTX' },
+        { date: '<b>23</b> 2:15 AM', transID: 'Transaction ID', to: '/transaction', typeTran: 'received', desc: ' to kkkljo...', amount: '-2.0084 VTX' },
+        { date: '<b>23</b> 2:15 AM', transID: 'Transaction ID', to: '/transaction', typeTran: 'received', desc: ' to kkkljo...', amount: '-2.0084 VTX' },
+        { date: '<b>23</b> 2:15 AM', transID: 'Transaction ID', to: '/transaction', typeTran: 'received', desc: ' to kkkljo...', amount: '-2.0084 VTX' },
+        { date: '<b>23</b> 2:15 AM', transID: 'Transaction ID', to: '/transaction', typeTran: 'received', desc: ' to kkkljo...', amount: '-2.0084 VTX' },
+        { date: '<b>21</b> 4:15 AM', transID: 'Transaction ID', to: '/transaction', typeTran: 'sent', desc: ' to kkkljo...', amount: '-2.0084 VTX' },
+        { date: '<b>23</b> 2:15 AM', transID: 'Transaction ID', to: '/transaction', typeTran: 'received', desc: ' to kkkljo...', amount: '-2.0084 VTX' },
+        { date: '<b>21</b> 4:15 AM', transID: 'Transaction ID', to: '/transaction', typeTran: 'sent', desc: ' to kkkljo...', amount: '-2.0084 VTX' }
       ]
     }
   },
@@ -174,6 +178,15 @@ export default {
             }
             &--desc{
               color: #B0B0B0;
+              .type{
+                text-transform: capitalize;
+                &.sent{
+                  color: #FFB200;
+                }
+                &.received{
+                  color: #00D0CA;
+                }
+              }
             }
           }
           &-amount{
