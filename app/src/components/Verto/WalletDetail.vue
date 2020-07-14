@@ -161,7 +161,7 @@ export default {
       w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)
     )
 
-    console.log('walletDetail currentAccount', this.currentAccount)
+    // console.log('walletDetail currentAccount', this.currentAccount)
 
     this.$store.commit('currentwallet/updateParams', {
       chainID: this.$route.params.chainID,
@@ -177,7 +177,7 @@ export default {
   // },
   methods: {
     async hideCurrency () {
-      console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
+      // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
 
       this.$store.state.wallets.tokens.filter(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
         w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)
@@ -186,7 +186,7 @@ export default {
       })
 
       await this.$configManager.updateConfig(this.$store.state.settings.temporary, this.$store.state.currentwallet.config)
-      console.log('hidden', this.currentAccount.hidden)
+      // console.log('hidden', this.currentAccount.hidden)
     },
     goToSecurity () {
       this.$router.push({ path: '/verto/wallet/privateKey' })

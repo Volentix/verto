@@ -98,7 +98,7 @@ export default {
     }
   },
   mounted () {
-    console.log('mnemonic', this.mnemonic)
+    // console.log('mnemonic', this.mnemonic)
   },
   methods: {
   }
