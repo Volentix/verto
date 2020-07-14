@@ -1036,7 +1036,7 @@ export default {
       this.step = 2
       this.checkGetPairs()
       this.checkToGetPairs()
-      console.log('this.step', this.step)
+      // console.log('this.step', this.step)
       // console.log('this.$route.params', this.$route.params.coin)
     }
   },

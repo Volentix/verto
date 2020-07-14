@@ -133,7 +133,7 @@ class Wallets2Tokens {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
           }).then(res => {
             let tokenSets = res.data.rebalancing_sets
-            // console.log('tokenSets', tokenSets)
+            console.log('tokenSets', tokenSets)
             if (ethplorer.tokens) {
               ethplorer.tokens.filter(t => t.balance > 0).map(t => {
                 t.tokenInfo.image = t.tokenInfo.image ? t.tokenInfo.image : 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + Web3.utils.toChecksumAddress(t.tokenInfo.address) + '/logo.png'
@@ -141,7 +141,7 @@ class Wallets2Tokens {
 
                 if (!t.tokenInfo.image) {
                   try {
-                    const status = (axios.get('https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + csa + '/logo.png')).status
+                    const status = (axios.get('https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + csa + '/logo.png', { validateStatus: false })).status
                     if (status === 200) {
                       t.tokenInfo.image = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + csa + '/logo.png'
                     }
@@ -156,6 +156,7 @@ class Wallets2Tokens {
                   type: t.tokenInfo.symbol.toLowerCase(),
                   name: t.tokenInfo.name,
                   amount: t.balance / (10 ** t.tokenInfo.decimals),
+                  usd: (t.balance / (10 ** t.tokenInfo.decimals)) * t.tokenInfo.price.rate,
                   contract: t.tokenInfo.address,
                   chain: 'eth',
                   to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase() + '/' + wallet.key,

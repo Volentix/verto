@@ -149,7 +149,7 @@ export default {
     this.tableData.map(token => {
       this.totalBalance = this.totalBalance + (token.usd ? token.usd : 0)
     })
-    console.log('this.currentAccount from ProfileHeader****************', this.currentAccount, params)
+    // console.log('this.currentAccount from ProfileHeader****************', this.currentAccount, params)
 
     if (this.currentAccount === undefined) {
       this.currentAccount = {
