@@ -291,7 +291,7 @@ export default {
   data () {
     return {
       custom: {
-        'upload': {
+        upload: {
           cmd: 'upload',
           ico: 'fas fa-upload',
           title: 'Upload File'

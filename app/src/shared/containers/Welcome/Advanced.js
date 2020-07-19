@@ -1,0 +1,104 @@
+// @flow
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import compose from 'lodash/fp/compose';
+import { withTranslation } from 'react-i18next';
+import { Button, Container, Divider, Form, Header, Segment } from 'semantic-ui-react';
+
+import WelcomeImportContainer from './Import';
+
+import * as AccountsActions from '../../actions/accounts';
+import * as SettingsActions from '../../actions/settings';
+import * as ValidateActions from '../../actions/validate';
+import * as WalletActions from '../../actions/wallet';
+
+class WelcomeAdvancedContainer extends Component<Props> {
+  useColdWallet = (e) => {
+    const {
+      actions,
+      onClose,
+    } = this.props;
+    const {
+      clearValidationState,
+      setWalletMode
+    } = actions;
+    // Immediately set the wallet into cold storage mode
+    setWalletMode('cold');
+    // Clear all the validation states that may have been triggered
+    clearValidationState();
+    // Move to account stage
+    onClose();
+    e.preventDefault();
+    return false;
+  }
+
+  render() {
+    const {
+      t,
+    } = this.props;
+    let {
+      autoFocus
+    } = this.props;
+    if (autoFocus === undefined) {
+      autoFocus = true;
+    }
+
+    return (
+      <Form>
+        <Divider />
+        <Header
+          content={t('welcome_cold_wallet_header')}
+          size="small"
+          subheader={t('welcome_cold_wallet_subheader')}
+        />
+        <Button
+          color="blue"
+          content={t('welcome_use_coldwallet')}
+          icon="snowflake"
+          onClick={this.useColdWallet}
+          size="small"
+          style={{ marginTop: '1em' }}
+        />
+        <Header
+          content={t('welcome_restore_wallet_header')}
+          subheader={t('welcome_restore_wallet_subheader')}
+        />
+        <WelcomeImportContainer />
+        <Button
+          content={t('cancel')}
+          icon="left arrow circle"
+          onClick={this.props.onClose}
+          size="small"
+          style={{ marginTop: '1em' }}
+        />
+      </Form>
+    );
+  }
+}
+
+function mapStateToProps(state) {
+  return {
+    connection: state.connection,
+    settings: state.settings,
+    validate: state.validate
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators({
+      ...AccountsActions,
+      ...SettingsActions,
+      ...ValidateActions,
+      ...WalletActions
+    }, dispatch)
+  };
+}
+
+export default compose(
+  withRouter,
+  withTranslation('welcome'),
+  connect(mapStateToProps, mapDispatchToProps)
+)(WelcomeAdvancedContainer);

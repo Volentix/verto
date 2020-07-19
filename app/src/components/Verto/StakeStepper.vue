@@ -375,10 +375,10 @@ export default {
 
     let stakedAmounts = 0
     if (this.params.tokenID === 'vtx') {
-      let totalBalance = (await eos.getCurrencyBalanceP('vtxstake1111', 'volentixgsys')).toString().split(' ')[0]
-      let globalAmnts = (await eos.getTable('vtxstake1111', 'vtxstake1111', 'globalamnts'))[0]
-      let totalStake = globalAmnts.stake.split(' ')[0]
-      let totalSubsidy = globalAmnts.subsidy.split(' ')[0]
+      const totalBalance = (await eos.getCurrencyBalanceP('vtxstake1111', 'volentixgsys')).toString().split(' ')[0]
+      const globalAmnts = (await eos.getTable('vtxstake1111', 'vtxstake1111', 'globalamnts'))[0]
+      const totalStake = globalAmnts.stake.split(' ')[0]
+      const totalSubsidy = globalAmnts.subsidy.split(' ')[0]
 
       this.allocatable = +totalBalance - (+totalStake + +totalSubsidy)
       console.log('allocatable', this.allocatable)
@@ -425,7 +425,7 @@ export default {
       this.checkAmount()
     },
     checkAmount () {
-      let stake_per = Math.round((0.01 + (0.001 * this.stakePeriod)) * 1000) / 1000
+      const stake_per = Math.round((0.01 + (0.001 * this.stakePeriod)) * 1000) / 1000
 
       if (+this.sendAmount > 0.0 && +this.sendAmount <= +this.currentAccount.amount) {
         this.slider = Math.round(10000 * (this.sendAmount / +this.currentAccount.amount)) / 100
@@ -454,7 +454,7 @@ export default {
       try {
         this.step = 4
 
-        let memo = this.stakePeriod * 30
+        const memo = this.stakePeriod * 30
         this.formatedAmount = this.formatAmountString()
         const transaction = await eos.transferToken(
           'volentixgsys',

@@ -291,8 +291,8 @@ export default {
       ],
       tokenContract:
         {
-          'EOS': 'eosio.token',
-          'VTX': 'volentixgsys'
+          EOS: 'eosio.token',
+          VTX: 'volentixgsys'
         },
       tableData: [],
       transactions: [],
@@ -343,8 +343,8 @@ export default {
     },
     setConnectionOn () {
       if (this.$q.platform.is.electron) {
-        let command = 'networksetup -setairportpower airport on'
-        let exec = require('child_process').exec
+        const command = 'networksetup -setairportpower airport on'
+        const exec = require('child_process').exec
         exec(command)
       }
     },
@@ -358,26 +358,26 @@ export default {
     },
     async getTransactionHistory () {
       // get them from the demux api of the vtx ledger contract
-      let result = await this.$axios.get(process.env[this.$store.state.settings.network].DEMUX_API + '/ledger/' + this.walletKey + '?skip=0&limit=100')
+      const result = await this.$axios.get(process.env[this.$store.state.settings.network].DEMUX_API + '/ledger/' + this.walletKey + '?skip=0&limit=100')
 
       if (this.$store.state.currentwallet.wallet.type === 'eos') {
         // get them from the eos token side of things
-        let eosresult = await this.$axios.get(process.env[this.$store.state.settings.network].DEMUX_API + '/eos/' + this.walletName + '?skip=0&limit=100')
+        const eosresult = await this.$axios.get(process.env[this.$store.state.settings.network].DEMUX_API + '/eos/' + this.walletName + '?skip=0&limit=100')
 
         // the two APIs don't have the same output so let's map it out.
         var self = this
-        let ledgerformatedresult = eosresult.data.data.map(function (eos) {
+        const ledgerformatedresult = eosresult.data.data.map(function (eos) {
           if (eos.from === self.walletName) { eos.quantity = -eos.quantity }
-          let row = {
-            'amount': eos.quantity,
-            'currency': eos.currency,
-            'comment': eos.memo,
-            'toaccount': eos.to,
-            'fromaccount': eos.from,
-            'timestamp': eos.timestamp,
-            'blockNumber': eos.blockNumber,
-            'trx_id': eos.trx_id,
-            'tokey': eos.to
+          const row = {
+            amount: eos.quantity,
+            currency: eos.currency,
+            comment: eos.memo,
+            toaccount: eos.to,
+            fromaccount: eos.from,
+            timestamp: eos.timestamp,
+            blockNumber: eos.blockNumber,
+            trx_id: eos.trx_id,
+            tokey: eos.to
           }
           return row
         })

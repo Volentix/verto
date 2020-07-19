@@ -202,7 +202,7 @@ export default {
           custom
         }
 
-        const zixiform = self.$refs['zixiform']
+        const zixiform = self.$refs.zixiform
 
         nextTick(function () {
           zixiform.submit()

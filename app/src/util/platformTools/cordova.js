@@ -123,7 +123,7 @@ const downloadFile = async (text, optionalFileName) => {
         }
       })
     } else {
-      let permissions = cordova.plugins.permissions
+      const permissions = cordova.plugins.permissions
       permissions.checkPermission(permissions.READ_EXTERNAL_STORAGE, (status) => {
         if (status.hasPermission) {
           writeFile(cordova.file.externalRootDirectory + 'download/' + fname, text).then(() => {

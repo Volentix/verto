@@ -1,7 +1,5 @@
-import { protocol, crashReporter,app, BrowserWindow, Menu, shell, Tray, ipcMain, nativeImage } from 'electron'
-import { autoUpdate } from 'electron-updater'
-//import { createProtocolHandlers } from '../modules/handler/electron';
-import {store} from '../../src/store'
+import { app, BrowserWindow, Menu, shell, Tray, ipcMain, nativeImage } from 'electron'
+import { autoUpdater } from 'electron-updater'
 const path = require('path')
 const log = require('electron-log')
 
@@ -134,37 +132,6 @@ app.on('ready', () => {
     autoUpdater.checkForUpdatesAndNotify()
   }
 })
-// signature requests
-app.setAsDefaultProtocolClient('eosio');
-  protocol.registerHttpProtocol('eosio', (req, cb) => {
-    log.info('protocol handler: register', req, cb);
-  });
-  app.setAsDefaultProtocolClient('esr');
-  protocol.registerHttpProtocol('esr', (req, cb) => {
-    log.info('protocol handler: register', req, cb);
-  });
-// pHandler = createProtocolHandlers(resourcePath, store, request);
-//   // Allow ESR Requests from the UI
-// ipcMain.on('openUri', (event, data) => {
-//   pHandler.webContents.send('openUri', data);
-//   pHandler.show();
-// });
-
-// // Allow for configuration of ESR from the UI
-// ipcMain.on('enableSigningRequests', enableSigningRequests);
-// ipcMain.on('disableSigningRequests', disableSigningRequests);
-
-// // Allow setting of authorization headers globally
-// ipcMain.on('setAuthorizationHeader', (e, token, expires) => {
-//   log.info('setAuthorizationHeader');
-//   store.dispatch({
-//     type: types.SET_CONNECTION_DFUSE_ENDPOINT,
-//     payload: {
-//       dfuseAuthorization: token,
-//       dfuseAuthorizationExpires: expires,
-//     }
-//   });
-// });
 
 // autoUpdater.on('update-downloaded', () => {
 //   mainWindow.webContents.send("updateReady");

@@ -391,7 +391,7 @@ export default {
   async created () {
     this.params = this.$store.state.currentwallet.params
     this.tableData = await this.$store.state.wallets.tokens
-    let self = this
+    const self = this
     this.tableData.map(token => {
       if (token.type === 'verto') {
         self.tokensOption.push({
@@ -467,7 +467,7 @@ export default {
     },
     getAccountNames () {
       const self = this
-      let key = this.currentToken.value
+      const key = this.currentToken.value
       eos.getAccountNamesFromPubKeyP(key)
         .then(function (result) {
           console.log('result pour getAccountNames ', result)

@@ -378,8 +378,8 @@ export default {
   },
   mounted () {
     if (this.$q.platform.is.electron) {
-      let command = 'networksetup -setairportpower airport on'
-      let exec = require('child_process').exec
+      const command = 'networksetup -setairportpower airport on'
+      const exec = require('child_process').exec
       exec(command)
     }
     this.loadTableData()

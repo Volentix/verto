@@ -205,12 +205,12 @@ export default {
       tokenID: '',
       selectedCoin: null,
       currentAsset: {
-        'buySupport': '',
-        'currentPrice': '',
-        'marketCap': '',
-        'c24hChange': '',
-        'c24hChange2': '',
-        'vespucciScore': ''
+        buySupport: '',
+        currentPrice: '',
+        marketCap: '',
+        c24hChange: '',
+        c24hChange2: '',
+        vespucciScore: ''
       },
       confirmed: false,
       // showWallet: true,
@@ -295,7 +295,7 @@ export default {
       }
     },
     removeClassSelected: function () {
-      for (let item of this.menu) {
+      for (const item of this.menu) {
         item.selected = false
       }
     },

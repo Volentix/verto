@@ -1,7 +1,8 @@
-import electron from 'electron'
 const path = require('path')
 const fs = require('fs')
 import { saveAs } from 'file-saver'
+
+import { electron } from 'electron'
 
 const filePath = () => Promise.resolve(path.join(electron.remote.app.getPath('userData'), '/verto.config'))
 

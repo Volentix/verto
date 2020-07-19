@@ -28,7 +28,7 @@ class Lib {
         // return { balance: float }
       },
       async btc (key) {
-        const amount = (await axios.get('https://blockchain.info/q/addressbalance/' + key, { 'cors': 'true' })).data / 100000000
+        const amount = (await axios.get('https://blockchain.info/q/addressbalance/' + key, { cors: 'true' })).data / 100000000
         const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')).data.bitcoin.usd
         return { amount, usd }
       },
@@ -73,7 +73,7 @@ class Lib {
 
         let message, success
         try {
-          let privateKey = new bitcore.PrivateKey(key)
+          const privateKey = new bitcore.PrivateKey(key)
 
           insight.getUnspentUtxos(from, function (error, utxos) {
             if (error) {
@@ -134,8 +134,8 @@ class Lib {
 
         async function formatAmountString (value, token, key) {
           let numberOfDecimals = 0
-          let tableData = await store.state.wallets.tokens
-          let currentAccount = tableData.find(w => w.privateKey === key && w.type === token)
+          const tableData = await store.state.wallets.tokens
+          const currentAccount = tableData.find(w => w.privateKey === key && w.type === token)
           let stringAmount = (Math.round(+value * Math.pow(10, currentAccount.precision)) / Math.pow(10, currentAccount.precision)).toString()
 
           const amountParsed = stringAmount.split('.')
@@ -156,11 +156,11 @@ class Lib {
         const EthereumTx = require('ethereumjs-tx').Transaction
         const web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
 
-        let nonce = await web3.eth.getTransactionCount(from)
-        let gasPrices = await getCurrentGasPrices()
+        const nonce = await web3.eth.getTransactionCount(from)
+        const gasPrices = await getCurrentGasPrices()
 
         try {
-          let details = {
+          const details = {
             from,
             to,
             value: web3.utils.toHex(web3.utils.toWei(value.toString())),
@@ -189,14 +189,14 @@ class Lib {
             })
           })
         } catch (err) {
-          let message = err
-          let success = false
+          const message = err
+          const success = false
 
           return { success, message }
         }
         async function getCurrentGasPrices () {
-          let response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json')
-          let prices = {
+          const response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json')
+          const prices = {
             low: response.data.safeLow / 10,
             medium: response.data.average / 10,
             high: response.data.fast / 10

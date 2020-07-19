@@ -202,7 +202,7 @@ export default {
         this.$set(this.arrayShuffleShow, index, show)
       } else {
         this.arrayOrdered = this.arrayOrdered.filter(e => e !== word)
-        let unset = this.arrayShuffled.indexOf(word)
+        const unset = this.arrayShuffled.indexOf(word)
         this.$set(this.arrayShuffleShow, unset, show)
       }
 

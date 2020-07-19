@@ -499,7 +499,7 @@ export default {
     transform (props) {
       Object.entries(props).forEach(([key, value]) => {
         if (key !== 'days') {
-          let digits = value < 10 ? `0${value}` : value
+          const digits = value < 10 ? `0${value}` : value
           if (key === 'totalMinutes' && value <= 0) {
             // this.underOneMinuteLeftInTimer = true
           } else if (key === 'totalSeconds' && value <= 0) {
@@ -532,7 +532,7 @@ export default {
     },
     async getPendingTransactions () {
       const url = process.env[this.$store.state.settings.network].CROWDFUND_URL + '/public/api/investor-transactions?verto_public_address=' + this.$store.state.currentwallet.wallet.key + '&status_code=' + this.transactionStatus
-      let results = await axios.get(url)
+      const results = await axios.get(url)
       this.tableData = results.data
       if (this.transactionStatus === 'CONVERTED') {
         for (let i = 0; i < this.tableData.length; i++) {

@@ -297,7 +297,7 @@ import store from '@/store'
 import { userError } from '@/util/errorHandler'
 
 const url = 'https://api.coinswitch.co'
-let headers = {
+const headers = {
   'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
 }
 
@@ -491,10 +491,10 @@ export default {
       self.coins = result.data.data
       self.depositCoinOptions = self.coins.map(function (coin) {
         if (coin.isActive === true) {
-          let row = {
-            'label': coin.name,
-            'value': coin.symbol,
-            'image': coin.logoUrl
+          const row = {
+            label: coin.name,
+            value: coin.symbol,
+            image: coin.logoUrl
           }
           return row
         }
@@ -626,10 +626,10 @@ export default {
         .then((response) => {
           self.destinationCoinOptions = response.data.data.map(function (coin) {
             if (coin.isActive === true) {
-              let row = {
-                'label': self.coins.filter(coins => coins.symbol === coin.destinationCoin)[0].name,
-                'value': coin.destinationCoin,
-                'image': self.coins.filter(coins => coins.symbol === coin.destinationCoin)[0].logoUrl
+              const row = {
+                label: self.coins.filter(coins => coins.symbol === coin.destinationCoin)[0].name,
+                value: coin.destinationCoin,
+                image: self.coins.filter(coins => coins.symbol === coin.destinationCoin)[0].logoUrl
               }
               return row
             } // deal with false, should not create empty option.

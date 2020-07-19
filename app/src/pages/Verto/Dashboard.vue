@@ -127,10 +127,10 @@ export default {
 
     // Adds the eos account name when it is found to the cruxID
     this.tableData = await store.state.wallets.tokens
-    let eosAccount = this.tableData.find(w => w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
+    const eosAccount = this.tableData.find(w => w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
 
     if (eosAccount) {
-      let accountNames = await eos.getAccountNamesFromPubKeyP(eosAccount.key)
+      const accountNames = await eos.getAccountNamesFromPubKeyP(eosAccount.key)
 
       // May be we could auto convert an eos key to an account if discovered here
       if (accountNames.account_names.includes(eosAccount.name)) {
@@ -143,11 +143,11 @@ export default {
         })
         await cruxClient.init()
 
-        let addressMap = await cruxClient.getAddressMap()
+        const addressMap = await cruxClient.getAddressMap()
         console.log('addressMap', addressMap)
 
         if (!addressMap.hasOwnProperty('eos')) {
-          addressMap['eos'] = { 'addressHash': eosAccount.name }
+          addressMap.eos = { addressHash: eosAccount.name }
           cruxClient.putAddressMap(addressMap)
         }
       }

@@ -124,17 +124,17 @@ export default {
       available: false,
       assets: {},
       names: [
-        { 'value': 'eos', 'label': 'EOS Key - HD' },
-        { 'value': 'btc', 'label': 'Bitcoin - HD' },
-        { 'value': 'eth', 'label': 'Ethereum - HD' },
-        { 'value': 'bnb', 'label': 'Binance Coin - HD' },
-        { 'value': 'ltc', 'label': 'Litecoin - HD' },
-        { 'value': 'dash', 'label': 'DASH - HD' },
-        { 'value': 'steem', 'label': 'STEEM Key - HD' },
+        { value: 'eos', label: 'EOS Key - HD' },
+        { value: 'btc', label: 'Bitcoin - HD' },
+        { value: 'eth', label: 'Ethereum - HD' },
+        { value: 'bnb', label: 'Binance Coin - HD' },
+        { value: 'ltc', label: 'Litecoin - HD' },
+        { value: 'dash', label: 'DASH - HD' },
+        { value: 'steem', label: 'STEEM Key - HD' },
         // { 'value': 'xrp', 'label': 'Ripple - HD' },
-        { 'value': 'xlm', 'label': 'Stellar Lumens - HD' },
-        { 'value': 'xtz', 'label': 'Tezos - HD' },
-        { 'value': 'ada', 'label': 'Cardano - HD' } ]
+        { value: 'xlm', label: 'Stellar Lumens - HD' },
+        { value: 'xtz', label: 'Tezos - HD' },
+        { value: 'ada', label: 'Cardano - HD' }]
     }
   },
   async created () {
@@ -219,11 +219,11 @@ export default {
     },
     async putAddress () {
       this.assets = await cruxClient.getAssetMap()
-      delete this.assets['xrp'] // Libs fails on Apple devices.
-      delete this.assets['ada'] // Key generation not working yet.
-      delete this.assets['eos'] // Need account to be created first!
-      let count = Object.keys(this.assets).length
-      let map = []
+      delete this.assets.xrp // Libs fails on Apple devices.
+      delete this.assets.ada // Key generation not working yet.
+      delete this.assets.eos // Need account to be created first!
+      const count = Object.keys(this.assets).length
+      const map = []
       let i = 0
 
       for (const symbol of Object.keys(this.assets)) {
@@ -231,10 +231,10 @@ export default {
         this.progress = Math.round(i / count * 10000) / 100
         console.log('this.progress', this.progress)
         this.status = 'Creating keys for: ' + symbol
-        let keys = await HD.Wallet(symbol)
-        let result = await this.$configManager.saveWalletAndKey(this.names.find(o => o.value === symbol).label, this.vertoPassword, null, keys.publicKey, keys.privateKey, symbol, 'mnemonic')
+        const keys = await HD.Wallet(symbol)
+        const result = await this.$configManager.saveWalletAndKey(this.names.find(o => o.value === symbol).label, this.vertoPassword, null, keys.publicKey, keys.privateKey, symbol, 'mnemonic')
         console.log('key creation', result)
-        map[symbol] = { 'addressHash': keys.publicKey }
+        map[symbol] = { addressHash: keys.publicKey }
       }
 
       console.log('map', map)

@@ -1,6 +1,6 @@
 const { Api, JsonRpc } = require('eosjs') // { Api, JsonRpc, RpcError }
 const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig')
-// const { TextEncoder, TextDecoder } = require('text-encoding')
+const { TextEncoder, TextDecoder } = require('text-encoding')
 import store from '@/store'
 
 // const floatRegex = /[^\d.-]/g
@@ -23,7 +23,7 @@ class EosWrapper {
 
   //  ---- ACCOUNTS ----
   async getAccountNamesFromPubKeyP (pubKey) {
-    let names = await this.rpc.history_get_key_accounts(pubKey)
+    const names = await this.rpc.history_get_key_accounts(pubKey)
     return names
   }
 
@@ -33,7 +33,7 @@ class EosWrapper {
   }
 
   async getAccount (accountName) {
-    let account = (await this.rpc.get_account(accountName))
+    const account = (await this.rpc.get_account(accountName))
     console.log('account', account)
     return account
   }
@@ -41,7 +41,7 @@ class EosWrapper {
   // If you look at the result value, you can see an array in the form of a string.
   // This is because there could be tokens with many different symbols in the account
   async getCurrencyBalanceP (account, code = 'eosio.token', symbol = 'VTX') {
-    let balance = await this.rpc.get_currency_balance(code, account, symbol)
+    const balance = await this.rpc.get_currency_balance(code, account, symbol)
     return balance
   }
 
@@ -91,7 +91,7 @@ class EosWrapper {
   async transact (actions, keyProvider) {
     const signatureProvider = new JsSignatureProvider([keyProvider.keyProvider])
 
-    let api = new Api({
+    const api = new Api({
       rpc: this.rpc,
       signatureProvider,
       chainId: process.env[store.state.settings.network].CHAIN_ID,

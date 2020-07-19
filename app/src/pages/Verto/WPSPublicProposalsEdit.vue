@@ -351,7 +351,7 @@ export default {
         this.monthly_budget = this.currentProposal.monthly_budget
         this.duration = this.currentProposal.duration
         this.description = this.currentProposal.proposal_json.find(d => d.key === 'description' ? d.value : '').value
-        let proposalType = this.currentProposal.proposal_json.find(d => d.key === 'type' ? d.value : '').value
+        const proposalType = this.currentProposal.proposal_json.find(d => d.key === 'type' ? d.value : '').value
         console.log('proposalType', proposalType)
         this.typeProposal = proposalType === 'undefined' ? '' : proposalType
         this.securityProposal = this.currentProposal.proposal_json.find(d => d.key === 'security' ? d.value : '').value

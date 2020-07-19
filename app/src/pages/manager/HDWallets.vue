@@ -103,17 +103,17 @@ export default {
       vertoPassword: null,
       selected: null,
       assets: [
-        { 'value': 'verto', 'label': 'EOS' },
-        { 'value': 'eos', 'label': 'EOS' },
-        { 'value': 'btc', 'label': 'Bitcoin' },
-        { 'value': 'eth', 'label': 'Ethereum' },
-        { 'value': 'bnb', 'label': 'Binance Coin' },
-        { 'value': 'ltc', 'label': 'Litecoin' },
-        { 'value': 'dash', 'label': 'DASH' },
-        { 'value': 'xrp', 'label': 'Ripple' },
-        { 'value': 'xlm', 'label': 'Stellar Lumens' },
-        { 'value': 'xtz', 'label': 'Tezos' },
-        { 'value': 'ada', 'label': 'Cardano' } ]
+        { value: 'verto', label: 'EOS' },
+        { value: 'eos', label: 'EOS' },
+        { value: 'btc', label: 'Bitcoin' },
+        { value: 'eth', label: 'Ethereum' },
+        { value: 'bnb', label: 'Binance Coin' },
+        { value: 'ltc', label: 'Litecoin' },
+        { value: 'dash', label: 'DASH' },
+        { value: 'xrp', label: 'Ripple' },
+        { value: 'xlm', label: 'Stellar Lumens' },
+        { value: 'xtz', label: 'Tezos' },
+        { value: 'ada', label: 'Cardano' }]
     }
   },
   async created () {

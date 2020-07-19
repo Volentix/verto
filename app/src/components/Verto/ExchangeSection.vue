@@ -64,7 +64,7 @@
 
 import store from '@/store'
 const url = 'https://api.coinswitch.co'
-let headers = {
+const headers = {
   'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
 }
 export default {
@@ -81,7 +81,7 @@ export default {
   methods: {
     goToExchange () {
       console.log('this.depositCoin', this.depositCoin)
-      let coin = this.depositCoin.value
+      const coin = this.depositCoin.value
       this.$router.push({ name: 'exchange-v2', params: { coin } })
     },
     filterDepositCoin (val, update, abort) {
@@ -98,10 +98,10 @@ export default {
       self.coins = result.data.data
       self.depositCoinOptions = self.coins.map(function (coin) {
         if (coin.isActive === true) {
-          let row = {
-            'label': coin.name,
-            'value': coin.symbol,
-            'image': coin.logoUrl
+          const row = {
+            label: coin.name,
+            value: coin.symbol,
+            image: coin.logoUrl
           }
           return row
         }

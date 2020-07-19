@@ -260,20 +260,20 @@ export default {
     // look into checking current reward allocations
     this.rewards[0].value = 100
 
-    let voter = await this.getVoter()
+    const voter = await this.getVoter()
     if (voter[0].owner === this.walletName) {
       this.voted = true
       this.proxyModel = true
     }
 
-    let APRs = await this.getAPR()
+    const APRs = await this.getAPR()
     APRs.forEach(apr => {
       if (apr.paused === 0) {
         this.apr += apr.rate / 100
       }
     })
 
-    let proxies = await this.getProxies()
+    const proxies = await this.getProxies()
     proxies.forEach(proxy => {
       if (proxy.active === 1) {
         this.proxy = proxy.proxy
@@ -306,8 +306,8 @@ export default {
       }
     },
     async formatRewards () {
-      let proxyPercentagesArr = []
-      let proxyRewardsArr = []
+      const proxyPercentagesArr = []
+      const proxyRewardsArr = []
 
       this.rewards.forEach(reward => {
         if (reward.value) {

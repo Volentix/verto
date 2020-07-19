@@ -337,13 +337,13 @@ export default {
       showLedgerPullProgress: false,
       tokenContract:
       {
-        'EOS': 'eosio.token',
-        'VTX': 'volentixgsys'
+        EOS: 'eosio.token',
+        VTX: 'volentixgsys'
       },
       tokenPrecision:
       {
-        'EOS': 4,
-        'VTX': 8
+        EOS: 4,
+        VTX: 8
       },
       tokenSymbol: 'VTX',
       options: [

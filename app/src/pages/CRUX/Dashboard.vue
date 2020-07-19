@@ -85,7 +85,7 @@ export default {
   async created () {
   },
   async mounted () {
-    let cruxKey = await HD.Wallet('crux')
+    const cruxKey = await HD.Wallet('crux')
     console.log('crux privateKey', cruxKey.privateKey, 'menonic', this.$store.state.currentwallet.config.mnemonic)
 
     cruxClient = new CruxPay.CruxClient({
@@ -121,24 +121,24 @@ export default {
     },
     async getAvailable () {
       this.$nextTick(async () => {
-        if (!this.$refs['cruxID'].hasError) {
+        if (!this.$refs.cruxID.hasError) {
           this.available = await cruxClient.isCruxIDAvailable(this.cruxID)
         }
       })
     },
     async putAddress () {
       this.assets = await cruxClient.getAssetMap()
-      delete this.assets['ada']
-      let count = Object.keys(this.assets).length
-      let map = []
+      delete this.assets.ada
+      const count = Object.keys(this.assets).length
+      const map = []
       let i = 0
 
       Object.keys(this.assets).forEach(async symbol => {
         i++
         this.progress = Math.round(i / count * 10000) / 100
         this.status = 'creating keys for: ' + symbol
-        let keys = await HD.Wallet(symbol)
-        map[symbol] = { 'addressHash': keys.publicKey }
+        const keys = await HD.Wallet(symbol)
+        map[symbol] = { addressHash: keys.publicKey }
       })
 
       console.log('map', map)

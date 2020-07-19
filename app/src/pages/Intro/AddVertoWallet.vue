@@ -166,10 +166,10 @@ export default {
         this.resetErrors()
         const result = await this.$configManager.addWallet(this.wallet.name, this.wallet.vertoPassword, this.wallet.address)
         if (result.success) {
-          let wallet = {
-            'key': this.wallet.address,
-            'name': this.wallet.name,
-            'type': 'verto'
+          const wallet = {
+            key: this.wallet.address,
+            name: this.wallet.name,
+            type: 'verto'
           }
           this.$configManager.updateCurrentWallet(wallet)
           this.$router.push({ path: '/wallet' })

@@ -227,8 +227,8 @@ export default {
       tokenLogo:
       {
         undefined: '/statics/tray/walletTemplate@2x.png',
-        'vtx': '/statics/tray/walletTemplate@2x.png',
-        'eos': '/statics/img/eos.png'
+        vtx: '/statics/tray/walletTemplate@2x.png',
+        eos: '/statics/img/eos.png'
       },
       spinnervisible: false,
       eosbalance: 0,
@@ -243,12 +243,12 @@ export default {
 
     this.hasPrivateKeyInWallet = this.$store.state.currentwallet.wallet.privateKeyEncrypted
 
-    let tableData = this.$store.state.currentwallet.config.keys
+    const tableData = this.$store.state.currentwallet.config.keys
     this.walletOptions = tableData.map((key) => {
-      let row = {
-        'label': key.name.toUpperCase(),
-        'value': key.key,
-        'image': this.tokenLogo[key.type]
+      const row = {
+        label: key.name.toUpperCase(),
+        value: key.key,
+        image: this.tokenLogo[key.type]
       }
       return row
     })

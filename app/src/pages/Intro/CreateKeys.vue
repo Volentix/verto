@@ -51,8 +51,8 @@ export default {
     async submit () {
       // if (this.checkOne && this.checkTwo && this.checkThree && this.checkFour) {
       if (this.$q.platform.is.electron) {
-        let command = 'networksetup -setairportpower airport off'
-        let exec = require('child_process').exec
+        const command = 'networksetup -setairportpower airport off'
+        const exec = require('child_process').exec
         exec(command)
       } else if (this.$q.platform.is.cordova) {
         try {

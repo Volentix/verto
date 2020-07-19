@@ -234,7 +234,7 @@ export default {
     this.params = this.$store.state.currentwallet.params
 
     this.tableData = await this.$store.state.wallets.tokens
-    let self = this
+    const self = this
     let firstItem = null
     let count = 0
     this.tableData.map(token => {

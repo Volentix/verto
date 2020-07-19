@@ -823,10 +823,10 @@ export default {
     async retrieveVTXBTC () {
       // let startTime = ''
       // let startTime = ''
-      let result = await this.$axios.get(
+      const result = await this.$axios.get(
         'https://api3.stex.com/public/chart/1058/5?timeStart=1567367779&timeEnd=1569527779&limit=100'
       )
-      let chartDataArray = []
+      const chartDataArray = []
       for (var item of result.data.data) {
         const varArray = [item.time, item.open]
         chartDataArray.push(varArray)
@@ -835,7 +835,7 @@ export default {
     },
     async getTransactionHistory () {
       // get them from the demux api of the vtx ledger contract
-      let result = await this.$axios.get(
+      const result = await this.$axios.get(
         process.env[this.$store.state.settings.network].DEMUX_API +
           '/ledger/' +
           this.walletKey +
@@ -844,7 +844,7 @@ export default {
 
       if (this.$store.state.currentwallet.wallet.type === 'eos') {
         // get them from the eos token side of things
-        let eosresult = await this.$axios.get(
+        const eosresult = await this.$axios.get(
           process.env[this.$store.state.settings.network].DEMUX_API +
             '/eos/' +
             this.walletName +
@@ -853,11 +853,11 @@ export default {
 
         // the two APIs don't have the same output so let's map it out.
         var self = this
-        let ledgerformatedresult = eosresult.data.data.map(function (eos) {
+        const ledgerformatedresult = eosresult.data.data.map(function (eos) {
           if (eos.from === self.walletName) {
             eos.quantity = -eos.quantity
           }
-          let row = {
+          const row = {
             amount: eos.quantity,
             currency: eos.currency,
             comment: eos.memo,
@@ -881,12 +881,12 @@ export default {
     },
     async loadTableDataWallets () {
       this.tableDataWallets = this.$store.state.currentwallet.config.keys
-      let tableDataWalletsCustom = []
+      const tableDataWalletsCustom = []
       for (var item of this.tableDataWallets) {
-        let balanceByWallet = await this.getBalanceByWalletKey(item.key)
+        const balanceByWallet = await this.getBalanceByWalletKey(item.key)
         // console.log('balanceByWallet', balanceByWallet.data.balance)
-        let balancaValue = balanceByWallet.data.balance
-        tableDataWalletsCustom.push({ 'wallet': item, 'balance': balancaValue })
+        const balancaValue = balanceByWallet.data.balance
+        tableDataWalletsCustom.push({ wallet: item, balance: balancaValue })
       }
       // console.log('tableDataWalletsCustom', tableDataWalletsCustom)
       this.tableDataWallets = tableDataWalletsCustom
@@ -941,8 +941,8 @@ export default {
     },
     setConnectionOn () {
       if (this.$q.platform.is.electron) {
-        let command = 'networksetup -setairportpower airport on'
-        let exec = require('child_process').exec
+        const command = 'networksetup -setairportpower airport on'
+        const exec = require('child_process').exec
         exec(command)
       }
     },
@@ -965,7 +965,7 @@ export default {
       var self = this
       try {
         // Getting the account balance from demux in case of the ledger contract
-        let result = await this.$axios.get(
+        const result = await this.$axios.get(
           process.env[this.$store.state.settings.network].DEMUX_API +
             '/ledger/balance/' +
             this.walletKey
@@ -978,7 +978,7 @@ export default {
         if (this.$store.state.currentwallet.wallet.type === 'eos') {
           const eos = new EosWrapper()
           vtxProm = eos
-            .getCurrencyBalanceP(this.walletName, this.tokenContract['VTX'])
+            .getCurrencyBalanceP(this.walletName, this.tokenContract.VTX)
             .then(function (result) {
               if (result.length) {
                 self.vtxBalance = result[0].split(' ')[0]
@@ -1003,16 +1003,16 @@ export default {
         }
         // get EOS Balance on EOS Account
         Promise.all([vtxProm, eosProm]).then(async values => {
-          let results = await this.$axios.get(
+          const results = await this.$axios.get(
             'https://api3.stex.com/public/ticker/1059'
           )
-          let eos2btc = await this.$axios.get(
+          const eos2btc = await this.$axios.get(
             'https://api.coingecko.com/api/v3/simple/price?ids=eos&vs_currencies=btc'
           )
-          let eosBtcTotals = parseFloat(
+          const eosBtcTotals = parseFloat(
             +eos2btc.data.eos.btc * +self.eosBalance
           ).toFixed(8)
-          let vtxBtcTotals = parseFloat(
+          const vtxBtcTotals = parseFloat(
             (+results.data.data.ask * +self.vtxTotal) / 10000
           ).toFixed(8)
           self.currentBtcValue = +eosBtcTotals + +vtxBtcTotals || 0

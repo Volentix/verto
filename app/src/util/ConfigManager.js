@@ -4,14 +4,40 @@ import sjcl from 'sjcl'
 import store from '../store'
 let platformTools = require('./platformTools')
 if (platformTools.default) platformTools = platformTools.default
+const { remote } = require('electron')
+// const { exec } = require('child_process')
+// const isMac = () => process.platform === 'darwin'
+// let ui
+// BrowserWindow } from 'electron'
+// import packageJson from '../../../package.json'
+// import { configureIPC } from '../../shared/electron/ipc'
+// import { windowStateKeeper } from '../../shared/electron/windowStateKeeper'
+import protocolHandler from './ProtocolHandler'
 
+const log = require('electron-log')
+
+let resourcePath = 'src'// __dirname
 class ConfigManager {
     currentConfig
     currentWallet
+    constructor () {
+      log.info('before')
+      remote.app.setAsDefaultProtocolClient('eosio')
+      remote.protocol.registerHttpProtocol('eosio', (req, cb) => {
+        log.info('protocol handler: register', req, cb)
+      })
+      remote.app.setAsDefaultProtocolClient('esr')
+      remote.protocol.registerHttpProtocol('esr', (req, cb) => {
+        log.info('protocol handler: register', req, cb)
+      })
+      protocolHandler.createProtocolHandler(resourcePath, store, false)
+      // log.info(protocolHandler)
+      log.info('after')
+    }
 
     getConfig (password) {
       return new Promise(async (resolve, reject) => {
-        let filePath = await platformTools.filePath()
+        const filePath = await platformTools.filePath()
         const configData = await platformTools.readFile(filePath, 'utf-8')
         let config = {}
         try {
@@ -33,7 +59,7 @@ class ConfigManager {
     async restoreConfig (configData, password) {
       // if (typeof configData !== 'string') configData = JSON.stringify(configData)
       try {
-        let filePath = await platformTools.filePath()
+        const filePath = await platformTools.filePath()
         const config = JSON.parse(sjcl.decrypt(password, configData))
         let defaultKey
         try {
@@ -54,7 +80,7 @@ class ConfigManager {
 
     getRawConfig () {
       return new Promise(async (resolve, reject) => {
-        let filePath = await platformTools.filePath()
+        const filePath = await platformTools.filePath()
         const configData = await platformTools.readFile(filePath, 'utf-8')
         resolve({ success: true, configData })
       })
@@ -72,7 +98,7 @@ class ConfigManager {
     }
 
     async saveConfig (password, currentWallet, config) {
-      let filePath = await platformTools.filePath()
+      const filePath = await platformTools.filePath()
       await platformTools.writeFile(filePath, sjcl.encrypt(password, JSON.stringify(config)), 'utf-8')
       store.commit('currentwallet/updateCurrentWallet', currentWallet)
       store.commit('currentwallet/updateConfig', config)
@@ -80,7 +106,7 @@ class ConfigManager {
     }
 
     async saveConfigOnly (password, config) {
-      let filePath = await platformTools.filePath()
+      const filePath = await platformTools.filePath()
       await platformTools.writeFile(filePath, sjcl.encrypt(password, JSON.stringify(config)), 'utf-8')
       store.commit('currentwallet/updateConfig', config)
       return { success: true }
@@ -143,7 +169,7 @@ class ConfigManager {
         try {
           this.currentConfig = { keys: [] }
           const payload = JSON.stringify(this.currentConfig)
-          let filePath = await platformTools.filePath()
+          const filePath = await platformTools.filePath()
           await platformTools.writeFile(filePath, sjcl.encrypt(password, payload), 'utf-8')
           store.commit('currentwallet/updateConfig', this.currentConfig)
           store.commit('currentwallet/setLoggedIn', true)
@@ -157,7 +183,7 @@ class ConfigManager {
 
     async hasVertoConfig () {
       try {
-        let filePath = await platformTools.filePath()
+        const filePath = await platformTools.filePath()
         const config = await platformTools.readFile(filePath, 'utf-8')
         if (config.constructor && config.constructor.name === 'FileError') {
           const fileError = new Error('File Error')
@@ -187,7 +213,7 @@ class ConfigManager {
         const result = await this.getConfig(vertoPassword)
         if (!result.success) return result
 
-        let config = result.config
+        const config = result.config
         const nameTaken = config.keys.some((key) => key.name.toLowerCase() === keyname.toLowerCase())
         const defaultKey = config.keys.length <= 0
         if (nameTaken) return { success: false, message: 'name_already_used' }
@@ -235,7 +261,7 @@ class ConfigManager {
         if (!result.success) {
           return result
         }
-        let config = result.config
+        const config = result.config
         store.commit('currentwallet/updateConfig', config)
         store.commit('currentwallet/setLoggedIn', true)
         let i
@@ -324,7 +350,7 @@ class ConfigManager {
       }
       wallet.associations.push({ name: associationName, createTime: new Date() })
       if (data.foundAllAssociations) {
-        wallet['setupcomplete'] = true
+        wallet.setupcomplete = true
       }
       return this.saveConfig(password, wallet, config)
     }
@@ -355,7 +381,7 @@ class ConfigManager {
         if (!result.success) {
           return result
         }
-        let config = result.config
+        const config = result.config
         let i
         for (i = 0; i < config.keys.length; i++) {
           const wallet = config.keys[i]
@@ -405,7 +431,7 @@ class ConfigManager {
         if (!result.success) {
           return result
         }
-        let config = result.config
+        const config = result.config
         let i
         for (i = 0; i < config.keys.length; i++) {
           const wallet = config.keys[i]
@@ -467,7 +493,7 @@ class ConfigManager {
     }
 
     async destroyConfig () {
-      let filePath = await platformTools.filePath()
+      const filePath = await platformTools.filePath()
       const unlinked = await platformTools.unlink(filePath)
       return unlinked
     }

@@ -6,7 +6,7 @@ class WindowEventBus {
     var eventMethod = window.addEventListener ? 'addEventListener' : 'attachEvent'
     var eventer = window[eventMethod]
     var messageEvent = eventMethod === 'attachEvent' ? 'onmessage' : 'message'
-    let listners = this.listeners
+    const listners = this.listeners
     eventer(messageEvent, function (e) {
       for (var i = 0; i < listners.length; i++) {
         listners[i](e)

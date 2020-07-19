@@ -151,8 +151,8 @@ export default {
     }
   },
   async created () {
-    let tableData = await this.$store.state.wallets.tokens
-    let params = this.$store.state.currentwallet.params
+    const tableData = await this.$store.state.wallets.tokens
+    const params = this.$store.state.currentwallet.params
     this.currentWallet = tableData.find(w => w.chain === params.chainID && w.type === params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === params.accountName : w.key === params.accountName)
     )

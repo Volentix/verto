@@ -237,8 +237,8 @@ export default {
       tokenSymbol: 'VTX',
       tokenContract:
       {
-        'EOS': 'eosio.token',
-        'VTX': 'volentixgsys'
+        EOS: 'eosio.token',
+        VTX: 'volentixgsys'
       },
       transactions: [],
       vtxTotal: 0,
@@ -291,8 +291,8 @@ export default {
     },
     setConnectionOn () {
       if (this.$q.platform.is.electron) {
-        let command = 'networksetup -setairportpower airport on'
-        let exec = require('child_process').exec
+        const command = 'networksetup -setairportpower airport on'
+        const exec = require('child_process').exec
         exec(command)
       }
     },
@@ -315,7 +315,7 @@ export default {
         let eosProm = 0
         if (this.$store.state.currentwallet.wallet.type === 'eos') {
           const eos = new EosWrapper()
-          vtxProm = eos.getCurrencyBalanceP(this.walletName, this.tokenContract['VTX'])
+          vtxProm = eos.getCurrencyBalanceP(this.walletName, this.tokenContract.VTX)
             .then(function (result) {
               if (result.length) {
                 self.vtxBalance = result[0].split(' ')[0]
@@ -336,10 +336,10 @@ export default {
         }
         // get EOS Balance on EOS Account
         Promise.all([vtxProm, eosProm]).then(async values => {
-          let results = await this.$axios.get('https://api3.stex.com/public/ticker/1059')
-          let eos2btc = await this.$axios.get('https://api.coingecko.com/api/v3/simple/price?ids=eos&vs_currencies=btc')
-          let eosBtcTotals = parseFloat(+eos2btc.data.eos.btc * +self.eosBalance).toFixed(8)
-          let vtxBtcTotals = parseFloat((+results.data.data.ask * +self.vtxTotal) / 10000).toFixed(8)
+          const results = await this.$axios.get('https://api3.stex.com/public/ticker/1059')
+          const eos2btc = await this.$axios.get('https://api.coingecko.com/api/v3/simple/price?ids=eos&vs_currencies=btc')
+          const eosBtcTotals = parseFloat(+eos2btc.data.eos.btc * +self.eosBalance).toFixed(8)
+          const vtxBtcTotals = parseFloat((+results.data.data.ask * +self.vtxTotal) / 10000).toFixed(8)
           self.currentBtcValue = +eosBtcTotals + +vtxBtcTotals || 0
         })
         this.spinnervisible = false
