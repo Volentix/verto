@@ -1,6 +1,5 @@
 import { app, ipcMain } from 'electron'
-import { checkForUpdates } from '../../shared/electron/updater'
-// updater';
+// import { checkForUpdates } from '../../shared/electron/updater'
 
 const { dialog } = require('electron')
 const fs = require('fs')
@@ -64,7 +63,7 @@ const configureIPC = (ui, primary = false) => {
     })
 
     ipcMain.on('checkForUpdates', () => {
-      checkForUpdates({}, ui)
+      // checkForUpdates({}, ui)
     })
 
     const defaultSize = {

@@ -70,6 +70,7 @@ class URI {
     // 4. If we don't want to broadcast it now, check whether whether we wanted to broadcast earlier and if so, call the URIWithProcessed (with tx sig). Register the dispatch value in obj being returned.
 
     // 5. Push the transaction to EOS, and register a call back waiting for the response.
+    //this.$store.get
 
   // return (dispatch: () => void, getState) => {
   //   dispatch({

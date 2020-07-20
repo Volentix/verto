@@ -1,8 +1,8 @@
-// import { BrowserWindow } from 'electron'
+
 import { Menu } from 'electron'
 import packageJson from '../../package.json'
 const { remote } = require('electron')
-// import { configureIPC } from '../shared/electron/ipc'
+import { configureIPC } from '../shared/electron/ipc'
 
 import { uri } from './uri'
 import { windowStateKeeper } from '../shared/electron/windowStateKeeper'
@@ -77,9 +77,9 @@ class ProtocolHandler {
       }
     })
 
-    // configureIPC(ui)
+    configureIPC(ui)
 
-  //   return ui
+    return ui
   }
 }
 

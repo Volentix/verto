@@ -5,13 +5,7 @@ import store from '../store'
 let platformTools = require('./platformTools')
 if (platformTools.default) platformTools = platformTools.default
 const { remote } = require('electron')
-// const { exec } = require('child_process')
-// const isMac = () => process.platform === 'darwin'
-// let ui
-// BrowserWindow } from 'electron'
-// import packageJson from '../../../package.json'
-// import { configureIPC } from '../../shared/electron/ipc'
-// import { windowStateKeeper } from '../../shared/electron/windowStateKeeper'
+
 import protocolHandler from './ProtocolHandler'
 
 const log = require('electron-log')
@@ -30,8 +24,27 @@ class ConfigManager {
       remote.protocol.registerHttpProtocol('esr', (req, cb) => {
         log.info('protocol handler: register', req, cb)
       })
-      protocolHandler.createProtocolHandler(resourcePath, store, false)
-      // log.info(protocolHandler)
+      let pHandler = protocolHandler.createProtocolHandler(resourcePath, store, false)
+      // Allow ESR Requests from the UI
+      remote.ipcMain.on('openUri', (event, data) => {
+        pHandler.webContents.send('openUri', data)
+        pHandler.show()
+      })
+      // Allow for configuration of ESR from the UI
+      // remote.ipcMain.on('enableSigningRequests', this.enableSigningRequests)
+      // remote.ipcMain.on('disableSigningRequests', this.disableSigningRequests)
+
+      // Allow setting of authorization headers globally
+      // remote.ipcMain.on('setAuthorizationHeader', (e, token, expires) => {
+      //   log.info('setAuthorizationHeader')
+      //   store.dispatch({
+      //     // type: types.SET_CONNECTION_DFUSE_ENDPOINT,
+      //     payload: {
+      //       dfuseAuthorization: token,
+      //       dfuseAuthorizationExpires: expires
+      //     }
+      //   })
+      // })
       log.info('after')
     }
 
