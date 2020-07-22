@@ -350,9 +350,11 @@ export default {
         font-weight: 700;
         text-align: center;
         width: 100%;
+        max-width: fit-content;
         margin-top: -10px;
         margin-bottom: 5px;
         letter-spacing: 1px;
+        position: relative;
       }
       &__action{
         text-align: center;

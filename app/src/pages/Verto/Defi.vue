@@ -118,7 +118,9 @@
           </div> -->
         </div>
       </div>
-      <AddLiquidityDialog :open="openDialog" />
+      <q-dialog v-model="openDialog">
+        <AddLiquidityDialog />
+      </q-dialog>
     </div>
     <div v-else class="standard-content">
       <h2 class="standard-content--title flex justify-center"><q-btn flat unelevated class="btn-align-left" text-color="black" icon="keyboard_backspace" /> Liquidity pool </h2>

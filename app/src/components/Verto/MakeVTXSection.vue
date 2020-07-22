@@ -1,31 +1,32 @@
 <template>
   <div class="desktop-card-style make-vtx q-mb-sm">
-    <div class="row flex justify-between q-pb-lg q-pt-lg">
+    <div class="row flex justify-between q-pb-xl q-pt-xl">
       <div class="col col-4 flex items-center"><img src="statics/make_vtx_bg.png" class="full-width" alt=""></div>
       <div class="col col-8 flex items-center justify-end">
-        <strong>Make x amount of VTX now!</strong>
+        <strong v-if="highestVTXAccount !== null">Make {{estimatedReward}} VTX now!</strong>
+        <strong v-else>Make VTX while you sleep !</strong>
         <div class="call-action">
-          <q-btn unelevated class="qbtn-start q-mr-md" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Stake now" />
-          <!-- <q-btn unelevated class="qbtn-start q-mr-sm" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Buy with BTC / ETH" /> -->
+          <q-btn v-if="highestVTXAccount !== null" unelevated class="qbtn-start q-mr-md" color="black" :to="`/verto/stake`" text-color="white" label="Stake now" />
+          <q-btn v-else unelevated class="qbtn-start q-mr-sm" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Buy with BTC/ETH" />
           <!-- <q-btn unelevated class="qbtn-start" color="black" @click="modalBuyWithEOS = true" text-color="white" label="Buy with EOS" /> -->
         </div>
       </div>
     </div>
     <q-dialog v-model="modalBuyWithBTCETH">
-      <q-card class="q-pa-sm" style="width: 90%;max-width: 400px">
+      <q-card class="q-pa-sm" style="width: 90%;max-width: 500px">
         <q-toolbar>
           <q-avatar><img src="statics/icon.png"></q-avatar>
-          <q-toolbar-title><span class="text-weight-bold">Buy with </span> BTC / ETH</q-toolbar-title>
+          <q-toolbar-title><span class="text-weight-bold">Buy with </span> BTC / ETH / EOS</q-toolbar-title>
           <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
         <q-card-section class="text-h6 flex justify-between btn-action q-mb-md">
           <a href="https://app.stex.com/en/basic-trade/pair/BTC/VTX/1D" class="border" target="_blank">STEX</a>
-          <a href="https://p2pb2b.io/trade/VTX_BTC" target="_blank">P2PB2B</a>
-          <!-- <a href="https://newdex.io/trade/volentixgsys-vtx-eos" target="_blank">NEWDEX</a> -->
+          <a href="https://p2pb2b.io/trade/VTX_BTC" class="border" target="_blank">P2PB2B</a>
+          <a href="https://newdex.io/trade/volentixgsys-vtx-eos" target="_blank">NEWDEX</a>
         </q-card-section>
       </q-card>
     </q-dialog>
-    <q-dialog v-model="modalBuyWithEOS">
+    <!-- <q-dialog v-model="modalBuyWithEOS">
       <q-card class="q-pa-sm" style="width: 90%;max-width: 400px">
         <q-toolbar>
           <q-avatar><img src="statics/icon.png"></q-avatar>
@@ -36,19 +37,41 @@
           <a href="https://newdex.io/trade/volentixgsys-vtx-eos" target="_blank">NEWDEX</a>
         </q-card-section>
       </q-card>
-    </q-dialog>
+    </q-dialog> -->
   </div>
 </template>
 
 <script>
 export default {
   name: 'MakeVTXSection',
-  components: {},
+  components: {
+
+  },
   data () {
     return {
+      estimatedReward: 0,
+      highestVTXAccount: null,
       modalBuyWithBTCETH: false,
       modalBuyWithEOS: false
     }
+  },
+  async created () {
+    let tableDatas = await this.$store.state.wallets.tokens.filter((c) => {
+      if (c.type === 'vtx') {
+        console.log('c.type', c.type)
+        return c
+      }
+    }).slice().sort(function (a, b) {
+      return b.amount - a.amount
+    })
+    if (tableDatas.length > 1) {
+
+    }
+    this.highestVTXAccount = tableDatas.length > 1 ? tableDatas[0] : null
+    let stake_per = Math.round((0.01 + (0.001 * 10)) * 1000) / 1000
+    let sendAmount = Math.round(Math.pow(10, this.highestVTXAccount.precision) * this.highestVTXAccount.amount) / Math.pow(10, this.highestVTXAccount.precision)
+    this.estimatedReward = Math.round(sendAmount * stake_per * 10 * 100) / 100
+    console.log('this.estimatedReward --**', this.estimatedReward)
   },
   methods: {
   }
@@ -62,7 +85,7 @@ export default {
       text-decoration: none;
       color: #333;
       outline: none;
-      flex-basis: 50%;
+      flex-basis: 33%;
       text-align: center;
       line-height: 100px;
       margin-top: 10px;
@@ -85,7 +108,7 @@ export default {
         strong{
           margin-bottom: -10px;
           line-height: 16px;
-          font-size: 12px;
+          font-size: 16px;
           padding-right: 20px;
         }
         .qbtn-start{
