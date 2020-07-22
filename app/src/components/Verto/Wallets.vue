@@ -79,7 +79,7 @@
                     </div>
                   </q-item>
                   <q-separator style="margin-top: 10px" />
-                  <q-item data-name='Trade' clickable v-ripple class="p-relative" to="/verto/exchange">Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                  <q-item data-name='Trade' v-if="item.disabled" clickable v-ripple class="p-relative" to="/verto/exchange">Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                   <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                   <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                   <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
@@ -294,8 +294,7 @@ export default {
         this.removeClassSelected()
         menu.selected = true
         this.selectedCoin = menu
-        // console.log('this.selectedCoin', this.selectedCoin)
-        this.$store.state.currentwallet.wallet = this.selectedCoin
+        console.log('this.selectedCoin', this.selectedCoin)
         this.$store.commit('currentwallet/updateParams', {
           chainID: this.selectedCoin.chain,
           tokenID: this.selectedCoin.type,
@@ -307,6 +306,7 @@ export default {
           accountName: this.$route.params.accountName
         })
         this.$store.state.currentwallet.wallet = this.currentAccount
+        this.$store.state.currentwallet.wallet = this.selectedCoin
       } else {
         menu.selected = false
       }

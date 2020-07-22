@@ -327,6 +327,11 @@ export default {
       message: ''
     }
   },
+  computed: {
+    wallet () {
+      return this.$store.state.currentwallet.wallet || {}
+    }
+  },
   async created () {
     this.osName = osName
     this.params = this.$store.state.currentwallet.params
@@ -345,16 +350,27 @@ export default {
       })
       count++
     })
-    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
-    )
-    console.log('this.currentAccount sur la page send', this.currentAccount)
-    this.currentToken = {
-      label: this.currentAccount !== undefined ? this.currentAccount.name : firstItem.name,
-      value: this.currentAccount !== undefined ? this.currentAccount.key : firstItem.key,
-      image: this.currentAccount !== undefined ? this.currentAccount.icon : firstItem.icon,
-      type: this.currentAccount !== undefined ? this.currentAccount.chain : firstItem.chain
+    if (this.wallet) {
+      this.currentAccount = this.wallet
+      this.currentToken = {
+        label: this.wallet.name,
+        value: this.wallet.key,
+        image: this.wallet.icon,
+        type: this.wallet.chain
+      }
+    } else {
+      this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+        w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+      )
+      // console.log('this.currentAccount sur la page send', this.currentAccount)
+      this.currentToken = {
+        label: this.currentAccount !== undefined ? this.currentAccount.name : firstItem.name,
+        value: this.currentAccount !== undefined ? this.currentAccount.key : firstItem.key,
+        image: this.currentAccount !== undefined ? this.currentAccount.icon : firstItem.icon,
+        type: this.currentAccount !== undefined ? this.currentAccount.chain : firstItem.chain
+      }
     }
+
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
 
     this.exchangeAddress = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name

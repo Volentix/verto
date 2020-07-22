@@ -77,7 +77,7 @@
                           </q-item>
                         </template>
                         <template v-slot:append>
-                          <q-btn round flat unelevated text-color="grey" @click.stop icon="o_file_copy" />
+                          <q-btn round flat unelevated text-color="grey" @click="copyToClipboard(currentAccount.type !== 'eos' && currentAccount.type !== 'verto'  ? currentAccount.name : currentAccount.key , 'Account name')" @click.stop icon="o_file_copy" />
                         </template>
                       </q-select>
 
@@ -350,13 +350,26 @@ export default {
     }
   },
   computed: {
+    wallet () {
+      return this.$store.state.currentwallet.wallet || {}
+    }
   },
   async created () {
-    this.params = this.$store.state.currentwallet.params
-    this.tableData = await this.$store.state.wallets.tokens
-    this.currentAccount = await this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
-    )
+    console.log('---this.wallet---', this.wallet)
+    if (this.wallet) {
+      this.currentAccount = this.wallet
+      this.params = {
+        chainID: this.currentAccount.chain,
+        tokenID: this.currentAccount.type,
+        accountName: this.currentAccount.name
+      }
+    } else {
+      this.params = this.$store.state.currentwallet.params
+      this.tableData = await this.$store.state.wallets.tokens
+      this.currentAccount = await this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+        w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+      )
+    }
 
     console.log('this.currentAccount ----------------- ', this.currentAccount)
 
@@ -404,6 +417,17 @@ export default {
   async mounted () {
   },
   methods: {
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    },
     changeSlider () {
       if (this.slider >= 0) {
         this.sendAmount = Math.round(Math.pow(10, this.currentAccount.precision) * this.currentAccount.amount * (this.slider / 100)) / Math.pow(10, this.currentAccount.precision)
@@ -432,6 +456,8 @@ export default {
 
         if (this.sendAmount >= 1000) {
           this.progColor = 'green'
+          let sep = ' , '
+          console.log(this.sendAmount, sep, stake_per, sep, this.stakePeriod)
           this.estimatedReward = Math.round(this.sendAmount * stake_per * this.stakePeriod * 100) / 100
           console.log('mul', stake_per)
         } else {
