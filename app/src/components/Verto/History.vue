@@ -59,6 +59,7 @@ export default {
   data () {
     return {
       active: true,
+      tableDataWallets: [],
       showWallet: false,
       showText: false,
       menu: [
@@ -80,10 +81,70 @@ export default {
       return this.$store.state.currentwallet.wallet || {}
     }
   },
+  created () {
+    // this.loadTableDataWallets()
+  },
   methods: {
     showMore () {
 
     }
+    // async loadDataTableHistory () {
+    //   if (this.$store.state.currentwallet.wallet.type === 'eos') {
+    //     // get them from the eos token side of things
+    //     let eosresult = await this.$axios.get(
+    //       process.env[this.$store.state.settings.network].DEMUX_API +
+    //         '/eos/' +
+    //         this.walletName +
+    //         '?skip=0&limit=100'
+    //     )
+
+    //     // the two APIs don't have the same output so let's map it out.
+    //     var self = this
+    //     let ledgerformatedresult = eosresult.data.data.map(function (eos) {
+    //       if (eos.from === self.walletName) {
+    //         eos.quantity = -eos.quantity
+    //       }
+    //       let row = {
+    //         amount: eos.quantity,
+    //         currency: eos.currency,
+    //         comment: eos.memo,
+    //         toaccount: eos.to,
+    //         fromaccount: eos.from,
+    //         timestamp: eos.timestamp,
+    //         blockNumber: eos.blockNumber,
+    //         trx_id: eos.trx_id,
+    //         tokey: eos.to
+    //       }
+    //       return row
+    //     })
+
+    //     result.data.data = result.data.data.concat(ledgerformatedresult)
+    //   }
+    //   // sort the transactions from the newest to the oldest
+    //   this.tableData = result.data.data
+    //     .sort((a, b) => a.blockNumber - b.blockNumber)
+    //     .reverse()
+    //   return true
+    // }
+    // async loadTableDataWallets () {
+    //   this.tableDataWallets = this.$store.state.currentwallet.config.keys
+    //   // let tableDataWalletsCustom = []
+    //   // console.log('tableDataWalletsCustom', tableDataWalletsCustom)
+    //   // this.tableDataWallets = tableDataWalletsCustom
+    // },
+
+    // async getBalanceByWalletKey (walletKey) {
+    //   let result = await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': walletKey }).then(balances => {
+    //     console.log('getBalanceByWalletKey () {} eos balances', balances)
+    //     // let balances = balancesArray.data.length === 0 ?
+    //     // if (balances.data.length === 0) {
+    //     //   balances.data = [
+    //     //     { amount: '0.0000', code: 'eosio.token', symbol: 'EOS' }
+    //     //   ]
+    //     // }
+    //   })
+    //   return result
+    // }
   }
 }
 </script>
