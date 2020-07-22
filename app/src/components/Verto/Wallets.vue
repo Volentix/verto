@@ -258,7 +258,7 @@ export default {
       return c
     })
 
-    console.log('this.tableData in wallets', this.tableData)
+    // console.log('this.tableData in wallets', this.tableData)
 
     this.$store.commit('currentwallet/updateParams', {
       chainID: this.chainID,
@@ -289,7 +289,7 @@ export default {
       this.openModal = true
     },
     showMenu: function (menu) {
-      console.log(menu.selected)
+      // console.log(menu.selected)
       if (!menu.selected) {
         this.removeClassSelected()
         menu.selected = true
@@ -321,7 +321,7 @@ export default {
       this.showText = !this.showText
     },
     async hideCurrency () {
-      console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
+      // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
 
       this.$store.state.wallets.tokens.filter(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
         w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)
@@ -330,7 +330,7 @@ export default {
       })
 
       await this.$configManager.updateConfig(this.$store.state.settings.temporary, this.$store.state.currentwallet.config)
-      console.log('hidden', this.currentAccount.hidden)
+      // console.log('hidden', this.currentAccount.hidden)
     }
   }
 }
