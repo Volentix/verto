@@ -54,7 +54,7 @@ export default {
       if (val.toLowerCase() === 'staking') {
         this.$router.push({ path: '/verto/stake' })
       }
-      console.log(val)
+      // console.log(val)
     }
   }
 }

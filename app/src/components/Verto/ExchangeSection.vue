@@ -131,7 +131,7 @@ export default {
   },
   methods: {
     goToExchange () {
-      console.log('this.depositCoin', this.depositCoin)
+      // console.log('this.depositCoin', this.depositCoin)
       let coin = this.depositCoin.value
       this.$router.push({ name: 'exchange-v2', params: { coin } })
     },
