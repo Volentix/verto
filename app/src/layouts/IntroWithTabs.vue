@@ -1,6 +1,6 @@
 <template>
   <q-layout>
-    <div class="desktop-version" v-if="osName.toLowerCase() === 'windows'">
+    <div class="desktop-version" v-if="screenSize > 1024">
       <TopMenu />
       <LeftMenu />
       <div class="menu-left-wrapper"></div>
@@ -23,12 +23,23 @@ export default {
   components: { TabsMenu, TopMenu, LeftMenu },
   data () {
     return {
+      screenSize: 0,
       osName: ''
     }
   },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.getWindowWidth)
+  },
   created () {
     this.osName = osName
+    this.getWindowWidth()
+    window.addEventListener('resize', this.getWindowWidth)
     // console.log('this.osName', this.osName)
+  },
+  methods: {
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
+    }
   }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
-  <q-page class="text-black bg-white" :class="osName.toLowerCase() === 'windows' ? 'desktop-marg': 'mobile-pad'">
-    <div class="desktop-version" v-if="osName.toLowerCase() === 'windows'">
+  <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+    <div class="desktop-version" v-if="screenSize > 1024">
       <div class="row">
         <div class="col-12 col-title">
           <h4>Liquidity pool</h4>
@@ -206,8 +206,13 @@ export default {
   updated () {
     // console.log('openDialog', this.openDialog)
   },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.getWindowWidth)
+  },
   async created () {
     this.osName = osName
+    this.getWindowWidth()
+    window.addEventListener('resize', this.getWindowWidth)
     // console.log('this.osName', this.osName)
     this.params = this.$store.state.currentwallet.params
     // console.log('this.params', this.params)
@@ -239,6 +244,9 @@ export default {
   mounted () {
   },
   methods: {
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({
