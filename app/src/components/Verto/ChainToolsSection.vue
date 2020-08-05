@@ -42,7 +42,7 @@ export default {
     }
   },
   updated () {
-    console.log('wallet ----* ', this.wallet)
+    // console.log('wallet ----* ', this.wallet)
   },
   computed: {
     wallet () {

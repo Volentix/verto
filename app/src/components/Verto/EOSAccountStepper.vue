@@ -396,7 +396,7 @@ export default {
       if (token.type === 'verto') {
         self.tokensOption.push({
           label: token.name.toLowerCase(),
-          value: token.key.toLowerCase(),
+          value: token.key,
           image: token.icon
         })
       }
