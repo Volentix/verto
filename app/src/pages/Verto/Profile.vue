@@ -1,6 +1,6 @@
 <template>
-  <q-page class="column text-black bg-white" :class="osName.toLowerCase() === 'windows' ? 'desktop-marg': 'mobile-pad'">
-    <div class="desktop-version" v-if="osName.toLowerCase() === 'windows'">
+  <q-page class="column text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+    <div class="desktop-version" v-if="screenSize > 1024">
       <div class="row">
         <div class="col col-md-3">
           <div class="wallets-container">
@@ -54,14 +54,22 @@ export default {
       configPath: ''
     }
   },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.getWindowWidth)
+  },
   created () {
     this.osName = osName
+    this.getWindowWidth()
+    window.addEventListener('resize', this.getWindowWidth)
   },
   mounted () {
     this.version = version
     this.setupPlatformPath()
   },
   methods: {
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
     async setupPlatformPath () {
       this.configPath = await platformTools.filePath()
     },

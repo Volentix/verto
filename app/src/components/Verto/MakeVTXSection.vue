@@ -6,7 +6,7 @@
         <strong v-if="highestVTXAccount !== null">Make {{estimatedReward}} VTX now!</strong>
         <strong v-else>Make VTX while you sleep !</strong>
         <div class="call-action">
-          <q-btn v-if="highestVTXAccount !== null" unelevated class="qbtn-start q-mr-md" color="black" :to="`/verto/stake`" text-color="white" label="Stake now" />
+          <q-btn v-if="highestVTXAccount !== null" unelevated class="qbtn-start q-mr-md" color="black" :to="`/verto/stake/2`" text-color="white" label="Stake now" />
           <q-btn v-else unelevated class="qbtn-start q-mr-sm" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Buy with BTC/ETH" />
           <!-- <q-btn unelevated class="qbtn-start" color="black" @click="modalBuyWithEOS = true" text-color="white" label="Buy with EOS" /> -->
         </div>
@@ -20,9 +20,10 @@
           <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
         <q-card-section class="text-h6 flex justify-between btn-action q-mb-md">
-          <a href="https://app.stex.com/en/basic-trade/pair/BTC/VTX/1D" class="border" target="_blank">STEX</a>
-          <a href="https://p2pb2b.io/trade/VTX_BTC" class="border" target="_blank">P2PB2B</a>
-          <a href="https://newdex.io/trade/volentixgsys-vtx-eos" target="_blank">NEWDEX</a>
+          <a href="https://app.stex.com/en/basic-trade/pair/BTC/VTX/1D" class="border column" target="_blank"> STEX <div class="flex flex-center coins-wrapper"><img :src="`${base}btc.png`" alt=""><img :src="`${base}eth.png`" alt=""></div>
+          </a>
+          <a href="https://p2pb2b.io/trade/VTX_BTC" class="border column" target="_blank">P2PB2B <div class="flex flex-center coins-wrapper"><img :src="`${base}btc.png`" alt=""><img :src="`${base}eth.png`" alt=""></div></a>
+          <a href="https://newdex.io/trade/volentixgsys-vtx-eos" class="column" target="_blank">NEWDEX <div class="flex flex-center coins-wrapper"><img :src="`${base}eos.png`" alt=""></div></a>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -50,6 +51,7 @@ export default {
   data () {
     return {
       estimatedReward: 0,
+      base: 'https://files.coinswitch.co/public/coins/',
       highestVTXAccount: null,
       modalBuyWithBTCETH: false,
       modalBuyWithEOS: false
@@ -67,11 +69,20 @@ export default {
     if (tableDatas.length > 1) {
 
     }
-    this.highestVTXAccount = tableDatas.length > 1 ? tableDatas[0] : null
-    let stake_per = Math.round((0.01 + (0.001 * 10)) * 1000) / 1000
-    let sendAmount = Math.round(Math.pow(10, this.highestVTXAccount.precision) * this.highestVTXAccount.amount) / Math.pow(10, this.highestVTXAccount.precision)
-    this.estimatedReward = Math.round(sendAmount * stake_per * 10 * 100) / 100
-    console.log('this.estimatedReward --**', this.estimatedReward)
+    this.highestVTXAccount = tableDatas.length > 1 && tableDatas[0].amout >= 1000 ? tableDatas[0] : null
+    if (this.highestVTXAccount !== undefined && this.highestVTXAccount !== null) {
+      let stake_per = Math.round((0.01 + (0.001 * 10)) * 1000) / 1000
+      let sendAmount = Math.round(Math.pow(10, this.highestVTXAccount.precision) * this.highestVTXAccount.amount) / Math.pow(10, this.highestVTXAccount.precision)
+      this.estimatedReward = Math.round(sendAmount * stake_per * 10 * 100) / 100
+      console.log('this.estimatedReward --**', this.estimatedReward)
+      this.$store.commit('highestVTXAccount/updateParams', {
+        chainID: this.highestVTXAccount.chain,
+        tokenID: this.highestVTXAccount.type,
+        accountName: this.highestVTXAccount.name
+      })
+      this.$store.state.highestVTXAccount.wallet = this.highestVTXAccount
+      console.log('this.$store.state.highestVTXAccount.wallet > ', await this.$store.state.highestVTXAccount.wallet)
+    }
   },
   methods: {
   }
@@ -80,6 +91,18 @@ export default {
 
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
+  .coins-wrapper{
+    margin-top: -30px;
+    margin-bottom: 30px;
+    img{
+      width: auto;
+      height: auto;
+      max-width: 26px;
+      max-height: 26px;
+      border: 1px solid rgba(#CCC, .2);
+      border-radius: 30px;
+    }
+  }
   .btn-action{
     a{
       text-decoration: none;

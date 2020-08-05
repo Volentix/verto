@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 // we first import the module
 import currentwallet from './currentwallet'
+import highestVTXAccount from './highestVTXAccount'
 import settings from './settings'
 import wallets from './wallets'
 Vue.use(Vuex)
@@ -12,7 +13,8 @@ const store = new Vuex.Store({
     // then we reference it
     currentwallet,
     settings,
-    wallets
+    wallets,
+    highestVTXAccount
   }
 })
 
@@ -23,9 +25,10 @@ const store = new Vuex.Store({
 if (process.env.DEV && module.hot) {
   module.hot.accept(['./currentwallet', './settings'], () => {
     const newCurrentwallet = require('./currentwallet').default
+    const newHighestVTXAccount = require('./highestVTXAccount').default
     const newSettings = require('./settings').default
     const newWallets = require('./wallets').default
-    store.hotUpdate({ modules: { currentwallet: newCurrentwallet, settings: newSettings, wallets: newWallets } })
+    store.hotUpdate({ modules: { currentwallet: newCurrentwallet, highestVTXAccount: newHighestVTXAccount, settings: newSettings, wallets: newWallets } })
   })
 }
 
