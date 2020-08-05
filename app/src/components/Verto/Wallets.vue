@@ -294,7 +294,7 @@ export default {
         this.removeClassSelected()
         menu.selected = true
         this.selectedCoin = menu
-        console.log('this.selectedCoin', this.selectedCoin)
+        // console.log('this.selectedCoin', this.selectedCoin)
         this.$store.commit('currentwallet/updateParams', {
           chainID: this.selectedCoin.chain,
           tokenID: this.selectedCoin.type,
