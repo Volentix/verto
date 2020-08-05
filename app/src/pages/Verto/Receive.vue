@@ -344,7 +344,7 @@ export default {
       if (count === 0) { firstItem = token }
       self.options.push({
         label: token.name.toLowerCase(),
-        value: token.key.toLowerCase(),
+        value: token.key,
         image: token.icon,
         type: token.chain
       })

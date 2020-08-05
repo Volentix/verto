@@ -58,7 +58,7 @@ export default {
   async created () {
     let tableDatas = await this.$store.state.wallets.tokens.filter((c) => {
       if (c.type === 'vtx') {
-        console.log('c.type', c.type)
+        // console.log('c.type', c.type)
         return c
       }
     }).slice().sort(function (a, b) {
@@ -71,7 +71,7 @@ export default {
     let stake_per = Math.round((0.01 + (0.001 * 10)) * 1000) / 1000
     let sendAmount = Math.round(Math.pow(10, this.highestVTXAccount.precision) * this.highestVTXAccount.amount) / Math.pow(10, this.highestVTXAccount.precision)
     this.estimatedReward = Math.round(sendAmount * stake_per * 10 * 100) / 100
-    console.log('this.estimatedReward --**', this.estimatedReward)
+    // console.log('this.estimatedReward --**', this.estimatedReward)
   },
   methods: {
   }
