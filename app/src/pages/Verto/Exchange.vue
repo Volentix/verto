@@ -1,7 +1,7 @@
 <template>
-  <q-page class="column text-black bg-grey-12" :class="osName.toLowerCase() === 'windows' ? 'desktop-marg': 'mobile-pad'">
+  <q-page class="column text-black bg-grey-12" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
     <!-- padding-bottom: 100px;background: #f3f3f3 !important -->
-    <div class="desktop-version" v-if="osName.toLowerCase() === 'windows'">
+    <div class="desktop-version" v-if="screenSize > 1024">
       <div class="row">
         <div class="col col-md-3">
           <div class="wallets-container">
@@ -827,8 +827,13 @@ export default {
       }
     }
   },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.getWindowWidth)
+  },
   async created () {
     this.osName = osName
+    this.getWindowWidth()
+    window.addEventListener('resize', this.getWindowWidth)
     // console.log('created - created - created - created')
     // console.log('this.$route.params', this.$route.params.coin)
     this.params = this.$store.state.currentwallet.params
@@ -1041,6 +1046,9 @@ export default {
     }
   },
   methods: {
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({

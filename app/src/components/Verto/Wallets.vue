@@ -294,18 +294,18 @@ export default {
         this.removeClassSelected()
         menu.selected = true
         this.selectedCoin = menu
-        // console.log('this.selectedCoin', this.selectedCoin)
+        console.log('this.selectedCoin', this.selectedCoin)
+        // this.$store.commit('currentwallet/updateParams', {
+        //   chainID: this.selectedCoin.chain,
+        //   tokenID: this.selectedCoin.type,
+        //   accountName: this.selectedCoin.name
+        // })
         this.$store.commit('currentwallet/updateParams', {
-          chainID: this.selectedCoin.chain,
-          tokenID: this.selectedCoin.type,
-          accountName: this.selectedCoin.name
+          chainID: this.$route.params.chainID || this.selectedCoin.chain,
+          tokenID: this.$route.params.tokenID || this.selectedCoin.type,
+          accountName: this.$route.params.accountName || this.selectedCoin.name
         })
-        this.$store.commit('currentwallet/updateParams', {
-          chainID: this.$route.params.chainID,
-          tokenID: this.$route.params.tokenID,
-          accountName: this.$route.params.accountName
-        })
-        this.$store.state.currentwallet.wallet = this.currentAccount
+        // this.$store.state.currentwallet.wallet = this.currentAccount
         this.$store.state.currentwallet.wallet = this.selectedCoin
       } else {
         menu.selected = false

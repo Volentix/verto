@@ -134,6 +134,14 @@ export default [
         }
       },
       {
+        name: 'stake',
+        path: '/verto/stake/:step',
+        component: () => import('pages/Verto/Stake.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'exchange',
         path: '/verto/exchange',
         component: () => import('pages/Verto/Exchange.vue'),
