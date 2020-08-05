@@ -415,6 +415,18 @@ export default {
     }
   },
   async mounted () {
+    let stepParam = this.$route.params.step
+    if (stepParam !== undefined) {
+      console.log('step staking = ', stepParam)
+      let highestVTXAccount = this.$store.state.highestVTXAccount.wallet
+      this.currentAccount = highestVTXAccount
+      this.params = this.$store.state.highestVTXAccount.params
+      this.slider = 100
+      this.changeSlider()
+      this.stakePeriod = 10
+      this.changeSlider()
+      this.step = parseInt(stepParam)
+    }
   },
   methods: {
     copyToClipboard (key, copied) {
@@ -497,7 +509,7 @@ export default {
       } catch (error) {
         // console.log('transaction errors', error)
         this.transactionError = true
-
+        console.log('error', error)
         if (error.includes('stake amount is too low')) {
           this.ErrorMessage = 'Your VTX stake amount is too low, you need at least 1000 VTX to stake.'
         } else if (error.includes('maximum billable CPU time')) {
