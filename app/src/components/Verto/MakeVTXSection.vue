@@ -60,7 +60,7 @@ export default {
   async created () {
     let tableDatas = await this.$store.state.wallets.tokens.filter((c) => {
       if (c.type === 'vtx') {
-        console.log('c.type', c.type)
+        // console.log('c.type', c.type)
         return c
       }
     }).slice().sort(function (a, b) {

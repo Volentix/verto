@@ -355,7 +355,7 @@ export default {
     }
   },
   async created () {
-    console.log('---this.wallet---', this.wallet)
+    // console.log('---this.wallet---', this.wallet)
     if (this.wallet) {
       this.currentAccount = this.wallet
       this.params = {
@@ -468,8 +468,8 @@ export default {
 
         if (this.sendAmount >= 1000) {
           this.progColor = 'green'
-          let sep = ' , '
-          console.log(this.sendAmount, sep, stake_per, sep, this.stakePeriod)
+          // let sep = ' , '
+          // console.log(this.sendAmount, sep, stake_per, sep, this.stakePeriod)
           this.estimatedReward = Math.round(this.sendAmount * stake_per * this.stakePeriod * 100) / 100
           // console.log('mul', stake_per)
         } else {
