@@ -67,10 +67,11 @@
     </div>
     <div v-else-if="version === 'type6'" class="profile-wrapper--header static" style="background: url(statics/refer_friend_bg.png) center bottom / cover no-repeat rgb(255, 255, 255) !important; min-height: 390px; box-shadow: none !important; border-radius: 0px;" />
     <div v-else class="column flex-center profile-wrapper--header" :class="{'desktop-ui' : !isMobile}" style="background: url('statics/header_bg.png');">
-      <h3 class="profile-wrapper--header__title text-white">Total Balance</h3>
+      <h3 class="profile-wrapper--header__title text-white">Portfolio Balance</h3>
       <h2 class="profile-wrapper--header__balance text-white">${{ new Number(totalBalance).toFixed(2) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <div class="profile-wrapper--header__action">
-        <q-btn unelevated to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
+        <q-btn unelevated v-if="screenSize <= 1024" to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
+        <q-btn unelevated v-if="screenSize > 1024" @click="selectedCoin === undefined ? notifSelectWallet() : goToSendPage()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
         <q-btn unelevated to="/verto/wallets/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
       </div>
     </div>
@@ -125,6 +126,8 @@ export default {
       openModal: false,
       tokenID: '',
       goBack: '',
+      screenSize: 0,
+      // selectedCoin: null,
       currentAccount: {
         selected: false,
         type: '',
@@ -135,9 +138,23 @@ export default {
       }
     }
   },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.getWindowWidth)
+  },
   async mounted () {
   },
+  updated () {
+    // this.selectedCoin = this.$store.state.currentwallet.wallet
+    console.log('this.selectedCoin updated()', this.selectedCoin)
+  },
+  computed: {
+    selectedCoin () {
+      return this.$store.state.currentwallet.wallet || {}
+    }
+  },
   async created () {
+    this.getWindowWidth()
+    window.addEventListener('resize', this.getWindowWidth)
     this.tableData = await this.$store.state.wallets.tokens
     let params = this.fetchCurrentWalletFromState ? this.$store.state.currentwallet.params : this.$route.params
 
@@ -164,6 +181,31 @@ export default {
     }
   },
   methods: {
+    notifSelectWallet () {
+      this.$q.notify.registerType('my-notif', {
+        icon: 'announcement',
+        progress: true,
+        color: 'deep-purple-14',
+        textColor: 'white',
+        position: 'top'
+      })
+      console.log('notifSelectWallet , notifSelectWallet')
+      this.triggerCustomRegisteredType1()
+    },
+    triggerCustomRegisteredType1 () {
+      this.$q.notify({
+        type: 'my-notif',
+        message: `Please select a wallet !`,
+        caption: 'Click on a wallet on the list'
+      })
+    },
+    goToSendPage () {
+      console.log('goToSendPage , goToSendPage')
+      this.$router.push({ path: '/verto/wallets/send' })
+    },
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({
