@@ -17,6 +17,7 @@
   },
   "scripts": {
     "dev": "cross-env QENV=development quasar dev",
+    "buildpwa": "cross-env QENV=development quasar build -m pwa",
     "ios": "QENV=development quasar dev -m cordova -T ios",
     "android": "QENV=development quasar dev -m cordova -T android",
     "electron": "QENV=development quasar dev -m electron",
