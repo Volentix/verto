@@ -125,6 +125,7 @@ export default {
 
     // Adds the eos account name when it is found to the cruxID
     this.tableData = await store.state.wallets.tokens
+    Promise.all(this.tableData)
     let eosAccount = this.tableData.find(w => w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
 
     if (eosAccount) {
