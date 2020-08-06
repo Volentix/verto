@@ -113,7 +113,7 @@
         <div class="col col-md-9">
           <div class="desktop-card-style apps-section q-mb-sm">
             <div class="standard-content">
-              <h2 class="standard-content--title flex justify-start">Send </h2>
+              <h2 class="standard-content--title flex justify-start items-center">Send <img :src="currentAccount.icon" class="max40 q-ml-sm" alt=""></h2>
               <div class="standard-content--body">
                 <div class="standard-content--body__form">
                   <div class="row">
@@ -312,20 +312,34 @@ export default {
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
   },
+  computed: {
+    selectedCoin () {
+      return this.$store.state.currentwallet.wallet || {}
+    }
+  },
   async created () {
     this.osName = osName
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
     // console.log('this.osName', this.osName)
     this.params = this.$store.state.currentwallet.params
-    // console.log('this.params', this.params)
     this.tableData = await this.$store.state.wallets.tokens
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
-
-    this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
-    this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
+    this.currentAccount = this.currentAccount || this.selectedCoin
+    if (this.params.chainID === undefined) {
+      this.params = {
+        chainID: this.currentAccount.chain,
+        tokenID: this.currentAccount.type,
+        accountName: this.currentAccount.name
+      }
+    }
+    console.log('this.params', this.params.chainID)
+    if (this.currentAccount !== undefined) {
+      this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
+      this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
+    }
 
     // console.log('this.currentAccount sur la page send', this.currentAccount)
 
@@ -457,6 +471,7 @@ export default {
         this.privateKey.key,
         this.currentAccount.contract
       ).then(result => {
+        console.log('result', result)
         if (result.success) {
           this.getPassword = false
           this.transErrorDialog = false
@@ -480,6 +495,20 @@ export default {
         this.sendTokens()
         this.openModalProgress = true
       }
+    },
+    formatAmountString () {
+      let numberOfDecimals = 0
+      let stringAmount = (Math.round(this.sendAmount * Math.pow(10, this.currentAccount.precision)) / Math.pow(10, this.currentAccount.precision)).toString()
+      const amountParsed = stringAmount.split('.')
+      if (amountParsed && amountParsed.length > 1) {
+        numberOfDecimals = amountParsed[1].length
+      } else {
+        stringAmount += '.'
+      }
+      for (;numberOfDecimals < this.currentAccount.precision; numberOfDecimals++) {
+        stringAmount += '0'
+      }
+      return stringAmount + ' ' + this.tokenSymbol
     },
     hideModalFun: function () {
       this.openModal = false
@@ -822,5 +851,11 @@ export default {
   }
   /deep/ .q-btn__wrapper{
     min-height: 30px !important;
+  }
+  .max40{
+    max-width: unset;
+    height: 30px;
+    width: 30px;
+    max-height: unset;
   }
 </style>
