@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import configManager from '@/util/ConfigManager'
+// import configManager from '@/util/ConfigManager'
 
 export default {
   name: 'TopMenu',
@@ -23,7 +23,7 @@ export default {
   },
   methods: {
     logout () {
-      configManager.logout()
+      // configManager.logout()
       this.$router.push({
         path: '/login'
       })
