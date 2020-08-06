@@ -39,6 +39,7 @@ class Wallets2Tokens {
       } else {
         wallet.to = '/verto/wallets/' + wallet.type + '/' + wallet.type + '/' + wallet.key
         wallet.chain = wallet.type
+        wallet.disabled = true
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
         wallet.vespucciScore = vespucciScore
       }
@@ -84,6 +85,7 @@ class Wallets2Tokens {
 
                   self.tableData.push({
                     selected: false,
+                    disabled: false,
                     type,
                     name,
                     vespucciScore,
@@ -153,6 +155,7 @@ class Wallets2Tokens {
 
                 self.tableData.push({
                   selected: false,
+                  disabled: false,
                   type: t.tokenInfo.symbol.toLowerCase(),
                   name: t.tokenInfo.name,
                   amount: t.balance / (10 ** t.tokenInfo.decimals),

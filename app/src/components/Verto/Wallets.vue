@@ -5,7 +5,7 @@
     <div v-if="isMobile" class="wallets-wrapper--list" :class="{'open': !walletShowHide}">
       <q-scroll-area :visible="true" class="scrollarea" :class="{'height' : !walletShowHide}">
         <q-list bordered separator class="list-wrapper">
-          <q-item v-for="(item, index) in tableData.filter(f => !f.hidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
+          <q-item v-for="(item, index) in $store.state.wallets.tokens.filter(f => !f.hidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
             <div class="header-wallet-wrapper culumn full-width">
               <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
                 <q-item-section avatar>
@@ -22,7 +22,7 @@
               </div>
             </div>
           </q-item>
-          <q-item v-for="(item, index) in tableData.filter(f => f.hidden && this.showHidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
+          <q-item v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.hidden && this.showHidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
             <div class="header-wallet-wrapper culumn full-width" style="opacity: .4">
               <div @click="showMenu(item)" class="header-wallet full-width flex justify-between items-center">
                 <q-item-section avatar>
@@ -53,7 +53,7 @@
       <h2 class="wallets-wrapper--list_title q-pa-md q-ml-md flex items-center"><q-icon name="o_account_balance_wallet"/> Wallets</h2>
       <q-scroll-area :visible="true" class="q-mr-sm" style="height: 300px;">
         <q-list bordered separator class="list-wrapper">
-          <q-item v-for="(item, index) in tableData.filter(f => !f.hidden)" :class="{'selected' : item.selected}" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+          <q-item v-for="(item, index) in $store.state.wallets.tokens.filter(f => !f.hidden)" :class="{'selected' : item.selected}" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
             <div class="header-wallet-wrapper culumn full-width">
               <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                 <q-item-section avatar>
@@ -95,7 +95,7 @@
               </div>
             </div>
           </q-item>
-          <q-item v-for="(item, index) in tableData.filter(f => f.hidden && this.showHidden)" :class="{'selected' : item.selected}" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+          <q-item v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.hidden && this.showHidden)" :class="{'selected' : item.selected}" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
             <div class="header-wallet-wrapper culumn full-width" style="opacity: .4">
               <div class="header-wallet-wrapper culumn full-width">
                 <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
@@ -219,7 +219,6 @@ export default {
       // showWallet: true,
       showText: false,
       menu: [],
-      tableData: [],
       currentAccount: {
         selected: false,
         type: '',
@@ -245,20 +244,7 @@ export default {
     this.tokenID = this.$route.params.tokenID
     this.accountName = this.$route.params.accountName
 
-    let tableDatas = await this.$store.state.wallets.tokens
-    this.tableData = tableDatas.map((c) => {
-      c.selected = false
-    })
-    this.tableData = tableDatas.filter((c) => {
-      if (c.chain === 'eos' || c.chain === 'eth') {
-        c.disabled = false
-      } else {
-        c.disabled = true
-      }
-      return c
-    })
-
-    // console.log('this.tableData in wallets', this.tableData)
+    console.log('this.$store.state.wallets.tokens in wallets', this.$store.state.wallets.tokens)
 
     this.$store.commit('currentwallet/updateParams', {
       chainID: this.chainID,
