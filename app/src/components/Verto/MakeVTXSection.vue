@@ -74,14 +74,14 @@ export default {
       let stake_per = Math.round((0.01 + (0.001 * 10)) * 1000) / 1000
       let sendAmount = Math.round(Math.pow(10, this.highestVTXAccount.precision) * this.highestVTXAccount.amount) / Math.pow(10, this.highestVTXAccount.precision)
       this.estimatedReward = Math.round(sendAmount * stake_per * 10 * 100) / 100
-      console.log('this.estimatedReward --**', this.estimatedReward)
+      // console.log('this.estimatedReward --**', this.estimatedReward)
       this.$store.commit('highestVTXAccount/updateParams', {
         chainID: this.highestVTXAccount.chain,
         tokenID: this.highestVTXAccount.type,
         accountName: this.highestVTXAccount.name
       })
       this.$store.state.highestVTXAccount.wallet = this.highestVTXAccount
-      console.log('this.$store.state.highestVTXAccount.wallet > ', await this.$store.state.highestVTXAccount.wallet)
+      // console.log('this.$store.state.highestVTXAccount.wallet > ', await this.$store.state.highestVTXAccount.wallet)
     }
   },
   methods: {
