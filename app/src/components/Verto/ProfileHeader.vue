@@ -70,9 +70,9 @@
       <h3 class="profile-wrapper--header__title text-white">Portfolio Balance</h3>
       <h2 class="profile-wrapper--header__balance text-white">${{ new Number(totalBalance).toFixed(2) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <div class="profile-wrapper--header__action">
-        <q-btn unelevated v-if="screenSize <= 1024" to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
-        <q-btn unelevated v-if="screenSize > 1024" @click="selectedCoin === undefined ? notifSelectWallet() : goToSendPage()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
-        <q-btn unelevated to="/verto/wallets/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
+        <q-btn unelevated v-if="screenSize <= 1024" :disable="selectedCoin.type === 'verto'" to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
+        <q-btn unelevated v-if="screenSize > 1024" :disable="selectedCoin.type === 'verto'" @click="selectedCoin === undefined ? notifSelectWallet() : goToSendPage()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
+        <q-btn unelevated to="/verto/wallets/receive" :disable="selectedCoin.type === 'verto'" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
       </div>
     </div>
   </div>

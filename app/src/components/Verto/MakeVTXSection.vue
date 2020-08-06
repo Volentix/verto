@@ -66,10 +66,9 @@ export default {
     }).slice().sort(function (a, b) {
       return b.amount - a.amount
     })
-    if (tableDatas.length > 1) {
 
-    }
-    this.highestVTXAccount = tableDatas.length > 1 && tableDatas[0].amout >= 1000 ? tableDatas[0] : null
+    this.highestVTXAccount = tableDatas.length > 1 && parseInt(tableDatas[0].amount) >= 1000 ? tableDatas[0] : null
+    console.log('this.highestVTXAccount **********************************', this.highestVTXAccount)
     if (this.highestVTXAccount !== undefined && this.highestVTXAccount !== null) {
       let stake_per = Math.round((0.01 + (0.001 * 10)) * 1000) / 1000
       let sendAmount = Math.round(Math.pow(10, this.highestVTXAccount.precision) * this.highestVTXAccount.amount) / Math.pow(10, this.highestVTXAccount.precision)
