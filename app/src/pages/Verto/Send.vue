@@ -498,6 +498,7 @@ export default {
     },
     formatAmountString () {
       let numberOfDecimals = 0
+      // console.log('this.currentAccount', this.currentAccount)
       let stringAmount = (Math.round(this.sendAmount * Math.pow(10, this.currentAccount.precision)) / Math.pow(10, this.currentAccount.precision)).toString()
       const amountParsed = stringAmount.split('.')
       if (amountParsed && amountParsed.length > 1) {
