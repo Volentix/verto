@@ -67,7 +67,7 @@
     "electron-log": "^3.0.5",
     "electron-updater": "^4.0.6",
     "elliptic": "^6.5.3",
-    "eosjs": "^21.0.1-rc2",
+    "eosjs": "^21.0.2",
     "eosjs-ecc": "^4.0.7",
     "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^6.2.0",
