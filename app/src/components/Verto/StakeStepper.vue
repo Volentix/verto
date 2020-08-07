@@ -264,7 +264,7 @@
                       <div v-else class="content__failed text-red q-pa-md">
                         <img src="statics/fail_icon.svg" class="failed_icon" alt="">
                         <div class="text-h4 --subtitle text-center --subtitle__faild">Something's wrong!</div>
-                        <div class="text-h4 --subtitle text-center --subtitle__transLink"> {{ ErrorMessage }}</div>
+                        <div class="text-h4 --subtitle text-center full-width --subtitle__transLink"> {{ ErrorMessage }}</div>
                       </div>
 
                     </q-step>
@@ -510,11 +510,11 @@ export default {
         console.log('transaction errors', error)
         this.transactionError = true
         // console.log('error', error)
-        if (error.includes('stake amount is too low')) {
+        if (error.message.includes('stake amount is too low')) {
           this.ErrorMessage = 'Your VTX stake amount is too low, you need at least 1000 VTX to stake.'
-        } else if (error.includes('maximum billable CPU time')) {
+        } else if (error.message.includes('maximum billable CPU time')) {
           this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
-        } else if (error.includes('has insufficient ram')) {
+        } else if (error.message.includes('has insufficient ram')) {
           this.ErrorMessage = 'Your EOS account does not have enough RAM staked to process the transaction.'
         } else {
           this.ErrorMessage = 'Unknown Error: ' + error
@@ -932,7 +932,7 @@ export default {
               }
               &__transLink{
                 color: #2A2A2A;
-                border-bottom: 1px solid;
+                // border-bottom: 1px solid;
                 width: fit-content;
                 font-weight: $bold;
                 margin-bottom: 20px;
