@@ -12,6 +12,7 @@
           <q-item-section class="item-name">{{item.name}}</q-item-section>
           <q-item-section>
             <div class="flex justify-end">
+              <div v-if="item.info === 'Linked'" class="flex flex-center q-mr-md text-grey">{{existingCruxID}}</div>
               <q-btn v-if="item.info === 'Linked'" flat unelevated text-color="grey" @click="copyToClipboard(existingCruxID , 'Verto ID')" round class="btn-copy" icon="o_file_copy" />
             </div>
           </q-item-section>
