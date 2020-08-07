@@ -244,7 +244,7 @@ export default {
     this.tokenID = this.$route.params.tokenID
     this.accountName = this.$route.params.accountName
 
-    console.log('this.$store.state.wallets.tokens in wallets', this.$store.state.wallets.tokens)
+    // console.log('this.$store.state.wallets.tokens in wallets', this.$store.state.wallets.tokens)
 
     this.$store.commit('currentwallet/updateParams', {
       chainID: this.chainID,
@@ -327,6 +327,9 @@ export default {
   .header-wallet{
     &.disable-coin{
       opacity: .45
+    }
+    &.selected_true{
+      border: 2px solid blue !important;
     }
   }
   .wallets-wrapper{
@@ -649,6 +652,9 @@ export default {
         }
       }
     }
+  }
+  .header-wallet-wrapper{
+
   }
   .standard-content{
     padding: 5% 10%;

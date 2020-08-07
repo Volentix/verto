@@ -145,7 +145,7 @@ export default {
   },
   updated () {
     // this.selectedCoin = this.$store.state.currentwallet.wallet
-    console.log('this.selectedCoin updated()', this.selectedCoin)
+    // console.log('this.selectedCoin updated()', this.selectedCoin)
   },
   computed: {
     selectedCoin () {
