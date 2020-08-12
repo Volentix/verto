@@ -1,5 +1,6 @@
 <template>
   <div class="desktop-card-style make-vtx q-mb-sm">
+    <span class="preloader flex flex-center" :class="{'show' : activate}"><img src="statics/preloader.svg" alt=""></span>
     <div class="row flex justify-between q-pb-xl q-pt-xl">
       <div class="col col-4 flex items-center"><img src="statics/make_vtx_bg.png" class="full-width" alt=""></div>
       <div class="col col-8 flex items-center justify-end">
@@ -51,6 +52,7 @@ export default {
   data () {
     return {
       estimatedReward: 0,
+      activate: true,
       base: 'https://files.coinswitch.co/public/coins/',
       highestVTXAccount: null,
       modalBuyWithBTCETH: false,
@@ -58,32 +60,45 @@ export default {
     }
   },
   async created () {
-    let tableDatas = await this.$store.state.wallets.tokens.filter((c) => {
-      if (c.type === 'vtx') {
-        // console.log('c.type', c.type)
-        return c
-      }
-    }).slice().sort(function (a, b) {
-      return b.amount - a.amount
-    })
-
-    this.highestVTXAccount = tableDatas.length > 1 && parseInt(tableDatas[0].amount) >= 1000 ? tableDatas[0] : null
-    console.log('this.highestVTXAccount **********************************', this.highestVTXAccount)
-    if (this.highestVTXAccount !== undefined && this.highestVTXAccount !== null) {
-      let stake_per = Math.round((0.01 + (0.001 * 10)) * 1000) / 1000
-      let sendAmount = Math.round(Math.pow(10, this.highestVTXAccount.precision) * this.highestVTXAccount.amount) / Math.pow(10, this.highestVTXAccount.precision)
-      this.estimatedReward = Math.round(sendAmount * stake_per * 10 * 100) / 100
-      // console.log('this.estimatedReward --**', this.estimatedReward)
-      this.$store.commit('highestVTXAccount/updateParams', {
-        chainID: this.highestVTXAccount.chain,
-        tokenID: this.highestVTXAccount.type,
-        accountName: this.highestVTXAccount.name
-      })
-      this.$store.state.highestVTXAccount.wallet = this.highestVTXAccount
-      // console.log('this.$store.state.highestVTXAccount.wallet > ', await this.$store.state.highestVTXAccount.wallet)
+    let highestVTXAccount = await this.$store.state.highestVTXAccount.wallet.amount
+    console.log('highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount', highestVTXAccount)
+    if (highestVTXAccount !== undefined) {
+      this.setHighestVTXAccount()
+      this.activate = false
+    } else {
+      setTimeout(() => {
+        this.setHighestVTXAccount()
+        this.activate = false
+      }, 7000)
     }
   },
   methods: {
+    async setHighestVTXAccount () {
+      let tableDatas = await this.$store.state.wallets.tokens.filter((c) => {
+        if (c.type === 'vtx') {
+        // console.log('c.type', c.type)
+          return c
+        }
+      }).slice().sort(function (a, b) {
+        return b.amount - a.amount
+      })
+
+      this.highestVTXAccount = tableDatas.length > 1 && parseInt(tableDatas[0].amount) >= 1000 ? tableDatas[0] : null
+      console.log('this.highestVTXAccount **********************************', this.highestVTXAccount)
+      if (this.highestVTXAccount !== undefined && this.highestVTXAccount !== null) {
+        let stake_per = Math.round((0.01 + (0.001 * 10)) * 1000) / 1000
+        let sendAmount = Math.round(Math.pow(10, this.highestVTXAccount.precision) * this.highestVTXAccount.amount) / Math.pow(10, this.highestVTXAccount.precision)
+        this.estimatedReward = Math.round(sendAmount * stake_per * 10 * 100) / 100
+        // console.log('this.estimatedReward --**', this.estimatedReward)
+        this.$store.commit('highestVTXAccount/updateParams', {
+          chainID: this.highestVTXAccount.chain,
+          tokenID: this.highestVTXAccount.type,
+          accountName: this.highestVTXAccount.name
+        })
+        this.$store.state.highestVTXAccount.wallet = this.highestVTXAccount
+      // console.log('this.$store.state.highestVTXAccount.wallet > ', await this.$store.state.highestVTXAccount.wallet)
+      }
+    }
   }
 }
 </script>
@@ -218,5 +233,21 @@ export default {
   .q-card{
     border-radius: 25px;
     box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 0 4px 35px rgba(0,0,0,0.14), 0 1px 10px rgba(0,0,0,0.12);
+  }
+  .preloader{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    z-index: 99;
+    transition: opacity ease .5s;
+    opacity: 0;
+    visibility: hidden;
+    &.show{
+      visibility: visible;
+      opacity: 1;
+    }
   }
 </style>

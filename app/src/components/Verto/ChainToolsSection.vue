@@ -25,7 +25,8 @@
           class="select-input"
           v-model="chainToolModel"
           @input="goToChainTool"
-          :options="['Staking', 'Voting', 'Lending']" />
+          :options="['Staking']" />
+          <!-- , 'Voting', 'Lending' -->
         <!-- <strong>Start Your Node</strong> -->
         <!-- <q-btn unelevated class="qbtn-start" color="black" text-color="white" label="Get started" /> -->
       </div>
