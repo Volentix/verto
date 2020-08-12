@@ -51,9 +51,20 @@
     </div>
     <div v-else class="else-is-desktop wallets-wrapper--list open">
       <h2 class="wallets-wrapper--list_title q-pa-md q-ml-md flex items-center"><q-icon name="o_account_balance_wallet"/> Wallets</h2>
+      <div class="header-list-table">
+        <div class="row q-pl-lg q-pr-lg">
+          <div class="col col-6 q-pl-sm pointer" @click="sortBy('account')" :class="{'active' : directionAccount}">
+            <span class="sort">Account name</span> <q-icon name="swap_vert" class="text-grey" />
+          </div>
+          <div class="col col-6 flex justify-end q-pr-sm items-center pointer" @click="sortBy('balance')" :class="{'active' : direction}">
+            <!-- active -->
+            <span class="sort">Balance</span> <q-icon name="swap_vert" class="text-grey" />
+          </div>
+        </div>
+      </div>
       <q-scroll-area :visible="true" class="q-mr-sm" style="height: 300px;">
         <q-list bordered separator class="list-wrapper">
-          <q-item v-for="(item, index) in $store.state.wallets.tokens.filter(f => !f.hidden)" :class="{'selected' : item.selected}" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+          <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
             <div class="header-wallet-wrapper culumn full-width">
               <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                 <q-item-section avatar>
@@ -95,7 +106,46 @@
               </div>
             </div>
           </q-item>
-          <q-item v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.hidden && this.showHidden)" :class="{'selected' : item.selected}" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+          <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+            <div class="header-wallet-wrapper culumn full-width">
+              <div @click="showMenu(item)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
+                <q-item-section avatar>
+                  <img class="coin-icon" width="35px" :src="item.icon" alt="">
+                </q-item-section>
+                <q-item-section class="item-name">
+                  <span class="item-name--name">{{item.name}}</span>
+                </q-item-section>
+                <q-item-section class="item-info" v-if="!item.disabled">
+                  <span class="item-info--amount">{{item.amount ? new Number(item.amount).toFixed(8) : 0 }} {{item.type.toUpperCase()}}</span>
+                </q-item-section>
+                <q-item-section class="item-info" v-else>
+                  <span class="item-info--amount">in progress</span>
+                </q-item-section>
+              </div>
+              <div class="menu-wallet">
+                <q-list bordered separator class="sub-list-menu">
+                  <q-item class="p-relative full-width no-pad">
+                    <div class="vespucci-score--wrapper full-width flex justify-between items-center">
+                      <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
+                      <span class="value">{{ item.vespucciScore }}</span>
+                      <span class="powered">Powered by Vespucci</span>
+                    </div>
+                  </q-item>
+                  <q-separator style="margin-top: 10px" />
+                  <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                  <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
+                    <q-item-section>
+                      <q-item-label>{{item.hidden ? 'Reveal' : 'Hide'}} Currency Chain</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                      <q-toggle class="p-abs" color="blue" @input="hideCurrency()" v-model="item.hidden" />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </div>
+            </div>
+          </q-item>
+          <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => f.hidden && this.showHidden)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
             <div class="header-wallet-wrapper culumn full-width" style="opacity: .4">
               <div class="header-wallet-wrapper culumn full-width">
                 <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
@@ -219,6 +269,10 @@ export default {
       // showWallet: true,
       showText: false,
       menu: [],
+      direction: false,
+      directionAccount: false,
+      // false is ASC
+      // true is DESC
       currentAccount: {
         selected: false,
         type: '',
@@ -234,7 +288,7 @@ export default {
   },
   async mounted () {
   },
-  updated () {
+  async updated () {
     // console.log('updated')
   },
   async created () {
@@ -258,6 +312,50 @@ export default {
     }
   },
   methods: {
+    sortBy (type) {
+      if (type === 'balance') {
+        let nonAmountCoins = this.$store.state.wallets.tokens.filter(f => f.usd === undefined)
+        for (let n of nonAmountCoins) {
+          this.$store.state.wallets.tokens.push(this.$store.state.wallets.tokens.splice(this.$store.state.wallets.tokens.indexOf(n), 1)[0])
+          console.log('n', n)
+        }
+        console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
+        let tokens = []
+        if (this.direction) {
+          tokens = this.$store.state.wallets.tokens.sort(function (a, b) {
+            return a.usd - b.usd
+          })
+        } else {
+          tokens = this.$store.state.wallets.tokens.sort(function (a, b) {
+            return b.usd - a.usd
+          })
+        }
+        console.log('tokens of table', tokens)
+        this.direction = !this.direction
+        // this.$store.state.wallets.tokens.map((a) => {
+        //   console.log('a.amount', a.amount)
+        // })
+      }
+      if (type === 'account') {
+        let nonAmountCoins = this.$store.state.wallets.tokens.filter(f => f.name === undefined)
+        for (let n of nonAmountCoins) {
+          this.$store.state.wallets.tokens.push(this.$store.state.wallets.tokens.splice(this.$store.state.wallets.tokens.indexOf(n), 1)[0])
+          console.log('n', n)
+        }
+        console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
+        let tokens = []
+        if (this.directionAccount) {
+          tokens = this.$store.state.wallets.tokens.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+        } else {
+          tokens = this.$store.state.wallets.tokens.sort((a, b) => (b.name > a.name) ? 1 : ((a.name > b.name) ? -1 : 0))
+        }
+        console.log('tokens of table', tokens)
+        this.directionAccount = !this.directionAccount
+        // this.$store.state.wallets.tokens.map((a) => {
+        //   console.log('a.amount', a.amount)
+        // })
+      }
+    },
     goToSecurity () {
       this.$router.push({ path: '/verto/wallet/privateKey' })
     },
@@ -370,7 +468,32 @@ export default {
         box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.19) !important;
         border-radius: 0px 0px 8px 8px !important;
       }
-
+      .header-list-table{
+        padding-right: 5px;
+        margin-top: -10px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(#CCC, .3);
+        padding-bottom: 10px;
+        .sort{
+          font-size: 12px;
+          // font-weight: bold;
+          // font-family: $Titillium;
+          color: grey;
+          letter-spacing: 1px;
+          padding-right: 5px;
+        }
+        .col{
+          &.active{
+            .sort{
+              font-weight: bold;
+              color: blue;
+            }
+            /deep/ .q-icon{
+              color: blue !important;
+            }
+          }
+        }
+      }
       &_title{
         font-size: 16px;
         font-family: $Titillium;
@@ -765,5 +888,8 @@ export default {
   .no-pad{
     padding-left: 0px;
     padding-right: 0px;
+  }
+  .pointer{
+    cursor: pointer;
   }
 </style>

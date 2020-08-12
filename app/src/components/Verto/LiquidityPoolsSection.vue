@@ -6,7 +6,7 @@
         <q-btn unelevated class="qbtn-new" @click="openDialog = true" color="black" text-color="white" label="New" />
       </div>
       <div class="col col-8 flex items-center q-pl-md" style="min-height: 120px">
-        <p>You can invest to earn exchange fees and pool rewards</p>
+        <p>You can participate to earn exchange fees and pool rewards</p>
       </div>
       <div class="col col-4 flex items-center">
         <img src="statics/liquidity_pool.png" class="full-width" alt="">
