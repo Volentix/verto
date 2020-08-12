@@ -24,7 +24,7 @@
                         <!-- 1. Select Coin to Send -->
                         <q-step default title="Select Coin to Send" :name="1" prefix="1" :done="step > 1">
                           <div class="text-black">
-                            <!-- <span class="lab-input">Select Coin to Send</span> -->
+                            <span class="lab-input">1. Select Coin to Send</span>
                             <q-select
                                 light
                                 separator
@@ -978,9 +978,9 @@ export default {
     },
     exchangeLabel () {
       if (this.depositCoin != null) {
-        return 'Complete this exchange by sending ' + this.expectedDepositCoinAmount + ' ' + typeUpper(this.depositCoin.value) + ' to this address within the next 12 hours'
+        return 'Complete this exchange by sending ' + this.expectedDepositCoinAmount + ' ' + typeUpper(this.depositCoin.value) + ' to this address within the next 1 hour'
       } else {
-        return 'Complete this exchange by sending the coins to this address within the next 12 hours'
+        return 'Complete this exchange by sending the coins to this address within the next 1 hour'
       }
     },
     depositQuantityLabel () {
