@@ -2,7 +2,7 @@
   <div class="desktop-card-style make-vtx q-mb-sm">
     <div class="row flex justify-between q-pb-lg q-pt-lg">
       <div class="col col-8 flex items-center q-pl-md" style="min-height: 120px">
-        <strong>Convert any to any coin</strong>
+        <strong class="earn-exchange">Convert any to any</strong>
         <i class="step-1-lab flex ">Step<b>1</b> Select coin to send</i>
         <div class="call-action">
           <q-select
@@ -12,8 +12,6 @@
             outlined
             class="select-input"
             v-model="depositCoin"
-            use-input
-            @filter="filterDepositCoin"
             :disabled="!depositCoinOptions"
             :loading="!depositCoinOptions"
             :options="depositCoinOptions"
@@ -59,12 +57,10 @@
             rounded
             outlined
             class="select-input"
-            v-model="depositCoin"
-            use-input
-            @filter="filterDepositCoin"
-            :disabled="!depositCoinOptions"
-            :loading="!depositCoinOptions"
-            :options="depositCoinOptions"
+            v-model="destinationCoin"
+            :disabled="!destinationCoinOptions"
+            :loading="!destinationCoinOptions"
+            :options="destinationCoinOptions"
             >
             <template v-slot:option="scope">
               <q-item
@@ -83,14 +79,14 @@
             </template>
             <template v-slot:selected>
               <q-item
-                v-if="depositCoin"
+                v-if="destinationCoin"
               >
                 <q-item-section avatar>
-                  <q-icon class="option--avatar option--avatar__custom" :name="`img:${depositCoin.image}`" />
+                  <q-icon class="option--avatar option--avatar__custom" :name="`img:${destinationCoin.image}`" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label v-html="depositCoin.label" />
-                  <q-item-label caption>{{ depositCoin.value }}</q-item-label>
+                  <q-item-label v-html="destinationCoin.label" />
+                  <q-item-label caption>{{ destinationCoin.value }}</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item
@@ -110,18 +106,17 @@
 
 <script>
 
-import store from '@/store'
-const url = 'https://api.coinswitch.co'
-let headers = {
-  'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
-}
+// import store from '@/store'
+// const url = 'https://api.coinswitch.co'
+// let headers = {
+//   'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
+// }
 export default {
   name: 'ExchangeSection',
   components: {},
   data () {
     return {
       depositCoin: null,
-      depositQuantity: 0,
       depositCoinOptions: null,
       depositCoinUnfilter: null,
       destinationCoin: null,
@@ -129,45 +124,134 @@ export default {
       destinationCoinUnfilter: null
     }
   },
-  methods: {
-    goToExchange () {
-      // console.log('this.depositCoin', this.depositCoin)
-      let coin = this.depositCoin.value
-      this.$router.push({ name: 'exchange-v2', params: { coin } })
+  watch: {
+    depositCoin: function (newVal) {
+      this.destinationCoinOptions = this.destinationCoinUnfilter
+      if (newVal.label === 'Other') {
+        this.$router.push({ name: 'exchange-v2' })
+      }
+      this.destinationCoinOptions = this.destinationCoinOptions.filter((el) => {
+        if (newVal.label !== el.label) {
+          return el
+        }
+      })
     },
-    filterDepositCoin (val, update, abort) {
-      update(() => {
-        const needle = val.toLowerCase()
-        this.depositCoinOptions = this.depositCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+    destinationCoin: function (newVal) {
+      this.depositCoinOptions = this.depositCoinUnfilter
+      if (newVal.label === 'Other') {
+        this.$router.push({ name: 'exchange-v2' })
+      }
+      this.depositCoinOptions = this.depositCoinOptions.filter((el) => {
+        if (newVal.label !== el.label) {
+          return el
+        }
       })
     }
   },
   mounted () {
-    const self = this
-    this.$axios.get(url + '/v2/coins', { headers }).then(function (result) {
-      // will be using this coins array later with the destination select
-      self.coins = result.data.data
-      self.depositCoinOptions = self.coins.map(function (coin) {
-        if (coin.isActive === true) {
-          let row = {
-            'label': coin.name,
-            'value': coin.symbol,
-            'image': coin.logoUrl
-          }
-          return row
-        }
-      }).filter(function (el) {
-        return el != null
-      }).sort(function (a, b) {
-        if (a.label.toLowerCase() < b.label.toLowerCase()) {
-          return -1
-        }
-        return 1
-      })
-
-      self.depositCoinUnfilter = self.depositCoinOptions
-      // console.log('depositCoinOptions', self.depositCoinOptions)
+    // const self = this
+    let baseURL = 'https://files.coinswitch.co/public/coins/'
+    this.depositCoinOptions = [
+      {
+        'label': 'EOS',
+        'value': 'eos',
+        'image': baseURL + 'eos.png'
+      },
+      {
+        'label': 'Bitcoin',
+        'value': 'btc',
+        'image': baseURL + 'btc.png'
+      },
+      {
+        'label': 'Ethereum',
+        'value': 'eth',
+        'image': baseURL + 'eth.png'
+      },
+      {
+        'label': 'Other',
+        'value': 'coin',
+        'image': 'statics/coins_icons/other-coin.svg'
+      }
+    ].sort(function (a, b) {
+      if (a.label.toLowerCase() < b.label.toLowerCase()) {
+        return -1
+      }
+      return 1
     })
+    this.depositCoinUnfilter = this.depositCoinOptions
+
+    this.destinationCoinOptions = [
+      {
+        'label': 'EOS',
+        'value': 'eos',
+        'image': baseURL + 'eos.png'
+      },
+      {
+        'label': 'Bitcoin',
+        'value': 'btc',
+        'image': baseURL + 'btc.png'
+      },
+      {
+        'label': 'Ethereum',
+        'value': 'eth',
+        'image': baseURL + 'eth.png'
+      },
+      {
+        'label': 'Other',
+        'value': 'coin',
+        'image': 'statics/coins_icons/other-coin.svg'
+      }
+    ].sort(function (a, b) {
+      if (a.label.toLowerCase() < b.label.toLowerCase()) {
+        return -1
+      }
+      return 1
+    })
+    this.destinationCoinUnfilter = this.destinationCoinOptions
+    // this.$axios.get(url + '/v2/coins', { headers }).then(function (result) {
+    //   // will be using this coins array later with the destination select
+    //   self.coins = result.data.data
+    //   self.depositCoinOptions = self.coins.map(function (coin) {
+    //     if (coin.isActive === true) {
+    //       let row = {
+    //         'label': coin.name,
+    //         'value': coin.symbol,
+    //         'image': coin.logoUrl
+    //       }
+    //       return row
+    //     }
+    //   }).filter(function (el) {
+    //     return el != null
+    //   }).sort(function (a, b) {
+    //     if (a.label.toLowerCase() < b.label.toLowerCase()) {
+    //       return -1
+    //     }
+    //     return 1
+    //   })
+
+    //   self.depositCoinUnfilter = self.depositCoinOptions
+    //   // console.log('depositCoinOptions', self.depositCoinOptions)
+    // })
+  },
+  methods: {
+    goToExchange () {
+      // console.log('this.depositCoin', this.depositCoin)
+      let depositCoin = this.depositCoin
+      let destinationCoin = this.destinationCoin
+      this.$router.push({ name: 'exchange-v3', params: { depositCoin: depositCoin, destinationCoin: destinationCoin } })
+    }
+    // filterDepositCoin (val, update, abort) {
+    //   update(() => {
+    //     const needle = val.toLowerCase()
+    //     this.depositCoinOptions = this.depositCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+    //   })
+    // },
+    // filterDestinationCoin (val, update, abort) {
+    //   update(() => {
+    //     const needle = val.toLowerCase()
+    //     this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+    //   })
+    // }
   }
 }
 </script>
@@ -316,5 +400,10 @@ export default {
         }
       }
     }
+  }
+  .earn-exchange{
+    font-size: 18px !important;
+    font-weight: $bold;
+    margin-bottom: 10px !important;
   }
 </style>
