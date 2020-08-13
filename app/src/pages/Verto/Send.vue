@@ -113,26 +113,67 @@
         <div class="col col-md-9">
           <div class="desktop-card-style apps-section q-mb-sm">
             <div class="standard-content">
-              <h2 class="standard-content--title flex justify-start items-center">Send <img :src="currentAccount.icon" class="max40 q-ml-sm" alt=""></h2>
+              <h2 class="standard-content--title flex justify-start items-center">Send <img :src="currentToken.image" class="max40 q-ml-sm" alt=""></h2>
               <div class="standard-content--body">
                 <div class="standard-content--body__form">
                   <div class="row">
                     <div class="col col-8 q-pr-lg">
                       <span class="lab-input">From</span>
-                      <q-input v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? 'Current ' + currentAccount.type.toUpperCase() + ' Address' : 'Current ' + currentAccount.type.toUpperCase() + ' Account'">
+                      <q-select
+                          light
+                          separator
+                          rounded
+                          outlined
+                          class="select-input"
+                          v-model="currentToken"
+                          :options="options"
+                      >
+                        <template v-slot:option="scope">
+                          <q-item
+                            class="custom-menu"
+                            v-bind="scope.itemProps"
+                            v-on="scope.itemEvents"
+                          >
+                            <q-item-section avatar>
+                              <q-icon class="option--avatar" :name="`img:${scope.opt.image}`" />
+                            </q-item-section>
+                            <q-item-section dark>
+                              <q-item-label v-html="scope.opt.label" />
+                              <q-item-label caption class="ellipsis mw200">{{ scope.opt.value }}</q-item-label>
+                            </q-item-section>
+                          </q-item>
+                        </template>
+                        <template v-slot:selected>
+                          <q-item
+                            v-if="currentToken"
+                          >
+                            <q-item-section avatar>
+                              <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
+                            </q-item-section>
+                            <q-item-section>
+                              <q-item-label v-html="currentToken.label" />
+                              <q-item-label caption class="ellipsis mw200">{{ currentToken.value }}</q-item-label>
+                            </q-item-section>
+                          </q-item>
+                          <q-item
+                            v-else>
+                          </q-item>
+                        </template>
+                      </q-select>
+                      <!-- <q-input v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? 'Current ' + currentAccount.type.toUpperCase() + ' Address' : 'Current ' + currentAccount.type.toUpperCase() + ' Account'">
                         <template v-slot:append>
                           <div class="flex justify-end">
                             <q-btn flat unelevated text-color="grey" @click="copyToClipboard(from , 'Address')" round class="btn-copy" icon="o_file_copy" />
                           </div>
                         </template>
-                      </q-input>
+                      </q-input> -->
                     </div>
                     <div class="col col-4">
                       <span class="lab-input">Amount</span>
                       <q-input v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                         <template v-slot:append>
                           <div class="flex justify-end">
-                            <span class="tokenID">{{ params.tokenID }}</span>
+                            <span class="tokenID">{{ currentToken.type }}</span>
                             <q-btn color="white" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat text-color="black" label="Max" />
                           </div>
                         </template>
@@ -286,6 +327,9 @@ export default {
       getPassword: false,
       walletClientName: 'verto', // should be 'verto' when in prod
       cruxKey: {},
+      currentToken: {
+        image: ''
+      },
       sendToResolved: {},
       memoError: false,
       toError: false,
@@ -317,6 +361,15 @@ export default {
       return this.$store.state.currentwallet.wallet || {}
     }
   },
+  watch: {
+    currentToken: function (newVal) {
+      this.from = newVal.label
+      this.currentAccount = this.tableData.find(w => w.chain === newVal.chainID && w.type === newVal.type && (
+        w.chain === 'eos' ? w.name.toLowerCase() === newVal.label : w.key === newVal.label)
+      )
+      this.sendAmount = 0
+    }
+  },
   async created () {
     this.osName = osName
     this.getWindowWidth()
@@ -324,10 +377,36 @@ export default {
     // console.log('this.osName', this.osName)
     this.params = this.$store.state.currentwallet.params
     this.tableData = await this.$store.state.wallets.tokens
-    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
-    )
-    this.currentAccount = this.currentAccount || this.selectedCoin
+    // console.log('this.tableData', this.tableData)
+    let self = this
+    this.tableData.map(token => {
+      if (!token.disabled && token.type.toLowerCase() !== 'verto' && parseFloat(token.amount) > 0) {
+        self.options.push({
+          label: token.name.toLowerCase(),
+          value: token.chain !== 'eos' ? token.key : token.key + ' - ' + token.type.toUpperCase(),
+          image: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+          type: token.type,
+          amount: token.amount,
+          chainID: token.chain
+        })
+      }
+    })
+    if (this.selectedCoin) {
+      this.currentAccount = this.selectedCoin
+      this.currentToken = {
+        label: this.selectedCoin.name,
+        value: this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.key + ' - ' + this.selectedCoin.type.toUpperCase(),
+        image: this.selectedCoin.type !== 'usdt' ? this.selectedCoin.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+        type: this.selectedCoin.type,
+        chainID: this.selectedCoin.chain,
+        amount: this.selectedCoin.amount
+      }
+    } else {
+      this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+        w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+      )
+    }
+    this.currentAccount = this.currentAccount || this.currentToken
     if (this.params.chainID === undefined) {
       this.params = {
         chainID: this.currentAccount.chain,
@@ -421,11 +500,9 @@ export default {
       var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       return re.test(String(email).toLowerCase())
     },
-    async getMaxBalance () {
-      this.sendAmount = await this.currentAccount.amount
-    },
-    goChangePassword: function () {
-      this.$router.push({ path: '/change-password' })
+    getMaxBalance () {
+      this.sendAmount = this.currentToken.amount
+      // console.log('getMaxBalance', this.sendAmount)
     },
     openModalFun: function (item) {
       if (this.currentAccount.privateKey) {
@@ -462,9 +539,9 @@ export default {
       // 'contract', this.currentAccount.contract)
 
       Lib.send(
-        this.params.chainID,
-        this.params.tokenID,
-        this.params.accountName,
+        this.currentAccount.chain,
+        this.currentAccount.type,
+        this.currentAccount.name,
         this.sendToResolved,
         this.sendAmount,
         this.sendMemo,
