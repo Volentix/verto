@@ -24,7 +24,7 @@
                         <!-- 1. Select Coin to Send -->
                         <q-step default title="Select Coin to Send" :name="1" prefix="1" :done="step > 1">
                           <div class="text-black">
-                            <span class="lab-input">1. Select Coin to Send</span>
+                            <span class="sublab-input">Step 1</span><span class="tlab-input">Select Coin to Send</span>
                             <q-select
                                 light
                                 separator
@@ -78,7 +78,8 @@
                         </q-step>
                         <!-- 2. Select Coin to Receive -->
                         <q-step default title="Select Coin to Receive" :name="2" prefix="2" :done="step > 2">
-                          <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" color="primary" label="Back" class="--back-btn"/>
+                          <!-- <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" color="primary" label="Back" class="--back-btn"/> -->
+                          <span class="sublab-input">Step 2</span><span class="tlab-input">Select Coin to Receive</span>
                           <div class="text-black">
                             <!-- <span class="lab-input">Select Coin to receive</span> -->
                             <q-select
@@ -128,20 +129,27 @@
                               </template>
                             </q-select>
                             <q-stepper-navigation v-show="true" class="flex justify-end">
+                              <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
                               <q-btn @click="checkToGetRate()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
                             </q-stepper-navigation>
                           </div>
                         </q-step>
                         <!-- 3. Select Quantity -->
                         <q-step default title="Select Quantity" :name="3" prefix="3" :done="step > 3">
-                          <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" color="primary" label="Back" class="--back-btn"/>
-                          <div class="standard-content--body">
+                          <!-- <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" color="primary" label="Back" class="--back-btn"/> -->
+                          <span class="sublab-input">Step 3</span><span class="tlab-input">Select Quantity</span>
+                          <div class="standard-content--body q-pl-lg">
                             <div class="standard-content--body__form">
                               <div class="pay-get-wrapper column justify-between">
                                 <div class="pay-wrapper column">
-                                  <span class="label">you pay</span>
+                                  <span class="label">You Send</span>
                                   <span class="value">
-                                    <q-input ref="depositQuantity" @input="quantityFromDeposit()" :suffix="fromCoinType.toUpperCase()" rounded class="full-width pl0" flat v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']" />
+                                    <q-input ref="depositQuantity" @input="quantityFromDeposit()" rounded class="full-width pl0" flat v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
+                                      <div class="flex justify-end items-center" style="width: 140px">
+                                        <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
+                                        <span class="q-pl-sm text-bold text-h6">{{fromCoinType.toUpperCase()}}</span>
+                                      </div>
+                                    </q-input>
                                   </span>
                                 </div>
                                 <q-btn flat unelevated class="exchange-btn" @click="switchAmounts()" text-color="black">
@@ -149,9 +157,14 @@
                                   <q-icon name="keyboard_backspace" class="right-icon" />
                                 </q-btn>
                                 <div class="get-wrapper column">
-                                  <span class="label">you get</span>
+                                  <span class="label">You Receive</span>
                                   <span class="value">
-                                    <q-input rounded class="full-width pl0" flat ref="destinationQuantity" :suffix="toCoinType.toUpperCase()" v-model="destinationQuantity" @input="quantityFromDestination()" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']" type="number" />
+                                    <q-input rounded class="full-width pl0" flat ref="destinationQuantity" v-model="destinationQuantity" @input="quantityFromDestination()" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']" type="number">
+                                      <div class="flex justify-end items-center" style="width: 140px">
+                                        <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
+                                        <span class="q-pl-sm text-bold text-h6">{{toCoinType.toUpperCase()}}</span>
+                                      </div>
+                                    </q-input>
                                   </span>
                                 </div>
                               </div>
@@ -162,13 +175,15 @@
                               <br>
                             </div>
                             <q-stepper-navigation v-show="true" class="flex justify-end">
+                              <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
                               <q-btn @click="checkToGetRate()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
                             </q-stepper-navigation>
                           </div>
                         </q-step>
                         <!-- 4. Chose account -->
                         <q-step default title="Chose account" :name="4" prefix="4" :done="step > 4">
-                          <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" color="primary" label="Back" class="--back-btn"/>
+                          <!-- <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" color="primary" label="Back" class="--back-btn"/> -->
+                          <span class="sublab-input">Step 4</span><span class="tlab-input">Chose account</span>
                           <div class="standard-content--body">
                             <div class="standard-content--body__form">
                               <div class="row">
@@ -317,6 +332,7 @@
                               <div class="q-gutter-sm"><q-checkbox label="I accept" color="deep-purple-14" v-model="disclaimerCheck" /></div>
                             </div>
                             <div class="standard-content--footer">
+                              <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
                               <q-btn @click="checkAddressMatchCoins()" :disable="!disclaimerCheck" flat class="action-link next" color="black" text-color="white">
                                 <span class="label">Exchange {{ fromCoinType.toUpperCase() }} <q-icon name="keyboard_backspace" color="white" class="left-icon" /> {{ toCoinType.toUpperCase() }}</span>
                               </q-btn>
@@ -774,6 +790,8 @@ export default {
       fromCoinMemo: false,
       toCoinMemo: false,
       // -------------------------
+      timeoutNotif: 0,
+      notif: false,
       step: 1,
       optionsSanitize: false,
       spinnervisible: false,
@@ -835,6 +853,7 @@ export default {
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
+    this.timeoutNotif = 1000
   },
   async created () {
     this.osName = osName
@@ -884,6 +903,15 @@ export default {
       // }
       this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
     }
+    this.$q.notify.registerType('my-notif', {
+      icon: 'announcement',
+      progress: false,
+      persistent: true,
+      timeout: this.timeoutNotif,
+      color: 'deep-purple-14',
+      textColor: 'white',
+      position: 'bottom-right'
+    })
   },
   computed: {
     getStatus () {
@@ -1038,6 +1066,7 @@ export default {
       self.depositCoinUnfilter = self.depositCoinOptions
       // console.log('depositCoinOptions', self.depositCoinOptions)
     })
+    console.log('this.$route.params', this.$route.params)
     if (this.$route.params.coin !== undefined) {
       this.depositCoin = {
         image: '',
@@ -1093,6 +1122,14 @@ export default {
       // let fromCoinTypeVar = this.fromCoinType
       // this.fromCoinType = this.toCoinType
       // this.toCoinType = fromCoinTypeVar
+
+      let depositCoinVar = this.depositCoin
+      this.depositCoin = this.destinationCoin
+      this.destinationCoin = depositCoinVar
+
+      let fromCoinTypeVar = this.fromCoinType
+      this.fromCoinType = this.toCoinType
+      this.toCoinType = fromCoinTypeVar
 
       let depositQuantityVar = this.depositQuantity
       this.depositQuantity = this.destinationQuantity
@@ -1197,7 +1234,13 @@ export default {
       const self = this
       this.$axios.get(url + '/v2/order/' + this.orderId, { headers }).then(function (result) {
         self.status = result.data.data.status
-
+        if (self.status === 'no_deposit') {
+          if (!self.notif) {
+            self.triggerCustomRegisteredType1()
+          }
+        } else {
+          self.timeoutNotif = 1000
+        }
         if (self.status === 'no_deposit' ||
         self.status === 'confirming' ||
         self.status === 'exchanging' ||
@@ -1295,6 +1338,14 @@ export default {
           // userError()
           console.error('There was a problem getting the rate data', err)
         })
+    },
+    triggerCustomRegisteredType1 () {
+      this.notif = true
+      this.$q.notify({
+        type: 'my-notif',
+        message: `This may take a few minutes.`,
+        caption: 'If you leave this page, you will no longer be able to track the status of this transaction.'
+      })
     }
   }
 }
@@ -1600,6 +1651,28 @@ export default {
     padding-bottom: 5px;
     display: block;
     margin-top: 10px;
+    line-height: 17px;
+  }
+  .tlab-input{
+    font-family: $Titillium;
+    font-weight: $bold;
+    font-size: 26px;
+    color: black;
+    padding-left: 20px;
+    padding-bottom: 25px;
+    display: block;
+    margin-top: 0px;
+    line-height: 17px;
+  }
+  .sublab-input{
+    font-family: $Titillium;
+    font-weight: $regular;
+    font-size: 14px;
+    color: #333;
+    padding-left: 20px;
+    padding-bottom: 5px;
+    display: block;
+    margin-top: -50px;
     line-height: 17px;
   }
   .mw200{

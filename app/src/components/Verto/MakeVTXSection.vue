@@ -5,7 +5,7 @@
       <div class="col col-4 flex items-center"><img src="statics/make_vtx_bg.png" class="full-width" alt=""></div>
       <div class="col col-8 flex items-center justify-end">
         <strong v-if="highestVTXAccount !== null">Make {{estimatedReward}} VTX now!</strong>
-        <strong v-else>Make VTX while you sleep !</strong>
+        <strong v-else>Make VTX while you sleep</strong>
         <div class="call-action">
           <q-btn v-if="highestVTXAccount !== null" unelevated class="qbtn-start q-mr-md" color="black" :to="`/verto/stake/2`" text-color="white" label="Stake now" />
           <q-btn v-else unelevated class="qbtn-start q-mr-sm" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Buy with BTC/ETH" />
