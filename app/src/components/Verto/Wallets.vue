@@ -75,6 +75,7 @@
                 </q-item-section>
                 <q-item-section class="item-info" v-if="!item.disabled">
                   <span class="item-info--amount">{{item.amount ? new Number(item.amount).toFixed(8) : 0 }} {{item.type.toUpperCase()}}</span>
+                  <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
                 </q-item-section>
                 <q-item-section class="item-info" v-else>
                   <span class="item-info--amount">in progress</span>
@@ -321,6 +322,7 @@ export default {
         }
         console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
         let tokens = []
+        this.directionAccount = false
         if (this.direction) {
           tokens = this.$store.state.wallets.tokens.sort(function (a, b) {
             return a.usd - b.usd
@@ -344,6 +346,7 @@ export default {
         }
         console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
         let tokens = []
+        this.direction = false
         if (this.directionAccount) {
           tokens = this.$store.state.wallets.tokens.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
         } else {
@@ -772,6 +775,12 @@ export default {
         &--amountUSD{
           font-size: 13px;
           color: #B0B0B0;
+          @media screen and (min-width: 768px) {
+            font-size: 12px;
+            font-family: $Titillium;
+            font-weight: $bold;
+            transform: translateY(2px);
+          }
         }
       }
     }
