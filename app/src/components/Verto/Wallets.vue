@@ -317,20 +317,19 @@ export default {
         let nonAmountCoins = this.$store.state.wallets.tokens.filter(f => f.usd === undefined)
         for (let n of nonAmountCoins) {
           this.$store.state.wallets.tokens.push(this.$store.state.wallets.tokens.splice(this.$store.state.wallets.tokens.indexOf(n), 1)[0])
-          console.log('n', n)
+          // console.log('n', n)
         }
-        console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
-        let tokens = []
+        // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
         if (this.direction) {
-          tokens = this.$store.state.wallets.tokens.sort(function (a, b) {
+          this.$store.state.wallets.tokens.sort(function (a, b) {
             return a.usd - b.usd
           })
         } else {
-          tokens = this.$store.state.wallets.tokens.sort(function (a, b) {
+          this.$store.state.wallets.tokens.sort(function (a, b) {
             return b.usd - a.usd
           })
         }
-        console.log('tokens of table', tokens)
+        // console.log('tokens of table', tokens)
         this.direction = !this.direction
         // this.$store.state.wallets.tokens.map((a) => {
         //   console.log('a.amount', a.amount)
@@ -340,16 +339,15 @@ export default {
         let nonAmountCoins = this.$store.state.wallets.tokens.filter(f => f.name === undefined)
         for (let n of nonAmountCoins) {
           this.$store.state.wallets.tokens.push(this.$store.state.wallets.tokens.splice(this.$store.state.wallets.tokens.indexOf(n), 1)[0])
-          console.log('n', n)
+          // console.log('n', n)
         }
-        console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
-        let tokens = []
+        // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
         if (this.directionAccount) {
-          tokens = this.$store.state.wallets.tokens.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+          this.$store.state.wallets.tokens.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
         } else {
-          tokens = this.$store.state.wallets.tokens.sort((a, b) => (b.name > a.name) ? 1 : ((a.name > b.name) ? -1 : 0))
+          this.$store.state.wallets.tokens.sort((a, b) => (b.name > a.name) ? 1 : ((a.name > b.name) ? -1 : 0))
         }
-        console.log('tokens of table', tokens)
+        // console.log('tokens of table', tokens)
         this.directionAccount = !this.directionAccount
         // this.$store.state.wallets.tokens.map((a) => {
         //   console.log('a.amount', a.amount)
@@ -378,7 +376,7 @@ export default {
         this.removeClassSelected()
         menu.selected = true
         this.selectedCoin = menu
-        console.log('this.selectedCoin', this.selectedCoin)
+        // console.log('this.selectedCoin', this.selectedCoin)
         // this.$store.commit('currentwallet/updateParams', {
         //   chainID: this.selectedCoin.chain,
         //   tokenID: this.selectedCoin.type,
