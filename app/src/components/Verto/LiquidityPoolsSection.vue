@@ -2,11 +2,11 @@
   <div class="desktop-card-style make-vtx q-mb-sm">
     <div class="row flex justify-between q-pb-lg q-pt-lg">
       <div class="header-col col-12 flex justify-between items-center">
-        <h4>Liquidity pools</h4>
+        <h4 class="q-pl-sm">DeFi</h4>
         <q-btn unelevated class="qbtn-new" @click="openDialog = true" color="black" text-color="white" label="New" />
       </div>
       <div class="col col-8 flex items-center q-pl-md" style="min-height: 120px">
-        <p>You can participate to earn exchange fees and pool rewards</p>
+        <p class="earn-exchange">Earn exchange fees and pool rewards</p>
       </div>
       <div class="col col-4 flex items-center">
         <img src="statics/liquidity_pool.png" class="full-width" alt="">
@@ -47,9 +47,10 @@ export default {
         h4{
           margin-top: -5px;
           line-height: 16px;
-          font-size: 12px;
+          font-size: 18px;
           padding-right: 25px;
           font-weight: $bold;
+          color: #6C0DCB;
         }
         .qbtn-new{
           margin-top: -20px;
@@ -155,5 +156,9 @@ export default {
         }
       }
     }
+  }
+  .earn-exchange{
+    font-size: 18px;
+    font-weight: $bold;
   }
 </style>
