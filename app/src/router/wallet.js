@@ -142,7 +142,7 @@ export default [
         }
       },
       {
-        name: 'exchange',
+        name: 'exchange-v2',
         path: '/verto/exchange',
         component: () => import('pages/Verto/Exchange.vue'),
         meta: {
@@ -158,7 +158,7 @@ export default [
         }
       },
       {
-        name: 'exchange-v2',
+        name: 'exchange-v3',
         path: '/verto/exchange/:selectedCoin',
         component: () => import('pages/Verto/Exchange.vue'),
         meta: {
