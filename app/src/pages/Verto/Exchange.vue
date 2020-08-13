@@ -1121,7 +1121,7 @@ export default {
     checkToPostOrder () {
       if (this.$refs.depositQuantity.hasError || this.$refs.destinationQuantity.hasError) {
         // userError()
-        console.error('There is a problem with the quantities')
+        // console.error('There is a problem with the quantities')
       } else {
         this.postOrder()
         this.$refs.stepper.next()
@@ -1130,7 +1130,7 @@ export default {
     checkToGetPairs () {
       if (this.depositCoin === null) {
         // userError('There is a problem with the coin selection')
-        console.error('There is a problem with the coin selection')
+        // console.error('There is a problem with the coin selection')
       } else {
         this.getPairs()
         this.$refs.stepper.next()
@@ -1174,7 +1174,7 @@ export default {
       })
       if (this.destinationCoin === null) {
         // userError()
-        console.error('There is a problem with the destination address or the coin is not selected')
+        // console.error('There is a problem with the destination address or the coin is not selected')
       } else {
         this.getRate()
         this.$refs.stepper.next()
@@ -1232,7 +1232,7 @@ export default {
         },
         { headers })
         .then((response) => {
-          console.log('response - order', response)
+          // console.log('response - order', response)
           self.orderId = response.data.data.orderId
           self.exchangeAddress = response.data.data.exchangeAddress
           self.expectedDepositCoinAmount = response.data.data.expectedDepositCoinAmount
@@ -1241,8 +1241,9 @@ export default {
           this.orderStatus()
         })
         .catch((err) => {
+          if (err) {}
           // userError()
-          console.error('There was a problem posting the order', err)
+          // console.error('There was a problem posting the order', err)
         })
     },
     getPairs () {
@@ -1275,8 +1276,9 @@ export default {
           self.destinationCoinUnfilter = self.destinationCoinOptions
         })
         .catch((err) => {
+          if (err) {}
           // userError()
-          console.error('There was a problem getting the destination coins', err)
+          // console.error('There was a problem getting the destination coins', err)
         })
     },
     getRate () {
@@ -1292,8 +1294,9 @@ export default {
           // console.log('self.rateData -------------- ', self.rateData)
         })
         .catch((err) => {
+          if (err) {}
           // userError()
-          console.error('There was a problem getting the rate data', err)
+          // console.error('There was a problem getting the rate data', err)
         })
     }
   }

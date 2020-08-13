@@ -189,7 +189,7 @@ export default {
         textColor: 'white',
         position: 'top'
       })
-      console.log('notifSelectWallet , notifSelectWallet')
+      // console.log('notifSelectWallet , notifSelectWallet')
       this.triggerCustomRegisteredType1()
     },
     triggerCustomRegisteredType1 () {
@@ -200,7 +200,7 @@ export default {
       })
     },
     goToSendPage () {
-      console.log('goToSendPage , goToSendPage')
+      // console.log('goToSendPage , goToSendPage')
       this.$router.push({ path: '/verto/wallets/send' })
     },
     getWindowWidth () {
