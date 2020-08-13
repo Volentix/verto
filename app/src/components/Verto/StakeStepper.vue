@@ -507,7 +507,7 @@ export default {
         this.transactionId = transaction.transaction_id
         this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '">block explorer</a>'
       } catch (error) {
-        console.log('transaction errors', error)
+        // console.log('transaction errors', error)
         this.transactionError = true
         // console.log('error', error)
         if (error.message.includes('stake amount is too low')) {
