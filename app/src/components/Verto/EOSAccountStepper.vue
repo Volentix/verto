@@ -470,7 +470,7 @@ export default {
       let key = this.currentToken.value
       eos.getAccountNamesFromPubKeyP(key)
         .then(function (result) {
-          // console.log('result pour getAccountNames ', result)
+          // // console.log('result pour getAccountNames ', result)
           self.accountNames = []
           for (var i = 0; i < result.account_names.length; i++) {
             self.accountNames.push({ label: result.account_names[i], value: result.account_names[i] })
@@ -563,7 +563,7 @@ export default {
         this.progColor = 'green'
       } else if (+this.sendAmount < 0.0 && +this.sendAmount <= +this.stakedAmount) {
         this.slider = Math.round(100 * (this.sendAmount / +this.stakedAmount))
-        // console.log('this.slider', this.slider)
+        // // console.log('this.slider', this.slider)
         this.navigationButtons.amount = true
         this.progColor = 'red'
       }

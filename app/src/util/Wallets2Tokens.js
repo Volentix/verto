@@ -8,7 +8,7 @@ const eos = new EosWrapper()
 
 class Wallets2Tokens {
   constructor () {
-    console.log('wallets in the config', store.state.currentwallet.config.keys)
+    // console.log('wallets in the config', store.state.currentwallet.config.keys)
     // let list = ''
     // axios.get('https://api.coingecko.com/api/v3/coins/list').then(res => list = res.data)
 
@@ -46,7 +46,7 @@ class Wallets2Tokens {
 
       if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'bnb' || wallet.type === 'dash') {
         Lib.balance(wallet.type, wallet.key).then(result => {
-          console.log('libwallet', result)
+          // console.log('libwallet', result)
           wallet.amount = result.amount
           wallet.usd = result.usd
         })
@@ -57,7 +57,7 @@ class Wallets2Tokens {
       if (wallet.type.toLowerCase() === 'eos') {
         // If tokens are missing from this API, anyone can add them using this contract: https://bloks.io/account/customtokens?loadContract=true&tab=Actions&account=customtokens&scope=customtokens&limit=100&action=set
         axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': wallet.name }).then(balances => {
-          console.log('eos balances', balances)
+          // console.log('eos balances', balances)
           // let balances = balancesArray.data.length === 0 ?
           if (balances.data.length === 0) {
             balances.data = [
@@ -65,7 +65,7 @@ class Wallets2Tokens {
             ]
           }
           balances.data.map(t => {
-            console.log('eos token', t)
+            // console.log('eos token', t)
             if (t.symbol.toLowerCase() !== 'eos') {
               if (+t.amount !== 0) {
                 let name = wallet.name.toLowerCase()
@@ -81,7 +81,7 @@ class Wallets2Tokens {
                 let usdValue = 0
                 this.getUSD(t.code, type).then(result => {
                   usdValue = result
-                  console.log('usdValue', usdValue, t.amount, usdValue * t.amount)
+                  // console.log('usdValue', usdValue, t.amount, usdValue * t.amount)
 
                   self.tableData.push({
                     selected: false,
@@ -111,12 +111,12 @@ class Wallets2Tokens {
                   eos.usd = this.eosUSD * t.amount
                   eos.contract = 'eosio.token'
                   eos.precision = t.amount.split('.')[1].length
-                  console.log('a ---------------------', a)
+                  // console.log('a ---------------------', a)
                   eos.proxy = a.voter_info ? a.voter_info.proxy : ''
                   eos.staked = a.voter_info ? a.voter_info.staked / 10000 : 0
                 })
               })
-              console.log('else EOS self.tableData', t.symbol, self.tableData)
+              // console.log('else EOS self.tableData', t.symbol, self.tableData)
             }
           })
         })
@@ -129,13 +129,13 @@ class Wallets2Tokens {
             eth.usd = ethplorer.ETH.balance * ethplorer.ETH.price.rate
           })
 
-          console.log('ethplorer', ethplorer)
+          // console.log('ethplorer', ethplorer)
 
           axios.get('https://cors-anywhere.herokuapp.com/https://api.tokensets.com/v1/rebalancing_sets', {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
           }).then(res => {
             let tokenSets = res.data.rebalancing_sets
-            console.log('tokenSets', tokenSets)
+            // console.log('tokenSets', tokenSets)
             if (ethplorer.tokens) {
               ethplorer.tokens.filter(t => t.balance > 0).map(t => {
                 t.tokenInfo.image = t.tokenInfo.image ? t.tokenInfo.image : 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + Web3.utils.toChecksumAddress(t.tokenInfo.address) + '/logo.png'
@@ -149,7 +149,7 @@ class Wallets2Tokens {
                     }
                   } catch (error) {
                     t.tokenInfo.image = tokenSets.find(s => s.address === t.tokenInfo.address).image
-                    console.log('eth token not on trustwallet', t, csa)
+                    // console.log('eth token not on trustwallet', t, csa)
                   }
                 }
 
@@ -183,7 +183,7 @@ class Wallets2Tokens {
   async getAllAssets () {
     await axios.get('https://volentix.info/get_assets')
       .then(response => {
-        // console.log('this.getAllAssets()->response--------', response.data.data)
+        // // console.log('this.getAllAssets()->response--------', response.data.data)
         return response.data.data
       })
   }
@@ -195,7 +195,7 @@ class Wallets2Tokens {
     // 'https://api.coingecko.com/api/v3/simple/price?ids=' + +'&vs_currencies=usd'
     let coinEOS = (await axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
     let coinUSD = coinEOS * this.eosUSD
-    console.log(coin, ' --> USD', coinUSD)
+    // console.log(coin, ' --> USD', coinUSD)
 
     return coinUSD
   }
@@ -219,7 +219,7 @@ class Wallets2Tokens {
           'c24hChange2': (mydata.market_data.volume_last_24_hours_overstatement_multiple === undefined) ? 0 : mydata.market_data.volume_last_24_hours_overstatement_multiple,
           'vespucciScore': scoreVespucci
         }
-        // console.log('self.currentAsset', self.currentAsset)
+        // // console.log('self.currentAsset', self.currentAsset)
       })
     return currentAsset
   }

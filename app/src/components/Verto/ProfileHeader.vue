@@ -149,7 +149,7 @@ export default {
   },
   updated () {
     // this.selectedCoin = this.$store.state.currentwallet.wallet
-    // console.log('this.selectedCoin updated()', this.selectedCoin)
+    // // console.log('this.selectedCoin updated()', this.selectedCoin)
   },
   // computed: {
   //   selectedCoin () {
@@ -157,7 +157,7 @@ export default {
   //   }
   // },
   async created () {
-    console.log('****_*_*_selectedCoin Profileheader****_*_*_', this.$store.state.currentwallet.wallet)
+    // console.log('****_*_*_selectedCoin Profileheader****_*_*_', this.$store.state.currentwallet.wallet)
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
     this.tableData = await this.$store.state.wallets.tokens
@@ -171,7 +171,7 @@ export default {
     this.tableData.map(token => {
       this.totalBalance = this.totalBalance + (token.usd ? token.usd : 0)
     })
-    // console.log('this.currentAccount from ProfileHeader****************', this.currentAccount, params)
+    // // console.log('this.currentAccount from ProfileHeader****************', this.currentAccount, params)
 
     if (this.currentAccount === undefined) {
       this.currentAccount = {
@@ -187,12 +187,12 @@ export default {
   },
   methods: {
     resetSelectedWallet () {
-      console.log('resetSelectedWallet called')
+      // console.log('resetSelectedWallet called')
       this.$store.state.currentwallet.wallet = { empty: true }
       this.$store.state.wallets.tokens.map(token => {
         token.selected = false
       })
-      console.log('this.$store.state.currentwallet.wallet = { empty: true } called')
+      // console.log('this.$store.state.currentwallet.wallet = { empty: true } called')
     },
     notifSelectWallet () {
       this.$q.notify.registerType('my-notif', {
@@ -202,7 +202,7 @@ export default {
         textColor: 'white',
         position: 'top'
       })
-      // console.log('notifSelectWallet , notifSelectWallet')
+      // // console.log('notifSelectWallet , notifSelectWallet')
       this.triggerCustomRegisteredType1()
     },
     triggerCustomRegisteredType1 () {
@@ -213,11 +213,11 @@ export default {
       })
     },
     goToSendPage () {
-      // console.log('goToSendPage , goToSendPage')
+      // // console.log('goToSendPage , goToSendPage')
       this.$router.push({ path: '/verto/wallets/send' })
     },
     goToReceivePage () {
-      // console.log('goToSendPage , goToSendPage')
+      // // console.log('goToSendPage , goToSendPage')
       this.$router.push({ path: '/verto/wallets/receive' })
     },
     getWindowWidth () {

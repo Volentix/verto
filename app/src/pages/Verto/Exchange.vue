@@ -852,14 +852,14 @@ export default {
     }
   },
   // beforeRouteLeave (to, from, next) {
-  // console.log('to', to)
-  // console.log('from', from)
-  // console.log('next', next)
+  // // console.log('to', to)
+  // // console.log('from', from)
+  // // console.log('next', next)
   // window.removeEventListener('resize', this.getWindowWidth)
   // const dismiss = this.$q.notify({ type: 'my-notif' })
   // dismiss()
   // this.timeoutNotif = 100
-  // console.log('beforeRouteLeave')
+  // // console.log('beforeRouteLeave')
   // this.$router.push({ path: to.fullPath })
   // // this.$router.push({
   // //     path: `/verto/card-wps/public-proposals/${item.proposal_name}`
@@ -870,7 +870,7 @@ export default {
   //     window.removeEventListener('resize', this.getWindowWidth)
   //     const dismiss = this.$q.notify({ type: 'my-notif' })
   //     dismiss()
-  //     console.log('beforeUpdate')
+  //     // console.log('beforeUpdate')
   //     this.timeoutNotif = 100
   //   }
   // },
@@ -878,8 +878,8 @@ export default {
     this.osName = osName
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
-    // console.log('created - created - created - created')
-    // console.log('this.$route.params', this.$route.params.coin)
+    // // console.log('created - created - created - created')
+    // // console.log('this.$route.params', this.$route.params.coin)
     this.params = this.$store.state.currentwallet.params
     this.tableData = await this.$store.state.wallets.tokens
     let self = this
@@ -912,7 +912,7 @@ export default {
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
-    // console.log('this.currentAccount', this.currentAccount)
+    // // console.log('this.currentAccount', this.currentAccount)
     if (this.currentAccount !== null && this.currentAccount !== undefined) {
       // this.fromCoin = {
       //   label: this.currentAccount.name,
@@ -1083,9 +1083,9 @@ export default {
       })
 
       self.depositCoinUnfilter = self.depositCoinOptions
-      // console.log('depositCoinOptions', self.depositCoinOptions)
+      // // console.log('depositCoinOptions', self.depositCoinOptions)
     })
-    console.log('this.$route.params', this.$route.params.depositCoin)
+    // console.log('this.$route.params', this.$route.params.depositCoin)
     if (this.$route.params.depositCoin !== undefined) {
       this.depositCoin = this.$route.params.depositCoin
       this.checkGetPairs()
@@ -1194,7 +1194,7 @@ export default {
     },
     checkToGetRate () {
       // if (this.$refs.destinationAddressAddress.hasError || this.destinationAddress.address === '' ||
-      // console.log('this.depositCoin.value', this.depositCoin.value)
+      // // console.log('this.depositCoin.value', this.depositCoin.value)
       let self = this
       this.optionsFrom = []
       this.optionsTo = []
@@ -1280,7 +1280,7 @@ export default {
       }
 
       this.refundAddress.address = this.refundAddress.address === '' ? this.fromCoin.value : this.refundAddress.address
-      // console.log('this.refundAddress', this.refundAddress)
+      // // console.log('this.refundAddress', this.refundAddress)
       this.destinationAddress.address = this.destinationAddress.address === '' ? this.toCoin.value : this.destinationAddress.address
 
       this.$axios.post(url + '/v2/order',
@@ -1294,7 +1294,7 @@ export default {
         },
         { headers })
         .then((response) => {
-          // console.log('response - order', response)
+          // // console.log('response - order', response)
           self.orderId = response.data.data.orderId
           self.exchangeAddress = response.data.data.exchangeAddress
           self.expectedDepositCoinAmount = response.data.data.expectedDepositCoinAmount
@@ -1316,7 +1316,7 @@ export default {
         },
         { headers })
         .then((response) => {
-          // console.log('------------Response------------', response)
+          // // console.log('------------Response------------', response)
           self.destinationCoinOptions = response.data.data.map(function (coin) {
             if (coin.isActive === true) {
               let row = {
@@ -1353,7 +1353,7 @@ export default {
         { headers })
         .then((response) => {
           self.rateData = response.data.data
-          // console.log('self.rateData -------------- ', self.rateData)
+          // // console.log('self.rateData -------------- ', self.rateData)
         })
         .catch((err) => {
           if (err) {}
