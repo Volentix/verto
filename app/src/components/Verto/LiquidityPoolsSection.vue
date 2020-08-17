@@ -1,5 +1,6 @@
 <template>
   <div class="desktop-card-style make-vtx q-mb-sm">
+    <br>
     <div class="row flex justify-between q-pb-lg q-pt-lg">
       <div class="header-col col-12 flex justify-between items-center">
         <h4 class="q-pl-sm">DeFi</h4>
@@ -16,6 +17,7 @@
     <q-dialog v-model="openDialog">
       <AddLiquidityDialog />
     </q-dialog>
+    <br>
   </div>
 </template>
 
