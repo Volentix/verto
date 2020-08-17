@@ -119,7 +119,7 @@ export default {
     }
   },
   async created () {
-    console.log('wall', this.wallet)
+    // console.log('wall', this.wallet)
 
     if (this.wallet.name) {
       this.fetch()
