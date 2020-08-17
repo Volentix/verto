@@ -61,7 +61,7 @@ export default {
   },
   async created () {
     let highestVTXAccount = await this.$store.state.highestVTXAccount.wallet.amount
-    console.log('highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount', highestVTXAccount)
+    // console.log('highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount', highestVTXAccount)
     if (highestVTXAccount !== undefined) {
       this.setHighestVTXAccount()
       this.activate = false
@@ -84,7 +84,7 @@ export default {
       })
 
       this.highestVTXAccount = tableDatas.length > 1 && parseInt(tableDatas[0].amount) >= 1000 ? tableDatas[0] : null
-      console.log('this.highestVTXAccount **********************************', this.highestVTXAccount)
+      // console.log('this.highestVTXAccount **********************************', this.highestVTXAccount)
       if (this.highestVTXAccount !== undefined && this.highestVTXAccount !== null) {
         let stake_per = Math.round((0.01 + (0.001 * 10)) * 1000) / 1000
         let sendAmount = Math.round(Math.pow(10, this.highestVTXAccount.precision) * this.highestVTXAccount.amount) / Math.pow(10, this.highestVTXAccount.precision)

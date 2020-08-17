@@ -204,7 +204,7 @@ export default {
     await cruxClient.init()
     this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
     if (this.existingCruxID) {
-      console.log('existingCruxID', this.existingCruxID)
+      // console.log('existingCruxID', this.existingCruxID)
     }
   },
   methods: {

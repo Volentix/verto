@@ -202,7 +202,7 @@ export default {
         textColor: 'white',
         position: 'top'
       })
-      console.log('notifSelectWallet , notifSelectWallet')
+      // console.log('notifSelectWallet , notifSelectWallet')
       this.triggerCustomRegisteredType1()
     },
     triggerCustomRegisteredType1 () {
