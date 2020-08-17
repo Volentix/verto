@@ -208,7 +208,7 @@ export default {
     triggerCustomRegisteredType1 () {
       this.$q.notify({
         type: 'my-notif',
-        message: `Please select a wallet `,
+        message: `Please select a wallet`,
         caption: 'from the list'
       })
     },
