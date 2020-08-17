@@ -1,10 +1,12 @@
 <template>
   <div class="desktop-card-style apps-section q-mb-sm">
     <div class="row">
-      <div class="col col-3 flex flex-center items-center logo-vtx"><img src="statics/vtx_black.svg" alt=""> Volentix</div>
+      <div class="col col-3 flex flex-center items-center logo-vtx "><img src="statics/vtx_black.svg" alt=""> Volentix</div>
+      <div class="col"></div>
       <div class="col column item-start shape-app"><img src="statics/picto_stex7.svg" alt=""><strong>vtx</strong>Volentix Currency</div>
       <div class="col column item-start shape-app" style="flex-basis: 10px"><img src="statics/picto_verto.svg" alt=""><strong>verto</strong>Multi- Currency Wallet</div>
       <div class="col column item-start shape-app"><img src="statics/picto_stex3.svg" alt=""><strong>vdex</strong>Market Data Analysis</div>
+      <div class="col"></div>
       <!-- <div class="col column item-start shape-app"><img src="statics/picto_stex5.svg" alt=""><strong>vespucci</strong>Exchange</div> -->
       <!-- <div class="col column item-start shape-app"><img src="statics/picto_stex4.svg" alt=""><strong>venue</strong>Community platform</div> -->
     </div>

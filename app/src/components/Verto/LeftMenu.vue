@@ -55,7 +55,7 @@ export default {
     left: 0px;
     top: 0px;
     height: 100%;
-    width: 60px;
+    width: 10vh;
     background-color: #7900FF;
     background: transparent linear-gradient(180deg, #7900FF 0%, #00D0DF 100%) 0% 0% no-repeat padding-box;
     z-index: 7;
@@ -95,7 +95,7 @@ export default {
           }
           &-tabs{
             .tabs-menu--wrapper-tab{
-              margin-left: -10px;
+              margin-left: -1vh;
               .svg-icon-wrapper{
                 overflow: hidden;
                 width: 60px;

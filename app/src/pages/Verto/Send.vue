@@ -367,6 +367,7 @@ export default {
       this.currentAccount = this.tableData.find(w => w.chain === newVal.chainID && w.type === newVal.type && (
         w.chain === 'eos' ? w.name.toLowerCase() === newVal.label : w.key === newVal.label)
       )
+      this.$store.state.currentwallet.wallet = this.currentAccount
       this.sendAmount = 0
     }
   },

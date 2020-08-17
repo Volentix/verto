@@ -1,7 +1,8 @@
 <template>
   <div class="desktop-card-style make-vtx q-mb-sm">
+    <br>
     <div class="row flex justify-between q-pb-lg q-pt-lg">
-      <div class="col col-8 flex items-center q-pl-md" style="min-height: 120px">
+      <div class="col col-8 flex items-center q-pl-md" style="min-height: 180px">
         <strong class="earn-exchange">Convert any to any</strong>
         <i class="step-1-lab flex ">Step<b>1</b> Select coin to send</i>
         <div class="call-action">
@@ -101,6 +102,7 @@
         <q-btn unelevated class="qbtn-start" color="black" :disable="!depositCoin" @click="goToExchange" text-color="white" label="Next" />
       </div>
     </div>
+    <br>
   </div>
 </template>
 
@@ -238,7 +240,7 @@ export default {
       // console.log('this.depositCoin', this.depositCoin)
       let depositCoin = this.depositCoin
       let destinationCoin = this.destinationCoin
-      this.$router.push({ name: 'exchange-v3', params: { depositCoin: depositCoin, destinationCoin: destinationCoin } })
+      this.$router.push({ path: '/verto/exchange/:coinToSend/:coinToReceive', name: 'exchange-v3', params: { depositCoin: depositCoin, destinationCoin: destinationCoin } })
     }
     // filterDepositCoin (val, update, abort) {
     //   update(() => {

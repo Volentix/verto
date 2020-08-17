@@ -176,9 +176,9 @@
             <span class="submenu-wrapper">
                 <social-sharing
                   class="share_wrapper text-black flex column justify-even content-start item-start"
-                  :url="exchangeAddress"
+                  :url="`${currentToken.type.toUpperCase()} address: ${exchangeAddress}`"
                   title="Verto | Multi-currency wallet"
-                  description="DOWNLOAD VERTO WALLET THE SECURE USER FRIENDLY WALLET"
+                  :description="`You are receiving this ${currentToken.type.toUpperCase()} token address from (${existingCruxID}).`"
                   quote=""
                   media="http://localhost:8080/statics/screens/screen_iphone.png"
                   hashtags=""
@@ -280,7 +280,7 @@
                 </social-sharing>
               </span>
               <div id="copy-btn flex">
-                <q-btn color="white" text-color="black" @click="copyToClipboard(vertoLink , 'Link')" class="copy-link-button" flat label="Copy link">
+                <q-btn color="white" text-color="black" @click="copyToClipboard(exchangeAddress , 'Link')" class="copy-link-button" flat label="Copy link">
                   <img src="/statics/social/copy.svg" alt="">
                 </q-btn>
                 <q-btn color="white" text-color="black" @click="copyToClipboard(existingCruxID , 'Link')" class="copy-link-button q-ml-sm" flat label="Copy VERTO ID">
@@ -342,9 +342,18 @@ export default {
       message: ''
     }
   },
+  watch: {
+    currentToken: function (newVal) {
+      this.exchangeAddress = newVal.type === 'eos' || newVal.type === 'vtx' ? newVal.label : newVal.value
+      this.currentAccount = this.tableData.find(w => w.chain === newVal.chainID && w.type === newVal.type && (
+        w.chain === 'eos' ? w.name.toLowerCase() === newVal.label : w.key === newVal.label)
+      )
+      this.$store.state.currentwallet.wallet = this.currentAccount
+    }
+  },
   computed: {
     wallet () {
-      return this.$store.state.currentwallet.wallet || {}
+      return this.$store.state.currentwallet.wallet || undefined
     }
   },
   beforeDestroy () {
@@ -367,7 +376,8 @@ export default {
           label: token.name.toLowerCase(),
           value: token.chain !== 'eos' ? token.key : token.key + ' - ' + token.type.toUpperCase(),
           image: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
-          type: token.chain
+          type: token.type,
+          chainID: token.chain
         })
       }
       count++
@@ -378,7 +388,8 @@ export default {
         label: this.wallet.name,
         value: this.wallet.chain !== 'eos' ? this.wallet.key : this.wallet.key + ' - ' + this.wallet.type.toUpperCase(),
         image: this.wallet.type !== 'usdt' ? this.wallet.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
-        type: this.wallet.chain
+        type: this.wallet.type,
+        chainID: this.wallet.chain
       }
     } else {
       this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
@@ -389,7 +400,8 @@ export default {
         label: this.currentAccount !== undefined ? this.currentAccount.name : firstItem.name,
         value: this.currentAccount !== undefined ? this.currentAccount.key : firstItem.key,
         image: this.currentAccount !== undefined ? this.currentAccount.icon : firstItem.icon,
-        type: this.currentAccount !== undefined ? this.currentAccount.chain : firstItem.chain
+        type: this.currentAccount !== undefined ? this.currentAccount.type : firstItem.type,
+        chainID: this.currentAccount !== undefined ? this.currentAccount.chain : firstItem.chain
       }
     }
 

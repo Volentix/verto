@@ -66,13 +66,17 @@
       </div>
     </div>
     <div v-else-if="version === 'type6'" class="profile-wrapper--header static" style="background: url(statics/refer_friend_bg.png) center bottom / cover no-repeat rgb(255, 255, 255) !important; min-height: 390px; box-shadow: none !important; border-radius: 0px;" />
-    <div v-else class="column flex-center profile-wrapper--header" :class="{'desktop-ui' : !isMobile}" style="background: url('statics/header_bg.png');">
-      <h3 class="profile-wrapper--header__title text-white">Portfolio Balance</h3>
-      <h2 class="profile-wrapper--header__balance text-white">${{ new Number(totalBalance).toFixed(2) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
+    <div v-else class="column flex-center profile-wrapper--header" :class="{'desktop-ui' : !isMobile, 'selected-wallet': !$store.state.currentwallet.wallet.empty}" style="background: url('statics/header_bg.png');">
+      <q-btn v-if="!$store.state.currentwallet.wallet.empty" outline round @click="resetSelectedWallet()" color="white" class="reset-btn" text-color="white" icon="close" />
+      <h3 class="profile-wrapper--header__title text-white" v-if="!$store.state.currentwallet.wallet.empty">{{$store.state.currentwallet.wallet.name}}</h3>
+      <h3 class="profile-wrapper--header__title text-white" v-else>Portfolio Balance</h3>
+      <h2 class="profile-wrapper--header__balance text-white" v-if="!$store.state.currentwallet.wallet.empty">${{ new Number($store.state.currentwallet.wallet.usd).toFixed(2) }} USD <span class="profile-wrapper--header__equivalent">Equivalent to <b>{{ new Number(+$store.state.currentwallet.wallet.amount).toFixed(2) + ' ' + $store.state.currentwallet.wallet.type.toUpperCase() }}</b></span></h2>
+      <h2 class="profile-wrapper--header__balance text-white" v-else>${{ new Number(totalBalance).toFixed(2) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <div class="profile-wrapper--header__action">
-        <q-btn unelevated v-if="screenSize <= 1024" :disable="selectedCoin.type === 'verto'" to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
-        <q-btn unelevated v-if="screenSize > 1024" :disable="selectedCoin.type === 'verto'" @click="selectedCoin === undefined ? notifSelectWallet() : goToSendPage()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
-        <q-btn unelevated to="/verto/wallets/receive" :disable="selectedCoin.type === 'verto'" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
+        <q-btn unelevated v-if="screenSize <= 1024" :disable="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
+        <q-btn unelevated v-if="screenSize > 1024" :disable="$store.state.currentwallet.wallet.type === 'verto'" @click="!$store.state.currentwallet.wallet.empty ? goToSendPage() : notifSelectWallet()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
+        <q-btn unelevated v-if="screenSize <= 1024" to="/verto/wallets/receive" :disable="$store.state.currentwallet.wallet.type === 'verto'" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
+        <q-btn unelevated v-if="screenSize > 1024" :disable="$store.state.currentwallet.wallet.type === 'verto'" @click="!$store.state.currentwallet.wallet.empty ? goToReceivePage() : notifSelectWallet()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
       </div>
     </div>
   </div>
@@ -147,12 +151,13 @@ export default {
     // this.selectedCoin = this.$store.state.currentwallet.wallet
     // console.log('this.selectedCoin updated()', this.selectedCoin)
   },
-  computed: {
-    selectedCoin () {
-      return this.$store.state.currentwallet.wallet || {}
-    }
-  },
+  // computed: {
+  //   selectedCoin () {
+  //     return this.$store.state.currentwallet.wallet || undefined
+  //   }
+  // },
   async created () {
+    console.log('****_*_*_selectedCoin Profileheader****_*_*_', this.$store.state.currentwallet.wallet)
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
     this.tableData = await this.$store.state.wallets.tokens
@@ -181,6 +186,14 @@ export default {
     }
   },
   methods: {
+    resetSelectedWallet () {
+      console.log('resetSelectedWallet called')
+      this.$store.state.currentwallet.wallet = { empty: true }
+      this.$store.state.wallets.tokens.map(token => {
+        token.selected = false
+      })
+      console.log('this.$store.state.currentwallet.wallet = { empty: true } called')
+    },
     notifSelectWallet () {
       this.$q.notify.registerType('my-notif', {
         icon: 'announcement',
@@ -195,13 +208,17 @@ export default {
     triggerCustomRegisteredType1 () {
       this.$q.notify({
         type: 'my-notif',
-        message: `Please select a wallet !`,
-        caption: 'Click on a wallet on the list'
+        message: `Please select a wallet`,
+        caption: 'from the list'
       })
     },
     goToSendPage () {
       // console.log('goToSendPage , goToSendPage')
       this.$router.push({ path: '/verto/wallets/send' })
+    },
+    goToReceivePage () {
+      // console.log('goToSendPage , goToSendPage')
+      this.$router.push({ path: '/verto/wallets/receive' })
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
@@ -426,6 +443,9 @@ export default {
       }
     }
   }
+  .selected-wallet{
+      border: 5px solid #FFF !important;
+    }
   .send-modal{
     position: fixed;
     width: 100vw;
@@ -527,5 +547,13 @@ export default {
   }
   .pl20{
     padding-left: 20px;
+  }
+  .reset-btn{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    // width: 35px;
+    transform: scale(.5);
+
   }
 </style>
