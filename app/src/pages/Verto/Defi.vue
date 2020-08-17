@@ -181,7 +181,6 @@
 // import EosWrapper from '@/util/EosWrapper'
 import { CruxPay } from '@cruxpay/js-sdk'
 import HD from '@/util/hdwallet'
-import Lib from '@/util/walletlib'
 import { osName } from 'mobile-device-detect'
 // import TransactionsSection from '../../components/Verto/TransactionsSection'
 import AddLiquidityDialog from '../../components/Verto/AddLiquidityDialog'
@@ -306,126 +305,6 @@ export default {
         type: 'warning',
         position: 'top'
       })
-    },
-    checkMemo () {
-      if (this.sendMemo.length > 0) {
-        this.$refs.sendMemo.error = false
-      } else if (this.sendTo.toLowerCase() === 'stexofficial') {
-        this.$refs.sendMemo.error = true
-      }
-    },
-    async checkTo () {
-      this.toError = false
-
-      if (this.validateEmail(this.sendTo)) {
-        try {
-          this.sendToResolved = (await cruxClient.resolveCurrencyAddressForCruxID(this.sendTo, this.currentAccount.chain)).addressHash
-        } catch (error) {
-          // console.log('checkTo:', error)
-          this.sendToResolved = ''
-
-          if (error.errorCode === 1002) {
-            // ID does not exist
-            this.toError = true
-            this.toErrorMessage = 'This Verto ID does not exist'
-          } else if (error.errorCode === 1005) {
-            // Currency address not available for user
-            this.toError = true
-            this.toErrorMessage = this.currentAccount.chain.toUpperCase() + ' address not set for that user'
-          }
-        }
-
-        // console.log('sendToResolved', this.sendToResolved)
-      } else {
-        // check for valid eos name
-        this.sendToResolved = this.sendTo
-        this.invalidEosName = false
-        if (this.sendTo.length === 12) {
-          if (this.sendTo.toLowerCase() === 'stexofficial') {
-            this.memoError = true
-          }
-        } else {
-          this.memoError = false
-        }
-      }
-    },
-    validateEmail (email) {
-      var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      return re.test(String(email).toLowerCase())
-    },
-    async getMaxBalance () {
-      this.sendAmount = await this.currentAccount.amount
-    },
-    goChangePassword: function () {
-      this.$router.push({ path: '/change-password' })
-    },
-    openModalFun: function (item) {
-      if (this.currentAccount.privateKey) {
-        this.sendTokens()
-        this.openModalProgress = true
-      } else {
-        this.getPassword = true
-        this.openModal = true
-      }
-    },
-    checkPrivateKeyPassword () {
-      const privateKeyEncrypted = JSON.stringify(this.currentAccount.privateKeyEncrypted)
-      this.privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
-      if (this.privateKey.success) {
-        this.invalidPrivateKeyPassword = false
-      } else {
-        this.invalidPrivateKeyPassword = true
-        return false
-      }
-    },
-    async sendTokens () {
-      this.unknownError = false
-      this.invalidEosName = false
-      this.transStatus = 'Transaction in progress'
-
-      // console.log(
-      //   'chainID', this.params.chainID,
-      //   'tokenID', this.params.tokenID,
-      //   'name', this.params.accountName,
-      //   'to', this.sendToResolved,
-      //   'value', this.sendAmount,
-      //   'memo', this.sendMemo,
-      //   'key', this.privateKey.key,
-      //   'contract', this.currentAccount.contract)
-
-      Lib.send(
-        this.params.chainID,
-        this.params.tokenID,
-        this.params.accountName,
-        this.sendToResolved,
-        this.sendAmount,
-        this.sendMemo,
-        this.privateKey.key,
-        this.currentAccount.contract
-      ).then(result => {
-        if (result.success) {
-          this.getPassword = false
-          this.transErrorDialog = false
-          this.openModal = false
-          this.openModalProgress = false
-          this.transSuccessDialog = true
-          this.transactionLink = result.message
-          this.transStatus = 'Sent Successfully'
-        } else {
-          this.unknownError = true
-          this.ErrorMessage = result.message
-          this.transErrorDialog = true
-          this.openModal = false
-          this.openModalProgress = false
-        }
-      })
-    },
-    toSummary () {
-      if (!this.invalidPrivateKeyPassword) {
-        this.formatedAmount = this.formatAmountString()
-        this.sendTokens()
-        this.openModalProgress = true
-      }
     },
     hideModalFun: function () {
       this.openModal = false

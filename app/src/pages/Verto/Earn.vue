@@ -12,21 +12,13 @@
         <div class="col col-md-9">
           <div class="desktop-card-style apps-section q-mb-sm">
             <div class="q-pb-lg">
-              <profile-header version="type5" />
               <div class="row">
-                <div class="col col-6 q-pa-md">
-                  <card-refer />
-                </div>
-                <div class="col col-6 q-pa-md">
-                  <card-share />
-                </div>
-                <div class="col col-5 q-pa-md">
-                  <card-create-proposal />
-                </div>
-                <div class="col col-7 q-pt-md q-pl-sm">
+                <div class="col col-6">
+                  <profile-header version="type5" />
                   <div class="convert-any-coin--wrapper">
                     <div class="convert-any-coin--wrapper--body">
-                      <q-btn color="white" to="/verto/earn/use-referral-account" class="convert-any-coin--wrapper--body__btn" text-color="black">
+                      <!-- to="/verto/earn/use-referral-account"  -->
+                      <q-btn disabled color="white" class="convert-any-coin--wrapper--body__btn" text-color="black">
                         <template v-slot>
                           <div class="icon-wrapper">
                             <img src="statics/share_icon.png" width="35px" alt="">
@@ -44,6 +36,20 @@
                       </q-btn>
                     </div>
                   </div>
+                </div>
+                <div class="col col-6 q-pa-md">
+                  <card-refer />
+                  <hr style="height:12px;opacity:0" />
+                  <card-share />
+                  <hr style="height:12px;opacity:0" />
+                  <card-create-proposal />
+                </div>
+                <div class="col col-6 q-pa-md">
+                </div>
+                <div class="col col-5 q-pa-md">
+                </div>
+                <div class="col col-7 q-pt-md q-pl-sm">
+
                 </div>
               </div>
             </div>
@@ -458,6 +464,9 @@ export default {
       margin-right: auto;
       box-shadow: 0px 3px 6px 0px rgba(black, .19);
       border-radius: 20px;
+      @media screen and (min-width: 768px) {
+        max-width: 100%;
+      }
       &--header{
         display: flex;
         flex-direction: column;
