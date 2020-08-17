@@ -5,6 +5,7 @@
         <div class="col col-md-3">
           <div class="wallets-container">
             <profile-header :isMobile="false" class="marg" version="type2222" />
+            <!-- ssdsd <br>{{$store.state.currentwallet.wallet}} -->
             <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
             <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
           </div>
@@ -13,7 +14,53 @@
           <appsSection />
           <startNodeSection :banner="1" />
           <chainToolsSection />
-          <transactionsSection />
+          <div class="desktop-card-style current-investments explore-opportunities q-mb-sm">
+            <h4 class="q-pl-md">Explore Opportunities</h4>
+            <div class="header-table-col row q-pl-md">
+              <div class="col-1"><h3>#</h3></div>
+              <div class="col-3"><h3>Available pools</h3></div>
+              <div class="col-2"><h3>Liquidity</h3></div>
+              <div class="col-2"><h3>Net ROI(1mo)</h3></div>
+              <div class="col-2"><h3>Net ROI(1mo)</h3></div>
+              <div class="col-2"></div>
+            </div>
+            <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 392px;">
+              <div v-for="i in 10" :key="i" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
+                <div class="col-1 flex items-center">
+                  <strong>{{i}}</strong>
+                </div>
+                <div class="col-3 flex items-center">
+                  <span class="imgs q-mr-lg">
+                    <img src="statics/coins_icons/eth2.png" alt="">
+                    <img src="statics/coins_icons/bat.png" alt="">
+                  </span>
+                  <span class="column pairs">
+                    <span class="pair">ETH / BAT</span>
+                    <span class="value">Uniswap V1</span>
+                  </span>
+                </div>
+                <div class="col-2 q-pl-sm">
+                  <span class="column pairs">
+                    <span class="pair">$10,918,987</span>
+                  </span>
+                </div>
+                <div class="col-2 q-pl-md">
+                  <span class="column pairs">
+                    <span class="value">N/A</span>
+                  </span>
+                </div>
+                <div class="col-2 q-pl-lg">
+                  <span class="column pairs">
+                    <span class="value">N/A</span>
+                  </span>
+                </div>
+                <div class="col-2 flex justify-end">
+                  <q-btn unelevated @click="openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
+                </div>
+              </div>
+            </q-scroll-area>
+          </div>
+          <!-- <transactionsSection /> -->
           <!-- <venueSection /> -->
         </div>
         <div class="col q-pl-sm q-pr-md col-md-3">
@@ -57,12 +104,13 @@ import Wallets from '../../components/Verto/Wallets'
 import AppsSection from '../../components/Verto/AppsSection'
 import StartNodeSection from '../../components/Verto/StartNodeSection'
 import ChainToolsSection from '../../components/Verto/ChainToolsSection'
-import TransactionsSection from '../../components/Verto/TransactionsSection'
+// import TransactionsSection from '../../components/Verto/TransactionsSection'
 import LiquidityPoolsSection from '../../components/Verto/LiquidityPoolsSection'
 import MakeVTXSection from '../../components/Verto/MakeVTXSection'
 import ExchangeSection from '../../components/Verto/ExchangeSection'
 
 // import VespucciRatingSection from '../../components/Verto/VespucciRatingSection'
+import { QScrollArea } from 'quasar'
 
 // import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
 import HD from '@/util/hdwallet'
@@ -80,6 +128,7 @@ import { osName } from 'mobile-device-detect'
 export default {
   components: {
     // ConvertAnyCoin,
+    QScrollArea,
     ProfileHeader,
     Wallets,
     // CardCreateWallet,
@@ -91,7 +140,7 @@ export default {
     AppsSection,
     StartNodeSection,
     ChainToolsSection,
-    TransactionsSection,
+    // TransactionsSection,
     LiquidityPoolsSection,
     MakeVTXSection,
     ExchangeSection
@@ -109,8 +158,17 @@ export default {
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
   },
+  beforeCreate () {
+    console.log('beforeCreate event')
+  },
   async created () {
+    // this.$store.state.currentwallet.wallet = undefined
+    // const dismiss = this.$q.notify({ type: 'my-notif' })
+    // dismiss()
+    // console.log('dismiss()')
     // Check if mnemonic exists
+
+    // console.log('this.$store.state.currentwallet.wallet = undefined called')
     this.osName = osName
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
@@ -124,7 +182,13 @@ export default {
     }
 
     // Adds the eos account name when it is found to the cruxID
-    this.tableData = await store.state.wallets.tokens
+    this.tableData = await store.state.wallets.tokens.map(token => {
+      token.selected = false
+      if (token.hidden === undefined) {
+        token.hidden = false
+      }
+    })
+    this.$store.state.currentwallet.wallet = { empty: true }
     Promise.all(this.tableData)
     let eosAccount = this.tableData.find(w => w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
 
@@ -211,6 +275,7 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+  @import "~@/assets/styles/variables.scss";
   .desktop-version{
     background: #E7E8E8;
     padding-top: 13vh;
@@ -219,6 +284,184 @@ export default {
   }
   .mobile-pad{
     padding-bottom: 50px
+  }
+  .desktop-card-style{
+    // height: 100%;
+    &.current-investments{
+      &.wallet-col{
+        h4{
+          margin-bottom: -8px;
+        }
+        .body-table-col{
+          .imgs{
+            img{
+              margin-right: 10px !important;
+            }
+          }
+        }
+        .header-table-col{
+          h3{
+            font-size: 16px;
+            line-height: 20px;
+          }
+        }
+      }
+      h4{
+        margin-bottom: -20px;
+      }
+      .header-table-col{
+        h3{
+          font-weight: $bold;
+          color: #7272FA;
+          font-size: 14px;
+          margin-top: 20px;
+          line-height: 30px;
+          margin-bottom: -5px;
+          padding-bottom: 10px;
+        }
+      }
+      .body-table-col{
+        &:hover{
+          background-color: rgba(black, .01);
+        }
+        &.border{
+          border-bottom: 1px solid rgba(black, .04);
+        }
+        .pairs{
+          .pair{
+            font-weight: $bold;
+            color: #2A2A2A;
+            margin-bottom: -2px;
+          }
+          .value{
+            color: #627797;
+          }
+        }
+        .imgs{
+          margin-top: 5px;
+          img{
+            border-radius: 40px;
+            height: 25px;
+          }
+          &:first-child{
+            img{
+              margin-right: -10px;
+            }
+          }
+        }
+      }
+      .qbtn-custom{
+        border-radius: 30px;
+        height: 34px;
+        background: #EFF5F9 !important;
+        /deep/ .q-btn__wrapper{
+          min-height: unset;
+          padding: 0px 5px;
+          .q-btn__content{
+            text-transform: initial;
+            font-size: 10px;
+            color: #627797;
+          }
+        }
+      }
+    }
+    &.yearn-finance{
+      img{
+        width: 30px;
+        margin-right: 10px;
+      }
+      strong{
+        position: relative;
+        margin-top: -13px;
+        b{
+          position: absolute;
+          right: 0px;
+          bottom: -5px;
+          font-size: 12px;
+          font-weight: $regular;
+          line-height: 20px;
+        }
+      }
+      h4{
+        margin-bottom: 0px;
+      }
+      .qbtn-download{
+        border-radius: 30px;
+        height: 34px;
+        background: #EFF5F9 !important;
+        padding-left: 10px;
+        padding-right: 10px;
+        /deep/ .q-btn__wrapper{
+          min-height: unset;
+          padding: 0px 10px;
+          .q-btn__content{
+            text-transform: initial;
+            font-size: 14px;
+            color: #627797;
+          }
+        }
+      }
+      /deep/ .transaction-section{
+        box-shadow: none;
+        .history-icon{
+          display: none;
+        }
+      }
+    }
+    &.wallet-snapshot{
+      padding-bottom: 8px;
+      padding-top: 8px;
+      h3{
+        font-size: 16px;
+        font-weight: $bold;
+        position: relative;
+        line-height: 40px;
+        font-family: $Titillium;
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+      .amount{
+        font-size: 16px;
+        font-weight: $bold;
+        position: relative;
+        line-height: 40px;
+        font-family: $Titillium;
+        .interest_rate{
+          font-size: 16px;
+          font-weight: $regular;
+          position: relative;
+          margin-top: -15px;
+          .thicker{
+            position: relative;
+            top: 7px;
+            margin-right: 10px;
+          }
+          .p-abs{
+            position: absolute;
+            bottom: -17px;
+            right: 17px;
+            font-size: 12px;
+            font-weight: $regular;
+            opacity: .7;
+          }
+          img{
+            width: 30px;
+            margin-right: 6px;
+            position: relative;
+            top: 7px;
+          }
+        }
+      }
+    }
+    h4{
+      font-size: 16px;
+      font-weight: $bold;
+      position: relative;
+      line-height: 40px;
+      font-family: $Titillium;
+      margin-top: 0px;
+      margin-bottom: 20px;
+    }
   }
 </style>
 <style>

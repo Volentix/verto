@@ -8,7 +8,8 @@
           <div class="title">Create Proposal</div>
         </div>
       </div>
-      <q-btn unelevated class="card-refer--wrapper--header_btn" to="/verto/card-wps/public-proposals" color="black" text-color="white" label="Create" />
+      <!-- to="/verto/card-wps/public-proposals" -->
+      <q-btn unelevated disabled class="card-refer--wrapper--header_btn" color="black" text-color="white" label="Create" />
     </div>
   </div>
 </template>

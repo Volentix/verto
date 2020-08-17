@@ -1,7 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import Lib from '@/util/walletlib'
-import coinsNames from '@/util/coinsNames'
+// import coinsNames from '@/util/coinsNames'
 import Web3 from 'web3'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
@@ -20,14 +20,14 @@ class Wallets2Tokens {
     this.tableData.map(wallet => {
       wallet.type = wallet.type ? wallet.type : 'verto'
 
-      let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
-      let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === vtxCoin.toLowerCase())
+      // let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
+      // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === vtxCoin.toLowerCase())
 
-      let vespucciScore = 0
-      this.getCoinScore(coinSlug.slug).then(result => {
-        vespucciScore = result.vespucciScore
-        wallet.vespucciScore = vespucciScore
-      })
+      // let vespucciScore = 0
+      // this.getCoinScore(coinSlug.slug).then(result => {
+      //   vespucciScore = result.vespucciScore
+      //   wallet.vespucciScore = vespucciScore
+      // })
       if (wallet.type === 'eos') {
         wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
@@ -41,7 +41,7 @@ class Wallets2Tokens {
         wallet.chain = wallet.type
         wallet.disabled = true
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
-        wallet.vespucciScore = vespucciScore
+        // wallet.vespucciScore = vespucciScore
       }
 
       if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'bnb' || wallet.type === 'dash') {
@@ -70,13 +70,13 @@ class Wallets2Tokens {
               if (+t.amount !== 0) {
                 let name = wallet.name.toLowerCase()
                 let type = t.symbol.toLowerCase()
-                let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === type.toLowerCase())
-                let vespucciScore = 0
-                if (coinSlug) {
-                  this.getCoinScore(coinSlug.slug).then(result => {
-                    vespucciScore = result.vespucciScore
-                  })
-                }
+                // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === type.toLowerCase())
+                // let vespucciScore = 0
+                // if (coinSlug) {
+                //   this.getCoinScore(coinSlug.slug).then(result => {
+                //     vespucciScore = result.vespucciScore
+                //   })
+                // }
 
                 let usdValue = 0
                 this.getUSD(t.code, type).then(result => {
@@ -88,7 +88,7 @@ class Wallets2Tokens {
                     disabled: false,
                     type,
                     name,
-                    vespucciScore,
+                    // vespucciScore,
                     key: wallet.key,
                     privateKey: wallet.privateKey,
                     privateKeyEncrypted: wallet.privateKeyEncrypted,
@@ -105,8 +105,8 @@ class Wallets2Tokens {
             } else {
               eos.getAccount(wallet.name).then(a => {
                 self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(async eos => {
-                  let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
-                  eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
+                  // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
+                  // eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
                   eos.amount = t.amount ? t.amount : 0
                   eos.usd = this.eosUSD * t.amount
                   eos.contract = 'eosio.token'
@@ -178,7 +178,6 @@ class Wallets2Tokens {
       }
       return 1
     })
-
     store.commit('wallets/updateTokens', this.tableData)
   }
   async getAllAssets () {

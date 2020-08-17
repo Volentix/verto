@@ -50,8 +50,8 @@
       <q-btn unelevated v-if="!showWallets" flat @click="toggleWallets()" :icon-right="showText ? 'keyboard_arrow_up': 'keyboard_arrow_down'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showText ? 'Hide all wallets' : 'Show all wallets'" :class="showText ? 'open': 'hide'" />
     </div>
     <div v-else class="else-is-desktop wallets-wrapper--list open">
-      <h2 class="wallets-wrapper--list_title q-pa-md q-ml-md flex items-center"><q-icon name="o_account_balance_wallet"/> Wallets</h2>
-      <div class="header-list-table">
+      <h2 class="wallets-wrapper--list_title q-pa-md q-ml-md flex items-center"><q-icon name="o_account_balance_wallet"/> {{$store.state.currentwallet.wallet.empty ? 'Wallets' : 'Wallet : '+ $store.state.currentwallet.wallet.name.toUpperCase()}}</h2>
+      <div v-if="$store.state.currentwallet.wallet.empty" class="header-list-table">
         <div class="row q-pl-lg q-pr-lg">
           <div class="col col-6 q-pl-sm pointer" @click="sortBy('account')" :class="{'active' : directionAccount}">
             <span class="sort">Account name</span> <q-icon name="swap_vert" class="text-grey" />
@@ -64,11 +64,12 @@
       </div>
       <q-scroll-area :visible="true" class="q-mr-sm" style="height: 300px;">
         <q-list bordered separator class="list-wrapper">
+          <div v-if="$store.state.currentwallet.wallet.empty">
           <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
             <div class="header-wallet-wrapper culumn full-width">
               <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                 <q-item-section avatar>
-                  <img class="coin-icon" width="35px" :src="item.icon" alt="">
+                  <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
                 </q-item-section>
                 <q-item-section class="item-name">
                   <span class="item-name--name">{{item.name}}</span>
@@ -83,7 +84,7 @@
               </div>
               <div class="menu-wallet">
                 <q-list bordered separator class="sub-list-menu">
-                  <q-item class="p-relative full-width no-pad">
+                  <q-item v-if="false" class="p-relative full-width no-pad">
                     <div class="vespucci-score--wrapper full-width flex justify-between items-center">
                       <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
                       <span class="value">{{ item.vespucciScore }}</span>
@@ -107,6 +108,45 @@
               </div>
             </div>
           </q-item>
+          </div>
+          <div v-else>
+            <q-item class="selected" clickable active-class="bg-teal-1 text-grey-8">
+            <div class="header-wallet-wrapper culumn full-width">
+              <div class="menu-wallet">
+                <q-list bordered separator class="sub-list-menu">
+                  <q-separator style="margin-top: -20px" />
+                  <q-item data-name='Associate with EOS' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                  <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                  <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                  <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
+                    <q-item-section>
+                      <q-item-label>{{$store.state.currentwallet.wallet.hidden ? 'Reveal' : 'Hide'}} Currency Chain</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar>
+                      <q-toggle class="p-abs" color="blue" @input="hideCurrency()" v-model="$store.state.currentwallet.wallet.hidden" />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </div>
+            </div>
+          </q-item>
+          <h2 class="wallets-wrapper--list_title q-pa-md q-ml-md flex items-center"><q-icon :name="'img:statics/history_icon-black.svg'" class="q-mr-sm" /> Transaction History</h2>
+          <q-list bordered separator class="list-wrapper history-list-wrapper">
+            <q-item v-for="(item, index) in fakeHistory" :key="index" clickable v-ripple>
+              <q-item-section class="item-date">
+                <span class="item-date--value column" v-html="item.date" />
+              </q-item-section>
+              <q-item-section class="item-trans">
+                <span class="item-trans--transID">{{item.transID}}</span>
+                <span class="item-trans--desc"> <span class="type" :class="item.typeTran">{{item.typeTran}}</span> {{item.desc}}</span>
+              </q-item-section>
+              <q-item-section class="item-amount">
+                <span class="item-amount--value">{{new Number(+item.amount).toFixed(2) + ' ' + $store.state.currentwallet.wallet.type.toUpperCase()}} </span>
+              </q-item-section>
+            </q-item>
+          </q-list>
+          </div>
+          <div v-if="$store.state.currentwallet.wallet.empty">
           <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
             <div class="header-wallet-wrapper culumn full-width">
               <div @click="showMenu(item)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
@@ -188,6 +228,7 @@
               </div>
             </div>
           </q-item>
+          </div>
         </q-list>
       </q-scroll-area>
       <div class="add-remove-wrapper flex column flex-center item-center content-center">
@@ -274,6 +315,14 @@ export default {
       directionAccount: false,
       // false is ASC
       // true is DESC
+      fakeHistory: [
+        { date: '<b>27</b> Today  ', transID: 'Transaction ID', to: '/transaction', typeTran: 'sent', desc: ' to kkkljo...', amount: '-2.0084' },
+        { date: '<b>26</b> 5:15 AM', transID: 'Transaction ID', to: '/transaction', typeTran: 'received', desc: ' to kkkljo...', amount: '-2.0084' },
+        { date: '<b>24</b> 6:15 PM', transID: 'Transaction ID', to: '/transaction', typeTran: 'sent', desc: ' to kkkljo...', amount: '-2.0084' },
+        { date: '<b>27</b> Today  ', transID: 'Transaction ID', to: '/transaction', typeTran: 'sent', desc: ' to kkkljo...', amount: '-2.0084' },
+        { date: '<b>27</b> Today  ', transID: 'Transaction ID', to: '/transaction', typeTran: 'sent', desc: ' to kkkljo...', amount: '-2.0084' },
+        { date: '<b>24</b> 6:15 PM', transID: 'Transaction ID', to: '/transaction', typeTran: 'sent', desc: ' to kkkljo...', amount: '-2.0084' }
+      ],
       currentAccount: {
         selected: false,
         type: '',
@@ -394,8 +443,10 @@ export default {
         })
         // this.$store.state.currentwallet.wallet = this.currentAccount
         this.$store.state.currentwallet.wallet = this.selectedCoin
+        console.log('****_*_*_selectedCoin****_*_*_', this.selectedCoin)
       } else {
         menu.selected = false
+        this.$store.state.currentwallet.wallet = undefined
       }
     },
     removeClassSelected: function () {
@@ -900,5 +951,79 @@ export default {
   }
   .pointer{
     cursor: pointer;
+  }
+</style>
+<style scoped lang="scss">
+  @import "~@/assets/styles/variables.scss";
+  .history-list-wrapper{
+    overflow: hidden;
+    visibility: hidden;
+    height: 0px;
+    opacity: 0;
+    transform: translateY(-20px) scaleY(.5);
+    transform-origin: top;
+    transition: ease transform .3s, ease opacity .4s;
+    .item{
+      &-date{
+        // display: flex;
+        // justify-content: flex-start;
+        max-width: 50px;
+        &--value{
+          display: flex;
+          flex-direction: column;
+          // align-items: center;
+          font-family: $Titillium;
+          font-weight: $light;
+          font-size: 10px;
+          color: #7272FA;
+          width: 50px;
+          margin-left: 10px;
+          /deep/ b{
+            font-weight: $bold;
+            color: #6C0DCB;
+            font-size: 20px;
+            margin-bottom: -5px;
+            margin-top: -4px;
+            @media screen and (min-width: 768px) {
+              margin-right: 10px;
+            }
+          }
+        }
+      }
+      &-trans{
+        font-family: $Titillium;
+        font-weight: $light;
+        font-size: 12px;
+        width: 90px;
+        &--transID{
+          font-weight: $bold;
+          color: #0E163B;
+          margin-top: 1px;
+        }
+        &--desc{
+          color: #B0B0B0;
+          .type{
+            text-transform: capitalize;
+            &.sent{
+              color: #FFB200;
+            }
+            &.received{
+              color: #00D0CA;
+            }
+          }
+        }
+      }
+      &-amount{
+        max-width: 70px;
+        text-align: right;
+        font-family: $Titillium;
+        font-weight: $bold;
+        font-size: 12px;
+        color: #2A2A2A;
+        justify-content: flex-start;
+        margin-top: 10px;
+      }
+    }
+
   }
 </style>

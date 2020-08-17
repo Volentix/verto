@@ -851,10 +851,29 @@ export default {
       }
     }
   },
-  beforeDestroy () {
-    window.removeEventListener('resize', this.getWindowWidth)
-    this.timeoutNotif = 1000
-  },
+  // beforeRouteLeave (to, from, next) {
+  // console.log('to', to)
+  // console.log('from', from)
+  // console.log('next', next)
+  // window.removeEventListener('resize', this.getWindowWidth)
+  // const dismiss = this.$q.notify({ type: 'my-notif' })
+  // dismiss()
+  // this.timeoutNotif = 100
+  // console.log('beforeRouteLeave')
+  // this.$router.push({ path: to.fullPath })
+  // // this.$router.push({
+  // //     path: `/verto/card-wps/public-proposals/${item.proposal_name}`
+  // //   })
+  // },
+  // beforeUpdate () {
+  //   if (this.notif) {
+  //     window.removeEventListener('resize', this.getWindowWidth)
+  //     const dismiss = this.$q.notify({ type: 'my-notif' })
+  //     dismiss()
+  //     console.log('beforeUpdate')
+  //     this.timeoutNotif = 100
+  //   }
+  // },
   async created () {
     this.osName = osName
     this.getWindowWidth()
@@ -1066,18 +1085,18 @@ export default {
       self.depositCoinUnfilter = self.depositCoinOptions
       // console.log('depositCoinOptions', self.depositCoinOptions)
     })
-    console.log('this.$route.params', this.$route.params)
-    if (this.$route.params.coin !== undefined) {
-      this.depositCoin = {
-        image: '',
-        label: '',
-        value: this.$route.params.coin
-      }
-      this.step = 2
+    console.log('this.$route.params', this.$route.params.depositCoin)
+    if (this.$route.params.depositCoin !== undefined) {
+      this.depositCoin = this.$route.params.depositCoin
       this.checkGetPairs()
       this.checkToGetPairs()
-      // console.log('this.step', this.step)
-      // console.log('this.$route.params', this.$route.params.coin)
+      this.step = 2
+      if (this.$route.params.destinationCoin !== undefined) {
+        this.destinationCoin = this.$route.params.destinationCoin
+        this.updateCoinName()
+        this.checkToGetRate()
+        this.step = 3
+      }
     }
   },
   methods: {

@@ -159,7 +159,7 @@ export default [
       },
       {
         name: 'exchange-v3',
-        path: '/verto/exchange/:selectedCoin',
+        path: '/verto/exchange/:coinToSend/:coinToReceive',
         component: () => import('pages/Verto/Exchange.vue'),
         meta: {
           authRequired: true
