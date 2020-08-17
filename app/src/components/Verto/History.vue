@@ -129,13 +129,13 @@ export default {
     // async loadTableDataWallets () {
     //   this.tableDataWallets = this.$store.state.currentwallet.config.keys
     //   // let tableDataWalletsCustom = []
-    //   // console.log('tableDataWalletsCustom', tableDataWalletsCustom)
+    //   // // console.log('tableDataWalletsCustom', tableDataWalletsCustom)
     //   // this.tableDataWallets = tableDataWalletsCustom
     // },
 
     // async getBalanceByWalletKey (walletKey) {
     //   let result = await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': walletKey }).then(balances => {
-    //     console.log('getBalanceByWalletKey () {} eos balances', balances)
+    //     // console.log('getBalanceByWalletKey () {} eos balances', balances)
     //     // let balances = balancesArray.data.length === 0 ?
     //     // if (balances.data.length === 0) {
     //     //   balances.data = [

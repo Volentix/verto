@@ -337,14 +337,14 @@ export default {
     }
   },
   async created () {
-    console.log('wall', this.wallet)
+    // console.log('wall', this.wallet)
     if (this.wallet.privateKey) {
       this.privateKey.key = this.wallet.privateKey
       this.isPrivateKeyEncrypted = false
-      console.log('this.isPrivateKeyEncrypted 1', this.isPrivateKeyEncrypted)
+      // console.log('this.isPrivateKeyEncrypted 1', this.isPrivateKeyEncrypted)
     } else {
       this.isPrivateKeyEncrypted = true
-      console.log('this.isPrivateKeyEncrypted 2', this.isPrivateKeyEncrypted)
+      // console.log('this.isPrivateKeyEncrypted 2', this.isPrivateKeyEncrypted)
     }
   },
   mounted () {
@@ -376,7 +376,7 @@ export default {
       } catch (error) {
         // FIXME with userError handler
         // userError(JSON.parse(e).message)
-        console.log('error-----------------------------', error)
+        // console.log('error-----------------------------', error)
         if (error.message.includes('maximum billable CPU time')) {
           this.transactError = true
           this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
@@ -406,7 +406,7 @@ export default {
     },
     async submitdraft () {
       this.transactError = false
-      console.log('this.editor-- ', this.editor)
+      // console.log('this.editor-- ', this.editor)
       const { proposal_name, title, monthly_budget, duration } = this
       await this.transact([{
         account: 'volentixwork',
@@ -427,7 +427,7 @@ export default {
     },
     checkPrivateKeyPassword () {
       const privateKeyEncrypted = JSON.stringify(this.wallet.privateKeyEncrypted)
-      console.log('privateKeyEncrypted', privateKeyEncrypted)
+      // console.log('privateKeyEncrypted', privateKeyEncrypted)
       const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
       if (privateKey.success) {
         this.invalidPrivateKeyPassword = false

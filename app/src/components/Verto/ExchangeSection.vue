@@ -232,12 +232,12 @@ export default {
     //   })
 
     //   self.depositCoinUnfilter = self.depositCoinOptions
-    //   // console.log('depositCoinOptions', self.depositCoinOptions)
+    //   // // console.log('depositCoinOptions', self.depositCoinOptions)
     // })
   },
   methods: {
     goToExchange () {
-      // console.log('this.depositCoin', this.depositCoin)
+      // // console.log('this.depositCoin', this.depositCoin)
       let depositCoin = this.depositCoin
       let destinationCoin = this.destinationCoin
       this.$router.push({ path: '/verto/exchange/:coinToSend/:coinToReceive', name: 'exchange-v3', params: { depositCoin: depositCoin, destinationCoin: destinationCoin } })

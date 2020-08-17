@@ -357,14 +357,14 @@ export default {
     }
   },
   async created () {
-    console.log('wall', this.wallet)
+    // console.log('wall', this.wallet)
     if (this.wallet.privateKey) {
       this.privateKey.key = this.wallet.privateKey
       this.isPrivateKeyEncrypted = false
-      console.log('this.isPrivateKeyEncrypted 1', this.isPrivateKeyEncrypted)
+      // console.log('this.isPrivateKeyEncrypted 1', this.isPrivateKeyEncrypted)
     } else {
       this.isPrivateKeyEncrypted = true
-      console.log('this.isPrivateKeyEncrypted 2', this.isPrivateKeyEncrypted)
+      // console.log('this.isPrivateKeyEncrypted 2', this.isPrivateKeyEncrypted)
     }
     if (this.wallet.name) {
       this.fetch()
@@ -396,7 +396,7 @@ export default {
       })
     },
     goToDetail (item) {
-      console.log('--item--', item.proposal_name)
+      // console.log('--item--', item.proposal_name)
       this.$router.push({
         path: `/verto/card-wps/public-proposals/${item.proposal_name}`
       })
@@ -411,7 +411,7 @@ export default {
           await eos.transact({ actions }, { keyProvider: this.privateKey.key })
         }
       } catch (error) {
-        console.log('error-------', error)
+        // console.log('error-------', error)
         // FIXME with userError handler
         // userError(JSON.parse(e).message)
         if (error.message.toString().includes('Required uint8')) {
@@ -447,7 +447,7 @@ export default {
     },
     checkPrivateKeyPassword () {
       const privateKeyEncrypted = JSON.stringify(this.wallet.privateKeyEncrypted)
-      console.log('privateKeyEncrypted', privateKeyEncrypted)
+      // console.log('privateKeyEncrypted', privateKeyEncrypted)
       const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
       if (privateKey.success) {
         this.invalidPrivateKeyPassword = false
@@ -474,15 +474,15 @@ export default {
         this.proposals = r
         this.currentProposal = this.proposals.find(p => p.proposal_name === this.$route.params.proposalName ? p : null)
         this.proposalLink += this.currentProposal.proposal_name
-        console.log('currentProposal ---', this.currentProposal)
+        // console.log('currentProposal ---', this.currentProposal)
       })
       eos.getTable('volentixwork', 'volentixwork', 'settings').then(r => {
         this.settings = r
-        console.log('settings ---', this.settings)
+        // console.log('settings ---', this.settings)
       })
       eos.getTable('volentixwork', 'volentixwork', 'votes').then(r => {
         this.votes = r
-        console.log('votes ---', this.votes)
+        // console.log('votes ---', this.votes)
       })
     }
   },

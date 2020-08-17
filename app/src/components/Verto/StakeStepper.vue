@@ -355,7 +355,7 @@ export default {
     }
   },
   async created () {
-    // console.log('---this.wallet---', this.wallet)
+    // // console.log('---this.wallet---', this.wallet)
     if (this.wallet) {
       this.currentAccount = this.wallet
       this.params = {
@@ -371,7 +371,7 @@ export default {
       )
     }
 
-    // console.log('this.currentAccount ----------------- ', this.currentAccount)
+    // // console.log('this.currentAccount ----------------- ', this.currentAccount)
 
     if (eos.isPrivKeyValid(this.currentAccount.privateKey)) {
       this.privateKey.key = this.currentAccount.privateKey
@@ -394,11 +394,11 @@ export default {
       let totalSubsidy = globalAmnts.subsidy.split(' ')[0]
 
       this.allocatable = +totalBalance - (+totalStake + +totalSubsidy)
-      // console.log('allocatable', this.allocatable)
+      // // console.log('allocatable', this.allocatable)
 
       this.stakes = await eos.getTable('vtxstake1111', this.params.accountName, 'accounts')
       this.stakes.map(s => {
-        // console.log('s', s)
+        // // console.log('s', s)
         s.stake_date = new Date(s.stake_time * 1000)
         s.stake_done = new Date((s.stake_time * 1000) + (s.stake_period * 86400000))
         s.time_left = date.getDateDiff(s.stake_done, Date.now(), 'days')
@@ -409,7 +409,7 @@ export default {
       this.currentAccount.staked = stakedAmounts
     }
 
-    // console.log('stakes', this.stakes)
+    // // console.log('stakes', this.stakes)
     if (this.stakes.length === 0) {
       this.tab = 'stake'
     }
@@ -417,7 +417,7 @@ export default {
   async mounted () {
     let stepParam = this.$route.params.step
     if (stepParam !== undefined) {
-      // console.log('step staking = ', stepParam)
+      // // console.log('step staking = ', stepParam)
       let highestVTXAccount = this.$store.state.highestVTXAccount.wallet
       this.currentAccount = highestVTXAccount
       this.params = this.$store.state.highestVTXAccount.params
@@ -469,9 +469,9 @@ export default {
         if (this.sendAmount >= 1000) {
           this.progColor = 'green'
           // let sep = ' , '
-          // console.log(this.sendAmount, sep, stake_per, sep, this.stakePeriod)
+          // // console.log(this.sendAmount, sep, stake_per, sep, this.stakePeriod)
           this.estimatedReward = Math.round(this.sendAmount * stake_per * this.stakePeriod * 100) / 100
-          // console.log('mul', stake_per)
+          // // console.log('mul', stake_per)
         } else {
           this.estimatedReward = 0
           this.progColor = 'red'
@@ -507,9 +507,9 @@ export default {
         this.transactionId = transaction.transaction_id
         this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '">block explorer</a>'
       } catch (error) {
-        // console.log('transaction errors', error)
+        // // console.log('transaction errors', error)
         this.transactionError = true
-        // console.log('error', error)
+        // // console.log('error', error)
         if (error.message.includes('stake amount is too low')) {
           this.ErrorMessage = 'Your VTX stake amount is too low, you need at least 1000 VTX to stake.'
         } else if (error.message.includes('maximum billable CPU time')) {
