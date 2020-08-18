@@ -58,6 +58,7 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   created () {
+    let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     this.osName = osName
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)

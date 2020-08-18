@@ -407,5 +407,6 @@ export default {
     font-size: 18px !important;
     font-weight: $bold;
     margin-bottom: 10px !important;
+    transform: translateY(-20px);
   }
 </style>

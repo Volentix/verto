@@ -355,6 +355,7 @@ export default {
     }
   },
   async created () {
+    let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     // // console.log('---this.wallet---', this.wallet)
     if (this.wallet) {
       this.currentAccount = this.wallet
@@ -505,7 +506,7 @@ export default {
 
         this.transactionError = false
         this.transactionId = transaction.transaction_id
-        this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '">block explorer</a>'
+        this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '" target="_blank">block explorer</a>'
       } catch (error) {
         // // console.log('transaction errors', error)
         this.transactionError = true

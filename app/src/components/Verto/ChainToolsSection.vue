@@ -1,5 +1,5 @@
 <template>
-  <div class="desktop-card-style apps-section q-mb-sm" :class="{'disabled' : wallet.chain !== 'eos' || wallet.type === 'verto'}">
+  <div class="desktop-card-style apps-section q-mb-sm" :class="{'disabled' : wallet.type !== 'vtx'}">
     <div class="row flex justify-between q-pt-sm q-pb-sm">
       <div class="col col-3 flex items-center chain-icon"><q-icon :name="'img:statics/chain-tools_icon-black.svg'" />Chain Tools</div>
       <div class="col col-4 flex items-center justify-end chain-token q-pr-sm">
