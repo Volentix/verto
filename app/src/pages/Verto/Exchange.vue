@@ -1365,6 +1365,8 @@ export default {
       this.notif = true
       this.$q.notify({
         type: 'my-notif',
+        closeBtn: '+',
+        classes: 'exchange-notif',
         message: `This may take a few minutes.`,
         caption: 'If you leave this page, you will no longer be able to track the status of this transaction.'
       })

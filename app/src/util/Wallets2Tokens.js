@@ -15,7 +15,7 @@ class Wallets2Tokens {
     const self = this
     this.eosUSD = 0
     axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { self.eosUSD = res.data.data.price })
-
+    store.state.wallets.portfolioTotal = 0
     this.tableData = [ ...store.state.currentwallet.config.keys ]
     this.tableData.map(wallet => {
       wallet.type = wallet.type ? wallet.type : 'verto'
@@ -81,8 +81,7 @@ class Wallets2Tokens {
                 let usdValue = 0
                 this.getUSD(t.code, type).then(result => {
                   usdValue = result
-                  // console.log('usdValue', usdValue, t.amount, usdValue * t.amount)
-
+                  console.log('this.eosUSD $$$$$ ', usdValue)
                   self.tableData.push({
                     selected: false,
                     disabled: false,
@@ -100,6 +99,7 @@ class Wallets2Tokens {
                     to: '/verto/wallets/eos/' + type + '/' + name,
                     icon: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/' + t.code + '/' + t.symbol + '.png'
                   })
+                  store.state.wallets.portfolioTotal += usdValue * t.amount
                 })
               }
             } else {
@@ -114,6 +114,8 @@ class Wallets2Tokens {
                   // console.log('a ---------------------', a)
                   eos.proxy = a.voter_info ? a.voter_info.proxy : ''
                   eos.staked = a.voter_info ? a.voter_info.staked / 10000 : 0
+                  console.log('eos eos eos  ', eos)
+                  store.state.wallets.portfolioTotal += this.eosUSD * t.amount
                 })
               })
               // console.log('else EOS self.tableData', t.symbol, self.tableData)
@@ -178,7 +180,11 @@ class Wallets2Tokens {
       }
       return 1
     })
+    // console.log('usdValue', usdValue, t.amount, usdValue * t.amount)
+    // this.$store.state.wallets.portfolioTotal = this.$store.state.wallets.portfolioTotal + usdValue * t.amount
+    // console.log('this.$store.state.wallets', this.$store.state)
     store.commit('wallets/updateTokens', this.tableData)
+    store.commit('wallets/updatePortfolioTotal', store.state.wallets.portfolioTotal)
   }
   async getAllAssets () {
     await axios.get('https://volentix.info/get_assets')

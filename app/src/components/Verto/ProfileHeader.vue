@@ -71,7 +71,8 @@
       <h3 class="profile-wrapper--header__title text-white" v-if="!$store.state.currentwallet.wallet.empty">{{$store.state.currentwallet.wallet.name}}</h3>
       <h3 class="profile-wrapper--header__title text-white" v-else>Portfolio Balance</h3>
       <h2 class="profile-wrapper--header__balance text-white" v-if="!$store.state.currentwallet.wallet.empty">${{ new Number($store.state.currentwallet.wallet.usd).toFixed(2) }} USD <span class="profile-wrapper--header__equivalent">Equivalent to <b>{{ new Number(+$store.state.currentwallet.wallet.amount).toFixed(2) + ' ' + $store.state.currentwallet.wallet.type.toUpperCase() }}</b></span></h2>
-      <h2 class="profile-wrapper--header__balance text-white" v-else>${{ new Number(totalBalance).toFixed(2) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
+      <h2 class="profile-wrapper--header__balance text-white" v-else>${{ new Number(this.$store.state.wallets.portfolioTotal).toFixed(2) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
+      <!-- {{$store.state.wallets.portfolioTotal}} -->
       <div class="profile-wrapper--header__action">
         <q-btn unelevated v-if="screenSize <= 1024" :disable="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
         <q-btn unelevated v-if="screenSize > 1024" :disable="$store.state.currentwallet.wallet.type === 'verto'" @click="!$store.state.currentwallet.wallet.empty ? goToSendPage() : notifSelectWallet()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
@@ -184,6 +185,12 @@ export default {
         key: 'test'
       }
     }
+    // await this.$store.state.wallets.tokens.map(token => {
+    //   if (token.usd !== undefined) {
+    //     this.$store.state.wallets.portfolioTotal += token.usd
+    //   }
+    // })
+    // console.log('this.$store.state.wallets.portfolioTotal', this.$store.state.wallets.portfolioTotal)
   },
   methods: {
     resetSelectedWallet () {
