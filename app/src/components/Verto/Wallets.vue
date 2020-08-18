@@ -130,6 +130,10 @@
               </div>
             </div>
           </q-item>
+          <h2 v-if="$store.state.currentwallet.wallet.staked" @click="goToStake" class="wallets-wrapper--list_title goToStake bg-indigo-1 q-pa-xs q-pl-lg q-pr-lg flex items-center justify-between q-mt-md q-mb-md">
+            <span class="q-pl-sm">Total Staked Amount:</span>
+            <span>{{$store.state.currentwallet.wallet.staked}} <q-icon style="font-size: 20px" :name="'img:'+ $store.state.currentwallet.wallet.icon" class="q-mr-sm q-mb-xs" /></span>
+          </h2>
           <h2 class="wallets-wrapper--list_title q-pa-md q-ml-md flex items-center"><q-icon :name="'img:statics/history_icon-black.svg'" class="q-mr-sm" /> Transaction History</h2>
           <q-list bordered separator class="list-wrapper history-list-wrapper">
             <q-item v-for="(item, index) in fakeHistory" :key="index" clickable v-ripple>
@@ -362,6 +366,9 @@ export default {
     }
   },
   methods: {
+    goToStake () {
+      this.$router.push({ path: '/verto/stake' })
+    },
     sortBy (type) {
       if (type === 'balance') {
         let nonAmountCoins = this.$store.state.wallets.tokens.filter(f => f.usd === undefined)
@@ -428,6 +435,9 @@ export default {
         this.removeClassSelected()
         menu.selected = true
         this.selectedCoin = menu
+        if (this.selectedCoin.hidden === undefined) {
+          this.selectedCoin.hidden = false
+        }
         // // console.log('this.selectedCoin', this.selectedCoin)
         // this.$store.commit('currentwallet/updateParams', {
         //   chainID: this.selectedCoin.chain,
@@ -1021,6 +1031,13 @@ export default {
         justify-content: flex-start;
         margin-top: 10px;
       }
+    }
+
+  }
+  .goToStake{
+    margin-top: 2px;margin-bottom: 20px; cursor: pointer;
+    &:hover{
+      opacity: .9;
     }
 
   }

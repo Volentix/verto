@@ -179,17 +179,8 @@ export default {
       vertoLink: 'https://volentix.io?verto-app',
       active: true,
       existingCruxID: null,
-      menu: [
-        { name: 'Wallets', to: '/verto/wallets', icon: 'o_account_balance_wallet', info: '' },
-        { name: 'Trade', to: '/verto/exchange', icon: 'compare_arrows', info: '' },
-        { name: 'Personalize your wallet', to: '', icon: 'o_perm_media', info: 'soon' },
-        { name: 'Backup Config', to: 'backup', icon: 'o_get_app', info: '' },
-        { name: 'Restore Config', to: 'restore', icon: 'cloud_upload', info: '' },
-        { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
-        { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'Linked' },
-        { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' },
-        { name: 'Log Out', to: 'logout', icon: 'exit_to_app', info: '' }
-      ],
+      screenSize: 0,
+      menu: [],
       showShareWrapper: false
     }
   },
@@ -207,7 +198,33 @@ export default {
       // // console.log('existingCruxID', this.existingCruxID)
     }
   },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.getWindowWidth)
+  },
+  created () {
+    this.getWindowWidth()
+    window.addEventListener('resize', this.getWindowWidth)
+    this.menu = [
+      { name: 'Trade', to: '/verto/exchange', icon: 'compare_arrows', info: '' },
+      { name: 'Personalize your wallet', to: '', icon: 'o_perm_media', info: 'soon' },
+      { name: 'Backup Config', to: 'backup', icon: 'o_get_app', info: '' },
+      { name: 'Restore Config', to: 'restore', icon: 'cloud_upload', info: '' },
+      { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
+      { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'Linked' },
+      { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' },
+      { name: 'Log Out', to: 'logout', icon: 'exit_to_app', info: '' }
+    ]
+    if (this.screenSize <= 1024) {
+      this.menu.unshift(
+        { name: 'Wallets', to: '/verto/wallets', icon: 'o_account_balance_wallet', info: '' }
+      )
+    }
+    // screenSize > 1024
+  },
   methods: {
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({

@@ -1,14 +1,22 @@
 <template>
   <div class="desktop-card-style make-vtx q-mb-sm">
     <span class="preloader flex flex-center" :class="{'show' : activate}"><img src="statics/preloader.svg" alt=""></span>
-    <div class="row flex justify-between q-pb-xl q-pt-xl">
-      <div class="col col-4 flex items-center"><img src="statics/make_vtx_bg.png" class="full-width" alt=""></div>
-      <div class="col col-8 flex items-center justify-end">
-        <strong v-if="highestVTXAccount !== null">Make {{estimatedReward}} VTX now!</strong>
-        <strong v-else>Make VTX while you sleep</strong>
-        <div class="call-action">
-          <q-btn v-if="highestVTXAccount !== null" unelevated class="qbtn-start q-mr-md" color="black" :to="`/verto/stake/2`" text-color="white" label="Stake now" />
-          <q-btn v-else unelevated class="qbtn-start q-mr-sm" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Buy with BTC/ETH" />
+    <div class="row flex justify-between q-pb-xl q-pt-lg">
+      <div v-if="highestVTXAccount !== null" class="col col-4 flex items-center earn-picto"><img src="statics/earn-picto.svg" class="full-width" alt=""></div>
+      <div v-else class="col col-4 flex items-center q-mt-lg"><img src="statics/make_vtx_bg.png" class="full-width" alt=""></div>
+      <div class="col col-8 flex items-center justify-end q-pl-md q-pr-lg">
+        <div v-if="highestVTXAccount !== null">
+          <span class="small">Make</span>
+          <div class="flex items-center">
+            <span class="big">{{estimatedReward}}</span>
+            <span class="thicker flex items-center"><img :src="highestVTXAccount.icon" alt=""> {{highestVTXAccount.type.toUpperCase()}}</span>
+          </div>
+          <span class="small">now!</span>
+        </div>
+        <strong v-else class="q-mt-lg q-pt-md q-pb-sm">Make VTX while you sleep</strong>
+        <div class="call-action full-width">
+          <div v-if="highestVTXAccount !== null" class="q-pl-sm"><q-btn unelevated class="qbtn-start qbtn-start2 q-mr-md" color="black" :to="`/verto/stake/2`" text-color="white" label="Stake now" /></div>
+          <div v-else class="q-mt-md"><q-btn unelevated class="qbtn-start q-mr-sm" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Buy with BTC/ETH" /></div>
           <!-- <q-btn unelevated class="qbtn-start" color="black" @click="modalBuyWithEOS = true" text-color="white" label="Buy with EOS" /> -->
         </div>
       </div>
@@ -61,7 +69,7 @@ export default {
   },
   async created () {
     let highestVTXAccount = await this.$store.state.highestVTXAccount.wallet.amount
-    // console.log('highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount', highestVTXAccount)
+    // // console.log('highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount', highestVTXAccount)
     if (highestVTXAccount !== undefined) {
       this.setHighestVTXAccount()
       this.activate = false
@@ -76,7 +84,7 @@ export default {
     async setHighestVTXAccount () {
       let tableDatas = await this.$store.state.wallets.tokens.filter((c) => {
         if (c.type === 'vtx') {
-        // console.log('c.type', c.type)
+        // // console.log('c.type', c.type)
           return c
         }
       }).slice().sort(function (a, b) {
@@ -84,19 +92,19 @@ export default {
       })
 
       this.highestVTXAccount = tableDatas.length > 1 && parseInt(tableDatas[0].amount) >= 1000 ? tableDatas[0] : null
-      // console.log('this.highestVTXAccount **********************************', this.highestVTXAccount)
+      // // console.log('this.highestVTXAccount **********************************', this.highestVTXAccount)
       if (this.highestVTXAccount !== undefined && this.highestVTXAccount !== null) {
         let stake_per = Math.round((0.01 + (0.001 * 10)) * 1000) / 1000
         let sendAmount = Math.round(Math.pow(10, this.highestVTXAccount.precision) * this.highestVTXAccount.amount) / Math.pow(10, this.highestVTXAccount.precision)
         this.estimatedReward = Math.round(sendAmount * stake_per * 10 * 100) / 100
-        // console.log('this.estimatedReward --**', this.estimatedReward)
+        // // console.log('this.estimatedReward --**', this.estimatedReward)
         this.$store.commit('highestVTXAccount/updateParams', {
           chainID: this.highestVTXAccount.chain,
           tokenID: this.highestVTXAccount.type,
           accountName: this.highestVTXAccount.name
         })
         this.$store.state.highestVTXAccount.wallet = this.highestVTXAccount
-      // console.log('this.$store.state.highestVTXAccount.wallet > ', await this.$store.state.highestVTXAccount.wallet)
+      // // console.log('this.$store.state.highestVTXAccount.wallet > ', await this.$store.state.highestVTXAccount.wallet)
       }
     }
   }
@@ -136,6 +144,36 @@ export default {
     }
   }
   .make-vtx{
+    position: relative;
+    .earn-picto{
+      width: 80px;
+      height: 114px;
+      img{
+        position: absolute;
+        left: -147px;
+        top: -40px;
+        width: 260px !important;
+        height: 260px;
+        max-width: unset !important;
+      }
+    }
+    .small{
+      font-size: 14px;
+    }
+    .big{
+      font-size: 35px;
+      letter-spacing: -1px;
+      font-weight: $black;
+      margin-top: -10px;
+      margin-bottom: -10px;
+    }
+    .thicker{
+      font-weight: $bold;
+      img{
+        width: 30px;
+        margin-right: 15px;
+      }
+    }
     .row{
       .col{
         img{
@@ -152,6 +190,18 @@ export default {
           border-radius: 30px;
           height: 25px;
           background: #7272FA !important;
+          &.qbtn-start2{
+            margin-left: 20px;
+            margin-bottom: -10px;
+            /deep/ .q-btn__wrapper{
+              min-height: unset;
+              padding: 0px 10px;
+              .q-btn__content{
+                text-transform: initial;
+                font-size: 12px;
+              }
+            }
+          }
           /deep/ .q-btn__wrapper{
             min-height: unset;
             padding: 0px 10px;

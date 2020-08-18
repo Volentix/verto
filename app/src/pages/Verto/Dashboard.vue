@@ -6,7 +6,6 @@
           <div class="wallets-container">
             <profile-header :isMobile="false" class="marg" version="type2222" />
             <!-- ssdsd <br>{{$store.state.currentwallet.wallet}} -->
-
             <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
             <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
           </div>
@@ -65,9 +64,9 @@
           <!-- <venueSection /> -->
         </div>
         <div class="col q-pl-sm q-pr-md col-md-3">
-          <LiquidityPoolsSection />
-          <makeVTXSection />
           <ExchangeSection />
+          <makeVTXSection />
+          <LiquidityPoolsSection />
         </div>
       </div>
     </div>
@@ -163,12 +162,8 @@ export default {
     // console.log('beforeCreate event')
   },
   async created () {
-    // this.$store.state.currentwallet.wallet = undefined
-    // const dismiss = this.$q.notify({ type: 'my-notif' })
-    // dismiss()
-    // // console.log('dismiss()')
+    let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     // Check if mnemonic exists
-
     // // console.log('this.$store.state.currentwallet.wallet = undefined called')
     this.osName = osName
     this.getWindowWidth()
@@ -191,7 +186,8 @@ export default {
     })
     this.$store.state.currentwallet.wallet = { empty: true }
     Promise.all(this.tableData)
-    let eosAccount = this.tableData.find(w => w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
+    let eosAccount = this.tableData.find(w => w !== undefined && w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
+    // console.log('this.tableData', this.tableData)
 
     if (eosAccount) {
       let accountNames = await eos.getAccountNamesFromPubKeyP(eosAccount.key)
@@ -472,5 +468,8 @@ export default {
   }
   .q-scrollarea__bar{
     background: rgb(183, 183, 183) !important;
+  }
+  .exchange-notif button{
+    opacity: 0;
   }
 </style>

@@ -1,4 +1,5 @@
 // src/store/showcase/state.js
 export default {
-  tokens: {}
+  tokens: {},
+  portfolioTotal: 0
 }
