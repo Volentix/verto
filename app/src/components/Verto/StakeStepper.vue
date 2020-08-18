@@ -121,8 +121,31 @@
                                 <span class="--amount row text-h4"> {{ currentAccount.staked }} </span>
                               </div>
                             </div>
-                            <div class="slider-holder">
+                            <div class="slider-holder stake-period">
                               <br>
+                              <div class="row q-mb-lg">
+                                <span class="--title row text-h6"> Stake period </span>
+                              </div>
+                              <br>
+                              <q-slider
+                                v-model="stakePeriod"
+                                :label-value="`${stakePeriod * 30}` + ' days'"
+                                :min="2"
+                                :max="10"
+                                :step="2"
+                                color="orange"
+                                :label-color="progColor"
+                                dark
+                                markers
+                                label
+                                class="--slider"
+                                label-always
+                                @input="changeSlider()"
+                              />
+                            </div>
+                              <br>
+                              <br>
+                            <div class="slider-holder">
                               <q-slider
                                 v-model="slider"
                                 :label-value="slider + '%'"
@@ -138,6 +161,17 @@
                                 label-always
                                 @input="changeSlider()"
                               />
+                            </div>
+                            <div class="row q-mb-lg">
+                              <div class="col col-4">
+                                 <q-btn color="white" outline text-color="grey" class="full-width" label="25%" @click="sliderToPercent(25)" />
+                              </div>
+                              <div class="col col-4 q-pl-md">
+                                 <q-btn color="white" outline text-color="grey" class="full-width" label="50%" @click="sliderToPercent(50)" />
+                              </div>
+                              <div class="col col-4 q-pl-md">
+                                 <q-btn color="white" outline text-color="grey" class="full-width" label="100%" @click="sliderToPercent(100)" />
+                              </div>
                             </div>
                             <div class="row full-width">
                               <div class="full-width">
@@ -155,27 +189,9 @@
                                   :rules="[val => val >= 1000 || '1000 VTX Minimum']"
                                 />
                                 <br>
-                                <span class="--title row text-h6"> Stake period </span>
                               </div>
                             </div>
-                            <div class="slider-holder">
-                              <br>
-                              <q-slider
-                                v-model="stakePeriod"
-                                :label-value="`${stakePeriod * 30}` + ' days'"
-                                :min="1"
-                                :max="10"
-                                :step="1"
-                                color="orange"
-                                :label-color="progColor"
-                                dark
-                                markers
-                                label
-                                class="--slider"
-                                label-always
-                                @input="changeSlider()"
-                              />
-                            </div>
+
                             <div class="row full-width">
                               <div class="full-width">
                                 <br>
@@ -271,7 +287,6 @@
                   </q-stepper>
                 </div>
               </q-tab-panel>
-
               <q-tab-panel name="staked">
                 <div class="staked-wrapper">
                   <div v-for="(stake, i) in stakes" :key="i" class="item-wrapper row flex">
@@ -279,9 +294,18 @@
                       <div class="border column justify-between">
                         <span class="date">Staked date: {{stake.stake_date.toDateString()}}</span>
                         <div class="row flex item-wrapper--row justify-between items-end">
-                          <div class="col">Amount: <br> <strong>{{stake.stake_amount}} VTX</strong></div>
+                          <div class="col">Amount: <br> <strong>{{stake.stake_amount}} VTX <q-icon class="q-mb-xs" :name="'img:' + currentAccount.icon" />
+                          </strong></div>
                           <div class="col">Period: <br> <strong>{{stake.stake_period}} Days</strong></div>
-                          <div class="col">Time left: <br> <strong>{{stake.time_left}}</strong></div>
+                          <div class="col mobile-only">Time left: <br> <strong>{{stake.time_left}}</strong></div>
+                          <div class="col desktop-only">Time left: <br>
+                            <q-linear-progress stripe size="25px" :value="(stake.time_left / 100)" color="deep-purple-14">
+                              <div class="absolute-full flex flex-center">
+                                <q-badge color="white" text-color="black" :label="stake.time_left + ' Days'" />
+                              </div>
+                            </q-linear-progress>
+                          </div>
+
                         </div>
                       </div>
                     </div>
@@ -291,9 +315,7 @@
                   </div>
                 </div>
               </q-tab-panel>
-
             </q-tab-panels>
-
           </div>
           <br><br><br>
         </div>
@@ -316,7 +338,7 @@ export default {
       step: 0,
       condition: 3,
       currentAccount: {},
-      stakePeriod: 1,
+      stakePeriod: 2,
       estimatedReward: 0,
       options: [],
       tableData: [],
@@ -430,6 +452,10 @@ export default {
     }
   },
   methods: {
+    sliderToPercent (percent) {
+      this.slider = percent
+      this.changeSlider()
+    },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({
@@ -695,26 +721,42 @@ export default {
             }
             .staked-wrapper{
               padding: 20px;
+              @media screen and (min-width: 1024px) {
+                padding: 30px 0px;
+              }
               .item-wrapper{
                 margin-bottom: 10px;
               }
               .date{
                 font-size: 10px;
+                @media screen and (min-width: 1024px) {
+                  font-size: 20px;
+                }
               }
               .total{
                 $purple : #6C0DCB;
                 font-size: 10px;
                 color: $purple !important;
+                @media screen and (min-width: 1024px) {
+                  font-size: 24px;
+                  font-weight: $bold;
+                }
                 strong{
                   color: $purple !important;
                 }
               }
               .item-wrapper--row{
                 height: 35px;
+                @media screen and (min-width: 1024px) {
+                  height: 50px;
+                }
               }
               .col{
                 color: #B0B0B0;
                 font-size: 10px;
+                @media screen and (min-width: 1024px) {
+                  font-size: 16px;
+                }
                 font-family: $Titillium;
                 font-weight: $regular;
                 strong{
