@@ -67,9 +67,9 @@
     </div>
     <div v-else-if="version === 'type6'" class="profile-wrapper--header static" style="background: url(statics/refer_friend_bg.png) center bottom / cover no-repeat rgb(255, 255, 255) !important; min-height: 390px; box-shadow: none !important; border-radius: 0px;" />
     <div v-else class="column flex-center profile-wrapper--header" :class="{'desktop-ui' : !isMobile, 'selected-wallet': !$store.state.currentwallet.wallet.empty}" style="background: url('statics/header_bg.png');">
-      <q-btn v-if="!$store.state.currentwallet.wallet.empty" outline round @click="resetSelectedWallet()" color="white" class="reset-btn" text-color="white" icon="close" />
+      <q-btn v-if="!$store.state.currentwallet.wallet.empty" outline round @click="resetSelectedWallet()" to="/verto/dashboard" color="white" class="reset-btn" text-color="white" icon="close" />
       <h3 class="profile-wrapper--header__title text-white" v-if="!$store.state.currentwallet.wallet.empty">{{$store.state.currentwallet.wallet.name}}</h3>
-      <h3 class="profile-wrapper--header__title text-white" v-else>Portfolio Balance</h3>
+      <h3 class="profile-wrapper--header__title text-white" v-else>Main Portfolio</h3>
       <h2 class="profile-wrapper--header__balance text-white" v-if="!$store.state.currentwallet.wallet.empty">${{ new Number($store.state.currentwallet.wallet.usd).toFixed(2) }} USD <span class="profile-wrapper--header__equivalent">Equivalent to <b>{{ new Number(+$store.state.currentwallet.wallet.amount).toFixed(2) + ' ' + $store.state.currentwallet.wallet.type.toUpperCase() }}</b></span></h2>
       <h2 class="profile-wrapper--header__balance text-white" v-else>${{ new Number(this.$store.state.wallets.portfolioTotal).toFixed(2) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <!-- {{$store.state.wallets.portfolioTotal}} -->
@@ -272,8 +272,10 @@ export default {
         margin-right: 10px;
         .profile-wrapper--header{
           &__title{
-            color: #EDEDED !important;
-            font-size: 14px;
+            color: #fff !important;
+            font-weight: $bold;
+            font-family: $Titillium;
+            font-size: 18px;
           }
           &__balance{
             font-size: 32px;

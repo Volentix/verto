@@ -3,7 +3,7 @@
     <br>
     <div class="row flex justify-between q-pb-lg q-pt-lg">
       <div class="col col-8 flex items-center q-pl-md" style="min-height: 180px">
-        <strong class="earn-exchange">Convert any to any</strong>
+        <strong class="earn-exchange">Exchange</strong>
         <i class="step-1-lab flex ">Step<b>1</b> Select coin to send</i>
         <div class="call-action">
           <q-select
@@ -290,8 +290,8 @@ export default {
           &.step-2-lab{}
         }
         img{
-          max-width: 80px;
-          transform: translateX(0px);
+          max-width: 120px;
+          transform: translateX(-15px);
         }
         strong{
           margin-bottom: 0px;
@@ -303,14 +303,14 @@ export default {
           border-radius: 30px;
           height: 24px;
           background: #00D0CA !important;
-          width: 50px;
-          margin-left: 15px;
+          width: 70px;
+          margin-left: 0px;
           /deep/ .q-btn__wrapper{
             min-height: unset;
             padding: 0px 10px;
             .q-btn__content{
               text-transform: initial;
-              font-size: 10px;
+              font-size: 12px;
             }
           }
         }

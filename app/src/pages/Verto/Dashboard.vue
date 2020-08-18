@@ -64,9 +64,9 @@
           <!-- <venueSection /> -->
         </div>
         <div class="col q-pl-sm q-pr-md col-md-3">
-          <LiquidityPoolsSection />
-          <makeVTXSection />
           <ExchangeSection />
+          <makeVTXSection />
+          <LiquidityPoolsSection />
         </div>
       </div>
     </div>
