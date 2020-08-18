@@ -58,6 +58,7 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   created () {
+    let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     this.osName = osName
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
@@ -95,6 +96,10 @@ export default {
 </script>
 <style lang="scss" scoped>
   @import "~@/assets/styles/variables.scss";
+  .mobile-pad{
+    padding-bottom: 50px;
+    background: #FFF !important;
+  }
   /deep/ .wallets-wrapper{
     padding-bottom: 0px !important;
   }
