@@ -81,7 +81,7 @@ class Wallets2Tokens {
                 let usdValue = 0
                 this.getUSD(t.code, type).then(result => {
                   usdValue = result
-                  console.log('this.eosUSD $$$$$ ', usdValue)
+                  // console.log('this.eosUSD $$$$$ ', usdValue)
                   self.tableData.push({
                     selected: false,
                     disabled: false,
@@ -114,7 +114,7 @@ class Wallets2Tokens {
                   // console.log('a ---------------------', a)
                   eos.proxy = a.voter_info ? a.voter_info.proxy : ''
                   eos.staked = a.voter_info ? a.voter_info.staked / 10000 : 0
-                  console.log('eos eos eos  ', eos)
+                  // console.log('eos eos eos  ', eos)
                   store.state.wallets.portfolioTotal += this.eosUSD * t.amount
                 })
               })
