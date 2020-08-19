@@ -70,8 +70,16 @@
     </div>
     <div v-if="step===4" class="standard-content">
       <div>
-        <h2 class="standard-content--title">Paste your 24 word recovery seed phrase.</h2>
+        <h2 class="standard-content--title">Paste your recovery seed phrase.</h2>
         <h2 class="standard-content--desc">If you do not have a recovery seed, go back and choose create.</h2>
+        <ul><li v-for="(word, index) in wordOptions" :key="index" class=""> {{ word.label }} </li></ul>
+        <!-- q-option-group
+          name="words"
+          v-model="words"
+          :options="wordOptions"
+          color="primary"
+          inline
+        / -->
       </div>
       <div class="standard-content--body">
         <div class="standard-content--body__mnemonic">
@@ -110,6 +118,17 @@ export default {
     return {
       step: 1,
       isPwd: true,
+      words: 24,
+      wordOptions: [
+        {
+          label: 'Verto (24 words)',
+          value: 24
+        },
+        {
+          label: 'Metamask (12 words)',
+          value: 12
+        }
+      ],
       mnemonicValidated: '',
       goodPassword: true,
       vertoPassword: this.$store.state.settings.temporary,
