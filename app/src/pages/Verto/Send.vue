@@ -376,10 +376,10 @@ export default {
     this.osName = osName
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
-    // // console.log('this.osName', this.osName)
+    // // // console.log('this.osName', this.osName)
     this.params = this.$store.state.currentwallet.params
     this.tableData = await this.$store.state.wallets.tokens
-    // // console.log('this.tableData', this.tableData)
+    // // // console.log('this.tableData', this.tableData)
     let self = this
     this.tableData.map(token => {
       if (!token.disabled && token.type.toLowerCase() !== 'verto' && parseFloat(token.amount) > 0) {
@@ -416,13 +416,13 @@ export default {
         accountName: this.currentAccount.name
       }
     }
-    // console.log('this.params', this.params.chainID)
+    // // console.log('this.params', this.params.chainID)
     if (this.currentAccount !== undefined) {
       this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
       this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
     }
 
-    // // console.log('this.currentAccount sur la page send', this.currentAccount)
+    // // // console.log('this.currentAccount sur la page send', this.currentAccount)
 
     if (this.currentAccount.privateKey) {
       this.privateKey.key = this.currentAccount.privateKey
@@ -432,7 +432,7 @@ export default {
     }
 
     this.cruxKey = await HD.Wallet('crux')
-    // // console.log('crux privateKey', this.cruxKey.privateKey)
+    // // // console.log('crux privateKey', this.cruxKey.privateKey)
     cruxClient = new CruxPay.CruxClient({
       walletClientName: this.walletClientName,
       privateKey: this.cruxKey.privateKey
@@ -470,7 +470,7 @@ export default {
         try {
           this.sendToResolved = (await cruxClient.resolveCurrencyAddressForCruxID(this.sendTo, this.currentAccount.chain)).addressHash
         } catch (error) {
-          // // console.log('checkTo:', error)
+          // // // console.log('checkTo:', error)
           this.sendToResolved = ''
 
           if (error.errorCode === 1002) {
@@ -484,7 +484,7 @@ export default {
           }
         }
 
-        // // console.log('sendToResolved', this.sendToResolved)
+        // // // console.log('sendToResolved', this.sendToResolved)
       } else {
         // check for valid eos name
         this.sendToResolved = this.sendTo
@@ -504,7 +504,7 @@ export default {
     },
     getMaxBalance () {
       this.sendAmount = this.currentToken.amount
-      // // console.log('getMaxBalance', this.sendAmount)
+      // // // console.log('getMaxBalance', this.sendAmount)
     },
     openModalFun: function (item) {
       if (this.currentAccount.privateKey) {
@@ -530,7 +530,7 @@ export default {
       this.invalidEosName = false
       this.transStatus = 'Transaction in progress'
 
-      // // console.log(
+      // // // console.log(
       // 'chainID', this.params.chainID,
       // 'tokenID', this.params.tokenID,
       // 'name', this.params.accountName,
@@ -550,7 +550,7 @@ export default {
         this.privateKey.key,
         this.currentAccount.contract
       ).then(result => {
-        // console.log('result', result)
+        // // console.log('result', result)
         if (result.success) {
           this.getPassword = false
           this.transErrorDialog = false
@@ -577,7 +577,7 @@ export default {
     },
     formatAmountString () {
       let numberOfDecimals = 0
-      // // console.log('this.currentAccount', this.currentAccount)
+      // // // console.log('this.currentAccount', this.currentAccount)
       let stringAmount = (Math.round(this.sendAmount * Math.pow(10, this.currentAccount.precision)) / Math.pow(10, this.currentAccount.precision)).toString()
       const amountParsed = stringAmount.split('.')
       if (amountParsed && amountParsed.length > 1) {

@@ -150,7 +150,7 @@ export default {
   async created () {
   },
   async mounted () {
-    // console.log('mnemonic', this.mnemonic, 'config', this.config, 'verto password', this.vertoPassword)
+    // // console.log('mnemonic', this.mnemonic, 'config', this.config, 'verto password', this.vertoPassword)
   },
   watch: {
   },
@@ -161,17 +161,17 @@ export default {
       this.mnemonicValidated = bip39.validateMnemonic(this.mnemonic)
     },
     async createMnemonic () {
-      // console.log('generating mnemonic')
+      // // console.log('generating mnemonic')
       this.mnemonic = bip39.generateMnemonic(256)
 
       this.step = 2
     },
     async saveMnemonic () {
       if (this.goodPassword && (this.$store.state.settings.rightOrder || this.step === 4)) {
-        // console.log('we are good with order')
+        // // console.log('we are good with order')
 
         if (this.vertoPassword) {
-          // console.log('in saveMnemonic with password')
+          // // console.log('in saveMnemonic with password')
           this.config.mnemonic = this.mnemonic
           await this.$configManager.updateConfig(this.vertoPassword, this.config)
           const keys = await HD.Wallet('eos')
