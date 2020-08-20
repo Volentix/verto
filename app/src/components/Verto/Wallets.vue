@@ -346,16 +346,16 @@ export default {
   async mounted () {
   },
   async updated () {
-    // // // console.log('updated')
+    // console.log('updated')
   },
   async created () {
-    // // // console.log('created')
+    // console.log('created')
     // this.params = this.$store.state.currentwallet.params
     this.chainID = this.$route.params.chainID
     this.tokenID = this.$route.params.tokenID
     this.accountName = this.$route.params.accountName
 
-    // // // console.log('this.$store.state.wallets.tokens in wallets', this.$store.state.wallets.tokens)
+    // console.log('this.$store.state.wallets.tokens in wallets', this.$store.state.wallets.tokens)
 
     this.$store.commit('currentwallet/updateParams', {
       chainID: this.chainID,
@@ -377,9 +377,9 @@ export default {
         let nonAmountCoins = this.$store.state.wallets.tokens.filter(f => f.usd === undefined)
         for (let n of nonAmountCoins) {
           this.$store.state.wallets.tokens.push(this.$store.state.wallets.tokens.splice(this.$store.state.wallets.tokens.indexOf(n), 1)[0])
-          // // // console.log('n', n)
+          // console.log('n', n)
         }
-        // // // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
+        // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
         this.directionAccount = false
         if (this.direction) {
           this.$store.state.wallets.tokens.sort(function (a, b) {
@@ -390,29 +390,29 @@ export default {
             return b.usd - a.usd
           })
         }
-        // // // console.log('tokens of table', tokens)
+        // console.log('tokens of table', tokens)
         this.direction = !this.direction
         // this.$store.state.wallets.tokens.map((a) => {
-        //   // // console.log('a.amount', a.amount)
+        // console.log('a.amount', a.amount)
         // })
       }
       if (type === 'account') {
         let nonAmountCoins = this.$store.state.wallets.tokens.filter(f => f.name === undefined)
         for (let n of nonAmountCoins) {
           this.$store.state.wallets.tokens.push(this.$store.state.wallets.tokens.splice(this.$store.state.wallets.tokens.indexOf(n), 1)[0])
-          // // // console.log('n', n)
+          // console.log('n', n)
         }
-        // // // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
+        // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
         this.direction = false
         if (this.directionAccount) {
           this.$store.state.wallets.tokens.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
         } else {
           this.$store.state.wallets.tokens.sort((a, b) => (b.name > a.name) ? 1 : ((a.name > b.name) ? -1 : 0))
         }
-        // // // console.log('tokens of table', tokens)
+        // console.log('tokens of table', tokens)
         this.directionAccount = !this.directionAccount
         // this.$store.state.wallets.tokens.map((a) => {
-        //   // // console.log('a.amount', a.amount)
+        // console.log('a.amount', a.amount)
         // })
       }
     },
@@ -433,7 +433,7 @@ export default {
       this.openModal = true
     },
     async showMenu (menu) {
-      // // // console.log(menu.selected)
+      // console.log(menu.selected)
       if (!menu.selected) {
         this.removeClassSelected()
         menu.selected = true
@@ -441,7 +441,7 @@ export default {
         if (this.selectedCoin.hidden === undefined) {
           this.selectedCoin.hidden = false
         }
-        // // // console.log('this.selectedCoin', this.selectedCoin)
+        // console.log('this.selectedCoin', this.selectedCoin)
         // this.$store.commit('currentwallet/updateParams', {
         //   chainID: this.selectedCoin.chain,
         //   tokenID: this.selectedCoin.type,
@@ -502,7 +502,7 @@ export default {
       this.showText = !this.showText
     },
     async hideCurrency () {
-      // // // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
+      // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
 
       this.$store.state.wallets.tokens.filter(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
         w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)
@@ -511,7 +511,7 @@ export default {
       })
 
       await this.$configManager.updateConfig(this.$store.state.settings.temporary, this.$store.state.currentwallet.config)
-      // // // console.log('hidden', this.currentAccount.hidden)
+      // console.log('hidden', this.currentAccount.hidden)
     }
   }
 }

@@ -195,7 +195,7 @@ export default {
     await cruxClient.init()
     this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
     if (this.existingCruxID) {
-      // // // console.log('existingCruxID', this.existingCruxID)
+      // console.log('existingCruxID', this.existingCruxID)
     }
   },
   beforeDestroy () {
@@ -262,7 +262,7 @@ export default {
       })
     },
     empty () {
-      // // // console.log('empty')
+      // console.log('empty')
     }
   }
 }

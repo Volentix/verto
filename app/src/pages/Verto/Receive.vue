@@ -396,7 +396,7 @@ export default {
       this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
         w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
       )
-      // // // console.log('this.currentAccount sur la page send', this.currentAccount)
+      // console.log('this.currentAccount sur la page send', this.currentAccount)
       this.currentToken = {
         label: this.currentAccount !== undefined ? this.currentAccount.name : firstItem.name,
         value: this.currentAccount !== undefined ? this.currentAccount.key : firstItem.key,
