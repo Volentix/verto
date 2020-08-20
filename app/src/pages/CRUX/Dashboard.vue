@@ -86,7 +86,7 @@ export default {
   },
   async mounted () {
     let cruxKey = await HD.Wallet('crux')
-    // // // console.log('crux privateKey', cruxKey.privateKey, 'menonic', this.$store.state.currentwallet.config.mnemonic)
+    //console.log('crux privateKey', cruxKey.privateKey, 'menonic', this.$store.state.currentwallet.config.mnemonic)
     Promise.all(cruxKey)
 
     cruxClient = new CruxPay.CruxClient({
@@ -105,7 +105,7 @@ export default {
       this.addressMap = await cruxClient.getAddressMap()
 
       this.showMap = !!this.addressMap
-      // // // console.log('addressMap', this.addressMap, 'show?', this.showMap)
+      //console.log('addressMap', this.addressMap, 'show?', this.showMap)
     }
   },
   computed: {
@@ -116,7 +116,7 @@ export default {
         cruxClient.registerCruxID(this.cruxID).then((res) => {
           // Deal with: keypair is already used in registration of CruxID: 'helo@testwallet.crux'
           this.cruxIDRegistered = true
-          // // // console.log('res', res)
+          //console.log('res', res)
         })
       }
     },
@@ -142,22 +142,22 @@ export default {
         map[symbol] = { 'addressHash': keys.publicKey }
       })
 
-      // // // console.log('map', map)
+      //console.log('map', map)
       cruxClient.putAddressMap(map)
     },
     async getAssets () {
       this.assets = await cruxClient.getAssetMap()
-      // // // console.log('pre assets', this.assets)
+      //console.log('pre assets', this.assets)
 
       Object.keys(this.assets).forEach(async symbol => {
-        // // // console.log('creating keys for: ', symbol)
+        //console.log('creating keys for: ', symbol)
         if (symbol === 'ada') {
           this.assets[symbol].keys = { publicKey: 'no key for ada' }
         } else {
           this.assets[symbol].keys = await HD.Wallet(symbol)
         }
       })
-      // // // console.log('post assets', this.assets)
+      //console.log('post assets', this.assets)
     },
     getImages (symbol) {
       return 'https://files.coinswitch.co/public/coins/' + symbol.toLowerCase() + '.png'
