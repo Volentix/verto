@@ -132,7 +132,7 @@
           </q-item>
           <h2 v-if="$store.state.currentwallet.wallet.staked" @click="goToStake" class="wallets-wrapper--list_title goToStake bg-indigo-1 q-pa-xs q-pl-lg q-pr-lg flex items-center justify-between q-mt-md q-mb-md">
             <span class="q-pl-sm">Total Staked Amount:</span>
-            <span>{{nFormatter2($store.state.currentwallet.wallet.staked)}} <q-icon style="font-size: 20px" :name="'img:'+ $store.state.currentwallet.wallet.icon" class="q-mr-xs q-mb-xs" /> <span class="small">{{$store.state.currentwallet.wallet.type.toUpperCase()}}</span></span>
+            <span>{{nFormatter2($store.state.currentwallet.wallet.staked, 3)}} <q-icon style="font-size: 20px" :name="'img:'+ $store.state.currentwallet.wallet.icon" class="q-mr-xs q-mb-xs" /> <span class="small">{{$store.state.currentwallet.wallet.type.toUpperCase()}}</span></span>
           </h2>
           <h2 class="wallets-wrapper--list_title q-pa-md q-ml-md flex items-center"><q-icon :name="'img:statics/history_icon-black.svg'" class="q-mr-sm" /> Transaction History</h2>
           <q-list bordered separator class="list-wrapper history-list-wrapper">
@@ -1070,7 +1070,9 @@ export default {
 
   }
   .goToStake{
-    margin-top: 2px;margin-bottom: 20px; cursor: pointer;
+    margin-top: 2px;
+    margin-bottom: 20px;
+    cursor: pointer;
     &:hover{
       opacity: .9;
     }
