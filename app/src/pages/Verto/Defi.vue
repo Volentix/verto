@@ -271,7 +271,7 @@ export default {
     }
   },
   updated () {
-    // // // console.logloglog('openDialog', this.openDialog)
+    //console.log('openDialog', this.openDialog)
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
@@ -281,9 +281,9 @@ export default {
     this.osName = osName
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
-    // // // console.logloglog('this.osName', this.osName)
+    //console.log('this.osName', this.osName)
     this.params = this.$store.state.currentwallet.params
-    // // // console.logloglog('this.params', this.params)
+    //console.log('this.params', this.params)
     this.tableData = await this.$store.state.wallets.tokens
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
@@ -292,7 +292,7 @@ export default {
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
     this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
 
-    // // // console.logloglog('this.currentAccount sur la page send', this.currentAccount)
+    //console.log('this.currentAccount sur la page send', this.currentAccount)
 
     if (this.currentAccount.privateKey) {
       this.privateKey.key = this.currentAccount.privateKey
@@ -302,7 +302,7 @@ export default {
     }
 
     this.cruxKey = await HD.Wallet('crux')
-    // // // console.logloglog('crux privateKey', this.cruxKey.privateKey)
+    //console.log('crux privateKey', this.cruxKey.privateKey)
     cruxClient = new CruxPay.CruxClient({
       walletClientName: this.walletClientName,
       privateKey: this.cruxKey.privateKey

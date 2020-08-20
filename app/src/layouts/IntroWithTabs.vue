@@ -34,7 +34,7 @@ export default {
     this.osName = osName
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
-    // // // console.log('this.osName', this.osName)
+    //console.log('this.osName', this.osName)
   },
   methods: {
     getWindowWidth () {

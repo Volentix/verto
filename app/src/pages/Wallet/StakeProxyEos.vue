@@ -323,9 +323,9 @@ export default {
     },
     async stakeNext () {
       if (this.voted && !this.proxyModel) {
-        // // // console.log('unvoteProxy')
+        //console.log('unvoteProxy')
       } else if (!this.voted && !this.proxyModel) {
-        // // // console.log('Nothing to do, not voted and not voting.')
+        //console.log('Nothing to do, not voted and not voting.')
       } else {
         this.step = 2
       }
