@@ -207,7 +207,7 @@ export default {
     this.vtxprice = result.data.data.price
 
     // let result = await eos.getCurrencyBalanceP(this.walletName)
-    //console.log('result', result)
+    // console.log('result', result)
     // if (result.length) {
     //   this.eosBalance = result[0].split(' ')[0]
     // }

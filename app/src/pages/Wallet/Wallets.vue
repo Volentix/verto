@@ -884,11 +884,11 @@ export default {
       let tableDataWalletsCustom = []
       for (var item of this.tableDataWallets) {
         let balanceByWallet = await this.getBalanceByWalletKey(item.key)
-        //console.log('balanceByWallet', balanceByWallet.data.balance)
+        // console.log('balanceByWallet', balanceByWallet.data.balance)
         let balancaValue = balanceByWallet.data.balance
         tableDataWalletsCustom.push({ 'wallet': item, 'balance': balancaValue })
       }
-      //console.log('tableDataWalletsCustom', tableDataWalletsCustom)
+      // console.log('tableDataWalletsCustom', tableDataWalletsCustom)
       this.tableDataWallets = tableDataWalletsCustom
     },
     changeCurrentWallet: function (row) {

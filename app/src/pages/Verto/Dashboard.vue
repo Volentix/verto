@@ -164,12 +164,12 @@ export default {
   async created () {
     let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     // Check if mnemonic exists
-    //console.log('this.$store.state.currentwallet.wallet = undefined called')
+    // console.log('this.$store.state.currentwallet.wallet = undefined called')
     this.osName = osName
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
-    //console.log('this.osName', this.osName)
-    //console.log('store.state.currentwallet.config', store.state.currentwallet.config)
+    // console.log('this.osName', this.osName)
+    // console.log('store.state.currentwallet.config', store.state.currentwallet.config)
     if (!store.state.currentwallet.config.mnemonic) {
       this.$router.push('recovery-seed')
     } else {
@@ -194,7 +194,7 @@ export default {
 
       // May be we could auto convert an eos key to an account if discovered here
       if (accountNames.account_names.includes(eosAccount.name)) {
-        //console.log('we have an upgraded account', accountNames, eosAccount.name)
+        // console.log('we have an upgraded account', accountNames, eosAccount.name)
 
         this.cruxKey = await HD.Wallet('crux')
         cruxClient = new CruxPay.CruxClient({
@@ -204,7 +204,7 @@ export default {
         await cruxClient.init()
 
         let addressMap = await cruxClient.getAddressMap()
-        //console.log('addressMap', addressMap)
+        // console.log('addressMap', addressMap)
 
         if (!addressMap.hasOwnProperty('eos')) {
           addressMap['eos'] = { 'addressHash': eosAccount.name }
