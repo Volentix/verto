@@ -252,7 +252,7 @@ export default {
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
 
-    // // console.log('this.currentAccount ----------------- ', this.currentAccount)
+    // // // console.log('this.currentAccount ----------------- ', this.currentAccount)
 
     if (eos.isPrivKeyValid(this.currentAccount.privateKey)) {
       this.privateKey.key = this.currentAccount.privateKey

@@ -326,14 +326,14 @@ export default {
     }
   },
   async created () {
-    // console.log('wall', this.wallet)
+    // // console.log('wall', this.wallet)
     if (this.wallet.privateKey) {
       this.privateKey.key = this.wallet.privateKey
       this.isPrivateKeyEncrypted = false
-      // console.log('this.isPrivateKeyEncrypted 1', this.isPrivateKeyEncrypted)
+      // // console.log('this.isPrivateKeyEncrypted 1', this.isPrivateKeyEncrypted)
     } else {
       this.isPrivateKeyEncrypted = true
-      // console.log('this.isPrivateKeyEncrypted 2', this.isPrivateKeyEncrypted)
+      // // console.log('this.isPrivateKeyEncrypted 2', this.isPrivateKeyEncrypted)
     }
     if (this.wallet.name) {
       this.fetch()
@@ -352,14 +352,14 @@ export default {
         this.duration = this.currentProposal.duration
         this.description = this.currentProposal.proposal_json.find(d => d.key === 'description' ? d.value : '').value
         let proposalType = this.currentProposal.proposal_json.find(d => d.key === 'type' ? d.value : '').value
-        // console.log('proposalType', proposalType)
+        // // console.log('proposalType', proposalType)
         this.typeProposal = proposalType === 'undefined' ? '' : proposalType
         this.securityProposal = this.currentProposal.proposal_json.find(d => d.key === 'security' ? d.value : '').value
         this.financialProposal = this.currentProposal.proposal_json.find(d => d.key === 'financial' ? d.value : '').value
         this.decentralizationProposal = this.currentProposal.proposal_json.find(d => d.key === 'decentralizad' ? d.value : '').value
         this.anonymityProposal = this.currentProposal.proposal_json.find(d => d.key === 'anonymity' ? d.value : '').value
         this.editor = this.currentProposal.proposal_json.find(d => d.key === 'proposal' ? d.value : '').value
-        // console.log('this.currentProposal ---', this.currentProposal)
+        // // console.log('this.currentProposal ---', this.currentProposal)
       })
     },
     copyToClipboard (key, copied) {
@@ -385,7 +385,7 @@ export default {
       } catch (error) {
         // FIXME with userError handler
         // userError(JSON.parse(e).message)
-        // console.log('error-----------------------------', error)
+        // // console.log('error-----------------------------', error)
         if (error.message.includes('maximum billable CPU time')) {
           this.transactError = true
           this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
@@ -448,7 +448,7 @@ export default {
     },
     checkPrivateKeyPassword () {
       const privateKeyEncrypted = JSON.stringify(this.wallet.privateKeyEncrypted)
-      // console.log('privateKeyEncrypted', privateKeyEncrypted)
+      // // console.log('privateKeyEncrypted', privateKeyEncrypted)
       const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
       if (privateKey.success) {
         this.invalidPrivateKeyPassword = false

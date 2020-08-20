@@ -6,7 +6,7 @@
           <h4>Account overview</h4>
         </div>
         <div class="col col-md-5 q-pr-md">
-          <div class="desktop-card-style account-overview q-mb-sm">
+          <div class="desktop-card-style account-overview q-mb-md">
             <div class="row">
               <div class="col-8">
                 <h4 class="q-pl-md">Available balances</h4>
@@ -32,7 +32,7 @@
               </div>
             </div>
           </div>
-          <div class="desktop-card-style wallet-snapshot q-mb-sm" style="background: url(statics/header_bg.png) no-repeat; background-position: 20% 75%; background-size: 100%;">
+          <div class="desktop-card-style wallet-snapshot q-mb-md" style="background: url(statics/header_bg.png) no-repeat; background-position: 20% 75%; background-size: 100%;">
             <div class="flex justify-between items-center q-pt-sm q-pb-sm">
               <h3 class="text-white q-pl-md">Max DeFi Yield</h3>
               <div class="text-white q-pr-md amount flex items-center">
@@ -43,7 +43,7 @@
           </div>
         </div>
         <div class="col col-md-7">
-          <div class="desktop-card-style current-investments wallet-col q-mb-sm">
+          <!-- <div class="desktop-card-style current-investments wallet-col q-mb-sm">
             <h4 class="q-pl-md">Wallet - $5,846.31</h4>
             <div class="header-table-col row q-pl-md q-pr-lg">
               <div class="col-3"><h3>Asset</h3></div>
@@ -63,16 +63,8 @@
                 <div class="col col-3"><span>$2,823.58</span></div>
               </div>
             </q-scroll-area>
-          </div>
-          <div class="desktop-card-style yearn-finance q-mb-sm">
-            <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
-              Convert 100 ETH to USDC <q-icon name="arrow_right_alt" /> <div class="flex justify-between items-center"><img src="statics/media/yearn-finance.png" alt=""> <strong>21.0528 %<b>yearn.finance</b></strong></div>
-              <q-btn unelevated class="qbtn-download q-mr-md" color="black" text-color="white" label="Confirm" />
-            </h4>
-          </div>
-        </div>
-        <div class="col col-12">
-          <div class="desktop-card-style current-investments explore-opportunities q-mb-sm">
+          </div> -->
+          <div class="desktop-card-style current-investments explore-opportunities q-mb-md">
             <h4 class="q-pl-md">Explore Opportunities</h4>
             <div class="header-table-col row q-pl-md">
               <div class="col-1"><h3>#</h3></div>
@@ -82,8 +74,8 @@
               <div class="col-2"><h3>Net ROI(1mo)</h3></div>
               <div class="col-2"></div>
             </div>
-            <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 350px;">
-              <div v-for="i in 10" :key="i" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
+            <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 125px;">
+              <div v-for="i in 10" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
                 <div class="col-1 flex items-center">
                   <strong>{{i}}</strong>
                 </div>
@@ -113,16 +105,41 @@
                   </span>
                 </div>
                 <div class="col-2 flex justify-end">
-                  <q-btn unelevated @click="openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
+                  <q-btn unelevated @click="openDialog = true" class="qbtn-custom full-width q-pl-xs q-pr-xs q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
                 </div>
               </div>
             </q-scroll-area>
           </div>
+          <div class="desktop-card-style yearn-finance q-mb-md">
+            <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
+              Convert 100 ETH to USDC <q-icon name="arrow_right_alt" /> <div class="flex justify-between items-center"><img src="statics/media/yearn-finance.png" alt=""> <strong>21.0528 %<b>yearn.finance</b></strong></div>
+              <q-btn unelevated class="qbtn-download q-mr-md" color="black" text-color="white" label="Confirm" />
+            </h4>
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col col-5 q-pr-md">
-          <div class="desktop-card-style current-investments wallet-col deposits-col q-mb-sm">
+        <div class="col col-7 q-pr-md">
+          <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
+            <h4 class="q-pl-md">Investments - $1,846.31</h4>
+            <div class="header-table-col row q-pl-md q-pr-lg">
+              <div class="col-4"><h3>Asset</h3></div>
+              <div class="col-4"><h3>Balance</h3></div>
+              <div class="col-4"><h3>Value</h3></div>
+            </div>
+            <q-scroll-area :visible="true" class="q-pr-md q-mb-md q-mr-sm" style="height: 120px;">
+              <div v-for="i in 4" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+                <div class="col col-4 flex items-center">
+                  <span class="imgs q-mr-lg flex items-center">
+                    <img src="statics/coins_icons/eth2.png" class="q-mr-md" alt=""> <span class="pair text-bold">Maker Vault #279922</span>
+                  </span>
+                </div>
+                <div class="col col-4"><span>-</span></div>
+                <div class="col col-4"><span>$1,823.58</span></div>
+              </div>
+            </q-scroll-area>
+          </div>
+        </div>
+        <div class="col col-5">
+          <div class="desktop-card-style current-investments wallet-col deposits-col q-mb-md">
             <h4 class="q-pl-md">Deposits - $5,846.31</h4>
             <div class="header-table-col row q-pl-md q-pr-lg">
               <div class="col-3"><h3>Asset</h3></div>
@@ -144,7 +161,9 @@
             </q-scroll-area>
           </div>
         </div>
-        <div class="col col-7">
+      </div>
+      <div class="row">
+        <div class="col col-7 q-pr-md">
           <div class="desktop-card-style current-investments wallet-col debt-col q-mb-sm">
             <h4 class="q-pl-md">Debt - $1,846.31</h4>
             <div class="header-table-col row q-pl-md q-pr-lg">
@@ -252,7 +271,7 @@ export default {
     }
   },
   updated () {
-    // // console.loglog('openDialog', this.openDialog)
+    // // // console.logloglog('openDialog', this.openDialog)
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
@@ -262,9 +281,9 @@ export default {
     this.osName = osName
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
-    // // console.loglog('this.osName', this.osName)
+    // // // console.logloglog('this.osName', this.osName)
     this.params = this.$store.state.currentwallet.params
-    // // console.loglog('this.params', this.params)
+    // // // console.logloglog('this.params', this.params)
     this.tableData = await this.$store.state.wallets.tokens
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
@@ -273,7 +292,7 @@ export default {
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
     this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
 
-    // // console.loglog('this.currentAccount sur la page send', this.currentAccount)
+    // // // console.logloglog('this.currentAccount sur la page send', this.currentAccount)
 
     if (this.currentAccount.privateKey) {
       this.privateKey.key = this.currentAccount.privateKey
@@ -283,7 +302,7 @@ export default {
     }
 
     this.cruxKey = await HD.Wallet('crux')
-    // // console.loglog('crux privateKey', this.cruxKey.privateKey)
+    // // // console.logloglog('crux privateKey', this.cruxKey.privateKey)
     cruxClient = new CruxPay.CruxClient({
       walletClientName: this.walletClientName,
       privateKey: this.cruxKey.privateKey

@@ -98,7 +98,7 @@
         </div>
       </div>
       <div class="col col-4 flex items-center">
-        <img src="statics/exchange_picto.svg" class="full-width" alt="">
+        <img src="statics/exchange_picto.svg" class="full-width picto" alt="">
         <q-btn unelevated class="qbtn-start" color="black" :disable="!depositCoin" @click="goToExchange" text-color="white" label="Next" />
       </div>
     </div>
@@ -232,12 +232,12 @@ export default {
     //   })
 
     //   self.depositCoinUnfilter = self.depositCoinOptions
-    //   // // console.log('depositCoinOptions', self.depositCoinOptions)
+    //   // // // console.log('depositCoinOptions', self.depositCoinOptions)
     // })
   },
   methods: {
     goToExchange () {
-      // // console.log('this.depositCoin', this.depositCoin)
+      // // // console.log('this.depositCoin', this.depositCoin)
       let depositCoin = this.depositCoin
       let destinationCoin = this.destinationCoin
       this.$router.push({ path: '/verto/exchange/:coinToSend/:coinToReceive', name: 'exchange-v3', params: { depositCoin: depositCoin, destinationCoin: destinationCoin } })
@@ -290,8 +290,10 @@ export default {
           &.step-2-lab{}
         }
         img{
-          max-width: 120px;
-          transform: translateX(-15px);
+          &.picto{
+            max-width: 120px;
+            transform: translateX(-15px);
+          }
         }
         strong{
           margin-bottom: 0px;
