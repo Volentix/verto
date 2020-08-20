@@ -393,7 +393,7 @@ export default {
         // console.log('tokens of table', tokens)
         this.direction = !this.direction
         // this.$store.state.wallets.tokens.map((a) => {
-        //   // console.log('a.amount', a.amount)
+        // console.log('a.amount', a.amount)
         // })
       }
       if (type === 'account') {
@@ -412,7 +412,7 @@ export default {
         // console.log('tokens of table', tokens)
         this.directionAccount = !this.directionAccount
         // this.$store.state.wallets.tokens.map((a) => {
-        //   // console.log('a.amount', a.amount)
+        // console.log('a.amount', a.amount)
         // })
       }
     },

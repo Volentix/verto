@@ -211,7 +211,7 @@ export default {
     })
     this.destinationCoinUnfilter = this.destinationCoinOptions
     // this.$axios.get(url + '/v2/coins', { headers }).then(function (result) {
-    //   // will be using this coins array later with the destination select
+    // will be using this coins array later with the destination select
     //   self.coins = result.data.data
     //   self.depositCoinOptions = self.coins.map(function (coin) {
     //     if (coin.isActive === true) {
@@ -232,7 +232,7 @@ export default {
     //   })
 
     //   self.depositCoinUnfilter = self.depositCoinOptions
-    //   //console.log('depositCoinOptions', self.depositCoinOptions)
+    //console.log('depositCoinOptions', self.depositCoinOptions)
     // })
   },
   methods: {

@@ -109,7 +109,7 @@ export default {
             //console.log('asset ----', asset)
           })
           // Promise.all([promise1, promise2, promise3]).then((values) => {
-          //   // console.log(values)
+          // console.log(values)
           // })
         })
     },
