@@ -69,7 +69,7 @@ export default {
   },
   async created () {
     let highestVTXAccount = await this.$store.state.highestVTXAccount.wallet.amount
-    //console.log('highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount', highestVTXAccount)
+    // console.log('highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount', highestVTXAccount)
     if (highestVTXAccount !== undefined) {
       this.setHighestVTXAccount()
       this.activate = false
@@ -84,7 +84,7 @@ export default {
     async setHighestVTXAccount () {
       let tableDatas = await this.$store.state.wallets.tokens.filter((c) => {
         if (c.type === 'vtx') {
-        //console.log('c.type', c.type)
+        // console.log('c.type', c.type)
           return c
         }
       }).slice().sort(function (a, b) {
@@ -92,19 +92,19 @@ export default {
       })
 
       this.highestVTXAccount = tableDatas.length > 1 && parseInt(tableDatas[0].amount) >= 1000 ? tableDatas[0] : null
-      //console.log('this.highestVTXAccount **********************************', this.highestVTXAccount)
+      // console.log('this.highestVTXAccount **********************************', this.highestVTXAccount)
       if (this.highestVTXAccount !== undefined && this.highestVTXAccount !== null) {
         let stake_per = Math.round((0.01 + (0.001 * 10)) * 1000) / 1000
         let sendAmount = Math.round(Math.pow(10, this.highestVTXAccount.precision) * this.highestVTXAccount.amount) / Math.pow(10, this.highestVTXAccount.precision)
         this.estimatedReward = Math.round(sendAmount * stake_per * 10 * 100) / 100
-        //console.log('this.estimatedReward --**', this.estimatedReward)
+        // console.log('this.estimatedReward --**', this.estimatedReward)
         this.$store.commit('highestVTXAccount/updateParams', {
           chainID: this.highestVTXAccount.chain,
           tokenID: this.highestVTXAccount.type,
           accountName: this.highestVTXAccount.name
         })
         this.$store.state.highestVTXAccount.wallet = this.highestVTXAccount
-      //console.log('this.$store.state.highestVTXAccount.wallet > ', await this.$store.state.highestVTXAccount.wallet)
+      // console.log('this.$store.state.highestVTXAccount.wallet > ', await this.$store.state.highestVTXAccount.wallet)
       }
     }
   }

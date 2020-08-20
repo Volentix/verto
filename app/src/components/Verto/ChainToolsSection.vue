@@ -43,7 +43,7 @@ export default {
     }
   },
   updated () {
-    //console.log('wallet ----* ', this.wallet)
+    // console.log('wallet ----* ', this.wallet)
   },
   computed: {
     wallet () {
@@ -55,7 +55,7 @@ export default {
       if (val.toLowerCase() === 'staking') {
         this.$router.push({ path: '/verto/stake' })
       }
-      //console.log(val)
+      // console.log(val)
     }
   }
 }

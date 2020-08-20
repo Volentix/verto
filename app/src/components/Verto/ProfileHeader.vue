@@ -150,7 +150,7 @@ export default {
   },
   updated () {
     // this.selectedCoin = this.$store.state.currentwallet.wallet
-    //console.log('this.selectedCoin updated()', this.selectedCoin)
+    // console.log('this.selectedCoin updated()', this.selectedCoin)
   },
   // computed: {
   //   selectedCoin () {
@@ -172,7 +172,7 @@ export default {
     this.tableData.map(token => {
       this.totalBalance = this.totalBalance + (token.usd ? token.usd : 0)
     })
-    //console.log('this.currentAccount from ProfileHeader****************', this.currentAccount, params)
+    // console.log('this.currentAccount from ProfileHeader****************', this.currentAccount, params)
 
     if (this.currentAccount === undefined) {
       this.currentAccount = {
@@ -209,7 +209,7 @@ export default {
         textColor: 'white',
         position: 'top'
       })
-      //console.log('notifSelectWallet , notifSelectWallet')
+      // console.log('notifSelectWallet , notifSelectWallet')
       this.triggerCustomRegisteredType1()
     },
     triggerCustomRegisteredType1 () {
@@ -220,11 +220,11 @@ export default {
       })
     },
     goToSendPage () {
-      //console.log('goToSendPage , goToSendPage')
+      // console.log('goToSendPage , goToSendPage')
       this.$router.push({ path: '/verto/wallets/send' })
     },
     goToReceivePage () {
-      //console.log('goToSendPage , goToSendPage')
+      // console.log('goToSendPage , goToSendPage')
       this.$router.push({ path: '/verto/wallets/receive' })
     },
     getWindowWidth () {

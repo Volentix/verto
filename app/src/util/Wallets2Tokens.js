@@ -189,7 +189,7 @@ class Wallets2Tokens {
   async getAllAssets () {
     await axios.get('https://volentix.info/get_assets')
       .then(response => {
-        //console.log('this.getAllAssets()->response--------', response.data.data)
+        // console.log('this.getAllAssets()->response--------', response.data.data)
         return response.data.data
       })
   }
@@ -225,7 +225,7 @@ class Wallets2Tokens {
           'c24hChange2': (mydata.market_data.volume_last_24_hours_overstatement_multiple === undefined) ? 0 : mydata.market_data.volume_last_24_hours_overstatement_multiple,
           'vespucciScore': scoreVespucci
         }
-        //console.log('self.currentAsset', self.currentAsset)
+        // console.log('self.currentAsset', self.currentAsset)
       })
     return currentAsset
   }
