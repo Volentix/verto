@@ -34,7 +34,7 @@ class EosWrapper {
 
   async getAccount (accountName) {
     let account = (await this.rpc.get_account(accountName))
-    // console.log('account', account)
+    // // console.log('account', account)
     return account
   }
 
@@ -62,7 +62,7 @@ class EosWrapper {
       json: true
     })
 
-    // console.log('getTable res', result)
+    // // console.log('getTable res', result)
     return result.rows
   }
 
@@ -83,7 +83,7 @@ class EosWrapper {
       }
     }]
 
-    // console.log('actions', actions)
+    // // console.log('actions', actions)
     const tr = await this.transact({ actions }, { keyProvider })
     return tr
   }
@@ -107,7 +107,7 @@ class EosWrapper {
       }
     )
 
-    // console.log('transact', result)
+    // // console.log('transact', result)
     return result
   }
 }
