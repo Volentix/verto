@@ -145,7 +145,7 @@ export default {
     })
 
     this.cruxKey = await HD.Wallet('crux')
-    // // console.log('crux privateKey', this.cruxKey.privateKey, 'mnenonic', this.$store.state.currentwallet.config.mnemonic, 'password', this.vertoPassword)
+    // console.log('crux privateKey', this.cruxKey.privateKey, 'mnenonic', this.$store.state.currentwallet.config.mnemonic, 'password', this.vertoPassword)
 
     cruxClient = new CruxPay.CruxClient({
       walletClientName: this.walletClientName,
@@ -162,7 +162,7 @@ export default {
       this.addressMap = await cruxClient.getAddressMap()
       this.step = 2
       this.showMap = !!this.addressMap
-      // // console.log('addressMap', this.addressMap, 'show?', this.showMap)
+      // console.log('addressMap', this.addressMap, 'show?', this.showMap)
     }
   },
   computed: {
@@ -183,7 +183,7 @@ export default {
       if (this.available) {
         this.loading = true
         const res = await cruxClient.registerCruxID(this.cruxID.toLowerCase())
-        // // console.log('response should be undef:', res)
+        // console.log('response should be undef:', res)
         if (!res) {
           // Deal with: keypair is already used in registration of CruxID: 'helo@testwallet.crux'
           this.cruxIDRegistered = true
@@ -199,7 +199,7 @@ export default {
         } else {
           // this.existingCruxID = err.split('CruxID: ')[1].replace(/'/g, '')
           this.step = 2
-          // // console.log('err', res)
+          // console.log('err', res)
         }
       }
     },
@@ -229,32 +229,32 @@ export default {
       for (const symbol of Object.keys(this.assets)) {
         i++
         this.progress = Math.round(i / count * 10000) / 100
-        // // console.log('this.progress', this.progress)
+        // console.log('this.progress', this.progress)
         this.status = 'Creating keys for: ' + symbol
         let keys = await HD.Wallet(symbol)
         // let result = await this.$configManager.saveWalletAndKey(this.names.find(o => o.value === symbol).label, this.vertoPassword, null, keys.publicKey, keys.privateKey, symbol, 'mnemonic')
-        // // console.log('key creation', result)
+        // console.log('key creation', result)
         map[symbol] = { 'addressHash': keys.publicKey }
       }
 
-      // // console.log('map', map)
+      // console.log('map', map)
       cruxClient.putAddressMap(map)
       // await this.$configManager.backupConfig()
       this.mapped = true
     },
     async getAssets () {
       this.assets = await cruxClient.getAssetMap()
-      // // console.log('pre assets', this.assets)
+      // console.log('pre assets', this.assets)
 
       Object.keys(this.assets).forEach(async symbol => {
-        // // console.log('creating keys for: ', symbol)
+        // console.log('creating keys for: ', symbol)
         if (symbol === 'ada') {
           this.assets[symbol].keys = { publicKey: 'no key for ada' }
         } else {
           this.assets[symbol].keys = await HD.Wallet(symbol)
         }
       })
-      // // console.log('post assets', this.assets)
+      // console.log('post assets', this.assets)
     },
     dataRefresh () {
       const self = this

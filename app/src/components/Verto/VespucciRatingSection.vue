@@ -88,10 +88,10 @@ export default {
           let marketCap = mydata.marketcap.current_marketcap_usd
           // get buy support from coinmarketbook
           // let buySupportFrom = ''
-          // // // console.log('mydata', mydata)
+          //console.log('mydata', mydata)
           this.$axios.get('https://cors-anywhere.herokuapp.com/https://coinmarketbook.cc/api/ticker/' + mydata.slug).then(response => {
             let buySupportFrom = response.data.buy_order
-            // // // console.log(buySupportFrom, mydata.slug)
+            //console.log(buySupportFrom, mydata.slug)
             let asset = {
               'buySupport': buySupportFrom,
               'current_price': mydata.market_data.price_usd,
@@ -106,10 +106,10 @@ export default {
               'searched': true
             }
             self.assetData.unshift(asset)
-            // // // console.log('asset ----', asset)
+            //console.log('asset ----', asset)
           })
           // Promise.all([promise1, promise2, promise3]).then((values) => {
-          //   // // console.log(values)
+          // console.log(values)
           // })
         })
     },

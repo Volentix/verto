@@ -124,7 +124,7 @@ export default {
           return type.value !== key.type
         })
 
-        // // // console.log('assets', self.assets)
+        // console.log('assets', self.assets)
       }
     })
   },
@@ -136,7 +136,7 @@ export default {
     async enable () {
       const keys = await HD.Wallet(this.selected.value)
       const result = await this.$configManager.saveWalletAndKey(this.selected.label, this.vertoPassword, null, keys.publicKey, keys.privateKey, this.selected.value, 'mnemonic')
-      // // // console.log(result)
+      // console.log(result)
       Promise.all(result)
 
       this.$router.push({ path: '/wallet' })
