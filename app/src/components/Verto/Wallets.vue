@@ -132,7 +132,7 @@
           </q-item>
           <h2 v-if="$store.state.currentwallet.wallet.staked" @click="goToStake" class="wallets-wrapper--list_title goToStake bg-indigo-1 q-pa-xs q-pl-lg q-pr-lg flex items-center justify-between q-mt-md q-mb-md">
             <span class="q-pl-sm">Total Staked Amount:</span>
-            <span>{{$store.state.currentwallet.wallet.staked}} <q-icon style="font-size: 20px" :name="'img:'+ $store.state.currentwallet.wallet.icon" class="q-mr-sm q-mb-xs" /></span>
+            <span>{{nFormatter2($store.state.currentwallet.wallet.staked)}} <q-icon style="font-size: 20px" :name="'img:'+ $store.state.currentwallet.wallet.icon" class="q-mr-xs q-mb-xs" /> <span class="small">{{$store.state.currentwallet.wallet.type.toUpperCase()}}</span></span>
           </h2>
           <h2 class="wallets-wrapper--list_title q-pa-md q-ml-md flex items-center"><q-icon :name="'img:statics/history_icon-black.svg'" class="q-mr-sm" /> Transaction History</h2>
           <q-list bordered separator class="list-wrapper history-list-wrapper">
@@ -264,6 +264,9 @@
 <script>
 
 import { QScrollArea } from 'quasar'
+import EosWrapper from '@/util/EosWrapper'
+const eos = new EosWrapper()
+
 export default {
   components: {
     QScrollArea
@@ -343,16 +346,16 @@ export default {
   async mounted () {
   },
   async updated () {
-    // // console.log('updated')
+    // // // console.log('updated')
   },
   async created () {
-    // // console.log('created')
+    // // // console.log('created')
     // this.params = this.$store.state.currentwallet.params
     this.chainID = this.$route.params.chainID
     this.tokenID = this.$route.params.tokenID
     this.accountName = this.$route.params.accountName
 
-    // // console.log('this.$store.state.wallets.tokens in wallets', this.$store.state.wallets.tokens)
+    // // // console.log('this.$store.state.wallets.tokens in wallets', this.$store.state.wallets.tokens)
 
     this.$store.commit('currentwallet/updateParams', {
       chainID: this.chainID,
@@ -374,9 +377,9 @@ export default {
         let nonAmountCoins = this.$store.state.wallets.tokens.filter(f => f.usd === undefined)
         for (let n of nonAmountCoins) {
           this.$store.state.wallets.tokens.push(this.$store.state.wallets.tokens.splice(this.$store.state.wallets.tokens.indexOf(n), 1)[0])
-          // // console.log('n', n)
+          // // // console.log('n', n)
         }
-        // // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
+        // // // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
         this.directionAccount = false
         if (this.direction) {
           this.$store.state.wallets.tokens.sort(function (a, b) {
@@ -387,29 +390,29 @@ export default {
             return b.usd - a.usd
           })
         }
-        // // console.log('tokens of table', tokens)
+        // // // console.log('tokens of table', tokens)
         this.direction = !this.direction
         // this.$store.state.wallets.tokens.map((a) => {
-        //   // console.log('a.amount', a.amount)
+        //   // // console.log('a.amount', a.amount)
         // })
       }
       if (type === 'account') {
         let nonAmountCoins = this.$store.state.wallets.tokens.filter(f => f.name === undefined)
         for (let n of nonAmountCoins) {
           this.$store.state.wallets.tokens.push(this.$store.state.wallets.tokens.splice(this.$store.state.wallets.tokens.indexOf(n), 1)[0])
-          // // console.log('n', n)
+          // // // console.log('n', n)
         }
-        // // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
+        // // // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
         this.direction = false
         if (this.directionAccount) {
           this.$store.state.wallets.tokens.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
         } else {
           this.$store.state.wallets.tokens.sort((a, b) => (b.name > a.name) ? 1 : ((a.name > b.name) ? -1 : 0))
         }
-        // // console.log('tokens of table', tokens)
+        // // // console.log('tokens of table', tokens)
         this.directionAccount = !this.directionAccount
         // this.$store.state.wallets.tokens.map((a) => {
-        //   // console.log('a.amount', a.amount)
+        //   // // console.log('a.amount', a.amount)
         // })
       }
     },
@@ -429,8 +432,8 @@ export default {
     openModalFun: function (item) {
       this.openModal = true
     },
-    showMenu: function (menu) {
-      // // console.log(menu.selected)
+    async showMenu (menu) {
+      // // // console.log(menu.selected)
       if (!menu.selected) {
         this.removeClassSelected()
         menu.selected = true
@@ -438,7 +441,7 @@ export default {
         if (this.selectedCoin.hidden === undefined) {
           this.selectedCoin.hidden = false
         }
-        // // console.log('this.selectedCoin', this.selectedCoin)
+        // // // console.log('this.selectedCoin', this.selectedCoin)
         // this.$store.commit('currentwallet/updateParams', {
         //   chainID: this.selectedCoin.chain,
         //   tokenID: this.selectedCoin.type,
@@ -449,13 +452,45 @@ export default {
           tokenID: this.$route.params.tokenID || this.selectedCoin.type,
           accountName: this.$route.params.accountName || this.selectedCoin.name
         })
+        let stakedAmounts = 0
+        if (this.selectedCoin.type === 'vtx') {
+          let stakes = await eos.getTable('vtxstake1111', this.selectedCoin.name, 'accounts')
+          stakes.map(s => {
+            s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
+            s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+            stakedAmounts += +s.stake_amount
+          })
+          this.selectedCoin.staked = stakedAmounts
+        }
         // this.$store.state.currentwallet.wallet = this.currentAccount
         this.$store.state.currentwallet.wallet = this.selectedCoin
-        // console.log('****_*_*_selectedCoin****_*_*_', this.selectedCoin)
+        // console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
       } else {
         menu.selected = false
         this.$store.state.currentwallet.wallet = undefined
       }
+    },
+    kFormatter (num) {
+      return Math.abs(num) > 999 ? Math.sign(num) * ((Math.abs(num) / 1000).toFixed(1)) + 'k' : Math.sign(num) * Math.abs(num)
+    },
+    nFormatter2 (num, digits) {
+      var si = [
+        { value: 1, symbol: '' },
+        { value: 1E3, symbol: 'k' },
+        { value: 1E6, symbol: 'M' },
+        { value: 1E9, symbol: 'G' },
+        { value: 1E12, symbol: 'T' },
+        { value: 1E15, symbol: 'P' },
+        { value: 1E18, symbol: 'E' }
+      ]
+      var rx = /\.0+$|(\.[0-9]*[1-9])0+$/
+      var i
+      for (i = si.length - 1; i > 0; i--) {
+        if (num >= si[i].value) {
+          break
+        }
+      }
+      return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol
     },
     removeClassSelected: function () {
       for (let item of this.menu) {
@@ -467,7 +502,7 @@ export default {
       this.showText = !this.showText
     },
     async hideCurrency () {
-      // // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
+      // // // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
 
       this.$store.state.wallets.tokens.filter(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
         w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)
@@ -476,7 +511,7 @@ export default {
       })
 
       await this.$configManager.updateConfig(this.$store.state.settings.temporary, this.$store.state.currentwallet.config)
-      // // console.log('hidden', this.currentAccount.hidden)
+      // // // console.log('hidden', this.currentAccount.hidden)
     }
   }
 }
@@ -1039,6 +1074,8 @@ export default {
     &:hover{
       opacity: .9;
     }
-
+    .small{
+      font-size: 12px;
+    }
   }
 </style>

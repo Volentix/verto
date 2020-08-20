@@ -144,7 +144,7 @@ class HD {
         const privateKey = extPrivateKey.to_bech32()
         const account = ada.Account.single_from_public_key(extPrivateKey.to_public())
         const publicKey = account.to_address('AddressDiscrimination.Production').to_string('addr')
-        // console.log('publicKey', publicKey)
+        // // console.log('publicKey', publicKey)
 
         return { publicKey, privateKey }
       }
