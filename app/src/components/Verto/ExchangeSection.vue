@@ -113,7 +113,7 @@
 import store from '@/store'
 const url = 'https://api.coinswitch.co'
 let headers = {
-  'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
+  //'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
 }
 export default {
   name: 'ExchangeSection',
