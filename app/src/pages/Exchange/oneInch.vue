@@ -163,7 +163,7 @@
         </q-icon>
         </div>
         <div class=" col-12 col-md-5">
-        <div class="col-12 text-h6 q-mb-sm" v-if="destinationCoin">{{destinationCoin.value}} amount you will receive </div>
+        <div class="col-12 text-h6 q-mb-sm" v-if="destinationCoin">{{destinationCoin.value}} to receive </div>
         <q-input bottom-slots  readonly type="number" min="0"  :loading="spinnervisible" input-class="text-left"  class=" col-12 text-right" standout v-model="swapData.toAmount"   label="Amount" >     
         <template v-slot:prepend>
           <q-avatar>

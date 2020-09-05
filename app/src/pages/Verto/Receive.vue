@@ -1,6 +1,6 @@
 <template>
   <q-page class="text-black bg-white">
-    <div class="desktop-version" v-if="osName.toLowerCase() === 'windows'">
+    <div class="desktop-version" v-if="screenSize > 1024">
       <div class="row">
         <div class="col col-md-3">
           <div class="wallets-container">
@@ -17,7 +17,7 @@
                 <div class="standard-content--body__form">
                   <div class="row">
                     <div class="col col-6 q-pr-md">
-                      <span class="lab-input">To</span>
+                      <span class="lab-input">To <b class="verto-id">{{existingCruxID}}</b></span>
                       <q-select
                           light
                           separator
@@ -60,10 +60,15 @@
                         </template>
                       </q-select>
                     </div>
-                    <div class="col col-6">
-                      <span class="lab-input">Or Via Verto ID (Cruxpay)</span>
-                      <q-input v-model="vertoID" class="input-input" rounded readonly outlined color="purple" type="text"/>
+                    <div class="col col-6 flex justify-end">
+                      <div class="standard-content--footer ">
+                        <q-btn flat class="action-link next" @click="toggleShare()" color="black" text-color="white" label="Share" />
+                      </div>
+                      <!-- <span class="lab-input">Or Via Verto ID (Cruxpay)</span> -->
+                      <!-- <q-input v-model="vertoID" class="input-input" rounded readonly outlined color="purple" type="text"/> -->
                     </div>
+                  </div>
+                  <div class="row">
                     <div class="col col-6 q-pr-md q-pt-md">
                       <div class="qrcode-wrapper">
                         <div class="wallet-address flex justify-between">
@@ -76,11 +81,11 @@
                         </span>
                       </div>
                     </div>
-                    <div class="col col-6 column justify-end items-end items-end">
-                      <div class="standard-content--footer">
+                    <!-- <div class="col col-6 column justify-end items-end items-end"> -->
+                      <!-- <div class="standard-content--footer">
                         <q-btn flat class="action-link next" @click="toggleShare()" color="black" text-color="white" label="Share" />
-                      </div>
-                    </div>
+                      </div> -->
+                    <!-- </div> -->
                   </div>
                 </div>
               </div>
@@ -162,7 +167,7 @@
       <q-card class="q-pa-lg">
         <q-toolbar>
           <q-avatar><img src="statics/icon.png"></q-avatar>
-          <q-toolbar-title><span class="text-weight-bold">Share</span> VERTO</q-toolbar-title>
+          <q-toolbar-title><span class="text-weight-bold">Share</span> Public Key</q-toolbar-title>
           <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
         <q-card-section class=" text-h6">
@@ -171,9 +176,9 @@
             <span class="submenu-wrapper">
                 <social-sharing
                   class="share_wrapper text-black flex column justify-even content-start item-start"
-                  :url="exchangeAddress"
+                  :url="`${currentToken.type.toUpperCase()} address: ${exchangeAddress}`"
                   title="Verto | Multi-currency wallet"
-                  description="DOWNLOAD VERTO WALLET THE SECURE USER FRIENDLY WALLET"
+                  :description="`You are receiving this ${currentToken.type.toUpperCase()} token address from (${existingCruxID}).`"
                   quote=""
                   media="http://localhost:8080/statics/screens/screen_iphone.png"
                   hashtags=""
@@ -274,8 +279,11 @@
                   </div>
                 </social-sharing>
               </span>
-              <div id="copy-btn">
-                <q-btn color="white" text-color="black" @click="copyToClipboard(vertoLink , 'Link')" class="copy-link-button" flat label="Copy link">
+              <div id="copy-btn flex">
+                <q-btn color="white" text-color="black" @click="copyToClipboard(exchangeAddress , 'Link')" class="copy-link-button" flat label="Copy link">
+                  <img src="/statics/social/copy.svg" alt="">
+                </q-btn>
+                <q-btn color="white" text-color="black" @click="copyToClipboard(existingCruxID , 'Link')" class="copy-link-button q-ml-sm" flat label="Copy VERTO ID">
                   <img src="/statics/social/copy.svg" alt="">
                 </q-btn>
               </div>
@@ -296,7 +304,13 @@ Vue.component(VueQrcode.name, VueQrcode)
 var SocialSharing = require('vue-social-sharing')
 Vue.use(SocialSharing)
 
+import { CruxPay } from '@cruxpay/js-sdk'
+import HD from '@/util/hdwallet'
+
+let cruxClient
+
 export default {
+
   components: {
     // desktop components
     ProfileHeader,
@@ -305,6 +319,7 @@ export default {
   data () {
     return {
       osName: '',
+      existingCruxID: null,
       currentToken: {
         label: '',
         value: '',
@@ -327,8 +342,28 @@ export default {
       message: ''
     }
   },
+  watch: {
+    currentToken: function (newVal) {
+      this.exchangeAddress = newVal.type === 'eos' || newVal.type === 'vtx' ? newVal.label : newVal.value
+      this.currentAccount = this.tableData.find(w => w.chain === newVal.chainID && w.type === newVal.type && (
+        w.chain === 'eos' ? w.name.toLowerCase() === newVal.label : w.key === newVal.label)
+      )
+      this.$store.state.currentwallet.wallet = this.currentAccount
+    }
+  },
+  computed: {
+    wallet () {
+      return this.$store.state.currentwallet.wallet || undefined
+    }
+  },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.getWindowWidth)
+  },
   async created () {
+    let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     this.osName = osName
+    this.getWindowWidth()
+    window.addEventListener('resize', this.getWindowWidth)
     this.params = this.$store.state.currentwallet.params
 
     this.tableData = await this.$store.state.wallets.tokens
@@ -336,35 +371,63 @@ export default {
     let firstItem = null
     let count = 0
     this.tableData.map(token => {
-      if (count === 0) { firstItem = token }
-      self.options.push({
-        label: token.name.toLowerCase(),
-        value: token.key.toLowerCase(),
-        image: token.icon,
-        type: token.chain
-      })
+      if (token.type.toLowerCase() !== 'verto') {
+        if (count === 0) { firstItem = token }
+        self.options.push({
+          label: token.name.toLowerCase(),
+          value: token.chain !== 'eos' ? token.key : token.key + ' - ' + token.type.toUpperCase(),
+          image: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+          type: token.type,
+          chainID: token.chain
+        })
+      }
       count++
     })
-    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
-    )
-    console.log('this.currentAccount sur la page send', this.currentAccount)
-    this.currentToken = {
-      label: this.currentAccount !== undefined ? this.currentAccount.name : firstItem.name,
-      value: this.currentAccount !== undefined ? this.currentAccount.key : firstItem.key,
-      image: this.currentAccount !== undefined ? this.currentAccount.icon : firstItem.icon,
-      type: this.currentAccount !== undefined ? this.currentAccount.chain : firstItem.chain
+    if (this.wallet) {
+      this.currentAccount = this.wallet
+      this.currentToken = {
+        label: this.wallet.name,
+        value: this.wallet.chain !== 'eos' ? this.wallet.key : this.wallet.key + ' - ' + this.wallet.type.toUpperCase(),
+        image: this.wallet.type !== 'usdt' ? this.wallet.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+        type: this.wallet.type,
+        chainID: this.wallet.chain
+      }
+    } else {
+      this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+        w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+      )
+      // console.log('this.currentAccount sur la page send', this.currentAccount)
+      this.currentToken = {
+        label: this.currentAccount !== undefined ? this.currentAccount.name : firstItem.name,
+        value: this.currentAccount !== undefined ? this.currentAccount.key : firstItem.key,
+        image: this.currentAccount !== undefined ? this.currentAccount.icon : firstItem.icon,
+        type: this.currentAccount !== undefined ? this.currentAccount.type : firstItem.type,
+        chainID: this.currentAccount !== undefined ? this.currentAccount.chain : firstItem.chain
+      }
     }
+
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
 
     this.exchangeAddress = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
   },
-  mounted () {
+  async mounted () {
+    let cruxKey = await HD.Wallet('crux')
+
+    cruxClient = new CruxPay.CruxClient({
+      walletClientName: 'verto',
+      privateKey: cruxKey.privateKey
+    })
+
+    await cruxClient.init()
+    this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
   },
   updated () {
     // this.exchangeAddress = this.exchangeAddress === '' ? this.currentToken.chain !== 'eos' ? this.currentToken.key : this.currentToken.name : ''
   },
   methods: {
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
     toggleShare () {
       this.showShareWrapper = !this.showShareWrapper
     },
@@ -465,6 +528,11 @@ export default {
         font-size: 16px;
       }
       &__form{
+        .verto-id{
+          font-size: 14px;
+          font-family: $Titillium;
+          padding-left: 26px;
+        }
         .qrcode-wrapper{
           border: 1px solid rgba(black,.24);
           border-radius: 30px;
@@ -663,6 +731,7 @@ export default {
           height: 55px;
           min-width: 55px;
           max-width: 55px;
+          margin-left: 30px;
         }
         // &.border{
         //   border-right: 1px solid rgb(226, 226, 226);

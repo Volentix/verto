@@ -17,6 +17,7 @@
   },
   "scripts": {
     "dev": "cross-env QENV=development quasar dev",
+    "buildpwa": "cross-env QENV=development quasar build -m pwa",
     "ios": "QENV=development quasar dev -m cordova -T ios",
     "android": "QENV=development quasar dev -m cordova -T android",
     "electron": "QENV=development quasar dev -m electron",
@@ -63,10 +64,11 @@
     "bn": "^1.0.5",
     "clipboard-polyfill": "^2.8.0",
     "conseiljs": "^0.3.1",
+    "conseiljs-softsigner": "^5.0.0-alpha.0",
     "electron-log": "^3.0.5",
     "electron-updater": "^4.0.6",
-    "elliptic": "^6.5.2",
-    "eosjs": "^21.0.1-rc2",
+    "elliptic": "^6.5.3",
+    "eosjs": "^21.0.2",
     "eosjs-ecc": "^4.0.7",
     "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^6.2.0",
@@ -109,7 +111,7 @@
     "babel-eslint": "^10.0.1",
     "cross-env": "^6.0.0",
     "devtron": "1.4.0",
-    "electron": "4.0.5",
+    "electron": ">=7.2.4",
     "electron-builder": "^20.44.2",
     "electron-debug": "2.1.0",
     "electron-devtools-installer": "2.2.4",
@@ -129,6 +131,7 @@
     "last 1 version, not dead, ie >= 11"
   ],
   "resolutions": {
+    "bitcore-lib/**/bn.js": "=2.0.4",
     "ajv": "6.8.1"
   }
 }

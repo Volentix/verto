@@ -149,14 +149,14 @@ export default {
     }
   },
   async created () {
-    console.log('wall', this.wallet)
+    // console.log('wall', this.wallet)
     if (this.wallet.privateKey) {
       this.privateKey.key = this.wallet.privateKey
       this.isPrivateKeyEncrypted = false
-      console.log('this.isPrivateKeyEncrypted 1', this.isPrivateKeyEncrypted)
+      // console.log('this.isPrivateKeyEncrypted 1', this.isPrivateKeyEncrypted)
     } else {
       this.isPrivateKeyEncrypted = true
-      console.log('this.isPrivateKeyEncrypted 2', this.isPrivateKeyEncrypted)
+      // console.log('this.isPrivateKeyEncrypted 2', this.isPrivateKeyEncrypted)
     }
 
     if (this.wallet.name) {
@@ -171,14 +171,14 @@ export default {
       this.selectedProposalName = name
     },
     goToDetail (item) {
-      console.log('--item--', item.proposal_name)
+      // console.log('--item--', item.proposal_name)
       this.$router.push({
         path: `/verto/card-wps/public-proposals/proposal/${item.proposal_name}`
       })
     },
     async transact (actions) {
       try {
-        console.log('this.checkPrivateKeyPassword()', this.checkPrivateKeyPassword())
+        // console.log('this.checkPrivateKeyPassword()', this.checkPrivateKeyPassword())
         if (this.checkPrivateKeyPassword()) {
           this.showLoading()
           await eos.transact({ actions }, { keyProvider: this.privateKey.key })
@@ -187,7 +187,7 @@ export default {
           await eos.transact({ actions }, { keyProvider: this.privateKey.key })
         }
       } catch (error) {
-        console.log('error-------', error)
+        // console.log('error-------', error)
         // FIXME with userError handler
         // userError(JSON.parse(e).message)
         if (error.message.toString().includes('Required uint8')) {
@@ -224,7 +224,7 @@ export default {
     },
     checkPrivateKeyPassword () {
       const privateKeyEncrypted = JSON.stringify(this.wallet.privateKeyEncrypted)
-      console.log('privateKeyEncrypted', privateKeyEncrypted)
+      // console.log('privateKeyEncrypted', privateKeyEncrypted)
       const privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
       if (privateKey.success) {
         this.invalidPrivateKeyPassword = false

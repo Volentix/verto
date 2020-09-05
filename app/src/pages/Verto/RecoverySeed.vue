@@ -70,8 +70,16 @@
     </div>
     <div v-if="step===4" class="standard-content">
       <div>
-        <h2 class="standard-content--title">Paste your 24 word recovery seed phrase.</h2>
+        <h2 class="standard-content--title">Paste your recovery seed phrase.</h2>
         <h2 class="standard-content--desc">If you do not have a recovery seed, go back and choose create.</h2>
+        <ul><li v-for="(word, index) in wordOptions" :key="index" class=""> {{ word.label }} </li></ul>
+        <!-- q-option-group
+          name="words"
+          v-model="words"
+          :options="wordOptions"
+          color="primary"
+          inline
+        / -->
       </div>
       <div class="standard-content--body">
         <div class="standard-content--body__mnemonic">
@@ -110,6 +118,17 @@ export default {
     return {
       step: 1,
       isPwd: true,
+      words: 24,
+      wordOptions: [
+        {
+          label: 'Verto (24 words)',
+          value: 24
+        },
+        {
+          label: 'Metamask (12 words)',
+          value: 12
+        }
+      ],
       mnemonicValidated: '',
       goodPassword: true,
       vertoPassword: this.$store.state.settings.temporary,
@@ -131,7 +150,7 @@ export default {
   async created () {
   },
   async mounted () {
-    console.log('mnemonic', this.mnemonic, 'config', this.config, 'verto password', this.vertoPassword)
+    // console.log('mnemonic', this.mnemonic, 'config', this.config, 'verto password', this.vertoPassword)
   },
   watch: {
   },
@@ -142,17 +161,17 @@ export default {
       this.mnemonicValidated = bip39.validateMnemonic(this.mnemonic)
     },
     async createMnemonic () {
-      console.log('generating mnemonic')
+      // console.log('generating mnemonic')
       this.mnemonic = bip39.generateMnemonic(256)
 
       this.step = 2
     },
     async saveMnemonic () {
       if (this.goodPassword && (this.$store.state.settings.rightOrder || this.step === 4)) {
-        console.log('we are good with order')
+        // console.log('we are good with order')
 
         if (this.vertoPassword) {
-          console.log('in saveMnemonic with password')
+          // console.log('in saveMnemonic with password')
           this.config.mnemonic = this.mnemonic
           await this.$configManager.updateConfig(this.vertoPassword, this.config)
           const keys = await HD.Wallet('eos')

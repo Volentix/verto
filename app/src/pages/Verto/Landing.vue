@@ -91,6 +91,14 @@ export default {
     if (!this.hasConfig) {
       this.$router.push({ name: 'create-password' })
     }
+    this.$q.notify.registerType('my-notif', {
+      icon: 'announcement',
+      progress: true,
+      color: 'deep-purple-14',
+      textColor: 'white',
+      position: 'top'
+    })
+    this.triggerCustomRegisteredType1()
   },
   async mounted () {
     this.version = version
@@ -141,6 +149,12 @@ export default {
         this.deleteConfigFail = true
         this.deleteConfig = false
       }
+    },
+    triggerCustomRegisteredType1 () {
+      this.$q.notify({
+        type: 'my-notif',
+        message: `This app is in beta, use at your own risk.`
+      })
     }
   }
 }

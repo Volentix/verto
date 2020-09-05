@@ -10,7 +10,13 @@
             <img v-else class="vtx_logo" width="15px" src="statics/vtx_black.svg" alt="">
           </q-item-section>
           <q-item-section class="item-name">{{item.name}}</q-item-section>
-          <q-item-section class="text-orange profile-wrapper--list__item-info" :class="{'hide': item.info === ''}">{{item.info}}</q-item-section>
+          <q-item-section>
+            <div class="flex justify-end">
+              <div v-if="item.info === 'Linked'" class="flex flex-center q-mr-md text-grey">{{existingCruxID}}</div>
+              <q-btn v-if="item.info === 'Linked'" flat unelevated text-color="grey" @click="copyToClipboard(existingCruxID , 'Verto ID')" round class="btn-copy" icon="o_file_copy" />
+            </div>
+          </q-item-section>
+          <q-item-section class="profile-wrapper--list__item-info" :class="{'hide': item.info === '', 'text-orange': item.info !== 'Linked', 'text-green' : item.info === 'Linked'}">{{item.info}}</q-item-section>
         </q-item>
       </q-list>
     </div>
@@ -161,29 +167,64 @@ import configManager from '@/util/ConfigManager'
 import Vue from 'vue'
 var SocialSharing = require('vue-social-sharing')
 Vue.use(SocialSharing)
+
+import { CruxPay } from '@cruxpay/js-sdk'
+import HD from '@/util/hdwallet'
+let cruxClient
+
 export default {
   name: 'Profile',
   data () {
     return {
       vertoLink: 'https://volentix.io?verto-app',
       active: true,
-      menu: [
-        { name: 'Wallets', to: '/verto/wallets', icon: 'o_account_balance_wallet', info: '' },
-        { name: 'Trade', to: '/verto/exchange', icon: 'compare_arrows', info: '' },
-        { name: 'Personalize your wallet', to: '', icon: 'o_perm_media', info: 'soon' },
-        { name: 'Backup Config', to: 'backup', icon: 'o_get_app', info: '' },
-        { name: 'Restore Config', to: 'restore', icon: 'cloud_upload', info: '' },
-        { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
-        { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'Not linked' },
-        { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' },
-        { name: 'Log Out', to: 'logout', icon: 'exit_to_app', info: '' }
-      ],
+      existingCruxID: null,
+      screenSize: 0,
+      menu: [],
       showShareWrapper: false
     }
   },
+  async mounted () {
+    let cruxKey = await HD.Wallet('crux')
+
+    cruxClient = new CruxPay.CruxClient({
+      walletClientName: 'verto',
+      privateKey: cruxKey.privateKey
+    })
+
+    await cruxClient.init()
+    this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
+    if (this.existingCruxID) {
+      // console.log('existingCruxID', this.existingCruxID)
+    }
+  },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.getWindowWidth)
+  },
   created () {
+    this.getWindowWidth()
+    window.addEventListener('resize', this.getWindowWidth)
+    this.menu = [
+      { name: 'Trade', to: '/verto/exchange', icon: 'compare_arrows', info: '' },
+      { name: 'Personalize your wallet', to: '', icon: 'o_perm_media', info: 'soon' },
+      { name: 'Backup Config', to: 'backup', icon: 'o_get_app', info: '' },
+      { name: 'Restore Config', to: 'restore', icon: 'cloud_upload', info: '' },
+      { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
+      { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'Linked' },
+      { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' },
+      { name: 'Log Out', to: 'logout', icon: 'exit_to_app', info: '' }
+    ]
+    if (this.screenSize <= 1024) {
+      this.menu.unshift(
+        { name: 'Wallets', to: '/verto/wallets', icon: 'o_account_balance_wallet', info: '' }
+      )
+    }
+    // screenSize > 1024
   },
   methods: {
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({
@@ -215,13 +256,13 @@ export default {
       }
     },
     logout () {
-      configManager.logout()
+      // configManager.logout()
       this.$router.push({
         path: '/login'
       })
     },
     empty () {
-      console.log('empty')
+      // console.log('empty')
     }
   }
 }
@@ -338,6 +379,7 @@ export default {
           height: 55px;
           min-width: 55px;
           max-width: 55px;
+          margin-left: 30px;
         }
         // &.border{
         //   border-right: 1px solid rgb(226, 226, 226);
@@ -365,5 +407,12 @@ export default {
         margin-top: 2px;
       }
     }
+  }
+  .btn-copy{
+    width: 40px;
+    position: relative;
+    // top: -3px;
+    margin-right: 0px;
+    // padding: 6px 13px;
   }
 </style>

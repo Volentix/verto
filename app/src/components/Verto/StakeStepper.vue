@@ -77,7 +77,7 @@
                           </q-item>
                         </template>
                         <template v-slot:append>
-                          <q-btn round flat unelevated text-color="grey" @click.stop icon="o_file_copy" />
+                          <q-btn round flat unelevated text-color="grey" @click="copyToClipboard(currentAccount.type !== 'eos' && currentAccount.type !== 'verto'  ? currentAccount.name : currentAccount.key , 'Account name')" @click.stop icon="o_file_copy" />
                         </template>
                       </q-select>
 
@@ -121,8 +121,32 @@
                                 <span class="--amount row text-h4"> {{ currentAccount.staked }} </span>
                               </div>
                             </div>
-                            <div class="slider-holder">
+                            <div class="slider-holder stake-period">
                               <br>
+                              <div class="row q-mb-lg">
+                                <span class="--title row text-h6"> Stake period </span>
+                              </div>
+                              <br>
+                              <!-- 90 days , 180 days, 300 days -->
+                              <q-slider
+                                v-model="stakePeriod"
+                                :label-value="`${stakePeriod * 30}` + ' days'"
+                                :min="2"
+                                :max="10"
+                                :step="4"
+                                color="orange"
+                                :label-color="progColor"
+                                dark
+                                markers
+                                label
+                                class="--slider"
+                                label-always
+                                @input="changeSlider()"
+                              />
+                            </div>
+                              <br>
+                              <br>
+                            <div class="slider-holder">
                               <q-slider
                                 v-model="slider"
                                 :label-value="slider + '%'"
@@ -138,6 +162,17 @@
                                 label-always
                                 @input="changeSlider()"
                               />
+                            </div>
+                            <div class="row q-mb-lg">
+                              <div class="col col-4">
+                                 <q-btn color="white" outline text-color="grey" class="full-width" label="25%" @click="sliderToPercent(25)" />
+                              </div>
+                              <div class="col col-4 q-pl-md">
+                                 <q-btn color="white" outline text-color="grey" class="full-width" label="50%" @click="sliderToPercent(50)" />
+                              </div>
+                              <div class="col col-4 q-pl-md">
+                                 <q-btn color="white" outline text-color="grey" class="full-width" label="100%" @click="sliderToPercent(100)" />
+                              </div>
                             </div>
                             <div class="row full-width">
                               <div class="full-width">
@@ -155,27 +190,9 @@
                                   :rules="[val => val >= 1000 || '1000 VTX Minimum']"
                                 />
                                 <br>
-                                <span class="--title row text-h6"> Stake period </span>
                               </div>
                             </div>
-                            <div class="slider-holder">
-                              <br>
-                              <q-slider
-                                v-model="stakePeriod"
-                                :label-value="`${stakePeriod * 30}` + ' days'"
-                                :min="1"
-                                :max="10"
-                                :step="1"
-                                color="orange"
-                                :label-color="progColor"
-                                dark
-                                markers
-                                label
-                                class="--slider"
-                                label-always
-                                @input="changeSlider()"
-                              />
-                            </div>
+
                             <div class="row full-width">
                               <div class="full-width">
                                 <br>
@@ -264,14 +281,13 @@
                       <div v-else class="content__failed text-red q-pa-md">
                         <img src="statics/fail_icon.svg" class="failed_icon" alt="">
                         <div class="text-h4 --subtitle text-center --subtitle__faild">Something's wrong!</div>
-                        <div class="text-h4 --subtitle text-center --subtitle__transLink"> {{ ErrorMessage }}</div>
+                        <div class="text-h4 --subtitle text-center full-width --subtitle__transLink"> {{ ErrorMessage }}</div>
                       </div>
 
                     </q-step>
                   </q-stepper>
                 </div>
               </q-tab-panel>
-
               <q-tab-panel name="staked">
                 <div class="staked-wrapper">
                   <div v-for="(stake, i) in stakes" :key="i" class="item-wrapper row flex">
@@ -279,9 +295,18 @@
                       <div class="border column justify-between">
                         <span class="date">Staked date: {{stake.stake_date.toDateString()}}</span>
                         <div class="row flex item-wrapper--row justify-between items-end">
-                          <div class="col">Amount: <br> <strong>{{stake.stake_amount}} VTX</strong></div>
+                          <div class="col">Amount: <br> <strong>{{stake.stake_amount}} VTX <q-icon class="q-mb-xs" :name="'img:' + currentAccount.icon" />
+                          </strong></div>
                           <div class="col">Period: <br> <strong>{{stake.stake_period}} Days</strong></div>
-                          <div class="col">Time left: <br> <strong>{{stake.time_left}}</strong></div>
+                          <div class="col mobile-only">Time left: <br> <strong>{{stake.time_left}}</strong></div>
+                          <div class="col desktop-only">Time left: <br>
+                            <q-linear-progress rounded stripe size="25px" :value="(1 / stake.stake_period )" color="deep-purple-14">
+                              <div class="absolute-full flex flex-center">
+                                <q-badge color="white" text-color="black" :label="(stake.time_left) + ' Days'" />
+                              </div>
+                            </q-linear-progress>
+                          </div>
+
                         </div>
                       </div>
                     </div>
@@ -291,9 +316,7 @@
                   </div>
                 </div>
               </q-tab-panel>
-
             </q-tab-panels>
-
           </div>
           <br><br><br>
         </div>
@@ -316,7 +339,7 @@ export default {
       step: 0,
       condition: 3,
       currentAccount: {},
-      stakePeriod: 1,
+      stakePeriod: 2,
       estimatedReward: 0,
       options: [],
       tableData: [],
@@ -350,15 +373,29 @@ export default {
     }
   },
   computed: {
+    wallet () {
+      return this.$store.state.currentwallet.wallet || {}
+    }
   },
   async created () {
-    this.params = this.$store.state.currentwallet.params
-    this.tableData = await this.$store.state.wallets.tokens
-    this.currentAccount = await this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
-    )
+    let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
+    // console.log('---this.wallet---', this.wallet)
+    if (this.wallet) {
+      this.currentAccount = this.wallet
+      this.params = {
+        chainID: this.currentAccount.chain,
+        tokenID: this.currentAccount.type,
+        accountName: this.currentAccount.name
+      }
+    } else {
+      this.params = this.$store.state.currentwallet.params
+      this.tableData = await this.$store.state.wallets.tokens
+      this.currentAccount = await this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+        w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+      )
+    }
 
-    console.log('this.currentAccount ----------------- ', this.currentAccount)
+    // console.log('this.currentAccount ----------------- ', this.currentAccount)
 
     if (eos.isPrivKeyValid(this.currentAccount.privateKey)) {
       this.privateKey.key = this.currentAccount.privateKey
@@ -381,11 +418,11 @@ export default {
       let totalSubsidy = globalAmnts.subsidy.split(' ')[0]
 
       this.allocatable = +totalBalance - (+totalStake + +totalSubsidy)
-      console.log('allocatable', this.allocatable)
+      // console.log('allocatable', this.allocatable)
 
       this.stakes = await eos.getTable('vtxstake1111', this.params.accountName, 'accounts')
       this.stakes.map(s => {
-        console.log('s', s)
+        // console.log('s', s)
         s.stake_date = new Date(s.stake_time * 1000)
         s.stake_done = new Date((s.stake_time * 1000) + (s.stake_period * 86400000))
         s.time_left = date.getDateDiff(s.stake_done, Date.now(), 'days')
@@ -402,8 +439,36 @@ export default {
     }
   },
   async mounted () {
+    let stepParam = this.$route.params.step
+    if (stepParam !== undefined) {
+      // console.log('step staking = ', stepParam)
+      let highestVTXAccount = this.$store.state.highestVTXAccount.wallet
+      this.$store.state.currentwallet.wallet = this.$store.state.highestVTXAccount.wallet
+      this.currentAccount = highestVTXAccount
+      this.params = this.$store.state.highestVTXAccount.params
+      this.slider = 100
+      this.changeSlider()
+      this.stakePeriod = 10
+      this.changeSlider()
+      this.step = parseInt(stepParam)
+    }
   },
   methods: {
+    sliderToPercent (percent) {
+      this.slider = percent
+      this.changeSlider()
+    },
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    },
     changeSlider () {
       if (this.slider >= 0) {
         this.sendAmount = Math.round(Math.pow(10, this.currentAccount.precision) * this.currentAccount.amount * (this.slider / 100)) / Math.pow(10, this.currentAccount.precision)
@@ -432,8 +497,10 @@ export default {
 
         if (this.sendAmount >= 1000) {
           this.progColor = 'green'
+          // let sep = ' , '
+          // console.log(this.sendAmount, sep, stake_per, sep, this.stakePeriod)
           this.estimatedReward = Math.round(this.sendAmount * stake_per * this.stakePeriod * 100) / 100
-          console.log('mul', stake_per)
+          // console.log('mul', stake_per)
         } else {
           this.estimatedReward = 0
           this.progColor = 'red'
@@ -467,16 +534,16 @@ export default {
 
         this.transactionError = false
         this.transactionId = transaction.transaction_id
-        this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '">block explorer</a>'
+        this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '" target="_blank">block explorer</a>'
       } catch (error) {
-        console.log('transaction errors', error)
+        // console.log('transaction errors', error)
         this.transactionError = true
-
-        if (error.includes('stake amount is too low')) {
+        // console.log('error', error)
+        if (error.message.includes('stake amount is too low')) {
           this.ErrorMessage = 'Your VTX stake amount is too low, you need at least 1000 VTX to stake.'
-        } else if (error.includes('maximum billable CPU time')) {
+        } else if (error.message.includes('maximum billable CPU time')) {
           this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
-        } else if (error.includes('has insufficient ram')) {
+        } else if (error.message.includes('has insufficient ram')) {
           this.ErrorMessage = 'Your EOS account does not have enough RAM staked to process the transaction.'
         } else {
           this.ErrorMessage = 'Unknown Error: ' + error
@@ -656,26 +723,42 @@ export default {
             }
             .staked-wrapper{
               padding: 20px;
+              @media screen and (min-width: 1024px) {
+                padding: 30px 0px;
+              }
               .item-wrapper{
                 margin-bottom: 10px;
               }
               .date{
                 font-size: 10px;
+                @media screen and (min-width: 1024px) {
+                  font-size: 20px;
+                }
               }
               .total{
                 $purple : #6C0DCB;
                 font-size: 10px;
                 color: $purple !important;
+                @media screen and (min-width: 1024px) {
+                  font-size: 24px;
+                  font-weight: $bold;
+                }
                 strong{
                   color: $purple !important;
                 }
               }
               .item-wrapper--row{
                 height: 35px;
+                @media screen and (min-width: 1024px) {
+                  height: 50px;
+                }
               }
               .col{
                 color: #B0B0B0;
                 font-size: 10px;
+                @media screen and (min-width: 1024px) {
+                  font-size: 16px;
+                }
                 font-family: $Titillium;
                 font-weight: $regular;
                 strong{
@@ -894,7 +977,7 @@ export default {
               }
               &__transLink{
                 color: #2A2A2A;
-                border-bottom: 1px solid;
+                // border-bottom: 1px solid;
                 width: fit-content;
                 font-weight: $bold;
                 margin-bottom: 20px;

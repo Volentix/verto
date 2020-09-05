@@ -1,5 +1,5 @@
 <template>
-  <div class="desktop-card-style apps-section q-mb-sm" :class="{'disabled' : wallet.chain !== 'eos'}">
+  <div class="desktop-card-style apps-section q-mb-sm" :class="{'disabled' : wallet.type !== 'vtx'}">
     <div class="row flex justify-between q-pt-sm q-pb-sm">
       <div class="col col-3 flex items-center chain-icon"><q-icon :name="'img:statics/chain-tools_icon-black.svg'" />Chain Tools</div>
       <div class="col col-4 flex items-center justify-end chain-token q-pr-sm">
@@ -9,11 +9,11 @@
         </div>
         <div class="column q-mr-md">
           <span class="label">Chain:</span>
-          <strong>{{wallet.chain}}</strong>
+          <strong class="upper">{{wallet.chain}}</strong>
         </div>
         <div class="column">
           <span class="label">Token:</span>
-          <strong>{{wallet.type}}</strong>
+          <strong class="upper">{{wallet.type}}</strong>
         </div>
       </div>
       <div class="col col-5 flex items-center justify-end dropdown q-pr-sm">
@@ -25,7 +25,8 @@
           class="select-input"
           v-model="chainToolModel"
           @input="goToChainTool"
-          :options="['Staking', 'Voting', 'Lending']" />
+          :options="['Staking']" />
+          <!-- , 'Voting', 'Lending' -->
         <!-- <strong>Start Your Node</strong> -->
         <!-- <q-btn unelevated class="qbtn-start" color="black" text-color="white" label="Get started" /> -->
       </div>
@@ -42,7 +43,7 @@ export default {
     }
   },
   updated () {
-
+    // console.log('wallet ----* ', this.wallet)
   },
   computed: {
     wallet () {
@@ -54,7 +55,7 @@ export default {
       if (val.toLowerCase() === 'staking') {
         this.$router.push({ path: '/verto/stake' })
       }
-      console.log(val)
+      // console.log(val)
     }
   }
 }
@@ -75,7 +76,9 @@ export default {
           strong{
             font-size: 12px;
             color: #7272FA;
-            text-transform: uppercase;
+            &.upper{
+              text-transform: uppercase;
+            }
           }
         }
 

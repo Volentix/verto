@@ -1,5 +1,5 @@
 <template>
-  <q-page class="text-black bg-white" :class="osName.toLowerCase() === 'windows' ? 'desktop-marg': 'mobile-pad'">
+  <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
     <div v-if="getPassword" class="send-modal flex flex-center" :class="{'open' : openModal}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
@@ -101,7 +101,7 @@
       </q-card>
     </q-dialog>
 
-    <div class="desktop-version" v-if="osName.toLowerCase() === 'windows'">
+    <div class="desktop-version" v-if="screenSize > 1024">
       <div class="row">
         <div class="col col-md-3">
           <div class="wallets-container">
@@ -113,26 +113,67 @@
         <div class="col col-md-9">
           <div class="desktop-card-style apps-section q-mb-sm">
             <div class="standard-content">
-              <h2 class="standard-content--title flex justify-start">Send </h2>
+              <h2 class="standard-content--title flex justify-start items-center">Send <img :src="currentToken.image" class="max40 q-ml-sm" alt=""></h2>
               <div class="standard-content--body">
                 <div class="standard-content--body__form">
                   <div class="row">
                     <div class="col col-8 q-pr-lg">
                       <span class="lab-input">From</span>
-                      <q-input v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? 'Current ' + currentAccount.type.toUpperCase() + ' Address' : 'Current ' + currentAccount.type.toUpperCase() + ' Account'">
+                      <q-select
+                          light
+                          separator
+                          rounded
+                          outlined
+                          class="select-input"
+                          v-model="currentToken"
+                          :options="options"
+                      >
+                        <template v-slot:option="scope">
+                          <q-item
+                            class="custom-menu"
+                            v-bind="scope.itemProps"
+                            v-on="scope.itemEvents"
+                          >
+                            <q-item-section avatar>
+                              <q-icon class="option--avatar" :name="`img:${scope.opt.image}`" />
+                            </q-item-section>
+                            <q-item-section dark>
+                              <q-item-label v-html="scope.opt.label" />
+                              <q-item-label caption class="ellipsis mw200">{{ scope.opt.value }}</q-item-label>
+                            </q-item-section>
+                          </q-item>
+                        </template>
+                        <template v-slot:selected>
+                          <q-item
+                            v-if="currentToken"
+                          >
+                            <q-item-section avatar>
+                              <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
+                            </q-item-section>
+                            <q-item-section>
+                              <q-item-label v-html="currentToken.label" />
+                              <q-item-label caption class="ellipsis mw200">{{ currentToken.value }}</q-item-label>
+                            </q-item-section>
+                          </q-item>
+                          <q-item
+                            v-else>
+                          </q-item>
+                        </template>
+                      </q-select>
+                      <!-- <q-input v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? 'Current ' + currentAccount.type.toUpperCase() + ' Address' : 'Current ' + currentAccount.type.toUpperCase() + ' Account'">
                         <template v-slot:append>
                           <div class="flex justify-end">
                             <q-btn flat unelevated text-color="grey" @click="copyToClipboard(from , 'Address')" round class="btn-copy" icon="o_file_copy" />
                           </div>
                         </template>
-                      </q-input>
+                      </q-input> -->
                     </div>
                     <div class="col col-4">
                       <span class="lab-input">Amount</span>
                       <q-input v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                         <template v-slot:append>
                           <div class="flex justify-end">
-                            <span class="tokenID">{{ params.tokenID }}</span>
+                            <span class="tokenID">{{ currentToken.type }}</span>
                             <q-btn color="white" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat text-color="black" label="Max" />
                           </div>
                         </template>
@@ -286,6 +327,9 @@ export default {
       getPassword: false,
       walletClientName: 'verto', // should be 'verto' when in prod
       cruxKey: {},
+      currentToken: {
+        image: ''
+      },
       sendToResolved: {},
       memoError: false,
       toError: false,
@@ -309,20 +353,76 @@ export default {
       }
     }
   },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.getWindowWidth)
+  },
+  computed: {
+    selectedCoin () {
+      return this.$store.state.currentwallet.wallet || {}
+    }
+  },
+  watch: {
+    currentToken: function (newVal) {
+      this.from = newVal.label
+      this.currentAccount = this.tableData.find(w => w.chain === newVal.chainID && w.type === newVal.type && (
+        w.chain === 'eos' ? w.name.toLowerCase() === newVal.label : w.key === newVal.label)
+      )
+      this.$store.state.currentwallet.wallet = this.currentAccount
+      this.sendAmount = 0
+    }
+  },
   async created () {
+    let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     this.osName = osName
-    console.log('this.osName', this.osName)
+    this.getWindowWidth()
+    window.addEventListener('resize', this.getWindowWidth)
+    // console.log('this.osName', this.osName)
     this.params = this.$store.state.currentwallet.params
-    console.log('this.params', this.params)
     this.tableData = await this.$store.state.wallets.tokens
-    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
-    )
+    // console.log('this.tableData', this.tableData)
+    let self = this
+    this.tableData.map(token => {
+      if (!token.disabled && token.type.toLowerCase() !== 'verto' && parseFloat(token.amount) > 0) {
+        self.options.push({
+          label: token.name.toLowerCase(),
+          value: token.chain !== 'eos' ? token.key : token.key + ' - ' + token.type.toUpperCase(),
+          image: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+          type: token.type,
+          amount: token.amount,
+          chainID: token.chain
+        })
+      }
+    })
+    if (this.selectedCoin) {
+      this.currentAccount = this.selectedCoin
+      this.currentToken = {
+        label: this.selectedCoin.name,
+        value: this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.key + ' - ' + this.selectedCoin.type.toUpperCase(),
+        image: this.selectedCoin.type !== 'usdt' ? this.selectedCoin.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+        type: this.selectedCoin.type,
+        chainID: this.selectedCoin.chain,
+        amount: this.selectedCoin.amount
+      }
+    } else {
+      this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+        w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+      )
+    }
+    this.currentAccount = this.currentAccount || this.currentToken
+    if (this.params.chainID === undefined) {
+      this.params = {
+        chainID: this.currentAccount.chain,
+        tokenID: this.currentAccount.type,
+        accountName: this.currentAccount.name
+      }
+    }
+    // console.log('this.params', this.params.chainID)
+    if (this.currentAccount !== undefined) {
+      this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
+      this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
+    }
 
-    this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
-    this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
-
-    console.log('this.currentAccount sur la page send', this.currentAccount)
+    // console.log('this.currentAccount sur la page send', this.currentAccount)
 
     if (this.currentAccount.privateKey) {
       this.privateKey.key = this.currentAccount.privateKey
@@ -332,7 +432,7 @@ export default {
     }
 
     this.cruxKey = await HD.Wallet('crux')
-    console.log('crux privateKey', this.cruxKey.privateKey)
+    // console.log('crux privateKey', this.cruxKey.privateKey)
     cruxClient = new CruxPay.CruxClient({
       walletClientName: this.walletClientName,
       privateKey: this.cruxKey.privateKey
@@ -342,6 +442,9 @@ export default {
   mounted () {
   },
   methods: {
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({
@@ -367,7 +470,7 @@ export default {
         try {
           this.sendToResolved = (await cruxClient.resolveCurrencyAddressForCruxID(this.sendTo, this.currentAccount.chain)).addressHash
         } catch (error) {
-          console.log('checkTo:', error)
+          // console.log('checkTo:', error)
           this.sendToResolved = ''
 
           if (error.errorCode === 1002) {
@@ -381,7 +484,7 @@ export default {
           }
         }
 
-        console.log('sendToResolved', this.sendToResolved)
+        // console.log('sendToResolved', this.sendToResolved)
       } else {
         // check for valid eos name
         this.sendToResolved = this.sendTo
@@ -399,11 +502,9 @@ export default {
       var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       return re.test(String(email).toLowerCase())
     },
-    async getMaxBalance () {
-      this.sendAmount = await this.currentAccount.amount
-    },
-    goChangePassword: function () {
-      this.$router.push({ path: '/change-password' })
+    getMaxBalance () {
+      this.sendAmount = this.currentToken.amount
+      // console.log('getMaxBalance', this.sendAmount)
     },
     openModalFun: function (item) {
       if (this.currentAccount.privateKey) {
@@ -429,26 +530,27 @@ export default {
       this.invalidEosName = false
       this.transStatus = 'Transaction in progress'
 
-      console.log(
-        'chainID', this.params.chainID,
-        'tokenID', this.params.tokenID,
-        'name', this.params.accountName,
-        'to', this.sendToResolved,
-        'value', this.sendAmount,
-        'memo', this.sendMemo,
-        'key', this.privateKey.key,
-        'contract', this.currentAccount.contract)
+      // console.log(
+      // 'chainID', this.params.chainID,
+      // 'tokenID', this.params.tokenID,
+      // 'name', this.params.accountName,
+      // 'to', this.sendToResolved,
+      // 'value', this.sendAmount,
+      // 'memo', this.sendMemo,
+      // 'key', this.privateKey.key,
+      // 'contract', this.currentAccount.contract)
 
       Lib.send(
-        this.params.chainID,
-        this.params.tokenID,
-        this.params.accountName,
+        this.currentAccount.chain,
+        this.currentAccount.type,
+        this.currentAccount.name,
         this.sendToResolved,
         this.sendAmount,
         this.sendMemo,
         this.privateKey.key,
         this.currentAccount.contract
       ).then(result => {
+        // console.log('result', result)
         if (result.success) {
           this.getPassword = false
           this.transErrorDialog = false
@@ -472,6 +574,21 @@ export default {
         this.sendTokens()
         this.openModalProgress = true
       }
+    },
+    formatAmountString () {
+      let numberOfDecimals = 0
+      // console.log('this.currentAccount', this.currentAccount)
+      let stringAmount = (Math.round(this.sendAmount * Math.pow(10, this.currentAccount.precision)) / Math.pow(10, this.currentAccount.precision)).toString()
+      const amountParsed = stringAmount.split('.')
+      if (amountParsed && amountParsed.length > 1) {
+        numberOfDecimals = amountParsed[1].length
+      } else {
+        stringAmount += '.'
+      }
+      for (;numberOfDecimals < this.currentAccount.precision; numberOfDecimals++) {
+        stringAmount += '0'
+      }
+      return stringAmount + ' ' + this.tokenSymbol
     },
     hideModalFun: function () {
       this.openModal = false
@@ -814,5 +931,11 @@ export default {
   }
   /deep/ .q-btn__wrapper{
     min-height: 30px !important;
+  }
+  .max40{
+    max-width: unset;
+    height: 30px;
+    width: 30px;
+    max-height: unset;
   }
 </style>
