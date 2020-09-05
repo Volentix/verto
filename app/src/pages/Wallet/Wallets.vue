@@ -748,7 +748,7 @@ export default {
     shareBtn2 () {
       this.link2Bool = true
       this.DisplaySocial = false
-      console.log('this.DisplaySocial', this.DisplaySocial)
+      // console.log('this.DisplaySocial', this.DisplaySocial)
     },
     changeCurrentItem (name) {
       if (this.link2Bool) {

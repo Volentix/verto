@@ -134,7 +134,15 @@ export default [
         }
       },
       {
-        name: 'exchange',
+        name: 'stake',
+        path: '/verto/stake/:step',
+        component: () => import('pages/Verto/Stake.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        name: 'exchange-v2',
         path: '/verto/exchange',
         component: () => import('pages/Verto/Exchange.vue'),
         meta: {
@@ -150,8 +158,8 @@ export default [
         }
       },
       {
-        name: 'exchange-v2',
-        path: '/verto/exchange/:selectedCoin',
+        name: 'exchange-v3',
+        path: '/verto/exchange/:coinToSend/:coinToReceive',
         component: () => import('pages/Verto/Exchange.vue'),
         meta: {
           authRequired: true

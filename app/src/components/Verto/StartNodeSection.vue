@@ -1,6 +1,6 @@
 <template>
   <div class="desktop-card-style apps-section q-mb-sm">
-    <div v-if="banner === 1" class="banner-wrapper">
+    <div v-if="banner === 1" class="banner-wrapper" @click="goToLink">
       <img src="statics/node-banners/ban1.png" class="full-width scale3d" alt="">
     </div>
     <div v-else class="row flex justify-between q-pt-sm q-pb-sm">
@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { openURL } from 'quasar'
 export default {
   props: ['banner'],
   name: 'StartNodeSection',
@@ -22,6 +23,9 @@ export default {
     }
   },
   methods: {
+    goToLink () {
+      openURL('https://www.volentix.io/node/')
+    }
   }
 }
 </script>

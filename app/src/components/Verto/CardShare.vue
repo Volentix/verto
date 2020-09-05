@@ -9,7 +9,7 @@
           <div class="desc">You will both receive 10 VTX</div>
         </div>
       </div>
-      <q-btn unelevated class="card-refer--wrapper--header_btn" icon-right="share" color="black" text-color="white" label="Share" />
+      <q-btn unelevated disabled class="card-refer--wrapper--header_btn" icon-right="share" color="black" text-color="white" label="Share" />
     </div>
   </div>
 </template>

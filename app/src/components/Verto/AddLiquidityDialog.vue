@@ -34,22 +34,22 @@
                 <div class="lab-value flex flex-center text-center q-pl-lg q-pr-sm">11.5765 RPL 0.0099 WETH</div>
             </div>
             </div>
-            <hr style="opacity: .1" class="q-mt-lg">
+            <!-- <hr style="opacity: .1" class="q-mt-lg">
             <h4 class="lab-title q-pb-md">Select Gas Setting</h4>
             <div class="row">
-            <div class="col col-4">
+              <div class="col col-4">
                 <q-btn color="white" flat class="btn-gas full-width" outlined rounded size="lg" text-color="black" label="Slow (36 Gwei ~ 12.3 Min)" />
-            </div>
-            <div class="col col-4 q-pl-md q-pr-md">
+              </div>
+              <div class="col col-4 q-pl-md q-pr-md">
                 <q-btn color="white" flat class="btn-gas full-width" outlined rounded size="lg" text-color="black" label="Slow (36 Gwei ~ 12.3 Min)" />
-            </div>
-            <div class="col col-4">
+              </div>
+              <div class="col col-4">
                 <q-btn color="white" flat class="btn-gas full-width" outlined rounded size="lg" text-color="black" label="Slow (36 Gwei ~ 12.3 Min)" />
-            </div>
-            </div>
+              </div>
+            </div> -->
         </q-card-section>
-        <q-card-actions align="right" class="q-pr-sm q-mb-sm">
-            <!-- <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/> -->
+        <q-card-actions align="right" class="q-pr-sm q-mb-sm q-mt-xl">
+            <q-btn label="Cancel" flat class="qbtn-start q-mr-sm cancel" color="black" v-close-popup/>
             <q-btn unelevated class="qbtn-start" color="black" text-color="white" label="Confirm" />
         </q-card-actions>
     </q-card>
@@ -82,6 +82,10 @@ export default {
       width: 120px;
       margin-left: 0px;
       padding: 5px 10px;
+      &.cancel{
+        background: #CCC !important;
+        width: 100px;
+      }
       /deep/ .q-btn__wrapper{
         min-height: unset;
         padding: 0px 10px;

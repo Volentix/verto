@@ -1,12 +1,70 @@
 <template>
-  <q-page class="text-black bg-white" :class="osName.toLowerCase() === 'windows' ? 'desktop-marg': 'mobile-pad'">
-    <div class="desktop-version" v-if="osName.toLowerCase() === 'windows'">
+  <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+    <div class="desktop-version" v-if="screenSize > 1024">
       <div class="row">
         <div class="col-12 col-title">
-          <h4>Liquidity pool</h4>
+          <h4>Account overview</h4>
         </div>
-        <div class="col col-12">
-          <div class="desktop-card-style current-investments explore-opportunities">
+        <div class="col col-md-5 q-pr-md">
+          <div class="desktop-card-style account-overview q-mb-md">
+            <div class="row">
+              <div class="col-8">
+                <h4 class="q-pl-md">Available balances</h4>
+                <div class="header-table-col row q-pl-md q-mb-md">
+                  <div class="col-5"><h3>Token</h3></div>
+                  <div class="col-4"><h3>Balance</h3></div>
+                </div>
+                <q-scroll-area :visible="true" class="q-pr-lg q-mb-md q-mr-sm" style="height: 130px;">
+                  <div v-for="i in 3" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+                    <div class="col-5 flex items-center">
+                      <span class="token flex items-center">
+                        <img src="statics/coins_icons/eth2.png" class="q-mr-sm" alt=""> <strong>ETH</strong>
+                      </span>
+                    </div>
+                    <div class="col-4 q-pl-sm">
+                      <span class="balance">120,8 USD</span>
+                    </div>
+                  </div>
+                </q-scroll-area>
+              </div>
+              <div class="col-4">
+                <img src="statics/liquidity_pool.png" class="full-width q-pt-sm" alt="">
+              </div>
+            </div>
+          </div>
+          <div class="desktop-card-style wallet-snapshot q-mb-md" style="background: url(statics/header_bg.png) no-repeat; background-position: 20% 75%; background-size: 100%;">
+            <div class="flex justify-between items-center q-pt-sm q-pb-sm">
+              <h3 class="text-white q-pl-md">Max DeFi Yield</h3>
+              <div class="text-white q-pr-md amount flex items-center">
+                <span class="interest_rate q-pr-md flex items-center"><img src="statics/media/USDC-logo.png"  alt=""><strong class="q-pr-md"><span class="thicker">USDC</span></strong> 21.0528 % <b class="p-abs">Interest Rate</b></span>
+                <!-- <span>28.35 USD</span> -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col col-md-7">
+          <!-- <div class="desktop-card-style current-investments wallet-col q-mb-sm">
+            <h4 class="q-pl-md">Wallet - $5,846.31</h4>
+            <div class="header-table-col row q-pl-md q-pr-lg">
+              <div class="col-3"><h3>Asset</h3></div>
+              <div class="col-3"><h3>Balance</h3></div>
+              <div class="col-3"><h3>Price</h3></div>
+              <div class="col-3"><h3>Value</h3></div>
+            </div>
+            <q-scroll-area :visible="true" class="q-pr-md q-mb-md q-mr-sm" style="height: 125px;">
+              <div v-for="i in 3" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+                <div class="col-3 flex items-center">
+                  <span class="imgs q-mr-lg flex items-center">
+                    <img src="statics/coins_icons/eth2.png" class="q-mr-md" alt=""> <span class="pair text-bold">ETH</span>
+                  </span>
+                </div>
+                <div class="col col-3"><span>7.1439</span></div>
+                <div class="col col-3"><span>$395.24</span></div>
+                <div class="col col-3"><span>$2,823.58</span></div>
+              </div>
+            </q-scroll-area>
+          </div> -->
+          <div class="desktop-card-style current-investments explore-opportunities q-mb-md">
             <h4 class="q-pl-md">Explore Opportunities</h4>
             <div class="header-table-col row q-pl-md">
               <div class="col-1"><h3>#</h3></div>
@@ -16,7 +74,7 @@
               <div class="col-2"><h3>Net ROI(1mo)</h3></div>
               <div class="col-2"></div>
             </div>
-            <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 350px;">
+            <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 125px;">
               <div v-for="i in 10" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
                 <div class="col-1 flex items-center">
                   <strong>{{i}}</strong>
@@ -47,78 +105,89 @@
                   </span>
                 </div>
                 <div class="col-2 flex justify-end">
-                  <q-btn unelevated @click="openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
+                  <q-btn unelevated @click="openDialog = true" class="qbtn-custom full-width q-pl-xs q-pr-xs q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
                 </div>
               </div>
             </q-scroll-area>
           </div>
-        </div>
-        <div class="col col-md-5 q-pr-md">
-          <!-- <div class="desktop-card-style account-overview q-mb-sm">
-            <div class="row">
-              <div class="col-8">
-                <h4 class="q-pl-md">Account overview</h4>
-                <div class="q-pl-md">Total Assets : $343.3482</div>
-                <div class="q-pl-md">Net Worth : $343.3482</div>
-              </div>
-              <div class="col-4">
-                <img src="statics/liquidity_pool.png" class="full-width q-pt-sm" alt="">
-              </div>
-            </div>
-          </div> -->
-          <!-- <div class="desktop-card-style wallet-snapshot q-mb-sm" style="background: url(statics/header_bg.png) no-repeat; background-position: 20% 72%; background-size: 100%;">
-            <div class="flex justify-between items-center q-pt-sm q-pb-sm">
-              <h3 class="text-white q-pl-md">Wallet Snapshot</h3>
-              <div class="text-white q-pr-md amount flex items-center">
-                <span class="vtx q-pr-md">425.17 VTX</span>
-                <span>28.35 USD</span>
-              </div>
-            </div>
-          </div> -->
-          <!-- <div class="desktop-card-style transaction-history q-mb-sm">
-            <h4 class="q-pl-md q-pt-md flex justify-between items-center">
-              Transaction History of pool
-              <q-btn unelevated class="qbtn-download q-mr-md" color="black" text-color="white" label="Download CSV" />
+          <div class="desktop-card-style yearn-finance q-mb-md">
+            <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
+              Convert 100 ETH to USDC <q-icon name="arrow_right_alt" /> <div class="flex justify-between items-center"><img src="statics/media/yearn-finance.png" alt=""> <strong>21.0528 %<b>yearn.finance</b></strong></div>
+              <q-btn unelevated class="qbtn-download q-mr-md" color="black" text-color="white" label="Confirm" />
             </h4>
-            <transactionsSection />
-          </div> -->
+          </div>
         </div>
-        <div class="col col-md-7">
-          <!-- <div class="desktop-card-style current-investments q-mb-sm">
-            <h4 class="q-pl-md">Current Investments</h4>
-            <div class="header-table-col row q-pl-md">
-              <div class="col-3"><h3>Liquidity Pools</h3></div>
+        <div class="col col-7 q-pr-md">
+          <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
+            <h4 class="q-pl-md">Investments - $1,846.31</h4>
+            <div class="header-table-col row q-pl-md q-pr-lg">
+              <div class="col-4"><h3>Asset</h3></div>
+              <div class="col-4"><h3>Balance</h3></div>
               <div class="col-4"><h3>Value</h3></div>
             </div>
-            <q-scroll-area :visible="true" class="q-pr-lg q-mb-md q-mr-sm" style="height: 200px;">
-              <div v-for="i in 10" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
-                <div class="col-3 flex items-center">
-                  <span class="imgs q-mr-lg">
-                    <img src="statics/coins_icons/eth2.png" alt="">
-                    <img src="statics/coins_icons/bat.png" alt="">
-                  </span>
-                  <span class="column pairs">
-                    <span class="pair">ETH / BAT</span>
-                    <span class="value">Uniswap V1</span>
+            <q-scroll-area :visible="true" class="q-pr-md q-mb-md q-mr-sm" style="height: 120px;">
+              <div v-for="i in 4" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+                <div class="col col-4 flex items-center">
+                  <span class="imgs q-mr-lg flex items-center">
+                    <img src="statics/coins_icons/eth2.png" class="q-mr-md" alt=""> <span class="pair text-bold">Maker Vault #279922</span>
                   </span>
                 </div>
-                <div class="col-5">
-                  <span class="column pairs">
-                    <span class="pair">ETH / BAT</span>
-                    <span class="value">0.12 ETH / 87.37 BAT</span>
-                  </span>
-                </div>
-                <div class="col-4 q">
-                  <q-btn unelevated class="qbtn-custom q-mr-sm" color="black" text-color="white" label="Rebalance" />
-                  <q-btn unelevated class="qbtn-custom q-mr-sm" color="black" text-color="white" label="Withdraw" />
-                  <q-btn unelevated class="qbtn-custom" color="black" text-color="white" label="Add" />
-                </div>
+                <div class="col col-4"><span>-</span></div>
+                <div class="col col-4"><span>$1,823.58</span></div>
               </div>
             </q-scroll-area>
-          </div> -->
+          </div>
+        </div>
+        <div class="col col-5">
+          <div class="desktop-card-style current-investments wallet-col deposits-col q-mb-md">
+            <h4 class="q-pl-md">Deposits - $5,846.31</h4>
+            <div class="header-table-col row q-pl-md q-pr-lg">
+              <div class="col-3"><h3>Asset</h3></div>
+              <div class="col-3"><h3>Balance</h3></div>
+              <div class="col-3"><h3>APY</h3></div>
+              <div class="col-3"><h3>Value</h3></div>
+            </div>
+            <q-scroll-area :visible="true" class="q-pr-md q-mb-md q-mr-sm" style="height: 125px;">
+              <div v-for="i in 3" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+                <div class="col-3 flex items-center">
+                  <span class="imgs q-mr-lg flex items-center">
+                    <img src="statics/coins_icons/eth2.png" class="q-mr-md" alt=""> <span class="pair text-bold">yDAI</span>
+                  </span>
+                </div>
+                <div class="col col-3"><span>7.1439</span></div>
+                <div class="col col-3"><span>-</span></div>
+                <div class="col col-3"><span>$2,823.58</span></div>
+              </div>
+            </q-scroll-area>
+          </div>
         </div>
       </div>
-      <AddLiquidityDialog :open="openDialog" />
+      <div class="row">
+        <div class="col col-7 q-pr-md">
+          <div class="desktop-card-style current-investments wallet-col debt-col q-mb-sm">
+            <h4 class="q-pl-md">Debt - $1,846.31</h4>
+            <div class="header-table-col row q-pl-md q-pr-lg">
+              <div class="col-4"><h3>Asset</h3></div>
+              <div class="col-4"><h3>Balance</h3></div>
+              <div class="col-4"><h3>Value</h3></div>
+            </div>
+            <q-scroll-area :visible="true" class="q-pr-md q-mb-md q-mr-sm" style="height: 120px;">
+              <div v-for="i in 1" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+                <div class="col col-4 flex items-center">
+                  <span class="imgs q-mr-lg flex items-center">
+                    <img src="statics/coins_icons/eth2.png" class="q-mr-md" alt=""> <span class="pair text-bold">Maker Vault #279922</span>
+                  </span>
+                </div>
+                <div class="col col-4"><span>-</span></div>
+                <div class="col col-4"><span>$1,823.58</span></div>
+              </div>
+            </q-scroll-area>
+          </div>
+        </div>
+      </div>
+      <q-dialog v-model="openDialog">
+        <AddLiquidityDialog />
+      </q-dialog>
     </div>
     <div v-else class="standard-content">
       <h2 class="standard-content--title flex justify-center"><q-btn flat unelevated class="btn-align-left" text-color="black" icon="keyboard_backspace" /> Liquidity pool </h2>
@@ -131,7 +200,6 @@
 // import EosWrapper from '@/util/EosWrapper'
 import { CruxPay } from '@cruxpay/js-sdk'
 import HD from '@/util/hdwallet'
-import Lib from '@/util/walletlib'
 import { osName } from 'mobile-device-detect'
 // import TransactionsSection from '../../components/Verto/TransactionsSection'
 import AddLiquidityDialog from '../../components/Verto/AddLiquidityDialog'
@@ -142,6 +210,7 @@ let cruxClient
 export default {
   components: {
     QScrollArea,
+    // TransactionsSection,
     // desktop components
     AddLiquidityDialog
   },
@@ -202,13 +271,19 @@ export default {
     }
   },
   updated () {
-    console.log('openDialog', this.openDialog)
+    // console.log('openDialog', this.openDialog)
+  },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.getWindowWidth)
   },
   async created () {
+    let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     this.osName = osName
-    console.log('this.osName', this.osName)
+    this.getWindowWidth()
+    window.addEventListener('resize', this.getWindowWidth)
+    // console.log('this.osName', this.osName)
     this.params = this.$store.state.currentwallet.params
-    console.log('this.params', this.params)
+    // console.log('this.params', this.params)
     this.tableData = await this.$store.state.wallets.tokens
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
@@ -217,7 +292,7 @@ export default {
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
     this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
 
-    console.log('this.currentAccount sur la page send', this.currentAccount)
+    // console.log('this.currentAccount sur la page send', this.currentAccount)
 
     if (this.currentAccount.privateKey) {
       this.privateKey.key = this.currentAccount.privateKey
@@ -227,7 +302,7 @@ export default {
     }
 
     this.cruxKey = await HD.Wallet('crux')
-    console.log('crux privateKey', this.cruxKey.privateKey)
+    // console.log('crux privateKey', this.cruxKey.privateKey)
     cruxClient = new CruxPay.CruxClient({
       walletClientName: this.walletClientName,
       privateKey: this.cruxKey.privateKey
@@ -237,6 +312,9 @@ export default {
   mounted () {
   },
   methods: {
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({
@@ -247,126 +325,6 @@ export default {
         type: 'warning',
         position: 'top'
       })
-    },
-    checkMemo () {
-      if (this.sendMemo.length > 0) {
-        this.$refs.sendMemo.error = false
-      } else if (this.sendTo.toLowerCase() === 'stexofficial') {
-        this.$refs.sendMemo.error = true
-      }
-    },
-    async checkTo () {
-      this.toError = false
-
-      if (this.validateEmail(this.sendTo)) {
-        try {
-          this.sendToResolved = (await cruxClient.resolveCurrencyAddressForCruxID(this.sendTo, this.currentAccount.chain)).addressHash
-        } catch (error) {
-          console.log('checkTo:', error)
-          this.sendToResolved = ''
-
-          if (error.errorCode === 1002) {
-            // ID does not exist
-            this.toError = true
-            this.toErrorMessage = 'This Verto ID does not exist'
-          } else if (error.errorCode === 1005) {
-            // Currency address not available for user
-            this.toError = true
-            this.toErrorMessage = this.currentAccount.chain.toUpperCase() + ' address not set for that user'
-          }
-        }
-
-        console.log('sendToResolved', this.sendToResolved)
-      } else {
-        // check for valid eos name
-        this.sendToResolved = this.sendTo
-        this.invalidEosName = false
-        if (this.sendTo.length === 12) {
-          if (this.sendTo.toLowerCase() === 'stexofficial') {
-            this.memoError = true
-          }
-        } else {
-          this.memoError = false
-        }
-      }
-    },
-    validateEmail (email) {
-      var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      return re.test(String(email).toLowerCase())
-    },
-    async getMaxBalance () {
-      this.sendAmount = await this.currentAccount.amount
-    },
-    goChangePassword: function () {
-      this.$router.push({ path: '/change-password' })
-    },
-    openModalFun: function (item) {
-      if (this.currentAccount.privateKey) {
-        this.sendTokens()
-        this.openModalProgress = true
-      } else {
-        this.getPassword = true
-        this.openModal = true
-      }
-    },
-    checkPrivateKeyPassword () {
-      const privateKeyEncrypted = JSON.stringify(this.currentAccount.privateKeyEncrypted)
-      this.privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
-      if (this.privateKey.success) {
-        this.invalidPrivateKeyPassword = false
-      } else {
-        this.invalidPrivateKeyPassword = true
-        return false
-      }
-    },
-    async sendTokens () {
-      this.unknownError = false
-      this.invalidEosName = false
-      this.transStatus = 'Transaction in progress'
-
-      console.log(
-        'chainID', this.params.chainID,
-        'tokenID', this.params.tokenID,
-        'name', this.params.accountName,
-        'to', this.sendToResolved,
-        'value', this.sendAmount,
-        'memo', this.sendMemo,
-        'key', this.privateKey.key,
-        'contract', this.currentAccount.contract)
-
-      Lib.send(
-        this.params.chainID,
-        this.params.tokenID,
-        this.params.accountName,
-        this.sendToResolved,
-        this.sendAmount,
-        this.sendMemo,
-        this.privateKey.key,
-        this.currentAccount.contract
-      ).then(result => {
-        if (result.success) {
-          this.getPassword = false
-          this.transErrorDialog = false
-          this.openModal = false
-          this.openModalProgress = false
-          this.transSuccessDialog = true
-          this.transactionLink = result.message
-          this.transStatus = 'Sent Successfully'
-        } else {
-          this.unknownError = true
-          this.ErrorMessage = result.message
-          this.transErrorDialog = true
-          this.openModal = false
-          this.openModalProgress = false
-        }
-      })
-    },
-    toSummary () {
-      if (!this.invalidPrivateKeyPassword) {
-        this.formatedAmount = this.formatAmountString()
-        this.sendTokens()
-        this.openModalProgress = true
-      }
     },
     hideModalFun: function () {
       this.openModal = false
@@ -404,7 +362,58 @@ export default {
   }
   .desktop-card-style{
     // height: 100%;
+    &.account-overview{
+      .body-table-col{
+        cursor: pointer;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        &:hover{
+          background-color: rgba(black, .02);
+        }
+      }
+      .balance{
+        padding-left: 5px;
+      }
+      .token{
+        img{
+          max-width: 25px;
+          border-radius: 25px;
+        }
+      }
+      h4{
+        margin-bottom: 10px;
+      }
+      .header-table-col{
+        h3{
+          font-weight: $bold;
+          color: #7272FA;
+          font-size: 16px;
+          line-height: 20px;
+          margin: 0px;
+          // border-bottom: 1px solid rgba(black, .03);
+          padding-bottom: 8px;
+          margin-bottom: -10px;
+        }
+      }
+    }
     &.current-investments{
+      &.wallet-col{
+        h4{
+          margin-bottom: -8px;
+        }
+        .body-table-col{
+          .imgs{
+            img{
+              margin-right: 10px !important;
+            }
+          }
+        }
+        .header-table-col{
+          h3{
+            font-size: 16px;
+            line-height: 20px;
+          }
+        }
+      }
       h4{
         margin-bottom: -20px;
       }
@@ -460,7 +469,23 @@ export default {
         }
       }
     }
-    &.transaction-history{
+    &.yearn-finance{
+      img{
+        width: 30px;
+        margin-right: 10px;
+      }
+      strong{
+        position: relative;
+        margin-top: -13px;
+        b{
+          position: absolute;
+          right: 0px;
+          bottom: -5px;
+          font-size: 12px;
+          font-weight: $regular;
+          line-height: 20px;
+        }
+      }
       h4{
         margin-bottom: 0px;
       }
@@ -468,6 +493,8 @@ export default {
         border-radius: 30px;
         height: 34px;
         background: #EFF5F9 !important;
+        padding-left: 10px;
+        padding-right: 10px;
         /deep/ .q-btn__wrapper{
           min-height: unset;
           padding: 0px 10px;
@@ -486,6 +513,8 @@ export default {
       }
     }
     &.wallet-snapshot{
+      padding-bottom: 8px;
+      padding-top: 8px;
       h3{
         font-size: 16px;
         font-weight: $bold;
@@ -501,8 +530,30 @@ export default {
         position: relative;
         line-height: 40px;
         font-family: $Titillium;
-        .vtx{
-          font-size: 20px;
+        .interest_rate{
+          font-size: 16px;
+          font-weight: $regular;
+          position: relative;
+          margin-top: -15px;
+          .thicker{
+            position: relative;
+            top: 7px;
+            margin-right: 10px;
+          }
+          .p-abs{
+            position: absolute;
+            bottom: -17px;
+            right: 17px;
+            font-size: 12px;
+            font-weight: $regular;
+            opacity: .7;
+          }
+          img{
+            width: 30px;
+            margin-right: 6px;
+            position: relative;
+            top: 7px;
+          }
         }
       }
     }
