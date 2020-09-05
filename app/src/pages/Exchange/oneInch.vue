@@ -598,6 +598,7 @@
               self.spinnervisible = false
 
               let transactionObject = {
+                from: self.ethAccount.key,
                 to: result.data.to,
                 value: self.web3.utils.toHex(result.data.value),
                 gas: self.web3.utils.toHex(result.data.gas),
