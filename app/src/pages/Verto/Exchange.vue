@@ -1223,6 +1223,7 @@ export default {
           self.optionsFrom.push({
             label: token.name.toLowerCase(),
             value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
+            key: token.key,
             image: token.icon,
             type: token.type
           })
@@ -1231,6 +1232,7 @@ export default {
           self.optionsTo.push({
             label: token.name.toLowerCase(),
             value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
+            key: token.key,
             image: token.icon,
             type: token.type
           })
@@ -1294,30 +1296,31 @@ export default {
     },
     orderVTX () {
       // check balance then...
-      if (2 > 1) {
+      let eosBal = Lib.balance('eos', this.toCoin.key, 'eos')
+
+      if (eosBal.amount < this.destinationCoinAmount) {
         setTimeout(() => { self.orderVTX() }, 1000)
       } else {
         Lib.send(
           'eos',
           'eos',
-          this.currentAccount.name,
+          this.toCoin.value,
           'newdexpublic',
-          this.sendAmount,
+          this.destinationCoinAmount,
           '{"type":"buy-market","symbol":"volentixgsys-vtx-eos","price":"0.00000","channel":"dapp","ref":"verto"}',
           this.privateKey.key,
-          this.currentAccount.contract
+          'eosio.token'
         ).then(result => {
-          // console.log('result', result)
-          if (result.success) {
-            this.transactionLink = result.message
-            this.transStatus = 'Sent Successfully'
-          } else {
-            this.ErrorMessage = result.message
-            this.transErrorDialog = true
-          }
+          console.log('send result', result)
+          // if (result.success) {
+          //   this.transactionLink = result.message
+          //   this.transStatus = 'Sent Successfully'
+          // } else {
+          //   this.ErrorMessage = result.message
+          //   this.transErrorDialog = true
+          // }
         })
       }
-
     },
     postOrder () {
       const self = this
