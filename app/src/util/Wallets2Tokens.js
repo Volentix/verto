@@ -39,7 +39,7 @@ class Wallets2Tokens {
       } else {
         wallet.to = '/verto/wallets/' + wallet.type + '/' + wallet.type + '/' + wallet.key
         wallet.chain = wallet.type
-        wallet.disabled = true
+        wallet.disabled = wallet.type !== 'eth'
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
         // wallet.vespucciScore = vespucciScore
       }
@@ -123,7 +123,7 @@ class Wallets2Tokens {
           })
         })
       } else if (wallet.type === 'eth') {
-        // wallet.key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
+        wallet.key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
         axios.get('https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
           let ethplorer = res.data
           self.tableData.filter(w => w.key === wallet.key).map(eth => {
