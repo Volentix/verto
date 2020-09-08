@@ -168,9 +168,9 @@
                                   </span>
                                 </div>
                               </div>
-                              <div class="rate-value flex justify-end">
+                              <div v-if="rateData !== null" class="rate-value flex justify-end">
                                 <span class="label">Rate {{fromCoinType.toUpperCase() + '&nbsp;'}} </span>
-                                <span class="value"> = {{ rateData !== null ? rateData.rate : '0.03254'}} {{toCoinType.toUpperCase()}}</span>
+                                <span class="value"> = {{ rateData.rate }} {{toCoinType.toUpperCase()}}</span>
                               </div>
                               <br>
                             </div>
@@ -356,10 +356,17 @@
                                     <li><span>{{exchangeLabel}}</span></li>
                                   </ul>
                                 </div>
-                                <q-input v-model="exchangeAddress.address" readonly rounded class="input-input pr80" outlined color="purple" type="text">
+                                <q-input v-model="exchangeAddress.address" prefix="Excahnge Address : " readonly rounded class="input-input pr80" outlined color="purple" type="text">
                                   <template v-slot:append>
                                     <div class="flex justify-end">
                                       <q-btn flat unelevated text-color="grey" @click="copyToClipboard(exchangeAddress.address , 'Exchange Address')" round class="btn-copy" icon="o_file_copy" />
+                                    </div>
+                                  </template>
+                                </q-input>
+                                <q-input v-if="exchangeAddress.tag !== null" v-model="exchangeAddress.tag" prefix="Excahnge Tag : " readonly rounded class="input-input q-mt-md pr80" outlined color="purple" type="text">
+                                  <template v-slot:append>
+                                    <div class="flex justify-end">
+                                      <q-btn flat unelevated text-color="grey" @click="copyToClipboard(exchangeAddress.tag , 'Exchange Tag')" round class="btn-copy" icon="o_file_copy" />
                                     </div>
                                   </template>
                                 </q-input>
@@ -1087,6 +1094,7 @@ export default {
     })
     // console.log('this.$route.params', this.$route.params.depositCoin)
     if (this.$route.params.depositCoin !== undefined) {
+      // console.log(this.$route.params.depositCoin, this.$route.params.destinationCoin)
       this.depositCoin = this.$route.params.depositCoin
       this.checkGetPairs()
       this.checkToGetPairs()
@@ -1553,6 +1561,9 @@ export default {
           /deep/ .q-field__control{
             height: 50px;
             min-height: unset;
+            @media screen and (min-width: 1024px) {
+              margin-left: 20px;
+            }
           }
           .btn-copy{
             // height: 30px;
