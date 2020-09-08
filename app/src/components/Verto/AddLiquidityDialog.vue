@@ -5,10 +5,20 @@
             <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
         <q-card-section class="text-h6">
-            <div class="text-h6 q-mb-md q-pl-sm flex items-center"><h4 class="lab-title q-pr-md">Available ETH:</h4> 0.3482</div>
+            <div class="text-h6 q-mb-md q-pl-sm flex items-center">
+              <h4 class="lab-title q-pr-md">Available ETH:</h4> 0
+              <span class="link-to-exchange" @click="goToExchange">Get ETH</span>
+            </div>
             <div class="row">
             <div class="col col-3">
-                <q-input class="input-input" filled rounded outlined color="purple" value="0.1" suffix="MAX" />
+                <!-- <q-input class="input-input" filled rounded outlined color="purple" value="0.1" suffix="MAX" /> -->
+                <q-input v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number">
+                  <template v-slot:append>
+                    <div class="flex justify-end items-center q-pb-xs">
+                      <q-btn color="white" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat text-color="black" label="Max" />
+                    </div>
+                  </template>
+                </q-input>
             </div>
             <div class="col col-3 q-ml-md">
                 <q-select class="select-input" filled rounded outlined color="purple" value="ETH" :options="['ETH','VTX','EOS']" />
@@ -17,21 +27,24 @@
             <hr style="opacity: .1" class="q-mt-lg">
             <h4 class="lab-title">Choose your Allocation</h4>
             <div class="row">
-            <div class="col col-3 q-pr-md">
+            <div class="col col-4 q-pr-md">
                 <strong class="lab-sub q-pl-md">Platform</strong>
-                <q-select class="select-input" filled rounded outlined color="purple" value="Balancer" :options="['Balancer','Balancer1','Balancer2']" />
+                <q-select class="select-input full-width" filled v-model="platform" color="purple" value="Balancer" :options="['Curve','Uniswap v2','Balancer', 'yEarn']" />
             </div>
-            <div class="col col-3 q-pr-md">
+            <div class="col col-4 q-pr-md">
                 <strong class="lab-sub q-pl-md">Pool</strong>
-                <q-select class="select-input" filled rounded outlined color="purple" value="Balancer" :options="['RPL/WETH','Balancer1','Balancer2']" />
+                <q-select class="select-input full-width" filled v-model="pool" color="purple" value="Balancer" :options="['ETH/USDT','USDC/ETH','DAI/ETH']" />
             </div>
-            <div class="col col-3 q-pr-md text-center">
+            <!-- <div class="col col-3 q-pr-md text-center">
                 <strong class="lab-sub q-pl-md text-center">Allocation</strong>
                 <div class="lab-value flex flex-center text-center q-pl-lg q-pr-sm">90 % RPL 10% WETH</div>
-            </div>
-            <div class="col col-3 q-pr-md text-center">
-                <strong class="lab-sub q-pl-md text-center">Output</strong>
-                <div class="lab-value flex flex-center text-center q-pl-lg q-pr-sm">11.5765 RPL 0.0099 WETH</div>
+            </div> -->
+            <div v-if="pool === 'DAI/ETH'" class="col col-4 q-pl-md">
+                <strong class="lab-sub q-pl-lg">Approx. Pool Output</strong>
+                <div class="lab-value output column q-pl-lg q-pr-sm">
+                  <span class="flex flex-start q-mb-sm"><img src="https://zapper.fi/images/ETH-icon.png" class="q-mr-sm" alt=""> 1.4922 ETH</span>
+                  <span class="flex flex-start"><img src="https://zapper.fi/images/DAI-icon.png" class="q-mr-sm" alt=""> 703.0724 DAI</span>
+                </div>
             </div>
             </div>
             <!-- <hr style="opacity: .1" class="q-mt-lg">
@@ -60,7 +73,9 @@ export default {
   name: 'AddLiquidityDialog',
   data () {
     return {
-
+      platform: '',
+      pool: '',
+      sendAmount: 0
     }
   },
   updated () {
@@ -68,12 +83,37 @@ export default {
   created () {
   },
   methods: {
+    getMaxBalance () {
+      this.sendAmount = 2.98
+    },
+    goToExchange () {
+      // console.log('this.depositCoin', this.depositCoin)
+      let depositCoin = {
+        image: 'https://files.coinswitch.co/public/coins/btc.png',
+        label: 'Bitcoin',
+        value: 'btc'
+      }
+      let destinationCoin = {
+        image: 'https://files.coinswitch.co/public/coins/eth.png',
+        label: 'Ethereum',
+        value: 'eth'
+      }
+      this.$router.push({ path: '/verto/exchange/:coinToSend/:coinToReceive', name: 'exchange-v3', params: { depositCoin: depositCoin, destinationCoin: destinationCoin } })
+    }
   }
 }
 </script>
 
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
+  .link-to-exchange{
+    text-decoration: underline;
+    color: blue;
+    padding-left: 15px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: $bold;
+  }
   .modal-dialog-wrapper{
     .qbtn-start{
       border-radius: 30px;
@@ -121,6 +161,12 @@ export default {
       font-size: 16px;
       color: #627797;
       line-height: 24px;
+      &.output{
+        font-size: 12px;
+      }
+      img{
+        max-width: 25px;
+      }
     }
     .input-input{
       height: 50px;
@@ -154,7 +200,7 @@ export default {
       }
     }
     .select-input{
-      border-radius: 100px !important;
+      // border-radius: 100px !important;
       $height: 50px;
       height: $height;
       /deep/ .q-field__marginal{
@@ -162,7 +208,7 @@ export default {
         min-height: unset;
       }
       /deep/ .q-field__control{
-        border-radius: 50px;
+        // border-radius: 50px;
         height: $height;
         min-height: unset;
         .q-field__native{
