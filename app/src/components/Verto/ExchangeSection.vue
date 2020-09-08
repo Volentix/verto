@@ -232,7 +232,7 @@ export default {
     //   })
 
     //   self.depositCoinUnfilter = self.depositCoinOptions
-    //console.log('depositCoinOptions', self.depositCoinOptions)
+    // console.log('depositCoinOptions', self.depositCoinOptions)
     // })
   },
   methods: {
