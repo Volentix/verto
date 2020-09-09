@@ -129,7 +129,7 @@ export default {
     // async loadTableDataWallets () {
     //   this.tableDataWallets = this.$store.state.currentwallet.config.keys
     // let tableDataWalletsCustom = []
-    //console.log('tableDataWalletsCustom', tableDataWalletsCustom)
+    // console.log('tableDataWalletsCustom', tableDataWalletsCustom)
     // this.tableDataWallets = tableDataWalletsCustom
     // },
 

@@ -21,37 +21,37 @@
               <div class="col-3"><h3>Available pools</h3></div>
               <div class="col-2"><h3>Liquidity</h3></div>
               <div class="col-2"><h3>Net ROI(1mo)</h3></div>
-              <div class="col-2"><h3>Net ROI(1mo)</h3></div>
+              <div class="col-2"><h3>ROI(1mo)</h3></div>
               <div class="col-2"></div>
             </div>
             <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 392px;">
-              <div v-for="i in 10" :key="i" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
+              <div v-for="(explore, index) in exploreFakeData" :key="index" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
                 <div class="col-1 flex items-center">
-                  <strong>{{i}}</strong>
+                  <strong>{{(index + 1)}}</strong>
                 </div>
                 <div class="col-3 flex items-center">
                   <span class="imgs q-mr-lg">
-                    <img src="statics/coins_icons/eth2.png" alt="">
-                    <img src="statics/coins_icons/bat.png" alt="">
+                    <img v-if="explore.img1" :src="explore.img1" alt="">
+                    <img v-if="explore.img2" :src="explore.img2" alt="">
                   </span>
                   <span class="column pairs">
-                    <span class="pair">ETH / BAT</span>
-                    <span class="value">Uniswap V1</span>
+                    <span class="pair">{{explore.pair}}</span>
+                    <span class="value">{{explore.pool}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-sm">
                   <span class="column pairs">
-                    <span class="pair">$10,918,987</span>
+                    <span class="pair">{{explore.liquidity}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-md">
                   <span class="column pairs">
-                    <span class="value">N/A</span>
+                    <span class="value">{{explore.netROI}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-lg">
                   <span class="column pairs">
-                    <span class="value">N/A</span>
+                    <span class="value">{{explore.ROI}}</span>
                   </span>
                 </div>
                 <div class="col-2 flex justify-end">
@@ -69,6 +69,9 @@
           <LiquidityPoolsSection />
         </div>
       </div>
+      <q-dialog v-model="openDialog">
+        <AddLiquidityDialog />
+      </q-dialog>
     </div>
     <div class="mobile-version" v-else>
       <profile-header class="marg" version="type2222" />
@@ -108,6 +111,7 @@ import ChainToolsSection from '../../components/Verto/ChainToolsSection'
 import LiquidityPoolsSection from '../../components/Verto/LiquidityPoolsSection'
 import MakeVTXSection from '../../components/Verto/MakeVTXSection'
 import ExchangeSection from '../../components/Verto/ExchangeSection'
+import AddLiquidityDialog from '../../components/Verto/AddLiquidityDialog'
 
 // import VespucciRatingSection from '../../components/Verto/VespucciRatingSection'
 import { QScrollArea } from 'quasar'
@@ -137,6 +141,7 @@ export default {
     CardMakeVTX,
     CardWPS,
     // desktop components
+    AddLiquidityDialog,
     AppsSection,
     StartNodeSection,
     ChainToolsSection,
@@ -152,6 +157,54 @@ export default {
       cruxKey: {},
       osName: '',
       screenSize: 0,
+      openDialog: false,
+      exploreFakeData: [
+        {
+          img1: 'https://zapper.fi/images/Y-icon.png',
+          img2: '',
+          pair: 'Y Curve',
+          pool: 'Curve',
+          liquidity: '$681,655,993',
+          netROI: '0.30%',
+          ROI: '0.30%'
+        },
+        {
+          img1: 'https://zapper.fi/images/ETH-icon.png',
+          img2: 'https://zapper.fi/images/USDT-icon.png',
+          pair: 'ETH / USDT',
+          pool: 'Uniswap V2',
+          liquidity: '$211,413,116',
+          netROI: '7.66%',
+          ROI: '18.42%'
+        },
+        {
+          img1: 'https://zapper.fi/images/sBTC-icon.png',
+          img2: '',
+          pair: 'sBTC Curve',
+          pool: 'Curve',
+          liquidity: '$190,773,204',
+          netROI: '0.14%',
+          ROI: '0.14%'
+        },
+        {
+          img1: 'https://zapper.fi/images/USDC-icon.png',
+          img2: 'https://zapper.fi/images/ETH-icon.png',
+          pair: 'USDC / ETH',
+          pool: 'Uniswap V2',
+          liquidity: '$190,399,817',
+          netROI: '5.50%',
+          ROI: '16.56%'
+        },
+        {
+          img1: 'https://zapper.fi/images/SUSHI-icon.png',
+          img2: 'https://zapper.fi/images/ETH-icon.png',
+          pair: 'SUSHI / ETH',
+          pool: 'Uniswap V2',
+          liquidity: '$172,518,133',
+          netROI: 'N/A',
+          ROI: 'N/A'
+        }
+      ],
       walletClientName: 'verto' // should be 'verto' when in prod
     }
   },
@@ -336,6 +389,7 @@ export default {
         }
         .imgs{
           margin-top: 5px;
+          min-width: 30px;
           img{
             border-radius: 40px;
             height: 25px;
