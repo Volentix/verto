@@ -48,6 +48,8 @@ class Wallets2Tokens {
       if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'bnb' || wallet.type === 'dash') {
         Lib.balance(wallet.type, wallet.key).then(result => {
           // console.log('libwallet', result)
+          // static value for recording video purpos
+          // wallet.amount = wallet.type === 'btc' ? '0.23000000' : result.amount
           wallet.amount = result.amount
           wallet.usd = result.usd
         })
