@@ -280,6 +280,11 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   height: 100vh !important;
+  max-width: 800px;
+  margin: auto;
+  @media screen and (min-width: 768px) {
+    padding-top: 30px;
+  }
   &--title{
     font-size: 27px;
     font-weight: $bold;
@@ -310,6 +315,9 @@ export default {
   }
   &--body{
     min-height: 90vh;
+    @media screen and (min-width: 768px) {
+      min-height: 50vh;
+    }
     .diclaimer{
       strong{
         display: block;
