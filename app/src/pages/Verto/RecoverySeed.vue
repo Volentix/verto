@@ -235,6 +235,11 @@ export default {
   flex-direction: column;
   // justify-content: space-between;
   min-height: 100vh !important;
+  max-width: 800px;
+  margin: auto;
+  @media screen and (min-width: 768px) {
+    padding-top: 30px;
+  }
   &--title{
     font-size: 22px;
     font-weight: $bold;
