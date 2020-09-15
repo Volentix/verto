@@ -2,7 +2,8 @@
  
         <q-stepper animated :vertical="$q.screen.lt.sm" v-model="step" ref="stepper" class="stepper--desktop" alternative-labels color="primary" animated flat >
           <q-step :name="1" prefix="1" default  title="Select Coin to Send" :done="step > 1">
-               <q-select
+               <span class="sublab-input">Step 1</span><span class="tlab-input">Select Coin to Send</span>
+                <q-select
                   class="select-input"
                   light
                   separator
@@ -10,6 +11,7 @@
                   outlined
                   rounded
                   v-model="depositCoin" 
+                  @input="swapData.error = false"
                   @filter="filterDepositCoin" 
                   :disabled="!depositCoinOptions" 
                   :loading="!depositCoinOptions" 
@@ -50,8 +52,8 @@
            </q-step>
 
        <q-step :name="2" prefix="2" default  title="Select Coin to Receive" :done="step > 2">
-         <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn absolute-top-right"/>
-         <q-select
+           <span class="sublab-input">Step 2</span><span class="tlab-input">Select Coin to Receive</span>
+            <q-select
             class="select-input"
             light
             separator
@@ -95,12 +97,13 @@
          </div>
       
         <q-stepper-navigation  class="flex justify-end">
+          <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
           <q-btn @click="getSwapQuote()" :loading="spinnervisible" :disable="spinnervisible"  color="deep-purple-14" class="--next-btn q-px-md" rounded label="Next" />
         </q-stepper-navigation>
       </q-step>
 
        <q-step :name="3" prefix="3" default  title="Select Quantity" :done="step > 3">
-        <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn absolute-top-right"/>
+        <span class="sublab-input">Step 3</span><span class="tlab-input">Select Quantity</span>
         <div class="standard-content--body">
           <div class="standard-content--body__form">
             <div class="pay-get-wrapper column justify-between">
@@ -131,6 +134,7 @@
             <br>
           </div>
           <q-stepper-navigation  class="flex justify-end">
+            <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
             <q-btn @click="$refs.stepper.next()" :disable="spinnervisible" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
           </q-stepper-navigation>
         </div>
@@ -193,9 +197,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-
-        
-           <q-stepper-navigation  v-show="true" class="flex justify-end">
+    <q-stepper-navigation  v-show="true" class="flex justify-end">
             <div class="row full-width" style="padding-left: 6px; margin-top: -20px;">
               <div class="q-gutter-sm">
                 <q-btn color="white" flat @click="swapData.showDisclaimerWrapper = true" class="lower bold" text-color="black" label="Read the disclaimer" />
@@ -208,8 +210,8 @@
               <q-btn  :disable="!swapData.termsAccepted" @click="doSwap()" flat class="action-link next" color="black" text-color="white">
                 <span v-if="depositCoin" class="label">Exchange {{ depositCoin.value.toUpperCase() }} <q-icon name="arrow_forward" color="white" class="left-icon" /> {{ destinationCoin.value.toUpperCase() }}</span>
               </q-btn>
-            </div>
-          </q-stepper-navigation>
+        </div>
+    </q-stepper-navigation>
        </q-step>
     </q-stepper>
 </template>
@@ -472,7 +474,7 @@
     watch: {
       step(newVal, oldVal) {
         //Remove selected coin from array of receiving coins 
-        if (newVal == oldVal + 1) {
+        if (newVal == 2) {
           this.destinationCoinOptions = this.destinationCoinUnfilter.filter(o => o.value.toLowerCase() != this.depositCoin.value.toLowerCase())
         }
       },
@@ -721,7 +723,27 @@
     padding-right: 20px;
     background-color: #7272FA !important;
 }
+.tlab-input {
+    font-family: "Titillium Web", sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    color: black;
+    padding-left: 20px;
+    padding-bottom: 25px;
+    display: block;
+    margin-top: 0px;
+    line-height: 17px;
+}
 
-
-
+.sublab-input {
+    font-family: "Titillium Web", sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: #333;
+    padding-left: 20px;
+    padding-bottom: 5px;
+    display: block;
+    margin-top: -50px;
+    line-height: 17px;
+}
 </style>

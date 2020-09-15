@@ -36,7 +36,7 @@
             <div class="flex justify-between items-center q-pt-sm q-pb-sm">
               <h3 class="text-white q-pl-md">Max DeFi Yield</h3>
               <div class="text-white q-pr-md amount flex items-center">
-                <span class="interest_rate q-pr-md flex items-center"><img src="statics/media/USDC-logo.png"  alt=""><strong class="q-pr-md"><span class="thicker">USDC</span></strong> 21.0528 % <b class="p-abs">Interest Rate</b></span>
+                <span class="interest_rate q-pr-md flex items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'"  alt=""><strong class="q-pr-md"><span class="thicker">{{maxDeFiYield.token}}</span></strong> {{maxDeFiYield.roi}} % <b class="p-abs">Interest Rate</b></span>
                 <!-- <span>28.35 USD</span> -->
               </div>
             </div>
@@ -110,9 +110,9 @@
               </div>
             </q-scroll-area>
           </div>
-          <div class="desktop-card-style yearn-finance q-mb-md">
+          <div class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken">
             <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
-              Convert 100 ETH to USDC <q-icon name="arrow_right_alt" /> <div class="flex justify-between items-center"><img src="statics/media/yearn-finance.png" alt=""> <strong>21.0528 %<b>yearn.finance</b></strong></div>
+              Convert {{parseInt(maxToken.amount)}} {{maxToken.type}} to {{maxDeFiYield.token}} <q-icon name="arrow_right_alt" /> <div class="flex justify-between items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'"  alt="">  <strong>${{parseInt(maxToken.usd * maxDeFiYield.roi / 100 + maxToken.usd)}} <b>USD</b></strong></div>
               <q-btn unelevated class="qbtn-download q-mr-md" color="black" text-color="white" label="Confirm" />
             </h4>
           </div>
@@ -216,6 +216,7 @@ export default {
   },
   data () {
     return {
+      maxDeFiYield:{},
       openDialog: false,
       osName: '',
       progressValue: 20,
@@ -267,7 +268,9 @@ export default {
         amount: '',
         contract: '',
         chain: ''
-      }
+      },
+      ethTokens:[],
+      maxToken:false
     }
   },
   updated () {
@@ -284,15 +287,19 @@ export default {
     // console.log('this.osName', this.osName)
     this.params = this.$store.state.currentwallet.params
     // console.log('this.params', this.params)
-    this.tableData = await this.$store.state.wallets.tokens
-    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+    let tableData = await this.$store.state.wallets.tokens
+    this.currentAccount = tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
+    
+    //console.log(this.ethAccount,'ethAccount', tableData)
+    this.ethTokens = tableData.filter(w => w.chain === 'eth' && !isNaN(w.usd))
+    this.maxToken = this.ethTokens.reduce((p, c) => p.usd > c.usd ? p : c);
 
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
     this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
 
-    // console.log('this.currentAccount sur la page send', this.currentAccount)
+     //console.log('this.currentAccount sur la page send', this.currentAccount)
 
     if (this.currentAccount.privateKey) {
       this.privateKey.key = this.currentAccount.privateKey
@@ -309,11 +316,35 @@ export default {
     })
     await cruxClient.init()
   },
-  mounted () {
+  async mounted () {
+    this.getMaxDeFiYield()
   },
   methods: {
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
+    getMaxDeFiYield(){
+       this.$axios.get('https://cors-anywhere.herokuapp.com/https://stats.finance/yearn')
+       .then((result) => {
+       
+        var html = new DOMParser().parseFromString(result.data, "text/html");
+        var prev = 0,
+            data = {};
+        for (let i = 6; i <= 14; i++) {
+            let value = parseFloat(html.querySelectorAll('table tr')[i].innerText.match(/[\d\.]+/)[0])
+            if (value > prev) {
+
+                this.maxDeFiYield = {
+                    roi: value,
+                    token: html.querySelectorAll('table tr')[i].innerText.match(/\(([^)]+)\)/)[1]
+                }
+              prev = value
+            }
+
+        }
+
+         console.log(this.maxDeFiYield)
+       })
     },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
