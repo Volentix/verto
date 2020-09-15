@@ -15,14 +15,14 @@
                   <div class="col-4"><h3>Balance</h3></div>
                 </div>
                 <q-scroll-area :visible="true" class="q-pr-lg q-mb-md q-mr-sm" style="height: 130px;">
-                  <div v-for="i in 3" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+                  <div v-for="token in ethTokens" :key="ethTokens" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
                     <div class="col-5 flex items-center">
                       <span class="token flex items-center">
-                        <img src="statics/coins_icons/eth2.png" class="q-mr-sm" alt=""> <strong>ETH</strong>
+                        <img :src="'https://files.coinswitch.co/public/coins/'+token.type+'.png'" class="q-mr-sm" alt=""> <strong>{{token.type}}</strong>
                       </span>
                     </div>
                     <div class="col-4 q-pl-sm">
-                      <span class="balance">120,8 USD</span>
+                      <span class="balance">{{token.usd.toFixed(3)}} USD</span>
                     </div>
                   </div>
                 </q-scroll-area>
@@ -64,6 +64,8 @@
               </div>
             </q-scroll-area>
           </div> -->
+
+          
           <div class="desktop-card-style current-investments explore-opportunities q-mb-md">
             <h4 class="q-pl-md">Explore Opportunities</h4>
             <div class="header-table-col row q-pl-md">
@@ -74,38 +76,38 @@
               <div class="col-2"><h3>Net ROI(1mo)</h3></div>
               <div class="col-2"></div>
             </div>
-            <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 125px;">
-              <div v-for="i in 10" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+             <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 122px;">
+              <div v-for="(pool, index) in $store.state.investment.pools" :key="index" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
                 <div class="col-1 flex items-center">
-                  <strong>{{i}}</strong>
+                  <strong>{{(index + 1)}}</strong>
                 </div>
                 <div class="col-3 flex items-center">
                   <span class="imgs q-mr-lg">
-                    <img src="statics/coins_icons/eth2.png" alt="">
-                    <img src="statics/coins_icons/bat.png" alt="">
+                    <img v-if="icon" v-for="(icon, index) in pool.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
+      
                   </span>
                   <span class="column pairs">
-                    <span class="pair">ETH / BAT</span>
-                    <span class="value">Uniswap V1</span>
+                    <span class="pair">{{pool.poolName}}</span>
+                    <span class="value">{{pool.platform}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-sm">
                   <span class="column pairs">
-                    <span class="pair">$10,918,987</span>
+                    <span class="pair">${{pool.liquidity}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-md">
                   <span class="column pairs">
-                    <span class="value">N/A</span>
+                    <span class="value">{{pool.netROI}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-lg">
                   <span class="column pairs">
-                    <span class="value">N/A</span>
+                    <span class="value">{{pool.ROI}}</span>
                   </span>
                 </div>
                 <div class="col-2 flex justify-end">
-                  <q-btn unelevated @click="openDialog = true" class="qbtn-custom full-width q-pl-xs q-pr-xs q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
+                  <q-btn unelevated @click="$store.commit('investment/setSelectedPool', pool); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
                 </div>
               </div>
             </q-scroll-area>
@@ -113,7 +115,7 @@
           <div class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken">
             <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
               Convert {{parseInt(maxToken.amount)}} {{maxToken.type}} to {{maxDeFiYield.token}} <q-icon name="arrow_right_alt" /> <div class="flex justify-between items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'"  alt="">  <strong>{{maxDeFiYield.toTokenAmount}} <b>{{maxDeFiYield.token}}</b></strong></div>
-              <q-btn unelevated class="qbtn-download q-mr-md" color="black" text-color="white" label="Confirm" />
+              <q-btn unelevated class="qbtn-download q-mr-md" color="black" text-color="white" label="Confirm" @click="goToExchange()" />
             </h4>
           </div>
         </div>
@@ -323,7 +325,13 @@ export default {
   async mounted () {
     this.getMaxDeFiYield()
   },
-  methods: {
+  methods: { 
+      goToExchange () {
+      // console.log('this.depositCoin', this.depositCoin)
+      let depositCoin = {label: this.maxToken.type , value: this.maxToken.type.toLowerCase(), image: 'https://files.coinswitch.co/public/coins/'+this.maxDeFiYield.token.toLowerCase()+'.png' }
+      let destinationCoin = {label: this.maxDeFiYield.token , value: this.maxDeFiYield.token.toLowerCase() , image: 'https://zapper.fi/images/'+this.maxDeFiYield.token+'-icon.png' }
+      this.$router.push({ path: '/verto/exchange/:coinToSend/:coinToReceive', name: 'exchange-v3', params: { depositCoin: depositCoin, destinationCoin: destinationCoin } })
+    },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
