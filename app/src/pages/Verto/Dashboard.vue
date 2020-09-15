@@ -25,37 +25,37 @@
               <div class="col-2"></div>
             </div>
             <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 392px;">
-              <div v-for="(explore, index) in exploreFakeData" :key="index" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
+              <div v-for="(pool, index) in $store.state.investment.pools" :key="index" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
                 <div class="col-1 flex items-center">
                   <strong>{{(index + 1)}}</strong>
                 </div>
                 <div class="col-3 flex items-center">
                   <span class="imgs q-mr-lg">
-                    <img v-if="explore.img1" :src="explore.img1" alt="">
-                    <img v-if="explore.img2" :src="explore.img2" alt="">
+                    <img v-if="icon" v-for="(icon, index) in pool.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
+      
                   </span>
                   <span class="column pairs">
-                    <span class="pair">{{explore.pair}}</span>
-                    <span class="value">{{explore.pool}}</span>
+                    <span class="pair">{{pool.poolName}}</span>
+                    <span class="value">{{pool.platform}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-sm">
                   <span class="column pairs">
-                    <span class="pair">{{explore.liquidity}}</span>
+                    <span class="pair">${{pool.liquidity}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-md">
                   <span class="column pairs">
-                    <span class="value">{{explore.netROI}}</span>
+                    <span class="value">{{pool.netROI}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-lg">
                   <span class="column pairs">
-                    <span class="value">{{explore.ROI}}</span>
+                    <span class="value">{{pool.ROI}}</span>
                   </span>
                 </div>
                 <div class="col-2 flex justify-end">
-                  <q-btn unelevated @click="openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
+                  <q-btn unelevated @click="$store.commit('investment/setSelectedPool', pool); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
                 </div>
               </div>
             </q-scroll-area>
@@ -70,7 +70,7 @@
         </div>
       </div>
       <q-dialog v-model="openDialog">
-        <AddLiquidityDialog />
+        <AddLiquidityDialog :standalone="false" v-if="$store.state.investment.selectedPool"/>
       </q-dialog>
     </div>
     <div class="mobile-version" v-else>
@@ -154,6 +154,8 @@ export default {
   },
   data () {
     return {
+      pools:[],
+      rawPools:[],
       cruxKey: {},
       osName: '',
       screenSize: 0,
@@ -265,11 +267,26 @@ export default {
         }
       }
     }
+    let config = {
+          headers: {
+            'api-key': '22779110-b1a7-4b99-ac6e-827d0a39ef70',
+           // 'user-agent': ' Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36'
+          }
+        }
+
+ 
+     this.$store.dispatch('investment/getBalancerPools');
+     this.$store.dispatch('investment/getUniswapPools');
+     this.$store.dispatch('investment/getYvaultsPools', config);
+     this.$store.dispatch('investment/getCurvesPools', config);
+   
+    this.$store.commit('investment/setSelectedPool', this.pools[0]);
   },
   methods: {
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     }
+    
   }
 }
 </script>

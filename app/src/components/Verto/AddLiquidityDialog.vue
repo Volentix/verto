@@ -6,13 +6,13 @@
         </q-toolbar>
         <q-card-section class="text-h6">
             <div class="text-h6 q-mb-md q-pl-sm flex items-center">
-              <h4 class="lab-title q-pr-md">Available ETH:</h4> 0
-              <span class="link-to-exchange" @click="goToExchange">Get ETH</span>
+              <h4 class="lab-title q-pr-md">Available {{currentToken}}:</h4> {{tokenInWallet ? tokenInWallet.amount : 0}}
+              <span class="link-to-exchange" @click="goToExchange" v-if="!tokenInWallet">Get {{currentToken}}</span>
             </div>
             <div class="row">
             <div class="col col-3">
                 <!-- <q-input class="input-input" filled rounded outlined color="purple" value="0.1" suffix="MAX" /> -->
-                <q-input v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number">
+                <q-input @input="validateInput()"  v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number">
                   <template v-slot:append>
                     <div class="flex justify-end items-center q-pb-xs">
                       <q-btn color="white" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat text-color="black" label="Max" />
@@ -21,19 +21,32 @@
                 </q-input>
             </div>
             <div class="col col-3 q-ml-md">
-                <q-select class="select-input" filled rounded outlined color="purple" value="ETH" :options="['ETH','VTX','EOS']" />
+                <q-select class="select-input"  @input="getMaxBalance()" filled rounded outlined  color="purple" v-model="currentToken" :options="tokenOptions" />
+           <div class="text-body2 col-12 q-pt-sm text-red" v-if="!tokenInWallet">
+              Token not in wallet
             </div>
+           </div>
+            
             </div>
             <hr style="opacity: .1" class="q-mt-lg">
             <h4 class="lab-title">Choose your Allocation</h4>
             <div class="row">
             <div class="col col-4 q-pr-md">
                 <strong class="lab-sub q-pl-md">Platform</strong>
-                <q-select class="select-input full-width" filled v-model="platform" color="purple" value="Balancer" :options="['Curve','Uniswap v2','Balancer', 'yEarn']" />
+                <q-select class="select-input full-width" filled v-model="platform" color="purple" @input="filterPoolsByPlatform()"   :options="['Any','Uniswap V2','Balancer-labs','yEarn','Curve']" />
             </div>
             <div class="col col-4 q-pr-md">
                 <strong class="lab-sub q-pl-md">Pool</strong>
-                <q-select class="select-input full-width" filled v-model="pool" color="purple" value="Balancer" :options="['ETH/USDT','USDC/ETH','DAI/ETH']" />
+                <q-select class="select-input full-width"  @filter="filterPoolsByUserInput"   input-debounce="0" use-input filled @input="tokenOptions = pool.tokens ; isTokenInWallet() ; " v-model="pool" color="purple"  :options="poolOptions" >
+                   <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        No results
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+           
             </div>
             <!-- <div class="col col-3 q-pr-md text-center">
                 <strong class="lab-sub q-pl-md text-center">Allocation</strong>
@@ -63,7 +76,7 @@
         </q-card-section>
         <q-card-actions align="right" class="q-pr-sm q-mb-sm q-mt-xl">
             <q-btn label="Cancel" flat class="qbtn-start q-mr-sm cancel" color="black" v-close-popup/>
-            <q-btn unelevated class="qbtn-start" color="black" text-color="white" label="Confirm" />
+            <q-btn unelevated :disable="!tokenInWallet" class="qbtn-start" color="black" text-color="white" label="Confirm" />
         </q-card-actions>
     </q-card>
 </template>
@@ -75,16 +88,82 @@ export default {
     return {
       platform: '',
       pool: '',
-      sendAmount: 0
+      sendAmount: 0,
+      poolOptions:[],
+      tokenOptions:[],
+      currentToken:'',
+      platform: 'Any',
+      ethTokens:[],
+      ethAccount:null,
+      availableAmount:0,
+      tokenInWallet:false
     }
   },
+  props:['standalone'],
   updated () {
   },
   created () {
+
+   if(this.standalone){
+    this.$store.dispatch('investment/getBalancerPools');
+    this.$store.dispatch('investment/getUniswapPools');
+    this.$store.dispatch('investment/getYvaultsPools', config);
+    this.$store.dispatch('investment/getCurvesPools', config);
+    this.$store.commit('investment/setSelectedPool', this.pools[0]);
+   }
+   this.tokenOptions = this.$store.state.investment.selectedPool.tokens
+   this.currentToken = this.tokenOptions[0]
+   this.getTokenAvailableAmount()
+   this.poolOptions =  this.$store.state.investment.pools.map(o => { return {label:o.poolName, value:o.id, tokens:o.tokens} })
+   this.pool =  this.poolOptions[0]
+   this.isTokenInWallet()
   },
   methods: {
+    async isTokenInWallet(){
+        console.log(this.pool, this.tokenOptions)
+        let tableData = await this.$store.state.wallets.tokens
+        this.ethTokens = tableData.filter(w => w.chain === 'eth')
+        this.tokenInWallet =  this.ethTokens.find(w =>  this.tokenOptions.find(o => o.toLowerCase() == w.type.toLowerCase())) 
+        this.currentToken = this.tokenInWallet ? this.tokenInWallet.name : this.tokenOptions[0] ; 
+        this.sendAmount = this.tokenInWallet ? this.tokenInWallet.amount : 0
+    
+      },
     getMaxBalance () {
-      this.sendAmount = 2.98
+      this.tokenInWallet = this.ethTokens.find(w => this.currentToken.toLowerCase() == w.type.toLowerCase())
+     this.sendAmount = this.tokenInWallet ?   this.tokenInWallet.amount : 0
+    },
+    validateInput(){
+        if(this.sendAmount <= 0){
+          this.sendAmount  = 0
+        } else {
+           this.sendAmount = this.tokenInWallet && this.sendAmount > this.tokenInWallet.amount  ? this.tokenInWallet.amount  : this.sendAmount
+        }
+    },
+    filterPoolsByUserInput(val, update) {
+       
+      if (val === '') {
+        update(() => {
+           self.poolOptions =  this.$store.state.investment.pools.map(o => { return {label:o.poolName, value:o.id, tokens:o.tokens} })
+        })
+        return
+      }
+      this.pool = ''
+      update(() => {
+        const needle = val.toLowerCase()
+         this.poolOptions = this.$store.state.investment.pools.filter(v => v.poolName.toLowerCase().indexOf(needle) > -1).map(o => { return {label:o.poolName, value:o.id, tokens:o.tokens} })
+      
+      })
+    },
+    filterPoolsByPlatform  (){
+      this.poolOptions = this.$store.state.investment.filter(o => this.platform == 'Any' || o.platform.toLowerCase() == this.platform.toLowerCase()).map(o => { return {label:o.poolName, value:o.id, tokens:o.tokens} })
+      this.pool =  this.poolOptions[0]
+      this.tokenOptions = this.pool.tokens ;
+      this.isTokenInWallet()
+   
+    },
+    getTokenAvailableAmount(){
+      let found = this.ethTokens.find(o => o.type.toLowerCase() ==  this.currentToken.toLowerCase() )
+      this.availableAmount = found ? found.amount : 0
     },
     goToExchange () {
       // console.log('this.depositCoin', this.depositCoin)

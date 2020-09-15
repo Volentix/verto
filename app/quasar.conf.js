@@ -85,6 +85,7 @@ module.exports = function (ctx) {
         'QToggle',
         'QUploader',
         'QEditor',
+        'QImg',
         'Loading'
       ],
 
