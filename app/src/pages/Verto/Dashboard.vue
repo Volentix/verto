@@ -112,7 +112,7 @@ import LiquidityPoolsSection from '../../components/Verto/LiquidityPoolsSection'
 import MakeVTXSection from '../../components/Verto/MakeVTXSection'
 import ExchangeSection from '../../components/Verto/ExchangeSection'
 import AddLiquidityDialog from '../../components/Verto/AddLiquidityDialog'
-
+import { mapState } from 'vuex'
 // import VespucciRatingSection from '../../components/Verto/VespucciRatingSection'
 import { QScrollArea } from 'quasar'
 
@@ -267,27 +267,40 @@ export default {
         }
       }
     }
-    let config = {
+      let config = {
           headers: {
-            'api-key': '22779110-b1a7-4b99-ac6e-827d0a39ef70',
-           // 'user-agent': ' Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36'
+              'api-key': '22779110-b1a7-4b99-ac6e-827d0a39ef70',
           }
         }
 
- 
-     this.$store.dispatch('investment/getBalancerPools');
-     this.$store.dispatch('investment/getUniswapPools');
-     this.$store.dispatch('investment/getYvaultsPools', config);
-     this.$store.dispatch('investment/getCurvesPools', config);
-   
-    this.$store.commit('investment/setSelectedPool', this.pools[0]);
+    this.$store.dispatch('investment/getZapperTokens',config);
+    
   },
   methods: {
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     }
     
-  }
+  },
+  watch:{
+    zapperTokens(newVal, old){
+      console.log(newVal,666)
+     if(!newVal.length) return
+     let config = {
+          headers: {
+              'api-key': '22779110-b1a7-4b99-ac6e-827d0a39ef70',
+          }
+        }
+     this.$store.dispatch('investment/getBalancerPools');
+     this.$store.dispatch('investment/getUniswapPools');
+     this.$store.dispatch('investment/getYvaultsPools', config);
+     this.$store.dispatch('investment/getCurvesPools', config);
+     this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0]);
+    }
+  },
+   computed:{
+     ...mapState('investment', ['zapperTokens']) 
+   }
 }
 </script>
 <style lang="scss" scoped>
