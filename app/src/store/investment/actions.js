@@ -28,7 +28,7 @@ export const getBalancerPools = ({ commit , state }, payload) => {
           }`
     }).then((result) => {
         if (result.data.hasOwnProperty('data') && result.data.data.pools) {
-            console.log(state.zapperTokens ,  result.data.data )
+       
             result.data.data.pools.forEach((value, index) => {
 
                 let pair = value.tokensList.map(o => state.zapperTokens.find(t => t.address.toLowerCase() == o.toLowerCase()))
@@ -117,7 +117,7 @@ export const getYvaultsPools = ({ commit , state }, payload) => {
                 pool.tokens = poolTokens.map(o => o?.label).filter((val) => val)
                 pool.platform = 'yEarn'
                 pool.liquidity = parseInt(pool.liquidity).toLocaleString()
-                console.log(pool)
+               
                 if (!(poolTokens.length > 1 && !pool.poolName.includes('/')))
                     commit("updatePools", pool)
 
@@ -161,8 +161,7 @@ export const getZapperTokens = (context, payload) => {
     axios.get('https://cors-anywhere.herokuapp.com/https://zapper.fi/api/account-balance/tokens?addresses=0x358A6C0F7614C44b344381b0699E2397b1483252', payload).then((result) => {
         if (result.data) {
             context.commit("setTokens", result.data['0x358A6C0F7614C44b344381b0699E2397b1483252'])
-            console.log(result.data['0x358A6C0F7614C44b344381b0699E2397b1483252'], 555)
-        }
+      }
 
     });
 }
