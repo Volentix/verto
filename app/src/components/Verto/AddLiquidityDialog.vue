@@ -102,15 +102,22 @@ export default {
   props:['standalone'],
   updated () {
   },
-  created () {
+  async created () {
 
-   if(this.standalone){
-    this.$store.dispatch('investment/getBalancerPools');
-    this.$store.dispatch('investment/getUniswapPools');
-    this.$store.dispatch('investment/getYvaultsPools', config);
-    this.$store.dispatch('investment/getCurvesPools', config);
-    this.$store.commit('investment/setSelectedPool', this.pools[0]);
-   }
+    let config = {
+          headers: {
+              'api-key': '22779110-b1a7-4b99-ac6e-827d0a39ef70',
+          }
+        }
+
+     if(this.standalone && false){
+     await this.$store.dispatch('investment/getZapperTokens',config);
+     this.$store.dispatch('investment/getBalancerPools');
+     this.$store.dispatch('investment/getUniswapPools');
+     this.$store.dispatch('investment/getYvaultsPools', config);
+     this.$store.dispatch('investment/getCurvesPools', config);
+     }
+
    this.tokenOptions = this.$store.state.investment.selectedPool.tokens
    this.currentToken = this.tokenOptions[0]
    this.getTokenAvailableAmount()
@@ -155,7 +162,7 @@ export default {
       })
     },
     filterPoolsByPlatform  (){
-      this.poolOptions = this.$store.state.investment.filter(o => this.platform == 'Any' || o.platform.toLowerCase() == this.platform.toLowerCase()).map(o => { return {label:o.poolName, value:o.id, tokens:o.tokens} })
+      this.poolOptions = this.$store.state.investment.pools.filter(o => this.platform == 'Any' || o.platform.toLowerCase() == this.platform.toLowerCase()).map(o => { return {label:o.poolName, value:o.id, tokens:o.tokens} })
       this.pool =  this.poolOptions[0]
       this.tokenOptions = this.pool.tokens ;
       this.isTokenInWallet()
