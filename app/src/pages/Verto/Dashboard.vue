@@ -31,7 +31,7 @@
                 </div>
                 <div class="col-3 flex items-center">
                   <span class="imgs q-mr-lg">
-                    <img v-if="icon" v-for="(icon, index) in pool.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
+                    <img  v-if="icon" v-for="(icon, index) in pool.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
       
                   </span>
                   <span class="column pairs">

@@ -470,7 +470,18 @@
   
       const Web3 = require('web3')
       this.web3  = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
-    },
+
+    if (this.$route.params.depositCoin !== undefined) {
+    
+      this.depositCoin = this.$route.params.depositCoin
+     
+    }
+    if (this.$route.params.destinationCoin !== undefined) {
+    this.destinationCoin = this.$route.params.destinationCoin
+  }
+
+  console.log(this.$route.params)
+ },
     watch: {
       step(newVal, oldVal) {
         //Remove selected coin from array of receiving coins 
@@ -522,10 +533,10 @@
             console.log('Intersection -> ', coinsArray.filter(value => tokensArray.includes(value)))
             console.log('Difference ->', tokensArray.filter(value => !coinsArray.includes(value)))
 
-            self.destinationCoin = self.depositCoinOptions[self.depositCoinOptions.length - 1]
+            self.destinationCoin = !self.destinationCoin ? self.depositCoinOptions[self.depositCoinOptions.length - 1] : self.destinationCoin
             self.depositCoinUnfilter = self.depositCoinOptions.filter(o => tokensArray.includes(o.value.toLowerCase()))
             self.destinationCoinUnfilter = self.depositCoinOptions.filter(o => !tokensArray.includes(o.value.toLowerCase()))
-            self.depositCoin = self.depositCoinUnfilter[0]
+            self.depositCoin =  !self.depositCoin ? self.depositCoinUnfilter[0] : self.depositCoin
             console.log('depositCoinOptions', self.depositCoinOptions)
           })
         },
