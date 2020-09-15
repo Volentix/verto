@@ -36,7 +36,7 @@
             <div class="flex justify-between items-center q-pt-sm q-pb-sm">
               <h3 class="text-white q-pl-md">Max DeFi Yield</h3>
               <div class="text-white q-pr-md amount flex items-center">
-                <span class="interest_rate q-pr-md flex items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'"  alt=""><strong class="q-pr-md"><span class="thicker">{{maxDeFiYield.token}}</span></strong> {{maxDeFiYield.roi}} % <b class="p-abs">Interest Rate</b></span>
+                <span class="interest_rate q-pr-md flex items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'"  alt=""><strong class="q-pr-md q-pb-sm"><span class="thicker">{{maxDeFiYield.token}}</span></strong> {{maxDeFiYield.roi}} % <b class="p-abs">Interest Rate</b></span>
                 <!-- <span>28.35 USD</span> -->
               </div>
             </div>
@@ -112,7 +112,7 @@
           </div>
           <div class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken">
             <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
-              Convert {{parseInt(maxToken.amount)}} {{maxToken.type}} to {{maxDeFiYield.token}} <q-icon name="arrow_right_alt" /> <div class="flex justify-between items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'"  alt="">  <strong>${{parseInt(maxToken.usd * maxDeFiYield.roi / 100 + maxToken.usd)}} <b>USD</b></strong></div>
+              Convert {{parseInt(maxToken.amount)}} {{maxToken.type}} to {{maxDeFiYield.token}} <q-icon name="arrow_right_alt" /> <div class="flex justify-between items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'"  alt="">  <strong>{{maxDeFiYield.toTokenAmount}} <b>{{maxDeFiYield.token}}</b></strong></div>
               <q-btn unelevated class="qbtn-download q-mr-md" color="black" text-color="white" label="Confirm" />
             </h4>
           </div>
@@ -297,9 +297,9 @@ export default {
     this.maxToken = this.ethTokens.reduce((p, c) => p.usd > c.usd ? p : c);
 
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
-    this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
+    //this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
 
-     //console.log('this.currentAccount sur la page send', this.currentAccount)
+     /*console.log('this.currentAccount sur la page send', this.currentAccount)
 
     if (this.currentAccount.privateKey) {
       this.privateKey.key = this.currentAccount.privateKey
@@ -314,7 +314,11 @@ export default {
       walletClientName: this.walletClientName,
       privateKey: this.cruxKey.privateKey
     })
+  
     await cruxClient.init()
+      */
+   
+      this.$store.dispatch('investment/getZapperTokens');
   },
   async mounted () {
     this.getMaxDeFiYield()
@@ -342,9 +346,14 @@ export default {
             }
 
         }
-
-         console.log(this.maxDeFiYield)
+        this.maxDeFiYield.toTokenAmount = this.convertWalletToken(this.maxToken.type, this.maxDeFiYield.token)
+       
        })
+    },
+    convertWalletToken(from,to){
+     
+     let find =  this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() == to.toLowerCase())
+     return find ?  parseInt(this.maxToken.usd / find.price) : 'Not found'
     },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)

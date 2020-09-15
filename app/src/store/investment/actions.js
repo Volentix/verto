@@ -3,7 +3,11 @@ export function someAction (context) {
 }
 */
 import axios from 'axios'
-
+const config = {
+    headers: {
+        'api-key': '22779110-b1a7-4b99-ac6e-827d0a39ef70',
+    }
+}
 export const getBalancerPools = ({ commit , state }, payload) => {
 
     axios.post('https://api.thegraph.com/subgraphs/name/balancer-labs/balancer', {
@@ -100,7 +104,7 @@ export const getUniswapPools = ({ commit , state }, payload) => {
     });
 }
 export const getYvaultsPools = ({ commit , state }, payload) => {
-    axios.get('https://cors-anywhere.herokuapp.com/https://zapper.fi/api/yvaults', payload).then((result) => {
+    axios.get('https://cors-anywhere.herokuapp.com/https://zapper.fi/api/yvaults', config).then((result) => {
         if (result.data.length) {
 
             result.data.forEach((value, index) => {
@@ -129,7 +133,7 @@ export const getYvaultsPools = ({ commit , state }, payload) => {
 }
 export const getCurvesPools = ({ commit , state }, payload) => {
 
-    axios.get('https://cors-anywhere.herokuapp.com/https://zapper.fi/api/pool-stats/curve', payload).then((result) => {
+    axios.get('https://cors-anywhere.herokuapp.com/https://zapper.fi/api/pool-stats/curve', config).then((result) => {
         if (result.data.length) {
 
             result.data.forEach((value, index) => {
@@ -158,7 +162,7 @@ export const getCurvesPools = ({ commit , state }, payload) => {
 }
 export const getZapperTokens = (context, payload) => {
 
-    axios.get('https://cors-anywhere.herokuapp.com/https://zapper.fi/api/account-balance/tokens?addresses=0x358A6C0F7614C44b344381b0699E2397b1483252', payload).then((result) => {
+    axios.get('https://cors-anywhere.herokuapp.com/https://zapper.fi/api/account-balance/tokens?addresses=0x358A6C0F7614C44b344381b0699E2397b1483252', config).then((result) => {
         if (result.data) {
             context.commit("setTokens", result.data['0x358A6C0F7614C44b344381b0699E2397b1483252'])
       }

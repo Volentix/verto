@@ -274,13 +274,8 @@ async created() {
                 }
             }
         }
-        let config = {
-            headers: {
-                'api-key': '22779110-b1a7-4b99-ac6e-827d0a39ef70',
-            }
-        }
-
-        this.$store.dispatch('investment/getZapperTokens', config);
+       
+        this.$store.dispatch('investment/getZapperTokens');
 
     },
     methods: {
@@ -293,15 +288,11 @@ async created() {
         zapperTokens(newVal, old) {
 
             if (!newVal.length) return
-            let config = {
-                headers: {
-                    'api-key': '22779110-b1a7-4b99-ac6e-827d0a39ef70',
-                }
-            }
+         
             this.$store.dispatch('investment/getBalancerPools');
             this.$store.dispatch('investment/getUniswapPools');
-            this.$store.dispatch('investment/getYvaultsPools', config);
-            this.$store.dispatch('investment/getCurvesPools', config);
+            this.$store.dispatch('investment/getYvaultsPools' );
+            this.$store.dispatch('investment/getCurvesPools');
             this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0]);
         }
     },
