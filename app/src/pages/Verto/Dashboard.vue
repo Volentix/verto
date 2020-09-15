@@ -70,7 +70,7 @@
         </div>
       </div>
       <q-dialog v-model="openDialog">
-        <AddLiquidityDialog :standalone="false" v-if="$store.state.investment.selectedPool"/>
+        <AddLiquidityDialog :notWidget="true" v-if="$store.state.investment.selectedPool"/>
       </q-dialog>
     </div>
     <div class="mobile-version" v-else>
@@ -216,91 +216,98 @@ export default {
   beforeCreate () {
     // console.log('beforeCreate event')
   },
-  async created () {
-    let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
-    // Check if mnemonic exists
-    // console.log('this.$store.state.currentwallet.wallet = undefined called')
-    this.osName = osName
-    this.getWindowWidth()
-    window.addEventListener('resize', this.getWindowWidth)
-    // console.log('this.osName', this.osName)
-    // console.log('store.state.currentwallet.config', store.state.currentwallet.config)
-    if (!store.state.currentwallet.config.mnemonic) {
-      this.$router.push('recovery-seed')
-    } else {
-      let wallets2Tokens = require('@/util/Wallets2Tokens')
-      if (!store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
-    }
+async created() {
+        let exchangeNotif = document.querySelector('.exchange-notif');
+        if (exchangeNotif !== null) {
+            exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click'))
+        }
+        // Check if mnemonic exists
+        // console.log('this.$store.state.currentwallet.wallet = undefined called')
+        this.osName = osName
+        this.getWindowWidth()
+        window.addEventListener('resize', this.getWindowWidth)
+        // console.log('this.osName', this.osName)
+        // console.log('store.state.currentwallet.config', store.state.currentwallet.config)
+        if (!store.state.currentwallet.config.mnemonic) {
+            this.$router.push('recovery-seed')
+        } else {
+            let wallets2Tokens = require('@/util/Wallets2Tokens')
+            if (!store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
+        }
 
-    // Adds the eos account name when it is found to the cruxID
-    this.tableData = await store.state.wallets.tokens.map(token => {
-      token.selected = false
-      if (token.hidden === undefined) {
-        token.hidden = false
-      }
-    })
-    this.$store.state.currentwallet.wallet = { empty: true }
-    Promise.all(this.tableData)
-    let eosAccount = this.tableData.find(w => w !== undefined && w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
-    // console.log('this.tableData', this.tableData)
-
-    if (eosAccount) {
-      let accountNames = await eos.getAccountNamesFromPubKeyP(eosAccount.key)
-
-      // May be we could auto convert an eos key to an account if discovered here
-      if (accountNames.account_names.includes(eosAccount.name)) {
-        // console.log('we have an upgraded account', accountNames, eosAccount.name)
-
-        this.cruxKey = await HD.Wallet('crux')
-        cruxClient = new CruxPay.CruxClient({
-          walletClientName: this.walletClientName,
-          privateKey: this.cruxKey.privateKey
+        // Adds the eos account name when it is found to the cruxID
+        this.tableData = await store.state.wallets.tokens.map(token => {
+            token.selected = false
+            if (token.hidden === undefined) {
+                token.hidden = false
+            }
         })
-        await cruxClient.init()
-
-        let addressMap = await cruxClient.getAddressMap()
-        // console.log('addressMap', addressMap)
-
-        if (!addressMap.hasOwnProperty('eos')) {
-          addressMap['eos'] = { 'addressHash': eosAccount.name }
-          cruxClient.putAddressMap(addressMap)
+        this.$store.state.currentwallet.wallet = {
+            empty: true
         }
-      }
-    }
-      let config = {
-          headers: {
-              'api-key': '22779110-b1a7-4b99-ac6e-827d0a39ef70',
-          }
+        Promise.all(this.tableData)
+        let eosAccount = this.tableData.find(w => w !== undefined && w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
+        // console.log('this.tableData', this.tableData)
+
+        if (eosAccount) {
+            let accountNames = await eos.getAccountNamesFromPubKeyP(eosAccount.key)
+
+            // May be we could auto convert an eos key to an account if discovered here
+            if (accountNames.account_names.includes(eosAccount.name)) {
+                // console.log('we have an upgraded account', accountNames, eosAccount.name)
+
+                this.cruxKey = await HD.Wallet('crux')
+                cruxClient = new CruxPay.CruxClient({
+                    walletClientName: this.walletClientName,
+                    privateKey: this.cruxKey.privateKey
+                })
+                await cruxClient.init()
+
+                let addressMap = await cruxClient.getAddressMap()
+                // console.log('addressMap', addressMap)
+
+                if (!addressMap.hasOwnProperty('eos')) {
+                    addressMap['eos'] = {
+                        'addressHash': eosAccount.name
+                    }
+                    cruxClient.putAddressMap(addressMap)
+                }
+            }
+        }
+        let config = {
+            headers: {
+                'api-key': '22779110-b1a7-4b99-ac6e-827d0a39ef70',
+            }
         }
 
-    this.$store.dispatch('investment/getZapperTokens',config);
-    
-  },
-  methods: {
-    getWindowWidth () {
-      this.screenSize = document.querySelector('#q-app').offsetWidth
-    }
-    
-  },
-  watch:{
-    zapperTokens(newVal, old){
-      console.log(newVal,666)
-     if(!newVal.length) return
-     let config = {
-          headers: {
-              'api-key': '22779110-b1a7-4b99-ac6e-827d0a39ef70',
-          }
+        this.$store.dispatch('investment/getZapperTokens', config);
+
+    },
+    methods: {
+        getWindowWidth() {
+            this.screenSize = document.querySelector('#q-app').offsetWidth
         }
-     this.$store.dispatch('investment/getBalancerPools');
-     this.$store.dispatch('investment/getUniswapPools');
-     this.$store.dispatch('investment/getYvaultsPools', config);
-     this.$store.dispatch('investment/getCurvesPools', config);
-     this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0]);
+
+    },
+    watch: {
+        zapperTokens(newVal, old) {
+
+            if (!newVal.length) return
+            let config = {
+                headers: {
+                    'api-key': '22779110-b1a7-4b99-ac6e-827d0a39ef70',
+                }
+            }
+            this.$store.dispatch('investment/getBalancerPools');
+            this.$store.dispatch('investment/getUniswapPools');
+            this.$store.dispatch('investment/getYvaultsPools', config);
+            this.$store.dispatch('investment/getCurvesPools', config);
+            this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0]);
+        }
+    },
+    computed: {
+        ...mapState('investment', ['zapperTokens'])
     }
-  },
-   computed:{
-     ...mapState('investment', ['zapperTokens']) 
-   }
 }
 </script>
 <style lang="scss" scoped>
