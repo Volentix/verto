@@ -46,6 +46,7 @@
         <div class="standard-content--body__img column flex-center">
           <img src="statics/password_bg.svg" alt="">
         </div>
+        <br>
         <div class="standard-content--body__form">
           <q-input
             ref="psswrdConfirm"
@@ -167,6 +168,11 @@ export default {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  max-width: 800px;
+  margin: auto;
+  @media screen and (min-width: 768px) {
+    padding-top: 20px;
+  }
   // justify-content: space-between;
   // height: 100vh !important;
   &--title{
