@@ -330,6 +330,7 @@
                             </div>
                             <div class="row full-width" style="padding-left: 13px; margin-top: 10px;">
                               <div class="q-gutter-sm"><q-checkbox label="I accept" color="deep-purple-14" v-model="disclaimerCheck" /></div>
+                              <q-btn @click="orderVTX()" label="test orderVTX" />
                             </div>
                             <div class="standard-content--footer">
                               <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
@@ -1296,8 +1297,10 @@ export default {
     },
     orderVTX () {
       // check balance then...
-      let eosBal = Lib.balance('eos', this.toCoin.key, 'eos')
+      let eosBal = Lib.balance('eos', this.toCoin.value, 'eos')
+      console.log('eosBal', eosBal)
 
+      /*
       if (eosBal.amount < this.destinationCoinAmount) {
         setTimeout(() => { self.orderVTX() }, 1000)
       } else {
@@ -1321,6 +1324,7 @@ export default {
           // }
         })
       }
+      */
     },
     postOrder () {
       const self = this
