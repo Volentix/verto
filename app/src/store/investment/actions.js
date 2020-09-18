@@ -47,8 +47,11 @@ export const getBalancerPools = ({ commit , state }, payload) => {
                 pool.contractAddress = value.id
                 pool.poolName = pair.map(o => o?.label).filter((val) => val).join(' / ')
                 pool.icons = pair.map(o => o?.img).filter((val) => val)
+                
+                //To be calculated using historical data of the token
                 pool.netROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
                 pool.ROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
+
                 pool.tokens = pair.map(o => o?.label).filter((val) => val)
                 pool.platform = 'Balancer-labs'
                 pool.liquidity = parseInt(pool.liquidity).toLocaleString()
@@ -96,8 +99,11 @@ export const getUniswapPools = ({ commit , state }, payload) => {
                 pool.contractAddress = value.id
                 pool.poolName = pair.map(o => o?.label).filter((val) => val).join(' / ')
                 pool.icons = pair.map(o => o?.img).filter((val) => val)
+
+                //To be calculated using historical data of the token
                 pool.netROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
                 pool.ROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
+                
                 pool.tokens = pair.map(o => o?.label).filter((val) => val)
                 pool.platform = 'Uniswap V2'
                 pool.liquidity = parseInt(pool.reserveUSD).toLocaleString()
@@ -124,8 +130,11 @@ export const getYvaultsPools = ({ commit , state }, payload) => {
                 let pool = value
                 pool.poolName = poolTokens.map(o => o?.label).filter((val) => val).join(' / ')
                 pool.icons = poolTokens.map(o => o?.img).filter((val) => val)
+
+                //To be calculated using historical data of the token
                 pool.netROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
                 pool.ROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
+
                 pool.id = value.address
                 pool.tokens = poolTokens.map(o => o?.label).filter((val) => val)
                 pool.platform = 'yEarn'
@@ -153,8 +162,11 @@ export const getCurvesPools = ({ commit , state }, payload) => {
                 let pool = value
                 pool.poolName = poolTokens.map(o => o?.label).filter((val) => val).join(' / ')
                 pool.icons = poolTokens.map(o => o?.img).filter((val) => val)
+
+                //To be calculated using historical data of the token
                 pool.netROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
                 pool.ROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
+
                 pool.tokens = poolTokens.map(o => o?.label).filter((val) => val)
                 pool.platform = 'Curve'
                 pool.id = value.contractAddress
