@@ -14,5 +14,7 @@ export const updatePools = (state, pool) => {
    }
 export const setTokens = (state, tokens) => {
     state.zapperTokens = tokens
-
+   }
+export const  updateGasPrice  = (state, gasPrice) => {
+    state.gasPrice = gasPrice
    }

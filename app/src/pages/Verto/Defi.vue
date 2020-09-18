@@ -14,7 +14,7 @@
                   <div class="col-5"><h3>Token</h3></div>
                   <div class="col-4"><h3>Balance</h3></div>
                 </div>
-                <q-scroll-area :visible="true" class="q-pr-lg q-mb-md q-mr-sm" style="height: 130px;">
+                <q-scroll-area :visible="true" class="q-pr-lg q-mb-md q-mr-sm" style="height: 230px;">
                   <div v-for="token in ethTokens" :key="ethTokens" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
                     <div class="col-5 flex items-center">
                       <span class="token flex items-center">
@@ -76,7 +76,7 @@
               <div class="col-2"><h3>Net ROI(1mo)</h3></div>
               <div class="col-2"></div>
             </div>
-             <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 122px;">
+             <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 230px;">
               <div v-for="(pool, index) in $store.state.investment.pools" :key="index" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
                 <div class="col-1 flex items-center">
                   <strong>{{(index + 1)}}</strong>

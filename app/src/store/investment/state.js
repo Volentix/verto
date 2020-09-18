@@ -2,6 +2,7 @@ export default function () {
   return {
     selectedPool: null,
     pools:[],
-    zapperTokens:[]
+    zapperTokens:[],
+    gasPrice:null
   }
 }
