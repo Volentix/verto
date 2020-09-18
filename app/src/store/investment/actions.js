@@ -5,9 +5,16 @@ export function someAction (context) {
 import axios from 'axios'
 const config = {
     headers: {
-        'api-key': '22779110-b1a7-4b99-ac6e-827d0a39ef70',
+        'api-key': 'b7575aeb-b8a2-4360-88ab-400d1fba3aec',
     }
 }
+export const getGasPrice = ({ commit , state }, payload) => {
+
+    axios.get('https://gasprice.poa.network/').then((result) => {
+        commit("updateGasPrice", result.data)      
+    });
+}
+
 export const getBalancerPools = ({ commit , state }, payload) => {
 
     axios.post('https://api.thegraph.com/subgraphs/name/balancer-labs/balancer', {
@@ -37,6 +44,7 @@ export const getBalancerPools = ({ commit , state }, payload) => {
 
                 let pair = value.tokensList.map(o => state.zapperTokens.find(t => t.address.toLowerCase() == o.toLowerCase()))
                 let pool = value
+                pool.contractAddress = value.id
                 pool.poolName = pair.map(o => o?.label).filter((val) => val).join(' / ')
                 pool.icons = pair.map(o => o?.img).filter((val) => val)
                 pool.netROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
@@ -85,6 +93,7 @@ export const getUniswapPools = ({ commit , state }, payload) => {
                 let pair = [state.zapperTokens.find(t => t.address.toLowerCase() == value['token0'].id.toLowerCase()), state.zapperTokens.find(t => t.address.toLowerCase() == value['token1'].id.toLowerCase())].filter((val) => val)
                 if (pair.length != 2) return
                 let pool = value
+                pool.contractAddress = value.id
                 pool.poolName = pair.map(o => o?.label).filter((val) => val).join(' / ')
                 pool.icons = pair.map(o => o?.img).filter((val) => val)
                 pool.netROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
