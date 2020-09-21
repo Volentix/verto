@@ -31,7 +31,7 @@ if (process.env.DEV && module.hot) {
     const newSettings = require('./settings').default
     const newWallets = require('./wallets').default
     const investment = require('./investment').default
-    store.hotUpdate({ modules: { investment:investment, currentwallet: newCurrentwallet, highestVTXAccount: newHighestVTXAccount, settings: newSettings, wallets: newWallets } })
+    store.hotUpdate({ modules: { investment: investment, currentwallet: newCurrentwallet, highestVTXAccount: newHighestVTXAccount, settings: newSettings, wallets: newWallets } })
   })
 }
 

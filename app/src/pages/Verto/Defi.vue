@@ -65,7 +65,6 @@
             </q-scroll-area>
           </div> -->
 
-          
           <div class="desktop-card-style current-investments explore-opportunities q-mb-md">
             <h4 class="q-pl-md">Explore Opportunities</h4>
             <div class="header-table-col row q-pl-md">
@@ -84,7 +83,7 @@
                 <div class="col-3 flex items-center">
                   <span class="imgs q-mr-lg">
                     <img v-if="icon" v-for="(icon, index) in pool.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
-      
+
                   </span>
                   <span class="column pairs">
                     <span class="pair">{{pool.poolName}}</span>
@@ -218,7 +217,7 @@ export default {
   },
   data () {
     return {
-      maxDeFiYield:{},
+      maxDeFiYield: {},
       openDialog: false,
       osName: '',
       progressValue: 20,
@@ -271,8 +270,8 @@ export default {
         contract: '',
         chain: ''
       },
-      ethTokens:[],
-      maxToken:false
+      ethTokens: [],
+      maxToken: false
     }
   },
   updated () {
@@ -293,15 +292,15 @@ export default {
     this.currentAccount = tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
-    
-    //console.log(this.ethAccount,'ethAccount', tableData)
+
+    // console.log(this.ethAccount,'ethAccount', tableData)
     this.ethTokens = tableData.filter(w => w.chain === 'eth' && !isNaN(w.usd))
-    this.maxToken = this.ethTokens.reduce((p, c) => p.usd > c.usd ? p : c);
+    this.maxToken = this.ethTokens.reduce((p, c) => p.usd > c.usd ? p : c)
 
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
-    //this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
+    // this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
 
-     /*console.log('this.currentAccount sur la page send', this.currentAccount)
+    /* console.log('this.currentAccount sur la page send', this.currentAccount)
 
     if (this.currentAccount.privateKey) {
       this.privateKey.key = this.currentAccount.privateKey
@@ -316,52 +315,47 @@ export default {
       walletClientName: this.walletClientName,
       privateKey: this.cruxKey.privateKey
     })
-  
+
     await cruxClient.init()
       */
-   
-      this.$store.dispatch('investment/getZapperTokens');
+
+    this.$store.dispatch('investment/getZapperTokens')
   },
   async mounted () {
     this.getMaxDeFiYield()
   },
-  methods: { 
-      goToExchange () {
+  methods: {
+    goToExchange () {
       // console.log('this.depositCoin', this.depositCoin)
-      let depositCoin = {label: this.maxToken.type , value: this.maxToken.type.toLowerCase(), image: 'https://files.coinswitch.co/public/coins/'+this.maxDeFiYield.token.toLowerCase()+'.png' }
-      let destinationCoin = {label: this.maxDeFiYield.token , value: this.maxDeFiYield.token.toLowerCase() , image: 'https://zapper.fi/images/'+this.maxDeFiYield.token+'-icon.png' }
+      let depositCoin = { label: this.maxToken.type, value: this.maxToken.type.toLowerCase(), image: 'https://files.coinswitch.co/public/coins/' + this.maxDeFiYield.token.toLowerCase() + '.png' }
+      let destinationCoin = { label: this.maxDeFiYield.token, value: this.maxDeFiYield.token.toLowerCase(), image: 'https://zapper.fi/images/' + this.maxDeFiYield.token + '-icon.png' }
       this.$router.push({ path: '/verto/exchange/:coinToSend/:coinToReceive', name: 'exchange-v3', params: { depositCoin: depositCoin, destinationCoin: destinationCoin } })
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
-    getMaxDeFiYield(){
-       this.$axios.get('https://cors-anywhere.herokuapp.com/https://stats.finance/yearn')
-       .then((result) => {
-       
-        var html = new DOMParser().parseFromString(result.data, "text/html");
-        var prev = 0,
-            data = {};
-        for (let i = 6; i <= 14; i++) {
+    getMaxDeFiYield () {
+      this.$axios.get('https://cors-anywhere.herokuapp.com/https://stats.finance/yearn')
+        .then((result) => {
+          var html = new DOMParser().parseFromString(result.data, 'text/html')
+          var prev = 0,
+            data = {}
+          for (let i = 6; i <= 14; i++) {
             let value = parseFloat(html.querySelectorAll('table tr')[i].innerText.match(/[\d\.]+/)[0])
             if (value > prev) {
-
-                this.maxDeFiYield = {
-                    roi: value,
-                    token: html.querySelectorAll('table tr')[i].innerText.match(/\(([^)]+)\)/)[1]
-                }
+              this.maxDeFiYield = {
+                roi: value,
+                token: html.querySelectorAll('table tr')[i].innerText.match(/\(([^)]+)\)/)[1]
+              }
               prev = value
             }
-
-        }
-        this.maxDeFiYield.toTokenAmount = this.convertWalletToken(this.maxToken.type, this.maxDeFiYield.token)
-       
-       })
+          }
+          this.maxDeFiYield.toTokenAmount = this.convertWalletToken(this.maxToken.type, this.maxDeFiYield.token)
+        })
     },
-    convertWalletToken(from,to){
-     
-     let find =  this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() == to.toLowerCase())
-     return find ?  parseInt(this.maxToken.usd / find.price) : 'Not found'
+    convertWalletToken (from, to) {
+      let find = this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() == to.toLowerCase())
+      return find ? parseInt(this.maxToken.usd / find.price) : 'Not found'
     },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
