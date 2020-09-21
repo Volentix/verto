@@ -783,7 +783,7 @@ export default {
       disclaimerCheck: false,
       showDisclaimerWrapper: false,
       fromCoin: null,
-      defaultView:'1Inch',
+      defaultView: '1Inch',
       fromCoinAmount: 0,
       toCoinAmount: 0,
       fromCoinType: 'EOS',

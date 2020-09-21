@@ -73,7 +73,7 @@ export default [
         meta: {
           authRequired: true
         }
-      },{
+      }, {
         name: 'oneInch',
         path: '/verto/oneInch',
         component: () => import('pages/Exchange/oneInch.vue'),

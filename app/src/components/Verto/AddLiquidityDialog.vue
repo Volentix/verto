@@ -26,7 +26,7 @@
               Token not in wallet
             </div>
            </div>
-            
+
             </div>
             <hr style="opacity: .1" class="q-mt-lg">
             <h4 class="lab-title">Choose your Allocation</h4>
@@ -46,7 +46,7 @@
                     </q-item>
                   </template>
                 </q-select>
-           
+
             </div>
             <!-- <div class="col col-3 q-pr-md text-center">
                 <strong class="lab-sub q-pl-md text-center">Allocation</strong>
@@ -83,7 +83,7 @@
                   </q-item>
                 </template>
                 </q-select>
-           
+
               </div>
               <div class="text-red q-mt-md" v-if="error">{{error}}</div>
             </div>
@@ -115,7 +115,7 @@ import {
 } from 'vuex'
 export default {
   name: 'AddLiquidityDialog',
-  data() {
+  data () {
     return {
       platform: '',
       gasOptions: null,
@@ -143,14 +143,14 @@ export default {
     }
   },
   props: ['notWidget'],
-  updated() {},
-  async created() {
+  updated () {},
+  async created () {
     let tableData = await this.$store.state.wallets.tokens
     this.ethAccount = tableData.filter(w => w.chain === 'eth')
       .filter(w => this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() == w.type.toLowerCase()))
     console.log(tableData.filter(w => w.chain === 'eth'))
     if (!this.notWidget) {
-      await this.$store.dispatch('investment/getZapperTokens');
+      await this.$store.dispatch('investment/getZapperTokens')
     } else {
       this.setDialogData()
     }
@@ -158,25 +158,23 @@ export default {
     const Web3 = require('web3')
     this.web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
 
-    this.$store.dispatch('investment/getGasPrice');
+    this.$store.dispatch('investment/getGasPrice')
   },
   computed: {
     ...mapState('investment', ['zapperTokens', 'selectedPool', 'gasPrice'])
   },
   watch: {
-    zapperTokens(newVal, old) {
-
+    zapperTokens (newVal, old) {
       if (!newVal.length) return
 
-      this.$store.dispatch('investment/getBalancerPools');
-      this.$store.dispatch('investment/getUniswapPools');
-      this.$store.dispatch('investment/getYvaultsPools');
-      this.$store.dispatch('investment/getCurvesPools');
-      this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0]);
+      this.$store.dispatch('investment/getBalancerPools')
+      this.$store.dispatch('investment/getUniswapPools')
+      this.$store.dispatch('investment/getYvaultsPools')
+      this.$store.dispatch('investment/getCurvesPools')
+      this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0])
       this.setDialogData()
     },
-    gasPrice(newVal, old) {
-
+    gasPrice (newVal, old) {
       if (newVal) {
         this.getGas()
       }
@@ -184,9 +182,8 @@ export default {
 
   },
   methods: {
-    setDialogData() {
+    setDialogData () {
       if (this.$store.state.investment.selectedPool) {
-
         this.tokenOptions = this.ethAccount.map(o => {
           o.label = o.type.toUpperCase()
           o.value = o.contract
@@ -206,1003 +203,1000 @@ export default {
         this.isTokenInWallet()
       }
     },
-    async doERC20ToCurveTransaction() {
-
-      const web3 = new Web3(provider.wallet.provider);
-      const address = provider.address;
-      const curveCurvePipeAddress = '0x66895417881B1d77Ca71bd9e5Ba1E729f3Aa44D3';
-      const curveCurvePipeContract = new web3.eth.Contract(curveCurvePipeABI, curveCurvePipeAddress);
-      const crvTokenContract = new web3.eth.Contract(ERC20ABI, fromCurveTokenAddress);
-      const valueToSend = (5 * 10 ** 18).toFixed(0);
+    async doERC20ToCurveTransaction () {
+      const web3 = new Web3(provider.wallet.provider)
+      const address = provider.address
+      const curveCurvePipeAddress = '0x66895417881B1d77Ca71bd9e5Ba1E729f3Aa44D3'
+      const curveCurvePipeContract = new web3.eth.Contract(curveCurvePipeABI, curveCurvePipeAddress)
+      const crvTokenContract = new web3.eth.Contract(ERC20ABI, fromCurveTokenAddress)
+      const valueToSend = (5 * 10 ** 18).toFixed(0)
       const tx = await curveCurvePipeContract.methods.Curve2Curve(
         address,
-        "a5407eae9ba41422680e2e00537571bcc53efbfd", //sUSD curve pool
+        'a5407eae9ba41422680e2e00537571bcc53efbfd', // sUSD curve pool
         valueToSend,
-        "bbc81d23ea2c3ec7e56d39296f0cbb648873a5d3" //y Curve pool
-      );
-      const allowance = await getAllowance(web3, fromCurveTokenAddress, address, curveCurvePipeAddress);
+        'bbc81d23ea2c3ec7e56d39296f0cbb648873a5d3' // y Curve pool
+      )
+      const allowance = await getAllowance(web3, fromCurveTokenAddress, address, curveCurvePipeAddress)
       if (allowance < value) {
-        const approvalAmount = '100000000000000000000';
+        const approvalAmount = '100000000000000000000'
         let approveTx = await crvTokenContract.methods.approve(
           curveCurvePipeAddress,
           web3.utils.toWei(approvalAmount, 'ether')
-        );
+        )
         approveTx
           .send({
             from: address,
-            gasPrice,
+            gasPrice
           })
           .on('transactionHash', async (txHash) => {
-            await sendTransaction(address, 0, tx, gasPrice, 2000000); // Rely on nonce for tx ordering to avoid waiting for approval to confirm
-          });
-      } else await sendTransaction(address, 0, tx, gasPrice); // Contract already has approval, gas estimates will not fail
-
+            await sendTransaction(address, 0, tx, gasPrice, 2000000) // Rely on nonce for tx ordering to avoid waiting for approval to confirm
+          })
+      } else await sendTransaction(address, 0, tx, gasPrice) // Contract already has approval, gas estimates will not fail
     },
-    async doErc20Transaction(transactionObject) {
-
+    async doErc20Transaction (transactionObject) {
       let tableData = await this.$store.state.wallets.tokens
       let account = tableData.find(w => w.chain === 'eth' && w.defaultKey == true)
       if (!account) return console.log('NO ETH ACCOUNT')
       let tokenAddress = this.currentToken.contract
       transactionObject.from = account.key
       console.log(transactionObject, this.currentToken)
-      let decimals = this.web3.utils.toBN(18);
-      let value = (this.sendAmount * 10 ** 18).toFixed(0);
+      let decimals = this.web3.utils.toBN(18)
+      let value = (this.sendAmount * 10 ** 18).toFixed(0)
       let minABI = [{
-        "constant": false,
-        "inputs": [{
-            "name": "_to",
-            "type": "address"
-          },
-          {
-            "name": "_value",
-            "type": "uint256"
-          }
+        'constant': false,
+        'inputs': [{
+          'name': '_to',
+          'type': 'address'
+        },
+        {
+          'name': '_value',
+          'type': 'uint256'
+        }
         ],
-        "name": "transfer",
-        "outputs": [{
-          "name": "",
-          "type": "bool"
-        }],
-        "type": "function"
-      }];
-
-      let tokenABI = [{
-        "inputs": [{
-          "internalType": "address[]",
-          "name": "_components",
-          "type": "address[]"
-        }, {
-          "internalType": "int256[]",
-          "name": "_units",
-          "type": "int256[]"
-        }, {
-          "internalType": "address[]",
-          "name": "_modules",
-          "type": "address[]"
-        }, {
-          "internalType": "contract IController",
-          "name": "_controller",
-          "type": "address"
-        }, {
-          "internalType": "address",
-          "name": "_manager",
-          "type": "address"
-        }, {
-          "internalType": "string",
-          "name": "_name",
-          "type": "string"
-        }, {
-          "internalType": "string",
-          "name": "_symbol",
-          "type": "string"
-        }],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "owner",
-          "type": "address"
-        }, {
-          "indexed": true,
-          "internalType": "address",
-          "name": "spender",
-          "type": "address"
-        }, {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "value",
-          "type": "uint256"
-        }],
-        "name": "Approval",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }],
-        "name": "ComponentAdded",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }],
-        "name": "ComponentRemoved",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }, {
-          "indexed": false,
-          "internalType": "int256",
-          "name": "_realUnit",
-          "type": "int256"
-        }],
-        "name": "DefaultPositionUnitEdited",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }, {
-          "indexed": true,
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
-        }, {
-          "indexed": false,
-          "internalType": "bytes",
-          "name": "_data",
-          "type": "bytes"
-        }],
-        "name": "ExternalPositionDataEdited",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }, {
-          "indexed": true,
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
-        }, {
-          "indexed": false,
-          "internalType": "int256",
-          "name": "_realUnit",
-          "type": "int256"
-        }],
-        "name": "ExternalPositionUnitEdited",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_target",
-          "type": "address"
-        }, {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "_value",
-          "type": "uint256"
-        }, {
-          "indexed": false,
-          "internalType": "bytes",
-          "name": "_data",
-          "type": "bytes"
-        }, {
-          "indexed": false,
-          "internalType": "bytes",
-          "name": "_returnValue",
-          "type": "bytes"
-        }],
-        "name": "Invoked",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": false,
-          "internalType": "address",
-          "name": "_newManager",
-          "type": "address"
-        }, {
-          "indexed": false,
-          "internalType": "address",
-          "name": "_oldManager",
-          "type": "address"
-        }],
-        "name": "ManagerEdited",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
-        }],
-        "name": "ModuleAdded",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
-        }],
-        "name": "ModuleInitialized",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
-        }],
-        "name": "ModuleRemoved",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
-        }],
-        "name": "PendingModuleRemoved",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }, {
-          "indexed": true,
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
-        }],
-        "name": "PositionModuleAdded",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }, {
-          "indexed": true,
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
-        }],
-        "name": "PositionModuleRemoved",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": false,
-          "internalType": "int256",
-          "name": "_newMultiplier",
-          "type": "int256"
-        }],
-        "name": "PositionMultiplierEdited",
-        "type": "event"
-      }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "from",
-          "type": "address"
-        }, {
-          "indexed": true,
-          "internalType": "address",
-          "name": "to",
-          "type": "address"
-        }, {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "value",
-          "type": "uint256"
-        }],
-        "name": "Transfer",
-        "type": "event"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }],
-        "name": "addComponent",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }, {
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
-        }],
-        "name": "addExternalPositionModule",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
-        }],
-        "name": "addModule",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "owner",
-          "type": "address"
-        }, {
-          "internalType": "address",
-          "name": "spender",
-          "type": "address"
-        }],
-        "name": "allowance",
-        "outputs": [{
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "spender",
-          "type": "address"
-        }, {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
-        }],
-        "name": "approve",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        }],
-        "name": "balanceOf",
-        "outputs": [{
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_account",
-          "type": "address"
-        }, {
-          "internalType": "uint256",
-          "name": "_quantity",
-          "type": "uint256"
-        }],
-        "name": "burn",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }],
-        "name": "components",
-        "outputs": [{
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "controller",
-        "outputs": [{
-          "internalType": "contract IController",
-          "name": "",
-          "type": "address"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "decimals",
-        "outputs": [{
-          "internalType": "uint8",
-          "name": "",
-          "type": "uint8"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "spender",
-          "type": "address"
-        }, {
-          "internalType": "uint256",
-          "name": "subtractedValue",
-          "type": "uint256"
-        }],
-        "name": "decreaseAllowance",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }, {
-          "internalType": "int256",
-          "name": "_realUnit",
-          "type": "int256"
-        }],
-        "name": "editDefaultPositionUnit",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }, {
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
-        }, {
-          "internalType": "bytes",
-          "name": "_data",
-          "type": "bytes"
-        }],
-        "name": "editExternalPositionData",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }, {
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
-        }, {
-          "internalType": "int256",
-          "name": "_realUnit",
-          "type": "int256"
-        }],
-        "name": "editExternalPositionUnit",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "int256",
-          "name": "_newMultiplier",
-          "type": "int256"
-        }],
-        "name": "editPositionMultiplier",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "getComponents",
-        "outputs": [{
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }],
-        "name": "getDefaultPositionRealUnit",
-        "outputs": [{
-          "internalType": "int256",
-          "name": "",
-          "type": "int256"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }, {
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
-        }],
-        "name": "getExternalPositionData",
-        "outputs": [{
-          "internalType": "bytes",
-          "name": "",
-          "type": "bytes"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }],
-        "name": "getExternalPositionModules",
-        "outputs": [{
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }, {
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
-        }],
-        "name": "getExternalPositionRealUnit",
-        "outputs": [{
-          "internalType": "int256",
-          "name": "",
-          "type": "int256"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "getModules",
-        "outputs": [{
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "getPositions",
-        "outputs": [{
-          "components": [{
-            "internalType": "address",
-            "name": "component",
-            "type": "address"
-          }, {
-            "internalType": "address",
-            "name": "module",
-            "type": "address"
-          }, {
-            "internalType": "int256",
-            "name": "unit",
-            "type": "int256"
-          }, {
-            "internalType": "uint8",
-            "name": "positionState",
-            "type": "uint8"
-          }, {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          }],
-          "internalType": "struct ISetToken.Position[]",
-          "name": "",
-          "type": "tuple[]"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }],
-        "name": "getTotalComponentRealUnits",
-        "outputs": [{
-          "internalType": "int256",
-          "name": "",
-          "type": "int256"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "spender",
-          "type": "address"
-        }, {
-          "internalType": "uint256",
-          "name": "addedValue",
-          "type": "uint256"
-        }],
-        "name": "increaseAllowance",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "initializeModule",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_target",
-          "type": "address"
-        }, {
-          "internalType": "uint256",
-          "name": "_value",
-          "type": "uint256"
-        }, {
-          "internalType": "bytes",
-          "name": "_data",
-          "type": "bytes"
-        }],
-        "name": "invoke",
-        "outputs": [{
-          "internalType": "bytes",
-          "name": "_returnValue",
-          "type": "bytes"
-        }],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }],
-        "name": "isComponent",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }, {
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
-        }],
-        "name": "isExternalPositionModule",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
-        }],
-        "name": "isInitializedModule",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "isLocked",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
-        }],
-        "name": "isPendingModule",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "lock",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "locker",
-        "outputs": [{
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "manager",
-        "outputs": [{
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_account",
-          "type": "address"
-        }, {
-          "internalType": "uint256",
-          "name": "_quantity",
-          "type": "uint256"
-        }],
-        "name": "mint",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }],
-        "name": "moduleStates",
-        "outputs": [{
-          "internalType": "enum ISetToken.ModuleState",
-          "name": "",
-          "type": "uint8"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }],
-        "name": "modules",
-        "outputs": [{
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "name",
-        "outputs": [{
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "positionMultiplier",
-        "outputs": [{
-          "internalType": "int256",
-          "name": "",
-          "type": "int256"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }],
-        "name": "removeComponent",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
-        }, {
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
-        }],
-        "name": "removeExternalPositionModule",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
-        }],
-        "name": "removeModule",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
-        }],
-        "name": "removePendingModule",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_manager",
-          "type": "address"
-        }],
-        "name": "setManager",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "symbol",
-        "outputs": [{
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "totalSupply",
-        "outputs": [{
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "recipient",
-          "type": "address"
-        }, {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
-        }],
-        "name": "transfer",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "sender",
-          "type": "address"
-        }, {
-          "internalType": "address",
-          "name": "recipient",
-          "type": "address"
-        }, {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
-        }],
-        "name": "transferFrom",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "inputs": [],
-        "name": "unlock",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }, {
-        "stateMutability": "payable",
-        "type": "receive"
+        'name': 'transfer',
+        'outputs': [{
+          'name': '',
+          'type': 'bool'
+        }],
+        'type': 'function'
       }]
 
-      //this.getGas(transactionObject.to, this.sendAmount )
+      let tokenABI = [{
+        'inputs': [{
+          'internalType': 'address[]',
+          'name': '_components',
+          'type': 'address[]'
+        }, {
+          'internalType': 'int256[]',
+          'name': '_units',
+          'type': 'int256[]'
+        }, {
+          'internalType': 'address[]',
+          'name': '_modules',
+          'type': 'address[]'
+        }, {
+          'internalType': 'contract IController',
+          'name': '_controller',
+          'type': 'address'
+        }, {
+          'internalType': 'address',
+          'name': '_manager',
+          'type': 'address'
+        }, {
+          'internalType': 'string',
+          'name': '_name',
+          'type': 'string'
+        }, {
+          'internalType': 'string',
+          'name': '_symbol',
+          'type': 'string'
+        }],
+        'stateMutability': 'nonpayable',
+        'type': 'constructor'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': 'owner',
+          'type': 'address'
+        }, {
+          'indexed': true,
+          'internalType': 'address',
+          'name': 'spender',
+          'type': 'address'
+        }, {
+          'indexed': false,
+          'internalType': 'uint256',
+          'name': 'value',
+          'type': 'uint256'
+        }],
+        'name': 'Approval',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }],
+        'name': 'ComponentAdded',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }],
+        'name': 'ComponentRemoved',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }, {
+          'indexed': false,
+          'internalType': 'int256',
+          'name': '_realUnit',
+          'type': 'int256'
+        }],
+        'name': 'DefaultPositionUnitEdited',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }, {
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
+        }, {
+          'indexed': false,
+          'internalType': 'bytes',
+          'name': '_data',
+          'type': 'bytes'
+        }],
+        'name': 'ExternalPositionDataEdited',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }, {
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
+        }, {
+          'indexed': false,
+          'internalType': 'int256',
+          'name': '_realUnit',
+          'type': 'int256'
+        }],
+        'name': 'ExternalPositionUnitEdited',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_target',
+          'type': 'address'
+        }, {
+          'indexed': true,
+          'internalType': 'uint256',
+          'name': '_value',
+          'type': 'uint256'
+        }, {
+          'indexed': false,
+          'internalType': 'bytes',
+          'name': '_data',
+          'type': 'bytes'
+        }, {
+          'indexed': false,
+          'internalType': 'bytes',
+          'name': '_returnValue',
+          'type': 'bytes'
+        }],
+        'name': 'Invoked',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': false,
+          'internalType': 'address',
+          'name': '_newManager',
+          'type': 'address'
+        }, {
+          'indexed': false,
+          'internalType': 'address',
+          'name': '_oldManager',
+          'type': 'address'
+        }],
+        'name': 'ManagerEdited',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
+        }],
+        'name': 'ModuleAdded',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
+        }],
+        'name': 'ModuleInitialized',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
+        }],
+        'name': 'ModuleRemoved',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
+        }],
+        'name': 'PendingModuleRemoved',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }, {
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
+        }],
+        'name': 'PositionModuleAdded',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }, {
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
+        }],
+        'name': 'PositionModuleRemoved',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': false,
+          'internalType': 'int256',
+          'name': '_newMultiplier',
+          'type': 'int256'
+        }],
+        'name': 'PositionMultiplierEdited',
+        'type': 'event'
+      }, {
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': 'from',
+          'type': 'address'
+        }, {
+          'indexed': true,
+          'internalType': 'address',
+          'name': 'to',
+          'type': 'address'
+        }, {
+          'indexed': false,
+          'internalType': 'uint256',
+          'name': 'value',
+          'type': 'uint256'
+        }],
+        'name': 'Transfer',
+        'type': 'event'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }],
+        'name': 'addComponent',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }, {
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
+        }],
+        'name': 'addExternalPositionModule',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
+        }],
+        'name': 'addModule',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': 'owner',
+          'type': 'address'
+        }, {
+          'internalType': 'address',
+          'name': 'spender',
+          'type': 'address'
+        }],
+        'name': 'allowance',
+        'outputs': [{
+          'internalType': 'uint256',
+          'name': '',
+          'type': 'uint256'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': 'spender',
+          'type': 'address'
+        }, {
+          'internalType': 'uint256',
+          'name': 'amount',
+          'type': 'uint256'
+        }],
+        'name': 'approve',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
+        }],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': 'account',
+          'type': 'address'
+        }],
+        'name': 'balanceOf',
+        'outputs': [{
+          'internalType': 'uint256',
+          'name': '',
+          'type': 'uint256'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_account',
+          'type': 'address'
+        }, {
+          'internalType': 'uint256',
+          'name': '_quantity',
+          'type': 'uint256'
+        }],
+        'name': 'burn',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'uint256',
+          'name': '',
+          'type': 'uint256'
+        }],
+        'name': 'components',
+        'outputs': [{
+          'internalType': 'address',
+          'name': '',
+          'type': 'address'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'controller',
+        'outputs': [{
+          'internalType': 'contract IController',
+          'name': '',
+          'type': 'address'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'decimals',
+        'outputs': [{
+          'internalType': 'uint8',
+          'name': '',
+          'type': 'uint8'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': 'spender',
+          'type': 'address'
+        }, {
+          'internalType': 'uint256',
+          'name': 'subtractedValue',
+          'type': 'uint256'
+        }],
+        'name': 'decreaseAllowance',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
+        }],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }, {
+          'internalType': 'int256',
+          'name': '_realUnit',
+          'type': 'int256'
+        }],
+        'name': 'editDefaultPositionUnit',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }, {
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
+        }, {
+          'internalType': 'bytes',
+          'name': '_data',
+          'type': 'bytes'
+        }],
+        'name': 'editExternalPositionData',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }, {
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
+        }, {
+          'internalType': 'int256',
+          'name': '_realUnit',
+          'type': 'int256'
+        }],
+        'name': 'editExternalPositionUnit',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'int256',
+          'name': '_newMultiplier',
+          'type': 'int256'
+        }],
+        'name': 'editPositionMultiplier',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'getComponents',
+        'outputs': [{
+          'internalType': 'address[]',
+          'name': '',
+          'type': 'address[]'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }],
+        'name': 'getDefaultPositionRealUnit',
+        'outputs': [{
+          'internalType': 'int256',
+          'name': '',
+          'type': 'int256'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }, {
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
+        }],
+        'name': 'getExternalPositionData',
+        'outputs': [{
+          'internalType': 'bytes',
+          'name': '',
+          'type': 'bytes'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }],
+        'name': 'getExternalPositionModules',
+        'outputs': [{
+          'internalType': 'address[]',
+          'name': '',
+          'type': 'address[]'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }, {
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
+        }],
+        'name': 'getExternalPositionRealUnit',
+        'outputs': [{
+          'internalType': 'int256',
+          'name': '',
+          'type': 'int256'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'getModules',
+        'outputs': [{
+          'internalType': 'address[]',
+          'name': '',
+          'type': 'address[]'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'getPositions',
+        'outputs': [{
+          'components': [{
+            'internalType': 'address',
+            'name': 'component',
+            'type': 'address'
+          }, {
+            'internalType': 'address',
+            'name': 'module',
+            'type': 'address'
+          }, {
+            'internalType': 'int256',
+            'name': 'unit',
+            'type': 'int256'
+          }, {
+            'internalType': 'uint8',
+            'name': 'positionState',
+            'type': 'uint8'
+          }, {
+            'internalType': 'bytes',
+            'name': 'data',
+            'type': 'bytes'
+          }],
+          'internalType': 'struct ISetToken.Position[]',
+          'name': '',
+          'type': 'tuple[]'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }],
+        'name': 'getTotalComponentRealUnits',
+        'outputs': [{
+          'internalType': 'int256',
+          'name': '',
+          'type': 'int256'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': 'spender',
+          'type': 'address'
+        }, {
+          'internalType': 'uint256',
+          'name': 'addedValue',
+          'type': 'uint256'
+        }],
+        'name': 'increaseAllowance',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
+        }],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'initializeModule',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_target',
+          'type': 'address'
+        }, {
+          'internalType': 'uint256',
+          'name': '_value',
+          'type': 'uint256'
+        }, {
+          'internalType': 'bytes',
+          'name': '_data',
+          'type': 'bytes'
+        }],
+        'name': 'invoke',
+        'outputs': [{
+          'internalType': 'bytes',
+          'name': '_returnValue',
+          'type': 'bytes'
+        }],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }],
+        'name': 'isComponent',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }, {
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
+        }],
+        'name': 'isExternalPositionModule',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
+        }],
+        'name': 'isInitializedModule',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'isLocked',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
+        }],
+        'name': 'isPendingModule',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'lock',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'locker',
+        'outputs': [{
+          'internalType': 'address',
+          'name': '',
+          'type': 'address'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'manager',
+        'outputs': [{
+          'internalType': 'address',
+          'name': '',
+          'type': 'address'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_account',
+          'type': 'address'
+        }, {
+          'internalType': 'uint256',
+          'name': '_quantity',
+          'type': 'uint256'
+        }],
+        'name': 'mint',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '',
+          'type': 'address'
+        }],
+        'name': 'moduleStates',
+        'outputs': [{
+          'internalType': 'enum ISetToken.ModuleState',
+          'name': '',
+          'type': 'uint8'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'uint256',
+          'name': '',
+          'type': 'uint256'
+        }],
+        'name': 'modules',
+        'outputs': [{
+          'internalType': 'address',
+          'name': '',
+          'type': 'address'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'name',
+        'outputs': [{
+          'internalType': 'string',
+          'name': '',
+          'type': 'string'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'positionMultiplier',
+        'outputs': [{
+          'internalType': 'int256',
+          'name': '',
+          'type': 'int256'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }],
+        'name': 'removeComponent',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
+        }, {
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
+        }],
+        'name': 'removeExternalPositionModule',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
+        }],
+        'name': 'removeModule',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
+        }],
+        'name': 'removePendingModule',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_manager',
+          'type': 'address'
+        }],
+        'name': 'setManager',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'symbol',
+        'outputs': [{
+          'internalType': 'string',
+          'name': '',
+          'type': 'string'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'totalSupply',
+        'outputs': [{
+          'internalType': 'uint256',
+          'name': '',
+          'type': 'uint256'
+        }],
+        'stateMutability': 'view',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': 'recipient',
+          'type': 'address'
+        }, {
+          'internalType': 'uint256',
+          'name': 'amount',
+          'type': 'uint256'
+        }],
+        'name': 'transfer',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
+        }],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [{
+          'internalType': 'address',
+          'name': 'sender',
+          'type': 'address'
+        }, {
+          'internalType': 'address',
+          'name': 'recipient',
+          'type': 'address'
+        }, {
+          'internalType': 'uint256',
+          'name': 'amount',
+          'type': 'uint256'
+        }],
+        'name': 'transferFrom',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
+        }],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'inputs': [],
+        'name': 'unlock',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+      }, {
+        'stateMutability': 'payable',
+        'type': 'receive'
+      }]
+
+      // this.getGas(transactionObject.to, this.sendAmount )
       // Get ERC20 Token contract instance
       /*
 
@@ -1223,7 +1217,7 @@ export default {
           console.log(hash, transactionObject);
 
         }).on('error', function(error, a) {
-          
+
          self.error = error
         })
       /*
@@ -1232,7 +1226,7 @@ export default {
         }).catch((error) => {
           this.error = error
 
-        }); 
+        });
 
       }
       // Legacy dapp browsers...
@@ -1249,7 +1243,7 @@ export default {
           console.log(hash, transactionObject);
 
         }).on('error', function(error, a) {
-          
+
          self.error = error
         })
         /*
@@ -1259,7 +1253,7 @@ export default {
           this.error = error
 
         });
-       
+
       }
       // Non-dapp browsers...
       else {
@@ -1268,979 +1262,974 @@ export default {
 
     return
     */
-      let contract = new this.web3.eth.Contract(tokenABI, tokenAddress);
-      let poolContract = new this.web3.eth.Contract(minABI, transactionObject.to);
+      let contract = new this.web3.eth.Contract(tokenABI, tokenAddress)
+      let poolContract = new this.web3.eth.Contract(minABI, transactionObject.to)
       console.log(contract.methods, 'contract.methods')
       const self = this
       contract.methods.transfer(transactionObject.to, value).send({
-          from: transactionObject.from,
-          value:value
+        from: transactionObject.from,
+        value: value
+      })
+        .on('transactionHash', function (hash) {
+          console.log(hash, transactionObject)
+        }).on('error', function (error, a) {
+          self.error = error
         })
-        .on('transactionHash', function(hash) {
-          console.log(hash, transactionObject);
-
-        }).on('error', function(error, a) {
-          
-         self.error = error
-        })
-
     },
-    getGas() {
-
+    getGas () {
       let tokenABI = [{
-        "inputs": [{
-          "internalType": "address[]",
-          "name": "_components",
-          "type": "address[]"
+        'inputs': [{
+          'internalType': 'address[]',
+          'name': '_components',
+          'type': 'address[]'
         }, {
-          "internalType": "int256[]",
-          "name": "_units",
-          "type": "int256[]"
+          'internalType': 'int256[]',
+          'name': '_units',
+          'type': 'int256[]'
         }, {
-          "internalType": "address[]",
-          "name": "_modules",
-          "type": "address[]"
+          'internalType': 'address[]',
+          'name': '_modules',
+          'type': 'address[]'
         }, {
-          "internalType": "contract IController",
-          "name": "_controller",
-          "type": "address"
+          'internalType': 'contract IController',
+          'name': '_controller',
+          'type': 'address'
         }, {
-          "internalType": "address",
-          "name": "_manager",
-          "type": "address"
+          'internalType': 'address',
+          'name': '_manager',
+          'type': 'address'
         }, {
-          "internalType": "string",
-          "name": "_name",
-          "type": "string"
+          'internalType': 'string',
+          'name': '_name',
+          'type': 'string'
         }, {
-          "internalType": "string",
-          "name": "_symbol",
-          "type": "string"
+          'internalType': 'string',
+          'name': '_symbol',
+          'type': 'string'
         }],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
+        'stateMutability': 'nonpayable',
+        'type': 'constructor'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "owner",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': 'owner',
+          'type': 'address'
         }, {
-          "indexed": true,
-          "internalType": "address",
-          "name": "spender",
-          "type": "address"
+          'indexed': true,
+          'internalType': 'address',
+          'name': 'spender',
+          'type': 'address'
         }, {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "value",
-          "type": "uint256"
+          'indexed': false,
+          'internalType': 'uint256',
+          'name': 'value',
+          'type': 'uint256'
         }],
-        "name": "Approval",
-        "type": "event"
+        'name': 'Approval',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }],
-        "name": "ComponentAdded",
-        "type": "event"
+        'name': 'ComponentAdded',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }],
-        "name": "ComponentRemoved",
-        "type": "event"
+        'name': 'ComponentRemoved',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }, {
-          "indexed": false,
-          "internalType": "int256",
-          "name": "_realUnit",
-          "type": "int256"
+          'indexed': false,
+          'internalType': 'int256',
+          'name': '_realUnit',
+          'type': 'int256'
         }],
-        "name": "DefaultPositionUnitEdited",
-        "type": "event"
+        'name': 'DefaultPositionUnitEdited',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }, {
-          "indexed": true,
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
         }, {
-          "indexed": false,
-          "internalType": "bytes",
-          "name": "_data",
-          "type": "bytes"
+          'indexed': false,
+          'internalType': 'bytes',
+          'name': '_data',
+          'type': 'bytes'
         }],
-        "name": "ExternalPositionDataEdited",
-        "type": "event"
+        'name': 'ExternalPositionDataEdited',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }, {
-          "indexed": true,
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
         }, {
-          "indexed": false,
-          "internalType": "int256",
-          "name": "_realUnit",
-          "type": "int256"
+          'indexed': false,
+          'internalType': 'int256',
+          'name': '_realUnit',
+          'type': 'int256'
         }],
-        "name": "ExternalPositionUnitEdited",
-        "type": "event"
+        'name': 'ExternalPositionUnitEdited',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_target",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_target',
+          'type': 'address'
         }, {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "_value",
-          "type": "uint256"
+          'indexed': true,
+          'internalType': 'uint256',
+          'name': '_value',
+          'type': 'uint256'
         }, {
-          "indexed": false,
-          "internalType": "bytes",
-          "name": "_data",
-          "type": "bytes"
+          'indexed': false,
+          'internalType': 'bytes',
+          'name': '_data',
+          'type': 'bytes'
         }, {
-          "indexed": false,
-          "internalType": "bytes",
-          "name": "_returnValue",
-          "type": "bytes"
+          'indexed': false,
+          'internalType': 'bytes',
+          'name': '_returnValue',
+          'type': 'bytes'
         }],
-        "name": "Invoked",
-        "type": "event"
+        'name': 'Invoked',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": false,
-          "internalType": "address",
-          "name": "_newManager",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': false,
+          'internalType': 'address',
+          'name': '_newManager',
+          'type': 'address'
         }, {
-          "indexed": false,
-          "internalType": "address",
-          "name": "_oldManager",
-          "type": "address"
+          'indexed': false,
+          'internalType': 'address',
+          'name': '_oldManager',
+          'type': 'address'
         }],
-        "name": "ManagerEdited",
-        "type": "event"
+        'name': 'ManagerEdited',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
         }],
-        "name": "ModuleAdded",
-        "type": "event"
+        'name': 'ModuleAdded',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
         }],
-        "name": "ModuleInitialized",
-        "type": "event"
+        'name': 'ModuleInitialized',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
         }],
-        "name": "ModuleRemoved",
-        "type": "event"
+        'name': 'ModuleRemoved',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
         }],
-        "name": "PendingModuleRemoved",
-        "type": "event"
+        'name': 'PendingModuleRemoved',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }, {
-          "indexed": true,
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
         }],
-        "name": "PositionModuleAdded",
-        "type": "event"
+        'name': 'PositionModuleAdded',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }, {
-          "indexed": true,
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
+          'indexed': true,
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
         }],
-        "name": "PositionModuleRemoved",
-        "type": "event"
+        'name': 'PositionModuleRemoved',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": false,
-          "internalType": "int256",
-          "name": "_newMultiplier",
-          "type": "int256"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': false,
+          'internalType': 'int256',
+          'name': '_newMultiplier',
+          'type': 'int256'
         }],
-        "name": "PositionMultiplierEdited",
-        "type": "event"
+        'name': 'PositionMultiplierEdited',
+        'type': 'event'
       }, {
-        "anonymous": false,
-        "inputs": [{
-          "indexed": true,
-          "internalType": "address",
-          "name": "from",
-          "type": "address"
+        'anonymous': false,
+        'inputs': [{
+          'indexed': true,
+          'internalType': 'address',
+          'name': 'from',
+          'type': 'address'
         }, {
-          "indexed": true,
-          "internalType": "address",
-          "name": "to",
-          "type": "address"
+          'indexed': true,
+          'internalType': 'address',
+          'name': 'to',
+          'type': 'address'
         }, {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "value",
-          "type": "uint256"
+          'indexed': false,
+          'internalType': 'uint256',
+          'name': 'value',
+          'type': 'uint256'
         }],
-        "name": "Transfer",
-        "type": "event"
+        'name': 'Transfer',
+        'type': 'event'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }],
-        "name": "addComponent",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'name': 'addComponent',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }, {
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
         }],
-        "name": "addExternalPositionModule",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'name': 'addExternalPositionModule',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
         }],
-        "name": "addModule",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'name': 'addModule',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "owner",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': 'owner',
+          'type': 'address'
         }, {
-          "internalType": "address",
-          "name": "spender",
-          "type": "address"
+          'internalType': 'address',
+          'name': 'spender',
+          'type': 'address'
         }],
-        "name": "allowance",
-        "outputs": [{
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+        'name': 'allowance',
+        'outputs': [{
+          'internalType': 'uint256',
+          'name': '',
+          'type': 'uint256'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "spender",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': 'spender',
+          'type': 'address'
         }, {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
+          'internalType': 'uint256',
+          'name': 'amount',
+          'type': 'uint256'
         }],
-        "name": "approve",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
+        'name': 'approve',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
         }],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': 'account',
+          'type': 'address'
         }],
-        "name": "balanceOf",
-        "outputs": [{
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+        'name': 'balanceOf',
+        'outputs': [{
+          'internalType': 'uint256',
+          'name': '',
+          'type': 'uint256'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_account",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_account',
+          'type': 'address'
         }, {
-          "internalType": "uint256",
-          "name": "_quantity",
-          "type": "uint256"
+          'internalType': 'uint256',
+          'name': '_quantity',
+          'type': 'uint256'
         }],
-        "name": "burn",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'name': 'burn',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+        'inputs': [{
+          'internalType': 'uint256',
+          'name': '',
+          'type': 'uint256'
         }],
-        "name": "components",
-        "outputs": [{
-          "internalType": "address",
-          "name": "",
-          "type": "address"
+        'name': 'components',
+        'outputs': [{
+          'internalType': 'address',
+          'name': '',
+          'type': 'address'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "controller",
-        "outputs": [{
-          "internalType": "contract IController",
-          "name": "",
-          "type": "address"
+        'inputs': [],
+        'name': 'controller',
+        'outputs': [{
+          'internalType': 'contract IController',
+          'name': '',
+          'type': 'address'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "decimals",
-        "outputs": [{
-          "internalType": "uint8",
-          "name": "",
-          "type": "uint8"
+        'inputs': [],
+        'name': 'decimals',
+        'outputs': [{
+          'internalType': 'uint8',
+          'name': '',
+          'type': 'uint8'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "spender",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': 'spender',
+          'type': 'address'
         }, {
-          "internalType": "uint256",
-          "name": "subtractedValue",
-          "type": "uint256"
+          'internalType': 'uint256',
+          'name': 'subtractedValue',
+          'type': 'uint256'
         }],
-        "name": "decreaseAllowance",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
+        'name': 'decreaseAllowance',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
         }],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }, {
-          "internalType": "int256",
-          "name": "_realUnit",
-          "type": "int256"
+          'internalType': 'int256',
+          'name': '_realUnit',
+          'type': 'int256'
         }],
-        "name": "editDefaultPositionUnit",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'name': 'editDefaultPositionUnit',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }, {
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
         }, {
-          "internalType": "bytes",
-          "name": "_data",
-          "type": "bytes"
+          'internalType': 'bytes',
+          'name': '_data',
+          'type': 'bytes'
         }],
-        "name": "editExternalPositionData",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'name': 'editExternalPositionData',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }, {
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
         }, {
-          "internalType": "int256",
-          "name": "_realUnit",
-          "type": "int256"
+          'internalType': 'int256',
+          'name': '_realUnit',
+          'type': 'int256'
         }],
-        "name": "editExternalPositionUnit",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'name': 'editExternalPositionUnit',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "int256",
-          "name": "_newMultiplier",
-          "type": "int256"
+        'inputs': [{
+          'internalType': 'int256',
+          'name': '_newMultiplier',
+          'type': 'int256'
         }],
-        "name": "editPositionMultiplier",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'name': 'editPositionMultiplier',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "getComponents",
-        "outputs": [{
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
+        'inputs': [],
+        'name': 'getComponents',
+        'outputs': [{
+          'internalType': 'address[]',
+          'name': '',
+          'type': 'address[]'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }],
-        "name": "getDefaultPositionRealUnit",
-        "outputs": [{
-          "internalType": "int256",
-          "name": "",
-          "type": "int256"
+        'name': 'getDefaultPositionRealUnit',
+        'outputs': [{
+          'internalType': 'int256',
+          'name': '',
+          'type': 'int256'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }, {
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
         }],
-        "name": "getExternalPositionData",
-        "outputs": [{
-          "internalType": "bytes",
-          "name": "",
-          "type": "bytes"
+        'name': 'getExternalPositionData',
+        'outputs': [{
+          'internalType': 'bytes',
+          'name': '',
+          'type': 'bytes'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }],
-        "name": "getExternalPositionModules",
-        "outputs": [{
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
+        'name': 'getExternalPositionModules',
+        'outputs': [{
+          'internalType': 'address[]',
+          'name': '',
+          'type': 'address[]'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }, {
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
         }],
-        "name": "getExternalPositionRealUnit",
-        "outputs": [{
-          "internalType": "int256",
-          "name": "",
-          "type": "int256"
+        'name': 'getExternalPositionRealUnit',
+        'outputs': [{
+          'internalType': 'int256',
+          'name': '',
+          'type': 'int256'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "getModules",
-        "outputs": [{
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
+        'inputs': [],
+        'name': 'getModules',
+        'outputs': [{
+          'internalType': 'address[]',
+          'name': '',
+          'type': 'address[]'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "getPositions",
-        "outputs": [{
-          "components": [{
-            "internalType": "address",
-            "name": "component",
-            "type": "address"
+        'inputs': [],
+        'name': 'getPositions',
+        'outputs': [{
+          'components': [{
+            'internalType': 'address',
+            'name': 'component',
+            'type': 'address'
           }, {
-            "internalType": "address",
-            "name": "module",
-            "type": "address"
+            'internalType': 'address',
+            'name': 'module',
+            'type': 'address'
           }, {
-            "internalType": "int256",
-            "name": "unit",
-            "type": "int256"
+            'internalType': 'int256',
+            'name': 'unit',
+            'type': 'int256'
           }, {
-            "internalType": "uint8",
-            "name": "positionState",
-            "type": "uint8"
+            'internalType': 'uint8',
+            'name': 'positionState',
+            'type': 'uint8'
           }, {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
+            'internalType': 'bytes',
+            'name': 'data',
+            'type': 'bytes'
           }],
-          "internalType": "struct ISetToken.Position[]",
-          "name": "",
-          "type": "tuple[]"
+          'internalType': 'struct ISetToken.Position[]',
+          'name': '',
+          'type': 'tuple[]'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }],
-        "name": "getTotalComponentRealUnits",
-        "outputs": [{
-          "internalType": "int256",
-          "name": "",
-          "type": "int256"
+        'name': 'getTotalComponentRealUnits',
+        'outputs': [{
+          'internalType': 'int256',
+          'name': '',
+          'type': 'int256'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "spender",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': 'spender',
+          'type': 'address'
         }, {
-          "internalType": "uint256",
-          "name": "addedValue",
-          "type": "uint256"
+          'internalType': 'uint256',
+          'name': 'addedValue',
+          'type': 'uint256'
         }],
-        "name": "increaseAllowance",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
+        'name': 'increaseAllowance',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
         }],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "initializeModule",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'inputs': [],
+        'name': 'initializeModule',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_target",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_target',
+          'type': 'address'
         }, {
-          "internalType": "uint256",
-          "name": "_value",
-          "type": "uint256"
+          'internalType': 'uint256',
+          'name': '_value',
+          'type': 'uint256'
         }, {
-          "internalType": "bytes",
-          "name": "_data",
-          "type": "bytes"
+          'internalType': 'bytes',
+          'name': '_data',
+          'type': 'bytes'
         }],
-        "name": "invoke",
-        "outputs": [{
-          "internalType": "bytes",
-          "name": "_returnValue",
-          "type": "bytes"
+        'name': 'invoke',
+        'outputs': [{
+          'internalType': 'bytes',
+          'name': '_returnValue',
+          'type': 'bytes'
         }],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }],
-        "name": "isComponent",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
+        'name': 'isComponent',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }, {
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
         }],
-        "name": "isExternalPositionModule",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
+        'name': 'isExternalPositionModule',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
         }],
-        "name": "isInitializedModule",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
+        'name': 'isInitializedModule',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "isLocked",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
+        'inputs': [],
+        'name': 'isLocked',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
         }],
-        "name": "isPendingModule",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
+        'name': 'isPendingModule',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "lock",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'inputs': [],
+        'name': 'lock',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "locker",
-        "outputs": [{
-          "internalType": "address",
-          "name": "",
-          "type": "address"
+        'inputs': [],
+        'name': 'locker',
+        'outputs': [{
+          'internalType': 'address',
+          'name': '',
+          'type': 'address'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "manager",
-        "outputs": [{
-          "internalType": "address",
-          "name": "",
-          "type": "address"
+        'inputs': [],
+        'name': 'manager',
+        'outputs': [{
+          'internalType': 'address',
+          'name': '',
+          'type': 'address'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_account",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_account',
+          'type': 'address'
         }, {
-          "internalType": "uint256",
-          "name": "_quantity",
-          "type": "uint256"
+          'internalType': 'uint256',
+          'name': '_quantity',
+          'type': 'uint256'
         }],
-        "name": "mint",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'name': 'mint',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '',
+          'type': 'address'
         }],
-        "name": "moduleStates",
-        "outputs": [{
-          "internalType": "enum ISetToken.ModuleState",
-          "name": "",
-          "type": "uint8"
+        'name': 'moduleStates',
+        'outputs': [{
+          'internalType': 'enum ISetToken.ModuleState',
+          'name': '',
+          'type': 'uint8'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+        'inputs': [{
+          'internalType': 'uint256',
+          'name': '',
+          'type': 'uint256'
         }],
-        "name": "modules",
-        "outputs": [{
-          "internalType": "address",
-          "name": "",
-          "type": "address"
+        'name': 'modules',
+        'outputs': [{
+          'internalType': 'address',
+          'name': '',
+          'type': 'address'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "name",
-        "outputs": [{
-          "internalType": "string",
-          "name": "",
-          "type": "string"
+        'inputs': [],
+        'name': 'name',
+        'outputs': [{
+          'internalType': 'string',
+          'name': '',
+          'type': 'string'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "positionMultiplier",
-        "outputs": [{
-          "internalType": "int256",
-          "name": "",
-          "type": "int256"
+        'inputs': [],
+        'name': 'positionMultiplier',
+        'outputs': [{
+          'internalType': 'int256',
+          'name': '',
+          'type': 'int256'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }],
-        "name": "removeComponent",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'name': 'removeComponent',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_component",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_component',
+          'type': 'address'
         }, {
-          "internalType": "address",
-          "name": "_positionModule",
-          "type": "address"
+          'internalType': 'address',
+          'name': '_positionModule',
+          'type': 'address'
         }],
-        "name": "removeExternalPositionModule",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'name': 'removeExternalPositionModule',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
         }],
-        "name": "removeModule",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'name': 'removeModule',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_module",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_module',
+          'type': 'address'
         }],
-        "name": "removePendingModule",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'name': 'removePendingModule',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "_manager",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': '_manager',
+          'type': 'address'
         }],
-        "name": "setManager",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'name': 'setManager',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "symbol",
-        "outputs": [{
-          "internalType": "string",
-          "name": "",
-          "type": "string"
+        'inputs': [],
+        'name': 'symbol',
+        'outputs': [{
+          'internalType': 'string',
+          'name': '',
+          'type': 'string'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "totalSupply",
-        "outputs": [{
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+        'inputs': [],
+        'name': 'totalSupply',
+        'outputs': [{
+          'internalType': 'uint256',
+          'name': '',
+          'type': 'uint256'
         }],
-        "stateMutability": "view",
-        "type": "function"
+        'stateMutability': 'view',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "recipient",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': 'recipient',
+          'type': 'address'
         }, {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
+          'internalType': 'uint256',
+          'name': 'amount',
+          'type': 'uint256'
         }],
-        "name": "transfer",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
+        'name': 'transfer',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
         }],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [{
-          "internalType": "address",
-          "name": "sender",
-          "type": "address"
+        'inputs': [{
+          'internalType': 'address',
+          'name': 'sender',
+          'type': 'address'
         }, {
-          "internalType": "address",
-          "name": "recipient",
-          "type": "address"
+          'internalType': 'address',
+          'name': 'recipient',
+          'type': 'address'
         }, {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
+          'internalType': 'uint256',
+          'name': 'amount',
+          'type': 'uint256'
         }],
-        "name": "transferFrom",
-        "outputs": [{
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
+        'name': 'transferFrom',
+        'outputs': [{
+          'internalType': 'bool',
+          'name': '',
+          'type': 'bool'
         }],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "inputs": [],
-        "name": "unlock",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        'inputs': [],
+        'name': 'unlock',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
       }, {
-        "stateMutability": "payable",
-        "type": "receive"
+        'stateMutability': 'payable',
+        'type': 'receive'
       }]
       self = this
-      let contract = new this.web3.eth.Contract(tokenABI, '0x033b186321fa88603e3ecc98821fb0932b2c0760');
-      contract.methods.transfer('0x80c5e6908368cb9db503ba968d7ec5a565bfb389', (this.sendAmount * 10 ** 18).toFixed(0)).estimateGas(function(error, gasAmount) {
-
+      let contract = new this.web3.eth.Contract(tokenABI, '0x033b186321fa88603e3ecc98821fb0932b2c0760')
+      contract.methods.transfer('0x80c5e6908368cb9db503ba968d7ec5a565bfb389', (this.sendAmount * 10 ** 18).toFixed(0)).estimateGas(function (error, gasAmount) {
         self.gasOptions = [{
-            label: 'Slow',
-            value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount)
-          },
-          {
-            label: 'Standard',
-            value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.standard, gasAmount)
-          },
-          {
-            label: 'Fast',
-            value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.fast, gasAmount)
-          },
-          {
-            label: 'Instant',
-            value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.instant, gasAmount)
-          }
+          label: 'Slow',
+          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount)
+        },
+        {
+          label: 'Standard',
+          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.standard, gasAmount)
+        },
+        {
+          label: 'Fast',
+          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.fast, gasAmount)
+        },
+        {
+          label: 'Instant',
+          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.instant, gasAmount)
+        }
         ]
         self.gasSelected = {
           label: 'Standard',
@@ -2248,17 +2237,14 @@ export default {
         }
         console.log(self.gasOptions, 'gasOptions', self.gasSelected, 'gasSelected')
       })
-
     },
-    getUSDGasPrice(gweiPrice, gasNumber) {
+    getUSDGasPrice (gweiPrice, gasNumber) {
       return (this.web3.utils.fromWei((gweiPrice * gasNumber * 1000000000).toString(), 'ether') * 385).toFixed(2)
     },
-    async doTransaction() {
+    async doTransaction () {
       let poolData = this.$store.state.investment.pools.find(v => v.contractAddress == this.pool.value)
       let toAddress = this.contractAddress[poolData.platform.replace(/[^0-9a-z]/gi, '').toLowerCase()]
       if (!toAddress) console.log('toAddress not found')
-
-
 
       let transactionObject = {
         to: toAddress,
@@ -2266,72 +2252,63 @@ export default {
       }
       if (this.currentToken.type.toLowerCase() != 'eth') return this.doErc20Transaction(transactionObject)
       if (window.ethereum) {
-        window.web3 = new Web3(ethereum);
+        window.web3 = new Web3(ethereum)
 
         // Request account access if needed
-        await ethereum.enable();
+        await ethereum.enable()
         // Acccounts now exposed
-        await web3.eth.sendTransaction(transactionObject).then(function(receipt) {
+        await web3.eth.sendTransaction(transactionObject).then(function (receipt) {
           console.log(receipt)
         }).catch((error) => {
           this.error = error
-
-        });
-
+        })
       }
       // Legacy dapp browsers...
       else if (window.web3) {
-        window.web3 = new Web3(web3.currentProvider);
+        window.web3 = new Web3(web3.currentProvider)
         // Acccounts always exposed
-        await web3.eth.sendTransaction(transactionObject).then(function(receipt) {
+        await web3.eth.sendTransaction(transactionObject).then(function (receipt) {
           console.log(receipt)
         }).catch((error) => {
           this.error = error
-
-        });
+        })
       }
       // Non-dapp browsers...
       else {
-        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
       }
       return
 
       if (this.currentToken.type.toLowerCase() != 'eth') return this.doErc20Transaction(transactionObject)
 
-
       transactionObject.from = this.currentToken.key
       transactionObject.value = this.web3.utils.toWei(this.web3.utils.toBN(this.sendAmount))
 
       const EthereumTx = require('ethereumjs-tx').Transaction
-      this.web3.eth.sendTransaction(transactionObject).then(function(receipt) {
+      this.web3.eth.sendTransaction(transactionObject).then(function (receipt) {
         console.log(receipt)
       }).catch((error) => {
         this.error = error
-
-      });
-
+      })
     },
-    async isTokenInWallet() {
-
+    async isTokenInWallet () {
       let tableData = await this.$store.state.wallets.tokens
       this.ethTokens = tableData.filter(w => w.chain === 'eth')
-      // this.tokenInWallet =  this.ethTokens.find(w =>  this.tokenOptions.find(o => o.toLowerCase() == w.type.toLowerCase())) 
-      // this.currentToken = this.tokenInWallet ? this.tokenInWallet.name : this.tokenOptions[0] ; 
-      //this.sendAmount = this.tokenInWallet ? this.tokenInWallet.amount : 0
-
+      // this.tokenInWallet =  this.ethTokens.find(w =>  this.tokenOptions.find(o => o.toLowerCase() == w.type.toLowerCase()))
+      // this.currentToken = this.tokenInWallet ? this.tokenInWallet.name : this.tokenOptions[0] ;
+      // this.sendAmount = this.tokenInWallet ? this.tokenInWallet.amount : 0
     },
-    getMaxBalance() {
+    getMaxBalance () {
       this.sendAmount = this.currentToken.amount
     },
-    validateInput() {
+    validateInput () {
       if (this.sendAmount <= 0) {
         this.sendAmount = 0
       } else {
         this.sendAmount = this.tokenInWallet && this.sendAmount > this.tokenInWallet.amount ? this.tokenInWallet.amount : this.sendAmount
       }
     },
-    filterPoolsByUserInput(val, update) {
-
+    filterPoolsByUserInput (val, update) {
       if (val === '') {
         update(() => {
           self.poolOptions = this.$store.state.investment.pools.map(o => {
@@ -2354,10 +2331,9 @@ export default {
             tokens: o.tokens
           }
         })
-
       })
     },
-    filterPoolsByPlatform() {
+    filterPoolsByPlatform () {
       this.poolOptions = this.$store.state.investment.pools.filter(o => this.platform == 'Any' || o.platform.toLowerCase() == this.platform.toLowerCase()).map(o => {
         return {
           label: o.poolName,
@@ -2368,13 +2344,12 @@ export default {
       this.pool = this.poolOptions[0]
       //  this.tokenOptions = this.pool.tokens ;
       this.isTokenInWallet()
-
     },
-    getTokenAvailableAmount() {
+    getTokenAvailableAmount () {
       let found = this.ethTokens.find(o => o.type.toLowerCase() == this.currentToken.toLowerCase())
       this.availableAmount = found ? found.amount : 0
     },
-    goToExchange() {
+    goToExchange () {
       // console.log('this.depositCoin', this.depositCoin)
       let depositCoin = {
         image: 'https://files.coinswitch.co/public/coins/btc.png',
@@ -2563,7 +2538,7 @@ export default {
             font-size: 10px;
           }
           .q-item__label{
-          
+
             font-weight: 600;
             margin-bottom: -2px;
             margin-left: -10px;
