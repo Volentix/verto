@@ -14,15 +14,15 @@
                   <div class="col-5"><h3>Token</h3></div>
                   <div class="col-4"><h3>Balance</h3></div>
                 </div>
-                <q-scroll-area :visible="true" class="q-pr-lg q-mb-md q-mr-sm" style="height: 130px;">
-                  <div v-for="i in 3" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+                <q-scroll-area :visible="true" class="q-pr-lg q-mb-md q-mr-sm" style="height: 230px;">
+                  <div v-for="token in ethTokens" :key="ethTokens" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
                     <div class="col-5 flex items-center">
                       <span class="token flex items-center">
-                        <img src="statics/coins_icons/eth2.png" class="q-mr-sm" alt=""> <strong>ETH</strong>
+                        <img :src="'https://files.coinswitch.co/public/coins/'+token.type+'.png'" class="q-mr-sm" alt=""> <strong>{{token.type}}</strong>
                       </span>
                     </div>
                     <div class="col-4 q-pl-sm">
-                      <span class="balance">120,8 USD</span>
+                      <span class="balance">{{token.usd.toFixed(3)}} USD</span>
                     </div>
                   </div>
                 </q-scroll-area>
@@ -36,7 +36,7 @@
             <div class="flex justify-between items-center q-pt-sm q-pb-sm">
               <h3 class="text-white q-pl-md">Max DeFi Yield</h3>
               <div class="text-white q-pr-md amount flex items-center">
-                <span class="interest_rate q-pr-md flex items-center"><img src="statics/media/USDC-logo.png"  alt=""><strong class="q-pr-md"><span class="thicker">USDC</span></strong> 21.0528 % <b class="p-abs">Interest Rate</b></span>
+                <span class="interest_rate q-pr-md flex items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'"  alt=""><strong class="q-pr-md q-pb-sm"><span class="thicker">{{maxDeFiYield.token}}</span></strong> {{maxDeFiYield.roi}} % <b class="p-abs">Interest Rate</b></span>
                 <!-- <span>28.35 USD</span> -->
               </div>
             </div>
@@ -64,6 +64,8 @@
               </div>
             </q-scroll-area>
           </div> -->
+
+          
           <div class="desktop-card-style current-investments explore-opportunities q-mb-md">
             <h4 class="q-pl-md">Explore Opportunities</h4>
             <div class="header-table-col row q-pl-md">
@@ -74,46 +76,46 @@
               <div class="col-2"><h3>Net ROI(1mo)</h3></div>
               <div class="col-2"></div>
             </div>
-            <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 125px;">
-              <div v-for="i in 10" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+             <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 230px;">
+              <div v-for="(pool, index) in $store.state.investment.pools" :key="index" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
                 <div class="col-1 flex items-center">
-                  <strong>{{i}}</strong>
+                  <strong>{{(index + 1)}}</strong>
                 </div>
                 <div class="col-3 flex items-center">
                   <span class="imgs q-mr-lg">
-                    <img src="statics/coins_icons/eth2.png" alt="">
-                    <img src="statics/coins_icons/bat.png" alt="">
+                    <img v-if="icon" v-for="(icon, index) in pool.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
+      
                   </span>
                   <span class="column pairs">
-                    <span class="pair">ETH / BAT</span>
-                    <span class="value">Uniswap V1</span>
+                    <span class="pair">{{pool.poolName}}</span>
+                    <span class="value">{{pool.platform}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-sm">
                   <span class="column pairs">
-                    <span class="pair">$10,918,987</span>
+                    <span class="pair">${{pool.liquidity}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-md">
                   <span class="column pairs">
-                    <span class="value">N/A</span>
+                    <span class="value">{{pool.netROI}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-lg">
                   <span class="column pairs">
-                    <span class="value">N/A</span>
+                    <span class="value">{{pool.ROI}}</span>
                   </span>
                 </div>
                 <div class="col-2 flex justify-end">
-                  <q-btn unelevated @click="openDialog = true" class="qbtn-custom full-width q-pl-xs q-pr-xs q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
+                  <q-btn unelevated @click="$store.commit('investment/setSelectedPool', pool); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
                 </div>
               </div>
             </q-scroll-area>
           </div>
-          <div class="desktop-card-style yearn-finance q-mb-md">
+          <div class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken">
             <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
-              Convert 100 ETH to USDC <q-icon name="arrow_right_alt" /> <div class="flex justify-between items-center"><img src="statics/media/yearn-finance.png" alt=""> <strong>21.0528 %<b>yearn.finance</b></strong></div>
-              <q-btn unelevated class="qbtn-download q-mr-md" color="black" text-color="white" label="Confirm" />
+              Convert {{parseInt(maxToken.amount)}} {{maxToken.type}} to {{maxDeFiYield.token}} <q-icon name="arrow_right_alt" /> <div class="flex justify-between items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'"  alt="">  <strong>{{maxDeFiYield.toTokenAmount}} <b>{{maxDeFiYield.token}}</b></strong></div>
+              <q-btn unelevated class="qbtn-download q-mr-md" color="black" text-color="white" label="Confirm" @click="goToExchange()" />
             </h4>
           </div>
         </div>
@@ -216,6 +218,7 @@ export default {
   },
   data () {
     return {
+      maxDeFiYield:{},
       openDialog: false,
       osName: '',
       progressValue: 20,
@@ -267,7 +270,9 @@ export default {
         amount: '',
         contract: '',
         chain: ''
-      }
+      },
+      ethTokens:[],
+      maxToken:false
     }
   },
   updated () {
@@ -284,15 +289,19 @@ export default {
     // console.log('this.osName', this.osName)
     this.params = this.$store.state.currentwallet.params
     // console.log('this.params', this.params)
-    this.tableData = await this.$store.state.wallets.tokens
-    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+    let tableData = await this.$store.state.wallets.tokens
+    this.currentAccount = tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
+    
+    //console.log(this.ethAccount,'ethAccount', tableData)
+    this.ethTokens = tableData.filter(w => w.chain === 'eth' && !isNaN(w.usd))
+    this.maxToken = this.ethTokens.reduce((p, c) => p.usd > c.usd ? p : c);
 
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
-    this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
+    //this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
 
-    // console.log('this.currentAccount sur la page send', this.currentAccount)
+     /*console.log('this.currentAccount sur la page send', this.currentAccount)
 
     if (this.currentAccount.privateKey) {
       this.privateKey.key = this.currentAccount.privateKey
@@ -307,13 +316,52 @@ export default {
       walletClientName: this.walletClientName,
       privateKey: this.cruxKey.privateKey
     })
+  
     await cruxClient.init()
+      */
+   
+      this.$store.dispatch('investment/getZapperTokens');
   },
-  mounted () {
+  async mounted () {
+    this.getMaxDeFiYield()
   },
-  methods: {
+  methods: { 
+      goToExchange () {
+      // console.log('this.depositCoin', this.depositCoin)
+      let depositCoin = {label: this.maxToken.type , value: this.maxToken.type.toLowerCase(), image: 'https://files.coinswitch.co/public/coins/'+this.maxDeFiYield.token.toLowerCase()+'.png' }
+      let destinationCoin = {label: this.maxDeFiYield.token , value: this.maxDeFiYield.token.toLowerCase() , image: 'https://zapper.fi/images/'+this.maxDeFiYield.token+'-icon.png' }
+      this.$router.push({ path: '/verto/exchange/:coinToSend/:coinToReceive', name: 'exchange-v3', params: { depositCoin: depositCoin, destinationCoin: destinationCoin } })
+    },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
+    getMaxDeFiYield(){
+       this.$axios.get('https://cors-anywhere.herokuapp.com/https://stats.finance/yearn')
+       .then((result) => {
+       
+        var html = new DOMParser().parseFromString(result.data, "text/html");
+        var prev = 0,
+            data = {};
+        for (let i = 6; i <= 14; i++) {
+            let value = parseFloat(html.querySelectorAll('table tr')[i].innerText.match(/[\d\.]+/)[0])
+            if (value > prev) {
+
+                this.maxDeFiYield = {
+                    roi: value,
+                    token: html.querySelectorAll('table tr')[i].innerText.match(/\(([^)]+)\)/)[1]
+                }
+              prev = value
+            }
+
+        }
+        this.maxDeFiYield.toTokenAmount = this.convertWalletToken(this.maxToken.type, this.maxDeFiYield.token)
+       
+       })
+    },
+    convertWalletToken(from,to){
+     
+     let find =  this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() == to.toLowerCase())
+     return find ?  parseInt(this.maxToken.usd / find.price) : 'Not found'
     },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)

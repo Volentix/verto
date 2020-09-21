@@ -18,7 +18,7 @@ class Wallets2Tokens {
     store.state.wallets.portfolioTotal = 0
     this.tableData = [ ...store.state.currentwallet.config.keys ]
     this.tableData.map(wallet => {
-      wallet.type = wallet.type ? wallet.type : 'verto'
+      wallet.chain = wallet.type = 'eth'
 
       // let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
       // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === vtxCoin.toLowerCase())
@@ -43,7 +43,8 @@ class Wallets2Tokens {
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
         // wallet.vespucciScore = vespucciScore
       }
-
+      wallet.disabled = false
+      wallet.chain = wallet.type = 'eth'
       if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'bnb' || wallet.type === 'dash') {
         Lib.balance(wallet.type, wallet.key).then(result => {
           // console.log('libwallet', result)
@@ -125,7 +126,7 @@ class Wallets2Tokens {
           })
         })
       } else if (wallet.type === 'eth') {
-        // wallet.key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
+         wallet.key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
         axios.get('https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
           let ethplorer = res.data
           self.tableData.filter(w => w.key === wallet.key).map(eth => {
