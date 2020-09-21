@@ -32,7 +32,7 @@
                 <div class="col-3 flex items-center">
                   <span class="imgs q-mr-lg">
                     <img  v-if="icon" v-for="(icon, index) in pool.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
-      
+
                   </span>
                   <span class="column pairs">
                     <span class="pair">{{pool.poolName}}</span>
@@ -154,8 +154,8 @@ export default {
   },
   data () {
     return {
-      pools:[],
-      rawPools:[],
+      pools: [],
+      rawPools: [],
       cruxKey: {},
       osName: '',
       screenSize: 0,
@@ -216,96 +216,92 @@ export default {
   beforeCreate () {
     // console.log('beforeCreate event')
   },
-async created() {
-        let exchangeNotif = document.querySelector('.exchange-notif');
-        if (exchangeNotif !== null) {
-            exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click'))
-        }
-        // Check if mnemonic exists
-        // console.log('this.$store.state.currentwallet.wallet = undefined called')
-        this.osName = osName
-        this.getWindowWidth()
-        window.addEventListener('resize', this.getWindowWidth)
-        // console.log('this.osName', this.osName)
-        // console.log('store.state.currentwallet.config', store.state.currentwallet.config)
-        if (!store.state.currentwallet.config.mnemonic) {
-            this.$router.push('recovery-seed')
-        } else {
-            let wallets2Tokens = require('@/util/Wallets2Tokens')
-            if (!store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
-        }
-
-        // Adds the eos account name when it is found to the cruxID
-        this.tableData = await store.state.wallets.tokens.map(token => {
-            token.selected = false
-            if (token.hidden === undefined) {
-                token.hidden = false
-            }
-        })
-        this.$store.state.currentwallet.wallet = {
-            empty: true
-        }
-        Promise.all(this.tableData)
-        let eosAccount = this.tableData.find(w => w !== undefined && w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
-        // console.log('this.tableData', this.tableData)
-
-        if (eosAccount) {
-            let accountNames = await eos.getAccountNamesFromPubKeyP(eosAccount.key)
-
-            // May be we could auto convert an eos key to an account if discovered here
-            if (accountNames.account_names.includes(eosAccount.name)) {
-                // console.log('we have an upgraded account', accountNames, eosAccount.name)
-
-                this.cruxKey = await HD.Wallet('crux')
-                cruxClient = new CruxPay.CruxClient({
-                    walletClientName: this.walletClientName,
-                    privateKey: this.cruxKey.privateKey
-                })
-                await cruxClient.init()
-
-                let addressMap = await cruxClient.getAddressMap()
-                // console.log('addressMap', addressMap)
-
-                if (!addressMap.hasOwnProperty('eos')) {
-                    addressMap['eos'] = {
-                        'addressHash': eosAccount.name
-                    }
-                    cruxClient.putAddressMap(addressMap)
-                }
-            }
-        }
-       
-        this.$store.dispatch('investment/getZapperTokens');
-       this.$store.dispatch('investment/getUniSwapHistoricalData');
-
-    },
-    methods: {
-        getWindowWidth() {
-            this.screenSize = document.querySelector('#q-app').offsetWidth
-        }
-
-    },
-    watch: {
-        zapperTokens(newVal, old) {
-
-            if (!newVal.length) return
-           
-            this.$store.dispatch('investment/getBalancerPools');
-           
-            this.$store.dispatch('investment/getYvaultsPools' );
-            this.$store.dispatch('investment/getCurvesPools');
-             this.$store.dispatch('investment/getUniswapPools');
-            this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0]);
-            
-            
-        },
-        poolDataHistory(newVal, old){
-                   
-        }
-    },
-    computed: {
-        ...mapState('investment', ['zapperTokens','poolDataHistory'])
+  async created () {
+    let exchangeNotif = document.querySelector('.exchange-notif')
+    if (exchangeNotif !== null) {
+      exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click'))
     }
+    // Check if mnemonic exists
+    // console.log('this.$store.state.currentwallet.wallet = undefined called')
+    this.osName = osName
+    this.getWindowWidth()
+    window.addEventListener('resize', this.getWindowWidth)
+    // console.log('this.osName', this.osName)
+    // console.log('store.state.currentwallet.config', store.state.currentwallet.config)
+    if (!store.state.currentwallet.config.mnemonic) {
+      this.$router.push('recovery-seed')
+    } else {
+      let wallets2Tokens = require('@/util/Wallets2Tokens')
+      if (!store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
+    }
+
+    // Adds the eos account name when it is found to the cruxID
+    this.tableData = await store.state.wallets.tokens.map(token => {
+      token.selected = false
+      if (token.hidden === undefined) {
+        token.hidden = false
+      }
+    })
+    this.$store.state.currentwallet.wallet = {
+      empty: true
+    }
+    Promise.all(this.tableData)
+    let eosAccount = this.tableData.find(w => w !== undefined && w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
+    // console.log('this.tableData', this.tableData)
+
+    if (eosAccount) {
+      let accountNames = await eos.getAccountNamesFromPubKeyP(eosAccount.key)
+
+      // May be we could auto convert an eos key to an account if discovered here
+      if (accountNames.account_names.includes(eosAccount.name)) {
+        // console.log('we have an upgraded account', accountNames, eosAccount.name)
+
+        this.cruxKey = await HD.Wallet('crux')
+        cruxClient = new CruxPay.CruxClient({
+          walletClientName: this.walletClientName,
+          privateKey: this.cruxKey.privateKey
+        })
+        await cruxClient.init()
+
+        let addressMap = await cruxClient.getAddressMap()
+        // console.log('addressMap', addressMap)
+
+        if (!addressMap.hasOwnProperty('eos')) {
+          addressMap['eos'] = {
+            'addressHash': eosAccount.name
+          }
+          cruxClient.putAddressMap(addressMap)
+        }
+      }
+    }
+
+    this.$store.dispatch('investment/getZapperTokens')
+    this.$store.dispatch('investment/getUniSwapHistoricalData')
+  },
+  methods: {
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
+    }
+
+  },
+  watch: {
+    zapperTokens (newVal, old) {
+      if (!newVal.length) return
+
+      this.$store.dispatch('investment/getBalancerPools')
+
+      this.$store.dispatch('investment/getYvaultsPools')
+      this.$store.dispatch('investment/getCurvesPools')
+      this.$store.dispatch('investment/getUniswapPools')
+      this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0])
+    },
+    poolDataHistory (newVal, old) {
+
+    }
+  },
+  computed: {
+    ...mapState('investment', ['zapperTokens', 'poolDataHistory'])
+  }
 }
 </script>
 <style lang="scss" scoped>
