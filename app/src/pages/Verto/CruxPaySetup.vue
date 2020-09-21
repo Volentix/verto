@@ -229,11 +229,11 @@ export default {
       for (const symbol of Object.keys(this.assets)) {
         i++
         this.progress = Math.round(i / count * 10000) / 100
-        // console.log('this.progress', this.progress)
+        console.log('this.progress', this.progress)
         this.status = 'Creating keys for: ' + symbol
         let keys = await HD.Wallet(symbol)
-        // let result = await this.$configManager.saveWalletAndKey(this.names.find(o => o.value === symbol).label, this.vertoPassword, null, keys.publicKey, keys.privateKey, symbol, 'mnemonic')
-        // console.log('key creation', result)
+        let result = await this.$configManager.saveWalletAndKey(this.names.find(o => o.value === symbol).label, this.vertoPassword, null, keys.publicKey, keys.privateKey, symbol, 'mnemonic')
+        console.log('key creation', result)
         map[symbol] = { 'addressHash': keys.publicKey }
       }
 
