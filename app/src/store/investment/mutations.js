@@ -28,9 +28,7 @@ export const  getRois  = (state, updated) => {
               return t.address.toLowerCase() == updated.contractAddress.toLowerCase()
             }
           ))
-            if(historical){
-             
-               
+            if(historical){  
           var d = state.pools[index] ? historical.value : 0,
           m = state.pools[index] ? (historical.reserve0 * updated.price0 + historical.reserve1 * updated.price1) / historical.supply : 0 ;
           grossROI = state.pools[index] ? 100 * (l / d - 1) : 0
