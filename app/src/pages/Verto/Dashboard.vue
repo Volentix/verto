@@ -276,6 +276,7 @@ async created() {
         }
        
         this.$store.dispatch('investment/getZapperTokens');
+       this.$store.dispatch('investment/getUniSwapHistoricalData');
 
     },
     methods: {
@@ -288,16 +289,22 @@ async created() {
         zapperTokens(newVal, old) {
 
             if (!newVal.length) return
-         
+           
             this.$store.dispatch('investment/getBalancerPools');
-            this.$store.dispatch('investment/getUniswapPools');
+           
             this.$store.dispatch('investment/getYvaultsPools' );
             this.$store.dispatch('investment/getCurvesPools');
+             this.$store.dispatch('investment/getUniswapPools');
             this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0]);
+            
+            
+        },
+        poolDataHistory(newVal, old){
+                   
         }
     },
     computed: {
-        ...mapState('investment', ['zapperTokens'])
+        ...mapState('investment', ['zapperTokens','poolDataHistory'])
     }
 }
 </script>

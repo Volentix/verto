@@ -15,6 +15,16 @@ export const getGasPrice = ({ commit , state }, payload) => {
     });
 }
 
+export const getUniSwapHistoricalData = ({ commit , state }, payload) => {
+
+    axios.get('https://cors-anywhere.herokuapp.com/https://zapper.fi/api/pool-history/uniswap', config).then((result) => {
+        if (result.data.hasOwnProperty('v2History') ) {
+       
+            commit("setPoolHistoricalData", {data:result.data.v2History, platform:'UniswapV2'})
+
+        }
+    });
+}
 export const getBalancerPools = ({ commit , state }, payload) => {
 
     axios.post('https://api.thegraph.com/subgraphs/name/balancer-labs/balancer', {
@@ -66,63 +76,64 @@ export const getBalancerPools = ({ commit , state }, payload) => {
     });
 }
 
-export const getUniswapPools = ({ commit , state }, payload) => {
-
-    axios.post('https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2', {
-        query: `{
-            pairs(first: 250, orderBy: reserveUSD, orderDirection: desc) {
-              id
-              reserve0
-              reserve1
-              totalSupply
-              reserveUSD
-              token0 {
-                id
-                symbol
-                decimals
-              }
-              token1 {
-                id
-                symbol
-                decimals
-              }
-            }
-          }`
-    }).then((result) => {
-        if (result.data.hasOwnProperty('data') && result.data.data.pairs) {
-
-            result.data.data.pairs.forEach((value, index) => {
-
-                let pair = [state.zapperTokens.find(t => t.address.toLowerCase() == value['token0'].id.toLowerCase()), state.zapperTokens.find(t => t.address.toLowerCase() == value['token1'].id.toLowerCase())].filter((val) => val)
-                if (pair.length != 2) return
-                let pool = value
-                pool.contractAddress = value.id
-                pool.poolName = pair.map(o => o?.label).filter((val) => val).join(' / ')
-                pool.icons = pair.map(o => o?.img).filter((val) => val)
-
-                //To be calculated using historical data of the token
-                pool.netROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
-                pool.ROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
-                
-                pool.tokens = pair.map(o => o?.label).filter((val) => val)
-                pool.platform = 'Uniswap V2'
-                pool.liquidity = parseInt(pool.reserveUSD).toLocaleString()
-
-
-                if (!(pair.length > 1 && !pool.poolName.includes('/')))
-                    commit("updatePools", pool)
-
-            })
-
-        }
-
-    });
+export const getUniswapPools = ({commit, state}, payload) => {
+	// https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2
+	axios.post('https://cors-anywhere.herokuapp.com/https://zapper.fi/api/pool-stats/uniswap', {}, config).then((result) => {
+		result.data = result.data.map((function(e) {
+			if("uniswapV2" === e.protocol) {
+				if("yUSD / ETH" === e.value) {
+					e.netROI = 0
+					e.grossROI = 0
+					return e
+				}
+				var l = e.liquidity / e.supply,
+					p = state.poolDataHistory['UniswapV2'].find((function(t) {
+						return t.address === e.address
+					})),
+					d = p ? p.value : 0,
+					m = p ? (p.reserve0 * e.price0 + p.reserve1 * e.price1) / p.supply : 0,
+					f = p ? 100 * (l / d - 1) : 0,
+					y = p ? 100 * (l / m - 1) : 0;
+				e.netROI = y.toFixed(2)
+				e.grossROI = f.toFixed(2)
+				return e
+			}
+		})).filter((function(e) {
+            return !e.isBlocked
+        })).filter((function(e) {
+            return !e.hideFromExplore
+        }))
+		if(result.data.length) {
+			result.data.forEach((value, index) => {
+				let poolTokens = value.tokens.map(o => state.zapperTokens.find(t => t.address.toLowerCase() == o.address.toLowerCase())).filter((val) => val)
+				if(!poolTokens.length) return
+				let pool = value
+				pool.poolName = poolTokens.map(o => o?.label).filter((val) => val).join(' / ')
+				pool.icons = poolTokens.map(o => o?.img).filter((val) => val)
+				//To be calculated using historical data of the token
+				pool.netROI = value.netROI + '%'
+				pool.ROI = value.grossROI + '%'
+				pool.id = value.address
+				pool.tokens = poolTokens.map(o => o?.label).filter((val) => val)
+				pool.platform = 'Uniswap V2'
+				pool.liquidity = parseInt(pool.liquidity).toLocaleString()
+				if(!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
+					commit("updatePools", pool)
+				
+				}
+			})
+		}
+	});
 }
 export const getYvaultsPools = ({ commit , state }, payload) => {
     axios.get('https://cors-anywhere.herokuapp.com/https://zapper.fi/api/yvaults', config).then((result) => {
         if (result.data.length) {
 
-            result.data.forEach((value, index) => {
+            result.data.filter((function(e) {
+                return !e.isBlocked
+            })).filter((function(e) {
+                return !e.hideFromExplore
+            })).forEach((value, index) => {
 
                 let poolTokens = value.tokens.map(o => state.zapperTokens.find(t => t.address.toLowerCase() == o.address.toLowerCase())).filter((val) => val)
 
@@ -132,8 +143,8 @@ export const getYvaultsPools = ({ commit , state }, payload) => {
                 pool.icons = poolTokens.map(o => o?.img).filter((val) => val)
 
                 //To be calculated using historical data of the token
-                pool.netROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
-                pool.ROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
+                pool.netROI = value.netROI.toFixed(2)+'%'
+                pool.ROI = value.grossROI.toFixed(2)+'%'
 
                 pool.id = value.address
                 pool.tokens = poolTokens.map(o => o?.label).filter((val) => val)
@@ -164,8 +175,8 @@ export const getCurvesPools = ({ commit , state }, payload) => {
                 pool.icons = poolTokens.map(o => o?.img).filter((val) => val)
 
                 //To be calculated using historical data of the token
-                pool.netROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
-                pool.ROI = '0.'+Math.floor((Math.random()*30) + 1)+'%'
+                pool.netROI = value.netROI+'%'
+                pool.ROI = value.grossROI+'%'
 
                 pool.tokens = poolTokens.map(o => o?.label).filter((val) => val)
                 pool.platform = 'Curve'
