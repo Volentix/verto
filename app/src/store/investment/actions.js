@@ -5,7 +5,7 @@ export function someAction (context) {
 import axios from 'axios'
 const config = {
     headers: {
-        'api-key': 'b7575aeb-b8a2-4360-88ab-400d1fba3aec',
+        'api-key': 'b7575aeb-b8a2-4360-88ab-400d1fba3aec'
     }
 }
 export const getGasPrice = ({ commit , state }, payload) => {
@@ -77,31 +77,31 @@ export const getBalancerPools = ({ commit , state }, payload) => {
 }
 
 export const getUniswapPools = ({commit, state}, payload) => {
-	// https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2
+	
 	axios.post('https://cors-anywhere.herokuapp.com/https://zapper.fi/api/pool-stats/uniswap', {}, config).then((result) => {
-		result.data = result.data.map((function(e) {
-			if("uniswapV2" === e.protocol) {
-				if("yUSD / ETH" === e.value) {
-					e.netROI = 0
-					e.grossROI = 0
-					return e
+		result.data = result.data.map((function(actualPool) {
+			if("uniswapV2" === actualPool.protocol) {
+				if("yUSD / actualPoolTH" === actualPool.value) {
+					actualPool.netROI = 0
+					actualPool.grossROI = 0
+					return actualPool
 				}
-				var l = e.liquidity / e.supply,
-					p = state.poolDataHistory['UniswapV2'].find((function(t) {
-						return t.address === e.address
+				var l = actualPool.liquidity / actualPool.supply,
+                    historicalPool = state.poolDataHistory['UniswapV2'].find((function(t) {
+						return t.address === actualPool.address
 					})),
-					d = p ? p.value : 0,
-					m = p ? (p.reserve0 * e.price0 + p.reserve1 * e.price1) / p.supply : 0,
-					f = p ? 100 * (l / d - 1) : 0,
-					y = p ? 100 * (l / m - 1) : 0;
-				e.netROI = y.toFixed(2)
-				e.grossROI = f.toFixed(2)
-				return e
-			}
-		})).filter((function(e) {
-            return !e.isBlocked
-        })).filter((function(e) {
-            return !e.hideFromExplore
+					d = historicalPool ? historicalPool.value : 0,
+					m = historicalPool ? ( historicalPool.reserve0 * actualPool.price0 + historicalPool.reserve1 * actualPool.price1 ) / historicalPool.supply : 0,
+					f = historicalPool ? 100 * (l / d - 1) : 0,
+					y = historicalPool ? 100 * (l / m - 1) : 0;
+				actualPool.netROI = y.toFixed(2)
+				actualPool.grossROI = f.toFixed(2)
+				return actualPool
+        }
+		})).filter((function(actualPool) {
+            return !actualPool.isBlocked
+        })).filter((function(actualPool) {
+            return !actualPool.hideFromExplore
         }))
 		if(result.data.length) {
 			result.data.forEach((value, index) => {
@@ -175,8 +175,8 @@ export const getCurvesPools = ({ commit , state }, payload) => {
                 pool.icons = poolTokens.map(o => o?.img).filter((val) => val)
 
                 //To be calculated using historical data of the token
-                pool.netROI = value.netROI+'%'
-                pool.ROI = value.grossROI+'%'
+                pool.netROI = value.netROI.toFixed(2)+'%'
+                pool.ROI = value.grossROI.toFixed(2)+'%'
 
                 pool.tokens = poolTokens.map(o => o?.label).filter((val) => val)
                 pool.platform = 'Curve'
