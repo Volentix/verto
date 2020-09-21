@@ -19,8 +19,12 @@
               </div>
               <div class="chain-tools-wrapper--list open">
                 <div class="list-wrapper">
-                    <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                      <q-stepper v-model="step" done-color="green" ref="stepper" class="stepper--desktop" alternative-labels color="primary" animated flat >
+                   <div class="list-wrapper--chain__eos-to-vtx-convertor">
+                      <div class="row q-mb-md">
+                        <q-select class="default-view col-md-3 col-6 offset-md-9" v-model="defaultView" :options="['Coinswitch', '1Inch']" label="Default view" />
+                      </div>
+                      <OneInchExhange v-if="defaultView == '1Inch'"></OneInchExhange>
+                      <q-stepper v-else-if="defaultView == 'Coinswitch'" v-model="step" done-color="green" ref="stepper" class="stepper--desktop" alternative-labels color="primary" animated flat >
                         <!-- 1. Select Coin to Send -->
                         <q-step default title="Select Coin to Send" :name="1" prefix="1" :done="step > 1">
                           <div class="text-black">
@@ -764,12 +768,14 @@ const typeUpper = function (thing) {
 }
 import { osName } from 'mobile-device-detect'
 import Wallets from '../../components/Verto/Wallets'
+import OneInchExhange from '../../pages/Exchange/oneInch'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 export default {
   components: {
     // desktop components
     ProfileHeader,
-    Wallets
+    Wallets,
+    OneInchExhange
   },
   data () {
     return {
@@ -777,6 +783,7 @@ export default {
       disclaimerCheck: false,
       showDisclaimerWrapper: false,
       fromCoin: null,
+      defaultView:'1Inch',
       fromCoinAmount: 0,
       toCoinAmount: 0,
       fromCoinType: 'EOS',
@@ -2183,5 +2190,8 @@ export default {
   }
   .q-field__messages{
     margin-top: 5px;
+  }
+  .default-view {
+    max-width:200px;
   }
 </style>
