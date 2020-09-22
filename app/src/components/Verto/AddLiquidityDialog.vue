@@ -5,7 +5,7 @@
             <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
         <q-card-section class="text-h6">
-            <div class="text-h6 q-mb-md q-pl-sm flex items-center">
+            <div v-if="currentToken.label" class="text-h6 q-mb-md q-pl-sm flex items-center">
               <h4 class="lab-title q-pr-md">Available {{currentToken.label}}:</h4> {{ currentToken.amount}}
               <span class="link-to-exchange" @click="goToExchange" v-if="!tokenInWallet && false">Get {{currentToken.label}}</span>
             </div>
