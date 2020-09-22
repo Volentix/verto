@@ -277,6 +277,7 @@ export default {
 
     this.$store.dispatch('investment/getZapperTokens')
     this.$store.dispatch('investment/getUniSwapHistoricalData')
+    this.$store.dispatch('investment/getBalancerHistoricalData')
   },
   methods: {
     getWindowWidth () {
@@ -289,7 +290,6 @@ export default {
       if (!newVal.length) return
 
       this.$store.dispatch('investment/getBalancerPools')
-
       this.$store.dispatch('investment/getYvaultsPools')
       this.$store.dispatch('investment/getCurvesPools')
       this.$store.dispatch('investment/getUniswapPools')
