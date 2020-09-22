@@ -295,7 +295,7 @@ export default {
 
     // console.log(this.ethAccount,'ethAccount', tableData)
     this.ethTokens = tableData.filter(w => w.chain === 'eth' && !isNaN(w.usd))
-    this.maxToken = this.ethTokens.reduce((p, c) => p.usd > c.usd ? p : c)
+    this.maxToken = this.ethTokens.length ? this.ethTokens.reduce((p, c) => p.usd > c.usd ? p : c) : null
 
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
     // this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
