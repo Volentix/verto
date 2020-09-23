@@ -4,7 +4,7 @@
             <q-toolbar-title><span class="text-weight-bold q-pl-sm">Add Liquidity</span></q-toolbar-title>
             <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
-        <q-card-section class="text-h6">
+        <q-card-section class="text-h6" v-if="!transactionSent">
             <div v-if="currentToken.label" class="text-h6 q-mb-md q-pl-sm flex items-center">
               <h4 class="lab-title q-pr-md">Available {{currentToken.label}}:</h4> {{ currentToken.amount}}
               <span class="link-to-exchange" @click="goToExchange" v-if="!tokenInWallet && false">Get {{currentToken.label}}</span>
@@ -105,7 +105,21 @@
               </div>
             </div> -->
         </q-card-section>
-        <q-card-actions align="right" class="q-pr-sm q-mb-sm q-mt-xl">
+         <q-card-section class="text-h6" v-else>
+            <div class="row">
+            <div class="col-12 col-md-12 text-left text-h7">
+               Transaction sent
+            </div>
+            <div class="col-12 col-md-12 text-center text-h6">
+               <q-input filled v-model="transactionSent" hint="Readonly"  label="Your transaction hash" readonly />
+            </div>
+             <div class="col-12 col-md-12 text-left text-h7 etherscan">
+              <a :href="'https://etherscan.io/tx/'+transactionSent" target="_black">View in Etherscan <q-icon name="visibility"></q-icon></a>
+            </div>
+             </div>
+        
+         </q-card-section>
+        <q-card-actions align="right" class="q-pr-sm q-mb-sm q-mt-xl" v-if="!transactionSent">
             <q-btn label="Cancel" flat class="qbtn-start q-mr-sm cancel" color="black" v-close-popup/>
             <q-btn unelevated  class="qbtn-start" :disable="sendAmount == 0" color="black" text-color="white" label="Confirm" @click="doTransaction()" />
         </q-card-actions>
@@ -123,6 +137,7 @@ export default {
     return {
       platform: '',
       gasOptions: null,
+      transactionSent:null,
       gasSelected: null,
       pool: '',
       error: null,
@@ -2336,11 +2351,12 @@ export default {
     console.log(p)
  */
    
-            this.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'),function(err, hash) {
+            this.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'),(err, hash) => {
                     if (!err) {
-                            console.log(hash); 
+                           this.transactionSent = hash; 
+                           console.log(hash)
                      } else {
-                            console.log(err)
+                            this.error = err
                       }
             });
     
@@ -2439,6 +2455,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  .etherscan a {
+    color: black;
+    text-decoration: none;
+  }
   @import "~@/assets/styles/variables.scss";
   .link-to-exchange{
     text-decoration: underline;
