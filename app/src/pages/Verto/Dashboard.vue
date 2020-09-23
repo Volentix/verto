@@ -234,7 +234,7 @@ export default {
       let wallets2Tokens = require('@/util/Wallets2Tokens')
       if (!store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
     }
-
+    this.$store.dispatch('investment/getMarketDataVsUSD')
     // Adds the eos account name when it is found to the cruxID
     this.tableData = await store.state.wallets.tokens.map(token => {
       token.selected = false

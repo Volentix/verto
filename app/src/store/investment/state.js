@@ -4,6 +4,7 @@ export default function () {
     pools: [],
     zapperTokens: [],
     gasPrice: null,
-    poolDataHistory: {}
+    poolDataHistory: {},
+    marketData:[]
   }
 }
