@@ -42,7 +42,7 @@ class Wallets2Tokens {
         // wallet.vespucciScore = vespucciScore
       }
       wallet.disabled = false
-      
+
       if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'bnb' || wallet.type === 'dash') {
         Lib.balance(wallet.type, wallet.key).then(result => {
           // console.log('libwallet', result)
