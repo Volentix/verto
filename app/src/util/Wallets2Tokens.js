@@ -18,8 +18,6 @@ class Wallets2Tokens {
     store.state.wallets.portfolioTotal = 0
     this.tableData = [ ...store.state.currentwallet.config.keys ]
     this.tableData.map(wallet => {
-   
-
       // let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
       // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === vtxCoin.toLowerCase())
 
@@ -44,7 +42,7 @@ class Wallets2Tokens {
         // wallet.vespucciScore = vespucciScore
       }
       wallet.disabled = false
-      
+
       if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'bnb' || wallet.type === 'dash') {
         Lib.balance(wallet.type, wallet.key).then(result => {
           // console.log('libwallet', result)
