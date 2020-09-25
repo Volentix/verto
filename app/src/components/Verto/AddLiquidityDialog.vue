@@ -4,8 +4,8 @@
             <q-toolbar-title><span class="text-weight-bold q-pl-sm">Add Liquidity</span></q-toolbar-title>
             <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
-        <q-card-section class="text-h6">
-            <div class="text-h6 q-mb-md q-pl-sm flex items-center">
+        <q-card-section class="text-h6" v-if="!transactionSent">
+            <div v-if="currentToken.label" class="text-h6 q-mb-md q-pl-sm flex items-center">
               <h4 class="lab-title q-pr-md">Available {{currentToken.label}}:</h4> {{ currentToken.amount}}
               <span class="link-to-exchange" @click="goToExchange" v-if="!tokenInWallet && false">Get {{currentToken.label}}</span>
             </div>
@@ -37,7 +37,7 @@
             </div>
             <div class="col col-4 q-pr-md">
                 <strong class="lab-sub q-pl-md">Pool</strong>
-                <q-select class="select-input full-width"  @filter="filterPoolsByUserInput"   input-debounce="0" use-input filled @input="error = null " v-model="pool" color="purple"  :options="poolOptions" >
+                <q-select class="select-input full-width"  @filter="filterPoolsByUserInput"   input-debounce="0" use-input filled @input="$store.commit('investment/setSelectedPool', pool);error = null " v-model="pool" color="purple"  :options="poolOptions" >
                    <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
@@ -83,8 +83,12 @@
                   </q-item>
                 </template>
                 </q-select>
-
+              
               </div>
+              <div class="col-md-12 q-mt-sm">
+               <q-checkbox v-model="processWithMetamask"  label="Use Metamask" />
+              </div>
+               
               <div class="text-red q-mt-md" v-if="error">{{error}}</div>
             </div>
             <!-- <hr style="opacity: .1" class="q-mt-lg">
@@ -101,9 +105,23 @@
               </div>
             </div> -->
         </q-card-section>
-        <q-card-actions align="right" class="q-pr-sm q-mb-sm q-mt-xl">
+         <q-card-section class="text-h6" v-else>
+            <div class="row">
+            <div class="col-12 col-md-12 text-left text-h7">
+               Transaction sent
+            </div>
+            <div class="col-12 col-md-12 text-center text-h6">
+               <q-input filled v-model="transactionSent" hint="Readonly"  label="Your transaction hash" readonly />
+            </div>
+             <div class="col-12 col-md-12 text-left text-h7 etherscan">
+              <a :href="'https://etherscan.io/tx/'+transactionSent" target="_black">View in Etherscan <q-icon name="visibility"></q-icon></a>
+            </div>
+             </div>
+        
+         </q-card-section>
+        <q-card-actions align="right" class="q-pr-sm q-mb-sm q-mt-xl" v-if="!transactionSent">
             <q-btn label="Cancel" flat class="qbtn-start q-mr-sm cancel" color="black" v-close-popup/>
-            <q-btn unelevated  class="qbtn-start" color="black" text-color="white" label="Confirm" @click="doTransaction()" />
+            <q-btn unelevated  class="qbtn-start" :disable="sendAmount == 0" color="black" text-color="white" label="Confirm" @click="doTransaction()" />
         </q-card-actions>
     </q-card>
 </template>
@@ -119,6 +137,7 @@ export default {
     return {
       platform: '',
       gasOptions: null,
+      transactionSent:null,
       gasSelected: null,
       pool: '',
       error: null,
@@ -131,6 +150,7 @@ export default {
       ethAccount: null,
       availableAmount: 0,
       tokenInWallet: false,
+      processWithMetamask:false,
       web3: null,
       contractAddress: {
         uniswapv2: '0x80c5e6908368cb9db503ba968d7ec5a565bfb389',
@@ -148,16 +168,20 @@ export default {
     let tableData = await this.$store.state.wallets.tokens
     this.ethAccount = tableData.filter(w => w.chain === 'eth')
       .filter(w => this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() == w.type.toLowerCase()))
-    console.log(tableData.filter(w => w.chain === 'eth'))
+
     if (!this.notWidget) {
       await this.$store.dispatch('investment/getZapperTokens')
     } else {
       this.setDialogData()
     }
-
+    const options = {
+      transactionConfirmationBlocks: 1
+    };
     const Web3 = require('web3')
-    this.web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
-
+    this.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
+    
+    let t = this.web3.eth.getTransaction('0x51c32feefe4bcfac06b19364e07b7f261138e1760da96a827d6c0954dcb47059')
+    console.log(t,'t ')
     this.$store.dispatch('investment/getGasPrice')
   },
   computed: {
@@ -199,7 +223,7 @@ export default {
             tokens: o.tokens
           }
         })
-        this.pool = this.poolOptions[0]
+        this.pool = this.$store.state.investment.selectedPool
         this.isTokenInWallet()
       }
     },
@@ -2216,41 +2240,62 @@ export default {
       contract.methods.transfer('0x80c5e6908368cb9db503ba968d7ec5a565bfb389', (this.sendAmount * 10 ** 18).toFixed(0)).estimateGas(function (error, gasAmount) {
         self.gasOptions = [{
           label: 'Slow',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount)
-        },
-        {
-          label: 'Standard',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.standard, gasAmount)
+          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount),
+          gasPrice:  self.$store.state.investment.gasPrice.slow *  1000000000,
+          gas:gasAmount
         },
         {
           label: 'Fast',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.fast, gasAmount)
+          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.fast, gasAmount),
+         gasPrice:   self.$store.state.investment.gasPrice.fast *  1000000000,
+          gas:gasAmount
         },
         {
           label: 'Instant',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.instant, gasAmount)
+          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.instant, gasAmount),
+          gasPrice:  self.$store.state.investment.gasPrice.instant *  1000000000,
+          gas:gasAmount
         }
         ]
         self.gasSelected = {
           label: 'Standard',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.standard, gasAmount)
+          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.standard, gasAmount),
+          gasPrice:   self.$store.state.investment.gasPrice.standard *  1000000000,
+          gas:gasAmount
         }
         console.log(self.gasOptions, 'gasOptions', self.gasSelected, 'gasSelected')
       })
     },
     getUSDGasPrice (gweiPrice, gasNumber) {
-      return (this.web3.utils.fromWei((gweiPrice * gasNumber * 1000000000).toString(), 'ether') * 385).toFixed(2)
+       let ethToUsd = this.$store.state.investment.marketData.find(o => o.symbol.toLowerCase() == 'eth').current_price
+
+      return this.web3.utils.fromWei(Math.round((gweiPrice * gasNumber * 1000000000)).toString(), 'ether') * ethToUsd
     },
     async doTransaction () {
+      const EthereumTx = require('ethereumjs-tx').Transaction
+      console.log(this.pool)
+     
       let poolData = this.$store.state.investment.pools.find(v => v.contractAddress == this.pool.value)
+         console.log(this.pool, poolData)
       let toAddress = this.contractAddress[poolData.platform.replace(/[^0-9a-z]/gi, '').toLowerCase()]
       if (!toAddress) console.log('toAddress not found')
-
+      let nonce = await this.web3.eth.getTransactionCount(this.currentToken.key) + 1
+   
       let transactionObject = {
+        from:this.currentToken.key,
         to: toAddress,
-        value: (this.sendAmount * 10 ** 18).toFixed(0)
+        gas:this.gasSelected.gas,
+        value: this.sendAmount * 1000000000000000000 ,
+        gasPrice: this.gasSelected.gasPrice,
+        nonce:nonce,
+        chain:1
+
       }
       if (this.currentToken.type.toLowerCase() != 'eth') return this.doErc20Transaction(transactionObject)
+
+      if(this.processWithMetamask){
+        
+        transactionObject.from = null
       if (window.ethereum) {
         window.web3 = new Web3(ethereum)
 
@@ -2278,18 +2323,44 @@ export default {
         console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
       }
       return
-
+      }
       if (this.currentToken.type.toLowerCase() != 'eth') return this.doErc20Transaction(transactionObject)
+    
+    
+     
+      console.log(transactionObject,this.gasSelected)
+     
+      const transaction = new EthereumTx(transactionObject)
+     
+       transaction.sign(Buffer.from(this.currentToken.privateKey.substring(2), 'hex'))
+       const serializedTransaction = transaction.serialize()
+ /*
+         let p =  new Promise(async (resolve, reject) => {
+            this.web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex'), (err, id) => {
+              if (err) {
+                // console.log(err)
+                return reject()
+              }
+              resolve({
+                message: `https://etherscan.io/tx/${id}`,
+                success: true
+              })
+            })
+          })
 
-      transactionObject.from = this.currentToken.key
-      transactionObject.value = this.web3.utils.toWei(this.web3.utils.toBN(this.sendAmount))
+    console.log(p)
+ */
+   
+            this.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'),(err, hash) => {
+                    if (!err) {
+                           this.transactionSent = hash; 
+                           console.log(hash)
+                     } else {
+                            this.error = err
+                      }
+            });
+    
 
-      const EthereumTx = require('ethereumjs-tx').Transaction
-      this.web3.eth.sendTransaction(transactionObject).then(function (receipt) {
-        console.log(receipt)
-      }).catch((error) => {
-        this.error = error
-      })
     },
     async isTokenInWallet () {
       let tableData = await this.$store.state.wallets.tokens
@@ -2298,6 +2369,15 @@ export default {
       // this.currentToken = this.tokenInWallet ? this.tokenInWallet.name : this.tokenOptions[0] ;
       // this.sendAmount = this.tokenInWallet ? this.tokenInWallet.amount : 0
     },
+     async  getCurrentGasPrices () {
+          let response = await this.$axios.get('https://ethgasstation.info/json/ethgasAPI.json')
+          let prices = {
+            low: response.data.safeLow / 10,
+            medium: response.data.average / 10,
+            high: response.data.fast / 10
+          }
+          return prices
+        },
     getMaxBalance () {
       this.sendAmount = this.currentToken.amount
     },
@@ -2375,6 +2455,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  .etherscan a {
+    color: black;
+    text-decoration: none;
+  }
   @import "~@/assets/styles/variables.scss";
   .link-to-exchange{
     text-decoration: underline;

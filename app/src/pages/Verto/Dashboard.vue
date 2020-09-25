@@ -234,7 +234,7 @@ export default {
       let wallets2Tokens = require('@/util/Wallets2Tokens')
       if (!store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
     }
-
+    this.$store.dispatch('investment/getMarketDataVsUSD')
     // Adds the eos account name when it is found to the cruxID
     this.tableData = await store.state.wallets.tokens.map(token => {
       token.selected = false
@@ -277,6 +277,7 @@ export default {
 
     this.$store.dispatch('investment/getZapperTokens')
     this.$store.dispatch('investment/getUniSwapHistoricalData')
+    this.$store.dispatch('investment/getBalancerHistoricalData')
   },
   methods: {
     getWindowWidth () {
@@ -289,7 +290,6 @@ export default {
       if (!newVal.length) return
 
       this.$store.dispatch('investment/getBalancerPools')
-
       this.$store.dispatch('investment/getYvaultsPools')
       this.$store.dispatch('investment/getCurvesPools')
       this.$store.dispatch('investment/getUniswapPools')

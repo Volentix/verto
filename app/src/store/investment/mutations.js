@@ -44,3 +44,7 @@ export const getRois = (state, updated) => {
 export const setPoolHistoricalData = (state, payload) => {
   state.poolDataHistory[payload.platform] = payload.data
 }
+export const setMarketData = (state, payload) => {
+  state.marketData= payload
+}
+
