@@ -20,12 +20,12 @@ export const updateGasPrice = (state, gasPrice) => {
 }
 export const getRois = (state, updated) => {
   var grossROI = 0, netROI = 0
-  let index = state.pools.findIndex(o => o.contractAddress == updated.contractAddress)
+  let index = state.pools.findIndex(o => o.contractAddress === updated.contractAddress)
   if (updated.platform === 'Uniswap V2') {
-    if (updated.value == 'WBTC / ETH') {
+    if (updated.value === 'WBTC / ETH') {
       var l = parseFloat(updated.liquidity) / updated.supply,
         historical = state.poolDataHistory[updated.platform.replace(/[^a-z0-9+]+/gi, '')].find(function (t) {
-          return t.address.toLowerCase() == updated.contractAddress.toLowerCase()
+          return t.address.toLowerCase() === updated.contractAddress.toLowerCase()
         }
         )
       if (historical) {
@@ -45,6 +45,5 @@ export const setPoolHistoricalData = (state, payload) => {
   state.poolDataHistory[payload.platform] = payload.data
 }
 export const setMarketData = (state, payload) => {
-  state.marketData= payload
+  state.marketData = payload
 }
-

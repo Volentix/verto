@@ -14,7 +14,7 @@ class Wallets2Tokens {
 
     const self = this
     this.eosUSD = 0
-    axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { self.eosUSD = res.data.data.price })
+    axios.get(process.env[store.state.settings.network].CHAIN_ID + 'https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { self.eosUSD = res.data.data.price })
     store.state.wallets.portfolioTotal = 0
     this.tableData = [ ...store.state.currentwallet.config.keys ]
     this.tableData.map(wallet => {
@@ -135,7 +135,7 @@ class Wallets2Tokens {
 
           // console.log('ethplorer', ethplorer)
 
-          axios.get('https://cors-anywhere.herokuapp.com/https://api.tokensets.com/v1/rebalancing_sets', {
+          axios.get(process.env[store.state.settings.network].CHAIN_ID + 'https://api.tokensets.com/v1/rebalancing_sets', {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
           }).then(res => {
             let tokenSets = res.data.rebalancing_sets
@@ -201,7 +201,7 @@ class Wallets2Tokens {
     }
 
     // 'https://api.coingecko.com/api/v3/simple/price?ids=' + +'&vs_currencies=usd'
-    let coinEOS = (await axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
+    let coinEOS = (await axios.get(process.env[store.state.settings.network].CHAIN_ID + 'https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
     let coinUSD = coinEOS * this.eosUSD
     // console.log(coin, ' --> USD', coinUSD)
 

@@ -217,15 +217,13 @@
 </template>
 
 <script>
-import store from '@/store'
-import {
-  userError
-} from '@/util/errorHandler'
+// import store from '@/store'
+// import { userError } from '@/util/errorHandler'
 const _1inch = 'https://api.1inch.exchange'
-const url = 'https://api.coinswitch.co'
-let headers = {
-  // 'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
-}
+// const url = 'https://api.coinswitch.co'
+// let headers = {
+//   'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
+// }
 const typeUpper = function (thing) {
   if (typeof thing === 'string' && thing.length >= 1) {
     return thing.toUpperCase()
@@ -241,7 +239,6 @@ export default {
       swapData: {
         marketData: [],
         fromAmount: 1,
-        toAmount: null,
         toAmount: 1,
         errorText: 'Converting [from] to [to] cannot be done at this moment please try another coin',
         error: false,
@@ -481,12 +478,12 @@ export default {
   watch: {
     step (newVal, oldVal) {
       // Remove selected coin from array of receiving coins
-      if (newVal == 2) {
-        this.destinationCoinOptions = this.destinationCoinUnfilter.filter(o => o.value.toLowerCase() != this.depositCoin.value.toLowerCase())
+      if (newVal === 2) {
+        this.destinationCoinOptions = this.destinationCoinUnfilter.filter(o => o.value.toLowerCase() !== this.depositCoin.value.toLowerCase())
       }
     },
     'swapData.toAmount': function (newVal, oldVal) {
-      if (newVal != null && this.step == 2) {
+      if (newVal != null && this.step === 2) {
         this.$refs.stepper.next()
       }
     }
@@ -634,7 +631,7 @@ export default {
     },
     convertETHToUSD (ethAmount) {
       const self = this
-      let ethToUsd = self.swapData.marketData.find(o => o.symbol.toLowerCase() == 'eth').current_price
+      let ethToUsd = self.swapData.marketData.find(o => o.symbol.toLowerCase() === 'eth').current_price
       console.log(ethAmount, ethToUsd * ethAmount, 'conversion')
       return ethToUsd ? `~ USD ${ethToUsd * ethAmount}` : null
     },
@@ -664,7 +661,7 @@ export default {
     convertWeiToUsd (weiAmount) {
       const self = this
       const ethAmount = parseFloat(self.web3.utils.fromWei(weiAmount.toString(), 'ether'))
-      let ethToUsd = self.swapData.marketData.find(o => o.symbol.toLowerCase() == 'eth').current_price
+      let ethToUsd = self.swapData.marketData.find(o => o.symbol.toLowerCase() === 'eth').current_price
 
       console.log('convertEtherToUSD', 'WEI ' + weiAmount, 'ETH' + ethAmount, ethToUsd)
 
