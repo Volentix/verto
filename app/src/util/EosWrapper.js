@@ -41,6 +41,7 @@ class EosWrapper {
   // If you look at the result value, you can see an array in the form of a string.
   // This is because there could be tokens with many different symbols in the account
   async getCurrencyBalanceP (account, code = 'eosio.token', symbol = 'eos') {
+    console.log('account,code,symbol', account, code, symbol)
     let balance = await this.rpc.get_currency_balance(code, account, symbol)
     return balance
   }

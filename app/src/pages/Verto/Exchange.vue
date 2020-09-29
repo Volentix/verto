@@ -757,9 +757,12 @@ const typeUpper = function (thing) {
   }
 }
 import { osName } from 'mobile-device-detect'
-import Lib from '@/util/walletlib'
+// import Lib from '@/util/walletlib'
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
+import EosWrapper from '@/util/EosWrapper'
+const eos = new EosWrapper()
+
 export default {
   components: {
     // desktop components
@@ -1295,9 +1298,10 @@ export default {
         }
       })
     },
-    orderVTX () {
+    async orderVTX () {
       // check balance then...
-      let eosBal = Lib.balance('eos', this.toCoin.value, 'eos')
+      // let eosBal = Lib.balance('eos', this.toCoin.value, 'eos')
+      let eosBal = (await eos.getCurrencyBalanceP(this.toCoin.value)).toString().split(' ')[0]
       console.log('eosBal', eosBal)
 
       /*
