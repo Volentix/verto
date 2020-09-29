@@ -5,9 +5,9 @@ export default function () {
     zapperTokens: [],
     gasPrice: null,
     poolDataHistory: {},
-    marketData:[],
-    investments:[],
-    debts:[],
-    transactions:[]
+    marketData: [],
+    investments: [],
+    debts: [],
+    transactions: []
   }
 }

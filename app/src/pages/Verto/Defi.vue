@@ -147,7 +147,7 @@
               <div class="col-3"><h3>Asset</h3></div>
               <div class="col-3"><h3>Amount</h3></div>
               <div class="col-3"><h3>From/To</h3></div>
-              <div class="col-3"><h3>Type</h3></div> 
+              <div class="col-3"><h3>Type</h3></div>
             </div>
             <q-scroll-area :visible="true" class="q-pr-md q-mb-md q-mr-sm" style="height: 125px;">
               <div  v-for="(transaction,key) in $store.state.investment.transactions" :key="key" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
@@ -309,7 +309,7 @@ export default {
       this.isPrivateKeyEncrypted = false
     } else {
       this.isPrivateKeyEncrypted = true
-    } 
+    }
 
     this.cruxKey = await HD.Wallet('crux')
     // console.log('crux privateKey', this.cruxKey.privateKey)
@@ -320,21 +320,21 @@ export default {
 
     await cruxClient.init()
       */
-    let address =  '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772' //this.maxToken.key ?   this.maxToken.key  : this.maxToken.contract
-    let account =  {platform:'uniswap-v2', address: address }
+    let address = '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772' // this.maxToken.key ?   this.maxToken.key  : this.maxToken.contract
+    let account = { platform: 'uniswap-v2', address: address }
     this.$store.dispatch('investment/getZapperTokens')
-    this.$store.dispatch('investment/getTransactions', {address: address})
-    this.$store.dispatch('investment/getInvestments' , account)
+    this.$store.dispatch('investment/getTransactions', { address: address })
+    this.$store.dispatch('investment/getInvestments', account)
     account.platform = 'uniswap'
-    this.$store.dispatch('investment/getInvestments' , account)
+    this.$store.dispatch('investment/getInvestments', account)
     account.platform = 'balancer'
-    this.$store.dispatch('investment/getInvestments' , account)
+    this.$store.dispatch('investment/getInvestments', account)
     account.platform = 'curve'
-    this.$store.dispatch('investment/getInvestments' , account)
+    this.$store.dispatch('investment/getInvestments', account)
     account.platform = 'iearn'
-    this.$store.dispatch('investment/getInvestments' , account)
-     account.platform = 'maker'
-    this.$store.dispatch('investment/getDebts' , account)
+    this.$store.dispatch('investment/getInvestments', account)
+    account.platform = 'maker'
+    this.$store.dispatch('investment/getDebts', account)
   },
   async mounted () {
     this.getMaxDeFiYield()

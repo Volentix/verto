@@ -207,15 +207,13 @@ export default {
 
   },
   methods: {
-    async getContractABI(address){
-      let abi = null   
-      await this.$axios.post('https://api.etherscan.io/api?apikey=YBABRIF5FBIVNZZK3R8USGI94444WQHHBN&module=contract&action=getabi&address='+address+'')
-      .then( (result) => {
+    async getContractABI (address) {
+      let abi = null
+      await this.$axios.post('https://api.etherscan.io/api?apikey=YBABRIF5FBIVNZZK3R8USGI94444WQHHBN&module=contract&action=getabi&address=' + address + '')
+        .then((result) => {
+          abi = result.data.result
+        })
 
-        abi = result.data.result
-               
-      })
-   
       return abi
     },
     setDialogData () {
@@ -269,9 +267,8 @@ export default {
           })
       } else await sendTransaction(address, 0, tx, gasPrice) // Contract already has approval, gas estimates will not fail
     },
-    async sendTransaction(){
-      
-      let poolContractABI = null , tokenABI = null , fromTokenAddress = '0x0000000000000000000000000000000000000000'
+    async sendTransaction () {
+      let poolContractABI = null, tokenABI = null, fromTokenAddress = '0x0000000000000000000000000000000000000000'
       let poolData = this.$store.state.investment.pools.find(v => v.contractAddress == this.pool.value)
       let toAddress = this.contractAddress[poolData.platform.replace(/[^0-9a-z]/gi, '').toLowerCase()]
       await this.getContractABI(toAddress).then(value => poolContractABI = value)
@@ -282,8 +279,8 @@ export default {
       const poolContract = new this.web3.eth.Contract(JSON.parse(poolContractABI), toAddress)
       const tokenContract = new this.web3.eth.Contract(ERC20ABI, fromTokenAddress)
       const valueToSend = 100
-          console.log(tokenContract , poolContract, transactionObject, this.currentToken, 'tokenContract');
-          /*
+      console.log(tokenContract, poolContract, transactionObject, this.currentToken, 'tokenContract')
+      /*
           const approvalAmount = '100000000000000000000';
           tokenContract.methods.approve(toAddress, approvalAmount).send({ from: this.currentToken.key }, async function(error, txHash) {
           if (error) {
@@ -297,84 +294,79 @@ export default {
               return;
           }
     })
-   */ 
-  
-  
-  let transactionObject = {
-    from: this.currentToken.key,
-    to: toAddress,
-    gas:557876,
-    value: this.sendAmount * 1000000000000000000 ,
-    gasPrice: 53000000000,
-    data: encoded_tx,
-    nonce: nonce
-  }
-  
-    if( this.pool.platform == 'Uniswap V2'){
-      let tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
-    } else if( this.pool.platform == 'Balancer-labs'){
+   */
+
+      let transactionObject = {
+        from: this.currentToken.key,
+        to: toAddress,
+        gas: 557876,
+        value: this.sendAmount * 1000000000000000000,
+        gasPrice: 53000000000,
+        data: encoded_tx,
+        nonce: nonce
+      }
+
+      if (this.pool.platform == 'Uniswap V2') {
         let tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
-    } else if( this.pool.platform == 'Curve'){
-      let tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100) 
-    }else if( this.pool.platform == 'yEarn'){
+      } else if (this.pool.platform == 'Balancer-labs') {
         let tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
-    }
-
-  
-  let encoded_tx = tx.encodeABI()
-  
-  if(this.processWithMetamask){
-    transactionObject.from = null
-      if (window.ethereum) {
-        window.web3 = new Web3(ethereum)
-
-        // Request account access if needed
-        await ethereum.enable()
-        // Acccounts now exposed
-        await web3.eth.sendTransaction(transactionObject).then(function (receipt) {
-          console.log(receipt)
-        }).catch((error) => {
-          this.error = error
-        })
+      } else if (this.pool.platform == 'Curve') {
+        let tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
+      } else if (this.pool.platform == 'yEarn') {
+        let tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
       }
-      // Legacy dapp browsers...
-      else if (window.web3) {
-        window.web3 = new Web3(web3.currentProvider)
-        // Acccounts always exposed
-        await web3.eth.sendTransaction(transactionObject).then(function (receipt) {
-          console.log(receipt)
-        }).catch((error) => {
-          this.error = error
-        })
+
+      let encoded_tx = tx.encodeABI()
+
+      if (this.processWithMetamask) {
+        transactionObject.from = null
+        if (window.ethereum) {
+          window.web3 = new Web3(ethereum)
+
+          // Request account access if needed
+          await ethereum.enable()
+          // Acccounts now exposed
+          await web3.eth.sendTransaction(transactionObject).then(function (receipt) {
+            console.log(receipt)
+          }).catch((error) => {
+            this.error = error
+          })
+        }
+        // Legacy dapp browsers...
+        else if (window.web3) {
+          window.web3 = new Web3(web3.currentProvider)
+          // Acccounts always exposed
+          await web3.eth.sendTransaction(transactionObject).then(function (receipt) {
+            console.log(receipt)
+          }).catch((error) => {
+            this.error = error
+          })
+        }
+        // Non-dapp browsers...
+        else {
+          console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
+        }
+        return
       }
-      // Non-dapp browsers...
-      else {
-        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
-      }
-      return
-  }
-    console.log(transactionObject, 'transactionObject', this.currentToken.privateKey)
-    const EthereumTx = require('ethereumjs-tx').Transaction
-    const transaction = new EthereumTx(transactionObject, { chain: 'mainnet', hardfork: 'petersburg' })
-    
-    transaction.sign(Buffer.from(this.currentToken.privateKey.substring(2), 'hex'))
-    const serializedTransaction = transaction.serialize()
+      console.log(transactionObject, 'transactionObject', this.currentToken.privateKey)
+      const EthereumTx = require('ethereumjs-tx').Transaction
+      const transaction = new EthereumTx(transactionObject, { chain: 'mainnet', hardfork: 'petersburg' })
 
+      transaction.sign(Buffer.from(this.currentToken.privateKey.substring(2), 'hex'))
+      const serializedTransaction = transaction.serialize()
 
-
-    this.web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex'), async (err, hash) => {
-      console.log(hash)
-      if (!err) {
-        this.transactionSent = hash;
+      this.web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex'), async (err, hash) => {
         console.log(hash)
-        console.log(await this.waitTransaction(hash))
-      } else {
-        this.error = err
-      }
-    });
+        if (!err) {
+          this.transactionSent = hash
+          console.log(hash)
+          console.log(await this.waitTransaction(hash))
+        } else {
+          this.error = err
+        }
+      })
 
-
-            /*
+      /*
         self.web3.eth.accounts.signTransaction(transactionObject, this.currentToken.privateKey, function (error, signedTx) {
         if (error) {
         console.log(error);
@@ -385,21 +377,20 @@ export default {
       });
       }})
 
-    
           console.log(encoded_tx)
     */
     },
-     sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    sleep (ms) {
+      return new Promise(resolve => setTimeout(resolve, ms))
     },
-    async waitTransaction(txHash) {
-        let tx = null;
-        while (tx == null) {
-            tx = await this.web3.eth.getTransactionReceipt(txHash);
-            await this.sleep(2000);
-        }
-        console.log("Transaction " + txHash + " was mined.");
-        return (tx.status);
+    async waitTransaction (txHash) {
+      let tx = null
+      while (tx == null) {
+        tx = await this.web3.eth.getTransactionReceipt(txHash)
+        await this.sleep(2000)
+      }
+      console.log('Transaction ' + txHash + ' was mined.')
+      return (tx.status)
     },
     async doErc20Transaction (transactionObject) {
       let tableData = await this.$store.state.wallets.tokens
@@ -492,7 +483,6 @@ export default {
         })
     },
     getGas () {
- 
       self = this
       let contract = new this.web3.eth.Contract(ERC20ABI, '0x033b186321fa88603e3ecc98821fb0932b2c0760')
       contract.methods.transfer('0x80c5e6908368cb9db503ba968d7ec5a565bfb389', (this.sendAmount * 10 ** 18).toFixed(0)).estimateGas(function (error, gasAmount) {
@@ -580,12 +570,10 @@ export default {
         else {
           console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
         }
-        return
       }
       if (this.currentToken.type.toLowerCase() != 'eth') return this.doErc20Transaction(transactionObject)
-    
-    
-      console.log(transactionObject,this.gasSelected)
+
+      console.log(transactionObject, this.gasSelected)
       const transaction = new EthereumTx(transactionObject)
 
       transaction.sign(Buffer.from(this.currentToken.privateKey.substring(2), 'hex'))
