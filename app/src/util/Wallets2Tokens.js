@@ -33,8 +33,6 @@ class Wallets2Tokens {
         wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
         wallet.chain = 'eos'
-        
-       
       } else if (wallet.type === 'verto') {
         wallet.to = '/verto/wallets/eos/verto/' + wallet.name.toLowerCase()
         wallet.icon = '/statics/icon.png'
@@ -129,7 +127,7 @@ class Wallets2Tokens {
           })
         })
       } else if (wallet.type === 'eth') {
-         // temporary account override for testing
+        // temporary account override for testing
         axios.get('https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
           let ethplorer = res.data
           self.tableData.filter(w => w.key === wallet.key).map(eth => {

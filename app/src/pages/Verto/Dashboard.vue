@@ -276,8 +276,8 @@ export default {
     }
 
     this.$store.dispatch('investment/getZapperTokens')
-    //this.$store.dispatch('investment/getUniSwapHistoricalData')
-   // this.$store.dispatch('investment/getBalancerHistoricalData')
+    // this.$store.dispatch('investment/getUniSwapHistoricalData')
+    // this.$store.dispatch('investment/getBalancerHistoricalData')
   },
   methods: {
     getWindowWidth () {
