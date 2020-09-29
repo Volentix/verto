@@ -50,8 +50,8 @@ export const setInvestments = (state, payload) => {
   state.investments = state.investments.concat(payload.pools ? payload.pools : payload)
 }
 export const setTransactions = (state, payload) => {
-  state.transactions = state.transactions.concat(payload.filter(item => !state.transactions.find(o => o.hash == item.hash)))
+  state.transactions = state.transactions.concat(payload.filter(item => !state.transactions.find(o => o.hash === item.hash)))
 }
 export const setDebts = (state, payload) => {
-  state.debts = state.debts.concat(payload.filter(item => !state.debts.find(o => o.hash == item.hash)))
+  state.debts = state.debts.concat(payload.filter(item => !state.debts.find(o => o.hash === item.hash)))
 }

@@ -15,7 +15,7 @@
                   <div class="col-4"><h3>Balance</h3></div>
                 </div>
                 <q-scroll-area :visible="true" class="q-pr-lg q-mb-md q-mr-sm" style="height: 230px;">
-                  <div v-for="token in ethTokens" :key="ethTokens" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+                  <div v-for="(token, index) in ethTokens" :key="index" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
                     <div class="col-5 flex items-center">
                       <span class="token flex items-center">
                         <img :src="'https://files.coinswitch.co/public/coins/'+token.type+'.png'" class="q-mr-sm" alt=""> <strong>{{token.type}}</strong>
@@ -81,8 +81,8 @@
                   <strong>{{(index + 1)}}</strong>
                 </div>
                 <div class="col-3 flex items-center">
-                  <span class="imgs q-mr-lg">
-                    <img v-if="icon" v-for="(icon, index) in pool.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
+                  <span class="imgs q-mr-lg" v-if="pool.icons.length">
+                    <img v-for="(icon, index) in pool.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
 
                   </span>
                   <span class="column pairs">
@@ -355,7 +355,7 @@ export default {
           var html = new DOMParser().parseFromString(result.data, 'text/html')
           var prev = 0
           for (let i = 6; i <= 14; i++) {
-            let value = parseFloat(html.querySelectorAll('table tr')[i].innerText.match(/[\d\.]+/)[0])
+            let value = parseFloat(html.querySelectorAll('table tr')[i].innerText.match(/[\d.]+/)[0])
             if (value > prev) {
               this.maxDeFiYield = {
                 roi: value,

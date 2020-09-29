@@ -8,6 +8,7 @@ const config = {
     'api-key': 'b7575aeb-b8a2-4360-88ab-400d1fba3aec'
   }
 }
+
 export const getGasPrice = ({ commit, state }, payload) => {
   axios.get('https://gasprice.poa.network/').then((result) => {
     commit('updateGasPrice', result.data)
@@ -48,7 +49,7 @@ export const getBalancerPools = ({ commit, state }, payload) => {
       }
 
 )) */.forEach((value, index) => {
-          let poolTokens = value.tokens.map(o => state.zapperTokens.find(t => t.address.toLowerCase() == o.address.toLowerCase())).filter((val) => val)
+          let poolTokens = value.tokens.map(o => state.zapperTokens.find(t => t.address.toLowerCase() === o.address.toLowerCase())).filter((val) => val)
           if (!poolTokens.length) return
           let pool = value
           pool.poolName = poolTokens.map(o => o?.label).filter((val) => val).join(' / ')
@@ -122,7 +123,7 @@ export const getUniswapPools = ({ commit, state }, payload) => {
       }).filter(function (actualPool) {
         return !actualPool.hideFromExplore
       }).forEach((value, index) => {
-        let poolTokens = value.tokens.map(o => state.zapperTokens.find(t => t.address.toLowerCase() == o.address.toLowerCase())).filter((val) => val)
+        let poolTokens = value.tokens.map(o => state.zapperTokens.find(t => t.address.toLowerCase() === o.address.toLowerCase())).filter((val) => val)
         if (!poolTokens.length) return
         let pool = value
         pool.poolName = poolTokens.map(o => o?.label).filter((val) => val).join(' / ')
@@ -225,7 +226,6 @@ export const getMarketDataVsUSD = (context, payload) => {
 }
 
 export const getTransactions = (context, payload) => {
-  const self = this
   let transactionEndpoint = 'https://cors-anywhere.herokuapp.com/https://zapper.fi/api/transactions?address=' + payload.address
   axios.get(transactionEndpoint, config)
     .then(function (result) {
@@ -238,7 +238,6 @@ export const getTransactions = (context, payload) => {
 }
 
 export const getInvestments = (context, payload) => {
-  const self = this
   let transactionEndpoint = 'https://cors-anywhere.herokuapp.com/https://zapper.fi/api/account-balance/' + payload.platform + '?addresses=' + payload.address
   axios.get(transactionEndpoint, config)
     .then(function (result) {
