@@ -199,14 +199,14 @@
 <script>
 // import RadialProgressBar from 'vue-radial-progress'
 // import EosWrapper from '@/util/EosWrapper'
-import { CruxPay } from '@cruxpay/js-sdk'
-import HD from '@/util/hdwallet'
+// import { CruxPay } from '@cruxpay/js-sdk'
+// import HD from '@/util/hdwallet'
 import { osName } from 'mobile-device-detect'
 // import TransactionsSection from '../../components/Verto/TransactionsSection'
 import AddLiquidityDialog from '../../components/Verto/AddLiquidityDialog'
 import { QScrollArea } from 'quasar'
 
-let cruxClient
+// let cruxClient
 
 export default {
   components: {
@@ -335,11 +335,10 @@ export default {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
     getMaxDeFiYield () {
-      this.$axios.get('https://cors-anywhere.herokuapp.com/https://stats.finance/yearn')
+      this.$axios.get(process.env[this.$store.state.settings.network].CHAIN_ID + 'https://stats.finance/yearn')
         .then((result) => {
           var html = new DOMParser().parseFromString(result.data, 'text/html')
-          var prev = 0,
-            data = {}
+          var prev = 0
           for (let i = 6; i <= 14; i++) {
             let value = parseFloat(html.querySelectorAll('table tr')[i].innerText.match(/[\d\.]+/)[0])
             if (value > prev) {
@@ -354,7 +353,7 @@ export default {
         })
     },
     convertWalletToken (from, to) {
-      let find = this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() == to.toLowerCase())
+      let find = this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() === to.toLowerCase())
       return find ? parseInt(this.maxToken.usd / find.price) : 'Not found'
     },
     copyToClipboard (key, copied) {
