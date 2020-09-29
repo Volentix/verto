@@ -15,22 +15,22 @@ export const getGasPrice = ({ commit, state }, payload) => {
   })
 }
 
-export const getBalancerHistoricalData = ({ commit, state }, payload) => {
-  axios.get(process.env[this.$store.state.settings.network].CHAIN_ID + 'https://zapper.fi/api/pool-history/balancer', config).then((result) => {
+export const getBalancerHistoricalData = ({ rootState, commit, state }, payload) => {
+  axios.get(process.env[rootState.settings.network].CHAIN_ID + 'https://zapper.fi/api/pool-history/balancer', config).then((result) => {
     if (result.data.length) {
       commit('setPoolHistoricalData', { data: result.data, platform: 'balancer' })
     }
   })
 }
-export const getUniSwapHistoricalData = ({ commit, state }, payload) => {
-  axios.get(process.env[this.$store.state.settings.network].CHAIN_ID + 'https://zapper.fi/api/pool-history/uniswap', config).then((result) => {
+export const getUniSwapHistoricalData = ({ rootState, commit, state }, payload) => {
+  axios.get(process.env[rootState.settings.network].CHAIN_ID + 'https://zapper.fi/api/pool-history/uniswap', config).then((result) => {
     if (result.data.hasOwnProperty('v2History')) {
       commit('setPoolHistoricalData', { data: result.data.v2History, platform: 'UniswapV2' })
     }
   })
 }
-export const getBalancerPools = ({ commit, state }, payload) => {
-  axios.post(process.env[this.$store.state.settings.network].CHAIN_ID + 'https://zapper.fi/api/pool-stats/balancer', {}, config).then((result) => {
+export const getBalancerPools = ({ rootState, commit, state }, payload) => {
+  axios.post(process.env[rootState.settings.network].CHAIN_ID + 'https://zapper.fi/api/pool-stats/balancer', {}, config).then((result) => {
     if (result.data.length) {
       result.data/* .map((function(e) {
           var t = state.poolDataHistory['balancer'].find((function(t) {
@@ -73,8 +73,8 @@ export const getBalancerPools = ({ commit, state }, payload) => {
   })
 }
 
-export const getUniswapPools = ({ commit, state }, payload) => {
-  axios.post(process.env[this.$store.state.settings.network].CHAIN_ID + 'https://zapper.fi/api/pool-stats/uniswap', {}, config).then((result) => {
+export const getUniswapPools = ({ rootState, context, commit, state }, payload) => {
+  axios.post(process.env[rootState.settings.network].CHAIN_ID + 'https://zapper.fi/api/pool-stats/uniswap', {}, config).then((result) => {
     result.data/* .map(function (e) {
       if (e.protocol === 'uniswap' && state.poolDataHistory['UniswapV1']) {
         var t = e.liquidity / e.supply,
@@ -145,8 +145,8 @@ export const getUniswapPools = ({ commit, state }, payload) => {
       })
   })
 }
-export const getYvaultsPools = ({ commit, state }, payload) => {
-  axios.get(process.env[this.$store.state.settings.network].CHAIN_ID + 'https://zapper.fi/api/yvaults', config).then((result) => {
+export const getYvaultsPools = ({ rootState, commit, state }, payload) => {
+  axios.get(process.env[rootState.settings.network].CHAIN_ID + 'https://zapper.fi/api/yvaults', config).then((result) => {
     if (result.data.length) {
       result.data.filter(function (e) {
         return !e.isBlocked
@@ -176,8 +176,8 @@ export const getYvaultsPools = ({ commit, state }, payload) => {
     }
   })
 }
-export const getCurvesPools = ({ commit, state }, payload) => {
-  axios.get(process.env[this.$store.state.settings.network].CHAIN_ID + 'https://zapper.fi/api/pool-stats/curve', config).then((result) => {
+export const getCurvesPools = ({ rootState, commit, state }, payload) => {
+  axios.get(process.env[rootState.settings.network].CHAIN_ID + 'https://zapper.fi/api/pool-stats/curve', config).then((result) => {
     if (result.data.length) {
       result.data.forEach((value, index) => {
         let poolTokens = value.tokens.map(o => state.zapperTokens.find(t => t.address.toLowerCase() === o.address.toLowerCase())).filter((val) => val)
@@ -206,7 +206,7 @@ export const getCurvesPools = ({ commit, state }, payload) => {
 }
 export const getZapperTokens = (context, payload) => {
   // context.commit('setTokens',fallBackTokens)
-  axios.get(process.env[this.$store.state.settings.network].CHAIN_ID + 'https://zapper.fi/api/account-balance/tokens?addresses=0x358A6C0F7614C44b344381b0699E2397b1483252', config).then((result) => {
+  axios.get(process.env[context.rootState.settings.network].CHAIN_ID + 'https://zapper.fi/api/account-balance/tokens?addresses=0x358A6C0F7614C44b344381b0699E2397b1483252', config).then((result) => {
     if (result.data) {
       context.commit('setTokens', result.data['0x358A6C0F7614C44b344381b0699E2397b1483252'])
     }
