@@ -30,8 +30,8 @@
                   <strong>{{(index + 1)}}</strong>
                 </div>
                 <div class="col-3 flex items-center">
-                  <span class="imgs q-mr-lg">
-                    <img  v-if="icon" v-for="(icon, index) in pool.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
+                  <span class="imgs q-mr-lg" v-if="pool.icons.length">
+                    <img   v-for="(icon, index) in pool.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
 
                   </span>
                   <span class="column pairs">

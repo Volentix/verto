@@ -1,6 +1,6 @@
 <template>
 
-        <q-stepper animated :vertical="$q.screen.lt.sm" v-model="step" ref="stepper" class="stepper--desktop" alternative-labels color="primary" animated flat >
+        <q-stepper animated :vertical="$q.screen.lt.sm" v-model="step" ref="stepper" class="stepper--desktop" alternative-labels color="primary"  flat >
           <q-step :name="1" prefix="1" default  title="Select Coin to Send" :done="step > 1">
                <span class="sublab-input">Step 1</span><span class="tlab-input">Select Coin to Send</span>
                 <q-select
@@ -93,7 +93,7 @@
             </template>
             </q-select>
            <div class="text-red text-body1 q-mt-sm" v-if="swapData.error">
-             {{swapData.errorText.replace('[from]',depositCoin.value).replace('[to]',destinationCoin.value)}}</div>
+             {{swapData.errorText.replace('[from]',depositCoin.value).replace('[to]',destinationCoin.value)}}
          </div>
 
         <q-stepper-navigation  class="flex justify-end">

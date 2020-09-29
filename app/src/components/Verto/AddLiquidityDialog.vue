@@ -127,16 +127,11 @@
 </template>
 
 <script>
-import {
-  mapState,
-  mapActions
-} from 'vuex'
-
+import { mapState } from 'vuex'
 export default {
   name: 'AddLiquidityDialog',
   data () {
     return {
-      platform: '',
       gasOptions: null,
       transactionSent: null,
       gasSelected: null,
@@ -168,16 +163,14 @@ export default {
   async created () {
     let tableData = await this.$store.state.wallets.tokens
     this.ethAccount = tableData.filter(w => w.chain === 'eth')
-      .filter(w => this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() == w.type.toLowerCase()))
+      .filter(w => this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() === w.type.toLowerCase()))
 
-    if (!this.notWidget) {
+    if (this.notWidget === null) {
       await this.$store.dispatch('investment/getZapperTokens')
     } else {
       this.setDialogData()
     }
-    const options = {
-      transactionConfirmationBlocks: 1
-    }
+
     const Web3 = require('web3')
     this.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
 
@@ -238,6 +231,7 @@ export default {
       }
     },
     async doERC20ToCurveTransaction () {
+      /*
       const web3 = new Web3(provider.wallet.provider)
       const address = provider.address
       const curveCurvePipeAddress = '0x66895417881B1d77Ca71bd9e5Ba1E729f3Aa44D3'
@@ -266,21 +260,23 @@ export default {
             await sendTransaction(address, 0, tx, gasPrice, 2000000) // Rely on nonce for tx ordering to avoid waiting for approval to confirm
           })
       } else await sendTransaction(address, 0, tx, gasPrice) // Contract already has approval, gas estimates will not fail
+      */
     },
     async sendTransaction () {
-      let poolContractABI = null, tokenABI = null, fromTokenAddress = '0x0000000000000000000000000000000000000000'
-      let poolData = this.$store.state.investment.pools.find(v => v.contractAddress == this.pool.value)
+      /* global web3, ethereum */
+
+      const Web3 = require('web3')
+      let poolContractABI = null, fromTokenAddress = '0x0000000000000000000000000000000000000000'
+      let poolData = this.$store.state.investment.pools.find(v => v.contractAddress === this.pool.value)
       let toAddress = this.contractAddress[poolData.platform.replace(/[^0-9a-z]/gi, '').toLowerCase()]
-      await this.getContractABI(toAddress).then(value => poolContractABI = value)
-      await this.getContractABI(fromTokenAddress).then(value => tokenABI = value)
+      await this.getContractABI(toAddress).then(value => { poolContractABI = value })
+      // await this.getContractABI(fromTokenAddress).then(value => tokenABI = value)
       let nonce = await this.web3.eth.getTransactionCount(this.currentToken.key) + 1
 
-      const self = this
       const poolContract = new this.web3.eth.Contract(JSON.parse(poolContractABI), toAddress)
-      const tokenContract = new this.web3.eth.Contract(ERC20ABI, fromTokenAddress)
-      const valueToSend = 100
-      console.log(tokenContract, poolContract, transactionObject, this.currentToken, 'tokenContract')
-      /*
+
+      /*  const valueToSend = 100
+           const tokenContract = new this.web3.eth.Contract(tokenABI, fromTokenAddress)
           const approvalAmount = '100000000000000000000';
           tokenContract.methods.approve(toAddress, approvalAmount).send({ from: this.currentToken.key }, async function(error, txHash) {
           if (error) {
@@ -302,25 +298,24 @@ export default {
         gas: 557876,
         value: this.sendAmount * 1000000000000000000,
         gasPrice: 53000000000,
-        data: encoded_tx,
         nonce: nonce
       }
-
-      if (this.pool.platform == 'Uniswap V2') {
-        let tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
-      } else if (this.pool.platform == 'Balancer-labs') {
-        let tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
-      } else if (this.pool.platform == 'Curve') {
-        let tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
-      } else if (this.pool.platform == 'yEarn') {
-        let tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
+      let tx = null
+      if (this.pool.platform === 'Uniswap V2') {
+        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
+      } else if (this.pool.platform === 'Balancer-labs') {
+        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
+      } else if (this.pool.platform === 'Curve') {
+        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
+      } else if (this.pool.platform === 'yEarn') {
+        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
       }
 
-      let encoded_tx = tx.encodeABI()
+      transactionObject.data = tx.encodeABI()
 
       if (this.processWithMetamask) {
         transactionObject.from = null
-        if (window.ethereum) {
+        if (typeof ethereum !== 'undefined') {
           window.web3 = new Web3(ethereum)
 
           // Request account access if needed
@@ -331,9 +326,7 @@ export default {
           }).catch((error) => {
             this.error = error
           })
-        }
-        // Legacy dapp browsers...
-        else if (window.web3) {
+        } else if (typeof web3 !== 'undefined') { // Legacy dapp browsers...
           window.web3 = new Web3(web3.currentProvider)
           // Acccounts always exposed
           await web3.eth.sendTransaction(transactionObject).then(function (receipt) {
@@ -341,9 +334,7 @@ export default {
           }).catch((error) => {
             this.error = error
           })
-        }
-        // Non-dapp browsers...
-        else {
+        } else { // Non-dapp browsers...
           console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
         }
         return
@@ -393,9 +384,9 @@ export default {
       return (tx.status)
     },
     async doErc20Transaction (transactionObject) {
-      let tableData = await this.$store.state.wallets.tokens
+      /* let tableData = await this.$store.state.wallets.tokens
       let account = tableData.find(w => w.chain === 'eth' && w.defaultKey == true)
-      if (!account) return console.log('NO ETH ACCOUNT')
+      if (account === null) return console.log('NO ETH ACCOUNT')
       let tokenAddress = this.currentToken.contract
       transactionObject.from = account.key
       console.log(transactionObject, this.currentToken)
@@ -404,7 +395,6 @@ export default {
       let minABI = []
       // this.getGas(transactionObject.to, this.sendAmount )
       // Get ERC20 Token contract instance
-      /*
 
        if (window.ethereum) {
         window.web3 = new Web3(ethereum);
@@ -467,7 +457,7 @@ export default {
       }
 
     return
-    */
+
       let contract = new this.web3.eth.Contract(tokenABI, tokenAddress)
       let poolContract = new this.web3.eth.Contract(minABI, transactionObject.to)
       console.log(contract.methods, 'contract.methods')
@@ -481,46 +471,57 @@ export default {
         }).on('error', function (error, a) {
           self.error = error
         })
+        */
     },
-    getGas () {
-      self = this
-      let contract = new this.web3.eth.Contract(ERC20ABI, '0x033b186321fa88603e3ecc98821fb0932b2c0760')
-      contract.methods.transfer('0x80c5e6908368cb9db503ba968d7ec5a565bfb389', (this.sendAmount * 10 ** 18).toFixed(0)).estimateGas(function (error, gasAmount) {
-        self.gasOptions = [{
-          label: 'Slow',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount),
-          gasPrice: self.$store.state.investment.gasPrice.slow * 1000000000,
-          gas: gasAmount
-        },
-        {
-          label: 'Fast',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.fast, gasAmount),
-          gasPrice: self.$store.state.investment.gasPrice.fast * 1000000000,
-          gas: gasAmount
-        },
-        {
-          label: 'Instant',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.instant, gasAmount),
-          gasPrice: self.$store.state.investment.gasPrice.instant * 1000000000,
-          gas: gasAmount
-        }
-        ]
-        self.gasSelected = {
-          label: 'Standard',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.standard, gasAmount),
-          gasPrice: self.$store.state.investment.gasPrice.standard * 1000000000,
-          gas: gasAmount
-        }
-        console.log(self.gasOptions, 'gasOptions', self.gasSelected, 'gasSelected')
-      })
+    async getGas () {
+      const self = this
+      let contractABI = null
+      await this.getContractABI('0x033b186321fa88603e3ecc98821fb0932b2c0760')
+        .then((value) => { contractABI = value })
+        .catch((error) => {
+          console.log(error, 'getGas error')
+        })
+      let contract = new this.web3.eth.Contract(contractABI, '0x033b186321fa88603e3ecc98821fb0932b2c0760')
+      contract.methods.transfer('0x80c5e6908368cb9db503ba968d7ec5a565bfb389', (this.sendAmount * 10 ** 18).toFixed(0))
+        .estimateGas(function (error, gasAmount) {
+          self.gasOptions = [{
+            label: 'Slow',
+            value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount),
+            gasPrice: self.$store.state.investment.gasPrice.slow * 1000000000,
+            gas: gasAmount
+          },
+          {
+            label: 'Fast',
+            value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.fast, gasAmount),
+            gasPrice: self.$store.state.investment.gasPrice.fast * 1000000000,
+            gas: gasAmount
+          },
+          {
+            label: 'Instant',
+            value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.instant, gasAmount),
+            gasPrice: self.$store.state.investment.gasPrice.instant * 1000000000,
+            gas: gasAmount
+          }
+          ]
+          self.gasSelected = {
+            label: 'Standard',
+            value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.standard, gasAmount),
+            gasPrice: self.$store.state.investment.gasPrice.standard * 1000000000,
+            gas: gasAmount
+          }
+          console.log(self.gasOptions, 'gasOptions', self.gasSelected, 'gasSelected', error, 'error')
+        })
+        .catch((error) => {
+          console.log('estimateGas error', error)
+        })
     },
     getUSDGasPrice (gweiPrice, gasNumber) {
-      let ethToUsd = this.$store.state.investment.marketData.find(o => o.symbol.toLowerCase() == 'eth').current_price
-
+      let ethToUsd = this.$store.state.investment.marketData.find(o => o.symbol.toLowerCase() === 'eth').current_price
       return this.web3.utils.fromWei(Math.round((gweiPrice * gasNumber * 1000000000)).toString(), 'ether') * ethToUsd
     },
     async doTransaction () {
       return this.sendTransaction()
+      /*
       const EthereumTx = require('ethereumjs-tx').Transaction
       console.log(this.pool)
 
@@ -593,7 +594,6 @@ export default {
           })
 
     console.log(p)
- */
 
       this.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, hash) => {
         if (!err) {
@@ -603,6 +603,7 @@ export default {
           this.error = err
         }
       })
+       */
     },
     async isTokenInWallet () {
       let tableData = await this.$store.state.wallets.tokens
@@ -656,7 +657,7 @@ export default {
       })
     },
     filterPoolsByPlatform () {
-      this.poolOptions = this.$store.state.investment.pools.filter(o => this.platform == 'Any' || o.platform.toLowerCase() == this.platform.toLowerCase()).map(o => {
+      this.poolOptions = this.$store.state.investment.pools.filter(o => this.platform === 'Any' || o.platform.toLowerCase() === this.platform.toLowerCase()).map(o => {
         return {
           label: o.poolName,
           value: o.contractAddress,
@@ -668,7 +669,7 @@ export default {
       this.isTokenInWallet()
     },
     getTokenAvailableAmount () {
-      let found = this.ethTokens.find(o => o.type.toLowerCase() == this.currentToken.toLowerCase())
+      let found = this.ethTokens.find(o => o.type.toLowerCase() === this.currentToken.toLowerCase())
       this.availableAmount = found ? found.amount : 0
     },
     goToExchange () {
