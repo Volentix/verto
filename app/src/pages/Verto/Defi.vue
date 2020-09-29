@@ -71,8 +71,8 @@
               <div class="col-1"><h3>#</h3></div>
               <div class="col-3"><h3>Available pools</h3></div>
               <div class="col-2"><h3>Liquidity</h3></div>
-              <div class="col-2"><h3>Net ROI(1mo)</h3></div>
-              <div class="col-2"><h3>Net ROI(1mo)</h3></div>
+              <div class="col-2"><h3>Volume(24h)</h3></div>
+              <div class="col-2"><h3>Fees(24h)</h3></div>
               <div class="col-2"></div>
             </div>
              <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 230px;">
@@ -97,12 +97,12 @@
                 </div>
                 <div class="col-2 q-pl-md">
                   <span class="column pairs">
-                    <span class="value">{{pool.netROI}}</span>
+                    <span class="value">${{pool.volume}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-lg">
                   <span class="column pairs">
-                    <span class="value">{{pool.ROI}}</span>
+                    <span class="value">${{pool.fees}}</span>
                   </span>
                 </div>
                 <div class="col-2 flex justify-end">
@@ -120,44 +120,46 @@
         </div>
         <div class="col col-7 q-pr-md">
           <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
-            <h4 class="q-pl-md">Investments - $1,846.31</h4>
+            <h4 class="q-pl-md">Investments - ${{$store.state.investment.investments.reduce((a, b) => +a + +b.balanceUSD, 0).toLocaleString()}}</h4>
             <div class="header-table-col row q-pl-md q-pr-lg">
               <div class="col-4"><h3>Asset</h3></div>
-              <div class="col-4"><h3>Balance</h3></div>
+              <div class="col-4"><h3>Protocol</h3></div>
               <div class="col-4"><h3>Value</h3></div>
             </div>
             <q-scroll-area :visible="true" class="q-pr-md q-mb-md q-mr-sm" style="height: 120px;">
-              <div v-for="i in 4" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+              <div v-for="(investment , index) in $store.state.investment.investments" :key="index" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
                 <div class="col col-4 flex items-center">
-                  <span class="imgs q-mr-lg flex items-center">
-                    <img src="statics/coins_icons/eth2.png" class="q-mr-md" alt=""> <span class="pair text-bold">Maker Vault #279922</span>
+                  <span  v-if="investment.tokens" class="imgs q-mr-lg flex items-center">
+                     <img  v-for="(token, index) in investment.tokens" :key="index" :src="'https://zapper.fi/images/'+token.symbol+'-icon.png'" alt="">
+                    <span class="pair text-bold">{{investment.label}}</span>
                   </span>
                 </div>
-                <div class="col col-4"><span>-</span></div>
-                <div class="col col-4"><span>$1,823.58</span></div>
+                <div class="col col-4"><span>{{investment.protocolDisplay}}</span></div>
+                <div class="col col-4"><span>${{Math.round(investment.balanceUSD)}}</span></div>
               </div>
             </q-scroll-area>
           </div>
         </div>
         <div class="col col-5">
           <div class="desktop-card-style current-investments wallet-col deposits-col q-mb-md">
-            <h4 class="q-pl-md">Deposits - $5,846.31</h4>
+            <h4 class="q-pl-md">Transactions</h4>
             <div class="header-table-col row q-pl-md q-pr-lg">
               <div class="col-3"><h3>Asset</h3></div>
-              <div class="col-3"><h3>Balance</h3></div>
-              <div class="col-3"><h3>APY</h3></div>
-              <div class="col-3"><h3>Value</h3></div>
+              <div class="col-3"><h3>Amount</h3></div>
+              <div class="col-3"><h3>From/To</h3></div>
+              <div class="col-3"><h3>Type</h3></div> 
             </div>
             <q-scroll-area :visible="true" class="q-pr-md q-mb-md q-mr-sm" style="height: 125px;">
-              <div v-for="i in 3" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+              <div  v-for="(transaction,key) in $store.state.investment.transactions" :key="key" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
                 <div class="col-3 flex items-center">
                   <span class="imgs q-mr-lg flex items-center">
-                    <img src="statics/coins_icons/eth2.png" class="q-mr-md" alt=""> <span class="pair text-bold">yDAI</span>
-                  </span>
+                     <img  :src="!transaction.details ? 'https://zapper.fi/images/'+ transaction.symbol+'-icon.png' : 'https://1inch.exchange/assets/tokens/'+transaction.contract+'.png'" alt="">
+                     <span data-v-cb559478="" class="pair text-bold">{{transaction.symbol}}</span>
+                    </span>
                 </div>
-                <div class="col col-3"><span>7.1439</span></div>
-                <div class="col col-3"><span>-</span></div>
-                <div class="col col-3"><span>$2,823.58</span></div>
+                <div class="col col-3"><span>{{transaction.amount+' '+transaction.symbol}}</span></div>
+                <div class="col col-3"><span>{{transaction.destination.substring(0,4)}}...</span></div>
+                <div class="col col-3"><span>{{transaction.direction}}</span></div>
               </div>
             </q-scroll-area>
           </div>
@@ -307,7 +309,7 @@ export default {
       this.isPrivateKeyEncrypted = false
     } else {
       this.isPrivateKeyEncrypted = true
-    }
+    } 
 
     this.cruxKey = await HD.Wallet('crux')
     // console.log('crux privateKey', this.cruxKey.privateKey)
@@ -318,8 +320,21 @@ export default {
 
     await cruxClient.init()
       */
-
+    let address =  '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772' //this.maxToken.key ?   this.maxToken.key  : this.maxToken.contract
+    let account =  {platform:'uniswap-v2', address: address }
     this.$store.dispatch('investment/getZapperTokens')
+    this.$store.dispatch('investment/getTransactions', {address: address})
+    this.$store.dispatch('investment/getInvestments' , account)
+    account.platform = 'uniswap'
+    this.$store.dispatch('investment/getInvestments' , account)
+    account.platform = 'balancer'
+    this.$store.dispatch('investment/getInvestments' , account)
+    account.platform = 'curve'
+    this.$store.dispatch('investment/getInvestments' , account)
+    account.platform = 'iearn'
+    this.$store.dispatch('investment/getInvestments' , account)
+     account.platform = 'maker'
+    this.$store.dispatch('investment/getDebts' , account)
   },
   async mounted () {
     this.getMaxDeFiYield()

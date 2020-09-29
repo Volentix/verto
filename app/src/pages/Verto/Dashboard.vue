@@ -20,8 +20,8 @@
               <div class="col-1"><h3>#</h3></div>
               <div class="col-3"><h3>Available pools</h3></div>
               <div class="col-2"><h3>Liquidity</h3></div>
-              <div class="col-2"><h3>Net ROI(1mo)</h3></div>
-              <div class="col-2"><h3>ROI(1mo)</h3></div>
+              <div class="col-2"><h3>Volume(24h)</h3></div>
+              <div class="col-2"><h3>Fees(24h)</h3></div>
               <div class="col-2"></div>
             </div>
             <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 392px;">
@@ -46,12 +46,12 @@
                 </div>
                 <div class="col-2 q-pl-md">
                   <span class="column pairs">
-                    <span class="value">{{pool.netROI}}</span>
+                    <span class="value">${{pool.volume}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-lg">
                   <span class="column pairs">
-                    <span class="value">{{pool.ROI}}</span>
+                    <span class="value">${{pool.fees}}</span>
                   </span>
                 </div>
                 <div class="col-2 flex justify-end">
@@ -276,8 +276,8 @@ export default {
     }
 
     this.$store.dispatch('investment/getZapperTokens')
-    this.$store.dispatch('investment/getUniSwapHistoricalData')
-    this.$store.dispatch('investment/getBalancerHistoricalData')
+    //this.$store.dispatch('investment/getUniSwapHistoricalData')
+   // this.$store.dispatch('investment/getBalancerHistoricalData')
   },
   methods: {
     getWindowWidth () {

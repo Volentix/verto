@@ -36,7 +36,6 @@ export const getRois = (state, updated) => {
         console.log(l, m, d, m / d, updated.poolName, updated)
       }
     }
-
     state.pools[index].ROI = grossROI
     state.pools[index].netROI = netROI
   }
@@ -45,6 +44,16 @@ export const setPoolHistoricalData = (state, payload) => {
   state.poolDataHistory[payload.platform] = payload.data
 }
 export const setMarketData = (state, payload) => {
-  state.marketData= payload
+  state.marketData = payload
 }
+export const setInvestments = (state, payload) => {
+  state.investments = state.investments.concat(payload.pools ? payload.pools :  payload )
+}
+export const setTransactions = (state, payload) => {
+  state.transactions = state.transactions.concat(payload.filter(item => !state.transactions.find(o => o.hash == item.hash)))
+}
+export const setDebts = (state, payload) => {
+  state.debts = state.debts.concat(payload.filter(item => !state.debts.find(o => o.hash == item.hash)))
+}
+
 
