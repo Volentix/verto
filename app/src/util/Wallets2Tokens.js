@@ -28,11 +28,15 @@ class Wallets2Tokens {
       //   vespucciScore = result.vespucciScore
       //   wallet.vespucciScore = vespucciScore
       // })
-    
+        wallet.chain = 'eth'
+        wallet.type = 'eth'
+        wallet.key = '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772'
       if (wallet.type === 'eos') {
         wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
         wallet.chain = 'eos'
+        
+       
       } else if (wallet.type === 'verto') {
         wallet.to = '/verto/wallets/eos/verto/' + wallet.name.toLowerCase()
         wallet.icon = '/statics/icon.png'
@@ -127,7 +131,7 @@ class Wallets2Tokens {
           })
         })
       } else if (wallet.type === 'eth') {
-        // wallet.key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
+         // temporary account override for testing
         axios.get('https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
           let ethplorer = res.data
           self.tableData.filter(w => w.key === wallet.key).map(eth => {
