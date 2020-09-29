@@ -83,12 +83,12 @@
                   </q-item>
                 </template>
                 </q-select>
-              
+
               </div>
               <div class="col-md-12 q-mt-sm">
                <q-checkbox v-model="processWithMetamask"  label="Use Metamask" />
               </div>
-               
+
               <div class="text-red q-mt-md" v-if="error">{{error}}</div>
             </div>
             <!-- <hr style="opacity: .1" class="q-mt-lg">
@@ -117,7 +117,7 @@
               <a :href="'https://etherscan.io/tx/'+transactionSent" target="_black">View in Etherscan <q-icon name="visibility"></q-icon></a>
             </div>
              </div>
-        
+
          </q-card-section>
         <q-card-actions align="right" class="q-pr-sm q-mb-sm q-mt-xl" v-if="!transactionSent">
             <q-btn label="Cancel" flat class="qbtn-start q-mr-sm cancel" color="black" v-close-popup/>
@@ -138,7 +138,7 @@ export default {
     return {
       platform: '',
       gasOptions: null,
-      transactionSent:null,
+      transactionSent: null,
       gasSelected: null,
       pool: '',
       error: null,
@@ -151,7 +151,7 @@ export default {
       ethAccount: null,
       availableAmount: 0,
       tokenInWallet: false,
-      processWithMetamask:false,
+      processWithMetamask: false,
       web3: null,
       contractAddress: {
         uniswapv2: '0x80c5e6908368cb9db503ba968d7ec5a565bfb389',
@@ -177,12 +177,12 @@ export default {
     }
     const options = {
       transactionConfirmationBlocks: 1
-    };
+    }
     const Web3 = require('web3')
     this.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
-    
+
     let t = this.web3.eth.getTransaction('0x51c32feefe4bcfac06b19364e07b7f261138e1760da96a827d6c0954dcb47059')
-    console.log(t,'t ')
+    console.log(t, 't ')
     this.$store.dispatch('investment/getGasPrice')
   },
   computed: {
@@ -499,33 +499,33 @@ export default {
         self.gasOptions = [{
           label: 'Slow',
           value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount),
-          gasPrice:  self.$store.state.investment.gasPrice.slow *  1000000000,
-          gas:gasAmount
+          gasPrice: self.$store.state.investment.gasPrice.slow * 1000000000,
+          gas: gasAmount
         },
         {
           label: 'Fast',
           value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.fast, gasAmount),
-         gasPrice:   self.$store.state.investment.gasPrice.fast *  1000000000,
-          gas:gasAmount
+          gasPrice: self.$store.state.investment.gasPrice.fast * 1000000000,
+          gas: gasAmount
         },
         {
           label: 'Instant',
           value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.instant, gasAmount),
-          gasPrice:  self.$store.state.investment.gasPrice.instant *  1000000000,
-          gas:gasAmount
+          gasPrice: self.$store.state.investment.gasPrice.instant * 1000000000,
+          gas: gasAmount
         }
         ]
         self.gasSelected = {
           label: 'Standard',
           value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.standard, gasAmount),
-          gasPrice:   self.$store.state.investment.gasPrice.standard *  1000000000,
-          gas:gasAmount
+          gasPrice: self.$store.state.investment.gasPrice.standard * 1000000000,
+          gas: gasAmount
         }
         console.log(self.gasOptions, 'gasOptions', self.gasSelected, 'gasSelected')
       })
     },
     getUSDGasPrice (gweiPrice, gasNumber) {
-       let ethToUsd = this.$store.state.investment.marketData.find(o => o.symbol.toLowerCase() == 'eth').current_price
+      let ethToUsd = this.$store.state.investment.marketData.find(o => o.symbol.toLowerCase() == 'eth').current_price
 
       return this.web3.utils.fromWei(Math.round((gweiPrice * gasNumber * 1000000000)).toString(), 'ether') * ethToUsd
     },
@@ -533,65 +533,64 @@ export default {
       return this.sendTransaction()
       const EthereumTx = require('ethereumjs-tx').Transaction
       console.log(this.pool)
-     
+
       let poolData = this.$store.state.investment.pools.find(v => v.contractAddress == this.pool.value)
-         console.log(this.pool, poolData)
+      console.log(this.pool, poolData)
       let toAddress = this.contractAddress[poolData.platform.replace(/[^0-9a-z]/gi, '').toLowerCase()]
       if (!toAddress) console.log('toAddress not found')
       let nonce = await this.web3.eth.getTransactionCount(this.currentToken.key) + 1
-   
+
       let transactionObject = {
-        from:this.currentToken.key,
+        from: this.currentToken.key,
         to: toAddress,
-        gas:this.gasSelected.gas,
-        value: this.sendAmount * 1000000000000000000 ,
+        gas: this.gasSelected.gas,
+        value: this.sendAmount * 1000000000000000000,
         gasPrice: this.gasSelected.gasPrice,
-        nonce:nonce,
-        chain:1
+        nonce: nonce,
+        chain: 1
 
       }
       if (this.currentToken.type.toLowerCase() != 'eth') return this.doErc20Transaction(transactionObject)
 
-      if(this.processWithMetamask){
-        
+      if (this.processWithMetamask) {
         transactionObject.from = null
-      if (window.ethereum) {
-        window.web3 = new Web3(ethereum)
+        if (window.ethereum) {
+          window.web3 = new Web3(ethereum)
 
-        // Request account access if needed
-        await ethereum.enable()
-        // Acccounts now exposed
-        await web3.eth.sendTransaction(transactionObject).then(function (receipt) {
-          console.log(receipt)
-        }).catch((error) => {
-          this.error = error
-        })
-      }
-      // Legacy dapp browsers...
-      else if (window.web3) {
-        window.web3 = new Web3(web3.currentProvider)
-        // Acccounts always exposed
-        await web3.eth.sendTransaction(transactionObject).then(function (receipt) {
-          console.log(receipt)
-        }).catch((error) => {
-          this.error = error
-        })
-      }
-      // Non-dapp browsers...
-      else {
-        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
-      }
-      return
+          // Request account access if needed
+          await ethereum.enable()
+          // Acccounts now exposed
+          await web3.eth.sendTransaction(transactionObject).then(function (receipt) {
+            console.log(receipt)
+          }).catch((error) => {
+            this.error = error
+          })
+        }
+        // Legacy dapp browsers...
+        else if (window.web3) {
+          window.web3 = new Web3(web3.currentProvider)
+          // Acccounts always exposed
+          await web3.eth.sendTransaction(transactionObject).then(function (receipt) {
+            console.log(receipt)
+          }).catch((error) => {
+            this.error = error
+          })
+        }
+        // Non-dapp browsers...
+        else {
+          console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
+        }
+        return
       }
       if (this.currentToken.type.toLowerCase() != 'eth') return this.doErc20Transaction(transactionObject)
     
     
       console.log(transactionObject,this.gasSelected)
       const transaction = new EthereumTx(transactionObject)
-     
-       transaction.sign(Buffer.from(this.currentToken.privateKey.substring(2), 'hex'))
-       const serializedTransaction = transaction.serialize()
- /*
+
+      transaction.sign(Buffer.from(this.currentToken.privateKey.substring(2), 'hex'))
+      const serializedTransaction = transaction.serialize()
+      /*
          let p =  new Promise(async (resolve, reject) => {
             this.web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex'), (err, id) => {
               if (err) {
@@ -607,17 +606,15 @@ export default {
 
     console.log(p)
  */
-   
-            this.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'),(err, hash) => {
-                    if (!err) {
-                           this.transactionSent = hash; 
-                           console.log(hash)
-                     } else {
-                            this.error = err
-                      }
-            });
-    
 
+      this.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, hash) => {
+        if (!err) {
+          this.transactionSent = hash
+          console.log(hash)
+        } else {
+          this.error = err
+        }
+      })
     },
     async isTokenInWallet () {
       let tableData = await this.$store.state.wallets.tokens
@@ -626,15 +623,15 @@ export default {
       // this.currentToken = this.tokenInWallet ? this.tokenInWallet.name : this.tokenOptions[0] ;
       // this.sendAmount = this.tokenInWallet ? this.tokenInWallet.amount : 0
     },
-     async  getCurrentGasPrices () {
-          let response = await this.$axios.get('https://ethgasstation.info/json/ethgasAPI.json')
-          let prices = {
-            low: response.data.safeLow / 10,
-            medium: response.data.average / 10,
-            high: response.data.fast / 10
-          }
-          return prices
-        },
+    async  getCurrentGasPrices () {
+      let response = await this.$axios.get('https://ethgasstation.info/json/ethgasAPI.json')
+      let prices = {
+        low: response.data.safeLow / 10,
+        medium: response.data.average / 10,
+        high: response.data.fast / 10
+      }
+      return prices
+    },
     getMaxBalance () {
       this.sendAmount = this.currentToken.amount
     },

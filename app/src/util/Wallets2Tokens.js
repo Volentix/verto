@@ -14,12 +14,10 @@ class Wallets2Tokens {
 
     const self = this
     this.eosUSD = 0
-    axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { self.eosUSD = res.data.data.price })
+    axios.get(process.env[store.state.settings.network].CHAIN_ID + 'https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { self.eosUSD = res.data.data.price })
     store.state.wallets.portfolioTotal = 0
     this.tableData = [ ...store.state.currentwallet.config.keys ]
     this.tableData.map(wallet => {
-   
-
       // let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
       // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === vtxCoin.toLowerCase())
 
@@ -28,9 +26,9 @@ class Wallets2Tokens {
       //   vespucciScore = result.vespucciScore
       //   wallet.vespucciScore = vespucciScore
       // })
-        wallet.chain = 'eth'
-        wallet.type = 'eth'
-        wallet.key = '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772'
+      wallet.chain = 'eth'
+      wallet.type = 'eth'
+      wallet.key = '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772'
       if (wallet.type === 'eos') {
         wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
@@ -49,7 +47,7 @@ class Wallets2Tokens {
         // wallet.vespucciScore = vespucciScore
       }
       wallet.disabled = false
-      
+
       if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'bnb' || wallet.type === 'dash') {
         Lib.balance(wallet.type, wallet.key).then(result => {
           // console.log('libwallet', result)
@@ -141,7 +139,7 @@ class Wallets2Tokens {
 
           // console.log('ethplorer', ethplorer)
 
-          axios.get('https://cors-anywhere.herokuapp.com/https://api.tokensets.com/v1/rebalancing_sets', {
+          axios.get(process.env[store.state.settings.network].CHAIN_ID + 'https://api.tokensets.com/v1/rebalancing_sets', {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
           }).then(res => {
             let tokenSets = res.data.rebalancing_sets
@@ -207,7 +205,7 @@ class Wallets2Tokens {
     }
 
     // 'https://api.coingecko.com/api/v3/simple/price?ids=' + +'&vs_currencies=usd'
-    let coinEOS = (await axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
+    let coinEOS = (await axios.get(process.env[store.state.settings.network].CHAIN_ID + 'https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
     let coinUSD = coinEOS * this.eosUSD
     // console.log(coin, ' --> USD', coinUSD)
 
