@@ -203,7 +203,7 @@ export default {
     this.walletName = this.$store.state.currentwallet.wallet.name
     this.account = await eos.getAccount(this.walletName)
 
-    let result = await this.$axios.get(process.env[this.$store.state.settings.network].CHAIN_ID + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')
+    let result = await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')
     this.vtxprice = result.data.data.price
 
     // let result = await eos.getCurrencyBalanceP(this.walletName)
