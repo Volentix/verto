@@ -15,7 +15,7 @@
                   <div class="col-4"><h3>Balance</h3></div>
                 </div>
                 <q-scroll-area :visible="true" class="q-pr-lg q-mb-md q-mr-sm" style="height: 230px;">
-                  <div v-for="token in ethTokens" :key="ethTokens" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+                  <div v-for="(token, index) in ethTokens" :key="index" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
                     <div class="col-5 flex items-center">
                       <span class="token flex items-center">
                         <img :src="'https://files.coinswitch.co/public/coins/'+token.type+'.png'" class="q-mr-sm" alt=""> <strong>{{token.type}}</strong>
@@ -66,50 +66,7 @@
           </div> -->
 
           <div class="desktop-card-style current-investments explore-opportunities q-mb-md">
-            <h4 class="q-pl-md">Explore Opportunities</h4>
-            <div class="header-table-col row q-pl-md">
-              <div class="col-1"><h3>#</h3></div>
-              <div class="col-3"><h3>Available pools</h3></div>
-              <div class="col-2"><h3>Liquidity</h3></div>
-              <div class="col-2"><h3>Net ROI(1mo)</h3></div>
-              <div class="col-2"><h3>Net ROI(1mo)</h3></div>
-              <div class="col-2"></div>
-            </div>
-             <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 230px;">
-              <div v-for="(pool, index) in $store.state.investment.pools" :key="index" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
-                <div class="col-1 flex items-center">
-                  <strong>{{(index + 1)}}</strong>
-                </div>
-                <div class="col-3 flex items-center">
-                  <span class="imgs q-mr-lg">
-                    <img v-if="icon" v-for="(icon, index) in pool.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
-
-                  </span>
-                  <span class="column pairs">
-                    <span class="pair">{{pool.poolName}}</span>
-                    <span class="value">{{pool.platform}}</span>
-                  </span>
-                </div>
-                <div class="col-2 q-pl-sm">
-                  <span class="column pairs">
-                    <span class="pair">${{pool.liquidity}}</span>
-                  </span>
-                </div>
-                <div class="col-2 q-pl-md">
-                  <span class="column pairs">
-                    <span class="value">{{pool.netROI}}</span>
-                  </span>
-                </div>
-                <div class="col-2 q-pl-lg">
-                  <span class="column pairs">
-                    <span class="value">{{pool.ROI}}</span>
-                  </span>
-                </div>
-                <div class="col-2 flex justify-end">
-                  <q-btn unelevated @click="$store.commit('investment/setSelectedPool', pool); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
-                </div>
-              </div>
-            </q-scroll-area>
+            <LiquidityPoolsTable/>
           </div>
           <div class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken">
             <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
@@ -118,48 +75,14 @@
             </h4>
           </div>
         </div>
-        <div class="col col-7 q-pr-md">
+        <div class="col col-5 q-pr-md">
           <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
-            <h4 class="q-pl-md">Investments - $1,846.31</h4>
-            <div class="header-table-col row q-pl-md q-pr-lg">
-              <div class="col-4"><h3>Asset</h3></div>
-              <div class="col-4"><h3>Balance</h3></div>
-              <div class="col-4"><h3>Value</h3></div>
-            </div>
-            <q-scroll-area :visible="true" class="q-pr-md q-mb-md q-mr-sm" style="height: 120px;">
-              <div v-for="i in 4" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
-                <div class="col col-4 flex items-center">
-                  <span class="imgs q-mr-lg flex items-center">
-                    <img src="statics/coins_icons/eth2.png" class="q-mr-md" alt=""> <span class="pair text-bold">Maker Vault #279922</span>
-                  </span>
-                </div>
-                <div class="col col-4"><span>-</span></div>
-                <div class="col col-4"><span>$1,823.58</span></div>
-              </div>
-            </q-scroll-area>
+            <InvestmentsTable/>
           </div>
         </div>
-        <div class="col col-5">
+        <div class="col col-7">
           <div class="desktop-card-style current-investments wallet-col deposits-col q-mb-md">
-            <h4 class="q-pl-md">Deposits - $5,846.31</h4>
-            <div class="header-table-col row q-pl-md q-pr-lg">
-              <div class="col-3"><h3>Asset</h3></div>
-              <div class="col-3"><h3>Balance</h3></div>
-              <div class="col-3"><h3>APY</h3></div>
-              <div class="col-3"><h3>Value</h3></div>
-            </div>
-            <q-scroll-area :visible="true" class="q-pr-md q-mb-md q-mr-sm" style="height: 125px;">
-              <div v-for="i in 3" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
-                <div class="col-3 flex items-center">
-                  <span class="imgs q-mr-lg flex items-center">
-                    <img src="statics/coins_icons/eth2.png" class="q-mr-md" alt=""> <span class="pair text-bold">yDAI</span>
-                  </span>
-                </div>
-                <div class="col col-3"><span>7.1439</span></div>
-                <div class="col col-3"><span>-</span></div>
-                <div class="col col-3"><span>$2,823.58</span></div>
-              </div>
-            </q-scroll-area>
+             <TransactionsTable/>
           </div>
         </div>
       </div>
@@ -168,20 +91,24 @@
           <div class="desktop-card-style current-investments wallet-col debt-col q-mb-sm">
             <h4 class="q-pl-md">Debt - $1,846.31</h4>
             <div class="header-table-col row q-pl-md q-pr-lg">
-              <div class="col-4"><h3>Asset</h3></div>
-              <div class="col-4"><h3>Balance</h3></div>
-              <div class="col-4"><h3>Value</h3></div>
+              <div class="col-3"><h3>Asset</h3></div>
+              <div class="col-3"><h3>Details</h3></div>
+              <div class="col-3"><h3>Balance</h3></div>
+              <div class="col-3"><h3>Value</h3></div>
             </div>
-            <q-scroll-area :visible="true" class="q-pr-md q-mb-md q-mr-sm" style="height: 120px;">
-              <div v-for="i in 1" :key="i" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
-                <div class="col col-4 flex items-center">
-                  <span class="imgs q-mr-lg flex items-center">
-                    <img src="statics/coins_icons/eth2.png" class="q-mr-md" alt=""> <span class="pair text-bold">Maker Vault #279922</span>
-                  </span>
+            <q-scroll-area :visible="true" class="q-pr-md q-mb-md q-mr-sm" style="height: 125px;">
+            <div  v-for="(debt,key) in $store.state.investment.debts" :key="key" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
+                <div class="col-3 flex">
+                <span class="imgs q-mr-lg flex items-center">
+                     <img  :src="'https://zapper.fi/images/'+debt.img" alt="">
+                     <img  :src="'https://zapper.fi/images/'+debt.protocolImg" alt="">
+                    <span data-v-cb559478="" class="pair text-bold"></span>
+                    </span>
                 </div>
-                <div class="col col-4"><span>-</span></div>
-                <div class="col col-4"><span>$1,823.58</span></div>
-              </div>
+                <div class="col col-3"><span>{{debt.label}}</span></div>
+                <div class="col col-3"><span>${{debt.balanceUSD}}</span></div>
+                <div class="col col-3"><span>${{debt.debtValue.toLocaleString()}}</span></div>
+            </div>
             </q-scroll-area>
           </div>
         </div>
@@ -205,7 +132,9 @@ import { osName } from 'mobile-device-detect'
 // import TransactionsSection from '../../components/Verto/TransactionsSection'
 import AddLiquidityDialog from '../../components/Verto/AddLiquidityDialog'
 import { QScrollArea } from 'quasar'
-
+import LiquidityPoolsTable from '../../components/Verto/liquidityPoolsTable'
+import TransactionsTable from '../../components/Verto/transactionsTable'
+import InvestmentsTable from '../../components/Verto/investmentsTable'
 // let cruxClient
 
 export default {
@@ -213,7 +142,10 @@ export default {
     QScrollArea,
     // TransactionsSection,
     // desktop components
-    AddLiquidityDialog
+    AddLiquidityDialog,
+    LiquidityPoolsTable,
+    InvestmentsTable,
+    TransactionsTable
   },
   data () {
     return {
@@ -318,8 +250,21 @@ export default {
 
     await cruxClient.init()
       */
-
+    let address = '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772' // this.maxToken.key ?   this.maxToken.key  : this.maxToken.contract
+    let account = { platform: 'uniswap-v2', address: address }
     this.$store.dispatch('investment/getZapperTokens')
+    this.$store.dispatch('investment/getTransactions', { address: address })
+    this.$store.dispatch('investment/getInvestments', account)
+    account.platform = 'uniswap'
+    this.$store.dispatch('investment/getInvestments', account)
+    account.platform = 'balancer'
+    this.$store.dispatch('investment/getInvestments', account)
+    account.platform = 'curve'
+    this.$store.dispatch('investment/getInvestments', account)
+    account.platform = 'iearn'
+    this.$store.dispatch('investment/getInvestments', account)
+    account.platform = 'maker'
+    this.$store.dispatch('investment/getDebts', account)
   },
   async mounted () {
     this.getMaxDeFiYield()
@@ -335,12 +280,12 @@ export default {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
     getMaxDeFiYield () {
-      this.$axios.get(process.env[this.$store.state.settings.network].CHAIN_ID + 'https://stats.finance/yearn')
+      this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://stats.finance/yearn')
         .then((result) => {
           var html = new DOMParser().parseFromString(result.data, 'text/html')
           var prev = 0
           for (let i = 6; i <= 14; i++) {
-            let value = parseFloat(html.querySelectorAll('table tr')[i].innerText.match(/[\d\.]+/)[0])
+            let value = parseFloat(html.querySelectorAll('table tr')[i].innerText.match(/[\d.]+/)[0])
             if (value > prev) {
               this.maxDeFiYield = {
                 roi: value,

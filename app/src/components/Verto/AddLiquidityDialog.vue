@@ -2,10 +2,19 @@
     <q-card class="q-pa-lg modal-dialog-wrapper" style="width: 800px; max-width: 90vw;">
         <q-toolbar>
             <q-toolbar-title><span class="text-weight-bold q-pl-sm">Add Liquidity</span></q-toolbar-title>
+            <q-select v-if="externalWallets.metamask.length" borderless  v-model="currentExrternalWallet" :options="externalWallets.metamask" label="Account" />
+          <q-item  dense >
+          <q-item-section class="text-body1 q-pr-sm">
+
+            <q-btn :loading="connectLoading.metamask" :class="externalWallets.metamask.length ? 'bg-green-1' : 'bg-red-1'" @click="conectWallet('metamask')" flat icon="fiber_manual_record" :color="!externalWallets.metamask.length ? 'red' : 'green'" :label="!externalWallets.metamask.length ? 'Connect' : 'Connected'">
+               <img style="width: 35px;" class="q-pl-sm" src="https://cdn.freebiesupply.com/logos/large/2x/metamask-logo-png-transparent.png">
+          </q-btn> </q-item-section>
+
+      </q-item>
             <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
         <q-card-section class="text-h6" v-if="!transactionSent">
-            <div v-if="currentToken.label" class="text-h6 q-mb-md q-pl-sm flex items-center">
+            <div v-if="currentToken" class="text-h6 q-mb-md q-pl-sm flex items-center">
               <h4 class="lab-title q-pr-md">Available {{currentToken.label}}:</h4> {{ currentToken.amount}}
               <span class="link-to-exchange" @click="goToExchange" v-if="!tokenInWallet && false">Get {{currentToken.label}}</span>
             </div>
@@ -85,9 +94,6 @@
                 </q-select>
 
               </div>
-              <div class="col-md-12 q-mt-sm">
-               <q-checkbox v-model="processWithMetamask"  label="Use Metamask" />
-              </div>
 
               <div class="text-red q-mt-md" v-if="error">{{error}}</div>
             </div>
@@ -127,23 +133,22 @@
 </template>
 
 <script>
-import {
-  mapState,
-  mapActions
-} from 'vuex'
+import { mapState } from 'vuex'
 export default {
   name: 'AddLiquidityDialog',
   data () {
     return {
-      platform: '',
       gasOptions: null,
       transactionSent: null,
       gasSelected: null,
+      externalWallets: { metamask: [] },
       pool: '',
       error: null,
       sendAmount: 0,
       poolOptions: [],
       tokenOptions: [],
+      currentExrternalWallet: '',
+      connectLoading: { metamask: false },
       currentToken: '',
       platform: 'Any',
       ethTokens: [],
@@ -167,21 +172,19 @@ export default {
   async created () {
     let tableData = await this.$store.state.wallets.tokens
     this.ethAccount = tableData.filter(w => w.chain === 'eth')
-      .filter(w => this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() == w.type.toLowerCase()))
+      .filter(w => this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() === w.type.toLowerCase()))
 
-    if (!this.notWidget) {
+    if (this.notWidget === null) {
       await this.$store.dispatch('investment/getZapperTokens')
     } else {
       this.setDialogData()
     }
-    const options = {
-      transactionConfirmationBlocks: 1
-    }
+
     const Web3 = require('web3')
     this.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
+    // let t = this.web3.eth.getTransaction('0x51c32feefe4bcfac06b19364e07b7f261138e1760da96a827d6c0954dcb47059')
+    if (this.$store.state.investment.metamaskConnected) this.conectWallet('metamask')
 
-    let t = this.web3.eth.getTransaction('0x51c32feefe4bcfac06b19364e07b7f261138e1760da96a827d6c0954dcb47059')
-    console.log(t, 't ')
     this.$store.dispatch('investment/getGasPrice')
   },
   computed: {
@@ -206,6 +209,46 @@ export default {
 
   },
   methods: {
+    conectWallet (walletType) {
+      if (walletType === 'metamask') {
+        this.connectLoading.metamask = true
+        window.ethereum.enable()
+          .then(async (accounts) => {
+            this.connectLoading.metamask = false
+            await accounts.map(async (o, index) => {
+              let item = {}
+              await this.web3.eth.getBalance(o, (err, balance) => {
+                item.balance = this.web3.utils.fromWei(balance, 'ether')
+                item.label = o.substring(0, 10) + '...' + o.substr(o.length - 5)
+                item.value = o
+                console.log(err)
+              })
+              if (index === 0) {
+                this.currentExrternalWallet = item
+                this.currentToken.amount = item.balance
+                this.currentToken.symbol = 'ETH'
+                this.currentToken.key = item.value
+                this.currentToken.metamask = true
+                this.$store.commit('investment/setMetamaskConnectionStatus', true)
+              }
+              this.externalWallets.metamask.push(item)
+            })
+          }).catch((e) => {
+            this.connectLoading.metamask = false
+            console.log(e)
+          })
+      }
+      console.log(this.externalWallets)
+    },
+    async getContractABI (address) {
+      let abi = null
+      await this.$axios.post('https://api.etherscan.io/api?apikey=YBABRIF5FBIVNZZK3R8USGI94444WQHHBN&module=contract&action=getabi&address=' + address + '')
+        .then((result) => {
+          abi = result.data.result
+        })
+
+      return abi
+    },
     setDialogData () {
       if (this.$store.state.investment.selectedPool) {
         this.tokenOptions = this.ethAccount.map(o => {
@@ -217,17 +260,16 @@ export default {
         this.currentToken = this.tokenOptions[0]
         this.getTokenAvailableAmount()
         this.poolOptions = this.$store.state.investment.pools.map(o => {
-          return {
-            label: o.poolName,
-            value: o.id,
-            tokens: o.tokens
-          }
+          o.label = o.poolName
+          o.value = o.id
+          return o
         })
         this.pool = this.$store.state.investment.selectedPool
         this.isTokenInWallet()
       }
     },
     async doERC20ToCurveTransaction () {
+      /*
       const web3 = new Web3(provider.wallet.provider)
       const address = provider.address
       const curveCurvePipeAddress = '0x66895417881B1d77Ca71bd9e5Ba1E729f3Aa44D3'
@@ -256,973 +298,131 @@ export default {
             await sendTransaction(address, 0, tx, gasPrice, 2000000) // Rely on nonce for tx ordering to avoid waiting for approval to confirm
           })
       } else await sendTransaction(address, 0, tx, gasPrice) // Contract already has approval, gas estimates will not fail
+      */
+    },
+    async sendTransaction () {
+      /* global web3  */
+
+      const Web3 = require('web3')
+      let poolContractABI = null, fromTokenAddress = '0x0000000000000000000000000000000000000000'
+      let poolData = this.$store.state.investment.pools.find(v => v.contractAddress === this.pool.value)
+      let toAddress = this.contractAddress[poolData.platform.replace(/[^0-9a-z]/gi, '').toLowerCase()]
+      await this.getContractABI(toAddress).then(value => { poolContractABI = value })
+      // await this.getContractABI(fromTokenAddress).then(value => tokenABI = value)
+      let nonce = await this.web3.eth.getTransactionCount(this.currentToken.key) + 1
+
+      const poolContract = new this.web3.eth.Contract(JSON.parse(poolContractABI), toAddress)
+
+      /*  const valueToSend = 100
+           const tokenContract = new this.web3.eth.Contract(tokenABI, fromTokenAddress)
+          const approvalAmount = '100000000000000000000';
+          tokenContract.methods.approve(toAddress, approvalAmount).send({ from: this.currentToken.key }, async function(error, txHash) {
+          if (error) {
+              console.log("ERC20 could not be approved", error);
+              return;
+          }
+          console.log("ERC20 token approved to " + toAddress);
+          const status = await self.waitTransaction(txHash);
+          if (!status) {
+              console.log("Approval transaction failed.");
+              return;
+          }
+    })
+   */
+
+      let transactionObject = {
+        from: this.currentToken.key,
+        to: toAddress,
+        gas: 557876,
+        value: this.sendAmount * 1000000000000000000,
+        gasPrice: 53000000000,
+        nonce: nonce
+      }
+      let tx = null
+
+      console.log(transactionObject, 'web3')
+      if (this.pool.platform === 'Uniswap V2') {
+        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
+      } else if (this.pool.platform === 'Balancer-labs') {
+        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
+      } else if (this.pool.platform === 'Curve') {
+        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
+      } else if (this.pool.platform === 'yEarn') {
+        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
+      }
+
+      transactionObject.data = tx.encodeABI()
+
+      if (this.currentToken.metamask) {
+        if (window.web3 && window.web3.currentProvider.isMetaMask) {
+          let localWeb3 = new Web3(web3.currentProvider)
+
+          await localWeb3.eth.sendTransaction(transactionObject).then(function (receipt) {
+            console.log(receipt)
+          }).catch((error) => {
+            this.error = error
+          })
+        } else { // Non-dapp browsers...
+          console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
+        }
+      }
+      return true /*
+
+      const EthereumTx = require('ethereumjs-tx').Transaction
+      const transaction = new EthereumTx(transactionObject, { chain: 'mainnet', hardfork: 'petersburg' })
+
+      transaction.sign(Buffer.from(this.currentToken.privateKey.substring(2), 'hex'))
+      const serializedTransaction = transaction.serialize()
+
+      this.web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex'), async (err, hash) => {
+        console.log(hash)
+        if (!err) {
+          this.transactionSent = hash
+          console.log(hash)
+          console.log(await this.waitTransaction(hash))
+        } else {
+          this.error = err
+        }
+      })
+
+      /*
+        self.web3.eth.accounts.signTransaction(transactionObject, this.currentToken.privateKey, function (error, signedTx) {
+        if (error) {
+        console.log(error);
+         } else {
+       self.web3.eth.sendSignedTransaction(signedTx.rawTransaction)
+        .on('receipt', function (receipt) {
+            console.log(receipt)
+      });
+      }})
+
+          console.log(encoded_tx)
+    */
+    },
+    sleep (ms) {
+      return new Promise(resolve => setTimeout(resolve, ms))
+    },
+    async waitTransaction (txHash) {
+      let tx = null
+      while (tx == null) {
+        tx = await this.web3.eth.getTransactionReceipt(txHash)
+        await this.sleep(2000)
+      }
+      console.log('Transaction ' + txHash + ' was mined.')
+      return (tx.status)
     },
     async doErc20Transaction (transactionObject) {
-      let tableData = await this.$store.state.wallets.tokens
+      /* let tableData = await this.$store.state.wallets.tokens
       let account = tableData.find(w => w.chain === 'eth' && w.defaultKey == true)
-      if (!account) return console.log('NO ETH ACCOUNT')
+      if (account === null) return console.log('NO ETH ACCOUNT')
       let tokenAddress = this.currentToken.contract
       transactionObject.from = account.key
       console.log(transactionObject, this.currentToken)
       let decimals = this.web3.utils.toBN(18)
       let value = (this.sendAmount * 10 ** 18).toFixed(0)
-      let minABI = [{
-        'constant': false,
-        'inputs': [{
-          'name': '_to',
-          'type': 'address'
-        },
-        {
-          'name': '_value',
-          'type': 'uint256'
-        }
-        ],
-        'name': 'transfer',
-        'outputs': [{
-          'name': '',
-          'type': 'bool'
-        }],
-        'type': 'function'
-      }]
-
-      let tokenABI = [{
-        'inputs': [{
-          'internalType': 'address[]',
-          'name': '_components',
-          'type': 'address[]'
-        }, {
-          'internalType': 'int256[]',
-          'name': '_units',
-          'type': 'int256[]'
-        }, {
-          'internalType': 'address[]',
-          'name': '_modules',
-          'type': 'address[]'
-        }, {
-          'internalType': 'contract IController',
-          'name': '_controller',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_manager',
-          'type': 'address'
-        }, {
-          'internalType': 'string',
-          'name': '_name',
-          'type': 'string'
-        }, {
-          'internalType': 'string',
-          'name': '_symbol',
-          'type': 'string'
-        }],
-        'stateMutability': 'nonpayable',
-        'type': 'constructor'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': 'owner',
-          'type': 'address'
-        }, {
-          'indexed': true,
-          'internalType': 'address',
-          'name': 'spender',
-          'type': 'address'
-        }, {
-          'indexed': false,
-          'internalType': 'uint256',
-          'name': 'value',
-          'type': 'uint256'
-        }],
-        'name': 'Approval',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'ComponentAdded',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'ComponentRemoved',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'indexed': false,
-          'internalType': 'int256',
-          'name': '_realUnit',
-          'type': 'int256'
-        }],
-        'name': 'DefaultPositionUnitEdited',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }, {
-          'indexed': false,
-          'internalType': 'bytes',
-          'name': '_data',
-          'type': 'bytes'
-        }],
-        'name': 'ExternalPositionDataEdited',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }, {
-          'indexed': false,
-          'internalType': 'int256',
-          'name': '_realUnit',
-          'type': 'int256'
-        }],
-        'name': 'ExternalPositionUnitEdited',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_target',
-          'type': 'address'
-        }, {
-          'indexed': true,
-          'internalType': 'uint256',
-          'name': '_value',
-          'type': 'uint256'
-        }, {
-          'indexed': false,
-          'internalType': 'bytes',
-          'name': '_data',
-          'type': 'bytes'
-        }, {
-          'indexed': false,
-          'internalType': 'bytes',
-          'name': '_returnValue',
-          'type': 'bytes'
-        }],
-        'name': 'Invoked',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': false,
-          'internalType': 'address',
-          'name': '_newManager',
-          'type': 'address'
-        }, {
-          'indexed': false,
-          'internalType': 'address',
-          'name': '_oldManager',
-          'type': 'address'
-        }],
-        'name': 'ManagerEdited',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'ModuleAdded',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'ModuleInitialized',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'ModuleRemoved',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'PendingModuleRemoved',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }],
-        'name': 'PositionModuleAdded',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }],
-        'name': 'PositionModuleRemoved',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': false,
-          'internalType': 'int256',
-          'name': '_newMultiplier',
-          'type': 'int256'
-        }],
-        'name': 'PositionMultiplierEdited',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': 'from',
-          'type': 'address'
-        }, {
-          'indexed': true,
-          'internalType': 'address',
-          'name': 'to',
-          'type': 'address'
-        }, {
-          'indexed': false,
-          'internalType': 'uint256',
-          'name': 'value',
-          'type': 'uint256'
-        }],
-        'name': 'Transfer',
-        'type': 'event'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'addComponent',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }],
-        'name': 'addExternalPositionModule',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'addModule',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': 'owner',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': 'spender',
-          'type': 'address'
-        }],
-        'name': 'allowance',
-        'outputs': [{
-          'internalType': 'uint256',
-          'name': '',
-          'type': 'uint256'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': 'spender',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': 'amount',
-          'type': 'uint256'
-        }],
-        'name': 'approve',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': 'account',
-          'type': 'address'
-        }],
-        'name': 'balanceOf',
-        'outputs': [{
-          'internalType': 'uint256',
-          'name': '',
-          'type': 'uint256'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_account',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': '_quantity',
-          'type': 'uint256'
-        }],
-        'name': 'burn',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'uint256',
-          'name': '',
-          'type': 'uint256'
-        }],
-        'name': 'components',
-        'outputs': [{
-          'internalType': 'address',
-          'name': '',
-          'type': 'address'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'controller',
-        'outputs': [{
-          'internalType': 'contract IController',
-          'name': '',
-          'type': 'address'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'decimals',
-        'outputs': [{
-          'internalType': 'uint8',
-          'name': '',
-          'type': 'uint8'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': 'spender',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': 'subtractedValue',
-          'type': 'uint256'
-        }],
-        'name': 'decreaseAllowance',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'int256',
-          'name': '_realUnit',
-          'type': 'int256'
-        }],
-        'name': 'editDefaultPositionUnit',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }, {
-          'internalType': 'bytes',
-          'name': '_data',
-          'type': 'bytes'
-        }],
-        'name': 'editExternalPositionData',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }, {
-          'internalType': 'int256',
-          'name': '_realUnit',
-          'type': 'int256'
-        }],
-        'name': 'editExternalPositionUnit',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'int256',
-          'name': '_newMultiplier',
-          'type': 'int256'
-        }],
-        'name': 'editPositionMultiplier',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'getComponents',
-        'outputs': [{
-          'internalType': 'address[]',
-          'name': '',
-          'type': 'address[]'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'getDefaultPositionRealUnit',
-        'outputs': [{
-          'internalType': 'int256',
-          'name': '',
-          'type': 'int256'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }],
-        'name': 'getExternalPositionData',
-        'outputs': [{
-          'internalType': 'bytes',
-          'name': '',
-          'type': 'bytes'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'getExternalPositionModules',
-        'outputs': [{
-          'internalType': 'address[]',
-          'name': '',
-          'type': 'address[]'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }],
-        'name': 'getExternalPositionRealUnit',
-        'outputs': [{
-          'internalType': 'int256',
-          'name': '',
-          'type': 'int256'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'getModules',
-        'outputs': [{
-          'internalType': 'address[]',
-          'name': '',
-          'type': 'address[]'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'getPositions',
-        'outputs': [{
-          'components': [{
-            'internalType': 'address',
-            'name': 'component',
-            'type': 'address'
-          }, {
-            'internalType': 'address',
-            'name': 'module',
-            'type': 'address'
-          }, {
-            'internalType': 'int256',
-            'name': 'unit',
-            'type': 'int256'
-          }, {
-            'internalType': 'uint8',
-            'name': 'positionState',
-            'type': 'uint8'
-          }, {
-            'internalType': 'bytes',
-            'name': 'data',
-            'type': 'bytes'
-          }],
-          'internalType': 'struct ISetToken.Position[]',
-          'name': '',
-          'type': 'tuple[]'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'getTotalComponentRealUnits',
-        'outputs': [{
-          'internalType': 'int256',
-          'name': '',
-          'type': 'int256'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': 'spender',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': 'addedValue',
-          'type': 'uint256'
-        }],
-        'name': 'increaseAllowance',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'initializeModule',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_target',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': '_value',
-          'type': 'uint256'
-        }, {
-          'internalType': 'bytes',
-          'name': '_data',
-          'type': 'bytes'
-        }],
-        'name': 'invoke',
-        'outputs': [{
-          'internalType': 'bytes',
-          'name': '_returnValue',
-          'type': 'bytes'
-        }],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'isComponent',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'isExternalPositionModule',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'isInitializedModule',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'isLocked',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'isPendingModule',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'lock',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'locker',
-        'outputs': [{
-          'internalType': 'address',
-          'name': '',
-          'type': 'address'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'manager',
-        'outputs': [{
-          'internalType': 'address',
-          'name': '',
-          'type': 'address'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_account',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': '_quantity',
-          'type': 'uint256'
-        }],
-        'name': 'mint',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '',
-          'type': 'address'
-        }],
-        'name': 'moduleStates',
-        'outputs': [{
-          'internalType': 'enum ISetToken.ModuleState',
-          'name': '',
-          'type': 'uint8'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'uint256',
-          'name': '',
-          'type': 'uint256'
-        }],
-        'name': 'modules',
-        'outputs': [{
-          'internalType': 'address',
-          'name': '',
-          'type': 'address'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'name',
-        'outputs': [{
-          'internalType': 'string',
-          'name': '',
-          'type': 'string'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'positionMultiplier',
-        'outputs': [{
-          'internalType': 'int256',
-          'name': '',
-          'type': 'int256'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'removeComponent',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }],
-        'name': 'removeExternalPositionModule',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'removeModule',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'removePendingModule',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_manager',
-          'type': 'address'
-        }],
-        'name': 'setManager',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'symbol',
-        'outputs': [{
-          'internalType': 'string',
-          'name': '',
-          'type': 'string'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'totalSupply',
-        'outputs': [{
-          'internalType': 'uint256',
-          'name': '',
-          'type': 'uint256'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': 'recipient',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': 'amount',
-          'type': 'uint256'
-        }],
-        'name': 'transfer',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': 'sender',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': 'recipient',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': 'amount',
-          'type': 'uint256'
-        }],
-        'name': 'transferFrom',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'unlock',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'stateMutability': 'payable',
-        'type': 'receive'
-      }]
-
+      let minABI = []
       // this.getGas(transactionObject.to, this.sendAmount )
       // Get ERC20 Token contract instance
-      /*
 
        if (window.ethereum) {
         window.web3 = new Web3(ethereum);
@@ -1285,7 +485,7 @@ export default {
       }
 
     return
-    */
+
       let contract = new this.web3.eth.Contract(tokenABI, tokenAddress)
       let poolContract = new this.web3.eth.Contract(minABI, transactionObject.to)
       console.log(contract.methods, 'contract.methods')
@@ -1299,979 +499,59 @@ export default {
         }).on('error', function (error, a) {
           self.error = error
         })
+        */
     },
-    getGas () {
-      let tokenABI = [{
-        'inputs': [{
-          'internalType': 'address[]',
-          'name': '_components',
-          'type': 'address[]'
-        }, {
-          'internalType': 'int256[]',
-          'name': '_units',
-          'type': 'int256[]'
-        }, {
-          'internalType': 'address[]',
-          'name': '_modules',
-          'type': 'address[]'
-        }, {
-          'internalType': 'contract IController',
-          'name': '_controller',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_manager',
-          'type': 'address'
-        }, {
-          'internalType': 'string',
-          'name': '_name',
-          'type': 'string'
-        }, {
-          'internalType': 'string',
-          'name': '_symbol',
-          'type': 'string'
-        }],
-        'stateMutability': 'nonpayable',
-        'type': 'constructor'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': 'owner',
-          'type': 'address'
-        }, {
-          'indexed': true,
-          'internalType': 'address',
-          'name': 'spender',
-          'type': 'address'
-        }, {
-          'indexed': false,
-          'internalType': 'uint256',
-          'name': 'value',
-          'type': 'uint256'
-        }],
-        'name': 'Approval',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'ComponentAdded',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'ComponentRemoved',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'indexed': false,
-          'internalType': 'int256',
-          'name': '_realUnit',
-          'type': 'int256'
-        }],
-        'name': 'DefaultPositionUnitEdited',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }, {
-          'indexed': false,
-          'internalType': 'bytes',
-          'name': '_data',
-          'type': 'bytes'
-        }],
-        'name': 'ExternalPositionDataEdited',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }, {
-          'indexed': false,
-          'internalType': 'int256',
-          'name': '_realUnit',
-          'type': 'int256'
-        }],
-        'name': 'ExternalPositionUnitEdited',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_target',
-          'type': 'address'
-        }, {
-          'indexed': true,
-          'internalType': 'uint256',
-          'name': '_value',
-          'type': 'uint256'
-        }, {
-          'indexed': false,
-          'internalType': 'bytes',
-          'name': '_data',
-          'type': 'bytes'
-        }, {
-          'indexed': false,
-          'internalType': 'bytes',
-          'name': '_returnValue',
-          'type': 'bytes'
-        }],
-        'name': 'Invoked',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': false,
-          'internalType': 'address',
-          'name': '_newManager',
-          'type': 'address'
-        }, {
-          'indexed': false,
-          'internalType': 'address',
-          'name': '_oldManager',
-          'type': 'address'
-        }],
-        'name': 'ManagerEdited',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'ModuleAdded',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'ModuleInitialized',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'ModuleRemoved',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'PendingModuleRemoved',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }],
-        'name': 'PositionModuleAdded',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'indexed': true,
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }],
-        'name': 'PositionModuleRemoved',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': false,
-          'internalType': 'int256',
-          'name': '_newMultiplier',
-          'type': 'int256'
-        }],
-        'name': 'PositionMultiplierEdited',
-        'type': 'event'
-      }, {
-        'anonymous': false,
-        'inputs': [{
-          'indexed': true,
-          'internalType': 'address',
-          'name': 'from',
-          'type': 'address'
-        }, {
-          'indexed': true,
-          'internalType': 'address',
-          'name': 'to',
-          'type': 'address'
-        }, {
-          'indexed': false,
-          'internalType': 'uint256',
-          'name': 'value',
-          'type': 'uint256'
-        }],
-        'name': 'Transfer',
-        'type': 'event'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'addComponent',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }],
-        'name': 'addExternalPositionModule',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'addModule',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': 'owner',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': 'spender',
-          'type': 'address'
-        }],
-        'name': 'allowance',
-        'outputs': [{
-          'internalType': 'uint256',
-          'name': '',
-          'type': 'uint256'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': 'spender',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': 'amount',
-          'type': 'uint256'
-        }],
-        'name': 'approve',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': 'account',
-          'type': 'address'
-        }],
-        'name': 'balanceOf',
-        'outputs': [{
-          'internalType': 'uint256',
-          'name': '',
-          'type': 'uint256'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_account',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': '_quantity',
-          'type': 'uint256'
-        }],
-        'name': 'burn',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'uint256',
-          'name': '',
-          'type': 'uint256'
-        }],
-        'name': 'components',
-        'outputs': [{
-          'internalType': 'address',
-          'name': '',
-          'type': 'address'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'controller',
-        'outputs': [{
-          'internalType': 'contract IController',
-          'name': '',
-          'type': 'address'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'decimals',
-        'outputs': [{
-          'internalType': 'uint8',
-          'name': '',
-          'type': 'uint8'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': 'spender',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': 'subtractedValue',
-          'type': 'uint256'
-        }],
-        'name': 'decreaseAllowance',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'int256',
-          'name': '_realUnit',
-          'type': 'int256'
-        }],
-        'name': 'editDefaultPositionUnit',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }, {
-          'internalType': 'bytes',
-          'name': '_data',
-          'type': 'bytes'
-        }],
-        'name': 'editExternalPositionData',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }, {
-          'internalType': 'int256',
-          'name': '_realUnit',
-          'type': 'int256'
-        }],
-        'name': 'editExternalPositionUnit',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'int256',
-          'name': '_newMultiplier',
-          'type': 'int256'
-        }],
-        'name': 'editPositionMultiplier',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'getComponents',
-        'outputs': [{
-          'internalType': 'address[]',
-          'name': '',
-          'type': 'address[]'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'getDefaultPositionRealUnit',
-        'outputs': [{
-          'internalType': 'int256',
-          'name': '',
-          'type': 'int256'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }],
-        'name': 'getExternalPositionData',
-        'outputs': [{
-          'internalType': 'bytes',
-          'name': '',
-          'type': 'bytes'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'getExternalPositionModules',
-        'outputs': [{
-          'internalType': 'address[]',
-          'name': '',
-          'type': 'address[]'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }],
-        'name': 'getExternalPositionRealUnit',
-        'outputs': [{
-          'internalType': 'int256',
-          'name': '',
-          'type': 'int256'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'getModules',
-        'outputs': [{
-          'internalType': 'address[]',
-          'name': '',
-          'type': 'address[]'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'getPositions',
-        'outputs': [{
-          'components': [{
-            'internalType': 'address',
-            'name': 'component',
-            'type': 'address'
-          }, {
-            'internalType': 'address',
-            'name': 'module',
-            'type': 'address'
-          }, {
-            'internalType': 'int256',
-            'name': 'unit',
-            'type': 'int256'
-          }, {
-            'internalType': 'uint8',
-            'name': 'positionState',
-            'type': 'uint8'
-          }, {
-            'internalType': 'bytes',
-            'name': 'data',
-            'type': 'bytes'
-          }],
-          'internalType': 'struct ISetToken.Position[]',
-          'name': '',
-          'type': 'tuple[]'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'getTotalComponentRealUnits',
-        'outputs': [{
-          'internalType': 'int256',
-          'name': '',
-          'type': 'int256'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': 'spender',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': 'addedValue',
-          'type': 'uint256'
-        }],
-        'name': 'increaseAllowance',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'initializeModule',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_target',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': '_value',
-          'type': 'uint256'
-        }, {
-          'internalType': 'bytes',
-          'name': '_data',
-          'type': 'bytes'
-        }],
-        'name': 'invoke',
-        'outputs': [{
-          'internalType': 'bytes',
-          'name': '_returnValue',
-          'type': 'bytes'
-        }],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'isComponent',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'isExternalPositionModule',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'isInitializedModule',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'isLocked',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'isPendingModule',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'lock',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'locker',
-        'outputs': [{
-          'internalType': 'address',
-          'name': '',
-          'type': 'address'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'manager',
-        'outputs': [{
-          'internalType': 'address',
-          'name': '',
-          'type': 'address'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_account',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': '_quantity',
-          'type': 'uint256'
-        }],
-        'name': 'mint',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '',
-          'type': 'address'
-        }],
-        'name': 'moduleStates',
-        'outputs': [{
-          'internalType': 'enum ISetToken.ModuleState',
-          'name': '',
-          'type': 'uint8'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'uint256',
-          'name': '',
-          'type': 'uint256'
-        }],
-        'name': 'modules',
-        'outputs': [{
-          'internalType': 'address',
-          'name': '',
-          'type': 'address'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'name',
-        'outputs': [{
-          'internalType': 'string',
-          'name': '',
-          'type': 'string'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'positionMultiplier',
-        'outputs': [{
-          'internalType': 'int256',
-          'name': '',
-          'type': 'int256'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }],
-        'name': 'removeComponent',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_component',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': '_positionModule',
-          'type': 'address'
-        }],
-        'name': 'removeExternalPositionModule',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'removeModule',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_module',
-          'type': 'address'
-        }],
-        'name': 'removePendingModule',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': '_manager',
-          'type': 'address'
-        }],
-        'name': 'setManager',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'symbol',
-        'outputs': [{
-          'internalType': 'string',
-          'name': '',
-          'type': 'string'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'totalSupply',
-        'outputs': [{
-          'internalType': 'uint256',
-          'name': '',
-          'type': 'uint256'
-        }],
-        'stateMutability': 'view',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': 'recipient',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': 'amount',
-          'type': 'uint256'
-        }],
-        'name': 'transfer',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [{
-          'internalType': 'address',
-          'name': 'sender',
-          'type': 'address'
-        }, {
-          'internalType': 'address',
-          'name': 'recipient',
-          'type': 'address'
-        }, {
-          'internalType': 'uint256',
-          'name': 'amount',
-          'type': 'uint256'
-        }],
-        'name': 'transferFrom',
-        'outputs': [{
-          'internalType': 'bool',
-          'name': '',
-          'type': 'bool'
-        }],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'inputs': [],
-        'name': 'unlock',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-      }, {
-        'stateMutability': 'payable',
-        'type': 'receive'
-      }]
-      self = this
-      let contract = new this.web3.eth.Contract(tokenABI, '0x033b186321fa88603e3ecc98821fb0932b2c0760')
-      contract.methods.transfer('0x80c5e6908368cb9db503ba968d7ec5a565bfb389', (this.sendAmount * 10 ** 18).toFixed(0)).estimateGas(function (error, gasAmount) {
-        self.gasOptions = [{
-          label: 'Slow',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount),
-          gasPrice: self.$store.state.investment.gasPrice.slow * 1000000000,
-          gas: gasAmount
-        },
-        {
-          label: 'Fast',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.fast, gasAmount),
-          gasPrice: self.$store.state.investment.gasPrice.fast * 1000000000,
-          gas: gasAmount
-        },
-        {
-          label: 'Instant',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.instant, gasAmount),
-          gasPrice: self.$store.state.investment.gasPrice.instant * 1000000000,
-          gas: gasAmount
-        }
-        ]
-        self.gasSelected = {
-          label: 'Standard',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.standard, gasAmount),
-          gasPrice: self.$store.state.investment.gasPrice.standard * 1000000000,
-          gas: gasAmount
-        }
-        console.log(self.gasOptions, 'gasOptions', self.gasSelected, 'gasSelected')
-      })
+    async getGas () {
+      const self = this
+
+      await this.getContractABI('0x0000000000000000000000000000000000000000')
+        .then((contractABI) => {
+          console.log(contractABI)
+          let contract = new this.web3.eth.Contract(contractABI, '0x0000000000000000000000000000000000000000')
+          contract.methods.transfer('0x80c5e6908368cb9db503ba968d7ec5a565bfb389', (this.sendAmount * 10 ** 18).toFixed(0))
+            .estimateGas(function (error, gasAmount) {
+              self.gasOptions = [{
+                label: 'Slow',
+                value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount),
+                gasPrice: self.$store.state.investment.gasPrice.slow * 1000000000,
+                gas: gasAmount
+              },
+              {
+                label: 'Fast',
+                value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.fast, gasAmount),
+                gasPrice: self.$store.state.investment.gasPrice.fast * 1000000000,
+                gas: gasAmount
+              },
+              {
+                label: 'Instant',
+                value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.instant, gasAmount),
+                gasPrice: self.$store.state.investment.gasPrice.instant * 1000000000,
+                gas: gasAmount
+              }
+              ]
+              self.gasSelected = {
+                label: 'Standard',
+                value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.standard, gasAmount),
+                gasPrice: self.$store.state.investment.gasPrice.standard * 1000000000,
+                gas: gasAmount
+              }
+              console.log(self.gasOptions, 'gasOptions', self.gasSelected, 'gasSelected', error, 'error')
+            })
+            .catch((error) => {
+              console.log('estimateGas error', error)
+            })
+        })
+        .catch((error) => {
+          console.log(error, 'getGas error')
+        })
     },
     getUSDGasPrice (gweiPrice, gasNumber) {
-      let ethToUsd = this.$store.state.investment.marketData.find(o => o.symbol.toLowerCase() == 'eth').current_price
-
+      let ethToUsd = this.$store.state.investment.marketData.find(o => o.symbol.toLowerCase() === 'eth').current_price
       return this.web3.utils.fromWei(Math.round((gweiPrice * gasNumber * 1000000000)).toString(), 'ether') * ethToUsd
     },
     async doTransaction () {
+      return this.sendTransaction()
+      /*
       const EthereumTx = require('ethereumjs-tx').Transaction
       console.log(this.pool)
 
@@ -2321,12 +601,10 @@ export default {
         else {
           console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
         }
-        return
       }
       if (this.currentToken.type.toLowerCase() != 'eth') return this.doErc20Transaction(transactionObject)
 
       console.log(transactionObject, this.gasSelected)
-
       const transaction = new EthereumTx(transactionObject)
 
       transaction.sign(Buffer.from(this.currentToken.privateKey.substring(2), 'hex'))
@@ -2346,7 +624,6 @@ export default {
           })
 
     console.log(p)
- */
 
       this.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, hash) => {
         if (!err) {
@@ -2356,6 +633,7 @@ export default {
           this.error = err
         }
       })
+       */
     },
     async isTokenInWallet () {
       let tableData = await this.$store.state.wallets.tokens
@@ -2387,11 +665,9 @@ export default {
       if (val === '') {
         update(() => {
           self.poolOptions = this.$store.state.investment.pools.map(o => {
-            return {
-              label: o.poolName,
-              value: o.contractAddress,
-              tokens: o.tokens
-            }
+            o.label = o.poolName
+            o.value = o.id
+            return o
           })
         })
         return
@@ -2400,28 +676,24 @@ export default {
       update(() => {
         const needle = val.toLowerCase()
         this.poolOptions = this.$store.state.investment.pools.filter(v => v.poolName.toLowerCase().indexOf(needle) > -1).map(o => {
-          return {
-            label: o.poolName,
-            value: o.contractAddress,
-            tokens: o.tokens
-          }
+          o.label = o.poolName
+          o.value = o.id
+          return o
         })
       })
     },
     filterPoolsByPlatform () {
-      this.poolOptions = this.$store.state.investment.pools.filter(o => this.platform == 'Any' || o.platform.toLowerCase() == this.platform.toLowerCase()).map(o => {
-        return {
-          label: o.poolName,
-          value: o.contractAddress,
-          tokens: o.tokens
-        }
+      this.poolOptions = this.$store.state.investment.pools.filter(o => this.platform === 'Any' || o.platform.toLowerCase() === this.platform.toLowerCase()).map(o => {
+        o.label = o.poolName
+        o.value = o.id
+        return o
       })
       this.pool = this.poolOptions[0]
       //  this.tokenOptions = this.pool.tokens ;
       this.isTokenInWallet()
     },
     getTokenAvailableAmount () {
-      let found = this.ethTokens.find(o => o.type.toLowerCase() == this.currentToken.toLowerCase())
+      let found = this.ethTokens.find(o => o.type.toLowerCase() === this.currentToken.toLowerCase())
       this.availableAmount = found ? found.amount : 0
     },
     goToExchange () {
