@@ -14,7 +14,7 @@ class Wallets2Tokens {
 
     const self = this
     this.eosUSD = 0
-    axios.get(process.env[store.state.settings.network].CHAIN_ID + 'https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { self.eosUSD = res.data.data.price })
+    axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { self.eosUSD = res.data.data.price })
     store.state.wallets.portfolioTotal = 0
     this.tableData = [ ...store.state.currentwallet.config.keys ]
     this.tableData.map(wallet => {
@@ -26,7 +26,11 @@ class Wallets2Tokens {
       //   vespucciScore = result.vespucciScore
       //   wallet.vespucciScore = vespucciScore
       // })
-
+      /*
+      wallet.chain = 'eth'
+      wallet.type = 'eth'
+      wallet.key = '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772'
+      */
       if (wallet.type === 'eos') {
         wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
@@ -125,7 +129,7 @@ class Wallets2Tokens {
           })
         })
       } else if (wallet.type === 'eth') {
-        // wallet.key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
+        // temporary account override for testing
         axios.get('https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
           let ethplorer = res.data
           self.tableData.filter(w => w.key === wallet.key).map(eth => {
@@ -135,7 +139,7 @@ class Wallets2Tokens {
 
           // console.log('ethplorer', ethplorer)
 
-          axios.get(process.env[store.state.settings.network].CHAIN_ID + 'https://api.tokensets.com/v1/rebalancing_sets', {
+          axios.get(process.env[store.state.settings.network].CACHE + 'https://api.tokensets.com/v1/rebalancing_sets', {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
           }).then(res => {
             let tokenSets = res.data.rebalancing_sets
