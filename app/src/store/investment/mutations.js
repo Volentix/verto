@@ -5,6 +5,7 @@ export function someMutation (state) {
 
 export const setSelectedPool = (state, pool) => {
   state.selectedPool = pool
+  console.log(pool, 'pool')
 }
 export const setPools = (state, pools) => {
   state.pools = pools
@@ -51,10 +52,16 @@ export const setMarketData = (state, payload) => {
   state.marketData = payload
 }
 export const setInvestments = (state, payload) => {
-  state.investments = state.investments.concat(payload.pools ? payload.pools : payload)
+  state.investments = state.investments.concat(payload.pools ? payload.pools : payload).map((o, index) => {
+    o.index = index
+    return o
+  })
 }
 export const setTransactions = (state, payload) => {
-  state.transactions = state.transactions.concat(payload.filter(item => !state.transactions.find(o => o.hash === item.hash)))
+  state.transactions = state.transactions.concat(payload.filter(item => !state.transactions.find(o => o.hash === item.hash))).map((o, index) => {
+    o.index = index
+    return o
+  })
 }
 export const setDebts = (state, payload) => {
   state.debts = state.debts.concat(payload.filter(item => !state.debts.find(o => o.hash === item.hash)))
