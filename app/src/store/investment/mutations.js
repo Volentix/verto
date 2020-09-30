@@ -18,6 +18,10 @@ export const setTokens = (state, tokens) => {
 export const updateGasPrice = (state, gasPrice) => {
   state.gasPrice = gasPrice
 }
+export const setMetamaskConnectionStatus = (state, status) => {
+  state.metamaskConnected = status
+}
+
 export const getRois = (state, updated) => {
   var grossROI = 0, netROI = 0
   let index = state.pools.findIndex(o => o.contractAddress === updated.contractAddress)

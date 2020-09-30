@@ -350,7 +350,7 @@ export default {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
     getMaxDeFiYield () {
-      this.$axios.get(process.env[this.$store.state.settings.network].CHAIN_ID + 'https://stats.finance/yearn')
+      this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://stats.finance/yearn')
         .then((result) => {
           var html = new DOMParser().parseFromString(result.data, 'text/html')
           var prev = 0

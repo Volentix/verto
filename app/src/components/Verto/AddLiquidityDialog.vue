@@ -2,6 +2,15 @@
     <q-card class="q-pa-lg modal-dialog-wrapper" style="width: 800px; max-width: 90vw;">
         <q-toolbar>
             <q-toolbar-title><span class="text-weight-bold q-pl-sm">Add Liquidity</span></q-toolbar-title>
+            <q-select borderless  v-model="currentExrternalWallet" :options="externalWallets.metamask" label="Account" />
+          <q-item  dense >
+          <q-item-section class="text-body1 q-pr-sm">
+
+            <q-btn :loading="connectLoading.metamask" :class="externalWallets.metamask.length ? 'bg-green-1' : 'bg-red-1'" @click="conectWallet('metamask')" flat icon="fiber_manual_record" :color="!externalWallets.metamask.length ? 'red' : 'green'" :label="!externalWallets.metamask.length ? 'Connect' : 'Connected'">
+               <img style="width: 35px;" class="q-pl-sm" src="https://cdn.freebiesupply.com/logos/large/2x/metamask-logo-png-transparent.png">
+          </q-btn> </q-item-section>
+
+      </q-item>
             <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
         <q-card-section class="text-h6" v-if="!transactionSent">
@@ -135,11 +144,14 @@ export default {
       gasOptions: null,
       transactionSent: null,
       gasSelected: null,
+      externalWallets: { metamask: [] },
       pool: '',
       error: null,
       sendAmount: 0,
       poolOptions: [],
       tokenOptions: [],
+      currentExrternalWallet: '',
+      connectLoading: { metamask: false },
       currentToken: '',
       platform: 'Any',
       ethTokens: [],
@@ -173,9 +185,9 @@ export default {
 
     const Web3 = require('web3')
     this.web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
+    // let t = this.web3.eth.getTransaction('0x51c32feefe4bcfac06b19364e07b7f261138e1760da96a827d6c0954dcb47059')
+    if (this.$store.state.investment.metamaskConnected) this.conectWallet('metamask')
 
-    let t = this.web3.eth.getTransaction('0x51c32feefe4bcfac06b19364e07b7f261138e1760da96a827d6c0954dcb47059')
-    console.log(t, 't ')
     this.$store.dispatch('investment/getGasPrice')
   },
   computed: {
@@ -200,6 +212,37 @@ export default {
 
   },
   methods: {
+    conectWallet (walletType) {
+      if (walletType === 'metamask') {
+        this.connectLoading.metamask = true
+        window.ethereum.enable()
+          .then(async (accounts) => {
+            this.connectLoading.metamask = false
+            await accounts.map(async (o, index) => {
+              let item = {}
+              await this.web3.eth.getBalance(o, (err, balance) => {
+                item.balance = this.web3.utils.fromWei(balance, 'ether')
+                item.label = o.substring(0, 10) + '...' + o.substr(o.length - 5)
+                item.value = o
+                console.log(err)
+              })
+              if (index === 0) {
+                this.currentExrternalWallet = item
+                this.currentToken.amount = item.balance
+                this.currentToken.symbol = 'ETH'
+                this.currentToken.key = item.value
+                this.currentToken.metamask = true
+                this.$store.commit('investment/setMetamaskConnectionStatus', true)
+              }
+              this.externalWallets.metamask.push(item)
+            })
+          }).catch((e) => {
+            this.connectLoading.metamask = false
+            console.log(e)
+          })
+      }
+      console.log(this.externalWallets)
+    },
     async getContractABI (address) {
       let abi = null
       await this.$axios.post('https://api.etherscan.io/api?apikey=YBABRIF5FBIVNZZK3R8USGI94444WQHHBN&module=contract&action=getabi&address=' + address + '')
@@ -220,11 +263,9 @@ export default {
         this.currentToken = this.tokenOptions[0]
         this.getTokenAvailableAmount()
         this.poolOptions = this.$store.state.investment.pools.map(o => {
-          return {
-            label: o.poolName,
-            value: o.id,
-            tokens: o.tokens
-          }
+          o.label = o.poolName
+          o.value = o.id
+          return o
         })
         this.pool = this.$store.state.investment.selectedPool
         this.isTokenInWallet()
@@ -263,7 +304,7 @@ export default {
       */
     },
     async sendTransaction () {
-      /* global web3, ethereum */
+      /* global web3  */
 
       const Web3 = require('web3')
       let poolContractABI = null, fromTokenAddress = '0x0000000000000000000000000000000000000000'
@@ -301,6 +342,8 @@ export default {
         nonce: nonce
       }
       let tx = null
+
+      console.log(transactionObject, 'web3')
       if (this.pool.platform === 'Uniswap V2') {
         tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
       } else if (this.pool.platform === 'Balancer-labs') {
@@ -313,23 +356,11 @@ export default {
 
       transactionObject.data = tx.encodeABI()
 
-      if (this.processWithMetamask) {
-        transactionObject.from = null
-        if (typeof ethereum !== 'undefined') {
-          window.web3 = new Web3(ethereum)
+      if (this.currentToken.metamask) {
+        if (window.web3 && window.web3.currentProvider.isMetaMask) {
+          let localWeb3 = new Web3(web3.currentProvider)
 
-          // Request account access if needed
-          await ethereum.enable()
-          // Acccounts now exposed
-          await web3.eth.sendTransaction(transactionObject).then(function (receipt) {
-            console.log(receipt)
-          }).catch((error) => {
-            this.error = error
-          })
-        } else if (typeof web3 !== 'undefined') { // Legacy dapp browsers...
-          window.web3 = new Web3(web3.currentProvider)
-          // Acccounts always exposed
-          await web3.eth.sendTransaction(transactionObject).then(function (receipt) {
+          await localWeb3.eth.sendTransaction(transactionObject).then(function (receipt) {
             console.log(receipt)
           }).catch((error) => {
             this.error = error
@@ -337,9 +368,9 @@ export default {
         } else { // Non-dapp browsers...
           console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
         }
-        return
       }
-      console.log(transactionObject, 'transactionObject', this.currentToken.privateKey)
+      return true /*
+
       const EthereumTx = require('ethereumjs-tx').Transaction
       const transaction = new EthereumTx(transactionObject, { chain: 'mainnet', hardfork: 'petersburg' })
 
@@ -481,6 +512,7 @@ export default {
         .catch((error) => {
           console.log(error, 'getGas error')
         })
+      console.log(contractABI, 'contractABI')
       let contract = new this.web3.eth.Contract(contractABI, '0x033b186321fa88603e3ecc98821fb0932b2c0760')
       contract.methods.transfer('0x80c5e6908368cb9db503ba968d7ec5a565bfb389', (this.sendAmount * 10 ** 18).toFixed(0))
         .estimateGas(function (error, gasAmount) {
@@ -635,11 +667,9 @@ export default {
       if (val === '') {
         update(() => {
           self.poolOptions = this.$store.state.investment.pools.map(o => {
-            return {
-              label: o.poolName,
-              value: o.contractAddress,
-              tokens: o.tokens
-            }
+            o.label = o.poolName
+            o.value = o.id
+            return o
           })
         })
         return
@@ -648,21 +678,17 @@ export default {
       update(() => {
         const needle = val.toLowerCase()
         this.poolOptions = this.$store.state.investment.pools.filter(v => v.poolName.toLowerCase().indexOf(needle) > -1).map(o => {
-          return {
-            label: o.poolName,
-            value: o.contractAddress,
-            tokens: o.tokens
-          }
+          o.label = o.poolName
+          o.value = o.id
+          return o
         })
       })
     },
     filterPoolsByPlatform () {
       this.poolOptions = this.$store.state.investment.pools.filter(o => this.platform === 'Any' || o.platform.toLowerCase() === this.platform.toLowerCase()).map(o => {
-        return {
-          label: o.poolName,
-          value: o.contractAddress,
-          tokens: o.tokens
-        }
+        o.label = o.poolName
+        o.value = o.id
+        return o
       })
       this.pool = this.poolOptions[0]
       //  this.tokenOptions = this.pool.tokens ;
