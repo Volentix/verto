@@ -2,7 +2,7 @@
     <q-card class="q-pa-lg modal-dialog-wrapper" style="width: 800px; max-width: 90vw;">
         <q-toolbar>
             <q-toolbar-title><span class="text-weight-bold q-pl-sm">Add Liquidity</span></q-toolbar-title>
-            <q-select borderless  v-model="currentExrternalWallet" :options="externalWallets.metamask" label="Account" />
+            <q-select v-if="externalWallets.metamask.length" borderless  v-model="currentExrternalWallet" :options="externalWallets.metamask" label="Account" />
           <q-item  dense >
           <q-item-section class="text-body1 q-pr-sm">
 
@@ -14,7 +14,7 @@
             <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
         <q-card-section class="text-h6" v-if="!transactionSent">
-            <div v-if="currentToken.label" class="text-h6 q-mb-md q-pl-sm flex items-center">
+            <div v-if="currentToken" class="text-h6 q-mb-md q-pl-sm flex items-center">
               <h4 class="lab-title q-pr-md">Available {{currentToken.label}}:</h4> {{ currentToken.amount}}
               <span class="link-to-exchange" @click="goToExchange" v-if="!tokenInWallet && false">Get {{currentToken.label}}</span>
             </div>
@@ -93,9 +93,6 @@
                 </template>
                 </q-select>
 
-              </div>
-              <div class="col-md-12 q-mt-sm">
-               <q-checkbox v-model="processWithMetamask"  label="Use Metamask" />
               </div>
 
               <div class="text-red q-mt-md" v-if="error">{{error}}</div>
@@ -506,45 +503,46 @@ export default {
     },
     async getGas () {
       const self = this
-      let contractABI = null
-      await this.getContractABI('0x033b186321fa88603e3ecc98821fb0932b2c0760')
-        .then((value) => { contractABI = value })
+
+      await this.getContractABI('0x0000000000000000000000000000000000000000')
+        .then((contractABI) => {
+          console.log(contractABI)
+          let contract = new this.web3.eth.Contract(contractABI, '0x0000000000000000000000000000000000000000')
+          contract.methods.transfer('0x80c5e6908368cb9db503ba968d7ec5a565bfb389', (this.sendAmount * 10 ** 18).toFixed(0))
+            .estimateGas(function (error, gasAmount) {
+              self.gasOptions = [{
+                label: 'Slow',
+                value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount),
+                gasPrice: self.$store.state.investment.gasPrice.slow * 1000000000,
+                gas: gasAmount
+              },
+              {
+                label: 'Fast',
+                value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.fast, gasAmount),
+                gasPrice: self.$store.state.investment.gasPrice.fast * 1000000000,
+                gas: gasAmount
+              },
+              {
+                label: 'Instant',
+                value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.instant, gasAmount),
+                gasPrice: self.$store.state.investment.gasPrice.instant * 1000000000,
+                gas: gasAmount
+              }
+              ]
+              self.gasSelected = {
+                label: 'Standard',
+                value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.standard, gasAmount),
+                gasPrice: self.$store.state.investment.gasPrice.standard * 1000000000,
+                gas: gasAmount
+              }
+              console.log(self.gasOptions, 'gasOptions', self.gasSelected, 'gasSelected', error, 'error')
+            })
+            .catch((error) => {
+              console.log('estimateGas error', error)
+            })
+        })
         .catch((error) => {
           console.log(error, 'getGas error')
-        })
-      console.log(contractABI, 'contractABI')
-      let contract = new this.web3.eth.Contract(contractABI, '0x033b186321fa88603e3ecc98821fb0932b2c0760')
-      contract.methods.transfer('0x80c5e6908368cb9db503ba968d7ec5a565bfb389', (this.sendAmount * 10 ** 18).toFixed(0))
-        .estimateGas(function (error, gasAmount) {
-          self.gasOptions = [{
-            label: 'Slow',
-            value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount),
-            gasPrice: self.$store.state.investment.gasPrice.slow * 1000000000,
-            gas: gasAmount
-          },
-          {
-            label: 'Fast',
-            value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.fast, gasAmount),
-            gasPrice: self.$store.state.investment.gasPrice.fast * 1000000000,
-            gas: gasAmount
-          },
-          {
-            label: 'Instant',
-            value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.instant, gasAmount),
-            gasPrice: self.$store.state.investment.gasPrice.instant * 1000000000,
-            gas: gasAmount
-          }
-          ]
-          self.gasSelected = {
-            label: 'Standard',
-            value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.standard, gasAmount),
-            gasPrice: self.$store.state.investment.gasPrice.standard * 1000000000,
-            gas: gasAmount
-          }
-          console.log(self.gasOptions, 'gasOptions', self.gasSelected, 'gasSelected', error, 'error')
-        })
-        .catch((error) => {
-          console.log('estimateGas error', error)
         })
     },
     getUSDGasPrice (gweiPrice, gasNumber) {

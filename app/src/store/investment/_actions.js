@@ -66,6 +66,7 @@ export const getBalancerPools = ({ rootState, commit, state }, payload) => {
           pool.value = value.address
           pool.liquidity = parseInt(pool.liquidity).toLocaleString()
           if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
+            pool.index = state.pools.length
             commit('updatePools', pool)
           }
         })
@@ -140,6 +141,7 @@ export const getUniswapPools = ({ rootState, context, commit, state }, payload) 
         pool.platform = 'Uniswap V2'
         pool.liquidity = parseInt(pool.liquidity).toLocaleString()
         if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
+          pool.index = state.pools.length
           commit('updatePools', pool)
         }
       })
@@ -171,7 +173,10 @@ export const getYvaultsPools = ({ rootState, commit, state }, payload) => {
         pool.platform = 'yEarn'
         pool.liquidity = parseInt(pool.liquidity).toLocaleString()
         pool.value = value.address
-        if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) { commit('updatePools', pool) }
+        if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
+          pool.index = state.pools.length
+          commit('updatePools', pool)
+        }
       })
     }
   })
@@ -199,7 +204,10 @@ export const getCurvesPools = ({ rootState, commit, state }, payload) => {
         pool.id = value.contractAddress
         pool.liquidity = parseInt(pool.liquidity).toLocaleString()
 
-        if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) { commit('updatePools', pool) }
+        if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
+          pool.index = state.pools.length
+          commit('updatePools', pool)
+        }
       })
     }
   })
@@ -244,5 +252,14 @@ export const getInvestments = (context, payload) => {
       context.commit('setInvestments', result.data[payload.address])
     }).catch(error => {
       console.log(error, 'Cannot get market Investments')
+    })
+}
+export const getDebts = (context, payload) => {
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://zapper.fi/api/account-balance/' + payload.platform + '?addresses=' + payload.address
+  axios.get(transactionEndpoint, config)
+    .then(function (result) {
+      context.commit('setDebts', result.data[payload.address])
+    }).catch(error => {
+      console.log(error, 'Cannot get Debts')
     })
 }
