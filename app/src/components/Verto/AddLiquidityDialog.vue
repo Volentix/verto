@@ -69,7 +69,7 @@
                 </div>
             </div>
              <div class="col-md-6 q-pt-md" v-if="gasOptions">
-                 <strong class="lab-sub q-pl-md">Gas Price</strong>
+                <h4 class="lab-title">Set gas price</h4>
                  <q-select class="select-input full-width"  filled v-model="gasSelected" color="purple"  :options="gasOptions" >
                    <template v-slot:option="scope">
                     <q-item

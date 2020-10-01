@@ -1,6 +1,6 @@
 <template>
     <div>
-        <q-table :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.pools" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+        <q-table dense :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.pools" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
             <template v-slot:body-cell-name="props">
         <q-td :props="props" class="body-table-col">
         <div class="col-3 flex items-center">
@@ -73,21 +73,22 @@ export default {
                 align: 'center',
                 label: 'Liquidity',
                 field: 'liquidity',
-                sortable: true
+                sortable: true,
+                format: val => `$${typeof val === 'undefined' ? 0 : parseInt(val)?.toLocaleString()}`
               },
               {
                 name: 'volume',
                 label: 'Volume(24h)',
                 field: 'volume',
                 sortable: true,
-                format: val => `$${typeof val === 'undefined' ? 0 : val}`
+                format: val => `$${typeof val === 'undefined' ? 0 : parseInt(val)?.toLocaleString()}`
               },
               {
                 name: 'fees',
                 label: 'Fees(24h)',
                 field: 'fees',
                 sortable: true,
-                format: val => `$${typeof val === 'undefined' ? 0 : val}`
+                format: val => `$${typeof val === 'undefined' ? 0 : parseInt(val)?.toLocaleString()}`
               },
               {
                 name: 'action',
