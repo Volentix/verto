@@ -21,7 +21,7 @@
             <div class="row">
             <div class="col col-3">
                 <!-- <q-input class="input-input" filled rounded outlined color="purple" value="0.1" suffix="MAX" /> -->
-                <q-input @input="validateInput() ; error = null"  v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number">
+                <q-input @input="validateInput() ; error = null ; getGas()"  v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number">
                   <template v-slot:append>
                     <div class="flex justify-end items-center q-pb-xs">
                       <q-btn color="white" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat text-color="black" label="Max" />
@@ -46,7 +46,7 @@
             </div>
             <div class="col col-4 q-pr-md">
                 <strong class="lab-sub q-pl-md">Pool</strong>
-                <q-select class="select-input full-width"  @filter="filterPoolsByUserInput"   input-debounce="0" use-input filled @input="$store.commit('investment/setSelectedPool', pool);error = null " v-model="pool" color="purple"  :options="poolOptions" >
+                <q-select class="select-input full-width"  @filter="filterPoolsByUserInput"   input-debounce="0" use-input filled @input="$store.commit('investment/setSelectedPool', pool);getGas();error = null " v-model="pool" color="purple"  :options="poolOptions" >
                    <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
@@ -200,11 +200,6 @@ export default {
       this.$store.dispatch('investment/getCurvesPools')
       this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0])
       this.setDialogData()
-    },
-    gasPrice (newVal, old) {
-      if (newVal) {
-        this.getGas()
-      }
     }
 
   },
@@ -300,47 +295,27 @@ export default {
       } else await sendTransaction(address, 0, tx, gasPrice) // Contract already has approval, gas estimates will not fail
       */
     },
-    async sendTransaction () {
-      /* global web3  */
-
-      const Web3 = require('web3')
+    async getTransactionObject (setGas = true) {
       let poolContractABI = null, fromTokenAddress = '0x0000000000000000000000000000000000000000'
-      let poolData = this.$store.state.investment.pools.find(v => v.contractAddress === this.pool.value)
-      let toAddress = this.contractAddress[poolData.platform.replace(/[^0-9a-z]/gi, '').toLowerCase()]
+      let toAddress = this.contractAddress[this.pool.platform.replace(/[^0-9a-z]/gi, '').toLowerCase()]
       await this.getContractABI(toAddress).then(value => { poolContractABI = value })
       // await this.getContractABI(fromTokenAddress).then(value => tokenABI = value)
       let nonce = await this.web3.eth.getTransactionCount(this.currentToken.key) + 1
 
       const poolContract = new this.web3.eth.Contract(JSON.parse(poolContractABI), toAddress)
 
-      /*  const valueToSend = 100
-           const tokenContract = new this.web3.eth.Contract(tokenABI, fromTokenAddress)
-          const approvalAmount = '100000000000000000000';
-          tokenContract.methods.approve(toAddress, approvalAmount).send({ from: this.currentToken.key }, async function(error, txHash) {
-          if (error) {
-              console.log("ERC20 could not be approved", error);
-              return;
-          }
-          console.log("ERC20 token approved to " + toAddress);
-          const status = await self.waitTransaction(txHash);
-          if (!status) {
-              console.log("Approval transaction failed.");
-              return;
-          }
-    })
-   */
-
       let transactionObject = {
         from: this.currentToken.key,
         to: toAddress,
-        gas: 557876,
-        value: this.sendAmount * 1000000000000000000,
-        gasPrice: 53000000000,
+        value: this.web3.utils.toHex(this.sendAmount * 1000000000000000000),
         nonce: nonce
+      }
+      if (setGas) {
+        transactionObject.gas = this.gasSelected.gas
+        transactionObject.gasPrice = this.gasSelected.gasPrice
       }
       let tx = null
 
-      console.log(transactionObject, 'web3')
       if (this.pool.platform === 'Uniswap V2') {
         tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
       } else if (this.pool.platform === 'Balancer-labs') {
@@ -352,6 +327,15 @@ export default {
       }
 
       transactionObject.data = tx.encodeABI()
+
+      return transactionObject
+    },
+    async sendTransaction () {
+      /* global web3  */
+
+      const Web3 = require('web3')
+
+      let transactionObject = await this.getTransactionObject()
 
       if (this.currentToken.metamask) {
         if (window.web3 && window.web3.currentProvider.isMetaMask) {
@@ -503,46 +487,39 @@ export default {
     },
     async getGas () {
       const self = this
-
-      await this.getContractABI('0x0000000000000000000000000000000000000000')
-        .then((contractABI) => {
-          console.log(contractABI)
-          let contract = new this.web3.eth.Contract(contractABI, '0x0000000000000000000000000000000000000000')
-          contract.methods.transfer('0x80c5e6908368cb9db503ba968d7ec5a565bfb389', (this.sendAmount * 10 ** 18).toFixed(0))
-            .estimateGas(function (error, gasAmount) {
-              self.gasOptions = [{
-                label: 'Slow',
-                value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount),
-                gasPrice: self.$store.state.investment.gasPrice.slow * 1000000000,
-                gas: gasAmount
-              },
-              {
-                label: 'Fast',
-                value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.fast, gasAmount),
-                gasPrice: self.$store.state.investment.gasPrice.fast * 1000000000,
-                gas: gasAmount
-              },
-              {
-                label: 'Instant',
-                value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.instant, gasAmount),
-                gasPrice: self.$store.state.investment.gasPrice.instant * 1000000000,
-                gas: gasAmount
-              }
-              ]
-              self.gasSelected = {
-                label: 'Standard',
-                value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.standard, gasAmount),
-                gasPrice: self.$store.state.investment.gasPrice.standard * 1000000000,
-                gas: gasAmount
-              }
-              console.log(self.gasOptions, 'gasOptions', self.gasSelected, 'gasSelected', error, 'error')
-            })
-            .catch((error) => {
-              console.log('estimateGas error', error)
-            })
-        })
+      let transactionObject = await this.getTransactionObject(false)
+      console.log(transactionObject, 'transactionObject')
+      this.web3.eth.estimateGas(transactionObject).then(function (gasAmount) {
+        console.log(transactionObject, gasAmount, 'gasTest')
+        self.gasOptions = [{
+          label: 'Slow',
+          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount).toFixed(2),
+          gasPrice: self.$store.state.investment.gasPrice.slow * 1000000000,
+          gas: gasAmount
+        },
+        {
+          label: 'Fast',
+          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.fast, gasAmount).toFixed(2),
+          gasPrice: self.$store.state.investment.gasPrice.fast * 1000000000,
+          gas: gasAmount
+        },
+        {
+          label: 'Instant',
+          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.instant, gasAmount).toFixed(2),
+          gasPrice: self.$store.state.investment.gasPrice.instant * 1000000000,
+          gas: gasAmount
+        }
+        ]
+        self.gasSelected = {
+          label: 'Standard',
+          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.standard, gasAmount).toFixed(2),
+          gasPrice: self.$store.state.investment.gasPrice.standard * 1000000000,
+          gas: gasAmount
+        }
+        console.log(self.gasOptions, 'gasOptions', self.gasSelected, 'gasSelected', 'error')
+      })
         .catch((error) => {
-          console.log(error, 'getGas error')
+          console.log('estimateGas error', error)
         })
     },
     getUSDGasPrice (gweiPrice, gasNumber) {
