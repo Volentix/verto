@@ -42,7 +42,7 @@
             <div class="row">
             <div class="col col-4 q-pr-md">
                 <strong class="lab-sub q-pl-md">Platform</strong>
-                <q-select class="select-input full-width" filled v-model="platform" color="purple" @input="filterPoolsByPlatform() ; error = null"   :options="['Any','Uniswap V2','Balancer-labs','yEarn','Curve']" />
+                <q-select class="select-input full-width" filled v-model="platform" color="purple" @input="filterPoolsByPlatform() ; getGas() ; error = null"   :options="['Any','Uniswap V2','Balancer-labs','yEarn','Curve']" />
             </div>
             <div class="col col-4 q-pr-md">
                 <strong class="lab-sub q-pl-md">Pool</strong>
@@ -200,6 +200,9 @@ export default {
       this.$store.dispatch('investment/getCurvesPools')
       this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0])
       this.setDialogData()
+    },
+    sendAmount (newVal, old) {
+      if (newVal) this.getGas()
     }
 
   },
@@ -224,6 +227,7 @@ export default {
                 this.currentToken.symbol = 'ETH'
                 this.currentToken.key = item.value
                 this.currentToken.metamask = true
+                this.sendAmount = this.currentToken.amount
                 this.$store.commit('investment/setMetamaskConnectionStatus', true)
               }
               this.externalWallets.metamask.push(item)
@@ -253,6 +257,7 @@ export default {
         })
         console.log(this.ethAccount)
         this.currentToken = this.tokenOptions[0]
+        this.sendAmount = this.currentToken.amount
         this.getTokenAvailableAmount()
         this.poolOptions = this.$store.state.investment.pools.map(o => {
           o.label = o.poolName
@@ -260,6 +265,7 @@ export default {
           return o
         })
         this.pool = this.$store.state.investment.selectedPool
+        this.platform = this.pool.platform
         this.isTokenInWallet()
       }
     },
@@ -317,13 +323,13 @@ export default {
       let tx = null
 
       if (this.pool.platform === 'Uniswap V2') {
-        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
+        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 0)
       } else if (this.pool.platform === 'Balancer-labs') {
-        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
+        tx = poolContract.methods.ZapIn(fromTokenAddress, this.pool.contractAddress, transactionObject.value, 0)
       } else if (this.pool.platform === 'Curve') {
-        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
+        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.contractAddress, transactionObject.value, 0)
       } else if (this.pool.platform === 'yEarn') {
-        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 100)
+        tx = poolContract.methods.ZapIn(this.currentToken.key, this.pool.contractAddress, 0, fromTokenAddress, transactionObject.value, 0)
       }
 
       transactionObject.data = tx.encodeABI()
