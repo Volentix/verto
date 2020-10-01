@@ -30,7 +30,7 @@ export const getUniSwapHistoricalData = ({ rootState, commit, state }, payload) 
   })
 }
 export const getBalancerPools = ({ rootState, commit, state }, payload) => {
-  axios.post(process.env[rootState.settings.network].CACHE + 'https://zapper.fi/api/pool-stats/balancer', {}, config).then((result) => {
+  axios.post(process.env[rootState.settings.network].CACHE + 'https://zapper.fi/api/pool-stats/balancers', {}, config).then((result) => {
     if (result.data.length) {
       result.data/* .map((function(e) {
           var t = state.poolDataHistory['balancer'].find((function(t) {

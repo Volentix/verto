@@ -8,6 +8,7 @@ export default function () {
     marketData: [],
     investments: [],
     debts: [],
-    transactions: []
+    transactions: [],
+    metamaskConnected: false
   }
 }
