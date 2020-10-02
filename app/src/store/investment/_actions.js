@@ -57,14 +57,14 @@ export const getBalancerPools = ({ rootState, commit, state }, payload) => {
           // To be calculated using historical data of the token
           // pool.netROI = value.netROI.toFixed(2) + '%'
           // pool.ROI = value.grossROI.toFixed(2) + '%'
-          pool.volume = value.volume?.toLocaleString()
-          pool.fees = value.feeVolume?.toLocaleString()
+          pool.volume = value.volume
+          pool.fees = value.feeVolume
           pool.id = value.address
           pool.tokensData = value.tokens
           pool.tokens = poolTokens.map(o => o?.label).filter((val) => val)
           pool.platform = 'Balancer-labs'
           pool.value = value.address
-          pool.liquidity = parseInt(pool.liquidity).toLocaleString()
+          pool.liquidity = parseInt(pool.liquidity)
           if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
             pool.index = state.pools.length
             commit('updatePools', pool)
@@ -132,14 +132,14 @@ export const getUniswapPools = ({ rootState, context, commit, state }, payload) 
         // To be calculated using historical data of the token
         // pool.netROI = value.netROI.toFixed(2) + '%'
         // pool.ROI = value.grossROI.toFixed(2) + '%'
-        pool.volume = value.volume?.toLocaleString()
-        pool.fees = value.feeVolume?.toLocaleString()
+        pool.volume = value.volume
+        pool.fees = value.feeVolume
         pool.id = value.address
         pool.value = value.address
         pool.tokensData = value.tokens
         pool.tokens = poolTokens.map(o => o?.label).filter((val) => val)
         pool.platform = 'Uniswap V2'
-        pool.liquidity = parseInt(pool.liquidity).toLocaleString()
+        pool.liquidity = parseInt(pool.liquidity)
         if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
           pool.index = state.pools.length
           commit('updatePools', pool)
@@ -165,13 +165,13 @@ export const getYvaultsPools = ({ rootState, commit, state }, payload) => {
         // To be calculated using historical data of the token
         // pool.netROI = value.netROI.toFixed(2) + '%'
         // pool.ROI = value.grossROI.toFixed(2) + '%'
-        pool.volume = value.volume?.toLocaleString()
-        pool.fees = value.feeVolume?.toLocaleString()
+        pool.volume = value.volume
+        pool.fees = value.feeVolume
         pool.id = value.address
         pool.tokensData = value.tokens
         pool.tokens = poolTokens.map(o => o?.label).filter((val) => val)
         pool.platform = 'yEarn'
-        pool.liquidity = parseInt(pool.liquidity).toLocaleString()
+        pool.liquidity = parseInt(pool.liquidity)
         pool.value = value.address
         if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
           pool.index = state.pools.length
@@ -195,14 +195,14 @@ export const getCurvesPools = ({ rootState, commit, state }, payload) => {
         // To be calculated using historical data of the token
         // pool.netROI = value.netROI.toFixed(2) + '%'
         // pool.ROI = value.grossROI.toFixed(2) + '%'
-        pool.volume = value.volume?.toLocaleString()
-        pool.fees = value.feeVolume?.toLocaleString()
+        pool.volume = value.volume
+        pool.fees = value.feeVolume
         pool.value = value.contractAddress
         pool.tokensData = value.tokens
         pool.tokens = poolTokens.map(o => o?.label).filter((val) => val)
         pool.platform = 'Curve'
         pool.id = value.contractAddress
-        pool.liquidity = parseInt(pool.liquidity).toLocaleString()
+        pool.liquidity = parseInt(pool.liquidity)
 
         if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
           pool.index = state.pools.length
