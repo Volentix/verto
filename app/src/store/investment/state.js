@@ -9,6 +9,8 @@ export default function () {
     investments: [],
     debts: [],
     transactions: [],
-    metamaskConnected: false
+    defaultAccount: null,
+    metamaskConnected: false,
+    tableLoading: true
   }
 }

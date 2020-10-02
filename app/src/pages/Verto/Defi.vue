@@ -2,8 +2,17 @@
 <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
-            <div class="col-12 col-title">
+            <div class="col-8 col-title">
                 <h4>Account overview</h4>
+            </div>
+            <div class="col-4">
+                <q-select color="primary" class="q-mb-md" @input="getAccountInformation({address:accountOption})" v-model="accountOption" :options="accountOptions" label="Change account">
+                    <template v-slot:append>
+                        <q-avatar>
+                            <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
+                        </q-avatar>
+                    </template>
+                </q-select>
             </div>
             <div class="col col-md-5 q-pr-md">
                 <div class="desktop-card-style account-overview q-mb-md">
@@ -140,12 +149,17 @@ export default {
     InvestmentsTable,
     TransactionsTable,
     DebtsTable
+
   },
   data () {
     return {
       maxDeFiYield: {},
       openDialog: false,
       osName: '',
+      accountOptions: [
+        '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772', '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1', '0x2C13f9722540a3b0a75Cc641005F4954CC7E8771'
+      ],
+      accountOption: '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772',
       progressValue: 20,
       openModal: false,
       openModalProgress: false,
@@ -230,42 +244,28 @@ export default {
 
     /* console.log('this.currentAccount sur la page send', this.currentAccount)
 
-            if (this.currentAccount.privateKey) {
-              this.privateKey.key = this.currentAccount.privateKey
-              this.isPrivateKeyEncrypted = false
-            } else {
-              this.isPrivateKeyEncrypted = true
-            }
+  if (this.currentAccount.privateKey) {
+    this.privateKey.key = this.currentAccount.privateKey
+    this.isPrivateKeyEncrypted = false
+  } else {
+    this.isPrivateKeyEncrypted = true
+  }
 
-            this.cruxKey = await HD.Wallet('crux')
-            // console.log('crux privateKey', this.cruxKey.privateKey)
-            cruxClient = new CruxPay.CruxClient({
-              walletClientName: this.walletClientName,
-              privateKey: this.cruxKey.privateKey
-            })
+  this.cruxKey = await HD.Wallet('crux')
+  // console.log('crux privateKey', this.cruxKey.privateKey)
+  cruxClient = new CruxPay.CruxClient({
+    walletClientName: this.walletClientName,
+    privateKey: this.cruxKey.privateKey
+  })
 
-            await cruxClient.init()
-              */
-    let address = '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772' // this.maxToken.key ?   this.maxToken.key  : this.maxToken.contract
+  await cruxClient.init()
+    */
+
     let account = {
-      platform: 'uniswap-v2',
-      address: address
+      address: '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772'
     }
     this.$store.dispatch('investment/getZapperTokens')
-    this.$store.dispatch('investment/getTransactions', {
-      address: address
-    })
-    this.$store.dispatch('investment/getInvestments', account)
-    account.platform = 'uniswap'
-    this.$store.dispatch('investment/getInvestments', account)
-    account.platform = 'balancer'
-    this.$store.dispatch('investment/getInvestments', account)
-    account.platform = 'curve'
-    this.$store.dispatch('investment/getInvestments', account)
-    account.platform = 'iearn'
-    this.$store.dispatch('investment/getInvestments', account)
-    account.platform = 'maker'
-    this.$store.dispatch('investment/getDebts', account)
+    this.getAccountInformation(account)
   },
   async mounted () {
     this.getMaxDeFiYield()
@@ -294,6 +294,28 @@ export default {
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
+    async getAccountInformation (account) {
+      this.$store.commit('investment/setTableLoadingStatus', true)
+      this.$store.commit('investment/resetAccountDetails', account.address)
+      this.$store.dispatch('investment/getTransactions', {
+        address: account.address
+      })
+      account.platform = 'uniswap-v2'
+      this.$store.dispatch('investment/getInvestments', account)
+      account.platform = 'uniswap'
+      this.$store.dispatch('investment/getInvestments', account)
+      account.platform = 'balancer'
+      this.$store.dispatch('investment/getInvestments', account)
+      account.platform = 'curve'
+      this.$store.dispatch('investment/getInvestments', account)
+      account.platform = 'iearn'
+      this.$store.dispatch('investment/getInvestments', account)
+      account.platform = 'maker'
+      await this.$store.dispatch('investment/getDebts', account)
+      setTimeout(() => {
+        this.$store.commit('investment/setTableLoadingStatus', false)
+      }, 4000)
     },
     getMaxDeFiYield () {
       this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://stats.finance/yearn')

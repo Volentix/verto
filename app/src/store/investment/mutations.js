@@ -48,6 +48,13 @@ export const getRois = (state, updated) => {
 export const setPoolHistoricalData = (state, payload) => {
   state.poolDataHistory[payload.platform] = payload.data
 }
+export const resetAccountDetails = (state, payload) => {
+  state.investments = []
+  state.transactions = []
+  state.debts = []
+  state.defaultAccount = payload
+}
+
 export const setMarketData = (state, payload) => {
   state.marketData = payload
 }
@@ -68,4 +75,10 @@ export const setDebts = (state, payload) => {
     o.index = index
     return o
   })
+}
+export const setDefaultAccount = (state, payload) => {
+  state.defaultAccount = payload
+}
+export const setTableLoadingStatus = (state, payload) => {
+  state.tableLoading = payload
 }
