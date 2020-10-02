@@ -27,9 +27,9 @@ class Wallets2Tokens {
       //   wallet.vespucciScore = vespucciScore
       // })
 
-      wallet.chain = 'eth'
-      wallet.type = 'eth'
-      wallet.key = '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772'
+      // wallet.chain = 'eth'
+      // wallet.type = 'eth'
+      // wallet.key = '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772'
 
       if (wallet.type === 'eos') {
         wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
