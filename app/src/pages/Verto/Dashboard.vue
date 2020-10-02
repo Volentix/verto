@@ -99,10 +99,10 @@ import AppsSection from '../../components/Verto/AppsSection'
 import StartNodeSection from '../../components/Verto/StartNodeSection'
 import ChainToolsSection from '../../components/Verto/ChainToolsSection'
 // import TransactionsSection from '../../components/Verto/TransactionsSection'
-import LiquidityPoolsSection from '../../components/Verto/LiquidityPoolsSection'
+import LiquidityPoolsSection from '../../components/Verto/Defi/LiquidityPoolsSection'
 import MakeVTXSection from '../../components/Verto/MakeVTXSection'
 import ExchangeSection from '../../components/Verto/ExchangeSection'
-import liquidityPoolsTable from '../../components/Verto/liquidityPoolsTable'
+import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 
 import { mapState } from 'vuex'
 // import VespucciRatingSection from '../../components/Verto/VespucciRatingSection'
@@ -146,7 +146,6 @@ export default {
   },
   data () {
     return {
-      pools: [],
       rawPools: [],
       cruxKey: {},
       osName: '',

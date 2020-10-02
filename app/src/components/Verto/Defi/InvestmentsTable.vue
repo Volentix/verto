@@ -1,23 +1,20 @@
 <template>
     <div>
-<q-table :grid="$q.screen.xs" title="Transactions" :data="$store.state.investment.transactions" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+<q-table :grid="$q.screen.xs" title="Investments" :data="$store.state.investment.investments" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
     <template v-slot:body-cell-asset="props">
     <q-td :props="props" class="body-table-col">
     <div class="col-3 flex items-center">
-        <span class="imgs q-mr-lg"  >
-         <img  :src="!props.row.details ? 'https://zapper.fi/images/'+ props.row.symbol+'-icon.png' : 'https://1inch.exchange/assets/tokens/'+props.row.contract+'.png'" alt="">
-         </span>
+        <span class="imgs q-mr-lg"  v-if="props.row.tokens.length">
+        <img v-for="(token, index) in props.row.tokens" :key="index" :src="'https://zapper.fi/images/'+token.symbol+'-icon.png'" alt="">
+    </span>
         <span class="column pairs">
-        <span class="pair">{{props.row.symbol}}</span>
+        <span class="pair">{{props.row.label}}</span>
+        <span class="value">{{props.row.protocolDisplay}}</span>
         </span>
     </div>
     </q-td>
 </template>
-  <template v-slot:body-cell-amount="props">
-    <q-td :props="props" class="body-table-col">
-    {{props.row.amount+' '+props.row.symbol}}
-    </q-td>
-</template>
+
 <template v-slot:body-cell-action="props">
     <q-td :props="props" class="body-table-col" v-if="false">
         <div class="col-2 flex justify-end">
@@ -68,31 +65,23 @@ export default {
                 sortable: true
               },
               {
-                name: 'amount',
+                name: 'protocol',
                 align: 'center',
-                label: 'Amount',
-                field: row => row,
+                label: 'Protocol',
+                field: 'protocol',
                 sortable: true
               },
               {
-                name: 'destination',
-                label: 'From/to',
-                field: 'destination',
+                name: 'value',
+                label: 'Value',
+                field: 'balanceUSD',
                 sortable: true,
-                format: o => `${o.substring(0, 10) + '.....' + o.substr(o.length - 5)}`
+                format: val => `$${Math.round(val)}`
               },
               {
-                name: 'direction',
-                label: 'Direction',
-                sortable: false,
-                field: 'direction'
-              },
-              {
-                name: 'date',
-                field: 'timeStamp',
-                label: 'date',
-                sortable: false,
-                format: o => `${(new Date(parseInt(o) * 1000)).toString().substring(0, 16)}`
+                name: 'action',
+                label: '',
+                sortable: false
               }
               ]
 
@@ -102,7 +91,7 @@ export default {
     filterTable (rows, terms, cols, cellValue) {
       const lowerTerms = terms ? terms.toLowerCase() : ''
       return rows.filter(
-        row => row.label.toLowerCase().includes(lowerTerms)
+        row => row.label && row.label.toLowerCase().includes(lowerTerms)
       )
     }
   },
@@ -110,7 +99,7 @@ export default {
     ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools'])
   },
   created () {
-
+    this.$store.dispatch('investment/getZapperTokens')
   }
 }
 </script>

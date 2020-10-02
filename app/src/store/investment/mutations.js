@@ -64,5 +64,8 @@ export const setTransactions = (state, payload) => {
   })
 }
 export const setDebts = (state, payload) => {
-  state.debts = state.debts.concat(payload.filter(item => !state.debts.find(o => o.hash === item.hash)))
+  state.debts = state.debts.concat(payload.filter(item => !state.debts.find(o => o.hash === item.hash))).map((o, index) => {
+    o.index = index
+    return o
+  })
 }
