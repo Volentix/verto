@@ -48,6 +48,13 @@ export const getRois = (state, updated) => {
 export const setPoolHistoricalData = (state, payload) => {
   state.poolDataHistory[payload.platform] = payload.data
 }
+export const resetAccountDetails = (state, payload) => {
+  state.investments = []
+  state.transactions = []
+  state.debts = []
+  state.defaultAccount = payload
+}
+
 export const setMarketData = (state, payload) => {
   state.marketData = payload
 }
@@ -64,5 +71,14 @@ export const setTransactions = (state, payload) => {
   })
 }
 export const setDebts = (state, payload) => {
-  state.debts = state.debts.concat(payload.filter(item => !state.debts.find(o => o.hash === item.hash)))
+  state.debts = state.debts.concat(payload.filter(item => !state.debts.find(o => o.hash === item.hash))).map((o, index) => {
+    o.index = index
+    return o
+  })
+}
+export const setDefaultAccount = (state, payload) => {
+  state.defaultAccount = payload
+}
+export const setTableLoadingStatus = (state, payload) => {
+  state.tableLoading = payload
 }
