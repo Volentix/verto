@@ -1,6 +1,6 @@
 <template>
     <div>
-<q-table :grid="$q.screen.xs" title="Transactions" :data="$store.state.investment.transactions" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+<q-table :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="Transactions" :data="$store.state.investment.transactions" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
     <template v-slot:body-cell-asset="props">
     <q-td :props="props" class="body-table-col">
     <div class="col-3 flex items-center">
