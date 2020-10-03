@@ -188,7 +188,7 @@ export default {
       availableAmount: 0,
       tokenInWallet: false,
       processWithMetamask: false,
-      web3: null,
+      web3Instance: null,
       contractAddress: {
         uniswapv2: '0x80c5e6908368cb9db503ba968d7ec5a565bfb389',
         uniswapv1: '0x5e6531d99e9099cb3936c048daf6ba0b3f79b9e2',
@@ -216,8 +216,9 @@ export default {
     }
 
     const Web3 = require('web3')
-    this.web3 = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
-    // let t = this.web3.eth.getTransaction('0x51c32feefe4bcfac06b19364e07b7f261138e1760da96a827d6c0954dcb47059')
+
+    this.web3Instance = new Web3('wss://mainnet.infura.io/ws/v3/0dd5e7c7cbd14603a5c20124a76afe63')
+    // let t = this.web3Instance.eth.getTransaction('0x51c32feefe4bcfac06b19364e07b7f261138e1760da96a827d6c0954dcb47059')
     if (this.$store.state.investment.metamaskConnected) this.conectWallet('metamask')
 
     this.gasInterval = setInterval(() => {
@@ -264,8 +265,8 @@ export default {
             this.connectLoading.metamask = false
             await accounts.map(async (o, index) => {
               let item = {}
-              await this.web3.eth.getBalance(o, (err, balance) => {
-                item.balance = this.web3.utils.fromWei(balance, 'ether')
+              await this.web3Instance.eth.getBalance(o, (err, balance) => {
+                item.balance = this.web3Instance.utils.fromWei(balance, 'ether')
                 item.label = o.substring(0, 10) + '...' + o.substr(o.length - 5)
                 item.value = o
                 console.log(err)
@@ -306,7 +307,7 @@ export default {
         })
         console.log(this.ethAccount)
         this.currentToken = this.tokenOptions[0]
-        this.sendAmount = this.currentToken.amount
+        this.sendAmount = 0.001 // this.currentToken.amount / 100
         this.getGas()
         this.getTokenAvailableAmount()
         this.poolOptions = this.$store.state.investment.pools.map(o => {
@@ -351,57 +352,56 @@ export default {
                                                                                                                                                                                                       } else await sendTransaction(address, 0, tx, gasPrice) // Contract already has approval, gas estimates will not fail
                                                                                                                                                                                                       */
     },
-    async getTransactionObject (setGas = true) {
+    async getTransactionObject (setGas = true, send = false) {
       if (!this.pool.platform) return
-
-      let poolContractABI = null,
+      // const { address: from } = this.web3Instance.eth.accounts.privateKeyToAccount(this.currentToken.privateKey)
+      let poolContractABI = null, // tokenABI = null,
         fromTokenAddress = '0x0000000000000000000000000000000000000000'
       let toAddress = this.contractAddress[this.pool.platform.replace(/[^0-9a-z]/gi, '').toLowerCase()]
       await this.getContractABI(toAddress).then(value => {
         poolContractABI = value
       })
       // await this.getContractABI(fromTokenAddress).then(value => { tokenABI = value })
-      let nonce = await this.web3.eth.getTransactionCount(this.currentToken.key) + 1
-
-      const poolContract = new this.web3.eth.Contract(JSON.parse(poolContractABI), toAddress)
-      // const tokenContract = new this.web3.eth.Contract(JSON.parse(tokenABI), fromTokenAddress)
+      let nonce = await this.web3Instance.eth.getTransactionCount(this.currentToken.key, 'pending')
+      const poolContract = new this.web3Instance.eth.Contract(JSON.parse(poolContractABI), toAddress)
+      // const tokenContract = new this.web3Instance.eth.Contract(JSON.parse(tokenABI), fromTokenAddress)
       let transactionObject = {
         from: this.currentToken.key,
         to: toAddress,
-        value: this.web3.utils.toHex(this.sendAmount * 1000000000000000000),
-        nonce: this.web3.utils.toHex(nonce)
+        value: this.web3Instance.utils.toHex(this.sendAmount * 1000000000000000000),
+        nonce: nonce
       }
       if (setGas) {
-        transactionObject.gas = this.web3.utils.toHex(this.gasSelected.gas)
-        transactionObject.gasPrice = this.web3.utils.toHex(this.gasSelected.gasPrice)
+        transactionObject.gas = this.web3Instance.utils.toHex(this.gasSelected.gas)
+        transactionObject.gasPrice = this.web3Instance.utils.toHex(this.gasSelected.gasPrice)
       }
       let tx = null
       /*
-                                                                                                                                                                                                      let approveTx = await tokenContract.methods.approve(
-                                                                                                                                                                                                        toAddress,
-                                                                                                                                                                                                        this.web3.utils.toWei(100, 'ether')
-                                                                                                                                                                                                      )
-                                                                                                                                                                                                      console.log(approtxveTx, 'approveTx')
-                                                                                                                                                                                                      */
-
+      let approveTx = await tokenContract.methods.approve(
+        toAddress,
+        this.web3Instance.utils.toWei(100, 'ether')
+      )
+      console.log(approveTx, 'approveTx', tokenABI)
+      */
       if (this.pool.platform === 'Uniswap V2') {
-        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 0)
+        tx = await poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, transactionObject.value, 110)
       } else if (this.pool.platform === 'Balancer-labs') {
-        tx = poolContract.methods.ZapIn(fromTokenAddress, this.pool.contractAddress, transactionObject.value, 0)
+        tx = await poolContract.methods.ZapIn(fromTokenAddress, this.pool.contractAddress, transactionObject.value, 0)
       } else if (this.pool.platform === 'Curve') {
-        tx = poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.contractAddress, transactionObject.value, 0)
+        tx = await poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.contractAddress, transactionObject.value, 0)
       } else if (this.pool.platform === 'yEarn') {
         console.log(this.yearnTokenTypeToNumber(this.pool.type), this.pool)
-        tx = poolContract.methods.ZapIn(this.currentToken.key, this.pool.contractAddress, this.yearnTokenTypeToNumber(this.pool.type), fromTokenAddress, transactionObject.value, 0)
+        tx = await poolContract.methods.ZapIn(this.currentToken.key, this.pool.contractAddress, this.yearnTokenTypeToNumber(this.pool.type), fromTokenAddress, transactionObject.value, 0)
       }
 
       // const allowance = await getAllowance(web3, fromTokenAddress, toAddress, this.pool.contractAddress)
+
       transactionObject.data = tx.encodeABI()
 
       return transactionObject
     },
     async sendTransaction () {
-      let transactionObject = await this.getTransactionObject(true)
+      let transactionObject = await this.getTransactionObject(true, true)
       this.transactionStatus = 'Pending'
       if (this.currentToken.metamask) {
         /* global web3  */
@@ -430,23 +430,109 @@ export default {
         } else { // Non-dapp browsers...
           console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
         }
-        return
       }
+
+      // const EthereumTx = require('ethereumjs-tx').Transaction
+      //  var transaction = new EthereumTx(transactionObject)
+      // console.log(await this.web3.eth.getPendingTransactions())
+      /// / transaction.sign(Buffer.from(this.currentToken.privateKey.substring(2), 'hex'))
+      // const serializedTransaction = transaction.serialize()
+      // let tx = this.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
+
+      /* Working
+
+      let account = this.web3Instance.eth.accounts.privateKeyToAccount(this.currentToken.privateKey)
+      account.signTransaction(transactionObject, (error, signedTx) => {
+        // raw transaction string may be available in .raw or
+        // .rawTransaction depending on which signTransaction
+        // function was called
+        console.log(signedTx, 'signedTx', error)
+
+        let data = { 'jsonrpc': '2.0', 'method': 'eth_sendRawTransaction', 'params': [signedTx.rawTransaction], 'id': 1 }
+        this.$axios.post('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63', data, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then(response => {
+          this.transactionHash = response.data.result
+          let data2 = { 'jsonrpc': '2.0', 'method': 'eth_getTransactionByHash', 'params': [response.data.result], 'id': 1 }
+
+          this.$axios.post('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63', data2, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }).then(response => {
+            console.log(response, 'eth_getTransactionByHash')
+          })
+            .catch(error => {
+              console.log(error)
+            })
+        })
+          .catch(error => {
+            console.log(error)
+          })
+
+      //  const tx = this.web3.eth.sendSignedTransaction(signedTx.raw || signedTx.rawTransaction)
+      })
+      Working */
+
       const EthereumTx = require('ethereumjs-tx').Transaction
       var transaction = new EthereumTx(transactionObject)
-      // console.log(await this.web3.eth.getPendingTransactions())
+      // console.log(await this.web3Instance.eth.getPendingTransactions())
       transaction.sign(Buffer.from(this.currentToken.privateKey.substring(2), 'hex'))
       const serializedTransaction = transaction.serialize()
       console.log(transactionObject, 'sending')
-      let tx = this.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
+      /*
+      let data3 = { 'jsonrpc': '2.0', 'method': 'eth_getTransactionCount', 'params': [this.currentToken.key, 'pending'], 'id': 1 }
+
+      this.$axios.post('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63', data3, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).then(response => {
+        console.log(response, 'eth_getTransactionCount')
+      })
+        .catch(error => {
+          console.log(error)
+        })
+      let data = { 'jsonrpc': '2.0', 'method': 'eth_sendRawTransaction', 'params': ['0x' + serializedTransaction.toString('hex')], 'id': 1 }
+      this.$axios.post('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63', data, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).then(response => {
+        console.log(response, 'eth_sendRawTransaction')
+        let data2 = { 'jsonrpc': '2.0', 'method': 'eth_getTransactionByHash', 'params': [response.data.result], 'id': 1 }
+
+        this.$axios.post('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63', data2, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then(response => {
+          console.log(response, 'eth_getTransactionByHash')
+        })
+          .catch(error => {
+            console.log(error)
+          })
+      })
+        .catch(error => {
+          console.log(error)
+        })
+
+      */
+      let tx = this.web3Instance.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
 
       tx.on('confirmation', (confirmationNumber, receipt) => {
-        this.transactionSTatus = 'Confirmed'
+        this.transactionStatus = 'Confirmed'
       })
 
       tx.on('transactionHash', hash => {
         this.transactionStatus = 'Pending'
         this.transactionHash = hash
+        var receipt = this.web3Instance.eth.getTransactionReceipt(hash)
+          .then(console.log)
+
+        console.log(receipt)
       })
 
       tx.on('receipt', receipt => {
@@ -477,7 +563,7 @@ export default {
     async waitTransaction (txHash) {
       let tx = null
       while (tx == null) {
-        tx = await this.web3.eth.getTransactionReceipt(txHash)
+        tx = await this.web3Instance.eth.getTransactionReceipt(txHash)
         await this.sleep(2000)
       }
       console.log('Transaction ' + txHash + ' was mined.')
@@ -490,7 +576,7 @@ export default {
       let tokenAddress = this.currentToken.contract
       transactionObject.from = account.key
       console.log(transactionObject, this.currentToken)
-      let decimals = this.web3.utils.toBN(18)
+      let decimals = this.web3Instance.utils.toBN(18)
       let value = (this.sendAmount * 10 ** 18).toFixed(0)
       let minABI = []
       // this.getGas(transactionObject.to, this.sendAmount )
@@ -558,8 +644,8 @@ export default {
 
     return
 
-      let contract = new this.web3.eth.Contract(tokenABI, tokenAddress)
-      let poolContract = new this.web3.eth.Contract(minABI, transactionObject.to)
+      let contract = new this.web3Instance.eth.Contract(tokenABI, tokenAddress)
+      let poolContract = new this.web3Instance.eth.Contract(minABI, transactionObject.to)
       console.log(contract.methods, 'contract.methods')
       const self = this
       contract.methods.transfer(transactionObject.to, value).send({
@@ -579,7 +665,7 @@ export default {
 
       if (this.sendAmount === 0 || !transactionObject) return
       // console.log(transactionObject)
-      this.web3.eth.estimateGas(transactionObject).then(function (gasAmount) {
+      this.web3Instance.eth.estimateGas(transactionObject).then(function (gasAmount) {
         self.gasOptions = [{
           label: 'Slow',
           value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount).toFixed(2),
@@ -609,7 +695,7 @@ export default {
     },
     getUSDGasPrice (gweiPrice, gasNumber) {
       let ethToUsd = this.$store.state.investment.marketData.find(o => o.symbol.toLowerCase() === 'eth').current_price
-      return this.web3.utils.fromWei(Math.round((gweiPrice * gasNumber * 1000000000)).toString(), 'ether') * ethToUsd
+      return this.web3Instance.utils.fromWei(Math.round((gweiPrice * gasNumber * 1000000000)).toString(), 'ether') * ethToUsd
     },
     async doTransaction () {
       return this.sendTransaction()
@@ -621,7 +707,7 @@ export default {
       console.log(this.pool, poolData)
       let toAddress = this.contractAddress[poolData.platform.replace(/[^0-9a-z]/gi, '').toLowerCase()]
       if (!toAddress) console.log('toAddress not found')
-      let nonce = await this.web3.eth.getTransactionCount(this.currentToken.key) + 1
+      let nonce = await this.web3Instance.eth.getTransactionCount(this.currentToken.key) + 1
 
       let transactionObject = {
         from: this.currentToken.key,
@@ -673,7 +759,7 @@ export default {
       const serializedTransaction = transaction.serialize()
       /*
          let p =  new Promise(async (resolve, reject) => {
-            this.web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex'), (err, id) => {
+            this.web3Instance.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex'), (err, id) => {
               if (err) {
                 // console.log(err)
                 return reject()
@@ -687,7 +773,7 @@ export default {
 
     console.log(p)
 
-      this.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, hash) => {
+      this.web3Instance.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, hash) => {
         if (!err) {
           this.transactionSent = hash
           console.log(hash)
