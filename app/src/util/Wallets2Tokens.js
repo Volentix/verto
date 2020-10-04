@@ -26,7 +26,7 @@ class Wallets2Tokens {
       //   vespucciScore = result.vespucciScore
       //   wallet.vespucciScore = vespucciScore
       // })
-     /*
+      /*
       wallet.chain = 'eth'
       wallet.type = 'eth'
       wallet.key = '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772'
