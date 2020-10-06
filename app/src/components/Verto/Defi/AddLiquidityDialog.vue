@@ -470,6 +470,7 @@ export default {
           tx.on('error', error => {
             this.error = error
             this.transactionStatus = null
+            console.log(error)
           })
         } else { // Non-dapp browsers...
           console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
@@ -501,10 +502,12 @@ export default {
         })
 
         tx.on('receipt', receipt => {
+          console.log(receipt, 'success')
           this.transactionStatus = 'Success'
         })
 
         tx.on('error', error => {
+          console.log(error, 'error')
           this.error = error
           this.transactionStatus = null
         })
