@@ -27,7 +27,6 @@ class Wallets2Tokens {
       //   wallet.vespucciScore = vespucciScore
       // })
 
-  
       if (wallet.type === 'eos') {
         wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
