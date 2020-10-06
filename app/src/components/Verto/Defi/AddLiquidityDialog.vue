@@ -13,8 +13,8 @@
         </q-item>
         <q-btn flat round dense icon="close" v-close-popup />
     </q-toolbar>
-    <q-card-section class="text-h6" v-if="!transactionStatus">
-        <div v-if="currentToken" class="text-h6 q-mb-md q-pl-sm flex items-center">
+    <q-card-section class="text-h6" v-if="!transactionStatus && currentToken">
+        <div  class="text-h6 q-mb-md q-pl-sm flex items-center">
             <h4 class="lab-title q-pr-md">Available {{currentToken.label}}:</h4> {{ currentToken.amount}}
             <span class="link-to-exchange" @click="goToExchange" v-if="!tokenInWallet && false">Get {{currentToken.label}}</span>
         </div>
@@ -30,7 +30,7 @@
                 </q-input>
             </div>
             <div class="col col-3 q-ml-md">
-                <q-select class="select-input" @input="getMaxBalance() ; approvalRequired = false; getGas();  error = null; " filled rounded outlined color="purple" v-model="currentToken" :options="tokenOptions">
+                <q-select v-if="currentToken" class="select-input" @input="getMaxBalance() ; approvalRequired = false; getGas();  error = null; " filled rounded outlined color="purple" v-model="currentToken" :options="tokenOptions">
                     <template v-slot:prepend>
                         <q-avatar>
                             <img :src="'https://zapper.fi/images/'+currentToken.label+'-icon.png'">
@@ -42,15 +42,19 @@
                     Token not in wallet
                 </div>
             </div>
-
+          <div class="text-body2 text-red" v-if="approvalRequired" >
+            <span>
+            Before adding Liquidity to the {{pool.label}} pool from {{platform.label}},<br> you need to process an approval transaction for your {{currentToken.label}} token
+            </span>
+          </div>
         </div>
-        <hr style="opacity: .1" class="q-mt-lg">
+        <hr style="opacity: .1" >
         <h4 class="lab-title">Choose your Allocation</h4>
         <div class="row">
             <div class="col-md-8 row">
                 <div class="col col-6 q-pr-md">
                     <strong class="lab-sub q-pl-md">Platform</strong>
-                    <q-select class="select-input full-width" filled v-model="platform" color="purple" @input="filterPoolsByPlatform() ; getGas() ; error = null" :options="platformOptions">
+                    <q-select class="select-input full-width" filled v-model="platform" color="purple" @input="approvalRequired = false; filterPoolsByPlatform() ; getGas() ; error = null" :options="platformOptions">
                         <template v-slot:prepend>
                             <q-avatar>
                                 <img :src="'https://zapper.fi/images/'+platform.icon">
@@ -123,7 +127,11 @@
             </div>
 
             <div class="text-red q-mt-md" v-if="error">{{error}}</div>
-
+            <div v-if="transactionHash" class="col-12">
+            <a :href="'https://etherscan.io/tx/'+transactionHash" class="flex text-body2 text-black q-mt-md" target="_blank">
+             <div>Last transaction:</div> <img width="80" src="https://etherscan.io/images/logo-ether.png?v=0.0.2" class="q-ml-sm" />
+           </a>
+           </div>
         </div>
         <!-- <hr style="opacity: .1" class="q-mt-lg">
             <h4 class="lab-title q-pb-md">Select Gas Setting</h4>
@@ -150,12 +158,14 @@
                 <q-linear-progress v-if="false" style="max-width:300px;" stripe rounded size="md" indeterminate class="q-mt-md" />
             </div>
             <div class="col-12 col-md-6 offset-md-3 text-center text-h6" v-if="transactionHash">
-                <q-input filled v-model="transactionHash" hint="Readonly" label="Your transaction hash" readonly>
+                <q-input bottom-slots filled v-model="transactionHash"  label="Your transaction hash" readonly>
                     <template v-slot:counter>
-                        <a :href="'https://etherscan.io/tx/'+transactionHash" class="text-body2 text-black" target="_black">
+                        <a :href="'https://etherscan.io/tx/'+transactionHash" class="text-body2 text-black " target="_blank">
                             <img width="80" src="https://etherscan.io/images/logo-ether.png?v=0.0.2" />
                         </a>
-
+                    </template>
+                    <template v-slot:hint>
+                     <div class="cursor-pointer" @click="transactionStatus = null ; "><q-icon name="keyboard_backspace" />  Go Back</div>
                     </template>
                 </q-input>
             </div>
@@ -180,7 +190,7 @@ export default {
     return {
       gasInterval: null,
       gasOptions: null,
-      transactionStatus: null,
+      transactionStatus: false,
       gasSelected: null,
       externalWallets: {
         metamask: []
@@ -192,7 +202,7 @@ export default {
       sendAmount: 0,
       poolOptions: [],
       tokenOptions: [],
-      currentExrternalWallet: '',
+      currentExrternalWallet: null,
       connectLoading: {
         metamask: false
       },
@@ -257,9 +267,9 @@ export default {
     if (this.$store.state.investment.metamaskConnected) this.conectWallet('metamask')
 
     /* this.gasInterval = setInterval(() => {
-                                                                                                              this.$store.dispatch('investment/getGasPrice')
-                                                                                                            }, 5000)
-                                                                                                            */
+      this.$store.dispatch('investment/getGasPrice')
+    }, 5000)
+    */
   },
   computed: {
     ...mapState('investment', ['zapperTokens', 'selectedPool', 'gasPrice'])
@@ -374,7 +384,7 @@ export default {
         poolContractABI = value
       })
 
-      let nonce = await this.web3Instance.eth.getTransactionCount(this.currentToken.key, 'pending') + 1
+      let nonce = await this.web3Instance.eth.getTransactionCount(this.currentToken.key, 'latest')
       const poolContract = new this.web3Instance.eth.Contract(JSON.parse(poolContractABI), toAddress)
 
       let transactionObject = {
@@ -389,8 +399,8 @@ export default {
       }
       let tx = null
 
-      // if erc20 token
       if (this.currentToken.isERC20) {
+        console.log(fromTokenAddress)
         await this.getContractABI(fromTokenAddress).then(value => {
           tokenABI = value
         })
@@ -400,19 +410,11 @@ export default {
 
         if (allowance === 0 || allowance < this.sendAmount) {
           this.approvalRequired = true
-          tx = await tokenContract.methods.approve(
+          tx = tokenContract.methods.approve(
             toAddress,
             this.web3Instance.utils.toWei('79228162514.26', 'ether')
           )
-          if (send) {
-            tx.send({
-              from: this.currentToken.key,
-              gasPrice: this.web3Instance.utils.toHex(this.gasSelected.gasPrice)
-            })
-              .on('transactionHash', async (txHash) => {
-                console.log('txHash', txHash)
-              })
-          }
+          transactionObject.to = fromTokenAddress
         } else {
           this.approvalRequired = false
         }
@@ -440,15 +442,18 @@ export default {
     },
     async sendTransaction () {
       let transactionObject = await this.getTransactionObject(true, true)
+      console.log(transactionObject)
+      // /*
       this.transactionStatus = 'Pending'
       if (this.currentToken.metamask) {
-        /* global web3  */
+        /* global web3 */
         const Web3 = require('web3')
         if (window.web3 && window.web3.currentProvider.isMetaMask) {
           let localWeb3 = new Web3(web3.currentProvider)
 
           let tx = await localWeb3.eth.sendTransaction(transactionObject)
           tx.on('confirmation', (confirmationNumber, receipt) => {
+            console.log(receipt, 'confirmationNumber', confirmationNumber)
             this.transactionSTatus = 'Confirmed'
           })
 
@@ -459,6 +464,7 @@ export default {
 
           tx.on('receipt', receipt => {
             this.transactionStatus = 'Success'
+            console.log(receipt, 'success')
           })
 
           tx.on('error', error => {
@@ -468,7 +474,6 @@ export default {
         } else { // Non-dapp browsers...
           console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
         }
-        return
       }
 
       const EthereumTx = require('ethereumjs-tx').Transaction
@@ -504,6 +509,7 @@ export default {
           this.transactionStatus = null
         })
       }
+      // */
     },
     sleep (ms) {
       return new Promise(resolve => setTimeout(resolve, ms))
@@ -651,6 +657,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+a {
+  text-decoration: none;
+}
 .q-field__messages.col {
     margin-top: 5px;
 }
