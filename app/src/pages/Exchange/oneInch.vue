@@ -98,7 +98,7 @@
                 </div>
 
                 <div class="flex justify-end" v-if="swapData.marketData.length">
-                    Gas Price: {{swapData.gasPrice}}
+                    Gas Price: {{swapData.gasUsd}}
                 </div>
                 <br>
             </div>
@@ -123,7 +123,7 @@
                         </q-avatar>
                     </template>
                     <template v-if="false" v-slot:hint>
-                        <div :class="[$q.screen.gt.xs ? 'text-body1' : '', 'text-red']">Gas Price: {{swapData.gasPrice}}</div>
+                        <div :class="[$q.screen.gt.xs ? 'text-body1' : '', 'text-red']">Gas Price: {{swapData.gasUsd}}</div>
                     </template>
                 </q-input>
             </div>
@@ -215,12 +215,14 @@ export default {
         customPriceSlipage: null,
         termsAccepted: false,
         gasPrice: null,
+        gas: null,
         ethToUsd: null,
         limitMinDepositCoin: 0,
         limitMaxDepositCoin: 2,
         limitMinDestinationCoin: 1,
         limitMaxDestinationCoin: 2,
-        showDisclaimerWrapper: false
+        showDisclaimerWrapper: false,
+        gasUsd: null
       },
       step: 1,
       web3: null,
@@ -535,9 +537,10 @@ export default {
         .then(function (result) {
           self.swapData.toAmount = parseFloat(self.web3.utils.fromWei(result.data.toTokenAmount.toString(), 'ether'))
           self.spinnervisible = false
-
+          self.swapData.gas = result.data.gas
+          self.swapData.gasPrice = result.data.gasPrice
           // Calculate total gas price and convert it to USD
-          self.swapData.gasPrice = self.convertETHToUSD(self.web3.utils.fromWei((result.data.gasPrice * result.data.gas).toString(), 'ether'))
+          self.swapData.gasUsd = self.convertETHToUSD(self.web3.utils.fromWei((result.data.gasPrice * result.data.gas).toString()))
           console.log('getSwapQuote', result)
         }).catch(error => {
           console.log(error)
@@ -565,18 +568,24 @@ export default {
       this.$axios.get(swapRequestUrl)
         .then(async function (result) {
           self.spinnervisible = false
-          // let nonce = await self.web3.eth.getTransactionCount(self.ethAccount.key, 'pending')
+          let nonce = await self.web3.eth.getTransactionCount(self.ethAccount.key, 'latest')
 
           let transactionObject = {
             from: self.ethAccount.key,
             to: result.data.to,
             value: parseInt(result.data.value),
-            gas: parseInt(result.data.gas),
-            gasPrice: parseInt(result.data.gasPrice),
-            data: result.data.data
+            gas: self.swapData.gas,
+            gasPrice: self.swapData.gasPrice,
+            data: result.data.data,
+            nonce: nonce
 
           }
-
+          self.web3.eth.estimateGas(transactionObject).then(function (gasAmount) {
+            console.log(gasAmount, 'gasAmount')
+          }).catch((error) => {
+            console.log('estimateGas error', error)
+            this.invalidTransaction = true
+          })
           const transaction = new EthereumTx(transactionObject)
 
           transaction.sign(Buffer.from(account.privateKey.substring(2), 'hex'))

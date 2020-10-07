@@ -175,7 +175,7 @@
     </q-card-section>
     <q-card-actions align="right" class="q-pr-sm q-mb-sm q-mt-xl" v-if="!transactionStatus">
         <q-btn label="Cancel" flat class="qbtn-start q-mr-sm cancel" color="black" v-close-popup />
-        <q-btn unelevated class="qbtn-start" :disable="sendAmount == 0" color="black" text-color="white" :label="approvalRequired ? 'Approve '+currentToken.label : 'Confirm'" @click="doTransaction()" />
+        <q-btn unelevated class="qbtn-start" :disable="sendAmount == 0 || invalidTransaction" color="black" text-color="white" :label="approvalRequired ? 'Approve '+currentToken.label : 'Confirm'" @click="doTransaction()" />
     </q-card-actions>
 </q-card>
 </template>
@@ -191,6 +191,7 @@ export default {
       gasInterval: null,
       gasOptions: null,
       transactionStatus: false,
+      invalidTransaction: false,
       gasSelected: null,
       externalWallets: {
         metamask: []
@@ -559,9 +560,11 @@ export default {
         if (!self.gasSelected && self.gasOptions[1]) {
           self.gasSelected = self.gasOptions[1]
         }
+        this.invalidTransaction = false
       })
         .catch((error) => {
           console.log('estimateGas error', error)
+          this.invalidTransaction = true
         })
     },
     getUSDGasPrice (gweiPrice, gasNumber) {
