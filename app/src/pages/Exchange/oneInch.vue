@@ -1,219 +1,189 @@
 <template>
-
-        <q-stepper animated :vertical="$q.screen.lt.sm" v-model="step" ref="stepper" class="stepper--desktop" alternative-labels color="primary"  flat >
-          <q-step :name="1" prefix="1" default  title="Select Coin to Send" :done="step > 1">
-               <span class="sublab-input">Step 1</span><span class="tlab-input">Select Coin to Send</span>
-                <q-select
-                  class="select-input"
-                  light
-                  separator
-                  use-input
-                  outlined
-                  rounded
-                  v-model="depositCoin"
-                  @input="swapData.error = false"
-                  @filter="filterDepositCoin"
-                  :disabled="!depositCoinOptions"
-                  :loading="!depositCoinOptions"
-                  :options="depositCoinOptions"
-                  >
-                <template v-slot:option="scope">
-                  <q-item
-                    class="custom-menu"
-                    v-bind="scope.itemProps"
-                    v-on="scope.itemEvents"
-                  >
+<q-stepper animated :vertical="$q.screen.lt.sm" v-model="step" ref="stepper" class="stepper--desktop" alternative-labels color="primary" flat>
+    <q-step :name="1" prefix="1" default title="Select Coin to Send" :done="step > 1">
+        <span class="sublab-input">Step 1</span><span class="tlab-input">Select Coin to Send</span>
+        <q-select class="select-input" light separator use-input outlined rounded v-model="depositCoin" @input="swapData.error = false" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+            <template v-slot:option="scope">
+                <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                     <q-item-section avatar>
-                      <q-icon :name="`img:${scope.opt.image}`" />
-                    </q-item-section>
-                    <q-item-section >
-                      <q-item-label v-html="scope.opt.label" />
-                      <q-item-label caption>{{ scope.opt.value }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                 </template>
-                <template v-slot:selected>
-                  <q-item v-if="depositCoin">
-                    <q-item-section avatar>
-                      <q-icon :name="`img:${depositCoin.image}`" />
+                        <q-icon :name="`img:${scope.opt.image}`" />
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label v-html="depositCoin.label" />
-                      <q-item-label caption>{{ depositCoin.value }}</q-item-label>
+                        <q-item-label v-html="scope.opt.label" />
+                        <q-item-label caption>{{ scope.opt.value }}</q-item-label>
                     </q-item-section>
-                  </q-item>
-                  <q-item v-else>
-                  </q-item>
-                </template>
-              </q-select>
-              <q-stepper-navigation  class="flex justify-end">
-                <q-btn @click="$refs.stepper.next()"  color="deep-purple-14" class="--next-btn q-px-md" rounded label="Next"  />
-              </q-stepper-navigation>
-           </q-step>
-
-       <q-step :name="2" prefix="2" default  title="Select Coin to Receive" :done="step > 2">
-           <span class="sublab-input">Step 2</span><span class="tlab-input">Select Coin to Receive</span>
-            <q-select
-            class="select-input"
-            light
-            separator
-            use-input
-            rounded
-            outlined
-            @input="swapData.error = false"
-            @filter="filterDestinationCoin"
-            v-model="destinationCoin"
-            :disabled="!destinationCoinOptions"
-            :loading="!destinationCoinOptions"
-            :options="destinationCoinOptions"
-             >
-            <template v-slot:option="scope">
-              <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
-                <q-item-section avatar>
-                  <q-icon :name="`img:${scope.opt.image}`" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label v-html="scope.opt.label" />
-                  <q-item-label caption>{{ scope.opt.value }}</q-item-label>
-                </q-item-section>
-              </q-item>
+                </q-item>
             </template>
             <template v-slot:selected>
-              <q-item v-if="destinationCoin">
-                <q-item-section avatar>
-                  <q-icon :name="`img:${destinationCoin.image}`" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label v-html="destinationCoin.label" />
-                  <q-item-label caption>{{ destinationCoin.value }}</q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item v-else>
-              </q-item>
+                <q-item v-if="depositCoin">
+                    <q-item-section avatar>
+                        <q-icon :name="`img:${depositCoin.image}`" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label v-html="depositCoin.label" />
+                        <q-item-label caption>{{ depositCoin.value }}</q-item-label>
+                    </q-item-section>
+                </q-item>
+                <q-item v-else>
+                </q-item>
             </template>
-            </q-select>
-           <div class="text-red text-body1 q-mt-sm" v-if="swapData.error">
-             {{swapData.errorText.replace('[from]',depositCoin.value).replace('[to]',destinationCoin.value)}}
-         </div>
-
-        <q-stepper-navigation  class="flex justify-end">
-          <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
-          <q-btn @click="getSwapQuote()" :loading="spinnervisible" :disable="spinnervisible"  color="deep-purple-14" class="--next-btn q-px-md" rounded label="Next" />
+        </q-select>
+        <q-stepper-navigation class="flex justify-end">
+            <q-btn @click="$refs.stepper.next()" color="deep-purple-14" class="--next-btn q-px-md" rounded label="Next" />
         </q-stepper-navigation>
-      </q-step>
+    </q-step>
 
-       <q-step :name="3" prefix="3" default  title="Select Quantity" :done="step > 3">
+    <q-step :name="2" prefix="2" default title="Select Coin to Receive" :done="step > 2">
+        <span class="sublab-input">Step 2</span><span class="tlab-input">Select Coin to Receive</span>
+        <q-select class="select-input" light separator use-input rounded outlined @input="swapData.error = false" @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+            <template v-slot:option="scope">
+                <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                    <q-item-section avatar>
+                        <q-icon :name="`img:${scope.opt.image}`" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label v-html="scope.opt.label" />
+                        <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                    </q-item-section>
+                </q-item>
+            </template>
+            <template v-slot:selected>
+                <q-item v-if="destinationCoin">
+                    <q-item-section avatar>
+                        <q-icon :name="`img:${destinationCoin.image}`" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label v-html="destinationCoin.label" />
+                        <q-item-label caption>{{ destinationCoin.value }}</q-item-label>
+                    </q-item-section>
+                </q-item>
+                <q-item v-else>
+                </q-item>
+            </template>
+        </q-select>
+        <div class="text-red text-body1 q-mt-sm" v-if="swapData.error">
+            {{swapData.errorText.replace('[from]',depositCoin.value).replace('[to]',destinationCoin.value)}}
+        </div>
+
+        <q-stepper-navigation class="flex justify-end">
+            <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
+            <q-btn @click="getSwapQuote()" :loading="spinnervisible" :disable="spinnervisible" color="deep-purple-14" class="--next-btn q-px-md" rounded label="Next" />
+        </q-stepper-navigation>
+    </q-step>
+
+    <q-step :name="3" prefix="3" default title="Select Quantity" :done="step > 3">
         <span class="sublab-input">Step 3</span><span class="tlab-input">Select Quantity</span>
         <div class="standard-content--body">
-          <div class="standard-content--body__form">
-            <div class="pay-get-wrapper column justify-between">
-              <div class="pay-wrapper column">
-                <span class="label">you pay</span>
-                <span class="value">
-                  <q-input v-if="depositCoin" bottom-slots ref="depositQuantity" type="number" @input="getSwapQuote()" :suffix="depositCoin.value.toUpperCase()" rounded class="full-width pl0" flat v-model="swapData.fromAmount" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val > swapData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < swapData.limitMaxDepositCoin || 'This is more than the maximum allowed']" >
-                  <template v-slot:hint>
-                    <div  v-if="swapData.marketData.length">{{convertETHToUSD(swapData.fromAmount)}}</div>
-                  </template>
-                  </q-input>
-                </span>
-              </div>
-              <q-btn flat unelevated class="exchange-btn" text-color="black">
-                <q-icon name="arrow_downward" />
-              </q-btn>
-              <div class="get-wrapper column" v-if="destinationCoin">
-                <span class="label">you get</span>
-                <span class="value">
-                  <q-input readonly rounded class="full-width pl0" flat ref="destinationQuantity" :suffix="destinationCoin.value.toUpperCase()" v-model="swapData.toAmount"  :disabled="spinnervisible" :loading="spinnervisible" type="number" />
-                </span>
-              </div>
+            <div class="standard-content--body__form">
+                <div class="pay-get-wrapper column justify-between">
+                    <div class="pay-wrapper column">
+                        <span class="label">you pay</span>
+                        <span class="value">
+                            <q-input v-if="depositCoin" bottom-slots ref="depositQuantity" type="number" @input="getSwapQuote()" :suffix="depositCoin.value.toUpperCase()" rounded class="full-width pl0" flat v-model="swapData.fromAmount" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val > swapData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < swapData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
+                                <template v-slot:hint>
+                                    <div v-if="swapData.marketData.length">{{convertETHToUSD(swapData.fromAmount)}}</div>
+                                </template>
+                            </q-input>
+                        </span>
+                    </div>
+                    <q-btn flat unelevated class="exchange-btn" text-color="black">
+                        <q-icon name="arrow_downward" />
+                    </q-btn>
+                    <div class="get-wrapper column" v-if="destinationCoin">
+                        <span class="label">you get</span>
+                        <span class="value">
+                            <q-input readonly rounded class="full-width pl0" flat ref="destinationQuantity" :suffix="destinationCoin.value.toUpperCase()" v-model="swapData.toAmount" :disabled="spinnervisible" :loading="spinnervisible" type="number" />
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex justify-end" v-if="swapData.marketData.length">
+                    Gas Price: {{swapData.gasUsd}}
+                </div>
+                <br>
             </div>
+            <q-stepper-navigation class="flex justify-end">
+                <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
+                <q-btn @click="$refs.stepper.next()" :disable="spinnervisible" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+            </q-stepper-navigation>
+        </div>
 
-            <div class="flex justify-end" v-if="swapData.marketData.length">
-               Gas Price: {{swapData.gasPrice}}
+    </q-step>
+
+    <q-step :name="4" title="Order review" icon="remove_red_eye">
+        <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn absolute-top-right" />
+        <div class="row" v-if="depositCoin">
+
+            <div class=" col-12 col-md-5">
+                <div class="col-12 text-h6 q-mb-sm">Amount of {{depositCoin.value}} to swap </div>
+                <q-input bottom-slots type="number" min="0" readonly input-class="text-left text-red" class=" col-12 col-md-5 text-right" standout v-model="swapData.fromAmount" :label="'Amount of '+depositCoin.value+' to swap'">
+                    <template v-slot:prepend>
+                        <q-avatar>
+                            <q-icon :name="`img:${depositCoin.image}`" />
+                        </q-avatar>
+                    </template>
+                    <template v-if="false" v-slot:hint>
+                        <div :class="[$q.screen.gt.xs ? 'text-body1' : '', 'text-red']">Gas Price: {{swapData.gasUsd}}</div>
+                    </template>
+                </q-input>
             </div>
-            <br>
-          </div>
-          <q-stepper-navigation  class="flex justify-end">
-            <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
-            <q-btn @click="$refs.stepper.next()" :disable="spinnervisible" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
-          </q-stepper-navigation>
+            <div class="col-12 col-md-2 flex flex-center text-weight-thin text-grey-4 ">
+                <q-icon class="text-grey-5 q-px-lg" name="sync_alt" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('exchange/coinswitch')">
+                    <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
+                </q-icon>
+            </div>
+            <div class=" col-12 col-md-5">
+                <div class="col-12 text-h6 q-mb-sm" v-if="destinationCoin">{{destinationCoin.value}} to receive </div>
+                <q-input bottom-slots readonly type="number" min="0" :loading="spinnervisible" input-class="text-left" class=" col-12 text-right" standout v-model="swapData.toAmount" label="Amount">
+                    <template v-slot:prepend>
+                        <q-avatar>
+                            <q-icon :name="`img:${destinationCoin.image}`" />
+                        </q-avatar>
+                    </template>
+                    <template v-slot:hint>
+                        <div v-if="swapData.ethToUsd">{{convertETHToUSD(swapData.toAmount)}}</div>
+                    </template>
+                </q-input>
+            </div>
         </div>
-
-      </q-step>
-
-      <q-step
-        :name="4"
-        title="Order review"
-        icon="remove_red_eye"
-      > <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn absolute-top-right"/>
-        <div class="row"  v-if="depositCoin">
-
-       <div class=" col-12 col-md-5">
-       <div class="col-12 text-h6 q-mb-sm">Amount of {{depositCoin.value}} to swap </div>
-        <q-input bottom-slots   type="number" min="0"  readonly input-class="text-left text-red"  class=" col-12 col-md-5 text-right" standout v-model="swapData.fromAmount"   :label="'Amount of '+depositCoin.value+' to swap'" >
-        <template v-slot:prepend>
-          <q-avatar>
-            <q-icon :name="`img:${depositCoin.image}`" />
-          </q-avatar>
-        </template>
-         <template v-if="false" v-slot:hint>
-          <div :class="[$q.screen.gt.xs ? 'text-body1' : '', 'text-red']" >Gas Price: {{swapData.gasPrice}}</div>
-        </template>
-       </q-input>
-        </div>
-        <div class="col-12 col-md-2 flex flex-center text-weight-thin text-grey-4 ">
-          <q-icon class="text-grey-5 q-px-lg" name="sync_alt" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('exchange/coinswitch')">
-          <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
-        </q-icon>
-        </div>
-        <div class=" col-12 col-md-5">
-        <div class="col-12 text-h6 q-mb-sm" v-if="destinationCoin">{{destinationCoin.value}} to receive </div>
-        <q-input bottom-slots  readonly type="number" min="0"  :loading="spinnervisible" input-class="text-left"  class=" col-12 text-right" standout v-model="swapData.toAmount"   label="Amount" >
-        <template v-slot:prepend>
-          <q-avatar>
-            <q-icon :name="`img:${destinationCoin.image}`" />
-          </q-avatar>
-        </template>
-        <template v-slot:hint>
-          <div  v-if="swapData.ethToUsd">{{convertETHToUSD(swapData.toAmount)}}</div>
-        </template>
-       </q-input>
-       </div>
-    </div>
-      <q-dialog persistent v-model="swapData.showDisclaimerWrapper">
-      <q-card class="q-pa-md" style="width: 700px; max-width: 92vw;">
-        <q-toolbar>
-          <q-avatar><img src="statics/icon.png"></q-avatar>
-          <q-toolbar-title><span class="text-weight-bold">Disclaimer</span> </q-toolbar-title>
-        </q-toolbar>
-        <q-card-section class="text-h6">
-          <div class="parg">
-            This transaction is carried out using an open API linked to various Exchanges.<br>
-            By sending coins to the above address, you agreed to <a href="https://coinswitch.co/terms" target="_blank">the terms and conditions</a> of the selected provider.
-          </div>
-        </q-card-section>
-        <q-card-actions align="right" class="q-pr-sm">
-          <q-btn flat label="Accept" class="accept-disclaimer" @click="swapData.termsAccepted = true" color="primary" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-    <q-stepper-navigation  v-show="true" class="flex justify-end">
+        <q-dialog persistent v-model="swapData.showDisclaimerWrapper">
+            <q-card class="q-pa-md" style="width: 700px; max-width: 92vw;">
+                <q-toolbar>
+                    <q-avatar><img src="statics/icon.png"></q-avatar>
+                    <q-toolbar-title><span class="text-weight-bold">Disclaimer</span> </q-toolbar-title>
+                </q-toolbar>
+                <q-card-section class="text-h6">
+                    <div class="parg">
+                        This transaction is carried out using an open API linked to various Exchanges.<br>
+                        By sending coins to the above address, you agreed to <a href="https://coinswitch.co/terms" target="_blank">the terms and conditions</a> of the selected provider.
+                    </div>
+                </q-card-section>
+                <q-card-actions align="right" class="q-pr-sm">
+                    <q-btn flat label="Accept" class="accept-disclaimer" @click="swapData.termsAccepted = true" color="primary" v-close-popup />
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
+        <q-stepper-navigation v-show="true" class="flex justify-end">
             <div class="row full-width" style="padding-left: 6px; margin-top: -20px;">
-              <div class="q-gutter-sm">
-                <q-btn color="white" flat @click="swapData.showDisclaimerWrapper = true" class="lower bold" text-color="black" label="Read the disclaimer" />
-              </div>
+                <div class="q-gutter-sm">
+                    <q-btn color="white" flat @click="swapData.showDisclaimerWrapper = true" class="lower bold" text-color="black" label="Read the disclaimer" />
+                </div>
             </div>
             <div class="row full-width" style="padding-left: 13px; margin-top: 10px;">
-              <div class="q-gutter-sm"><q-checkbox label="I accept" color="deep-purple-14" v-model="swapData.termsAccepted" /></div>
+                <div class="q-gutter-sm">
+                    <q-checkbox label="I accept" color="deep-purple-14" v-model="swapData.termsAccepted" />
+                </div>
             </div>
             <div class="standard-content--footer">
-              <q-btn  :disable="!swapData.termsAccepted" @click="doSwap()" flat class="action-link next" color="black" text-color="white">
-                <span v-if="depositCoin" class="label">Exchange {{ depositCoin.value.toUpperCase() }} <q-icon name="arrow_forward" color="white" class="left-icon" /> {{ destinationCoin.value.toUpperCase() }}</span>
-              </q-btn>
-        </div>
-    </q-stepper-navigation>
-       </q-step>
-    </q-stepper>
+                <q-btn :disable="!swapData.termsAccepted" @click="doSwap()" flat class="action-link next" color="black" text-color="white">
+                    <span v-if="depositCoin" class="label">Exchange {{ depositCoin.value.toUpperCase() }}
+                        <q-icon name="arrow_forward" color="white" class="left-icon" /> {{ destinationCoin.value.toUpperCase() }}
+                    </span>
+                </q-btn>
+            </div>
+        </q-stepper-navigation>
+    </q-step>
+</q-stepper>
 </template>
 
 <script>
@@ -245,12 +215,14 @@ export default {
         customPriceSlipage: null,
         termsAccepted: false,
         gasPrice: null,
+        gas: null,
         ethToUsd: null,
         limitMinDepositCoin: 0,
         limitMaxDepositCoin: 2,
         limitMinDestinationCoin: 1,
         limitMaxDestinationCoin: 2,
-        showDisclaimerWrapper: false
+        showDisclaimerWrapper: false,
+        gasUsd: null
       },
       step: 1,
       web3: null,
@@ -464,7 +436,7 @@ export default {
   },
   mounted () {
     const Web3 = require('web3')
-    this.web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+    this.web3 = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
 
     if (this.$route.params.depositCoin !== undefined) {
       this.depositCoin = this.$route.params.depositCoin
@@ -515,14 +487,9 @@ export default {
           }
           return 1
         })
-        let coinsArray = self.coins.map(function (val, index) {
-          return val.value.toLowerCase()
-        })
-
-        console.log('ETH  wallet tokens ->', tokensArray)
-        console.log(' 1Inch Tokens ->', coinsArray)
-        console.log('Intersection -> ', coinsArray.filter(value => tokensArray.includes(value)))
-        console.log('Difference ->', tokensArray.filter(value => !coinsArray.includes(value)))
+        // let coinsArray = self.coins.map(function (val, index) {
+        //   return val.value.toLowerCase()
+        // })
 
         self.destinationCoin = !self.destinationCoin ? self.depositCoinOptions[self.depositCoinOptions.length - 1] : self.destinationCoin
         self.depositCoinUnfilter = self.depositCoinOptions.filter(o => tokensArray.includes(o.value.toLowerCase()))
@@ -570,15 +537,16 @@ export default {
         .then(function (result) {
           self.swapData.toAmount = parseFloat(self.web3.utils.fromWei(result.data.toTokenAmount.toString(), 'ether'))
           self.spinnervisible = false
-          console.log(result.data.gasPrice * result.data.gas)
+          self.swapData.gas = result.data.gas
+          self.swapData.gasPrice = result.data.gasPrice
           // Calculate total gas price and convert it to USD
-          self.swapData.gasPrice = self.convertETHToUSD(self.web3.utils.fromWei((result.data.gasPrice * result.data.gas).toString(), 'ether'))
+          self.swapData.gasUsd = self.convertETHToUSD(self.web3.utils.fromWei((result.data.gasPrice * result.data.gas).toString()))
           console.log('getSwapQuote', result)
         }).catch(error => {
+          console.log(error)
           self.spinnervisible = false
           self.swapData.toAmount = null
           self.swapData.error = true
-          console.log('getSwapQuote', error)
         })
     },
     doSwap () {
@@ -594,34 +562,61 @@ export default {
         toAddress: this.destinationCoin.address,
         disableEstimate: true
       }
+      const account = self.ethAccount
       let swapRequestUrl = _1inch + '/v1.1/swap?' + new URLSearchParams(data).toString()
       // JSON.stringify for easy copy paste
       this.$axios.get(swapRequestUrl)
-        .then(function (result) {
+        .then(async function (result) {
           self.spinnervisible = false
+          let nonce = await self.web3.eth.getTransactionCount(self.ethAccount.key, 'latest')
 
           let transactionObject = {
             from: self.ethAccount.key,
             to: result.data.to,
-            value: self.web3.utils.toHex(result.data.value),
-            gas: self.web3.utils.toHex(result.data.gas),
-            gasPrice: self.web3.utils.toHex(result.data.gasPrice),
-            data: result.data.data
+            value: parseInt(result.data.value),
+            gas: self.swapData.gas,
+            gasPrice: self.swapData.gasPrice,
+            data: result.data.data,
+            nonce: nonce
+
           }
-          console.log(transactionObject, JSON.stringify(transactionObject), 'transactionObject')
+          self.web3.eth.estimateGas(transactionObject).then(function (gasAmount) {
+            console.log(gasAmount, 'gasAmount')
+          }).catch((error) => {
+            console.log('estimateGas error', error)
+            this.invalidTransaction = true
+          })
           const transaction = new EthereumTx(transactionObject)
 
-          console.log(transaction, JSON.stringify(transaction), 'new EthereumTx')
-          transaction.sign(Buffer.from(self.ethAccount.privateKey.substring(2), 'hex'))
+          transaction.sign(Buffer.from(account.privateKey.substring(2), 'hex'))
 
-          console.log(transaction, JSON.stringify(transaction), 'transaction.sign')
           const serializedTransaction = transaction.serialize()
 
-          self.web3.eth.accounts.signTransaction(result.data.data, self.ethAccount.privateKey, function (error, result) {
-            console.log(error, result, JSON.stringify(result), 'signTransaction callback')
-          }).then(function (result) {
-            console.log(result, JSON.stringify(result), 'doSwap result')
-            self.sendTransaction('0x' + serializedTransaction.toString('hex'))
+          let tx = self.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
+
+          tx.on('confirmation', (confirmationNumber, receipt) => {
+            // this.transactionStatus = 'Confirmed'
+            console.log(receipt, 'receipt', confirmationNumber)
+          })
+
+          tx.on('transactionHash', hash => {
+            console.log(hash, 'hash')
+            //  this.transactionStatus = 'Pending'
+            // this.transactionHash = hash
+            var receipt = self.web3.eth.getTransactionReceipt(hash)
+              .then(console.log)
+            console.log(receipt, 'receipt')
+          })
+
+          tx.on('receipt', receipt => {
+            // this.transactionStatus = 'Success'
+            console.log(receipt, 'receiptreceipt')
+          })
+
+          tx.on('error', error => {
+            // this.error = error
+            // this.transactionStatus = null
+            console.log(error)
           })
         }).catch(error => {
           self.spinnervisible = false
@@ -632,7 +627,7 @@ export default {
     convertETHToUSD (ethAmount) {
       const self = this
       let ethToUsd = self.swapData.marketData.find(o => o.symbol.toLowerCase() === 'eth').current_price
-      console.log(ethAmount, ethToUsd * ethAmount, 'conversion')
+
       return ethToUsd ? `~ USD ${ethToUsd * ethAmount}` : null
     },
     async sendTransaction (rawTransaction) {
@@ -682,30 +677,36 @@ export default {
   }
 }
 </script>
+
 <style lang="stylus" scoped>
 .q-select .q-field__input {
     cursor: pointer;
 }
-@media (min-width: 576px){
-.page-container {
-    max-width: 540px;
+
+@media (min-width: 576px) {
+    .page-container {
+        max-width: 540px;
+    }
 }
+
+@media (min-width: 768px) {
+    .page-container {
+        max-width: 720px;
+    }
 }
-@media (min-width: 768px){
-.page-container {
-    max-width: 720px;
+
+@media (min-width: 992px) {
+    .page-container {
+        max-width: 960px;
+    }
 }
+
+@media (min-width: 1200px) {
+    .page-container {
+        max-width: 1040px;
+    }
 }
-@media (min-width: 992px){
-.page-container{
-    max-width: 960px;
-}
-}
-@media (min-width: 1200px){
-.page-container {
-    max-width: 1040px;
-}
-}
+
 .standard-content--footer .action-link {
     height: 54px;
     text-transform: initial !important;
@@ -720,6 +721,7 @@ export default {
     padding-right: 20px;
     background-color: #7272FA !important;
 }
+
 .tlab-input {
     font-family: "Titillium Web", sans-serif;
     font-weight: 700;
