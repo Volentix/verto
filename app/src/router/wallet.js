@@ -166,6 +166,14 @@ export default [
         }
       },
       {
+        name: 'exchange-v4',
+        path: '/verto/exchange4',
+        component: () => import('pages/Verto/Exchange4.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'wps',
         path: '/verto/card-wps',
         component: () => import('pages/Verto/WPS.vue'),
