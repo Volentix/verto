@@ -8,13 +8,13 @@
         <div v-if="highestVTXAccount !== null">
           <span class="small">Make</span>
           <div class="flex items-center">
-            <span class="big">{{estimatedReward}}</span>
+            <span class="big">{{nFormatter2(estimatedReward, 3)}}</span>
             <span class="thicker flex items-center"><img :src="highestVTXAccount.icon" alt=""> {{highestVTXAccount.type.toUpperCase()}}</span>
           </div>
           <span class="small">now!</span>
         </div>
         <strong v-else class="q-mt-lg q-pt-md q-pb-sm">Make VTX while you sleep</strong>
-        <div class="call-action full-width">
+        <div class="call-action full-width flex justify-end">
           <div v-if="highestVTXAccount !== null" class="q-pl-sm"><q-btn unelevated class="qbtn-start qbtn-start2 q-mr-md" color="black" :to="`/verto/stake/2`" text-color="white" label="Stake now" /></div>
           <div v-else class="q-mt-md"><q-btn unelevated class="qbtn-start q-mr-sm" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Buy with BTC/ETH" /></div>
           <!-- <q-btn unelevated class="qbtn-start" color="black" @click="modalBuyWithEOS = true" text-color="white" label="Buy with EOS" /> -->
@@ -81,6 +81,25 @@ export default {
     }
   },
   methods: {
+    nFormatter2 (num, digits) {
+      var si = [
+        { value: 1, symbol: '' },
+        { value: 1E3, symbol: 'k' },
+        { value: 1E6, symbol: 'M' },
+        { value: 1E9, symbol: 'G' },
+        { value: 1E12, symbol: 'T' },
+        { value: 1E15, symbol: 'P' },
+        { value: 1E18, symbol: 'E' }
+      ]
+      var rx = /\.0+$|(\.[0-9]*[1-9])0+$/
+      var i
+      for (i = si.length - 1; i > 0; i--) {
+        if (num >= si[i].value) {
+          break
+        }
+      }
+      return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol
+    },
     async setHighestVTXAccount () {
       let tableDatas = await this.$store.state.wallets.tokens.filter((c) => {
         if (c.type === 'vtx') {
@@ -161,7 +180,7 @@ export default {
       font-size: 14px;
     }
     .big{
-      font-size: 35px;
+      font-size: 30px;
       letter-spacing: -1px;
       font-weight: $black;
       margin-top: -10px;

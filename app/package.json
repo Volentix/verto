@@ -50,6 +50,7 @@
     "@cruxpay/js-sdk": "^0.1.8",
     "@dashevo/dashcore-lib": "^0.18.0",
     "@ledgerhq/hw-transport-u2f": "^5.2.0",
+    "@polkadot/api": "^1.34.1",
     "@quasar/extras": "^1.8.1",
     "@quasar/quasar-app-extension-qenv": "^1.0.1",
     "@uniswap/sdk": "^2.0.5",
@@ -96,7 +97,7 @@
     "vue-social-sharing": "^2.4.6",
     "vue-template-compiler": "^2.6.10",
     "vuelidate": "^0.7.4",
-    "web3": "^1.2.6",
+    "web3": "1.2.9",
     "wif": "^2.0.6",
     "xlm-provider": "^0.0.3",
     "xrp-provider": "^0.0.5"
