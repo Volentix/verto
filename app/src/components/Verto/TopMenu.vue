@@ -1,16 +1,20 @@
 <template>
-  <div class="menu-top-wrapper">
+<div class="menu-top-wrapper">
     <div class="row">
-      <div class="col col-3 app-logo flex q-pl-xl items-center"><router-link to="/verto/dashboard">VERTO</router-link></div>
-      <div class="col col-3 flex items-center">2020-05-22 - 16:15:31</div>
-      <div class="col col-6 flex justify-end q-pr-xl items-center menu">
-        <!-- to="/verto/earn/use-referral-account" -->
-        <!-- <router-link disabled>Refer & Earn</router-link> -->
-        <router-link to="/verto/exchange4">Exchange</router-link>
-        <a href="javascript:void(0)" @click="logout"><q-icon class="reverse" name="exit_to_app" /> Logout</a>
-      </div>
+        <div class="col col-3 app-logo flex q-pl-xl items-center">
+            <router-link to="/verto/dashboard">VERTO</router-link>
+        </div>
+        <div class="col col-3 flex items-center">2020-05-22 - 16:15:31</div>
+        <div class="col col-6 flex justify-end q-pr-xl items-center menu">
+            <!-- to="/verto/earn/use-referral-account" -->
+            <!-- <router-link disabled>Refer & Earn</router-link> -->
+            <router-link to="/verto/exchange">Exchange</router-link>
+            <a href="javascript:void(0)" @click="logout">
+                <q-icon class="reverse" name="exit_to_app" /> Logout
+            </a>
+        </div>
     </div>
-  </div>
+</div>
 </template>
 
 <script>
@@ -19,8 +23,7 @@
 export default {
   name: 'TopMenu',
   data () {
-    return {
-    }
+    return {}
   },
   methods: {
     logout () {
@@ -33,9 +36,10 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-  @import "~@/assets/styles/variables.scss";
-  .menu-top-wrapper{
+<style lang="scss" scoped>
+@import "~@/assets/styles/variables.scss";
+
+.menu-top-wrapper {
     position: fixed;
     left: 0px;
     top: 0px;
@@ -45,40 +49,46 @@ export default {
     background-color: #fff;
     z-index: 9;
     @extend .shad;
-    .row{
-      .col{
-        height: $height;
-        &.menu{
-          a{
-            font-weight: $regular;
-            font-family: $Titillium;
-            font-size: 16px;
-            color: #333;
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            &:hover{
-              background-color: rgba(black, .02);
-            }
-          }
-        }
-        &.app-logo{
-          a{
-            font-weight: $bold;
-            text-transform: uppercase;
-            font-family: $Titillium;
-            font-size: 20px;
-            color: #333;
-            text-decoration: none;
-          }
-        }
-        cursor: pointer;
-        position: relative;
 
-      }
+    .row {
+        .col {
+            height: $height;
+
+            &.menu {
+                a {
+                    font-weight: $regular;
+                    font-family: $Titillium;
+                    font-size: 16px;
+                    color: #333;
+                    text-decoration: none;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+
+                    &:hover {
+                        background-color: rgba(black, .02);
+                    }
+                }
+            }
+
+            &.app-logo {
+                a {
+                    font-weight: $bold;
+                    text-transform: uppercase;
+                    font-family: $Titillium;
+                    font-size: 20px;
+                    color: #333;
+                    text-decoration: none;
+                }
+            }
+
+            cursor: pointer;
+            position: relative;
+
+        }
     }
-  }
-  .reverse{
+}
+
+.reverse {
     transform: scaleX(-1);
-  }
+}
 </style>
