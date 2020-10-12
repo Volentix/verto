@@ -1,189 +1,686 @@
 <template>
-<q-stepper animated :vertical="$q.screen.lt.sm" v-model="step" ref="stepper" class="stepper--desktop" alternative-labels color="primary" flat>
-    <q-step :name="1" prefix="1" default title="Select Coin to Send" :done="step > 1">
-        <span class="sublab-input">Step 1</span><span class="tlab-input">Select Coin to Send</span>
-        <q-select class="select-input" light separator use-input outlined rounded v-model="depositCoin" @input="swapData.error = false" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
-            <template v-slot:option="scope">
-                <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
-                    <q-item-section avatar>
-                        <q-icon :name="`img:${scope.opt.image}`" />
-                    </q-item-section>
-                    <q-item-section>
-                        <q-item-label v-html="scope.opt.label" />
-                        <q-item-label caption>{{ scope.opt.value }}</q-item-label>
-                    </q-item-section>
-                </q-item>
-            </template>
-            <template v-slot:selected>
-                <q-item v-if="depositCoin">
-                    <q-item-section avatar>
-                        <q-icon :name="`img:${depositCoin.image}`" />
-                    </q-item-section>
-                    <q-item-section>
-                        <q-item-label v-html="depositCoin.label" />
-                        <q-item-label caption>{{ depositCoin.value }}</q-item-label>
-                    </q-item-section>
-                </q-item>
-                <q-item v-else>
-                </q-item>
-            </template>
-        </q-select>
-        <q-stepper-navigation class="flex justify-end">
-            <q-btn @click="$refs.stepper.next()" color="deep-purple-14" class="--next-btn q-px-md" rounded label="Next" />
-        </q-stepper-navigation>
-    </q-step>
+<div class="" v-if="$q.screen.width > 1024 && depositCoin && destinationCoin">
+    <div class="row">
 
-    <q-step :name="2" prefix="2" default title="Select Coin to Receive" :done="step > 2">
-        <span class="sublab-input">Step 2</span><span class="tlab-input">Select Coin to Receive</span>
-        <q-select class="select-input" light separator use-input rounded outlined @input="swapData.error = false" @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
-            <template v-slot:option="scope">
-                <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
-                    <q-item-section avatar>
-                        <q-icon :name="`img:${scope.opt.image}`" />
-                    </q-item-section>
-                    <q-item-section>
-                        <q-item-label v-html="scope.opt.label" />
-                        <q-item-label caption>{{ scope.opt.value }}</q-item-label>
-                    </q-item-section>
-                </q-item>
-            </template>
-            <template v-slot:selected>
-                <q-item v-if="destinationCoin">
-                    <q-item-section avatar>
-                        <q-icon :name="`img:${destinationCoin.image}`" />
-                    </q-item-section>
-                    <q-item-section>
-                        <q-item-label v-html="destinationCoin.label" />
-                        <q-item-label caption>{{ destinationCoin.value }}</q-item-label>
-                    </q-item-section>
-                </q-item>
-                <q-item v-else>
-                </q-item>
-            </template>
-        </q-select>
-        <div class="text-red text-body1 q-mt-sm" v-if="swapData.error">
-            {{swapData.errorText.replace('[from]',depositCoin.value).replace('[to]',destinationCoin.value)}}
+        <div class="col col-md-9">
+            <div class=" apps-section q-mb-sm">
+
+                <!-- 1inch component -->
+                <!-- add your code here -->
+
+                <!-- Vdex component -->
+                <div class="">
+                    <div class="standard-content"></div>
+                    <div class="chain-tools-wrapper--list open">
+                        <div class="list-wrapper">
+                            <div class="row">
+                                <div class="col col-12">
+                                    <div class="trade-component">
+                                        <!-- <img src="statics/theme1/Screenshot_208.png" alt="" style="opacity: .1"> -->
+                                        <div v-if="step === 1" class="prototype">
+                                            <div class="head">Token swap</div>
+                                            <div class="you-pay">
+                                                <div class="you-pay-head row items-center">
+                                                    <div class="col col-6">From</div>
+                                                    <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
+                                                </div>
+                                                <div class="you-pay-body row items-center">
+
+                                                    <div class="col col-2 choose-coin">
+                                                        <span class="cursor">
+
+                                                            <q-select class="select-input" light separator use-input borderless rounded v-model="depositCoin" @input="swapData.error = false; getSwapQuote()" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                                                                <template v-slot:option="scope">
+                                                                    <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                                                        <q-item-section avatar>
+                                                                            <q-icon :name="`img:${scope.opt.image}`" />
+                                                                        </q-item-section>
+                                                                        <q-item-section>
+                                                                            <q-item-label v-html="scope.opt.label" />
+                                                                            <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                                                                        </q-item-section>
+                                                                    </q-item>
+                                                                </template>
+                                                                <template v-slot:selected>
+                                                                    <span class="text-h5">{{depositCoin.value}}</span>
+
+                                                                </template>
+                                                            </q-select>
+
+                                                        </span>
+                                                    </div>
+                                                    <div class="col col-6 offset-4">
+                                                        <q-input outlined class="bg-white text-h5" ref="depositQuantity" @input="swapData.error = false; getSwapQuote()" v-model="swapData.fromAmount" type="number" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val <= depositCoin.data.amount || 'Insufficient funds']">
+                                                            <div class="flex justify-end items-center" style="width: 60px">
+                                                                <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
+                                                            </div>
+                                                            <template v-slot:hint>
+                                                                <div v-if="swapData.marketData.length">{{convertETHToUSD(swapData.fromAmount)}}</div>
+                                                            </template>
+                                                        </q-input>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="you-receive">
+                                                <br>
+                                                <q-btn outline round color="black" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
+                                                <div class="you-receive-head row items-center">
+                                                    <div class="col col-6">You Receive</div>
+                                                    <div v-if="rateData" class="col col-6 info_rate_holder small text-right flex justify-end items-center" :class="{'_loading': fetchingRate}">
+                                                        <!-- 1 ETH = 374.705 USDT -->
+                                                        <span>{{ '1 ' + fromCoinType.toUpperCase() + '&nbsp;= &nbsp;' + rateData.rate.toFixed(5) + ' ' + destinationCoinType.toUpperCase() }}</span>
+                                                        <div class="info_rate">
+                                                            <span class="i-btn">i
+                                                                <!-- <img src="statics/theme1/rate-info.png" class="rate-info-prototype" alt=""> -->
+                                                                <div class="info_rate_wrapper text-left">
+                                                                    <div class="title">We got you the best price</div>
+                                                                    <hr>
+                                                                    <div class="lineheight flex justify-between items-center">
+                                                                        <span>Max Deposit</span>
+                                                                        <span>{{rateData.limitMaxDepositCoin}} {{fromCoinType.toUpperCase()}}</span>
+                                                                    </div>
+                                                                    <div class="lineheight flex justify-between items-center">
+                                                                        <span>Max Destination</span>
+                                                                        <span>{{rateData.limitMaxDestinationCoin}} {{destinationCoinType.toUpperCase()}}</span>
+                                                                    </div>
+                                                                    <div class="lineheight flex justify-between items-center">
+                                                                        <span>Min Deposit</span>
+                                                                        <span>{{rateData.limitMinDepositCoin}} {{fromCoinType.toUpperCase()}}</span>
+                                                                    </div>
+                                                                    <div class="lineheight flex justify-between items-center">
+                                                                        <span>Min Destination</span>
+                                                                        <span>{{rateData.limitMinDestinationCoin}} {{destinationCoinType.toUpperCase()}}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="you-receive-body row items-center">
+                                                    <div class="col col-2 choose-coin"><span class="cursor">
+                                                            <q-select class="select-input" light separator use-input rounded borderless @input="swapData.error = false; getSwapQuote()" @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="false" :options="destinationCoinOptions">
+                                                                <template v-slot:option="scope">
+                                                                    <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                                                        <q-item-section avatar>
+                                                                            <q-icon :name="`img:${scope.opt.image}`" />
+                                                                        </q-item-section>
+                                                                        <q-item-section>
+                                                                            <q-item-label v-html="scope.opt.label" />
+                                                                            <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                                                                        </q-item-section>
+                                                                    </q-item>
+                                                                </template>
+                                                                <template v-slot:selected>
+                                                                    <span class="text-h5">{{destinationCoin.value}}</span>
+                                                                </template>
+                                                            </q-select>
+                                                        </span></div>
+                                                    <div class="col col-6 offset-4">
+                                                        <q-input disable outlined class="bg-white text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" type="number">
+                                                            <div class="flex justify-end items-center" style="width: 60px">
+                                                                <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
+                                                            </div>
+                                                            <template v-slot:hint>
+                                                                ~ USD {{swapData.toAmount * destinationCoin.price }}
+                                                            </template>
+                                                        </q-input>
+                                                    </div>
+                                                </div>
+                                                <div class="text-red text-body1 q-mt-sm" v-if="error">
+
+                                                    <span v-if="error == 'gas'">
+                                                        {{swapData.errorText.replace('[from]',depositCoin.value).replace('[to]',destinationCoin.value)}}
+                                                    </span>
+                                                    <span v-else>
+                                                        {{error}}
+                                                    </span>
+                                                </div>
+                                                <div class="text-body2 text-red q-pa-md" v-if="approvalRequired">
+
+                                                    <span>
+                                                        Before swaping {{depositCoin.value}} with {{destinationCoin.value}}, you need to process an approval transaction
+                                                    </span>
+                                                </div>
+                                                <q-list class="gasfield q-mt-md" v-if="gasOptions.length" separator>
+                                                    <span class="text-body1 q-pl-md q-mb-md">Select gas price option</span>
+                                                    <q-item dense class="gasSelector q-pt-sm">
+                                                        <q-item-section v-for="(gas, index) in gasOptions" :key="index">
+                                                            <q-item :class="[gasSelected.label == gas.label ? 'selected bg-black ' : 'bg-white' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
+                                                                <q-item-section>
+                                                                    <q-item-label>${{gas.value }}</q-item-label>
+                                                                    <q-item-label class="text-body1 text-grey"> {{gas.label }}</q-item-label>
+                                                                </q-item-section>
+                                                                <q-item-section avatar>
+                                                                    <q-icon color="primary" name="local_gas_station" />
+                                                                </q-item-section>
+                                                            </q-item>
+                                                        </q-item-section>
+                                                    </q-item>
+                                                </q-list>
+                                                <q-btn v-if="approvalRequired" unelevated @click="processERC20Approval()" :loading="spinnervisible" :disable="spinnervisible || gasOptions.length == 0" color="primary" text-color="black" label="Approve token" class="text-capitalize chose_accounts full-width" />
+
+                                                <q-btn v-else unelevated @click="doSwap()" :loading="spinnervisible" :disable="error !== false || gasOptions.length == 0 || spinnervisible || depositCoin.data.amount < swapData.fromAmount " color="primary" text-color="black" label="Swap now" class="text-capitalize chose_accounts full-width" />
+                                            </div>
+                                        </div>
+
+                                        <div v-if="step === 2 || transactionHash" class="prototype">
+                                            <div class="head">
+                                                <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
+                                                Order in progress
+                                            </div>
+                                            <div class="standard-content--body">
+                                                <div class="standard-content--body__form q-pa-xl">
+                                                    <div class="progress-custom-volentix column flex-center">
+                                                        <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58">
+                                                            <path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path>
+                                                        </svg>
+                                                        <span class="title">{{ transactionStatus }}</span>
+                                                        <q-linear-progress v-if="transactionStatus == 'Pending'" indeterminate stripe rounded size="md" :value="progress" class="q-mt-md" />
+                                                    </div>
+                                                    <hr style="height:15px;opacity:0" />
+                                                    <div class="text-black">
+                                                        <div class="text-h4 --subtitle">{{''}}</div>
+                                                        <q-input v-if="transactionHash" bottom-slots v-model="transactionHash" readonly rounded class="input-input pr80" outlined color="purple" type="text">
+                                                            <template v-slot:append>
+                                                                <div class="flex justify-end">
+                                                                    <q-btn flat unelevated text-color="grey" @click="copyToClipboard(transactionHash , 'Transaction  hash')" round class="btn-copy" icon="file_copy" />
+                                                                </div>
+                                                            </template>
+                                                            <template v-slot:hint>
+                                                                <div class="cursor-pointer" @click="step = 1">
+                                                                    <q-icon name="keyboard_backspace" /> Go Back
+                                                                </div>
+                                                            </template>
+                                                            <template v-slot:counter>
+                                                                <a :href="'https://etherscan.io/tx/'+transactionHash" class="text-body2 text-black " target="_blank">
+                                                                    <img width="80" src="https://etherscan.io/images/logo-ether.png?v=0.0.2" />
+                                                                </a>
+                                                            </template>
+                                                        </q-input>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <div class="col col-6">
+                      <img src="statics/theme1/Screenshot_208.png" alt="">
+                    </div> -->
+                            </div>
+
+                            <br><br><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <q-stepper-navigation class="flex justify-end">
-            <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
-            <q-btn @click="getSwapQuote()" :loading="spinnervisible" :disable="spinnervisible" color="deep-purple-14" class="--next-btn q-px-md" rounded label="Next" />
-        </q-stepper-navigation>
-    </q-step>
-
-    <q-step :name="3" prefix="3" default title="Select Quantity" :done="step > 3">
-        <span class="sublab-input">Step 3</span><span class="tlab-input">Select Quantity</span>
-        <div class="standard-content--body">
-            <div class="standard-content--body__form">
-                <div class="pay-get-wrapper column justify-between">
-                    <div class="pay-wrapper column">
-                        <span class="label">you pay</span>
-                        <span class="value">
-                            <q-input v-if="depositCoin" bottom-slots ref="depositQuantity" type="number" @input="getSwapQuote()" :suffix="depositCoin.value.toUpperCase()" rounded class="full-width pl0" flat v-model="swapData.fromAmount" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val > swapData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < swapData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
-                                <template v-slot:hint>
-                                    <div v-if="swapData.marketData.length">{{convertETHToUSD(swapData.fromAmount)}}</div>
+    </div>
+</div>
+<div v-else-if="depositCoin && destinationCoin" class="chain-tools-wrapper">
+    <div class="standard-content">
+        <h2 class="standard-content--title flex justify-center">
+            <q-btn flat unelevated class="btn-align-left" to="goBack" text-color="black" icon="keyboard_backspace" />
+            Exchange
+        </h2>
+        <div class="exchange_picto flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div>
+    </div>
+    <div class="chain-tools-wrapper--list open">
+        <div class="list-wrapper">
+            <div class="list-wrapper--chain__eos-to-vtx-convertor">
+                <q-stepper v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
+                    <!-- 1. Select Coin to Send -->
+                    <q-step default title="Select Coin to Send" :name="1" prefix="1" :done="step > 1">
+                        <div class="text-black">
+                            <!-- <span class="lab-input">Select Coin to Send</span> -->
+                            <q-select light separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" @input="checkGetPairs()" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                                <template v-slot:option="scope">
+                                    <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                        <q-item-section avatar>
+                                            <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
+                                        </q-item-section>
+                                        <q-item-section dark>
+                                            <q-item-label v-html="scope.opt.label" />
+                                            <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
                                 </template>
-                            </q-input>
-                        </span>
-                    </div>
-                    <q-btn flat unelevated class="exchange-btn" text-color="black">
-                        <q-icon name="arrow_downward" />
-                    </q-btn>
-                    <div class="get-wrapper column" v-if="destinationCoin">
-                        <span class="label">you get</span>
-                        <span class="value">
-                            <q-input readonly rounded class="full-width pl0" flat ref="destinationQuantity" :suffix="destinationCoin.value.toUpperCase()" v-model="swapData.toAmount" :disabled="spinnervisible" :loading="spinnervisible" type="number" />
-                        </span>
-                    </div>
-                </div>
+                                <template v-slot:selected>
+                                    <q-item v-if="depositCoin">
+                                        <q-item-section avatar>
+                                            <q-icon class="option--avatar option--avatar__custom" :name="`img:${depositCoin.image}`" />
+                                        </q-item-section>
+                                        <q-item-section>
+                                            <q-item-label v-html="depositCoin.label" />
+                                            <q-item-label caption>{{ depositCoin.value }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                    <q-item v-else>
+                                    </q-item>
+                                </template>
+                            </q-select>
+                            <q-stepper-navigation v-show="true" class="flex justify-end">
+                                <q-btn @click="checkToGetPairs()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                            </q-stepper-navigation>
+                        </div>
+                    </q-step>
+                    <!-- 2. Select Coin to Receive -->
+                    <q-step default title="Select Coin to Receive" :name="2" prefix="2" :done="step > 2">
+                        <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" color="primary" label="Back" class="--back-btn" />
+                        <div class="text-black">
+                            <!-- <span class="lab-input">Select Coin to receive</span> -->
+                            <q-select light separator rounded outlined class="select-input" v-model="destinationCoin" use-input @filter="filterDestinationCoin" @input="updateCoinName()" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                                <template v-slot:option="scope">
+                                    <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                        <q-item-section avatar>
+                                            <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
+                                        </q-item-section>
+                                        <q-item-section>
+                                            <q-item-label v-html="scope.opt.label" />
+                                            <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                </template>
+                                <template v-slot:selected>
+                                    <q-item v-if="destinationCoin">
+                                        <q-item-section avatar>
+                                            <q-icon class="option--avatar option--avatar__custom" :name="`img:${destinationCoin.image}`" />
+                                        </q-item-section>
+                                        <q-item-section>
+                                            <q-item-label v-html="destinationCoin.label" />
+                                            <q-item-label caption>{{ destinationCoin.value }}</q-item-label>
+                                        </q-item-section>
+                                    </q-item>
+                                    <q-item v-else>
+                                    </q-item>
+                                </template>
+                            </q-select>
+                            <q-stepper-navigation v-show="true" class="flex justify-end">
+                                <q-btn @click="checkToGetRate()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                            </q-stepper-navigation>
+                        </div>
+                    </q-step>
+                    <!-- 3. Select Quantity -->
+                    <q-step default title="Select Quantity" :name="3" prefix="3" :done="step > 3">
+                        <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" color="primary" label="Back" class="--back-btn" />
+                        <div class="standard-content--body">
+                            <div class="standard-content--body__form">
+                                <div class="pay-get-wrapper column justify-between">
+                                    <div class="pay-wrapper column">
+                                        <span class="label">you pay</span>
+                                        <span class="value">
+                                            <q-input ref="depositQuantity" @input="quantityFromDeposit()" :suffix="depositCoin.value.toUpperCase()" rounded class="full-width pl0" flat v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']" />
+                                        </span>
+                                    </div>
+                                    <q-btn flat unelevated class="exchange-btn" @click="switchAmounts()" text-color="black">
+                                        <q-icon name="keyboard_backspace" class="left-icon" />
+                                        <q-icon name="keyboard_backspace" class="right-icon" />
+                                    </q-btn>
+                                    <div class="get-wrapper column">
+                                        <span class="label">you get</span>
+                                        <span class="value">
+                                            <q-input rounded class="full-width pl0" flat ref="destinationQuantity" :suffix="destinationCoin.value.toUpperCase()" v-model="destinationQuantity" @input="quantityFromDestination()" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']" type="number" />
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="rate-value flex justify-end">
+                                    <span class="label">Rate {{depositCoin.value.toUpperCase() + '&nbsp;'}} </span>
+                                    <span class="value"> = {{ rateData !== null ? rateData.rate : '0.03254'}} {{destinationCoin.value.toUpperCase()}}</span>
+                                </div>
+                                <br>
+                            </div>
+                            <q-stepper-navigation v-show="true" class="flex justify-end">
+                                <q-btn color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                            </q-stepper-navigation>
+                        </div>
+                    </q-step>
+                    <!-- 4. Chose account -->
+                    <q-step default title="Chose account" :name="4" prefix="4" :done="step > 4">
+                        <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" color="primary" label="Back" class="--back-btn" />
+                        <div class="standard-content--body">
+                            <div class="standard-content--body__form">
+                                <span v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" class="lab-input">From</span>
+                                <q-select v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" light separator rounded outlined class="select-input" @input="checkGetPairs()" v-model="fromCoin" :options="depositCoinOptions">
+                                    <template v-slot:option="scope">
+                                        <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                            <q-item-section avatar>
+                                                <q-icon class="option--avatar option--avatar" :class="scope.opt.value" :name="`img:${scope.opt.image}`" />
+                                            </q-item-section>
+                                            <q-item-section dark>
+                                                <q-item-label v-html="scope.opt.label" />
+                                                <q-item-label caption class="ellipsis mw160">{{ scope.opt.value }}</q-item-label>
+                                            </q-item-section>
+                                        </q-item>
+                                    </template>
+                                    <template v-slot:selected>
+                                        <q-item v-if="fromCoin">
+                                            <q-item-section avatar>
+                                                <q-icon class="option--avatar option--avatar__custom" :name="`img:${fromCoin.image}`" />
+                                            </q-item-section>
+                                            <q-item-section>
+                                                <q-item-label v-html="fromCoin.label" />
+                                                <q-item-label caption class="ellipsis mw160">{{ fromCoin.value }}</q-item-label>
+                                            </q-item-section>
+                                        </q-item>
+                                        <q-item v-else>
+                                        </q-item>
+                                    </template>
+                                </q-select>
+                                <span v-show="fromCoin !== null && (fromCoin.type === 'new_public_key')" class="lab-input">Your <strong>{{ depositCoin !== null ? depositCoin.value.toUpperCase() : '' }}</strong> return address </span>
+                                <q-input v-show="fromCoin !== null && (fromCoin.type === 'new_public_key')" v-model="refundAddress.address" @input="verifyAddress()" class="input-input" rounded outlined color="purple" type="text" hint="[ in case the transaction does not complete ]">
+                                    <template v-slot:append>
+                                        <div class="flex justify-end">
+                                            <q-btn color="purple" rounded class="q-mb-sm" @click="fromCoin = null" outlined unelevated flat text-color="black" label="Hide" />
+                                        </div>
+                                    </template>
+                                </q-input>
+                                <br v-show="fromCoin !== null && (fromCoin.type === 'new_public_key')">
+                                <span class="lab-input" v-show="fromCoinMemo" />
+                                <q-input v-show="fromCoinMemo" class="input-input" rounded outlined color="purple" type="text" v-model="refundAddress.tag" label="Optional tag or memo" hint="some exchanges require this field">
+                                    <template v-slot:append>
+                                        <div class="flex justify-end">
+                                            <q-btn color="purple" rounded class="q-mb-sm" @click="fromCoinMemo = false" outlined unelevated flat text-color="black" label="Hide" />
+                                        </div>
+                                    </template>
+                                </q-input>
+                                <br v-show="fromCoinMemo">
+                                <q-btn v-show="!fromCoinMemo" flat class="q-mt-sm q-mb-sm --next-btn align-left full-width" :icon-right="fromCoinMemo ? 'close':'add'" rounded :label="fromCoinMemo ? 'Hide Tag/Memo':'Add Tag/Memo'" @click="fromCoinMemo = !fromCoinMemo" />
+                                <br>
+                                <hr>
+                                <span v-show="destinationCoin === null || (destinationCoin.type !== 'new_public_key')" class="lab-input">To</span>
+                                <q-select v-show="destinationCoin === null || (destinationCoin.type !== 'new_public_key')" light separator rounded outlined class="select-input" v-model="destinationCoin" @input="updateCoinName()" use-input :options="destinationCoinOptions">
+                                    <template v-slot:option="scope">
+                                        <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                            <q-item-section avatar>
+                                                <q-icon class="option--avatar option--avatar" :class="scope.opt.value" :name="`img:${scope.opt.image}`" />
+                                            </q-item-section>
+                                            <q-item-section dark>
+                                                <q-item-label v-html="scope.opt.label" />
+                                                <q-item-label caption class="ellipsis mw160">{{ scope.opt.value }}</q-item-label>
+                                            </q-item-section>
+                                        </q-item>
+                                    </template>
+                                    <template v-slot:selected>
+                                        <q-item v-if="destinationCoin">
+                                            <q-item-section avatar>
+                                                <q-icon class="option--avatar option--avatar__custom" :class="destinationCoin.value" :name="`img:${destinationCoin.image}`" />
+                                            </q-item-section>
+                                            <q-item-section>
+                                                <q-item-label v-html="destinationCoin.label" />
+                                                <q-item-label caption class="ellipsis mw160">{{ destinationCoin.value }}</q-item-label>
+                                            </q-item-section>
+                                        </q-item>
+                                        <q-item v-else>
+                                        </q-item>
+                                    </template>
+                                </q-select>
+                                <span v-show="destinationCoin !== null && destinationCoin.type === 'new_public_key'" class="lab-input">{{ destinationAddressLabel }}</span>
+                                <q-input v-show="destinationCoin !== null && destinationCoin.type === 'new_public_key'" ref="destinationAddressAddress" v-model="destinationAddress.address" :rules="[ val => val.length >= 3 || 'Destination Address Cannot less than 3 characters' ]" @input="verifyAddress()" class="input-input" rounded outlined color="purple" type="text">
+                                    <template v-slot:append>
+                                        <div class="flex justify-end">
+                                            <q-btn color="purple" rounded class="q-mb-sm" @click="destinationCoin = null" outlined unelevated flat text-color="black" label="Hide" />
+                                        </div>
+                                    </template>
+                                </q-input>
+                                <span class="lab-input" v-show="destinationCoinMemo" />
+                                <q-input v-show="destinationCoinMemo" class="input-input" rounded outlined color="purple" type="text" v-model="destinationAddress.tag" label="Optional tag or memo" hint="some exchanges require this field">
+                                    <template v-slot:append>
+                                        <div class="flex justify-end">
+                                            <q-btn color="purple" rounded class="q-mb-sm" @click="destinationCoinMemo = false" outlined unelevated flat text-color="black" label="Hide" />
+                                        </div>
+                                    </template>
+                                </q-input>
+                                <br v-show="destinationCoinMemo">
+                                <q-btn v-show="!destinationCoinMemo" flat class="q-mt-sm q-mb-sm --next-btn align-left full-width" :icon-right="destinationCoinMemo ? 'close':'add'" rounded :label="destinationCoinMemo ? 'Hide Tag/Memo':'Add Tag/Memo'" @click="destinationCoinMemo = !destinationCoinMemo" />
+                            </div>
+                        </div>
+                        <q-stepper-navigation v-show="true" class="flex justify-end">
+                            <div class="row full-width" style="padding-left: 6px; margin-top: -20px;">
+                                <div class="q-gutter-sm">
+                                    <q-btn color="white" flat @click="showDisclaimerWrapper = true" class="lower bold" text-color="black" label="Read the disclaimer" />
+                                </div>
+                            </div>
+                            <div class="row full-width" style="padding-left: 13px; margin-top: 10px;">
+                                <div class="q-gutter-sm">
+                                    <q-checkbox label="I accept" color="deep-purple-14" v-model="disclaimerCheck" />
+                                </div>
+                            </div>
+                            <div class="standard-content--footer">
+                                <q-btn @click="checkAddressMatchCoins()" :disable="!disclaimerCheck" flat class="action-link next" color="black" text-color="white">
+                                    <span class="label">Exchange {{ depositCoin.value.toUpperCase() }}
+                                        <q-icon name="keyboard_backspace" color="white" class="left-icon" /> {{ destinationCoin.value.toUpperCase() }}
+                                    </span>
+                                </q-btn>
+                            </div>
+                        </q-stepper-navigation>
+                    </q-step>
+                    <!-- 5. View Order -->
+                    <q-step default title="View Order" :name="5" prefix="5" :done="step > 5">
+                        <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" color="primary" label="Back" class="--back-btn" />
+                        <div class="standard-content--body">
+                            <div class="standard-content--body__form" style="margin-left: -35px;">
+                                <div class="progress-custom-volentix column flex-center">
+                                    <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58">
+                                        <path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path>
+                                    </svg>
+                                    <span class="title">{{ friendlyStatus }}</span>
+                                    <q-linear-progress indeterminate stripe rounded size="md" :value="progress" class="q-mt-md" />
+                                </div>
+                                <hr style="height:15px;opacity:0" />
+                                <div class="text-black">
+                                    <div class="text-h4 --subtitle">
+                                        <ul>
+                                            <li><span>{{exchangeLabel}}</span></li>
+                                        </ul>
+                                    </div>
+                                    <q-input v-model="exchangeAddress.address" readonly rounded class="input-input pr80" outlined color="purple" type="text">
+                                        <template v-slot:append>
+                                            <div class="flex justify-end">
+                                                <q-btn flat unelevated text-color="grey" @click="copyToClipboard(exchangeAddress.address , 'Exchange Address')" round class="btn-copy" icon="o_file_copy" />
+                                            </div>
+                                        </template>
+                                    </q-input>
+                                </div>
+                            </div>
+                        </div>
+                    </q-step>
+                </q-stepper>
+            </div>
+            <br><br><br>
+        </div>
+    </div>
 
-                <div class="flex justify-end" v-if="swapData.marketData.length">
-                    Gas Price: {{swapData.gasPrice}}
-                </div>
-                <br>
+    <q-stepper animated :vertical="$q.screen.lt.sm" v-model="step" ref="stepper" class="stepper--desktop" alternative-labels color="primary" flat>
+        <q-step :name="1" prefix="1" default title="Select Coin to Send" :done="step > 1">
+            <span class="sublab-input">Step 1</span><span class="tlab-input">Select Coin to Send</span>
+            <q-select class="select-input" light separator use-input outlined rounded v-model="depositCoin" @input="swapData.error = false; " @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                <template v-slot:option="scope">
+                    <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                        <q-item-section avatar>
+                            <q-icon :name="`img:${scope.opt.image}`" />
+                        </q-item-section>
+                        <q-item-section>
+                            <q-item-label v-html="scope.opt.label" />
+                            <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                        </q-item-section>
+                    </q-item>
+                </template>
+                <template v-slot:selected>
+                    <q-item v-if="depositCoin">
+                        <q-item-section avatar>
+                            <q-icon :name="`img:${depositCoin.image}`" />
+                        </q-item-section>
+                        <q-item-section>
+                            <q-item-label v-html="depositCoin.label" />
+                            <q-item-label caption>{{ depositCoin.value }}</q-item-label>
+                        </q-item-section>
+                    </q-item>
+                    <q-item v-else>
+                    </q-item>
+                </template>
+            </q-select>
+            <div class="text-body2 text-red" v-if="approvalRequired">
+                <span>
+                    Before adding Liquidity to the {{pool.label}} pool from {{platform.label}},<br> you need to process an approval transaction for your {{currentToken.label}} token
+                </span>
             </div>
             <q-stepper-navigation class="flex justify-end">
-                <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
-                <q-btn @click="$refs.stepper.next()" :disable="spinnervisible" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                <q-btn @click="$refs.stepper.next()" :disable="approvalRequired" color="deep-purple-14" class="--next-btn q-px-md" rounded label="Next" />
             </q-stepper-navigation>
-        </div>
+        </q-step>
 
-    </q-step>
-
-    <q-step :name="4" title="Order review" icon="remove_red_eye">
-        <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn absolute-top-right" />
-        <div class="row" v-if="depositCoin">
-
-            <div class=" col-12 col-md-5">
-                <div class="col-12 text-h6 q-mb-sm">Amount of {{depositCoin.value}} to swap </div>
-                <q-input bottom-slots type="number" min="0" readonly input-class="text-left text-red" class=" col-12 col-md-5 text-right" standout v-model="swapData.fromAmount" :label="'Amount of '+depositCoin.value+' to swap'">
-                    <template v-slot:prepend>
-                        <q-avatar>
-                            <q-icon :name="`img:${depositCoin.image}`" />
-                        </q-avatar>
-                    </template>
-                    <template v-if="false" v-slot:hint>
-                        <div :class="[$q.screen.gt.xs ? 'text-body1' : '', 'text-red']">Gas Price: {{swapData.gasPrice}}</div>
-                    </template>
-                </q-input>
-            </div>
-            <div class="col-12 col-md-2 flex flex-center text-weight-thin text-grey-4 ">
-                <q-icon class="text-grey-5 q-px-lg" name="sync_alt" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('exchange/coinswitch')">
-                    <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
-                </q-icon>
-            </div>
-            <div class=" col-12 col-md-5">
-                <div class="col-12 text-h6 q-mb-sm" v-if="destinationCoin">{{destinationCoin.value}} to receive </div>
-                <q-input bottom-slots readonly type="number" min="0" :loading="spinnervisible" input-class="text-left" class=" col-12 text-right" standout v-model="swapData.toAmount" label="Amount">
-                    <template v-slot:prepend>
-                        <q-avatar>
+        <q-step :name="2" prefix="2" default title="Select Coin to Receive" :done="step > 2">
+            <span class="sublab-input">Step 2</span><span class="tlab-input">Select Coin to Receive</span>
+            <q-select class="select-input" light separator use-input rounded outlined @input="swapData.error = false" @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                <template v-slot:option="scope">
+                    <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                        <q-item-section avatar>
+                            <q-icon :name="`img:${scope.opt.image}`" />
+                        </q-item-section>
+                        <q-item-section>
+                            <q-item-label v-html="scope.opt.label" />
+                            <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                        </q-item-section>
+                    </q-item>
+                </template>
+                <template v-slot:selected>
+                    <q-item v-if="destinationCoin">
+                        <q-item-section avatar>
                             <q-icon :name="`img:${destinationCoin.image}`" />
-                        </q-avatar>
-                    </template>
-                    <template v-slot:hint>
-                        <div v-if="swapData.ethToUsd">{{convertETHToUSD(swapData.toAmount)}}</div>
-                    </template>
-                </q-input>
+                        </q-item-section>
+                        <q-item-section>
+                            <q-item-label v-html="destinationCoin.label" />
+                            <q-item-label caption>{{ destinationCoin.value }}</q-item-label>
+                        </q-item-section>
+                    </q-item>
+                    <q-item v-else>
+                    </q-item>
+                </template>
+            </q-select>
+            <div class="text-red text-body1 q-mt-sm" v-if="swapData.error">
+                {{swapData.errorText.replace('[from]',depositCoin.value).replace('[to]',destinationCoin.value)}}
             </div>
-        </div>
-        <q-dialog persistent v-model="swapData.showDisclaimerWrapper">
-            <q-card class="q-pa-md" style="width: 700px; max-width: 92vw;">
-                <q-toolbar>
-                    <q-avatar><img src="statics/icon.png"></q-avatar>
-                    <q-toolbar-title><span class="text-weight-bold">Disclaimer</span> </q-toolbar-title>
-                </q-toolbar>
-                <q-card-section class="text-h6">
-                    <div class="parg">
-                        This transaction is carried out using an open API linked to various Exchanges.<br>
-                        By sending coins to the above address, you agreed to <a href="https://coinswitch.co/terms" target="_blank">the terms and conditions</a> of the selected provider.
+
+            <q-stepper-navigation class="flex justify-end">
+                <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
+                <q-btn @click="getSwapQuote()" :loading="spinnervisible" :disable="spinnervisible" color="deep-purple-14" class="--next-btn q-px-md" rounded label="Next" />
+            </q-stepper-navigation>
+        </q-step>
+
+        <q-step :name="3" prefix="3" default title="Select Quantity" :done="step > 3">
+            <span class="sublab-input">Step 3</span><span class="tlab-input">Select Quantity</span>
+            <div class="standard-content--body">
+                <div class="standard-content--body__form">
+                    <div class="pay-get-wrapper column justify-between">
+                        <div class="pay-wrapper column">
+                            <span class="label">you pay</span>
+                            <span class="value">
+                                <q-input v-if="depositCoin" bottom-slots ref="depositQuantity" type="number" @input="getSwapQuote()" :suffix="depositCoin.value.toUpperCase()" rounded class="full-width pl0" flat v-model="swapData.fromAmount" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val > swapData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < swapData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
+                                    <template v-slot:hint>
+                                        <div v-if="swapData.marketData.length">{{convertETHToUSD(swapData.fromAmount)}}</div>
+                                    </template>
+                                </q-input>
+                            </span>
+                        </div>
+                        <q-btn flat unelevated class="exchange-btn" text-color="black">
+                            <q-icon name="arrow_downward" />
+                        </q-btn>
+                        <div class="get-wrapper column" v-if="destinationCoin">
+                            <span class="label">you get</span>
+                            <span class="value">
+                                <q-input readonly rounded class="full-width pl0" flat ref="destinationQuantity" :suffix="destinationCoin.value.toUpperCase()" v-model="swapData.toAmount" :disabled="spinnervisible" :loading="spinnervisible" type="number" />
+                            </span>
+                        </div>
                     </div>
-                </q-card-section>
-                <q-card-actions align="right" class="q-pr-sm">
-                    <q-btn flat label="Accept" class="accept-disclaimer" @click="swapData.termsAccepted = true" color="primary" v-close-popup />
-                </q-card-actions>
-            </q-card>
-        </q-dialog>
-        <q-stepper-navigation v-show="true" class="flex justify-end">
-            <div class="row full-width" style="padding-left: 6px; margin-top: -20px;">
-                <div class="q-gutter-sm">
-                    <q-btn color="white" flat @click="swapData.showDisclaimerWrapper = true" class="lower bold" text-color="black" label="Read the disclaimer" />
+
+                    <div class="flex justify-end" v-if="swapData.marketData.length">
+                        Gas Price: {{swapData.gasUsd}}
+                    </div>
+                    <br>
+                </div>
+                <q-stepper-navigation class="flex justify-end">
+                    <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
+                    <q-btn @click="$refs.stepper.next()" :disable="spinnervisible" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                </q-stepper-navigation>
+            </div>
+
+        </q-step>
+
+        <q-step :name="4" title="Order review" icon="remove_red_eye">
+            <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn absolute-top-right" />
+            <div class="row" v-if="depositCoin">
+
+                <div class=" col-12 col-md-5">
+                    <div class="col-12 text-h6 q-mb-sm">Amount of {{depositCoin.value}} to swap </div>
+                    <q-input bottom-slots type="number" min="0" readonly input-class="text-left text-red" class=" col-12 col-md-5 text-right" standout v-model="swapData.fromAmount" :label="'Amount of '+depositCoin.value+' to swap'">
+                        <template v-slot:prepend>
+                            <q-avatar>
+                                <q-icon :name="`img:${depositCoin.image}`" />
+                            </q-avatar>
+                        </template>
+                        <template v-if="false" v-slot:hint>
+                            <div :class="[$q.screen.gt.xs ? 'text-body1' : '', 'text-red']">Gas Price: {{swapData.gasUsd}}</div>
+                        </template>
+                    </q-input>
+                </div>
+                <div class="col-12 col-md-2 flex flex-center text-weight-thin text-grey-4 ">
+                    <q-icon class="text-grey-5 q-px-lg" name="sync_alt" size="2.5rem" color="white" @click.native="$documentationManger.openDocumentation('exchange/coinswitch')">
+                        <q-tooltip>{{ $t('SettingsView.help') }}</q-tooltip>
+                    </q-icon>
+                </div>
+                <div class=" col-12 col-md-5">
+                    <div class="col-12 text-h6 q-mb-sm" v-if="destinationCoin">{{destinationCoin.value}} to receive </div>
+                    <q-input bottom-slots readonly type="number" min="0" :loading="spinnervisible" input-class="text-left" class=" col-12 text-right" standout v-model="swapData.toAmount" label="Amount">
+                        <template v-slot:prepend>
+                            <q-avatar>
+                                <q-icon :name="`img:${destinationCoin.image}`" />
+                            </q-avatar>
+                        </template>
+                        <template v-slot:hint>
+                            <div v-if="swapData.ethToUsd">{{convertETHToUSD(swapData.toAmount)}}</div>
+                        </template>
+                    </q-input>
                 </div>
             </div>
-            <div class="row full-width" style="padding-left: 13px; margin-top: 10px;">
-                <div class="q-gutter-sm">
-                    <q-checkbox label="I accept" color="deep-purple-14" v-model="swapData.termsAccepted" />
+            <q-dialog persistent v-model="swapData.showDisclaimerWrapper">
+                <q-card class="q-pa-md" style="width: 700px; max-width: 92vw;">
+                    <q-toolbar>
+                        <q-avatar><img src="statics/icon.png"></q-avatar>
+                        <q-toolbar-title><span class="text-weight-bold">Disclaimer</span> </q-toolbar-title>
+                    </q-toolbar>
+                    <q-card-section class="text-h6">
+                        <div class="parg">
+                            This transaction is carried out using an open API linked to various Exchanges.<br>
+                            By sending coins to the above address, you agreed to <a href="https://coinswitch.co/terms" target="_blank">the terms and conditions</a> of the selected provider.
+                        </div>
+                    </q-card-section>
+                    <q-card-actions align="right" class="q-pr-sm">
+                        <q-btn flat label="Accept" class="accept-disclaimer" @click="swapData.termsAccepted = true" color="primary" v-close-popup />
+                    </q-card-actions>
+                </q-card>
+            </q-dialog>
+            <q-stepper-navigation v-show="true" class="flex justify-end">
+                <div class="row full-width" style="padding-left: 6px; margin-top: -20px;">
+                    <div class="q-gutter-sm">
+                        <q-btn color="white" flat @click="swapData.showDisclaimerWrapper = true" class="lower bold" text-color="black" label="Read the disclaimer" />
+                    </div>
                 </div>
-            </div>
-            <div class="standard-content--footer">
-                <q-btn :disable="!swapData.termsAccepted" @click="doSwap()" flat class="action-link next" color="black" text-color="white">
-                    <span v-if="depositCoin" class="label">Exchange {{ depositCoin.value.toUpperCase() }}
-                        <q-icon name="arrow_forward" color="white" class="left-icon" /> {{ destinationCoin.value.toUpperCase() }}
-                    </span>
-                </q-btn>
-            </div>
-        </q-stepper-navigation>
-    </q-step>
-</q-stepper>
+                <div class="row full-width" style="padding-left: 13px; margin-top: 10px;">
+                    <div class="q-gutter-sm">
+                        <q-checkbox label="I accept" color="deep-purple-14" v-model="swapData.termsAccepted" />
+                    </div>
+                </div>
+                <div class="standard-content--footer">
+                    <q-btn :disable="!swapData.termsAccepted" @click="doSwap()" flat class="action-link next" color="black" text-color="white">
+                        <span v-if="depositCoin" class="label">Exchange {{ depositCoin.value.toUpperCase() }}
+                            <q-icon name="arrow_forward" color="white" class="left-icon" /> {{ destinationCoin.value.toUpperCase() }}
+                        </span>
+                    </q-btn>
+                </div>
+            </q-stepper-navigation>
+        </q-step>
+    </q-stepper>
+</div>
 </template>
 
 <script>
@@ -201,26 +698,46 @@ const typeUpper = function (thing) {
     return ''
   }
 }
+const _1inchApprovalAddress = '0xe4c9194962532feb467dce8b3d42419641c6ed2e'
+import contract from '../../mixins/contract'
 export default {
   components: {},
   data () {
     return {
       tableData: null,
+      fromCoinType: '',
+      gasOptions: [],
+      invalidTransaction: false,
+      gasSelected: null,
+      gasInterval: null,
+      payCoin: 'BTC',
+      fromCoinMemo: '',
+      disclaimerCheck: '',
+      destinationCoinMemo: '',
+      fromCoin: {},
+      destinationCoin: {
+        value: ''
+      },
+      progress: 0.02,
+      approvalRequired: false,
+      error: false,
       swapData: {
         marketData: [],
-        fromAmount: 1,
+        fromAmount: 0.01,
         toAmount: 1,
         errorText: 'Converting [from] to [to] cannot be done at this moment please try another coin',
         error: false,
         customPriceSlipage: null,
         termsAccepted: false,
         gasPrice: null,
+        gas: null,
         ethToUsd: null,
         limitMinDepositCoin: 0,
         limitMaxDepositCoin: 2,
         limitMinDestinationCoin: 1,
         limitMaxDestinationCoin: 2,
-        showDisclaimerWrapper: false
+        showDisclaimerWrapper: false,
+        gasUsd: null
       },
       step: 1,
       web3: null,
@@ -231,11 +748,11 @@ export default {
       coins: [],
       depositCoin: null,
       depositQuantity: 0,
-      depositCoinOptions: null,
+      depositCoinOptions: [],
       depositCoinUnfilter: null,
-      destinationCoin: null,
+      toCoin: null,
       destinationQuantity: 0,
-      destinationCoinOptions: null,
+      destinationCoinOptions: [],
       destinationCoinUnfilter: null,
       rateData: null,
       rateDataTemplate: {
@@ -430,7 +947,7 @@ export default {
     let tableData = await this.$store.state.wallets.tokens
     this.ethAccount = tableData.find(w => w.chain === 'eth' && w.type === 'eth')
     this.ethTokens = tableData.filter(w => w.chain === 'eth')
-    console.log(this.ethAccount, 'ethAccount', tableData)
+    this.$store.dispatch('investment/getGasPrice')
   },
   mounted () {
     const Web3 = require('web3')
@@ -442,8 +959,6 @@ export default {
     if (this.$route.params.destinationCoin !== undefined) {
       this.destinationCoin = this.$route.params.destinationCoin
     }
-
-    console.log(this.$route.params)
   },
   watch: {
     step (newVal, oldVal) {
@@ -459,6 +974,24 @@ export default {
     }
   },
   methods: {
+    checkPais () {
+
+    },
+    switchAmounts () {
+      let depositCoinVar = this.depositCoin
+      this.depositCoin = this.destinationCoin
+      this.destinationCoin = depositCoinVar
+
+      let fromCoinTypeVar = this.fromCoinType
+      this.fromCoinType = this.toCoinType
+      this.toCoinType = fromCoinTypeVar
+
+      let depositQuantityVar = this.depositQuantity
+      this.depositQuantity = this.destinationQuantity
+      this.destinationQuantity = depositQuantityVar
+
+      this.getRate()
+    },
     getCoins () {
       const self = this
       this.$axios.get(_1inch + '/v1.1/tokens').then(function (result) {
@@ -473,7 +1006,8 @@ export default {
             'label': self.coins[key].name,
             'value': self.coins[key].symbol,
             'image': 'https://1inch.exchange/assets/tokens/' + self.coins[key].address.toLowerCase() + '.png',
-            'address': self.coins[key].address
+            'address': self.coins[key].address,
+            'price': self.coins[key].current_price
           }
           return row
         })
@@ -485,15 +1019,18 @@ export default {
           }
           return 1
         })
-        // let coinsArray = self.coins.map(function (val, index) {
-        //   return val.value.toLowerCase()
-        // })
 
-        self.destinationCoin = !self.destinationCoin ? self.depositCoinOptions[self.depositCoinOptions.length - 1] : self.destinationCoin
-        self.depositCoinUnfilter = self.depositCoinOptions.filter(o => tokensArray.includes(o.value.toLowerCase()))
+        self.destinationCoin = !self.destinationCoin.value.length ? self.depositCoinOptions[self.depositCoinOptions.length - 1] : self.destinationCoin
+        self.depositCoinUnfilter = self.depositCoinOptions.filter(o => tokensArray.includes(o.value.toLowerCase())).map(function (val, index) {
+          let item = self.ethTokens.find(o => o.type.toLowerCase() === val.value.toLowerCase())
+          val.data = item
+          return val
+        })
         self.destinationCoinUnfilter = self.depositCoinOptions.filter(o => !tokensArray.includes(o.value.toLowerCase()))
+
         self.depositCoin = !self.depositCoin ? self.depositCoinUnfilter[0] : self.depositCoin
-        console.log('depositCoinOptions', self.depositCoinOptions)
+
+        self.getSwapQuote()
       })
     },
     getExchanges () {
@@ -518,36 +1055,97 @@ export default {
     },
     getSwapQuote () {
       const self = this
+      this.error = false
       if (self.swapData.fromAmount <= 0) return
       self.spinnervisible = true
-      console.log(self.swapData.fromAmount, 'fromAmount')
       let data = {
         fromTokenSymbol: self.depositCoin.value,
         toTokenSymbol: self.destinationCoin.value,
         amount: self.web3.utils.toWei(self.swapData.fromAmount.toString(), 'ether'),
         slippage: 2,
-        fromAddress: self.depositCoin.address,
+        fromAddress: self.ethAccount.key,
         toAddress: self.destinationCoin.address,
-        disableEstimate: false
+        disableEstimate: true
       }
       let swapRequestUrl = _1inch + '/v1.1/swapQuote?' + new URLSearchParams(data).toString()
       this.$axios.get(swapRequestUrl)
-        .then(function (result) {
+        .then(async function (result) {
           self.swapData.toAmount = parseFloat(self.web3.utils.fromWei(result.data.toTokenAmount.toString(), 'ether'))
           self.spinnervisible = false
-
+          self.swapData.gas = result.data.gas
+          self.swapData.gasPrice = result.data.gasPrice
+          self.approvalRequired = false
+          let isERC2O = self.depositCoin.value.toLowerCase() !== 'eth',
+            approvedRequired = false
+          if (isERC2O) {
+            approvedRequired = await self.isApprovalRequired(self.depositCoin.address, _1inchApprovalAddress, self.swapData.fromAmount)
+          }
+          console.log(approvedRequired, 'approvedRequired')
+          if (!approvedRequired) {
+            let nonce = await self.web3.eth.getTransactionCount(self.ethAccount.key, 'latest')
+            let transactionObject = {
+              from: self.ethAccount.key,
+              to: result.data.to,
+              value: self.web3.utils.toWei(self.swapData.fromAmount.toString(), 'ether'),
+              data: result.data.data,
+              nonce: nonce
+            }
+            self.getGasOptions(transactionObject)
+          }
           // Calculate total gas price and convert it to USD
-          self.swapData.gasPrice = self.convertETHToUSD(self.web3.utils.fromWei((result.data.gasPrice * result.data.gas).toString(), 'ether'))
+          self.swapData.gasUsd = self.convertETHToUSD(self.web3.utils.fromWei((result.data.gasPrice * result.data.gas).toString()))
           console.log('getSwapQuote', result)
         }).catch(error => {
-          console.log(error)
+          self.approvalRequired = false
           self.spinnervisible = false
           self.swapData.toAmount = null
-          self.swapData.error = true
+          self.error = error
         })
     },
+    async processERC20Approval () {
+      if (this.depositCoin.value.toLowerCase() !== 'eth') {
+        this.step = 2
+        this.sendSignedTransaction(await this.isApprovalRequired(this.depositCoin.address, _1inchApprovalAddress, this.swapData.fromAmount, true))
+      }
+    },
+    triggerPayCoinSelect () {
+      // console.log('triggerPayCoinSelect triggered')
+      document.querySelector('.pay-coin-select .q-field__control').dispatchEvent(new Event('click'))
+      setTimeout(() => {
+        let payCoinSelectPopup = document.querySelector('.pay-coin-select-popup')
+        let paycoinSearch = document.querySelector('.paycoin-search').cloneNode(true)
+        // console.log('paycoinSearch', paycoinSearch)
+        payCoinSelectPopup.prepend(paycoinSearch)
+        payCoinSelectPopup.querySelector('.paycoin-search').classList.remove('hidden')
+      }, 100)
+      // paycoin-search
+      // pay-coin-select-popup
+    },
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    },
+    triggerDestinationCoin () {
+      // console.log('triggerReceiveCoinSelect triggered')
+      document.querySelector('.receive-coin-select .q-field__control').dispatchEvent(new Event('click'))
+      setTimeout(() => {
+        let receiveCoinSelectPopup = document.querySelector('.receive-coin-select-popup')
+        let receivecoinSearch = document.querySelector('.receivecoin-search').cloneNode(true)
+        // console.log('receivecoinSearch', receivecoinSearch)
+        receiveCoinSelectPopup.prepend(receivecoinSearch)
+        receiveCoinSelectPopup.querySelector('.receivecoin-search').classList.remove('hidden')
+      }, 100)
+      // paycoin-search
+      // pay-coin-select-popup
+    },
     doSwap () {
-      const EthereumTx = require('ethereumjs-tx').Transaction
       const self = this
       this.spinnervisible = true
       let data = {
@@ -559,59 +1157,27 @@ export default {
         toAddress: this.destinationCoin.address,
         disableEstimate: true
       }
-      const account = self.ethAccount
       let swapRequestUrl = _1inch + '/v1.1/swap?' + new URLSearchParams(data).toString()
       // JSON.stringify for easy copy paste
       this.$axios.get(swapRequestUrl)
         .then(async function (result) {
           self.spinnervisible = false
-          // let nonce = await self.web3.eth.getTransactionCount(self.ethAccount.key, 'pending')
+          let nonce = await self.web3.eth.getTransactionCount(self.ethAccount.key, 'latest')
 
           let transactionObject = {
             from: self.ethAccount.key,
             to: result.data.to,
             value: parseInt(result.data.value),
-            gas: parseInt(result.data.gas),
-            gasPrice: parseInt(result.data.gasPrice),
-            data: result.data.data
-
+            gas: self.web3.utils.toHex(self.gasSelected.gas),
+            gasPrice: self.web3.utils.toHex(self.gasSelected.gasPrice),
+            data: result.data.data,
+            nonce: nonce
           }
-
-          const transaction = new EthereumTx(transactionObject)
-
-          transaction.sign(Buffer.from(account.privateKey.substring(2), 'hex'))
-
-          const serializedTransaction = transaction.serialize()
-
-          let tx = self.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
-
-          tx.on('confirmation', (confirmationNumber, receipt) => {
-            // this.transactionStatus = 'Confirmed'
-            console.log(receipt, 'receipt', confirmationNumber)
-          })
-
-          tx.on('transactionHash', hash => {
-            console.log(hash, 'hash')
-            //  this.transactionStatus = 'Pending'
-            // this.transactionHash = hash
-            var receipt = self.web3.eth.getTransactionReceipt(hash)
-              .then(console.log)
-            console.log(receipt, 'receipt')
-          })
-
-          tx.on('receipt', receipt => {
-            // this.transactionStatus = 'Success'
-            console.log(receipt, 'receiptreceipt')
-          })
-
-          tx.on('error', error => {
-            // this.error = error
-            // this.transactionStatus = null
-            console.log(error)
-          })
+          self.step = 2
+          self.sendSignedTransaction(transactionObject)
         }).catch(error => {
           self.spinnervisible = false
-          self.swapData.error = true
+          self.error = error
           console.log('doSwap', error)
         })
     },
@@ -665,57 +1231,385 @@ export default {
         this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
       })
     }
-  }
+  },
+  mixins: [contract]
 }
 </script>
 
-<style lang="stylus" scoped>
-.q-select .q-field__input {
-    cursor: pointer;
+<style lang="scss" scoped>
+@import "~@/assets/styles/variables.scss";
+
+.gasSelector .q-item {
+    border: 1px solid #f1e7e7
 }
 
-@media (min-width: 576px) {
-    .page-container {
-        max-width: 540px;
+.Slow i {
+    color: #a0afae !important;
+}
+
+.Fast i {
+    color: #00d0ca !important;
+}
+
+.Instant i {
+    color: #7272fa !important;
+}
+
+.gasfield .selected {
+    background: #dfdff1 !important;
+}
+
+/deep/ .wallets-wrapper {
+    padding-bottom: 0px !important;
+}
+
+/deep/ .wallets-wrapper--list {
+    box-shadow: none;
+    margin-top: 0px;
+}
+
+.marg {
+    /deep/ .profile-wrapper {
+        &--header {
+            margin-bottom: 0px;
+        }
     }
 }
 
-@media (min-width: 768px) {
-    .page-container {
-        max-width: 720px;
+.mobile-pad {
+    padding-bottom: 100px;
+    background: #f3f3f3 !important
+}
+
+.desktop-card-style {
+    height: 100%;
+}
+
+.standard-content {
+    padding: 5% 10%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    // justify-content: space-start;
+    // min-height: calc(100vh + 100px) !important;
+    // padding-bottom: 100px;
+    @media screen and (min-width: 768px) {
+        padding: 2%;
+        flex-direction: column;
+        justify-content: flex-start;
+        min-height: unset !important;
+        padding-bottom: 20px;
+    }
+
+    .exchange_picto {
+        margin-top: -60px;
+
+        img {
+            width: 100%;
+            max-width: 270px;
+            margin-top: 20px;
+            margin-bottom: -30px;
+        }
+
+        @media screen and (min-width: 768px) {
+            margin-top: -20px;
+
+            img {
+                width: 100%;
+                max-width: 380px;
+            }
+        }
+    }
+
+    &--title {
+        font-size: 35px;
+        font-weight: $bold;
+        position: relative;
+        line-height: 50px;
+        font-family: $Titillium;
+        margin-top: 0px;
+        margin-bottom: 0px;
+
+        @media screen and (min-width: 768px) {
+            margin-top: -20px;
+            font-size: 25px;
+        }
+
+        .btn-align-left {
+            position: absolute;
+            left: -15px;
+            top: 10px;
+        }
+    }
+
+    &--desc {
+        margin-top: -20px;
+        margin-bottom: 40px;
+        font-size: 18px;
+        font-weight: $regular;
+        position: relative;
+        line-height: 26px;
+        font-family: $Titillium;
+        color: $mainColor;
+    }
+
+    &--body {
+        .progress-custom-volentix {
+            max-width: 150px;
+            margin: auto;
+            margin-top: 20px;
+
+            .title {
+                font-size: 13px;
+                color: #7272FA;
+                font-weight: $light;
+                font-family: $Titillium;
+                margin-bottom: -10px;
+                margin-top: 10px;
+            }
+
+            /deep/ .q-linear-progress__model {
+                background: #7272FA;
+            }
+        }
+
+        &__img {
+            min-height: 250px;
+
+            img {
+                max-width: 90%;
+            }
+        }
+
+        .rate-value {
+            padding: 0px 0px;
+            font-family: $Titillium;
+            font-weight: $regular;
+            color: #B0B0B0;
+            font-size: 16px;
+            margin-bottom: -20px;
+            margin-top: -20px;
+        }
+
+        &__form {
+            .pay-get-wrapper {
+                // border-bottom: 1px solid rgba(#707070, .4);
+                padding: 0px;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+
+                .pay-wrapper {}
+
+                .exchange-btn {
+                    height: fit-content;
+                    align-self: flex-end;
+                    padding-top: 15px;
+                    transform: rotate(90deg);
+                    margin: auto;
+                    margin-top: 10px;
+                    padding: 12px 10px 0px 10px;
+
+                    .left-icon {
+                        transform: scaleX(-1);
+                        margin-left: 0px;
+                        margin-right: -26px;
+                        margin-top: -24px;
+                        color: #7272FA;
+                    }
+
+                    .right-icon {
+                        color: #7272FA;
+                    }
+                }
+
+                .label {
+                    font-size: 17px;
+                    color: #2A2A2A;
+                    font-family: $Titillium;
+                    font-weight: $light;
+                }
+
+                .value {
+                    font-size: 33px;
+                    color: #B0B0B0;
+                    font-family: $Titillium;
+                    font-weight: $regular;
+                }
+
+                .get-wrapper {}
+            }
+
+            /deep/ .q-field__native {
+                padding-left: 8px;
+                font-size: 16px;
+                font-weight: $regular;
+            }
+
+            /deep/ .q-field__label {
+                font-family: $Titillium;
+                font-weight: $regular;
+                font-size: 18px;
+                padding-left: 10px;
+                margin-top: -2px;
+            }
+
+            .input-input {
+                height: 50px;
+                padding-bottom: 0px;
+
+                /deep/ .q-field__control {
+                    height: 50px;
+                    min-height: unset;
+
+                    @media screen and (min-width: 1024px) {
+                        margin-left: 20px;
+                    }
+                }
+
+                .btn-copy {
+                    // height: 30px;
+                    position: relative;
+                    top: -3px;
+                    margin-right: 0px;
+                    padding: 6px 13px;
+                }
+
+                .qr-btn {
+                    width: 30px;
+                    height: 30px;
+                    padding-right: 8px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+
+                    img {
+                        width: 25px;
+                        height: 25px;
+                        position: relative;
+                        right: -5px;
+                        transform: scale3d(1, 1, 1);
+                    }
+                }
+            }
+
+            /deep/ .option--avatar {
+                border: 1px solid;
+                width: 35px;
+                height: 35px;
+                max-width: 40px;
+                padding: 0px;
+                min-width: unset;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border-radius: 50px;
+                overflow: hidden;
+                margin-left: -10px;
+                padding-right: 0px;
+
+                &.vtx {
+                    background-color: #000;
+                    padding: 3px;
+                }
+            }
+        }
+    }
+
+    &--footer {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        min-height: 100px;
+
+        .action-link {
+            height: 54px;
+            text-transform: initial !important;
+            font-size: 16px;
+            letter-spacing: .5px;
+            border-radius: 40px;
+            width: fit-content;
+            margin-left: 0px;
+            padding-left: 20px;
+            padding-right: 20px;
+            background-color: #7272FA !important;
+
+            .left-icon {
+                transform: scaleX(-1);
+                margin-left: 6px;
+                margin-right: 6px;
+                margin-top: -1px;
+            }
+
+            // &.next{
+            //   background-color: #7900FF !important;
+            // }
+            // &.back{
+            //   background-color: #B0B0B0 !important;
+            // }
+        }
+
     }
 }
 
-@media (min-width: 992px) {
-    .page-container {
-        max-width: 960px;
+.select-input {
+    border-radius: 100px !important;
+    $height: 50px;
+    height: $height;
+
+    /deep/ .q-field__marginal {
+        height: $height;
+        min-height: unset;
+    }
+
+    /deep/ .q-field__control {
+        height: $height;
+        min-height: unset;
+
+        .q-field__native {
+            padding-left: 0px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+            height: $height;
+            min-height: unset;
+
+            .q-item {
+                padding: 0px;
+                padding-left: 18px;
+                min-height: $height;
+                padding-bottom: 0px;
+
+                .q-item__section {
+                    padding-right: 0px;
+                    min-width: 36px;
+
+                    .q-item__label+.q-item__label {
+                        margin-top: 0px;
+                    }
+                }
+            }
+        }
     }
 }
 
-@media (min-width: 1200px) {
-    .page-container {
-        max-width: 1040px;
-    }
-}
-
-.standard-content--footer .action-link {
-    height: 54px;
-    text-transform: initial !important;
+.lab-input {
+    font-family: $Titillium;
+    font-weight: $regular;
     font-size: 16px;
-    letter-spacing: .5px;
-    border-radius: 40px;
-    width: -webkit-fit-content;
-    width: -moz-fit-content;
-    width: fit-content;
-    margin-left: 0px;
+    color: black;
     padding-left: 20px;
-    padding-right: 20px;
-    background-color: #7272FA !important;
+    padding-bottom: 5px;
+    display: block;
+    margin-top: 10px;
+    line-height: 17px;
 }
 
 .tlab-input {
-    font-family: "Titillium Web", sans-serif;
-    font-weight: 700;
+    font-family: $Titillium;
+    font-weight: $bold;
     font-size: 26px;
     color: black;
     padding-left: 20px;
@@ -726,8 +1620,8 @@ export default {
 }
 
 .sublab-input {
-    font-family: "Titillium Web", sans-serif;
-    font-weight: 400;
+    font-family: $Titillium;
+    font-weight: $regular;
     font-size: 14px;
     color: #333;
     padding-left: 20px;
@@ -735,5 +1629,818 @@ export default {
     display: block;
     margin-top: -50px;
     line-height: 17px;
+}
+
+.mw200 {
+    max-width: 220px;
+}
+
+.mw160 {
+    max-width: 160px;
+}
+
+.mw100 {
+    max-width: 110px;
+}
+
+.pl0 {
+    padding-left: 0px !important;
+
+    /deep/ .q-field__native {
+        padding-left: 1px !important;
+    }
+}
+
+.align-left {
+    /deep/ .q-btn__content {
+        text-align: left;
+        justify-content: start;
+        padding-left: 7px;
+
+        .q-icon {
+            font-size: 1em;
+        }
+    }
+}
+
+.--next-btn {
+    text-transform: initial !important;
+}
+
+.chain-tools-wrapper {
+
+    // padding: 0px 6%;
+    &--list {
+        &__hide-chain-tools {
+            text-transform: initial !important;
+            margin-top: 0px;
+            margin-bottom: 10px;
+            color: #7272FA !important;
+        }
+
+        .list-wrapper {
+            overflow: hidden;
+            visibility: hidden;
+            height: 0px;
+            opacity: 0;
+            transform: translateY(-20px) scaleY(.5);
+            transform-origin: top;
+            transition: ease transform .3s, ease opacity .4s;
+
+            @media screen and (min-width: 1024px) {
+                overflow: visible;
+            }
+
+            &--chain {
+                &__type {
+                    background-color: #fff;
+                    margin-bottom: 10px;
+                    border-radius: 0px 0px 10px 10px;
+                    padding: 3% 8%;
+                    box-shadow: 0px 4px 16px 0px rgba(black, .09);
+                    font-family: $Titillium;
+                    font-size: 20px;
+                    color: #2A2A2A;
+                    font-weight: $bold;
+
+                    b {
+                        color: #7272FA;
+                        text-transform: uppercase;
+                    }
+
+                    .chain {}
+
+                    .token {}
+                }
+
+                &__coming-soon {
+                    ul {
+                        list-style: none;
+                        padding: 0px;
+                        margin: 0px;
+                        padding: 5% 6%;
+
+                        li {
+                            &:not(:last-child) {
+                                border-bottom: 1px solid #707070;
+                            }
+
+                            .btn-soon {
+                                text-transform: initial !important;
+                                padding: 20px 10px;
+                                border-radius: 0px;
+
+                                /deep/ .q-btn__content {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    flex-direction: row;
+                                    align-items: center;
+                                    align-content: center;
+                                }
+
+                                .title {
+                                    font-size: 20px;
+                                    color: #454F63;
+                                    font-weight: $bold;
+                                    margin-right: auto;
+                                }
+
+                                .soon {
+                                    font-size: 16px;
+                                    color: #B0B0B0;
+                                    display: flex;
+                                    justify-content: space-between;
+                                    flex-direction: row;
+                                    align-items: center;
+                                    align-content: center;
+                                }
+
+                                .icon {
+                                    color: #78849E;
+                                    position: relative;
+                                    top: 2px;
+                                    margin-left: 20px;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                &__eos-to-vtx-convertor {
+                    background-color: #fff;
+                    margin-bottom: 10px;
+                    border-radius: 10px;
+                    padding: 1% 2%;
+                    box-shadow: 0px 4px 16px 0px rgba(black, .09);
+
+                    @media screen and (min-width: 1024px) {
+                        box-shadow: none;
+                    }
+
+                    &--title {
+                        font-size: 22px;
+                        font-family: $Titillium;
+                        font-weight: $bold;
+                        color: #2A2A2A;
+                        margin: 0px;
+                        padding-left: 22px;
+                        margin-top: 3px;
+                        position: relative;
+                    }
+
+                    /deep/ .q-stepper__step {
+                        position: relative;
+                    }
+
+                    /deep/ .q-stepper--vertical .q-stepper__dot:before,
+                    /deep/ .q-stepper--vertical .q-stepper__dot:after {
+                        content: '';
+                        transform: translateX(-50%);
+                        width: 18px;
+                        background: #F3F3F3;
+                        // margin-top: -4px;
+                        // margin-bottom: -4px;
+                    }
+
+                    /deep/ .q-stepper__tab {
+                        .q-stepper__title {
+                            font-size: 20px;
+                            font-family: $Titillium;
+                            font-weight: $bold;
+                            color: #2A2A2A;
+                        }
+
+                        &.q-stepper__tab--active,
+                        &.q-stepper__tab--done {
+                            .q-stepper__title {
+                                color: #7272FA;
+                            }
+
+                            .q-stepper__dot {
+                                background: #7272FA;
+                            }
+                        }
+                    }
+
+                    .--input {
+                        margin-top: 20px;
+
+                        /deep/ .q-field {
+                            height: 40px;
+                        }
+
+                        /deep/ .q-field__native,
+                        /deep/ .q-field__prefix,
+                        /deep/ .q-field__suffix {
+                            padding-top: 10px;
+                            padding-bottom: 0px;
+                        }
+
+                        /deep/ .q-field__label {
+                            top: 10px;
+                            font-size: 12px;
+                            font-weight: $bold;
+                            font-family: $Titillium;
+                        }
+
+                        /deep/ .q-field__marginal {
+                            height: 40px;
+                        }
+
+                        /deep/ .q-field__control {
+                            height: 40px;
+                        }
+                    }
+
+                    .--slider {
+                        /deep/ &.q-slider--dark {
+                            .q-slider__track-container {
+                                background: rgba(0, 0, 0, 0.3);
+                            }
+
+                            .q-slider__pin-value-marker-text {
+                                font-weight: $bold;
+                                font-size: 11px;
+                            }
+
+                            .q-slider__pin-value-marker-bg {
+                                background: #FFB200 !important;
+                            }
+
+                            .text-green {
+                                background: #FFB200 !important;
+                            }
+                        }
+                    }
+
+                    .--next-btn {
+                        width: 100px;
+                        text-transform: initial !important;
+                    }
+
+                    .--progress {
+                        height: 20px;
+
+                        /deep/ .q-linear-progress {
+                            margin-top: 8px;
+                            height: 5px !important;
+                            max-width: 90%;
+                            margin-left: auto;
+                            margin-right: auto;
+
+                            .q-linear-progress__track {
+                                background: #FFB200;
+                            }
+
+                            .q-linear-progress__model--indeterminate:before,
+                            .q-linear-progress__model--indeterminate:after {
+                                background: #FFB200;
+                            }
+                        }
+                    }
+
+                    .--back-btn {
+                        position: absolute;
+                        right: 0px;
+                        top: 6px;
+
+                        @media screen and (min-width: 1024px) {
+                            right: unset;
+                            left: 5px;
+                            top: 5px;
+                            width: 90px;
+
+                            /deep/ .q-focus-helper {
+                                display: none !important;
+                            }
+
+                            /deep/ .q-btn__wrapper {
+                                padding-left: 0px;
+                                padding-right: 0px;
+                            }
+                        }
+                    }
+
+                    .--subtitle {
+                        font-size: 16px;
+                        color: #000;
+                        font-family: $Titillium;
+                        font-weight: $light;
+                        line-height: 20px;
+                        margin-top: 10px;
+                        margin-bottom: 10px;
+
+                        ul {
+                            padding: 0px;
+                            margin: 0px;
+                            margin-left: 20px;
+
+                            li {
+                                font-size: 15px;
+                                font-weight: $light;
+                                margin-bottom: 10px;
+                                line-height: 21px;
+                                color: #FFB200;
+
+                                span {
+                                    color: #2A2A2A;
+                                }
+                            }
+                        }
+
+                        &__success {
+                            color: #00D0CA;
+                            font-weight: $bold;
+                            margin-bottom: 20px;
+                        }
+
+                        &__faild {
+                            color: #FFB200;
+                            font-weight: $bold;
+                            margin-bottom: 20px;
+                        }
+
+                        &__transLink {
+                            color: #2A2A2A;
+                            border-bottom: 1px solid;
+                            width: fit-content;
+                            font-weight: $bold;
+                            margin-bottom: 20px;
+                        }
+
+                        &__summary {
+                            margin-bottom: 20px;
+                            font-weight: $bold;
+                        }
+
+                        &__summary--list {
+                            list-style: disc;
+                            padding-left: 24px;
+                            margin-top: -10px;
+
+                            li {
+                                color: #B0B0B0;
+                            }
+                        }
+
+                        &__success {
+                            color: #00D0CA;
+                            font-weight: $bold;
+                            margin-bottom: 20px;
+                        }
+
+                        &__faild {
+                            color: #FFB200;
+                            font-weight: $bold;
+                            margin-bottom: 20px;
+                        }
+
+                        &__transLink {
+                            color: #2A2A2A;
+                            border-bottom: 1px solid;
+                            width: fit-content;
+                            font-weight: $bold;
+                            margin-bottom: 20px;
+                        }
+
+                        &__summary {
+                            margin-bottom: 20px;
+                            font-weight: $bold;
+                        }
+
+                        &__summary--list {
+                            list-style: disc;
+                            padding-left: 24px;
+                            margin-top: -10px;
+
+                            li {
+                                color: #B0B0B0;
+                            }
+                        }
+                    }
+
+                    .--title,
+                    .--amount {
+                        font-size: 13px;
+                        font-family: $Titillium;
+                        font-weight: $bold;
+                        color: #B0B0B0;
+                        text-transform: initial !important;
+                        line-height: 20px;
+                    }
+
+                    .--amount {
+                        color: #2A2A2A !important;
+                    }
+                }
+            }
+        }
+
+        &.open {
+            margin-bottom: 0px;
+            padding-left: 6%;
+            padding-right: 6%;
+
+            .list-wrapper {
+                visibility: visible;
+                height: auto;
+                opacity: 1;
+                transform: translateY(0px) scaleY(1);
+                margin-bottom: 10px;
+            }
+        }
+    }
+}
+
+.q-card {
+    border-radius: 25px;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 35px rgba(0, 0, 0, 0.14), 0 1px 10px rgba(0, 0, 0, 0.12);
+}
+
+.accept-disclaimer {
+    color: #FFF !important;
+    background-color: #00D0DF !important;
+    text-transform: initial !important;
+    padding: 10px 30px;
+    border-radius: 50px;
+    font-weight: $light;
+}
+
+.parg {
+    font-size: 16px;
+    font-weight: $regular;
+    font-family: $Titillium;
+    line-height: 22px;
+
+    a {
+        font-weight: $bold;
+        border-bottom: 1px solid;
+        text-decoration: none;
+    }
+}
+
+.lower {
+    text-transform: initial !important;
+}
+
+.bold {
+    font-weight: $bold !important;
+}
+
+.stepper--desktop {
+    /deep/ .q-stepper__content {
+        max-width: 600px;
+        margin: auto;
+        margin-top: 50px;
+
+        .q-stepper__step-inner {
+            padding-top: 60px;
+        }
+    }
+
+    /deep/ .q-stepper__header {
+        // padding: 0px 10%;
+        background-color: #F6F6F6;
+        margin-bottom: 0px;
+        border-radius: 40px;
+        height: 40px;
+        position: relative;
+
+        &:before {
+            content: '';
+            width: 12%;
+            position: absolute;
+            left: 0px;
+            top: 18px;
+            height: 3px;
+            background-color: #F6F6F6;
+            transform: translateX(-100%);
+        }
+
+        &:after {
+            content: '';
+            width: 12%;
+            position: absolute;
+            right: 0px;
+            top: 18px;
+            height: 3px;
+            background-color: #F6F6F6;
+            transform: translateX(100%);
+        }
+
+        .q-stepper__tab {
+            height: 40px;
+            min-height: 40px;
+            padding: 0px 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            &--active,
+            &--done {
+                .q-stepper__label {
+                    .q-stepper__title {
+                        font-size: 12px;
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+
+        .q-stepper__dot {
+            &:after {
+                display: none;
+            }
+        }
+
+        .q-stepper__label {
+            margin-top: 0px;
+            padding-left: 6px;
+
+            .q-stepper__title {
+                font-size: 12px;
+                font-weight: normal;
+            }
+        }
+    }
+}
+</style><style lang="scss" scoped>
+@import "~@/assets/styles/variables.scss";
+
+.trade-component {
+    position: relative;
+    // font-family: $Franklin;
+    font-size: 18px;
+    font-weight: $bold;
+    border: 1px solid #CCC;
+    border-radius: 10px;
+    max-width: 500px;
+    padding-bottom: 10px;
+
+    .prototype {
+        // position: absolute;
+        z-index: 0;
+        left: 0px;
+        top: 0px;
+
+        .--subtitle {
+            font-size: 14px;
+            // font-family: $Franklin;
+            font-weight: $light;
+            line-height: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        /deep/ .q-field--with-bottom {
+            .q-field__messages.col div {
+                padding-bottom: 0px;
+                margin-bottom: 0px;
+                margin-top: -8px;
+                font-size: 10px;
+                margin-left: -13px;
+            }
+        }
+
+        .head {
+            padding: 16px 30px;
+            border-bottom: 1px solid #f6f6f9;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .you-pay {
+            &-head {
+                padding: 0px 30px;
+                margin-bottom: 18px;
+                font-size: 16px;
+
+                .col {
+                    &.red {
+                        font-size: 12px;
+                        font-weight: $light;
+                    }
+                }
+            }
+
+            &-body {
+                padding: 0px 30px;
+                font-size: 24px;
+                font-weight: $bold;
+            }
+        }
+
+        .choose-coin {
+            cursor: pointer;
+
+            &:hover {
+                opacity: .7;
+            }
+
+            position: relative;
+        }
+
+        .pay-coin {
+            position: relative;
+
+            .pay-coin-select {
+                position: absolute;
+                left: -29px;
+                top: 40px;
+                z-index: -10;
+                width: 348px;
+                opacity: 0;
+            }
+
+            .receive-coin-select {
+                position: absolute;
+                left: -29px;
+                top: 40px;
+                z-index: -10;
+                width: 348px;
+                opacity: 0;
+            }
+        }
+
+        .you-receive {
+            background-color: #f6f6f9;
+            margin: 0px 10px;
+            margin-top: 20px;
+            padding: 15px 10px;
+            border-radius: 10px;
+            position: relative;
+
+            /deep/ .chose_accounts {
+                background-color: #dfdff1 !important;
+                font-weight: $bold;
+                font-size: 14px !important;
+                // font-family: $Franklin !important;
+                color: #5e5e88 !important;
+                border-radius: 10px;
+                margin-top: 20px;
+                height: 54px;
+            }
+
+            /deep/.swap_vert {
+                position: absolute;
+                top: 0px;
+                left: 20px;
+                transform: translateY(-50%) scale(1.15);
+                background-color: #FFF !important;
+
+                .q-btn__wrapper:before {
+                    border: 3px solid #f4f4f4;
+                }
+            }
+
+            &-head {
+                padding: 0px 15px;
+                margin-bottom: 18px;
+                font-size: 16px;
+
+                .col {
+                    &.small {
+                        font-size: 11px;
+                        font-weight: $light;
+                    }
+
+                    &._loading {
+                        -webkit-animation: infiniteRotate 1s linear infinite;
+                        /* Safari */
+                        animation: infiniteRotate 1s linear infinite;
+                    }
+                }
+            }
+
+            &-body {
+                padding: 0px 15px;
+                font-size: 24px;
+                font-weight: $bold;
+            }
+        }
+    }
+}
+
+.info_rate_holder {
+    .i-btn {
+        &:hover {
+            .info_rate_wrapper {
+                visibility: visible;
+                opacity: 1;
+                transform: translateY(-10px);
+            }
+        }
+    }
+}
+
+.info_rate {
+    position: relative;
+
+    .i-btn {
+        width: 20px;
+        height: 20px;
+        border-radius: 20px;
+        border: 1px solid rgba(black, .2);
+        display: flex;
+        justify-content: center;
+        margin-left: 10px;
+    }
+
+    .rate-info-prototype {
+        position: absolute;
+        left: -220px;
+        top: 0px;
+        z-index: 9;
+        display: none;
+    }
+
+    .info_rate_wrapper {
+        position: absolute;
+        right: 0px;
+        top: 30px;
+        z-index: 9;
+        width: 220px;
+        background-color: #fff;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0px 10px 10px 0px rgba(black, .1);
+        // font-family: $Franklin;
+        font-weight: $regular;
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(0px);
+        transition: ease opacity .3s, transform ease .3s;
+
+        hr {
+            opacity: .2;
+        }
+
+        .title {
+            font-size: 15px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            // font-weight: $semibold;
+        }
+    }
+}
+
+.disclaimer-wrapper {
+    font-size: 14px;
+    // font-family: $Franklin;
+    font-weight: $light;
+}
+
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes infiniteRotate {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: .3;
+    }
+}
+
+/* Standard syntax */
+@keyframes infinite-rotate {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: .3;
+    }
+}
+</style><style lang="scss">
+.option--avatar {
+    border: 1px solid rgba(black, .1);
+    width: 35px;
+    height: 35px;
+    max-width: 40px;
+    padding: 0px;
+    min-width: unset;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50px;
+    overflow: hidden;
+
+    &__custom {
+        border: 1px solid;
+        margin-left: -10px;
+        padding-right: 0px;
+    }
+
+    &.vtx {
+        background-color: #000;
+        padding: 3px;
+    }
+}
+
+.q-field__messages {
+    margin-top: 5px;
 }
 </style>
