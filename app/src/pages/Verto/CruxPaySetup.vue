@@ -1,5 +1,31 @@
 <template>
   <q-page class="text-black bg-white">
+    <div v-if="step===0" class="standard-content" style="padding-bottom: 0px">
+      <div class="standard-content--body">
+        <h2 class="standard-content--title">Checking linked CRUX ID...</h2>
+        <!-- <p class="diclaimer"> {{ status }} </p> -->
+        <div class="standard-content--body__form">
+          <div class="send-modal__content--body column flex-center">
+            <q-circular-progress
+              size="170px"
+              :thickness="0.05"
+              color="cyan-5"
+              track-color="grey-3"
+              class="q-ma-md"
+              show-value
+              indeterminate
+              font-size="20px"
+            />
+            <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58"><path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path></svg>          </div>
+          <div class="send-modal__content--footer">
+            <div class="text-h4 --status">Please wait...</div>
+          </div>
+        </div>
+      </div>
+      <div class="standard-content--footer">
+        <p class="crux-label">Powered by cruxpay.</p>
+      </div>
+    </div>
     <div v-if="step===1" class="standard-content" style="padding-bottom: 0px">
       <div class="standard-content--body column">
         <h2 class="standard-content--title">Create the Verto ID</h2>
@@ -19,6 +45,7 @@
             :suffix="'@' + walletClientName + '.crux'"
             :error="error"
             :error-message="errorMessage"
+            autofocus
           />
           <div class="flex-end flex justify-end">
             <q-btn class="action-link next" color="deep-purple-14" text-color="white" @click="register()" label="Register" :disable="!available" />
@@ -137,13 +164,12 @@ export default {
         { 'value': 'ada', 'label': 'Cardano - HD' } ]
     }
   },
-  async created () {
+  created () {
+    if (this.$route.params.fromStep === 'recover') {
+      this.step = 0
+    }
   },
   async mounted () {
-    this.$nextTick(() => {
-      this.$refs.cruxID.focus()
-    })
-
     this.cruxKey = await HD.Wallet('crux')
     // console.log('crux privateKey', this.cruxKey.privateKey, 'mnenonic', this.$store.state.currentwallet.config.mnemonic, 'password', this.vertoPassword)
 
@@ -151,18 +177,19 @@ export default {
       walletClientName: this.walletClientName,
       privateKey: this.cruxKey.privateKey
     })
-
     await cruxClient.init()
     this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
     // Subdomain is queued for update and should be announced within the next few blocks.
     // Your subdomain was registered in transaction 6a24c1ad453a09a740f7792ca07f0f95cac530728cbfa35f32be6a0e0a550c01 -- it should propagate on the network once it has 6 confirmations."
-
     if (this.existingCruxID) {
       this.cruxIDRegistered = true
-      this.addressMap = await cruxClient.getAddressMap()
-      this.step = 2
+      this.addressMap = await cruxClient.getAddressMap().catch(err => { console.log(err) })
       this.showMap = !!this.addressMap
+
+      this.step = 3
       // console.log('addressMap', this.addressMap, 'show?', this.showMap)
+    } else {
+      this.step = 1
     }
   },
   computed: {
