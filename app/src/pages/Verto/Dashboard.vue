@@ -15,47 +15,40 @@
           <startNodeSection :banner="1" />
           <chainToolsSection />
           <div class="desktop-card-style current-investments explore-opportunities q-mb-sm">
-            <h4 class="q-pl-md">Explore Opportunities</h4>
-            <div class="header-table-col row q-pl-md">
-              <div class="col-1"><h3>#</h3></div>
-              <div class="col-3"><h3>Available pools</h3></div>
-              <div class="col-2"><h3>Liquidity</h3></div>
-              <div class="col-2"><h3>Net ROI(1mo)</h3></div>
-              <div class="col-2"><h3>Net ROI(1mo)</h3></div>
-              <div class="col-2"></div>
-            </div>
-            <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 392px;">
-              <div v-for="i in 10" :key="i" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
+
+            <liquidityPoolsTable/>
+
+            <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 392px;" v-if="false">
+              <div v-for="(pool, index) in $store.state.investment.pools" :key="index" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
                 <div class="col-1 flex items-center">
-                  <strong>{{i}}</strong>
+                  <strong>{{(index + 1)}}</strong>
                 </div>
                 <div class="col-3 flex items-center">
-                  <span class="imgs q-mr-lg">
-                    <img src="statics/coins_icons/eth2.png" alt="">
-                    <img src="statics/coins_icons/bat.png" alt="">
-                  </span>
+                  <span class="imgs q-mr-lg" v-if="pool.icons.length">
+                    <img   v-for="(icon, index) in pool.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
+                     </span>
                   <span class="column pairs">
-                    <span class="pair">ETH / BAT</span>
-                    <span class="value">Uniswap V1</span>
+                    <span class="pair">{{pool.poolName}}</span>
+                    <span class="value">{{pool.platform}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-sm">
                   <span class="column pairs">
-                    <span class="pair">$10,918,987</span>
+                    <span class="pair">${{pool.liquidity}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-md">
                   <span class="column pairs">
-                    <span class="value">N/A</span>
+                    <span class="value">${{pool.volume}}</span>
                   </span>
                 </div>
                 <div class="col-2 q-pl-lg">
                   <span class="column pairs">
-                    <span class="value">N/A</span>
+                    <span class="value">${{pool.fees}}</span>
                   </span>
                 </div>
                 <div class="col-2 flex justify-end">
-                  <q-btn unelevated @click="openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
+                  <q-btn unelevated @click="$store.commit('investment/setSelectedPool', pool); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="white" label="Add Liquidity" />
                 </div>
               </div>
             </q-scroll-area>
@@ -69,6 +62,7 @@
           <LiquidityPoolsSection />
         </div>
       </div>
+
     </div>
     <div class="mobile-version" v-else>
       <profile-header class="marg" version="type2222" />
@@ -105,10 +99,12 @@ import AppsSection from '../../components/Verto/AppsSection'
 import StartNodeSection from '../../components/Verto/StartNodeSection'
 import ChainToolsSection from '../../components/Verto/ChainToolsSection'
 // import TransactionsSection from '../../components/Verto/TransactionsSection'
-import LiquidityPoolsSection from '../../components/Verto/LiquidityPoolsSection'
+import LiquidityPoolsSection from '../../components/Verto/Defi/LiquidityPoolsSection'
 import MakeVTXSection from '../../components/Verto/MakeVTXSection'
 import ExchangeSection from '../../components/Verto/ExchangeSection'
+import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 
+import { mapState } from 'vuex'
 // import VespucciRatingSection from '../../components/Verto/VespucciRatingSection'
 import { QScrollArea } from 'quasar'
 
@@ -142,6 +138,7 @@ export default {
     ChainToolsSection,
     // TransactionsSection,
     LiquidityPoolsSection,
+    liquidityPoolsTable,
     MakeVTXSection,
     ExchangeSection
     // VespucciRatingSection
@@ -149,9 +146,11 @@ export default {
   },
   data () {
     return {
+      rawPools: [],
       cruxKey: {},
       osName: '',
       screenSize: 0,
+      openDialog: false,
       walletClientName: 'verto' // should be 'verto' when in prod
     }
   },
@@ -162,7 +161,10 @@ export default {
     // console.log('beforeCreate event')
   },
   async created () {
-    let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
+    let exchangeNotif = document.querySelector('.exchange-notif')
+    if (exchangeNotif !== null) {
+      exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click'))
+    }
     // Check if mnemonic exists
     // console.log('this.$store.state.currentwallet.wallet = undefined called')
     this.osName = osName
@@ -176,7 +178,7 @@ export default {
       let wallets2Tokens = require('@/util/Wallets2Tokens')
       if (!store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
     }
-
+    this.$store.dispatch('investment/getMarketDataVsUSD')
     // Adds the eos account name when it is found to the cruxID
     this.tableData = await store.state.wallets.tokens.map(token => {
       token.selected = false
@@ -184,7 +186,9 @@ export default {
         token.hidden = false
       }
     })
-    this.$store.state.currentwallet.wallet = { empty: true }
+    this.$store.state.currentwallet.wallet = {
+      empty: true
+    }
     Promise.all(this.tableData)
     let eosAccount = this.tableData.find(w => w !== undefined && w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
     // console.log('this.tableData', this.tableData)
@@ -207,16 +211,27 @@ export default {
         // console.log('addressMap', addressMap)
 
         if (!addressMap.hasOwnProperty('eos')) {
-          addressMap['eos'] = { 'addressHash': eosAccount.name }
+          addressMap['eos'] = {
+            'addressHash': eosAccount.name
+          }
           cruxClient.putAddressMap(addressMap)
         }
       }
     }
+
+    this.$store.dispatch('investment/getZapperTokens')
+    // this.$store.dispatch('investment/getUniSwapHistoricalData')
+    // this.$store.dispatch('investment/getBalancerHistoricalData')
   },
   methods: {
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     }
+
+  },
+
+  computed: {
+    ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools'])
   }
 }
 </script>
@@ -336,6 +351,7 @@ export default {
         }
         .imgs{
           margin-top: 5px;
+          min-width: 30px;
           img{
             border-radius: 40px;
             height: 25px;

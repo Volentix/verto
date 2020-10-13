@@ -89,7 +89,7 @@ export default {
           // get buy support from coinmarketbook
           // let buySupportFrom = ''
           //console.log('mydata', mydata)
-          this.$axios.get('https://cors-anywhere.herokuapp.com/https://coinmarketbook.cc/api/ticker/' + mydata.slug).then(response => {
+          this.$axios.get(process.env[store.state.settings.network].CHAIN_ID + 'https://coinmarketbook.cc/api/ticker/' + mydata.slug).then(response => {
             let buySupportFrom = response.data.buy_order
             //console.log(buySupportFrom, mydata.slug)
             let asset = {
