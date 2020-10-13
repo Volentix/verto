@@ -181,7 +181,7 @@ export default {
     this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
     // Subdomain is queued for update and should be announced within the next few blocks.
     // Your subdomain was registered in transaction 6a24c1ad453a09a740f7792ca07f0f95cac530728cbfa35f32be6a0e0a550c01 -- it should propagate on the network once it has 6 confirmations."
-    if (!this.existingCruxID) {
+    if (this.existingCruxID) {
       this.cruxIDRegistered = true
       this.addressMap = await cruxClient.getAddressMap().catch(err => { console.log(err) })
       this.showMap = !!this.addressMap
