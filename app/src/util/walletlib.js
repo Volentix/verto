@@ -1,6 +1,7 @@
 import EosWrapper from '@/util/EosWrapper'
 import axios from 'axios'
 import store from '@/store'
+import { userError } from '@/util/errorHandler'
 
 class Lib {
   balance = async (walletType, key, token) => {
@@ -12,12 +13,21 @@ class Lib {
           vtx: 'volentixgsys'
         }
         const eos = new EosWrapper()
-        const bal = await eos.getCurrencyBalanceP(key, tokenContract[token])
-        // console.log('walletlib', key, tokenContract[token], bal)
-        if (bal) {
-          float = bal[0].split(' ')[0]
-        }
+        // const balProm =
+        await eos.getCurrencyBalanceP(key, tokenContract[token])
+          .then(function (result) {
+            // console.log('walletlib', key, tokenContract[token], bal)
+            if (result.length) {
+              float = result[0].split(' ')[0]
+              return float
+            }
+          }).catch(function (error) {
+            // TODO: Exception handling
+            userError(error)
+            return false
+          })
 
+        // Promise.all(balProm)
         return { balance: float }
       },
       async eth (key, token) {

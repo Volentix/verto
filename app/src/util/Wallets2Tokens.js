@@ -38,7 +38,7 @@ class Wallets2Tokens {
       } else {
         wallet.to = '/verto/wallets/' + wallet.type + '/' + wallet.type + '/' + wallet.key
         wallet.chain = wallet.type
-        wallet.disabled = true
+        wallet.disabled = wallet.type !== 'eth'
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
         // wallet.vespucciScore = vespucciScore
       }
@@ -201,7 +201,7 @@ class Wallets2Tokens {
     }
 
     // 'https://api.coingecko.com/api/v3/simple/price?ids=' + +'&vs_currencies=usd'
-    let coinEOS = (await axios.get(process.env[store.state.settings.network].CHAIN_ID + 'https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
+    let coinEOS = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
     let coinUSD = coinEOS * this.eosUSD
     // console.log(coin, ' --> USD', coinUSD)
 
