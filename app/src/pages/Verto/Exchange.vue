@@ -710,6 +710,13 @@
                                 </div>
                               </template>
                             </q-input>
+                            <q-input v-model="exchangeAddress.tag" readonly rounded class="input-input pr80" outlined color="purple" type="text">
+                              <template v-slot:append>
+                                <div class="flex justify-end">
+                                  <q-btn flat unelevated text-color="grey" @click="copyToClipboard(exchangeAddress.tag , 'Exchange Memo')" round class="btn-copy" icon="o_file_copy" />
+                                </div>
+                              </template>
+                            </q-input>
                           </div>
                         </div>
                       </div>
@@ -757,7 +764,7 @@ const typeUpper = function (thing) {
   }
 }
 import { osName } from 'mobile-device-detect'
-// import Lib from '@/util/walletlib'
+import Lib from '@/util/walletlib'
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EosWrapper from '@/util/EosWrapper'
@@ -902,6 +909,7 @@ export default {
       self.optionsTo.push({
         label: token.name.toLowerCase(),
         value: token.key,
+        privateKey: token.privateKey,
         image: token.icon,
         type: token.type
       })
@@ -1232,11 +1240,12 @@ export default {
             type: token.type
           })
         }
-        if (this.destinationCoin.value.toLowerCase() === token.type) {
+        if ((this.destinationCoin.value.toLowerCase() === token.type) || (this.destinationCoin.value.toLowerCase() === 'vtx' && token.type === 'eos')) {
           self.optionsTo.push({
             label: token.name.toLowerCase(),
             value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
             key: token.key,
+            privateKey: token.privateKey,
             image: token.icon,
             type: token.type
           })
@@ -1304,8 +1313,8 @@ export default {
       let eosBal = (await eos.getCurrencyBalanceP(this.toCoin.value)).toString().split(' ')[0]
       console.log('eosBal', eosBal)
 
-      /*
-      if (eosBal.amount < this.destinationCoinAmount) {
+      if (+eosBal < +this.destinationCoinAmount) {
+        console.log('eos balance is yet to low to proceed: ', eosBal)
         setTimeout(() => { self.orderVTX() }, 1000)
       } else {
         Lib.send(
@@ -1315,20 +1324,24 @@ export default {
           'newdexpublic',
           this.destinationCoinAmount,
           '{"type":"buy-market","symbol":"volentixgsys-vtx-eos","price":"0.00000","channel":"dapp","ref":"verto"}',
-          this.privateKey.key,
+          this.toCoin.privateKey,
           'eosio.token'
         ).then(result => {
           console.log('send result', result)
-          // if (result.success) {
-          //   this.transactionLink = result.message
-          //   this.transStatus = 'Sent Successfully'
-          // } else {
-          //   this.ErrorMessage = result.message
-          //   this.transErrorDialog = true
-          // }
+          if (result.success) {
+            this.$q.notify({
+              message: 'Your VTX have been received',
+              color: 'positive'
+            })
+          } else {
+            this.$q.notify({
+              message: 'Could not convert EOS to VTX',
+              color: 'negative',
+              type: 'warning'
+            })
+          }
         })
       }
-      */
     },
     postOrder () {
       const self = this
@@ -1395,6 +1408,7 @@ export default {
                 inject = {
                   'label': 'Volentix',
                   'value': 'vtx',
+                  'chain': 'eos',
                   'image': '/statics/vtx_icon.png'
                 }
               }
