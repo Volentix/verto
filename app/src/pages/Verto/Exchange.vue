@@ -334,7 +334,6 @@
                             </div>
                             <div class="row full-width" style="padding-left: 13px; margin-top: 10px;">
                               <div class="q-gutter-sm"><q-checkbox label="I accept" color="deep-purple-14" v-model="disclaimerCheck" /></div>
-                              <q-btn @click="orderVTX()" label="test orderVTX" />
                             </div>
                             <div class="standard-content--footer">
                               <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
@@ -944,12 +943,6 @@ export default {
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
 
-    // this.tableData = await this.$store.state.wallets.tokens
-    // let ethAccount = this.tableData.find(w => w.chain === 'eth' && w.type === 'eth')
-    // let ethTokens = this.tableData.filter(w => w.chain === 'eth')
-    // console.log('this.ethAccount', ethAccount)
-    // console.log('this.ethTokens', ethTokens)
-
     // console.log('this.currentAccount', this.currentAccount)
     if (this.currentAccount !== null && this.currentAccount !== undefined) {
       // this.fromCoin = {
@@ -1316,7 +1309,7 @@ export default {
         self.status === 'sending') {
           setTimeout(() => { self.orderStatus() }, 30000)
         }
-        if (self.status === 'complete') {
+        if (self.status === 'complete' && self.destinationCoin.value === 'vtx') {
           self.destinationCoinAmount = Math.trunc(result.data.data.destinationCoinAmount * 10000) / 10000
           self.orderVTX()
         }
@@ -1373,9 +1366,6 @@ export default {
       // console.log('this.refundAddress', this.refundAddress)
       this.destinationAddress.address = this.destinationAddress.address === '' ? this.toCoin.value : this.destinationAddress.address
 
-      console.log('destinationCoinAmount', destinationCoinAmount)
-      console.log('self.destinationQuantity / self.vtxEosPrice', self.destinationQuantity, self.vtxEosPrice)
-
       this.$axios.post(url + '/v2/order',
         {
           depositCoin: self.depositCoin.value,
@@ -1387,7 +1377,7 @@ export default {
         },
         { headers })
         .then((response) => {
-          console.log('response - order', response)
+          // console.log('response - order', response)
           self.orderId = response.data.data.orderId
           self.exchangeAddress = response.data.data.exchangeAddress
           self.expectedDepositCoinAmount = response.data.data.expectedDepositCoinAmount
@@ -1459,7 +1449,7 @@ export default {
       const self = this
 
       if (self.destinationCoin.value === 'vtx') {
-        this.vtxEosPrice = (await this.$axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
+        this.vtxEosPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
       }
 
       this.$axios.post(url + '/v2/rate',
