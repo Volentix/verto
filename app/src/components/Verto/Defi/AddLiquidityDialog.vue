@@ -14,7 +14,7 @@
         <q-btn flat round dense icon="close" v-close-popup />
     </q-toolbar>
     <q-card-section class="text-h6" v-if="!transactionStatus && currentToken">
-        <div  class="text-h6 q-mb-md q-pl-sm flex items-center">
+        <div class="text-h6 q-mb-md q-pl-sm flex items-center">
             <h4 class="lab-title q-pr-md">Available {{currentToken.label}}:</h4> {{ currentToken.amount}}
             <span class="link-to-exchange" @click="goToExchange" v-if="!tokenInWallet && false">Get {{currentToken.label}}</span>
         </div>
@@ -42,13 +42,13 @@
                     Token not in wallet
                 </div>
             </div>
-          <div class="text-body2 text-red" v-if="approvalRequired" >
-            <span>
-            Before adding Liquidity to the {{pool.label}} pool from {{platform.label}},<br> you need to process an approval transaction for your {{currentToken.label}} token
-            </span>
-          </div>
+            <div class="text-body2 text-red" v-if="approvalRequired">
+                <span>
+                    Before adding Liquidity to the {{pool.label}} pool from {{platform.label}},<br> you need to process an approval transaction for your {{currentToken.label}} token
+                </span>
+            </div>
         </div>
-        <hr style="opacity: .1" >
+        <hr style="opacity: .1">
         <h4 class="lab-title">Choose your Allocation</h4>
         <div class="row">
             <div class="col-md-8 row">
@@ -128,10 +128,10 @@
 
             <div class="text-red q-mt-md" v-if="error">{{error}}</div>
             <div v-if="transactionHash" class="col-12">
-            <a :href="'https://etherscan.io/tx/'+transactionHash" class="flex text-body2 text-black q-mt-md" target="_blank">
-             <div>Last transaction:</div> <img width="80" src="https://etherscan.io/images/logo-ether.png?v=0.0.2" class="q-ml-sm" />
-           </a>
-           </div>
+                <a :href="'https://etherscan.io/tx/'+transactionHash" class="flex text-body2 text-black q-mt-md" target="_blank">
+                    <div>Last transaction:</div> <img width="80" src="https://etherscan.io/images/logo-ether.png?v=0.0.2" class="q-ml-sm" />
+                </a>
+            </div>
         </div>
         <!-- <hr style="opacity: .1" class="q-mt-lg">
             <h4 class="lab-title q-pb-md">Select Gas Setting</h4>
@@ -155,10 +155,11 @@
                     <path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path>
                 </svg>
                 <span class="title">Transaction submitted</span>
-                <q-linear-progress v-if="false" style="max-width:300px;" stripe rounded size="md" indeterminate class="q-mt-md" />
+                <span class="title">Status: {{transactionStatus}}</span>
+                <q-linear-progress v-if="transactionStatus == 'Pending'" style="max-width:300px;" stripe rounded size="md" indeterminate class="q-mt-md" />
             </div>
             <div class="col-12 col-md-6 offset-md-3 text-center text-h6" v-if="transactionHash">
-                <q-input bottom-slots filled v-model="transactionHash"  label="Your transaction hash" readonly>
+                <q-input bottom-slots filled v-model="transactionHash" label="Your transaction hash" readonly>
                     <template v-slot:counter>
                         <a :href="'https://etherscan.io/tx/'+transactionHash" class="text-body2 text-black " target="_blank">
                             <img width="80" src="https://etherscan.io/images/logo-ether.png?v=0.0.2" />
@@ -181,18 +182,16 @@
 </template>
 
 <script>
-import {
-  mapState
-} from 'vuex'
+import { mapState } from 'vuex'
+import contract from '../../../mixins/contract'
 export default {
   name: 'AddLiquidityDialog',
   data () {
     return {
-      gasInterval: null,
-      gasOptions: null,
       transactionStatus: false,
       invalidTransaction: false,
       gasSelected: null,
+      gasOptions: null,
       externalWallets: {
         metamask: []
       },
@@ -230,7 +229,6 @@ export default {
       ethTokens: [],
       ethAccount: null,
       availableAmount: 0,
-      poolContractABIS: {},
       tokenInWallet: false,
       processWithMetamask: false,
       web3Instance: null,
@@ -267,10 +265,9 @@ export default {
     // let t = this.web3Instance.eth.getTransaction('0x51c32feefe4bcfac06b19364e07b7f261138e1760da96a827d6c0954dcb47059')
     if (this.$store.state.investment.metamaskConnected) this.conectWallet('metamask')
 
-    /* this.gasInterval = setInterval(() => {
+    this.gasInterval = setInterval(() => {
       this.$store.dispatch('investment/getGasPrice')
-    }, 5000)
-    */
+    }, 10000)
   },
   computed: {
     ...mapState('investment', ['zapperTokens', 'selectedPool', 'gasPrice'])
@@ -336,18 +333,7 @@ export default {
       }
       console.log(this.externalWallets)
     },
-    async getContractABI (address) {
-      let abi = this.poolContractABIS[address]
 
-      if (!abi) {
-        await this.$axios.post('https://api.etherscan.io/api?apikey=YBABRIF5FBIVNZZK3R8USGI94444WQHHBN&module=contract&action=getabi&address=' + address + '')
-          .then((result) => {
-            abi = result.data.result
-            this.poolContractABIS[address] = abi
-          })
-      }
-      return abi
-    },
     setDialogData () {
       if (this.$store.state.investment.selectedPool) {
         let account = this.ethAccount.find(o => o.chain === 'eth' && o.type === 'eth')
@@ -381,9 +367,7 @@ export default {
         tokenABI = null,
         fromTokenAddress = this.currentToken.contract ? this.currentToken.contract : '0x0000000000000000000000000000000000000000'
       let toAddress = this.contractAddress[this.pool.platform.replace(/[^0-9a-z]/gi, '').toLowerCase()]
-      await this.getContractABI(toAddress).then(value => {
-        poolContractABI = value
-      })
+      poolContractABI = await this.getContractABI(toAddress)
 
       let nonce = await this.web3Instance.eth.getTransactionCount(this.currentToken.key, 'latest')
       const poolContract = new this.web3Instance.eth.Contract(JSON.parse(poolContractABI), toAddress)
@@ -401,11 +385,8 @@ export default {
       let tx = null
 
       if (this.currentToken.isERC20) {
-        console.log(fromTokenAddress)
-        await this.getContractABI(fromTokenAddress).then(value => {
-          tokenABI = value
-        })
-        const tokenContract = new this.web3Instance.eth.Contract(JSON.parse(tokenABI), fromTokenAddress)
+        tokenABI = await this.getContractABI('default', true)
+        const tokenContract = new this.web3Instance.eth.Contract(tokenABI, fromTokenAddress)
 
         const allowance = parseInt(await tokenContract.methods.allowance(this.currentToken.key, toAddress).call())
 
@@ -413,14 +394,12 @@ export default {
           this.approvalRequired = true
           tx = tokenContract.methods.approve(
             toAddress,
-            this.web3Instance.utils.toWei('79228162514.26', 'ether')
+            this.web3Instance.utils.toHex(this.sendAmount * 10 ** 18 * 100)
           )
           transactionObject.to = fromTokenAddress
         } else {
           this.approvalRequired = false
         }
-
-        console.log(allowance, 2222)
       }
 
       let amount = this.currentToken.isERC20 ? this.web3Instance.utils.toHex(this.sendAmount * 10 ** 18) : transactionObject.value
@@ -454,8 +433,9 @@ export default {
 
           let tx = await localWeb3.eth.sendTransaction(transactionObject)
           tx.on('confirmation', (confirmationNumber, receipt) => {
-            console.log(receipt, 'confirmationNumber', confirmationNumber)
-            this.transactionSTatus = 'Confirmed'
+            if (confirmationNumber > 2) {
+              this.transactionSTatus = 'Confirmed'
+            }
           })
 
           tx.on('transactionHash', hash => {
@@ -490,7 +470,9 @@ export default {
         let tx = this.web3Instance.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
 
         tx.on('confirmation', (confirmationNumber, receipt) => {
-          this.transactionStatus = 'Confirmed'
+          if (confirmationNumber > 2) {
+            this.transactionSTatus = 'Successfull'
+          }
         })
 
         tx.on('transactionHash', hash => {
@@ -560,11 +542,11 @@ export default {
         if (!self.gasSelected && self.gasOptions[1]) {
           self.gasSelected = self.gasOptions[1]
         }
-        this.invalidTransaction = false
+        self.invalidTransaction = false
       })
         .catch((error) => {
           console.log('estimateGas error', error)
-          this.invalidTransaction = true
+          self.invalidTransaction = true
         })
     },
     getUSDGasPrice (gweiPrice, gasNumber) {
@@ -657,15 +639,16 @@ export default {
         }
       })
     }
-  }
-
+  },
+  mixins: [contract]
 }
 </script>
 
 <style lang="scss" scoped>
 a {
-  text-decoration: none;
+    text-decoration: none;
 }
+
 .q-field__messages.col {
     margin-top: 5px;
 }

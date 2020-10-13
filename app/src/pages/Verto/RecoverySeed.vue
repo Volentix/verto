@@ -98,7 +98,7 @@
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link back" color="black" text-color="white" label="Back" @click="step=1" />
-         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="saveMnemonic()" :disable="!mnemonicValidated" />
+         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="saveMnemonic(true)" :disable="!mnemonicValidated" />
       </div>
     </div>
   </q-page>
@@ -166,7 +166,7 @@ export default {
 
       this.step = 2
     },
-    async saveMnemonic () {
+    async saveMnemonic (isRecovering = false) {
       if (this.goodPassword && (this.$store.state.settings.rightOrder || this.step === 4)) {
         // console.log('we are good with order')
 
@@ -190,7 +190,7 @@ export default {
             this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
           //   this.$router.push('wallet')
           }
-          this.$router.push('cruxpay')
+          this.$router.push('cruxpay/' + (isRecovering ? 'recover' : 'new'))
         }
       } else {
         this.$q.notify({ color: 'negative', message: 'The words are not yet in the right order' })
