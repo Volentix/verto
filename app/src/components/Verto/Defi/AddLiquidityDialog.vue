@@ -83,7 +83,7 @@
             <div class="col col-4 col-md-4 q-pl-md">
                 <strong class="lab-sub q-pl-lg">Approx. Pool Output</strong>
                 <div class="lab-value output column q-pl-lg q-pr-sm">
-                    <span class="flex flex-start q-mb-sm" v-for="(icon, index) in pool.icons" :key="index"><img :src="'https://zapper.fi/images/'+icon" class="q-mr-sm" alt=""> 1.4922 ETH</span>
+                    <span class="flex flex-start q-mb-sm" v-for="(icon, index) in pool.tokensData" :key="index"><img :src="'https://zapper.fi/images/'+pool.icons[index]" class="q-mr-sm" alt=""> {{(sendAmount * (currentToken.data.price / pool.tokensData[index].price)  / 2).toFixed(4)}} {{pool.tokensData[index].symbol}}</span>
 
                 </div>
             </div>
@@ -252,7 +252,6 @@ export default {
     let tableData = await this.$store.state.wallets.tokens
     this.ethAccount = tableData.filter(w => w.chain === 'eth')
       .filter(w => this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() === w.type.toLowerCase()))
-
     if (this.notWidget === null) {
       await this.$store.dispatch('investment/getZapperTokens')
     } else {
@@ -336,15 +335,19 @@ export default {
 
     setDialogData () {
       if (this.$store.state.investment.selectedPool) {
+        let tokens = this.$store.state.investment.zapperTokens
         let account = this.ethAccount.find(o => o.chain === 'eth' && o.type === 'eth')
         this.tokenOptions = this.ethAccount.map(o => {
           o.label = o.type.toUpperCase()
           o.value = o.contract ? o.contract : o.key
           o.key = account.key
+          o.data = o.label === 'ETH' ? tokens.find(t => t.address.toLowerCase() === '0x0000000000000000000000000000000000000000') : tokens.find(t => t.address.toLowerCase() === o.value.toLowerCase())
           o.isERC20 = !!o.contract
           return o
         })
         this.currentToken = this.tokenOptions[0]
+        console.log(this.ethAccount, 'this.ethAccount', this.$store.state.investment.selectedPool, this.tokenOptions)
+
         this.sendAmount = this.currentToken.isERC20 ? 1 : 0.001 // this.currentToken.amount / 100
         this.getTokenAvailableAmount()
         this.pool = this.$store.state.investment.selectedPool
@@ -518,7 +521,7 @@ export default {
       let transactionObject = await this.getTransactionObject(false)
 
       if (this.sendAmount === 0 || !transactionObject) return
-      console.log(transactionObject, 'transactionObject2')
+
       this.web3Instance.eth.estimateGas(transactionObject).then(function (gasAmount) {
         self.gasOptions = [{
           label: 'Slow',
