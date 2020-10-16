@@ -146,6 +146,7 @@ export default {
         try {
           this.spinnervisible = true
           const results = await configManager.restoreConfig(reader.result, that.addWallet.vertoPassword)
+          console.log(results, 'results restoreConfig')
           if (results.message === 'bad_password') {
             // that.startRestoreConfig()
             this.spinnervisible = false
@@ -160,6 +161,7 @@ export default {
           }, 300)
         } catch (e) {
           this.spinnervisible = false
+          console.log(e, 'restoreConfig error')
           userError(e)
         }
       }
