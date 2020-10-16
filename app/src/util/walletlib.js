@@ -4,6 +4,50 @@ import store from '@/store'
 import { userError } from '@/util/errorHandler'
 
 class Lib {
+  history = async (walletType, key, token) => {
+    const wallet = {
+      async eos (token, key) {
+        console.log('history eos!', key)
+        let actions = []
+        await axios.post(process.env[store.state.settings.network].CACHE + process.env[store.state.settings.network].EOS_HISTORYAPI + '/v1/history/get_actions', { 'account_name': key })
+          .then(function (result) {
+            if (result.length !== 123456) {
+              // console.log('walletlib history actions', result)
+              result.data.actions.map(a => {
+                // console.log('walletlib history actions', a)
+                actions.push({
+                  date: a.block_time,
+                  transID: a.action_trace.trx_id,
+                  to: a.action_trace.act.data.to,
+                  typeTran: a.action_trace.act.name,
+                  desc: a.action_trace.act.data.memo,
+                  amount: a.action_trace.act.data.quantity
+                })
+              })
+              return actions
+            }
+          }).catch(function (error) {
+            // TODO: Exception handling
+            console.log('history error', error)
+            userError(error)
+            return false
+          })
+
+        // Promise.all(balProm)
+        return { history: actions }
+      },
+      async eth (key, token) {
+        // const Web3 = require('web3')
+        // const web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/54b0a9c16bc94aeb908616525203c9da"))
+        // var balance = web3.eth.getBalance(key)
+
+        // return { balance: float }
+      }
+    }[walletType]
+
+    return wallet ? wallet(key, token) : {}
+  }
+
   balance = async (walletType, key, token) => {
     const wallet = {
       async eos (key, token) {
