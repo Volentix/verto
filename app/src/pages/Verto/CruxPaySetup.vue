@@ -183,9 +183,13 @@ export default {
     // Your subdomain was registered in transaction 6a24c1ad453a09a740f7792ca07f0f95cac530728cbfa35f32be6a0e0a550c01 -- it should propagate on the network once it has 6 confirmations."
     if (this.existingCruxID) {
       this.cruxIDRegistered = true
-      this.addressMap = await cruxClient.getAddressMap().catch(err => { console.log(err) })
+      /*
+      this.addressMap = await cruxClient.getAddressMap().catch(err => { console.log(err , 'wallet error') })
       this.showMap = !!this.addressMap
-
+      */
+      this.config.cruxID = this.existingCruxID
+      await this.$configManager.updateConfig(this.vertoPassword, this.config)
+      this.putAddress()
       this.step = 3
       // console.log('addressMap', this.addressMap, 'show?', this.showMap)
     } else {

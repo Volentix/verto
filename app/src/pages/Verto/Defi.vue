@@ -5,7 +5,32 @@
             <div class="col-8 col-title">
                 <h4>Account overview</h4>
             </div>
-            <div class="col-4">
+            <div class="col-12 col-title" v-if="false">
+                <q-tabs v-model="tab" inline-label switch-indicator indicator-color="primary" class="bg-white shadow-2">
+                    <q-tab name="dashboard" icon="mail" label="Dashboard" />
+                    <q-tab name="mails" icon="mail" label="Investments" />
+                    <q-tab name="alarms" icon="alarm" label="Transactions" />
+                    <q-tab name="movies" icon="movie" label="Debts" />
+                </q-tabs>
+
+                <q-tab-panels v-model="tab" animated>
+                    <q-tab-panel name="dashboard">
+                        <div class="text-h6">Mails</div>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    </q-tab-panel>
+
+                    <q-tab-panel name="alarms">
+                        <div class="text-h6">Alarms</div>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    </q-tab-panel>
+
+                    <q-tab-panel name="movies">
+                        <div class="text-h6">Movies</div>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    </q-tab-panel>
+                </q-tab-panels>
+            </div>
+            <div v-if="false" class="col-4">
                 <q-select color="primary" class="q-mb-md" @input="getAccountInformation({address:accountOption})" v-model="accountOption" :options="accountOptions" label="Change account">
                     <template v-slot:append>
                         <q-avatar>
@@ -35,7 +60,7 @@
                                         </span>
                                     </div>
                                     <div class="col-4 q-pl-sm">
-                                        <span class="balance">{{token.usd.toFixed(3)}} USD</span>
+                                        <span class="balance">${{token.usd.toFixed(3)}} USD</span>
                                     </div>
                                 </div>
                             </q-scroll-area>
@@ -82,17 +107,33 @@
                     <LiquidityPoolsTable />
                 </div>
                 <div class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken">
-                    <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
-                        Convert {{parseInt(maxToken.amount)}} {{maxToken.type}} to {{maxDeFiYield.token}}
-                        <q-icon name="arrow_right_alt" />
-                        <div class="flex justify-between items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""> <strong>{{maxDeFiYield.toTokenAmount}} <b>{{maxDeFiYield.token}}</b></strong></div>
-                        <q-btn unelevated class="qbtn-download q-mr-md" color="black" text-color="white" label="Confirm" @click="goToExchange()" />
-                    </h4>
+                    <q-item>
+                        <q-item-section>
+                            <span class="q-pl-md  text-h5 text-bold ">
+
+                                Convert {{maxToken.amount.toFixed(4)}} {{maxToken.type}} to {{maxDeFiYield.token}}
+                            </span>
+                        </q-item-section>
+                        <q-item-section>
+                            <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
+                                <q-icon name="arrow_right_alt" />
+                                <div class="flex justify-between items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""> <strong>{{maxDeFiYield.toTokenAmount}} <b>{{maxDeFiYield.token}}</b></strong></div>
+                                <q-btn unelevated class="qbtn-download q-mr-md" color="black" text-color="white" label="Confirm" @click="goToExchange()" />
+                            </h4>
+                        </q-item-section>
+                    </q-item>
                 </div>
             </div>
             <div class="col col-5 q-pr-md">
                 <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
                     <InvestmentsTable />
+                </div>
+                 <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
+                    <InvestmentsOpportunitiesTable />
+                </div>
+
+                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-sm">
+                    <DebtsTable />
                 </div>
             </div>
             <div class="col col-7">
@@ -101,13 +142,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col col-7 q-pr-md">
-                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-sm">
-                    <DebtsTable />
-                </div>
-            </div>
-        </div>
+
         <q-dialog v-model="openDialog">
             <AddLiquidityDialog />
         </q-dialog>
@@ -136,6 +171,7 @@ import {
 import LiquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 import TransactionsTable from '../../components/Verto/Defi/TransactionsTable'
 import InvestmentsTable from '../../components/Verto/Defi/InvestmentsTable'
+import InvestmentsOpportunitiesTable from '../../components/Verto/Defi/InvestmentsTableOpportunities'
 import DebtsTable from '../../components/Verto/Defi/DebtsTable'
 // let cruxClient
 
@@ -148,6 +184,7 @@ export default {
     LiquidityPoolsTable,
     InvestmentsTable,
     TransactionsTable,
+    InvestmentsOpportunitiesTable,
     DebtsTable
 
   },
@@ -155,10 +192,9 @@ export default {
     return {
       maxDeFiYield: {},
       openDialog: false,
+      tab: 'mails',
       osName: '',
-      accountOptions: [
-        '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772', '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1', '0x2C13f9722540a3b0a75Cc641005F4954CC7E8771'
-      ],
+      accountOptions: [],
       accountOption: '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772',
       progressValue: 20,
       openModal: false,
@@ -262,7 +298,7 @@ export default {
     */
 
     let account = {
-      address: '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772'
+      address: tableData.find(w => w.chain === 'eth' && w.type === 'eth').key
     }
     this.$store.dispatch('investment/getZapperTokens')
     this.getAccountInformation(account)

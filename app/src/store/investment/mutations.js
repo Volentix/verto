@@ -22,7 +22,9 @@ export const updateGasPrice = (state, gasPrice) => {
 export const setMetamaskConnectionStatus = (state, status) => {
   state.metamaskConnected = status
 }
-
+export const setStakeData = (state, index) => {
+  state.stakeData = state.investmentOpportunities[index]
+}
 export const getRois = (state, updated) => {
   var grossROI = 0, netROI = 0
   let index = state.pools.findIndex(o => o.contractAddress === updated.contractAddress)
@@ -62,7 +64,11 @@ export const setInvestments = (state, payload) => {
   state.investments = state.investments.concat(payload.pools ? payload.pools : payload).map((o, index) => {
     o.index = index
     return o
-  })
+  }).filter(o => !o.canStake)
+  state.investmentOpportunities = state.investmentOpportunities.concat(payload.pools ? payload.pools : payload).map((o, index) => {
+    o.index = index
+    return o
+  }).filter(o => o.canStake)
 }
 export const setTransactions = (state, payload) => {
   state.transactions = state.transactions.concat(payload.filter(item => !state.transactions.find(o => o.hash === item.hash))).map((o, index) => {
