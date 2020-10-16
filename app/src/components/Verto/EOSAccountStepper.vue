@@ -97,12 +97,12 @@
                                         <q-btn @click="step = 4" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
                                     </q-stepper-navigation>
                                 </q-step>
-                                <q-step :name="4" title="Retry the Upgrade Account" icon="restore" :done="step > 4">
+                                <q-step :name="4" title="Retry Associate with EOS Account" icon="restore" :done="step > 4">
                                     <q-btn flat @click="step = 3" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
 
                                     <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
                                     <ul class="--subtitle__summary--list">
-                                        <li>Once you have purchase EOS from an exchange and the transfer is complete, retry the upgrade, it will find the account then.</li>
+                                        <li>Once you have purchase EOS from an exchange and the transfer is complete, retry Associate with EOS, it will find the account then.</li>
                                     </ul>
                                 </q-step>
                             </q-stepper>
