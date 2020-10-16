@@ -1329,9 +1329,9 @@ export default {
           'eos',
           'eos',
           this.toCoin.value,
-          'newdexpublic',
+          'swap.defi', // 'newdexpublic',
           this.destinationCoinAmount,
-          '{"type":"buy-market","symbol":"volentixgsys-vtx-eos","price":"0.00000","channel":"dapp","ref":"verto"}',
+          'swap,0,448', // '{"type":"buy-market","symbol":"volentixgsys-vtx-eos","price":"0.00000","channel":"dapp","ref":"verto"}',
           this.toCoin.privateKey,
           'eosio.token'
         ).then(result => {
