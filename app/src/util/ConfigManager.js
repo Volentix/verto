@@ -37,8 +37,10 @@ class ConfigManager {
         const config = JSON.parse(sjcl.decrypt(password, configData))
         let defaultKey
         try {
+          console.log(config.keys, 'try', config)
           defaultKey = config.keys.filter(k => k.defaultKey)[0].key
         } catch (e) {
+          console.log(config.keys, 'catch')
           defaultKey = config.keys[0].key
           config.keys = config.keys.map((k, i) => ({ ...k, defaultKey: !i }))
         }
@@ -48,6 +50,7 @@ class ConfigManager {
         store.commit('currentwallet/updateConfig', config)
         return config
       } catch (e) {
+        console.log(e, 'restoreConfigManager error')
         return new Error('bad_password')
       }
     }

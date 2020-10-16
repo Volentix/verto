@@ -171,7 +171,7 @@ export default {
   },
   async mounted () {
     this.cruxKey = await HD.Wallet('crux')
-    // console.log('crux privateKey', this.cruxKey.privateKey, 'mnenonic', this.$store.state.currentwallet.config.mnemonic, 'password', this.vertoPassword)
+    console.log('this.walletClientName', this.walletClientName, 'crux', this.cruxKey, 'verto wallet', this.$store.state.currentwallet, 'password length', this.vertoPassword.toString().length)
 
     cruxClient = new CruxPay.CruxClient({
       walletClientName: this.walletClientName,
@@ -179,6 +179,8 @@ export default {
     })
     await cruxClient.init()
     this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
+    console.log('this.existingCruxID', this.existingCruxID, 'crux', this.cruxKey, this.config)
+
     // Subdomain is queued for update and should be announced within the next few blocks.
     // Your subdomain was registered in transaction 6a24c1ad453a09a740f7792ca07f0f95cac530728cbfa35f32be6a0e0a550c01 -- it should propagate on the network once it has 6 confirmations."
     if (this.existingCruxID) {
