@@ -234,7 +234,7 @@ export const getMarketDataVsUSD = (context, payload) => {
 }
 
 export const getTransactions = (context, payload) => {
-  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://zapper.fi/api/transactionss?address=' + payload.address
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://zapper.fi/api/transactions?address=' + payload.address
   axios.get(transactionEndpoint, config)
     .then(function (result) {
       if (result.data.length) {

@@ -1,7 +1,7 @@
 <template>
 <q-card class="q-pa-lg modal-dialog-wrapper" style="width: 800px; max-width: 90vw;">
     <q-toolbar>
-        <q-toolbar-title><span class="text-weight-bold q-pl-sm">Add Liquidity</span></q-toolbar-title>
+        <q-toolbar-title><span class="text-weight-bold q-pl-sm">Stake</span></q-toolbar-title>
         <q-select v-if="externalWallets.metamask.length" borderless v-model="currentExrternalWallet" :options="externalWallets.metamask" label="Account" />
         <q-item dense>
             <q-item-section class="text-body1 q-pr-sm">
@@ -13,102 +13,38 @@
         </q-item>
         <q-btn flat round dense icon="close" v-close-popup />
     </q-toolbar>
-    <q-card-section class="text-h6" v-if="!transactionStatus && currentToken">
-        <div class="text-h6 q-mb-md q-pl-sm flex items-center">
-            <h4 class="lab-title q-pr-md">Available {{currentToken.label}}:</h4> {{ currentToken.amount}}
-            <span class="link-to-exchange" @click="goToExchange" v-if="!tokenInWallet && false">Get {{currentToken.label}}</span>
-        </div>
+    <q-card-section class="text-h6" v-if="!transactionStatus">
+
         <div class="row">
-            <div class="col col-3">
+            <div class="col-12 text-h6 q-mb-md q-pl-sm flex items-center">
+                <h4 class="lab-title q-pr-md">Staking: <span class="text-grey">{{stakeData.balance.toFixed(8)}} {{stakeData.label}} </span></h4>
+                <span class="link-to-exchange" @click="goToExchange" v-if="!tokenInWallet && false">Get {{currentToken.label}}</span>
+            </div>
+            <div class="col col-6">
                 <!-- <q-input class="input-input" filled rounded outlined color="purple" value="0.1" suffix="MAX" /> -->
-                <q-input :rules="[ val => !currentToken.isERC20 || currentToken.isERC20 && val % 1 == 0 || 'Whole numbers only']" @input="validateInput() ; error = null ;" v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number">
-                    <template v-slot:append>
+                <q-input readonly :rules="[ val => !currentToken.isERC20 || currentToken.isERC20 && val % 1 == 0 || 'Whole numbers only']" @input="validateInput() ; error = null ;" v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number">
+                    <template v-slot:prepend>
                         <div class="flex justify-end items-center q-pb-xs">
-                            <q-btn color="white" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat text-color="black" label="Max" />
+                            <img style="max-width:50px;" :src="'https://zapper.fi/images/'+stakeData.lpRewards.rewardToken+'-icon.png'" alt="">
                         </div>
                     </template>
+
                 </q-input>
             </div>
-            <div class="col col-3 q-ml-md">
-                <q-select v-if="currentToken" class="select-input" @input="getMaxBalance() ; approvalRequired = false; getGas();  error = null; " filled rounded outlined color="purple" v-model="currentToken" :options="tokenOptions">
-                    <template v-slot:prepend>
-                        <q-avatar>
-                            <img :src="'https://zapper.fi/images/'+currentToken.label+'-icon.png'">
-                        </q-avatar>
-                    </template>
-                </q-select>
 
-                <div class="text-body2 col-12 q-pt-sm text-red" v-if="!tokenInWallet && false">
-                    Token not in wallet
-                </div>
-            </div>
             <div class="text-body2 text-red" v-if="approvalRequired">
                 <span>
-                    Before adding Liquidity to the {{pool.label}} pool from {{platform.label}},<br> you need to process an approval transaction for your {{currentToken.label}} token
+                    You need to process an approval transaction before proceeding to your current action
                 </span>
             </div>
         </div>
         <hr style="opacity: .1">
-        <h4 class="lab-title">Choose your Allocation</h4>
+
         <div class="row">
-            <div class="col-md-8 row">
-                <div class="col col-6 q-pr-md">
-                    <strong class="lab-sub q-pl-md">Platform</strong>
-                    <q-select class="select-input full-width" filled v-model="platform" color="purple" @input="approvalRequired = false; filterPoolsByPlatform() ; getGas() ; error = null" :options="platformOptions">
-                        <template v-slot:prepend>
-                            <q-avatar>
-                                <img :src="'https://zapper.fi/images/'+platform.icon">
-                            </q-avatar>
-                        </template>
-                    </q-select>
-                </div>
-                <div class="col col-6 q-pr-md">
-                    <strong class="lab-sub q-pl-md">Pool</strong>
-                    <q-select class="select-input full-width" @filter="filterPoolsByUserInput" input-debounce="0" use-input filled @input="$store.commit('investment/setSelectedPool', pool);getGas();error = null " v-model="pool" color="purple" :options="poolOptions">
-                        <template v-slot:no-option>
-                            <q-item>
-                                <q-item-section class="text-grey">
-                                    No results
-                                </q-item-section>
-                            </q-item>
-                        </template>
-                    </q-select>
 
-                </div>
-            </div>
-            <!-- <div class="col col-3 q-pr-md text-center">
-                <strong class="lab-sub q-pl-md text-center">Allocation</strong>
-                <div class="lab-value flex flex-center text-center q-pl-lg q-pr-sm">90 % RPL 10% WETH</div>
-            </div> -->
-            <div class="col col-4 col-md-4 q-pl-md">
-                <strong class="lab-sub q-pl-lg">Approx. Pool Output</strong>
-                <div class="lab-value output column q-pl-lg q-pr-sm">
-                    <span class="flex flex-start q-mb-sm" v-for="(icon, index) in pool.tokensData" :key="index"><img :src="'https://zapper.fi/images/'+pool.icons[index]" class="q-mr-sm" alt=""> {{(sendAmount * (currentToken.data.price / pool.tokensData[index].price)  / 2).toFixed(4)}} {{pool.tokensData[index].symbol}}</span>
-
-                </div>
-            </div>
             <div class="col-md-18 q-pt-md" v-if="gasOptions">
                 <h4 class="lab-title">Set gas price</h4>
-                <!-- <q-select  class="select-input full-width" filled v-model="gasSelected" color="purple" :options="gasOptions">
-                    <template v-slot:option="scope">
-                        <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
-                            <q-item-section>
-                                <q-item-label v-html="scope.opt.label" />
-                                <q-item-label caption>{{ scope.opt.value }} USD</q-item-label>
-                            </q-item-section>
-                        </q-item>
-                    </template>
-                    <template v-if="gasOptions" v-slot:selected>
-                        <q-item>
-                            <q-item-section>
-                                <q-item-label class="full-width no-margin" v-html="gasSelected.label+' - '+gasSelected.value+' USD'" />
-                            </q-item-section>
-                        </q-item>
-                        <q-item>
-                        </q-item>
-                    </template>
-                </q-select>
-                -->
+
                 <q-list class="gasfield" separator>
                     <q-item dense class="gasSelector">
                         <q-item-section v-for="(gas, index) in gasOptions" :key="index">
@@ -178,7 +114,7 @@
     </q-card-section>
     <q-card-actions align="right" class="q-pr-sm q-mb-sm q-mt-xl" v-if="!transactionStatus">
         <q-btn label="Cancel" flat class="qbtn-start q-mr-sm cancel" color="black" v-close-popup />
-        <q-btn unelevated class="qbtn-start" :disable="sendAmount == 0 || invalidTransaction" color="black" text-color="white" :label="approvalRequired ? 'Approve '+currentToken.label : 'Confirm'" @click="doTransaction()" />
+        <q-btn unelevated class="qbtn-start" :disable="sendAmount == 0 || invalidTransaction" color="black" text-color="white" :label="approvalRequired ? 'Approve ' : 'Confirm'" @click="doTransaction()" />
     </q-card-actions>
 </q-card>
 </template>
@@ -235,7 +171,7 @@ export default {
       availableAmount: 0,
       tokenInWallet: false,
       processWithMetamask: false,
-      web3Instance: null,
+      web3: null,
       contractAddress: {
         uniswapv2: '0x80c5e6908368cb9db503ba968d7ec5a565bfb389',
         uniswapv1: '0x5e6531d99e9099cb3936c048daf6ba0b3f79b9e2',
@@ -251,21 +187,19 @@ export default {
   destroyed () {
     clearInterval(this.gasInterval)
   },
+
   async created () {
     this.$store.dispatch('investment/getGasPrice')
     let tableData = await this.$store.state.wallets.tokens
-    this.ethAccount = tableData.filter(w => w.chain === 'eth')
-      .filter(w => this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() === w.type.toLowerCase()))
-    if (this.notWidget === null) {
-      await this.$store.dispatch('investment/getZapperTokens')
-    } else {
-      this.setDialogData()
-    }
+    this.ethAccount = tableData.filter(w => w.chain === 'eth' && w.type === 'eth')
+
+    this.setDialogData()
+
     this.approvalRequired = false
     const Web3 = require('web3')
 
-    this.web3Instance = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
-    // let t = this.web3Instance.eth.getTransaction('0x51c32feefe4bcfac06b19364e07b7f261138e1760da96a827d6c0954dcb47059')
+    this.web3 = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
+    // let t = this.web3.eth.getTransaction('0x51c32feefe4bcfac06b19364e07b7f261138e1760da96a827d6c0954dcb47059')
     if (this.$store.state.investment.metamaskConnected) this.conectWallet('metamask')
 
     this.gasInterval = setInterval(() => {
@@ -273,37 +207,9 @@ export default {
     }, 10000)
   },
   computed: {
-    ...mapState('investment', ['zapperTokens', 'selectedPool', 'gasPrice'])
-  },
-  watch: {
-    zapperTokens (newVal, old) {
-      if (!newVal.length) return
-
-      this.$store.dispatch('investment/getBalancerPools')
-      this.$store.dispatch('investment/getUniswapPools')
-      this.$store.dispatch('investment/getYvaultsPools')
-      this.$store.dispatch('investment/getCurvesPools')
-      this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0])
-      this.setDialogData()
-    },
-    sendAmount (newVal, old) {
-      if (newVal) this.getGas()
-    },
-    gasPrice (newVal, old) {
-      this.getGas()
-    }
-
+    ...mapState('investment', ['zapperTokens', 'selectedPool', 'gasPrice', 'stakeData'])
   },
   methods: {
-    yearnTokenTypeToNumber (type) {
-      let val = 1
-      if (type === 'LP') {
-        val = 2
-      } else if (type === 'token') {
-        val = 0
-      }
-      return val
-    },
     conectWallet (walletType) {
       if (walletType === 'metamask') {
         this.connectLoading.metamask = true
@@ -312,8 +218,8 @@ export default {
             this.connectLoading.metamask = false
             await accounts.map(async (o, index) => {
               let item = {}
-              await this.web3Instance.eth.getBalance(o, (err, balance) => {
-                item.balance = this.web3Instance.utils.fromWei(balance, 'ether')
+              await this.web3.eth.getBalance(o, (err, balance) => {
+                item.balance = this.web3.utils.fromWei(balance, 'ether')
                 item.label = o.substring(0, 10) + '...' + o.substr(o.length - 5)
                 item.value = o
                 console.log(err)
@@ -334,11 +240,10 @@ export default {
             console.log(e)
           })
       }
-      console.log(this.externalWallets)
     },
 
-    setDialogData () {
-      if (this.$store.state.investment.selectedPool) {
+    async setDialogData () {
+      if (this.stakeData) {
         let tokens = this.$store.state.investment.zapperTokens
         let account = this.ethAccount.find(o => o.chain === 'eth' && o.type === 'eth')
         this.tokenOptions = this.ethAccount.map(o => {
@@ -349,160 +254,43 @@ export default {
           o.isERC20 = !!o.contract
           return o
         })
+        this.sendAmount = this.$store.state.investment.stakeData.balance
         this.currentToken = this.tokenOptions[0]
-        console.log(this.ethAccount, 'this.ethAccount', this.$store.state.investment.selectedPool, this.tokenOptions)
+        let approvalRequired = await this.isApprovalRequired(this.stakeData.contractAddress, this.stakeData.lpRewards.rewardAddress, this.sendAmount)
 
-        this.sendAmount = this.currentToken.isERC20 ? 1 : 0.001 // this.currentToken.amount / 100
-        this.getTokenAvailableAmount()
-        this.pool = this.$store.state.investment.selectedPool
-        this.platform = this.platformOptions.find(o => o.value.toLowerCase() === this.pool.platform.toLowerCase())
-        this.poolOptions = this.poolOptions = this.$store.state.investment.pools.filter(o => o.platform.toLowerCase() === this.platform.value.toLowerCase()).map(o => {
-          o.label = o.poolName
-          o.value = o.id
-          return o
-        })
-
-        this.isTokenInWallet()
-        this.getGas()
+        if (!approvalRequired) {
+          this.getTransactionObject()
+        }
       }
     },
+    async getTransactionObject (setGas = false, send = false) {
+      let toAddress = this.stakeData.lpRewards.rewardAddress
 
-    async getTransactionObject (setGas = true, send = false) {
-      if (!this.pool.platform) return
-
-      let poolContractABI = null,
-        tokenABI = null,
-        fromTokenAddress = this.currentToken.contract ? this.currentToken.contract : '0x0000000000000000000000000000000000000000'
-      let toAddress = this.contractAddress[this.pool.platform.replace(/[^0-9a-z]/gi, '').toLowerCase()]
-      poolContractABI = await this.getContractABI(toAddress)
-
-      let nonce = await this.web3Instance.eth.getTransactionCount(this.currentToken.key, 'latest')
-      const poolContract = new this.web3Instance.eth.Contract(JSON.parse(poolContractABI), toAddress)
+      let nonce = await this.web3.eth.getTransactionCount(this.currentToken.key, 'latest') + 1
+      const poolContract = new this.web3.eth.Contract(this.stakeData.lpRewards.abi, toAddress)
 
       let transactionObject = {
         from: this.currentToken.key,
         to: toAddress,
-        value: this.web3Instance.utils.toHex(this.currentToken.isERC20 ? 0 : this.sendAmount * 10 ** 18),
+        value: 0,
         nonce: nonce
       }
-      if (setGas) {
-        transactionObject.gas = this.web3Instance.utils.toHex(this.gasSelected.gas)
-        transactionObject.gasPrice = this.web3Instance.utils.toHex(this.gasSelected.gasPrice)
-      }
+
       let tx = null
 
-      if (this.currentToken.isERC20) {
-        tokenABI = await this.getContractABI('default', true)
-        const tokenContract = new this.web3Instance.eth.Contract(tokenABI, fromTokenAddress)
+      let amount = this.web3.utils.toHex(this.sendAmount * 10 ** 18)
 
-        const allowance = parseInt(await tokenContract.methods.allowance(this.currentToken.key, toAddress).call())
-
-        if (allowance === 0 || allowance < this.sendAmount) {
-          this.approvalRequired = true
-          tx = tokenContract.methods.approve(
-            toAddress,
-            this.web3Instance.utils.toHex(this.sendAmount * 10 ** 18 * 100)
-          )
-          transactionObject.to = fromTokenAddress
-        } else {
-          this.approvalRequired = false
-        }
-      }
-
-      let amount = this.currentToken.isERC20 ? this.web3Instance.utils.toHex(this.sendAmount * 10 ** 18) : transactionObject.value
-
-      if (this.approvalRequired === false) {
-        if (this.pool.platform === 'Uniswap V2') {
-          tx = await poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.tokensData[0].address, this.pool.tokensData[1].address, amount, 0)
-        } else if (this.pool.platform === 'Balancer-labs') {
-          tx = await poolContract.methods.ZapIn(fromTokenAddress, this.pool.contractAddress, amount, 0)
-        } else if (this.pool.platform === 'Curve') {
-          tx = await poolContract.methods.ZapIn(this.currentToken.key, fromTokenAddress, this.pool.contractAddress, amount, 0)
-        } else if (this.pool.platform === 'yEarn') {
-          console.log(this.yearnTokenTypeToNumber(this.pool.type), this.pool)
-          tx = await poolContract.methods.ZapIn(this.currentToken.key, this.pool.contractAddress, this.yearnTokenTypeToNumber(this.pool.type), fromTokenAddress, amount, 0)
-        }
-      }
+      tx = await poolContract.methods.stake(amount)
+      console.log(this.sendAmount, 'this.sendAmount')
       transactionObject.data = tx.encodeABI()
-
-      return transactionObject
-    },
-    async sendTransaction () {
-      let transactionObject = await this.getTransactionObject(true, true)
+      if (setGas) {
+        transactionObject.gas = this.web3.utils.toHex(this.gasSelected.gas)
+        transactionObject.gasPrice = this.web3.utils.toHex(this.gasSelected.gasPrice)
+      } else {
+        this.getGasOptions(transactionObject)
+      }
       console.log(transactionObject)
-      // /*
-      this.transactionStatus = 'Pending'
-      if (this.currentToken.metamask) {
-        /* global web3 */
-        const Web3 = require('web3')
-        if (window.web3 && window.web3.currentProvider.isMetaMask) {
-          let localWeb3 = new Web3(web3.currentProvider)
-
-          let tx = await localWeb3.eth.sendTransaction(transactionObject)
-          tx.on('confirmation', (confirmationNumber, receipt) => {
-            if (confirmationNumber > 2) {
-              this.transactionSTatus = 'Confirmed'
-            }
-          })
-
-          tx.on('transactionHash', hash => {
-            this.transactionStatus = 'Pending'
-            this.transactionHash = hash
-          })
-
-          tx.on('receipt', receipt => {
-            this.transactionStatus = 'Success'
-            console.log(receipt, 'success')
-          })
-
-          tx.on('error', error => {
-            this.error = error
-            this.transactionStatus = null
-            console.log(error)
-          })
-        } else { // Non-dapp browsers...
-          console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
-        }
-      }
-
-      const EthereumTx = require('ethereumjs-tx').Transaction
-      var transaction = new EthereumTx(transactionObject)
-      let account = this.ethAccount.find(o => o.chain === 'eth' && o.type === 'eth')
-
-      if (account) {
-        transaction.sign(Buffer.from(account.privateKey.substring(2), 'hex'))
-        const serializedTransaction = transaction.serialize()
-        console.log(transactionObject, 'sending')
-
-        let tx = this.web3Instance.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
-
-        tx.on('confirmation', (confirmationNumber, receipt) => {
-          if (confirmationNumber > 2) {
-            this.transactionSTatus = 'Successfull'
-          }
-        })
-
-        tx.on('transactionHash', hash => {
-          this.transactionStatus = 'Pending'
-          this.transactionHash = hash
-          var receipt = this.web3Instance.eth.getTransactionReceipt(hash)
-            .then(console.log)
-
-          console.log(receipt)
-        })
-
-        tx.on('receipt', receipt => {
-          console.log(receipt, 'success')
-          this.transactionStatus = 'Success'
-        })
-
-        tx.on('error', error => {
-          console.log(error, 'error')
-          this.error = error
-          this.transactionStatus = null
-        })
-      }
-      // */
+      return transactionObject
     },
     sleep (ms) {
       return new Promise(resolve => setTimeout(resolve, ms))
@@ -510,7 +298,7 @@ export default {
     async waitTransaction (txHash) {
       let tx = null
       while (tx == null) {
-        tx = await this.web3Instance.eth.getTransactionReceipt(txHash)
+        tx = await this.web3.eth.getTransactionReceipt(txHash)
         await this.sleep(2000)
       }
       console.log('Transaction ' + txHash + ' was mined.')
@@ -519,49 +307,16 @@ export default {
     async doErc20Transaction (transactionObject) {
 
     },
-    async getGas () {
-      const self = this
-
-      let transactionObject = await this.getTransactionObject(false)
-
-      if (this.sendAmount === 0 || !transactionObject) return
-
-      this.web3Instance.eth.estimateGas(transactionObject).then(function (gasAmount) {
-        self.gasOptions = [{
-          label: 'Slow',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.slow, gasAmount).toFixed(2),
-          gasPrice: self.$store.state.investment.gasPrice.slow * 1000000000,
-          gas: gasAmount
-        },
-        {
-          label: 'Fast',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.fast, gasAmount).toFixed(2),
-          gasPrice: self.$store.state.investment.gasPrice.fast * 1000000000,
-          gas: gasAmount
-        },
-        {
-          label: 'Instant',
-          value: self.getUSDGasPrice(self.$store.state.investment.gasPrice.instant, gasAmount).toFixed(2),
-          gasPrice: self.$store.state.investment.gasPrice.instant * 1000000000,
-          gas: gasAmount
-        }
-        ]
-        if (!self.gasSelected && self.gasOptions[1]) {
-          self.gasSelected = self.gasOptions[1]
-        }
-        self.invalidTransaction = false
-      })
-        .catch((error) => {
-          console.log('estimateGas error', error)
-          self.invalidTransaction = true
-        })
-    },
     getUSDGasPrice (gweiPrice, gasNumber) {
       let ethToUsd = this.$store.state.investment.marketData.find(o => o.symbol.toLowerCase() === 'eth').current_price
-      return this.web3Instance.utils.fromWei(Math.round((gweiPrice * gasNumber * 1000000000)).toString(), 'ether') * ethToUsd
+      return this.web3.utils.fromWei(Math.round((gweiPrice * gasNumber * 1000000000)).toString(), 'ether') * ethToUsd
     },
     async doTransaction () {
-      return this.sendTransaction()
+      if (this.approvalRequired) {
+        this.sendSignedTransaction(await this.isApprovalRequired(this.stakeData.contractAddress, this.stakeData.lpRewards.rewardAddress, this.sendAmount, true))
+      } else {
+        this.sendSignedTransaction(await this.getTransactionObject(true))
+      }
     },
     async isTokenInWallet () {
       let tableData = await this.$store.state.wallets.tokens
