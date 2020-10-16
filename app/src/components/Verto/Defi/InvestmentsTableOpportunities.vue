@@ -1,6 +1,6 @@
 <template>
 <div>
-    <q-table :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="Investments" :data="$store.state.investment.investments" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+    <q-table :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="Staking Opportunities" :data="$store.state.investment.investmentOpportunities" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
         <template v-slot:body-cell-asset="props">
             <q-td :props="props" class="body-table-col">
                 <div class="col-3 flex items-center">
@@ -9,24 +9,29 @@
                     </span>
                     <span class="column pairs">
                         <span class="pair">{{props.row.label}}</span>
-                       <span class="value">${{props.row.balanceUSD.toFixed(4)}}</span>
+                        <span class="value">${{props.row.balanceUSD.toFixed(4)}}</span>
                     </span>
-                    <q-chip outline  color="cyan-7"  text-color="white" v-if="props.row.isStaked">
-                        Stacked
+                    <q-chip color="cyan-7" text-color="white" class="cursor-pointer" @click.native="$store.commit('investment/setStakeData', props.row.index); openDialog = true">
+                        Stake
                     </q-chip>
 
                 </div>
             </q-td>
         </template>
+        <template v-slot:body-cell-reward="props">
+            <q-td :props="props" class="body-table-col">
+                <div class="col-3 flex items-center">
+                    <span class="imgs q-mr-lg" v-if="props.row.tokens.length">
+                        <img :src="'https://zapper.fi/images/'+props.row.lpRewards.rewardToken+'-icon.png'" alt="">
+                    </span>
+                    <span class="column pairs">
+                        <span class="pair">{{props.row.lpRewards.rewardToken}}</span>
 
-        <template v-slot:body-cell-action="props">
-            <q-td :props="props" class="body-table-col" v-if="false">
-                <div class="col-2 flex justify-end">
-                    <q-btn unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="grey" label="Add" />
+                    </span>
+
                 </div>
             </q-td>
         </template>
-
         <template v-slot:top-right>
             <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
                 <template v-slot:append>
@@ -35,6 +40,9 @@
             </q-input>
         </template>
     </q-table>
+    <q-dialog v-model="openDialog">
+        <StakingDialog :notWidget="true" v-if="$store.state.investment.stakeData" />
+    </q-dialog>
 </div>
 </template>
 
@@ -42,12 +50,14 @@
 import {
   mapState
 } from 'vuex'
+import StakingDialog from './StakingDialog'
 export default {
   components: {
-
+    StakingDialog
   },
   data () {
     return {
+      openDialog: false,
       poolsData: [],
       filter: '',
       columns: [{
@@ -69,16 +79,16 @@ export default {
         sortable: true
       },
       {
-        name: 'protocol',
+        name: 'pool',
         align: 'center',
-        label: 'Protocol',
-        field: 'protocol',
+        label: 'Pool',
+        field: row => row.lpRewards.name,
         sortable: true
       },
       {
-        name: 'value',
-        label: 'Value',
-        field: 'balanceUSD',
+        name: 'reward',
+        label: 'Reward',
+        field: row => row,
         sortable: true,
         format: val => `${Math.round(val)}`
       },

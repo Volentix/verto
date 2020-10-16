@@ -25,18 +25,18 @@ export default {
     },
     async isApprovalRequired (fromTokenAddress, toAddress, amountToSend, setGas = false) {
       let tx = null, transactionObject = {}
-
+      let account = Array.isArray(this.ethAccount) ? this.ethAccount.find(o => o.type === 'eth') : this.ethAccount
       let tokenABI = await this.getContractABI('default', true)
       this.approvalRequired = false
       const tokenContract = new this.web3.eth.Contract(tokenABI, fromTokenAddress)
 
-      const allowance = await tokenContract.methods.allowance(this.ethAccount.key, toAddress).call()
+      const allowance = await tokenContract.methods.allowance(account.key, toAddress).call()
 
       if (allowance === 0 || allowance < amountToSend) {
-        let nonce = await this.web3.eth.getTransactionCount(this.ethAccount.key, 'latest')
+        let nonce = await this.web3.eth.getTransactionCount(account.key, 'latest')
 
         transactionObject = {
-          from: this.ethAccount.key,
+          from: account.key,
           nonce: nonce
         }
         this.approvalRequired = true
@@ -96,7 +96,7 @@ export default {
     },
     async sendSignedTransaction (transactionObject, metamask = false) {
       this.transactionStatus = 'Pending'
-
+      let account = Array.isArray(this.ethAccount) ? this.ethAccount.find(o => o.type === 'eth') : this.ethAccount
       console.log(transactionObject)
       if (metamask) {
         /* global web3 */
@@ -135,8 +135,8 @@ export default {
       const EthereumTx = require('ethereumjs-tx').Transaction
       var transaction = new EthereumTx(transactionObject)
 
-      if (this.ethAccount) {
-        transaction.sign(Buffer.from(this.ethAccount.privateKey.substring(2), 'hex'))
+      if (account) {
+        transaction.sign(Buffer.from(account.privateKey.substring(2), 'hex'))
         const serializedTransaction = transaction.serialize()
 
         let tx = this.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
