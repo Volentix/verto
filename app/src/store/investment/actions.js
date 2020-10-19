@@ -155,6 +155,7 @@ export const getYvaultsPools = ({ rootState, commit, state }, payload) => {
       }).filter(function (e) {
         return !e.hideFromExplore
       }).forEach((value, index) => {
+        console.log(state.zapperTokens, 'state.zapperTokens')
         let poolTokens = value.tokens.map(o => state.zapperTokens.find(t => t.address.toLowerCase() === o.address.toLowerCase())).filter((val) => val)
 
         if (!poolTokens.length) return
@@ -214,9 +215,13 @@ export const getCurvesPools = ({ rootState, commit, state }, payload) => {
 }
 export const getZapperTokens = (context, payload) => {
   // context.commit('setTokens',fallBackTokens)
-  axios.get(process.env[context.rootState.settings.network].CACHE + 'https://zapper.fi/api/account-balance/tokens?addresses=0x358A6C0F7614C44b344381b0699E2397b1483252', config).then((result) => {
+  let address = '0x358A6C0F7614C44b344381b0699E2397b1483252'
+  axios.get(process.env[context.rootState.settings.network].CACHE + 'https://zapper.fi/api/account-balance/tokens?addresses=' + address, config).then((result) => {
     if (result.data) {
-      context.commit('setTokens', result.data['0x358A6C0F7614C44b344381b0699E2397b1483252'])
+      for (var prop in result.data) {
+        context.commit('setTokens', result.data[prop])
+        break
+      }
     }
   })
 }
