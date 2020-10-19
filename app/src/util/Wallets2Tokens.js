@@ -144,9 +144,9 @@ class Wallets2Tokens {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
           }).then(res => {
             let tokenSets = res.data.rebalancing_sets
-            // console.log('tokenSets', tokenSets)
+            console.log('ethplorer.tokens', ethplorer.tokens)
             if (ethplorer.tokens) {
-              ethplorer.tokens.filter(t => t.balance > 0).map(t => {
+              ethplorer.tokens.filter(t => t.balance > 0 && t.symbol).map(t => {
                 t.tokenInfo.image = t.tokenInfo.image ? t.tokenInfo.image : 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + Web3.utils.toChecksumAddress(t.tokenInfo.address) + '/logo.png'
                 const csa = Web3.utils.toChecksumAddress(t.tokenInfo.address)
 
@@ -206,7 +206,7 @@ class Wallets2Tokens {
     }
 
     // 'https://api.coingecko.com/api/v3/simple/price?ids=' + +'&vs_currencies=usd'
-    let coinEOS = (await axios.get(process.env[store.state.settings.network].CHAIN_ID + 'https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
+    let coinEOS = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
     let coinUSD = coinEOS * this.eosUSD
     // console.log(coin, ' --> USD', coinUSD)
 

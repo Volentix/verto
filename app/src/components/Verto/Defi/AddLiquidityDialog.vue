@@ -263,7 +263,7 @@ export default {
     }
     this.approvalRequired = false
     const Web3 = require('web3')
-
+    console.log(tableData, 'this.ethAccount')
     this.web3Instance = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
     // let t = this.web3Instance.eth.getTransaction('0x51c32feefe4bcfac06b19364e07b7f261138e1760da96a827d6c0954dcb47059')
     if (this.$store.state.investment.metamaskConnected) this.conectWallet('metamask')

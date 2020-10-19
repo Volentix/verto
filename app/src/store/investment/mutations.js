@@ -5,9 +5,9 @@ export function someMutation (state) {
 
 export const setSelectedPool = (state, pool) => {
   state.selectedPool = pool
-  console.log(pool, 'pool')
 }
 export const setPools = (state, pools) => {
+  console.log(pools, 'pools')
   state.pools = pools
 }
 export const updatePools = (state, pool) => {
