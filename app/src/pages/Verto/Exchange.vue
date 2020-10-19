@@ -156,7 +156,7 @@
                                     </q-input>
                                   </span>
                                 </div>
-                                <q-btn flat unelevated class="exchange-btn" @click="switchAmounts()" text-color="black">
+                                <q-btn :disable="destinationCoin && destinationCoin.value === 'vtx'" flat unelevated class="exchange-btn" @click="switchAmounts()" text-color="black">
                                   <q-icon name="keyboard_backspace" class="left-icon" />
                                   <q-icon name="keyboard_backspace" class="right-icon" />
                                 </q-btn>
@@ -720,6 +720,13 @@
                                 </div>
                               </template>
                             </q-input>
+                            <q-input v-model="exchangeAddress.tag" readonly rounded class="input-input pr80" outlined color="purple" type="text">
+                              <template v-slot:append>
+                                <div class="flex justify-end">
+                                  <q-btn flat unelevated text-color="grey" @click="copyToClipboard(exchangeAddress.tag , 'Exchange Memo')" round class="btn-copy" icon="o_file_copy" />
+                                </div>
+                              </template>
+                            </q-input>
                           </div>
                         </div>
                       </div>
@@ -767,9 +774,13 @@ const typeUpper = function (thing) {
   }
 }
 import { osName } from 'mobile-device-detect'
+import Lib from '@/util/walletlib'
 import Wallets from '../../components/Verto/Wallets'
 import OneInchExhange from '../../pages/Exchange/oneInch'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
+import EosWrapper from '@/util/EosWrapper'
+const eos = new EosWrapper()
+
 export default {
   components: {
     // desktop components
@@ -819,6 +830,10 @@ export default {
       destinationQuantity: 0,
       destinationCoinOptions: null,
       destinationCoinUnfilter: null,
+      destinationCoinAmount: null,
+      vtxEosPrice: null,
+      rateDataVtx: null,
+      rateDataEos: null,
       rateData: null,
       rateDataTemplate: {
         rate: 1,
@@ -907,6 +922,7 @@ export default {
       self.optionsTo.push({
         label: token.name.toLowerCase(),
         value: token.key,
+        privateKey: token.privateKey,
         image: token.icon,
         type: token.type
       })
@@ -926,6 +942,7 @@ export default {
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
     )
+
     // console.log('this.currentAccount', this.currentAccount)
     if (this.currentAccount !== null && this.currentAccount !== undefined) {
       // this.fromCoin = {
@@ -981,6 +998,12 @@ export default {
         case null:
           value = ''
           break
+        case 'limit_exceeded':
+          value = 'The destination amount limit was exceeded'
+          break
+        case 'invalid_address':
+          value = 'The destination address is invalid'
+          break
         case 'no_deposit':
           value = 'No deposit detected yet'
           break
@@ -1021,6 +1044,8 @@ export default {
         case 'complete':
           value = 'white'
           break
+        case 'limit_exceeded':
+        case 'invalid_address':
         case 'failed':
         case 'refunded':
         case 'timeout':
@@ -1217,15 +1242,18 @@ export default {
         if (this.depositCoin.value.toLowerCase() === token.type) {
           self.optionsFrom.push({
             label: token.name.toLowerCase(),
-            value: token.type === 'eos' ? token.name.toLowerCase() : token.key,
+            value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
+            key: token.key,
             image: token.icon,
             type: token.type
           })
         }
-        if (this.destinationCoin.value.toLowerCase() === token.type) {
+        if ((this.destinationCoin.value.toLowerCase() === token.type) || (this.destinationCoin.value.toLowerCase() === 'vtx' && token.type === 'eos')) {
           self.optionsTo.push({
             label: token.name.toLowerCase(),
-            value: token.type === 'eos' ? token.name.toLowerCase() : token.key,
+            value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
+            key: token.key,
+            privateKey: token.privateKey,
             image: token.icon,
             type: token.type
           })
@@ -1281,7 +1309,47 @@ export default {
         self.status === 'sending') {
           setTimeout(() => { self.orderStatus() }, 30000)
         }
+        if (self.status === 'complete' && self.destinationCoin.value === 'vtx') {
+          self.destinationCoinAmount = Math.trunc(result.data.data.destinationCoinAmount * 10000) / 10000
+          self.orderVTX()
+        }
       })
+    },
+    async orderVTX () {
+      // check balance then...
+      // let eosBal = Lib.balance('eos', this.toCoin.value, 'eos')
+      let eosBal = (await eos.getCurrencyBalanceP(this.toCoin.value)).toString().split(' ')[0]
+      console.log('eosBal', eosBal)
+
+      if (+eosBal < +this.destinationCoinAmount) {
+        console.log('eos balance is yet to low to proceed: ', eosBal)
+        setTimeout(() => { self.orderVTX() }, 1000)
+      } else {
+        Lib.send(
+          'eos',
+          'eos',
+          this.toCoin.value,
+          'swap.defi', // 'newdexpublic',
+          this.destinationCoinAmount,
+          'swap,0,448', // '{"type":"buy-market","symbol":"volentixgsys-vtx-eos","price":"0.00000","channel":"dapp","ref":"verto"}',
+          this.toCoin.privateKey,
+          'eosio.token'
+        ).then(result => {
+          console.log('send result', result)
+          if (result.success) {
+            this.$q.notify({
+              message: 'Your VTX have been received',
+              color: 'positive'
+            })
+          } else {
+            this.$q.notify({
+              message: 'Could not convert EOS to VTX',
+              color: 'negative',
+              type: 'warning'
+            })
+          }
+        })
+      }
     },
     postOrder () {
       const self = this
@@ -1291,7 +1359,7 @@ export default {
       if (self.lastChangedValue === 'deposit') {
         depositCoinAmount = self.depositQuantity
       } else {
-        destinationCoinAmount = self.destinationQuantity
+        destinationCoinAmount = self.destinationCoin.value === 'vtx' ? self.destinationQuantity * self.vtxEosPrice : self.destinationQuantity
       }
 
       this.refundAddress.address = this.refundAddress.address === '' ? this.fromCoin.value : this.refundAddress.address
@@ -1301,7 +1369,7 @@ export default {
       this.$axios.post(url + '/v2/order',
         {
           depositCoin: self.depositCoin.value,
-          destinationCoin: self.destinationCoin.value,
+          destinationCoin: self.destinationCoin.value === 'vtx' ? 'eos' : self.destinationCoin.value,
           depositCoinAmount,
           destinationCoinAmount,
           destinationAddress: self.destinationAddress,
@@ -1332,6 +1400,7 @@ export default {
         { headers })
         .then((response) => {
           // console.log('------------Response------------', response)
+          let inject = {}
           self.destinationCoinOptions = response.data.data.map(function (coin) {
             if (coin.isActive === true) {
               let row = {
@@ -1339,11 +1408,29 @@ export default {
                 'value': coin.destinationCoin,
                 'image': self.coins.filter(coins => coins.symbol === coin.destinationCoin)[0].logoUrl
               }
+
+              if (coin.destinationCoin === 'eos') {
+                inject = {
+                  'label': 'Volentix',
+                  'value': 'vtx',
+                  'chain': 'eos',
+                  'image': '/statics/vtx_icon.png'
+                }
+              }
+
               return row
             } // deal with false, should not create empty option.
           }).filter(function (el) {
             return el != null
           }).sort(function (a, b) {
+            if (a.label.toLowerCase() < b.label.toLowerCase()) {
+              return -1
+            }
+            return 1
+          })
+
+          self.destinationCoinOptions.push(inject)
+          self.destinationCoinOptions.sort(function (a, b) {
             if (a.label.toLowerCase() < b.label.toLowerCase()) {
               return -1
             }
@@ -1358,17 +1445,37 @@ export default {
           // console.error('There was a problem getting the destination coins', err)
         })
     },
-    getRate () {
+    async getRate () {
       const self = this
+
+      if (self.destinationCoin.value === 'vtx') {
+        this.vtxEosPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
+      }
+
       this.$axios.post(url + '/v2/rate',
         {
           depositCoin: self.depositCoin.value,
-          destinationCoin: self.destinationCoin.value
+          destinationCoin: self.destinationCoin.value === 'vtx' ? 'eos' : self.destinationCoin.value
         },
         { headers })
         .then((response) => {
           self.rateData = response.data.data
-          // console.log('self.rateData -------------- ', self.rateData)
+
+          if (self.destinationCoin.value === 'vtx') {
+            self.rateDataVtx = {
+              limitMaxDepositCoin: self.rateData.limitMaxDepositCoin,
+              limitMaxDestinationCoin: self.rateData.limitMaxDestinationCoin / self.vtxEosPrice,
+              limitMinDepositCoin: self.rateData.limitMinDepositCoin,
+              limitMinDestinationCoin: self.rateData.limitMinDestinationCoin / self.vtxEosPrice,
+              minerFee: self.rateData.minerFee,
+              rate: self.rateData.rate / self.vtxEosPrice
+            }
+
+            self.rateDataEos = self.rateData
+            self.rateData = self.rateDataVtx
+          }
+
+          console.log('self.rateData -------------- ', self.rateData)
         })
         .catch((err) => {
           if (err) {}

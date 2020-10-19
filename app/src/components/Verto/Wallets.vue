@@ -136,16 +136,16 @@
           </h2>
           <h2 class="wallets-wrapper--list_title q-pa-md q-ml-md flex items-center"><q-icon :name="'img:statics/history_icon-black.svg'" class="q-mr-sm" /> Transaction History</h2>
           <q-list bordered separator class="list-wrapper history-list-wrapper">
-            <q-item v-for="(item, index) in fakeHistory" :key="index" clickable v-ripple>
+            <q-item v-for="(item, index) in history" :key="index" clickable v-ripple>
               <q-item-section class="item-date">
-                <span class="item-date--value column" v-html="item.date" />
+                <span class="item-date--value column"> {{item.date}} </span>
               </q-item-section>
               <q-item-section class="item-trans">
                 <span class="item-trans--transID">{{item.transID}}</span>
-                <span class="item-trans--desc"> <span class="type" :class="item.typeTran">{{item.typeTran}}</span> {{item.desc}}</span>
+                <span class="item-trans--desc"> <span class="type" :clas="item.typeTran" >{{item.typeTran}}</span> {{item.desc}}</span>
               </q-item-section>
               <q-item-section class="item-amount">
-                <span class="item-amount--value">{{new Number(+item.amount).toFixed(2) + ' ' + $store.state.currentwallet.wallet.type.toUpperCase()}} </span>
+                <span class="item-amount--value">{{item.amount}} </span>
               </q-item-section>
             </q-item>
           </q-list>
@@ -262,7 +262,7 @@
 </template>
 
 <script>
-
+import Lib from '@/util/walletlib'
 import { QScrollArea } from 'quasar'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
@@ -296,6 +296,7 @@ export default {
   },
   data () {
     return {
+      history: [],
       toggled: false,
       alertSecurity: false,
       showHidden: false,
@@ -465,6 +466,12 @@ export default {
         // this.$store.state.currentwallet.wallet = this.currentAccount
         this.$store.state.currentwallet.wallet = this.selectedCoin
         // console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
+
+        if (this.selectedCoin.chain !== 'eos') {
+          this.history = this.fakeHistory
+        } else {
+          this.history = (await Lib.history(this.selectedCoin.chain, this.selectedCoin.type, this.selectedCoin.name)).history
+        }
       } else {
         menu.selected = false
         this.$store.state.currentwallet.wallet = undefined
