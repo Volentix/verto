@@ -373,7 +373,7 @@ export default {
       this.accountName = null
       // this.step = 1
       this.$router.push({
-        path: this.currentAccount.to
+        path: 'verto/dashboard'
       })
     },
     checkPassword () {
