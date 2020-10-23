@@ -27,6 +27,14 @@ export default [
         }
       },
       {
+        name: 'create-keys',
+        path: '/create-keys',
+        component: () => import('pages/Verto/CreateKeys.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'cruxpay',
         path: '/cruxpay/:fromStep',
         component: () => import('pages/Verto/CruxPaySetup.vue'),
