@@ -88,3 +88,9 @@ export const setDefaultAccount = (state, payload) => {
 export const setTableLoadingStatus = (state, payload) => {
   state.tableLoading = payload
 }
+export const setEOSInvestments = (state, payload) => {
+  state.eosInvestments = state.eosInvestments.concat(payload.map((o, index) => {
+    o.index = index
+    return o
+  }))
+}
