@@ -387,6 +387,8 @@ export default {
     this.params = this.$store.state.currentwallet.params
     this.tableData = await this.$store.state.wallets.tokens
     // console.log('this.tableData', this.tableData)
+
+    console.log(this.tableData, 'tableData')
     let self = this
     this.tableData.map(token => {
       if (!token.disabled && token.type.toLowerCase() !== 'verto' && parseFloat(token.amount) > 0) {

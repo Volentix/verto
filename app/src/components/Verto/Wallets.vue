@@ -141,7 +141,7 @@
                 <span class="item-date--value column"> {{item.date}} </span>
               </q-item-section>
               <q-item-section class="item-trans">
-                <span class="item-trans--transID">{{item.transID}}</span>
+                <span class="item-trans--transID" @click="launchEosExplorer(item.transID)" ><a :h="item.transID">Tx: {{item.transID.substring(0, 8)}}</a></span>
                 <span class="item-trans--desc"> <span class="type" :clas="item.typeTran" >{{item.typeTran}}</span> {{item.desc}}</span>
               </q-item-section>
               <q-item-section class="item-amount">
@@ -263,7 +263,7 @@
 
 <script>
 import Lib from '@/util/walletlib'
-import { QScrollArea } from 'quasar'
+import { QScrollArea, openURL } from 'quasar'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 
@@ -370,6 +370,9 @@ export default {
     }
   },
   methods: {
+    launchEosExplorer (tx) {
+      openURL(process.env[this.$store.state.settings.network].EOS_TRANSACTION_EXPLORER + tx)
+    },
     goToStake () {
       this.$router.push({ path: '/verto/stake' })
     },
@@ -469,10 +472,11 @@ export default {
         this.$store.state.currentwallet.wallet = this.selectedCoin
         // console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
 
-        if (this.selectedCoin.chain !== 'eos') {
+        if (this.selectedCoin.chain !== 'eos' && this.selectedCoin.chain !== 'eth') {
           this.history = this.fakeHistory
         } else {
-          this.history = (await Lib.history(this.selectedCoin.chain, this.selectedCoin.type, this.selectedCoin.name)).history
+          let nameOrKey = this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.name
+          this.history = (await Lib.history(this.selectedCoin.chain, this.selectedCoin.type, nameOrKey)).history
         }
       } else {
         menu.selected = false
