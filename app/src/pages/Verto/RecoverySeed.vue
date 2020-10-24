@@ -173,9 +173,10 @@ export default {
         if (this.vertoPassword) {
           // console.log('in saveMnemonic with password')
           this.config.mnemonic = this.mnemonic
-          await this.$configManager.updateConfig(this.vertoPassword, this.config)
+          let updateReturn = await this.$configManager.updateConfig(this.vertoPassword, this.config)
           const keys = await HD.Wallet('eos')
           const result = await this.$configManager.saveWalletAndKey('EOS Key - HD', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
+          console.log(keys, 'keys', result, 'result', this.mnemonic, 'this.mnemonic', 'updateReturn', updateReturn)
 
           if (result && result.success) {
           //   try {
@@ -190,7 +191,7 @@ export default {
             this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
           //   this.$router.push('wallet')
           }
-          this.$router.push('cruxpay/' + (isRecovering ? 'recover' : 'new'))
+          this.$router.push('create-keys/')
         }
       } else {
         this.$q.notify({ color: 'negative', message: 'The words are not yet in the right order' })
