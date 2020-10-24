@@ -291,8 +291,9 @@ export default {
     window.addEventListener('resize', this.getWindowWidth)
     let tableData = await this.$store.state.wallets.tokens
     let params = this.$store.state.currentwallet.params
+    console.log(this.$store.state.currentwallet, tableData)
     this.currentWallet = tableData.find(w => w.chain === params.chainID && w.type === params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === params.accountName : w.key === params.accountName)
+      w.chain === 'eos' ? w.name.toLowerCase() === params.accountName : w.name === params.accountName)
     )
     // this.wallet = this.$store.state.currentwallet.wallet
     this.goBack = `/verto/wallets/${params.chainID}/${params.tokenID}/${params.accountName}`

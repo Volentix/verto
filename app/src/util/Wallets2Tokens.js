@@ -161,7 +161,7 @@ class Wallets2Tokens {
                     // console.log('eth token not on trustwallet', t, csa)
                   }
                 }
-
+               if(t.tokenInfo && t.tokenInfo.symbol){
                 self.tableData.push({
                   selected: false,
                   disabled: false,
@@ -175,6 +175,7 @@ class Wallets2Tokens {
                   icon: t.tokenInfo.image ? t.tokenInfo.image : ''
                 })
               })
+            }
             }
           })
         })

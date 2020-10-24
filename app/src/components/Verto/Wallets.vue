@@ -352,17 +352,17 @@ export default {
   async created () {
     // console.log('created')
     // this.params = this.$store.state.currentwallet.params
-    this.chainID = this.$route.params.chainID
-    this.tokenID = this.$route.params.tokenID
-    this.accountName = this.$route.params.accountName
+    if (this.$route.params.chainID) {
+      this.chainID = this.$route.params.chainID
+      this.tokenID = this.$route.params.tokenID
+      this.accountName = this.$route.params.accountName
 
-    // console.log('this.$store.state.wallets.tokens in wallets', this.$store.state.wallets.tokens)
-
-    this.$store.commit('currentwallet/updateParams', {
-      chainID: this.chainID,
-      tokenID: this.tokenID,
-      accountName: this.accountName
-    })
+      this.$store.commit('currentwallet/updateParams', {
+        chainID: this.chainID,
+        tokenID: this.tokenID,
+        accountName: this.accountName
+      })
+    }
   },
   computed: {
     walletShowHide () {
@@ -442,12 +442,14 @@ export default {
         if (this.selectedCoin.hidden === undefined) {
           this.selectedCoin.hidden = false
         }
-        // console.log('this.selectedCoin', this.selectedCoin)
+
         // this.$store.commit('currentwallet/updateParams', {
         //   chainID: this.selectedCoin.chain,
         //   tokenID: this.selectedCoin.type,
         //   accountName: this.selectedCoin.name
         // })
+
+        console.log(this.$route.params.chainID, this.selectedCoin.chain, 'this.$route.params.chainID || this.selectedCoin.chain')
         this.$store.commit('currentwallet/updateParams', {
           chainID: this.$route.params.chainID || this.selectedCoin.chain,
           tokenID: this.$route.params.tokenID || this.selectedCoin.type,

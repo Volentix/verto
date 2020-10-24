@@ -155,7 +155,6 @@ export const getYvaultsPools = ({ rootState, commit, state }, payload) => {
       }).filter(function (e) {
         return !e.hideFromExplore
       }).forEach((value, index) => {
-        console.log(state.zapperTokens, 'state.zapperTokens')
         let poolTokens = value.tokens.map(o => state.zapperTokens.find(t => t.address.toLowerCase() === o.address.toLowerCase())).filter((val) => val)
 
         if (!poolTokens.length) return
@@ -266,5 +265,14 @@ export const getDebts = (context, payload) => {
       context.commit('setDebts', result.data[payload.address])
     }).catch(error => {
       console.log(error, 'Cannot get Debts')
+    })
+}
+export const getEOSInvestments = (context, payload) => {
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://defibox.io/api/swap/account/capital'
+  axios.post(transactionEndpoint, payload)
+    .then(function (result) {
+      context.commit('setEOSInvestments', result.data.data)
+    }).catch(error => {
+      console.log(error, 'Cannot get EOSInvestments')
     })
 }
