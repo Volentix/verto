@@ -5,9 +5,9 @@ export function someMutation (state) {
 
 export const setSelectedPool = (state, pool) => {
   state.selectedPool = pool
-  console.log(pool, 'pool')
 }
 export const setPools = (state, pools) => {
+  console.log(pools, 'pools')
   state.pools = pools
 }
 export const updatePools = (state, pool) => {
@@ -87,4 +87,10 @@ export const setDefaultAccount = (state, payload) => {
 }
 export const setTableLoadingStatus = (state, payload) => {
   state.tableLoading = payload
+}
+export const setEOSInvestments = (state, payload) => {
+  state.eosInvestments = payload.map((o, index) => {
+    o.index = index
+    return o
+  })
 }

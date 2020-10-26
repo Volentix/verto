@@ -214,9 +214,13 @@ export const getCurvesPools = ({ rootState, commit, state }, payload) => {
 }
 export const getZapperTokens = (context, payload) => {
   // context.commit('setTokens',fallBackTokens)
-  axios.get(process.env[context.rootState.settings.network].CACHE + 'https://zapper.fi/api/account-balance/tokens?addresses=0x358A6C0F7614C44b344381b0699E2397b1483252', config).then((result) => {
+  let address = '0x358A6C0F7614C44b344381b0699E2397b1483252'
+  axios.get(process.env[context.rootState.settings.network].CACHE + 'https://zapper.fi/api/account-balance/tokens?addresses=' + address, config).then((result) => {
     if (result.data) {
-      context.commit('setTokens', result.data['0x358A6C0F7614C44b344381b0699E2397b1483252'])
+      for (var prop in result.data) {
+        context.commit('setTokens', result.data[prop])
+        break
+      }
     }
   })
 }
@@ -261,5 +265,15 @@ export const getDebts = (context, payload) => {
       context.commit('setDebts', result.data[payload.address])
     }).catch(error => {
       console.log(error, 'Cannot get Debts')
+    })
+}
+export const getEOSInvestments = (context, payload) => {
+  console.log(payload, 'payload')
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://defibox.io/api/swap/account/capital'
+  axios.post(transactionEndpoint, payload)
+    .then(function (result) {
+      context.commit('setEOSInvestments', result.data.data)
+    }).catch(error => {
+      console.log(error, 'Cannot get EOSInvestments')
     })
 }

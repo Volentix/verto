@@ -8,23 +8,32 @@
         <div class="col col-6 flex justify-end q-pr-xl items-center menu">
             <!-- to="/verto/earn/use-referral-account" -->
             <!-- <router-link disabled>Refer & Earn</router-link> -->
-             <router-link to="/verto/exchange4">New UI (Temp)</router-link>
+            <span @click="temp = true">Free* CPU</span>
+            <router-link to="/verto/exchange4">New UI (Temp)</router-link>
             <router-link to="/verto/exchange">Exchange</router-link>
             <a href="javascript:void(0)" @click="logout">
                 <q-icon class="reverse" name="exit_to_app" /> Logout
             </a>
         </div>
     </div>
+     <q-dialog v-model="temp">
+    <FreeCPUDialog />
+    </q-dialog>
 </div>
 </template>
 
 <script>
 // import configManager from '@/util/ConfigManager'
-
+import FreeCPUDialog from './Defi/FreeCPUDialog'
 export default {
   name: 'TopMenu',
+  components: {
+    FreeCPUDialog
+  },
   data () {
-    return {}
+    return {
+      temp: false
+    }
   },
   methods: {
     logout () {

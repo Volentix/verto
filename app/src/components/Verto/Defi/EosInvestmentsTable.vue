@@ -1,28 +1,24 @@
 <template>
 <div>
-    <q-table dense :loading="!$store.state.investment.pools.length" :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.pools" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
-        <template v-slot:body-cell-name="props">
+    <q-table :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="EOS ivestments" :data="$store.state.investment.eosInvestments" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+        <template v-slot:body-cell-asset="props">
             <q-td :props="props" class="body-table-col">
                 <div class="col-3 flex items-center">
-                    <span class="imgs q-mr-lg" v-if="props.row.icons.length">
-                        <img v-for="(icon, index) in props.row.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
+                    <span class="imgs q-mr-lg">
+                        <img :src="'https://ndi.340wan.com/eos/'+ props.row.contract0 +'-'+ props.row.symbol0.toLowerCase() +'.png'" alt="">
+                        <img :src="'https://ndi.340wan.com/eos/'+ props.row.contract1 +'-'+ props.row.symbol1.toLowerCase() +'.png'" alt="">
                     </span>
                     <span class="column pairs">
-                        <span class="pair">{{props.row.poolName}}</span>
-                        <span class="value">{{props.row.platform}}</span>
+                        <span class="pair">{{props.row.symbol0 + ' + ' + props.row.symbol1}}</span>
+
                     </span>
+                    <q-chip color="cyan-7" text-color="white" class="cursor-pointer" @click.native="stakeData = props.row ; openDialog = true">
+                        Unstake
+                    </q-chip>
+
                 </div>
             </q-td>
         </template>
-
-        <template v-slot:body-cell-action="props">
-            <q-td :props="props" class="body-table-col">
-                <div class="col-2 flex justify-end">
-                    <q-btn unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="grey" label="Add" />
-                </div>
-            </q-td>
-        </template>
-
         <template v-slot:top-right>
             <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
                 <template v-slot:append>
@@ -32,23 +28,25 @@
         </template>
     </q-table>
     <q-dialog v-model="openDialog">
-        <AddLiquidityDialog :notWidget="true" v-if="$store.state.investment.selectedPool" />
+        <EOSStakingDialog :notWidget="true" :stakeData="stakeData" />
     </q-dialog>
 </div>
 </template>
 
 <script>
-import AddLiquidityDialog from './AddLiquidityDialog'
 import {
   mapState
 } from 'vuex'
+import EOSStakingDialog from './EOSStakingDialog'
 export default {
   components: {
-    AddLiquidityDialog
+    EOSStakingDialog
   },
   data () {
     return {
+      openDialog: false,
       poolsData: [],
+      stakeData: null,
       filter: '',
       columns: [{
         name: 'index',
@@ -60,68 +58,63 @@ export default {
         sortable: true
       },
       {
-        name: 'name',
+        name: 'asset',
         required: true,
-        label: 'Available pools',
+        label: 'Asset',
         align: 'left',
         field: row => row,
         format: val => `${val}`,
         sortable: true
       },
       {
-        name: 'Liquidity',
+        name: 'capital',
         align: 'center',
-        label: 'Liquidity',
-        field: 'liquidity',
-        sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : parseInt(val)?.toLocaleString()}`
+        label: 'Capital',
+        field: row => row.count0 + ' ' + row.symbol0 + ' / ' + row.count1 + ' ' + row.symbol1
+
       },
       {
-        name: 'volume',
-        label: 'Volume(24h)',
-        field: 'volume',
-        sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : parseInt(val)?.toLocaleString()}`
+        name: 'token',
+        align: 'center',
+        label: 'Token',
+        field: row => row.token + ' ' + row.code
+
       },
       {
-        name: 'fees',
-        label: 'Fees(24h)',
-        field: 'fees',
-        sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : parseInt(val)?.toLocaleString()}`
+        name: 'owner',
+        align: 'center',
+        label: 'Owner',
+        field: 'owner'
+
       },
       {
         name: 'action',
         label: '',
         sortable: false
       }
-      ],
-      openDialog: false
+      ]
+
     }
   },
   methods: {
     filterTable (rows, terms, cols, cellValue) {
       const lowerTerms = terms ? terms.toLowerCase() : ''
       return rows.filter(
-        row => row.poolName.toLowerCase().includes(lowerTerms)
+        row => row.label && row.label.toLowerCase().includes(lowerTerms)
       )
-    }
-  },
-  watch: {
-    zapperTokens (newVal, old) {
-      if (!newVal.length) return
-      this.$store.dispatch('investment/getYvaultsPools')
-      this.$store.dispatch('investment/getCurvesPools')
-      this.$store.dispatch('investment/getUniswapPools')
-      this.$store.dispatch('investment/getBalancerPools')
-      this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0])
     }
   },
   computed: {
     ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools'])
   },
-  created () {
-    this.$store.dispatch('investment/getZapperTokens')
+  async created () {
+    let tableData = await this.$store.state.wallets.tokens
+    console.log(tableData, 'tableData')
+    let eosAccount = tableData.find(w => w.chain === 'eos' && w.type === 'eos')
+
+    this.$store.dispatch('investment/getEOSInvestments', {
+      owner: eosAccount.name
+    })
   }
 }
 </script>

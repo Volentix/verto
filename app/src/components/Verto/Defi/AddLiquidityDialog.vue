@@ -114,7 +114,7 @@
                         <q-item-section v-for="(gas, index) in gasOptions" :key="index">
                             <q-item :class="[gasSelected.label == gas.label ? 'selected bg-black text-white' : '' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
                                 <q-item-section>
-                                    <q-item-label>${{gas.value }}</q-item-label>
+                                    <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 text-black']">${{gas.value }}</q-item-label>
                                     <q-item-label class="text-body1 text-grey"> {{gas.label }}</q-item-label>
                                 </q-item-section>
                                 <q-item-section avatar>
@@ -126,7 +126,7 @@
                 </q-list>
             </div>
 
-            <div class="text-red q-mt-md" v-if="error">{{error}}</div>
+            <div class="text-red q-mt-md col-12 col" v-if="error">{{error}}</div>
             <div v-if="transactionHash" class="col-12">
                 <a :href="'https://etherscan.io/tx/'+transactionHash" class="flex text-body2 text-black q-mt-md" target="_blank">
                     <div>Last transaction:</div> <img width="80" src="https://etherscan.io/images/logo-ether.png?v=0.0.2" class="q-ml-sm" />
@@ -263,7 +263,7 @@ export default {
     }
     this.approvalRequired = false
     const Web3 = require('web3')
-
+    console.log(tableData, 'this.ethAccount')
     this.web3Instance = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
     // let t = this.web3Instance.eth.getTransaction('0x51c32feefe4bcfac06b19364e07b7f261138e1760da96a827d6c0954dcb47059')
     if (this.$store.state.investment.metamaskConnected) this.conectWallet('metamask')
@@ -679,6 +679,10 @@ a {
 
 .Instant i {
     color: #7272fa !important;
+}
+
+.gasfield .selected {
+    background: #dfdff1 !important;
 }
 
 @import "~@/assets/styles/variables.scss";

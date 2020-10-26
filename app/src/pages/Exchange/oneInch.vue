@@ -2164,8 +2164,6 @@ export default {
         }
     }
 }
-</style><style lang="scss" scoped>
-@import "~@/assets/styles/variables.scss";
 
 .trade-component {
     position: relative;
@@ -2413,7 +2411,7 @@ export default {
         opacity: .3;
     }
 }
-</style><style lang="scss">
+
 .option--avatar {
     border: 1px solid rgba(black, .1);
     width: 35px;
