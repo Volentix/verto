@@ -12,14 +12,13 @@
                         <span class="pair">{{props.row.symbol0 + ' + ' + props.row.symbol1}}</span>
 
                     </span>
-                    <q-chip color="cyan-7" text-color="white" class="cursor-pointer" @click.native="$store.commit('investment/setStakeData', props.row.index); openDialog = true">
+                    <q-chip color="cyan-7" text-color="white" class="cursor-pointer" @click.native="stakeData = props.row ; openDialog = true">
                         Unstake
                     </q-chip>
 
                 </div>
             </q-td>
         </template>
-
         <template v-slot:top-right>
             <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
                 <template v-slot:append>
@@ -29,7 +28,7 @@
         </template>
     </q-table>
     <q-dialog v-model="openDialog">
-        <StakingDialog :notWidget="true" v-if="$store.state.investment.stakeData" />
+        <EOSStakingDialog :notWidget="true" :stakeData="stakeData" />
     </q-dialog>
 </div>
 </template>
@@ -38,15 +37,16 @@
 import {
   mapState
 } from 'vuex'
-import StakingDialog from './StakingDialog'
+import EOSStakingDialog from './EOSStakingDialog'
 export default {
   components: {
-    StakingDialog
+    EOSStakingDialog
   },
   data () {
     return {
       openDialog: false,
       poolsData: [],
+      stakeData: null,
       filter: '',
       columns: [{
         name: 'index',
@@ -71,6 +71,13 @@ export default {
         align: 'center',
         label: 'Capital',
         field: row => row.count0 + ' ' + row.symbol0 + ' / ' + row.count1 + ' ' + row.symbol1
+
+      },
+      {
+        name: 'token',
+        align: 'center',
+        label: 'Token',
+        field: row => row.token + ' ' + row.code
 
       },
       {
@@ -102,7 +109,8 @@ export default {
   },
   async created () {
     let tableData = await this.$store.state.wallets.tokens
-    let eosAccount = tableData.filter(w => w.chain === 'eos' && w.type === 'eos')
+    console.log(tableData, 'tableData')
+    let eosAccount = tableData.find(w => w.chain === 'eos' && w.type === 'eos')
 
     this.$store.dispatch('investment/getEOSInvestments', {
       owner: eosAccount.name

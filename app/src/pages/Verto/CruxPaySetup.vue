@@ -96,7 +96,7 @@
 
 <script>
 import {
-    CruxPay
+  CruxPay
 } from '@cruxpay/js-sdk'
 import HD from '@/util/hdwallet'
 let cruxClient
@@ -106,223 +106,223 @@ let cruxClient
 // IDs will be created as foo@testwallet.crux
 
 export default {
-    data() {
-        return {
-            step: 1,
-            cruxKey: null,
-            existingCruxID: null,
-            error: false,
-            errorMessage: '',
-            walletClientName: 'verto', // should be 'verto' when in prod // testwallet
-            vertoPassword: this.$store.state.settings.temporary, // TODO empty temporary
-            config: this.$store.state.currentwallet.config,
-            loading: false,
-            mapped: false,
-            cruxID: null,
-            cruxIDRegistered: false,
-            addressMap: null,
-            showMap: false,
-            showAvailableCruxID: true,
-            state: null,
-            status: '',
-            progress: 0,
-            available: false,
-            assets: {},
-            names: [{
-                    'value': 'eos',
-                    'label': 'EOS Key - HD'
-                },
-                {
-                    'value': 'btc',
-                    'label': 'Bitcoin - HD'
-                },
-                {
-                    'value': 'eth',
-                    'label': 'Ethereum - HD'
-                },
-                {
-                    'value': 'bnb',
-                    'label': 'Binance Coin - HD'
-                },
-                {
-                    'value': 'ltc',
-                    'label': 'Litecoin - HD'
-                },
-                {
-                    'value': 'dash',
-                    'label': 'DASH - HD'
-                },
-                {
-                    'value': 'steem',
-                    'label': 'STEEM Key - HD'
-                },
-                // { 'value': 'xrp', 'label': 'Ripple - HD' },
-                {
-                    'value': 'xlm',
-                    'label': 'Stellar Lumens - HD'
-                },
-                {
-                    'value': 'xtz',
-                    'label': 'Tezos - HD'
-                },
-                {
-                    'value': 'ada',
-                    'label': 'Cardano - HD'
-                }
-            ]
-        }
-    },
-    created() {
-        if (this.$route.params.fromStep === 'recover') {
-            this.step = 0
-        }
-    },
-    async mounted() {
-        this.cruxKey = await HD.Wallet('crux')
-        console.log('this.walletClientName', this.walletClientName, 'crux', this.cruxKey, 'verto wallet', this.$store.state.currentwallet, 'password length', this.vertoPassword.toString().length)
+  data () {
+    return {
+      step: 1,
+      cruxKey: null,
+      existingCruxID: null,
+      error: false,
+      errorMessage: '',
+      walletClientName: 'verto', // should be 'verto' when in prod // testwallet
+      vertoPassword: this.$store.state.settings.temporary, // TODO empty temporary
+      config: this.$store.state.currentwallet.config,
+      loading: false,
+      mapped: false,
+      cruxID: null,
+      cruxIDRegistered: false,
+      addressMap: null,
+      showMap: false,
+      showAvailableCruxID: true,
+      state: null,
+      status: '',
+      progress: 0,
+      available: false,
+      assets: {},
+      names: [{
+        'value': 'eos',
+        'label': 'EOS Key - HD'
+      },
+      {
+        'value': 'btc',
+        'label': 'Bitcoin - HD'
+      },
+      {
+        'value': 'eth',
+        'label': 'Ethereum - HD'
+      },
+      {
+        'value': 'bnb',
+        'label': 'Binance Coin - HD'
+      },
+      {
+        'value': 'ltc',
+        'label': 'Litecoin - HD'
+      },
+      {
+        'value': 'dash',
+        'label': 'DASH - HD'
+      },
+      {
+        'value': 'steem',
+        'label': 'STEEM Key - HD'
+      },
+      // { 'value': 'xrp', 'label': 'Ripple - HD' },
+      {
+        'value': 'xlm',
+        'label': 'Stellar Lumens - HD'
+      },
+      {
+        'value': 'xtz',
+        'label': 'Tezos - HD'
+      },
+      {
+        'value': 'ada',
+        'label': 'Cardano - HD'
+      }
+      ]
+    }
+  },
+  created () {
+    if (this.$route.params.fromStep === 'recover') {
+      this.step = 0
+    }
+  },
+  async mounted () {
+    this.cruxKey = await HD.Wallet('crux')
+    console.log('this.walletClientName', this.walletClientName, 'crux', this.cruxKey, 'verto wallet', this.$store.state.currentwallet, 'password length', this.vertoPassword.toString().length)
 
-        cruxClient = new CruxPay.CruxClient({
-            walletClientName: this.walletClientName,
-            privateKey: this.cruxKey.privateKey
-        })
-        console.log(125)
-        await cruxClient.init().catch(console.log)
-        console.log(12)
-        this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
-        console.log('this.existingCruxID', this.existingCruxID, 'crux', this.cruxKey, this.config)
+    cruxClient = new CruxPay.CruxClient({
+      walletClientName: this.walletClientName,
+      privateKey: this.cruxKey.privateKey
+    })
+    console.log(125)
+    await cruxClient.init().catch(console.log)
+    console.log(12)
+    this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
+    console.log('this.existingCruxID', this.existingCruxID, 'crux', this.cruxKey, this.config)
 
-        // Subdomain is queued for update and should be announced within the next few blocks.
-        // Your subdomain was registered in transaction 6a24c1ad453a09a740f7792ca07f0f95cac530728cbfa35f32be6a0e0a550c01 -- it should propagate on the network once it has 6 confirmations."
-        if (this.existingCruxID) {
-            this.cruxIDRegistered = true
-            console.log(2)
-            /*
+    // Subdomain is queued for update and should be announced within the next few blocks.
+    // Your subdomain was registered in transaction 6a24c1ad453a09a740f7792ca07f0f95cac530728cbfa35f32be6a0e0a550c01 -- it should propagate on the network once it has 6 confirmations."
+    if (this.existingCruxID) {
+      this.cruxIDRegistered = true
+      console.log(2)
+      /*
                                           this.addressMap = await cruxClient.getAddressMap().catch(err => { console.log(err , 'wallet error') })
                                           this.showMap = !!this.addressMap
                                           */
-            this.config.cruxID = this.existingCruxID
-            await this.$configManager.updateConfig(this.vertoPassword, this.config)
-            console.log(3)
-            this.putAddress()
-            console.log(3)
-            this.step = 3
-            // console.log('addressMap', this.addressMap, 'show?', this.showMap)
-        } else {
-            this.step = 1
-        }
-    },
-    computed: {},
-    methods: {
-        copyToClipboard(key, copied) {
-            this.$clipboardWrite(key)
-            this.$q.notify({
-                message: copied ? copied + ' Copied' : 'Key Copied',
-                timeout: 2000,
-                icon: 'check',
-                textColor: 'white',
-                type: 'warning',
-                position: 'top'
-            })
-        },
-        async register() {
-            if (this.available) {
-                this.loading = true
-                const res = await cruxClient.registerCruxID(this.cruxID.toLowerCase())
-                // console.log('response should be undef:', res)
-                if (!res) {
-                    // Deal with: keypair is already used in registration of CruxID: 'helo@testwallet.crux'
-                    this.cruxIDRegistered = true
-                    this.existingCruxID = this.cruxID.toLowerCase() + '@' + this.walletClientName + '.crux'
-
-                    this.config.cruxID = this.existingCruxID
-                    await this.$configManager.updateConfig(this.vertoPassword, this.config)
-
-                    this.step = 2
-                    this.$nextTick(() => {
-                        this.putAddress()
-                    })
-                } else {
-                    // this.existingCruxID = err.split('CruxID: ')[1].replace(/'/g, '')
-                    this.step = 2
-                    // console.log('err', res)
-                }
-            }
-        },
-        async getAvailable() {
-            if (this.cruxID.length >= 4 && this.cruxID.length <= 20) {
-                this.available = await cruxClient.isCruxIDAvailable(this.cruxID.toLowerCase())
-                if (this.available) {
-                    this.error = false
-                } else {
-                    this.error = true
-                    this.errorMessage = 'This ID is already taken'
-                }
-            } else {
-                this.error = true
-                this.errorMessage = 'Must start with a letter & length must be between 4 to 20, all lowercase.'
-            }
-        },
-        async putAddress() {
-            this.assets = await cruxClient.getAssetMap()
-            delete this.assets['xrp'] // Libs fails on Apple devices.
-            delete this.assets['ada'] // Key generation not working yet.
-            delete this.assets['eos'] // Need account to be created first!
-            let count = Object.keys(this.assets).length
-            let map = []
-            let i = 0
-
-            for (const symbol of Object.keys(this.assets)) {
-                i++
-                this.progress = Math.round(i / count * 10000) / 100
-                console.log('this.progress', this.progress)
-                this.status = 'Creating keys for: ' + symbol
-                let keys = await HD.Wallet(symbol)
-                let result = await this.$configManager.saveWalletAndKey(this.names.find(o => o.value === symbol).label, this.vertoPassword, null, keys.publicKey, keys.privateKey, symbol, 'mnemonic')
-                console.log('key creation', result)
-                map[symbol] = {
-                    'addressHash': keys.publicKey
-                }
-            }
-
-            // console.log('map', map)
-            cruxClient.putAddressMap(map)
-            // await this.$configManager.backupConfig()
-            this.mapped = true
-        },
-        async getAssets() {
-            this.assets = await cruxClient.getAssetMap()
-            // console.log('pre assets', this.assets)
-
-            Object.keys(this.assets).forEach(async symbol => {
-                // console.log('creating keys for: ', symbol)
-                if (symbol === 'ada') {
-                    this.assets[symbol].keys = {
-                        publicKey: 'no key for ada'
-                    }
-                } else {
-                    this.assets[symbol].keys = await HD.Wallet(symbol)
-                }
-            })
-            // console.log('post assets', this.assets)
-        },
-        dataRefresh() {
-            const self = this
-            this.$store.state.wallets.tokens = null
-
-            let wallets2Tokens = require('@/util/Wallets2Tokens')
-            if (wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
-
-            this.$q.notify({
-                color: 'positive',
-                message: 'Application refreshing'
-            })
-            setTimeout(function () {
-                self.$router.push({
-                    path: '/verto/dashboard'
-                })
-            }, 300)
-        }
+      this.config.cruxID = this.existingCruxID
+      await this.$configManager.updateConfig(this.vertoPassword, this.config)
+      console.log(3)
+      this.putAddress()
+      console.log(3)
+      this.step = 3
+      // console.log('addressMap', this.addressMap, 'show?', this.showMap)
+    } else {
+      this.step = 1
     }
+  },
+  computed: {},
+  methods: {
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    },
+    async register () {
+      if (this.available) {
+        this.loading = true
+        const res = await cruxClient.registerCruxID(this.cruxID.toLowerCase())
+        // console.log('response should be undef:', res)
+        if (!res) {
+          // Deal with: keypair is already used in registration of CruxID: 'helo@testwallet.crux'
+          this.cruxIDRegistered = true
+          this.existingCruxID = this.cruxID.toLowerCase() + '@' + this.walletClientName + '.crux'
+
+          this.config.cruxID = this.existingCruxID
+          await this.$configManager.updateConfig(this.vertoPassword, this.config)
+
+          this.step = 2
+          this.$nextTick(() => {
+            this.putAddress()
+          })
+        } else {
+          // this.existingCruxID = err.split('CruxID: ')[1].replace(/'/g, '')
+          this.step = 2
+          // console.log('err', res)
+        }
+      }
+    },
+    async getAvailable () {
+      if (this.cruxID.length >= 4 && this.cruxID.length <= 20) {
+        this.available = await cruxClient.isCruxIDAvailable(this.cruxID.toLowerCase())
+        if (this.available) {
+          this.error = false
+        } else {
+          this.error = true
+          this.errorMessage = 'This ID is already taken'
+        }
+      } else {
+        this.error = true
+        this.errorMessage = 'Must start with a letter & length must be between 4 to 20, all lowercase.'
+      }
+    },
+    async putAddress () {
+      this.assets = await cruxClient.getAssetMap()
+      delete this.assets['xrp'] // Libs fails on Apple devices.
+      delete this.assets['ada'] // Key generation not working yet.
+      delete this.assets['eos'] // Need account to be created first!
+      let count = Object.keys(this.assets).length
+      let map = []
+      let i = 0
+
+      for (const symbol of Object.keys(this.assets)) {
+        i++
+        this.progress = Math.round(i / count * 10000) / 100
+        console.log('this.progress', this.progress)
+        this.status = 'Creating keys for: ' + symbol
+        let keys = await HD.Wallet(symbol)
+        let result = await this.$configManager.saveWalletAndKey(this.names.find(o => o.value === symbol).label, this.vertoPassword, null, keys.publicKey, keys.privateKey, symbol, 'mnemonic')
+        console.log('key creation', result)
+        map[symbol] = {
+          'addressHash': keys.publicKey
+        }
+      }
+
+      // console.log('map', map)
+      cruxClient.putAddressMap(map)
+      // await this.$configManager.backupConfig()
+      this.mapped = true
+    },
+    async getAssets () {
+      this.assets = await cruxClient.getAssetMap()
+      // console.log('pre assets', this.assets)
+
+      Object.keys(this.assets).forEach(async symbol => {
+        // console.log('creating keys for: ', symbol)
+        if (symbol === 'ada') {
+          this.assets[symbol].keys = {
+            publicKey: 'no key for ada'
+          }
+        } else {
+          this.assets[symbol].keys = await HD.Wallet(symbol)
+        }
+      })
+      // console.log('post assets', this.assets)
+    },
+    dataRefresh () {
+      const self = this
+      this.$store.state.wallets.tokens = null
+
+      let wallets2Tokens = require('@/util/Wallets2Tokens')
+      if (wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
+
+      this.$q.notify({
+        color: 'positive',
+        message: 'Application refreshing'
+      })
+      setTimeout(function () {
+        self.$router.push({
+          path: '/verto/dashboard'
+        })
+      }, 300)
+    }
+  }
 }
 </script>
 

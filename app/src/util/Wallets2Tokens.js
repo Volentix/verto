@@ -125,11 +125,10 @@ class Wallets2Tokens {
           })
         })
       } else if (wallet.type === 'eth') {
-      /*  wallet.key = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
-        wallet.chain = 'eth'
-        wallet.type = 'eth'
+        wallet.key = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
+
         wallet.privateKey = ''
-        */
+
         // temporary account override for testing
         axios.get('https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
           let ethplorer = res.data
@@ -161,11 +160,11 @@ class Wallets2Tokens {
                     // console.log('eth token not on trustwallet', t, csa)
                   }
                 }
-               if(t.tokenInfo && t.tokenInfo.symbol){
+
                 self.tableData.push({
                   selected: false,
                   disabled: false,
-                  type: t.tokenInfo.symbol.toLowerCase(),
+                  type: t.tokenInfo.symbol ? t.tokenInfo.symbol.toLowerCase() : '',
                   name: t.tokenInfo.name,
                   amount: t.balance / (10 ** t.tokenInfo.decimals),
                   usd: (t.balance / (10 ** t.tokenInfo.decimals)) * t.tokenInfo.price.rate,
@@ -175,7 +174,6 @@ class Wallets2Tokens {
                   icon: t.tokenInfo.image ? t.tokenInfo.image : ''
                 })
               })
-            }
             }
           })
         })
@@ -239,4 +237,4 @@ class Wallets2Tokens {
   }
 }
 
-export default new Wallets2Tokens()
+export default Wallets2Tokens
