@@ -589,8 +589,8 @@ export default {
         this.transactionStatus = 'Success'
         this.spinnervisible = false
         this.transactionHash = result.transaction_id
-        let wallets2Tokens = require('@/util/Wallets2Tokens')
-        if (!this.$store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
+        let initWallet = require('@/util/Wallets2Tokens')
+        if (!this.$store.state.wallets.tokens) initWallet()
         if (this.transaction.name === 'createpair') {
           this.getPools()
         }

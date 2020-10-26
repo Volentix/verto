@@ -236,5 +236,7 @@ class Wallets2Tokens {
     return currentAsset
   }
 }
-
-export default new Wallets2Tokens()
+const initWallet = () => {
+  return new Wallets2Tokens()
+}
+export default initWallet

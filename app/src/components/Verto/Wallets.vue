@@ -298,7 +298,7 @@
 
 <script>
 import Lib from '@/util/walletlib'
-import Wallets2Tokens from '@/util/Wallets2Tokens'
+import initWallet from '@/util/Wallets2Tokens'
 import {
   QScrollArea,
   openURL
@@ -507,7 +507,7 @@ export default {
       })
     },
     refreshWallet () {
-      return Wallets2Tokens.default
+      return initWallet()
     },
     revealHide () {
       this.showHidden = !this.showHidden

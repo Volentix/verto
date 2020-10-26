@@ -197,9 +197,9 @@ export default {
       this.cruxIDRegistered = true
       console.log(2)
       /*
-                                          this.addressMap = await cruxClient.getAddressMap().catch(err => { console.log(err , 'wallet error') })
-                                          this.showMap = !!this.addressMap
-                                          */
+                                                      this.addressMap = await cruxClient.getAddressMap().catch(err => { console.log(err , 'wallet error') })
+                                                      this.showMap = !!this.addressMap
+                                                      */
       this.config.cruxID = this.existingCruxID
       await this.$configManager.updateConfig(this.vertoPassword, this.config)
       console.log(3)
@@ -309,8 +309,8 @@ export default {
       const self = this
       this.$store.state.wallets.tokens = null
 
-      let wallets2Tokens = require('@/util/Wallets2Tokens')
-      if (wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
+      let initWallet = require('@/util/Wallets2Tokens')
+      if (initWallet.default) initWallet()
 
       this.$q.notify({
         color: 'positive',
