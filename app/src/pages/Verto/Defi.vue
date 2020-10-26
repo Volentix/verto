@@ -30,7 +30,7 @@
                     </q-tab-panel>
                 </q-tab-panels>
             </div>
-            <div v-if="false" class="col-4">
+            <div class="col-4">
                 <q-select color="primary" class="q-mb-md" @input="getAccountInformation({address:accountOption})" v-model="accountOption" :options="accountOptions" label="Change account">
                     <template v-slot:append>
                         <q-avatar>
@@ -128,7 +128,7 @@
                 <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
                     <InvestmentsTable />
                 </div>
-                 <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
+                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
                     <InvestmentsOpportunitiesTable />
                 </div>
 
@@ -140,6 +140,10 @@
                 <div class="desktop-card-style current-investments wallet-col deposits-col q-mb-md">
                     <TransactionsTable />
                 </div>
+                <div class="desktop-card-style current-investments wallet-col deposits-col q-mb-md">
+                    <EosInvestmentsTable />
+                </div>
+
             </div>
         </div>
 
@@ -171,6 +175,7 @@ import {
 import LiquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 import TransactionsTable from '../../components/Verto/Defi/TransactionsTable'
 import InvestmentsTable from '../../components/Verto/Defi/InvestmentsTable'
+import EosInvestmentsTable from '../../components/Verto/Defi/EosInvestmentsTable'
 import InvestmentsOpportunitiesTable from '../../components/Verto/Defi/InvestmentsTableOpportunities'
 import DebtsTable from '../../components/Verto/Defi/DebtsTable'
 // let cruxClient
@@ -185,7 +190,8 @@ export default {
     InvestmentsTable,
     TransactionsTable,
     InvestmentsOpportunitiesTable,
-    DebtsTable
+    DebtsTable,
+    EosInvestmentsTable
 
   },
   data () {
@@ -195,7 +201,7 @@ export default {
       tab: 'mails',
       osName: '',
       accountOptions: [],
-      accountOption: '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772',
+      accountOption: '',
       progressValue: 20,
       openModal: false,
       openModalProgress: false,
@@ -296,12 +302,15 @@ export default {
 
   await cruxClient.init()
     */
-
-    let account = {
-      address: tableData.find(w => w.chain === 'eth' && w.type === 'eth').key
+    let ethACcount = tableData.find(w => w.chain === 'eth' && w.type === 'eth')
+    if (ethACcount) {
+      let account = {
+        address: ethACcount.key
+      }
+      this.accountOption = account.address
+      this.$store.dispatch('investment/getZapperTokens')
+      this.getAccountInformation(account)
     }
-    this.$store.dispatch('investment/getZapperTokens')
-    this.getAccountInformation(account)
   },
   async mounted () {
     this.getMaxDeFiYield()
