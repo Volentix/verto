@@ -2,8 +2,8 @@
 <q-card class="q-pa-lg modal-dialog-wrapper" style="width: 800px; max-width: 90vw;">
     <q-toolbar>
         <q-toolbar-title><span class="text-weight-bold q-pl-sm">Stake</span></q-toolbar-title>
-        <q-select v-if="externalWallets.metamask.length" borderless v-model="currentExrternalWallet" :options="externalWallets.metamask" label="Account" />
-        <q-item dense>
+        <q-select v-model="currentExrternalWallet" label="Account" />
+        <q-item dense v-if="false">
             <q-item-section class="text-body1 q-pr-sm">
                 <q-btn v-if="!transactionStatus" :loading="connectLoading.metamask" :class="externalWallets.metamask.length ? 'bg-green-1' : 'bg-red-1'" @click="conectWallet('metamask')" flat icon="fiber_manual_record" :color="!externalWallets.metamask.length ? 'red' : 'green'" :label="!externalWallets.metamask.length ? 'Connect' : 'Connected'">
                     <img style="width: 35px;" class="q-pl-sm" src="https://cdn.freebiesupply.com/logos/large/2x/metamask-logo-png-transparent.png">
@@ -50,7 +50,7 @@
                         <q-item-section v-for="(gas, index) in gasOptions" :key="index">
                             <q-item :class="[gasSelected.label == gas.label ? 'selected bg-black text-white' : '' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
                                 <q-item-section>
-                                    <q-item-label>${{gas.value }}</q-item-label>
+                                    <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 text-black']">${{gas.value }}</q-item-label>
                                     <q-item-label class="text-body1 text-grey"> {{gas.label }}</q-item-label>
                                 </q-item-section>
                                 <q-item-section avatar>
@@ -192,7 +192,7 @@ export default {
     this.$store.dispatch('investment/getGasPrice')
     let tableData = await this.$store.state.wallets.tokens
     this.ethAccount = tableData.filter(w => w.chain === 'eth' && w.type === 'eth')
-
+    this.currentExrternalWallet = this.ethAccount[0].key
     this.setDialogData()
 
     this.approvalRequired = false
@@ -407,6 +407,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.gasfield .selected {
+    background: #dfdff1 !important;
+}
+
 a {
     text-decoration: none;
 }
