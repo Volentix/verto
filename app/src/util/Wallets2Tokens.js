@@ -125,9 +125,9 @@ class Wallets2Tokens {
           })
         })
       } else if (wallet.type === 'eth') {
-        wallet.key = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
+        // wallet.key = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
 
-        wallet.privateKey = ''
+        // wallet.privateKey = ''
 
         // temporary account override for testing
         axios.get('https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {

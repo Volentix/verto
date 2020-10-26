@@ -63,7 +63,7 @@
 import {
   JsonRpc
 } from 'eosjs'
-import EOSContract from '../../../mixins/EOSContract2'
+import EOSContract from '../../../mixins/EOSContract'
 export default {
   name: 'FreeCPUDIalog',
   data () {
