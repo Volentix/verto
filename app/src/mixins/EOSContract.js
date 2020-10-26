@@ -20,7 +20,11 @@ export default {
     rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
   },
   methods: {
-    async sendTransaction (transactionObject, externalRpc = null) {
+    async sendTransaction (transactionObject, externalRpc = null, header = null) {
+      let transactionHeader = header || {
+        blocksBehind: 3,
+        expireSeconds: 30
+      }
       this.spinnervisible = true
       this.transactionStatus = 'Pending'
       signatureProvider = new JsSignatureProvider([this.eosAccount.privateKey])
@@ -29,10 +33,7 @@ export default {
         rpc,
         signatureProvider
       })
-      api.transact(transactionObject, {
-        blocksBehind: 3,
-        expireSeconds: 30
-      }).then((result) => {
+      api.transact(transactionObject, transactionHeader).then((result) => {
         this.transactionStatus = 'Success'
         this.spinnervisible = false
         this.transactionHash = result.transaction_id
