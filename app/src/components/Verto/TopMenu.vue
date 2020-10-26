@@ -1,12 +1,16 @@
 <template>
   <div class="menu-top-wrapper">
     <div class="row">
-      <div class="col col-3 app-logo flex q-pl-xl items-center"><router-link to="/verto/dashboard">VERTO</router-link></div>
+      <div class="col col-3 app-logo flex q-pl-xl items-center">
+        <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;">
+        <!-- add the vulps logo before  -->
+        <router-link to="/verto/dashboard">VERTO</router-link>
+      </div>
       <div class="col col-3 flex items-center">2020-05-22 - 16:15:31</div>
       <div class="col col-6 flex justify-end q-pr-xl items-center menu">
         <!-- to="/verto/earn/use-referral-account" -->
         <!-- <router-link disabled>Refer & Earn</router-link> -->
-        <router-link to="/verto/exchange4">Exchange</router-link>
+        <router-link to="/verto/exchange">Exchange</router-link>
         <a href="javascript:void(0)" @click="logout"><q-icon class="reverse" name="exit_to_app" /> Logout</a>
       </div>
     </div>

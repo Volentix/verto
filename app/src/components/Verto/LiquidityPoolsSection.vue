@@ -49,7 +49,7 @@ export default {
         h4{
           margin-top: -5px;
           line-height: 16px;
-          font-size: 18px;
+          font-size: 14px;
           padding-right: 25px;
           font-weight: $bold;
           color: #6C0DCB;
@@ -160,7 +160,7 @@ export default {
     }
   }
   .earn-exchange{
-    font-size: 18px;
+    font-size: 14px;
     font-weight: $bold;
   }
 </style>

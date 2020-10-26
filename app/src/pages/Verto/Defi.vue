@@ -460,10 +460,10 @@ export default {
         background: #EFF5F9 !important;
         /deep/ .q-btn__wrapper{
           min-height: unset;
-          padding: 0px 10px;
+          padding: 0px 0px;
           .q-btn__content{
             text-transform: initial;
-            font-size: 14px;
+            font-size: 12px;
             color: #627797;
           }
         }

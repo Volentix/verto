@@ -18,7 +18,7 @@ export default {
 
 <style>
 body {
-  font-family: Tittilium;
+  font-family: 'Libre Franklin', sans-serif;
   background: black;
 }
 @media screen and (max-width: 768px) {
