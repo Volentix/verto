@@ -507,7 +507,7 @@ export default {
       })
     },
     refreshWallet () {
-      return new Wallets2Tokens()
+      return Wallets2Tokens.default
     },
     revealHide () {
       this.showHidden = !this.showHidden
