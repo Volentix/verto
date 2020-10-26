@@ -324,12 +324,18 @@
                           </div>
                           <q-stepper-navigation v-show="true" class="flex justify-end">
                             <div class="row full-width" style="padding-left: 6px; margin-top: -20px;">
-                              <div class="q-gutter-sm">
-                                <q-btn color="white" flat @click="showDisclaimerWrapper = true" class="lower bold" text-color="black" label="Read the disclaimer" />
+                              <div class="col col-6"></div>
+                              <div class="col col-6">
+                                <div class="q-gutter-sm">
+                                  <q-btn color="white" flat @click="showDisclaimerWrapper = true" class="lower bold" text-color="black" label="Read the disclaimer" />
+                                </div>
                               </div>
                             </div>
                             <div class="row full-width" style="padding-left: 13px; margin-top: 10px;">
-                              <div class="q-gutter-sm"><q-checkbox label="I accept" color="deep-purple-14" v-model="disclaimerCheck" /></div>
+                              <div class="col col-6"></div>
+                              <div class="col col-6">
+                                <div class="q-gutter-sm"><q-checkbox label="I accept" color="deep-purple-14" v-model="disclaimerCheck" /></div>
+                              </div>
                             </div>
                             <div class="standard-content--footer">
                               <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
@@ -734,8 +740,9 @@
         </q-toolbar>
         <q-card-section class="text-h6">
           <div class="parg">
-            This transaction is carried out using an open API linked to various Exchanges.<br>
-            By sending coins to the above address, you agreed to <a href="https://coinswitch.co/terms" target="_blank">the terms and conditions</a> of the selected provider.
+            This transaction is carried out using an <a href="https://coinswitch.co/terms" target="_blank">open API</a> linked to various Exchanges.<br>
+            By sending coins to the above address, you agreed to <a href="https://eos.io/legal/important-notice/" target="_blank">the terms and conditions</a> of the selected provider.<br>
+            I have read the terms and conditions and I agree
           </div>
         </q-card-section>
         <q-card-actions align="right" class="q-pr-sm">
@@ -905,13 +912,13 @@ export default {
       })
     })
     this.optionsFrom.unshift({
-      label: 'New Public Key',
+      label: 'Other public key / Account',
       value: '',
       image: '/statics/img/door-key.png',
       type: 'new_public_key'
     })
     this.optionsTo.unshift({
-      label: 'New Public Key',
+      label: 'Other public key / Account',
       value: '',
       image: '/statics/img/door-key.png',
       type: 'new_public_key'
@@ -1225,13 +1232,13 @@ export default {
         }
       })
       this.optionsFrom.unshift({
-        label: 'New Public Key',
+        label: 'Other public key / Account',
         value: '',
         image: '/statics/img/door-key.png',
         type: 'new_public_key'
       })
       this.optionsTo.unshift({
-        label: 'New Public Key',
+        label: 'Other public key / Account',
         value: '',
         image: '/statics/img/door-key.png',
         type: 'new_public_key'
@@ -1504,6 +1511,9 @@ export default {
         margin-top: -20px;
       }
       &__form{
+        /deep/ .q-field__bottom{
+          font-size: 10px;
+        }
         .pay-get-wrapper{
           // border-bottom: 1px solid rgba(#707070, .4);
           padding: 0px;
@@ -1562,7 +1572,7 @@ export default {
             height: 50px;
             min-height: unset;
             @media screen and (min-width: 1024px) {
-              margin-left: 20px;
+              // margin-left: 20px;
             }
           }
           .btn-copy{
@@ -1911,7 +1921,7 @@ export default {
               }
             }
             .--next-btn{
-              width: 100px;
+              width: 150px;
               text-transform: initial !important;
             }
             .--progress{

@@ -202,7 +202,7 @@ export default {
         strong{
           margin-bottom: -10px;
           line-height: 16px;
-          font-size: 16px;
+          font-size: 12px;
           padding-right: 20px;
         }
         .qbtn-start{

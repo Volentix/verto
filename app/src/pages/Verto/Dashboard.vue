@@ -343,6 +343,7 @@ export default {
           margin-bottom: -8px;
         }
         .body-table-col{
+          font-size: 12px;
           .imgs{
             img{
               margin-right: 10px !important;
@@ -361,9 +362,10 @@ export default {
       }
       .header-table-col{
         h3{
+          font-family: $Franklin;
           font-weight: $bold;
           color: #7272FA;
-          font-size: 14px;
+          font-size: 12px;
           margin-top: 20px;
           line-height: 30px;
           margin-bottom: -5px;
@@ -378,6 +380,7 @@ export default {
           border-bottom: 1px solid rgba(black, .04);
         }
         .pairs{
+          font-size: 12px;
           .pair{
             font-weight: $bold;
             color: #2A2A2A;
@@ -405,6 +408,7 @@ export default {
         border-radius: 30px;
         height: 34px;
         background: #EFF5F9 !important;
+        font-family: $Franklin;
         /deep/ .q-btn__wrapper{
           min-height: unset;
           padding: 0px 5px;

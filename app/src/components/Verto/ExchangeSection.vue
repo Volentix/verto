@@ -264,12 +264,12 @@ export default {
     .row{
       .col{
         .step-1-lab{
-          font-size: 9px;
+          font-size: 8px;
           color: #7272FA;
           font-style: normal;
           background: #FFF;
           font-weight: $regular;
-          margin-bottom: -8px;
+          margin-bottom: -33px;
           margin-left: 8px;
           position: relative;
           z-index: 2;

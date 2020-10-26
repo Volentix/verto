@@ -574,7 +574,7 @@ export default {
         .sort{
           font-size: 12px;
           // font-weight: bold;
-          // font-family: $Titillium;
+          // font-family: $Franklin;
           color: grey;
           letter-spacing: 1px;
           padding-right: 5px;
@@ -592,8 +592,8 @@ export default {
         }
       }
       &_title{
-        font-size: 16px;
-        font-family: $Titillium;
+        font-size: 12px;
+        font-family: $Franklin;
         font-weight: $bold;
         line-height: 30px;
         margin-top: -20px;
@@ -611,7 +611,7 @@ export default {
         cursor: pointer;
         &--title{
           font-size: 18px;
-          font-family: $Titillium;
+          font-family: $Franklin;
           font-weight: $regular;
           margin-right: 0px;
           color: #7272FA !important;
@@ -619,7 +619,7 @@ export default {
         }
         &--desc{
           font-size: 14px;
-          font-family: $Titillium;
+          font-family: $Franklin;
           font-weight: $regular;
           margin-right: 0px;
           box-shadow: 0px 5px 10px 0px rgba(black, .07);
@@ -635,7 +635,7 @@ export default {
           border-radius: 50px;
           font-size: 25px;
           line-height: 25px;
-          font-family: $Titillium;
+          font-family: $Franklin;
           font-weight: $light;
           background: #7272FA !important;
           width: 39px;
@@ -720,7 +720,7 @@ export default {
             .menu-wallet{
               display: none;
               .bold-btn{
-                font-family: $Titillium;
+                font-family: $Franklin;
                 font-weight: $bold;
                 font-size: 15px !important;
                 color:#627797 !important;
@@ -792,7 +792,7 @@ export default {
                     background-color: #6C0DCB;
                     color: #FFF;
                     font-size: 12px;
-                    font-family: $Titillium;
+                    font-family: $Franklin;
                     font-weight: $regular;
                     padding: 2px 6px;
                     border-radius: 20px;
@@ -842,7 +842,8 @@ export default {
         &--name{
           font-size: 14px;
           @media screen and (min-width: 768px) {
-            font-size: 12px;
+            font-size: 10px;
+            font-weight: 400;
           }
         }
         &--percent{
@@ -862,7 +863,7 @@ export default {
         &--amount{
           font-size: 16px;
           @media screen and (min-width: 768px) {
-            font-size: 12px;
+            font-size: 10px;
             margin-bottom: -5px;
           }
         }
@@ -871,7 +872,7 @@ export default {
           color: #B0B0B0;
           @media screen and (min-width: 768px) {
             font-size: 12px;
-            font-family: $Titillium;
+            font-family: $Franklin;
             font-weight: $bold;
             transform: translateY(2px);
           }
@@ -896,7 +897,7 @@ export default {
       font-weight: $bold;
       position: relative;
       line-height: 50px;
-      font-family: $Titillium;
+      font-family: $Franklin;
       margin-top: 0px;
       padding-top: 60px;
       margin-bottom: 60px;
@@ -908,13 +909,13 @@ export default {
     }
     &--body{
       .wallet-name{
-        font-family: $Titillium;
+        font-family: $Franklin;
         font-weight: $regular;
         color: #B0B0B0;
         font-size: 17px;
       }
       .wallet-amount{
-        font-family: $Titillium;
+        font-family: $Franklin;
         font-weight: $bold;
         color: #B0B0B0;
         font-size: 19px;
@@ -927,7 +928,7 @@ export default {
       font-weight: $regular;
       position: relative;
       line-height: 26px;
-      font-family: $Titillium;
+      font-family: $Franklin;
       color: $mainColor;
     }
     &--footer{
@@ -945,7 +946,7 @@ export default {
         .confirmed-title{
           font-size: 19px;
           color: #191818;
-          font-family: $Titillium;
+          font-family: $Franklin;
           font-weight: $bold;
           width: 100%;
           text-align: left;
@@ -1015,9 +1016,9 @@ export default {
           display: flex;
           flex-direction: column;
           // align-items: center;
-          font-family: $Titillium;
+          font-family: $Franklin;
           font-weight: $light;
-          font-size: 10px;
+          font-size: 9px;
           color: #7272FA;
           width: 50px;
           margin-left: 10px;
@@ -1034,9 +1035,9 @@ export default {
         }
       }
       &-trans{
-        font-family: $Titillium;
+        font-family: $Franklin;
         font-weight: $light;
-        font-size: 12px;
+        font-size: 10px;
         width: 90px;
         &--transID{
           font-weight: $bold;
@@ -1059,7 +1060,7 @@ export default {
       &-amount{
         max-width: 70px;
         text-align: right;
-        font-family: $Titillium;
+        font-family: $Franklin;
         font-weight: $bold;
         font-size: 12px;
         color: #2A2A2A;
