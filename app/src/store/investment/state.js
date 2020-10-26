@@ -13,6 +13,7 @@ export default function () {
     transactions: [],
     defaultAccount: null,
     metamaskConnected: false,
-    tableLoading: true
+    tableLoading: true,
+    eosInvestments: []
   }
 }
