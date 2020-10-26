@@ -89,8 +89,8 @@ export const setTableLoadingStatus = (state, payload) => {
   state.tableLoading = payload
 }
 export const setEOSInvestments = (state, payload) => {
-  state.eosInvestments = state.eosInvestments.concat(payload.map((o, index) => {
+  state.eosInvestments = payload.map((o, index) => {
     o.index = index
     return o
-  }))
+  })
 }

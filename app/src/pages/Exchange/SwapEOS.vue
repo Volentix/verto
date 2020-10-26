@@ -272,13 +272,23 @@
 
                 </q-item>
 
-                <q-item class="q-my-sm" v-if="tab == 'liquidity'" clickable v-ripple>
+                <q-item class="q-my-sm" v-if="tab == 'liquidity' &&  depositCoin.liquidityMultiplier && pairData.miningData" clickable v-ripple>
 
                     <q-item-section>
                         <q-item-label>You will receive</q-item-label>
-                        <q-item-label class="text-bold" caption lines="1">{{this.swapData.toAmount}} BOXQF</q-item-label>
+                        <q-item-label class="text-bold" caption lines="1">{{parseInt(this.swapData.fromAmount * this.depositCoin.liquidityMultiplier)}} {{pairData.miningData.code}}</q-item-label>
                     </q-item-section>
 
+                </q-item>
+
+                <q-item class="q-my-sm" v-if="pairData">
+
+                    <q-item-section>
+                        <q-item-label class="text-bold">Liquidity</q-item-label>
+
+                        <q-item-label lines="1">{{pairData.reserve0}}</q-item-label>
+                        <q-item-label lines="1">{{pairData.reserve1}}</q-item-label>
+                    </q-item-section>
                 </q-item>
             </q-list>
             <div class="text-h6 q-pt-md" v-if="path.length && tab != 'liquidity'"> Multi Swap Path</div>
@@ -326,271 +336,293 @@
 
 <script>
 import {
-    Api,
-    JsonRpc
+  Api,
+  JsonRpc
 } from 'eosjs'
 import {
-    JsSignatureProvider
+  JsSignatureProvider
 } from 'eosjs/dist/eosjs-jssig'
 let rpc, api, signatureProvider
 export default {
-    components: {},
-    data() {
-        return {
-            step: 1,
-            tab: 'swap',
-            transactionStatus: 'Pending',
-            spinnervisible: false,
-            transactionHash: null,
-            error: null,
-            rateData: null,
-            approvalRequired: false,
-            gasOptions: [],
-            swapData: {
-                marketData: [],
-                fromAmount: 1,
-                toAmount: 1,
-                errorText: 'Converting [from] to [to] cannot be done at this moment please try another coin',
-                error: false,
-                customPriceSlipage: null,
-                termsAccepted: false,
-                gasPrice: null,
-                gas: null,
-                ethToUsd: null,
-                limitMinDepositCoin: 0,
-                limitMaxDepositCoin: 2,
-                limitMinDestinationCoin: 1,
-                limitMaxDestinationCoin: 2,
-                showDisclaimerWrapper: false,
-                gasUsd: null
-            },
-            eosAccount: null,
-            eosAccounts: [],
-            eos: null,
-            tokens: [],
-            depositCoin: null,
-            destinationCoin: null,
-            pairs: [],
-            coins: [],
-            depositCoinOptions: [],
-            depositCoinUnfilter: [],
-            destinationCoinUnfilter: [],
-            destinationCoinOptions: [],
-            pairData: null,
-            path: [],
-            transaction: {}
-        }
-    },
-    async created() {
-        let tableData = await this.$store.state.wallets.tokens
-        this.eosAccounts = tableData.filter(w => w.chain === 'eos')
-        rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
-
-        this.getPools()
-    },
-    methods: {
-        urlExists(url) {
-            return true
-        },
-        switchAmounts() {
-            let depositCoinVar = this.depositCoin
-            this.depositCoin = this.destinationCoin
-            this.destinationCoin = depositCoinVar
-            this.getPairData()
-        },
-        getPairData() {
-            let multiplier = 0
-            this.path = []
-            this.transaction = {}
-            this.swapData.fromAmount = parseFloat(this.swapData.fromAmount).toFixed(this.depositCoin.precision)
-            this.pairData = this.pairs.find(w => (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) || (w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase()))
-
-            if (!this.pairData || this.pairData.liquidity_token === 0) {
-                let pair = this.pairs.find(w => (w.token1.symbol.split(',')[1].toLowerCase() === 'eos' && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) || (w.token0.symbol.split(',')[1].toLowerCase() === 'eos' && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase()))
-
-                let next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
-
-                multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price1_last) : parseFloat(pair.price0_last)
-                let url = 'https://ndi.340wan.com/eos/' + next.contract + '-' + next.symbol.split(',')[1].toLowerCase() + '.png'
-                this.path.push({
-                    id: pair.id,
-                    token: next,
-                    multiplier: multiplier,
-                    url: url
-                })
-
-                this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
-
-                pair = this.pairs.find(w => (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && w.token0.symbol.split(',')[1].toLowerCase() === 'eos') || (w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && w.token1.symbol.split(',')[1].toLowerCase() === 'eos'))
-
-                next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
-                multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price0_last) : parseFloat(pair.price1_last)
-                this.swapData.toAmount = parseFloat(parseFloat(this.swapData.toAmount) * multiplier).toFixed(this.depositCoin.precision)
-                url = 'https://ndi.340wan.com/eos/' + next.contract + '-' + next.symbol.split(',')[1].toLowerCase() + '.png'
-                this.path.push({
-                    id: pair.id,
-                    token: next,
-                    multiplier: multiplier,
-                    url: url
-                })
-                if (this.tab !== 'swap' && !this.pairData) {
-                    this.eosAccount = this.eosAccounts.find(o => o.type.toLowerCase() === this.depositCoin.value.toLowerCase())
-
-                    this.transaction.name = 'createpair'
-                    this.transaction.data = {
-                        creator: this.eosAccount.name,
-                        token0: {
-                            contract: this.depositCoin.contract,
-                            symbol: this.depositCoin.precision + ',' + this.depositCoin.value
-                        },
-                        token1: {
-                            contract: this.destinationCoin.contract,
-                            symbol: this.destinationCoin.precision + ',' + this.destinationCoin.value
-                        }
-                    }
-                }
-            } else {
-                multiplier = this.pairData.token0.symbol.split(',')[1].toLowerCase() === this.depositCoin.value.toLowerCase() ? parseFloat(this.pairData.price0_last) : parseFloat(this.pairData.price1_last)
-
-                this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
-            }
-            this.validateTransaction()
-            console.log(this.pairData, ' this.pairData')
-        },
-        addCoinToGlobalList(value, key) {
-            let infosArray = value[key].symbol.split(',')
-            let item = this.coins.find(o => o.value.toLowerCase() === infosArray[1].toLowerCase())
-            if (!item && !isNaN(value.price0_last)) {
-                let url = 'https://ndi.340wan.com/eos/' + value[key].contract + '-' + infosArray[1].toLowerCase() + '.png'
-                let account = this.eosAccounts.find(o => o.type === infosArray[1].toLowerCase())
-                let option = {
-                    label: infosArray[1],
-                    precision: infosArray[0],
-                    value: infosArray[1],
-                    contract: value[key].contract,
-                    image: this.urlExists(url) ? url : 'https://dbds.340wan.com/static/img/eos.png',
-                    data: {
-                        amount: account ? parseFloat(account.amount) : 0
-                    }
-                }
-
-                this.coins.push(option)
-            }
-        },
-        async getPools() {
-            this.pairs = (await rpc.get_table_rows({
-                json: true,
-                code: 'swap.defi',
-                scope: 'swap.defi',
-                table: 'pairs',
-                limit: -1
-            })).rows
-            this.pairs.forEach((value, index, array) => {
-                this.addCoinToGlobalList(value, 'token0')
-                this.addCoinToGlobalList(value, 'token1')
-            })
-            this.depositCoinOptions = this.coins
-            this.depositCoinUnfilter = this.coins
-            this.depositCoin = this.coins.find(w => w.value.toLowerCase() === 'eos')
-            this.getDestinationCoinOptions()
-            this.destinationCoin = this.destinationCoinOptions[0]
-            this.getPairData()
-        },
-        getDestinationCoinOptions() {
-            this.destinationCoinOptions = this.coins.filter(o => o.value.toLowerCase() !== this.depositCoin.value.toLowerCase()) // .filter(o => this.pairs.find(w => (w.token1.symbol.split(',')[1].toLowerCase() === o.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) || (w.token0.symbol.split(',')[1].toLowerCase() === o.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase())))
-            this.destinationCoinUnfilter = this.destinationCoinOptions
-            this.destinationCoinOptions = this.destinationCoinOptions.filter(o => o.value !== this.depositCoin.value)
-            this.destinationCoin = !this.destinationCoin ? this.destinationCoinOptions[0] : this.destinationCoin
-        },
-        filterDepositCoin(val, update, abort) {
-            update(() => {
-                const needle = val.toLowerCase()
-                this.depositCoinOptions = this.depositCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
-            })
-        },
-        validateTransaction() {
-            this.error = null
-            if (this.depositCoin.data.amount < this.swapData.fromAmount) {
-                this.error = 'Insufficient ' + this.depositCoin.label + ' balance'
-            } else if (this.tab === 'liquidity' && this.destinationCoin.data.amount < parseFloat(this.swapData.toAmount)) {
-                this.error = 'Insufficient ' + this.destinationCoin.label + ' balance'
-            }
-        },
-        async sendTransaction() {
-            this.spinnervisible = true
-            this.eosAccount = this.eosAccounts.find(o => o.type.toLowerCase() === this.depositCoin.value.toLowerCase())
-            let transaction = {
-                name: 'transfer',
-                data: {
-                    from: this.eosAccount.name,
-                    to: 'swap.defi',
-                    quantity: this.swapData.fromAmount + ' ' + this.depositCoin.value,
-                    memo: this.getMemo()
-                }
-            }
-
-            if (this.tab === 'liquidity' && this.transaction.name === 'createpair') {
-                transaction = this.transaction
-            }
-
-            signatureProvider = new JsSignatureProvider([this.eosAccount.privateKey])
-            api = new Api({
-                rpc,
-                signatureProvider
-            })
-            api.transact({
-                actions: [{
-                    account: this.transaction.name !== 'createpair' ? this.depositCoin.contract : 'swap.defi',
-                    name: transaction.name,
-                    authorization: [{
-                        actor: this.eosAccount.name,
-                        permission: 'active'
-                    }],
-                    data: transaction.data
-                }]
-            }, {
-                blocksBehind: 3,
-                expireSeconds: 30
-            }).then((result) => {
-                this.step = 2
-                console.log(result)
-                this.transactionStatus = 'Success'
-                this.spinnervisible = false
-                this.transactionHash = result.transaction_id
-                let wallets2Tokens = require('@/util/Wallets2Tokens')
-                if (!this.$store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
-                if (this.transaction.name === 'createpair') {
-                    this.getPools()
-                }
-            }).catch((error) => {
-                this.error = error
-                this.transactionStatus = 'Failed'
-                this.spinnervisible = false
-            })
-        },
-        getMemo() {
-            let memo = ''
-            if (this.tab === 'swap') {
-                memo += 'swap,'.concat('1', ',')
-                if (this.path.length) {
-                    memo += this.path.map(o => o.id).join('-')
-                } else {
-                    memo = memo.concat(this.pairData.id)
-                }
-            } else {
-                memo += 'deposit,'
-            }
-
-            return memo
-        },
-        filterDestinationCoin(val, update, abort) {
-            update(() => {
-                const needle = val.toLowerCase()
-                this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
-            })
-        }
-
+  components: {},
+  data () {
+    return {
+      step: 1,
+      tab: 'swap',
+      transactionStatus: 'Pending',
+      spinnervisible: false,
+      transactionHash: null,
+      error: null,
+      rateData: null,
+      approvalRequired: false,
+      gasOptions: [],
+      swapData: {
+        marketData: [],
+        fromAmount: 1,
+        toAmount: 1,
+        errorText: 'Converting [from] to [to] cannot be done at this moment please try another coin',
+        error: false,
+        customPriceSlipage: null,
+        termsAccepted: false,
+        gasPrice: null,
+        gas: null,
+        ethToUsd: null,
+        limitMinDepositCoin: 0,
+        limitMaxDepositCoin: 2,
+        limitMinDestinationCoin: 1,
+        limitMaxDestinationCoin: 2,
+        showDisclaimerWrapper: false,
+        gasUsd: null
+      },
+      eosAccount: null,
+      eosAccounts: [],
+      eos: null,
+      tokens: [],
+      depositCoin: null,
+      destinationCoin: null,
+      pairs: [],
+      coins: [],
+      depositCoinOptions: [],
+      depositCoinUnfilter: [],
+      destinationCoinUnfilter: [],
+      destinationCoinOptions: [],
+      pairData: null,
+      path: [],
+      miningData: [],
+      transaction: {}
     }
+  },
+  async created () {
+    let tableData = await this.$store.state.wallets.tokens
+    this.eosAccounts = tableData.filter(w => w.chain === 'eos')
+    rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
+    this.getMinePair()
+    this.getPools()
+  },
+  methods: {
+    urlExists (url) {
+      return true
+    },
+    switchAmounts () {
+      let depositCoinVar = this.depositCoin
+      this.depositCoin = this.destinationCoin
+      this.destinationCoin = depositCoinVar
+      this.getPairData()
+    },
+    async getMinePair () {
+      let endpoint = process.env[this.$store.state.settings.network].CACHE + 'https://defibox.io/api/swap/getMinePair'
+      await this.$axios.get(endpoint).then((result) => {
+        this.miningData = result.data.data
+      })
+    },
+    getLiquidityMultiplier () {
+      if (this.pairData) {
+        this.pairData.miningData = this.miningData.find(o => o.pair_id === this.pairData.id)
+
+        if (this.pairData.reserve0.includes(this.depositCoin.value)) {
+          this.depositCoin.liquidityMultiplier = this.pairData.liquidity_token / parseFloat(this.pairData.reserve0.split(' ')[0])
+          this.destinationCoin.liquidityMultiplier = this.pairData.liquidity_token / parseFloat(this.pairData.reserve1.split(' ')[0])
+        } else {
+          this.depositCoin.liquidityMultiplier = this.pairData.liquidity_token / parseFloat(this.pairData.reserve1.split(' ')[0])
+          this.destinationCoin.liquidityMultiplier = this.pairData.liquidity_token / parseFloat(this.pairData.reserve0.split(' ')[0])
+        }
+        console.log(this.depositCoin, this.destinationCoin)
+      }
+    },
+    getPairData () {
+      let multiplier = 0
+      this.path = []
+      this.transaction = {}
+      this.swapData.fromAmount = parseFloat(this.swapData.fromAmount).toFixed(this.depositCoin.precision)
+      this.pairData = this.pairs.find(w => (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) || (w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase()))
+      this.getLiquidityMultiplier()
+      if (!this.pairData || this.pairData.liquidity_token === 0) {
+        let pair = this.pairs.find(w => (w.token1.symbol.split(',')[1].toLowerCase() === 'eos' && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) || (w.token0.symbol.split(',')[1].toLowerCase() === 'eos' && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase()))
+
+        let next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
+
+        multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price1_last) : parseFloat(pair.price0_last)
+        let url = 'https://ndi.340wan.com/eos/' + next.contract + '-' + next.symbol.split(',')[1].toLowerCase() + '.png'
+        this.path.push({
+          id: pair.id,
+          token: next,
+          multiplier: multiplier,
+          url: url
+        })
+
+        this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
+
+        pair = this.pairs.find(w => (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && w.token0.symbol.split(',')[1].toLowerCase() === 'eos') || (w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && w.token1.symbol.split(',')[1].toLowerCase() === 'eos'))
+
+        next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
+        multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price0_last) : parseFloat(pair.price1_last)
+        this.swapData.toAmount = parseFloat(parseFloat(this.swapData.toAmount) * multiplier).toFixed(this.depositCoin.precision)
+        url = 'https://ndi.340wan.com/eos/' + next.contract + '-' + next.symbol.split(',')[1].toLowerCase() + '.png'
+        this.path.push({
+          id: pair.id,
+          token: next,
+          multiplier: multiplier,
+          url: url
+        })
+        if (this.tab !== 'swap' && !this.pairData) {
+          this.eosAccount = this.eosAccounts.find(o => o.type.toLowerCase() === this.depositCoin.value.toLowerCase())
+          if (this.eosAccount) {
+            this.transaction.name = 'createpair'
+            this.transaction.data = {
+              creator: this.eosAccount.name,
+              token0: {
+                contract: this.depositCoin.contract,
+                symbol: this.depositCoin.precision + ',' + this.depositCoin.value
+              },
+              token1: {
+                contract: this.destinationCoin.contract,
+                symbol: this.destinationCoin.precision + ',' + this.destinationCoin.value
+              }
+            }
+          }
+        }
+      } else {
+        multiplier = this.pairData.token0.symbol.split(',')[1].toLowerCase() === this.depositCoin.value.toLowerCase() ? parseFloat(this.pairData.price0_last) : parseFloat(this.pairData.price1_last)
+
+        this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
+      }
+      this.validateTransaction()
+      console.log(this.pairData, ' this.pairData')
+    },
+    addCoinToGlobalList (value, key) {
+      let infosArray = value[key].symbol.split(',')
+      let item = this.coins.find(o => o.value.toLowerCase() === infosArray[1].toLowerCase())
+      if (!item && !isNaN(value.price0_last)) {
+        let url = 'https://ndi.340wan.com/eos/' + value[key].contract + '-' + infosArray[1].toLowerCase() + '.png'
+        let account = this.eosAccounts.find(o => o.type === infosArray[1].toLowerCase())
+        let option = {
+          label: infosArray[1],
+          precision: infosArray[0],
+          value: infosArray[1],
+          contract: value[key].contract,
+          image: this.urlExists(url) ? url : 'https://dbds.340wan.com/static/img/eos.png',
+          data: {
+            amount: account ? parseFloat(account.amount) : 0
+          }
+        }
+
+        this.coins.push(option)
+      }
+    },
+    async getPools () {
+      this.pairs = (await rpc.get_table_rows({
+        json: true,
+        code: 'swap.defi',
+        scope: 'swap.defi',
+        table: 'pairs',
+        limit: -1
+      })).rows
+      this.pairs.forEach((value, index, array) => {
+        this.addCoinToGlobalList(value, 'token0')
+        this.addCoinToGlobalList(value, 'token1')
+      })
+      this.depositCoinOptions = this.coins
+      this.depositCoinUnfilter = this.coins
+      this.depositCoin = this.coins.find(w => w.value.toLowerCase() === 'eos')
+      this.getDestinationCoinOptions()
+      this.destinationCoin = this.destinationCoinOptions[0]
+      this.getPairData()
+    },
+    getDestinationCoinOptions () {
+      this.destinationCoinOptions = this.coins.filter(o => o.value.toLowerCase() !== this.depositCoin.value.toLowerCase()) // .filter(o => this.pairs.find(w => (w.token1.symbol.split(',')[1].toLowerCase() === o.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) || (w.token0.symbol.split(',')[1].toLowerCase() === o.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase())))
+      this.destinationCoinUnfilter = this.destinationCoinOptions
+      this.destinationCoinOptions = this.destinationCoinOptions.filter(o => o.value !== this.depositCoin.value)
+      this.destinationCoin = !this.destinationCoin ? this.destinationCoinOptions[0] : this.destinationCoin
+    },
+    filterDepositCoin (val, update, abort) {
+      update(() => {
+        const needle = val.toLowerCase()
+        this.depositCoinOptions = this.depositCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+      })
+    },
+    validateTransaction () {
+      this.error = null
+      if (this.depositCoin.data.amount < this.swapData.fromAmount) {
+        this.error = 'Insufficient ' + this.depositCoin.label + ' balance'
+      } else if (this.tab === 'liquidity' && this.destinationCoin.data.amount < parseFloat(this.swapData.toAmount)) {
+        this.error = 'Insufficient ' + this.destinationCoin.label + ' balance'
+      }
+    },
+    async sendTransaction () {
+      this.spinnervisible = true
+      this.eosAccount = this.eosAccounts.find(o => o.type.toLowerCase() === this.depositCoin.value.toLowerCase())
+      let transaction = {
+        name: 'transfer',
+        data: {
+          from: this.eosAccount.name,
+          to: 'swap.defi',
+          quantity: this.swapData.fromAmount + ' ' + this.depositCoin.value,
+          memo: this.getMemo()
+        }
+      }
+
+      if (this.tab === 'liquidity' && this.transaction.name === 'createpair') {
+        transaction = this.transaction
+      }
+
+      signatureProvider = new JsSignatureProvider([this.eosAccount.privateKey])
+      api = new Api({
+        rpc,
+        signatureProvider
+      })
+      api.transact({
+        actions: [{
+          account: this.transaction.name !== 'createpair' ? this.depositCoin.contract : 'swap.defi',
+          name: transaction.name,
+          authorization: [{
+            actor: this.eosAccount.name,
+            permission: 'active'
+          }],
+          data: transaction.data
+        }]
+      }, {
+        blocksBehind: 3,
+        expireSeconds: 30
+      }).then((result) => {
+        this.step = 2
+        console.log(result)
+        this.transactionStatus = 'Success'
+        this.spinnervisible = false
+        this.transactionHash = result.transaction_id
+        let wallets2Tokens = require('@/util/Wallets2Tokens')
+        if (!this.$store.state.wallets.tokens && wallets2Tokens.default) wallets2Tokens = wallets2Tokens.default
+        if (this.transaction.name === 'createpair') {
+          this.getPools()
+        }
+      }).catch((error) => {
+        this.error = error
+        this.transactionStatus = 'Failed'
+        this.spinnervisible = false
+      })
+    },
+    getMemo () {
+      let memo = ''
+      if (this.tab === 'swap') {
+        memo += 'swap,'.concat('1', ',')
+        if (this.path.length) {
+          memo += this.path.map(o => o.id).join('-')
+        } else {
+          memo = memo.concat(this.pairData.id)
+        }
+      } else {
+        memo += 'deposit,'
+      }
+
+      return memo
+    },
+    filterDestinationCoin (val, update, abort) {
+      update(() => {
+        const needle = val.toLowerCase()
+        this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+      })
+    }
+
+  }
 }
 </script>
 

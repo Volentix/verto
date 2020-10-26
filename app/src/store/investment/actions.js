@@ -268,6 +268,7 @@ export const getDebts = (context, payload) => {
     })
 }
 export const getEOSInvestments = (context, payload) => {
+  console.log(payload, 'payload')
   let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://defibox.io/api/swap/account/capital'
   axios.post(transactionEndpoint, payload)
     .then(function (result) {

@@ -201,7 +201,7 @@ export default {
       tab: 'mails',
       osName: '',
       accountOptions: [],
-      accountOption: '0xF4dCB9cA53b74e039f5FcFCcD4f0548547a25772',
+      accountOption: '',
       progressValue: 20,
       openModal: false,
       openModalProgress: false,
@@ -302,13 +302,15 @@ export default {
 
   await cruxClient.init()
     */
-
-    let account = {
-      address: tableData.find(w => w.chain === 'eth' && w.type === 'eth').key
+    let ethACcount = tableData.find(w => w.chain === 'eth' && w.type === 'eth')
+    if (ethACcount) {
+      let account = {
+        address: ethACcount.key
+      }
+      this.accountOption = account.address
+      this.$store.dispatch('investment/getZapperTokens')
+      this.getAccountInformation(account)
     }
-    this.accountOption = account.address
-    this.$store.dispatch('investment/getZapperTokens')
-    this.getAccountInformation(account)
   },
   async mounted () {
     this.getMaxDeFiYield()
