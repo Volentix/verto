@@ -45,7 +45,7 @@
 
 <script>
 import HD from '@/util/hdwallet'
-
+import initWallet from '@/util/Wallets2Tokens'
 // I have setup your symbols into a sandbox wallet named testwallet.
 // You can proceed with development with this as your walletName.
 // IDs will be created as foo@testwallet.crux
@@ -151,8 +151,7 @@ export default {
       const self = this
       this.$store.state.wallets.tokens = null
 
-      let initWallet = require('@/util/Wallets2Tokens')
-      if (initWallet.default) initWallet()
+      initWallet()
 
       this.$q.notify({
         color: 'positive',

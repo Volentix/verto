@@ -100,6 +100,7 @@ import {
 } from '@cruxpay/js-sdk'
 import HD from '@/util/hdwallet'
 let cruxClient
+import initWallet from '@/util/Wallets2Tokens'
 
 // I have setup your symbols into a sandbox wallet named testwallet.
 // You can proceed with development with this as your walletName.
@@ -307,10 +308,8 @@ export default {
     },
     dataRefresh () {
       const self = this
-      this.$store.state.wallets.tokens = null
-
-      let initWallet = require('@/util/Wallets2Tokens')
-      if (initWallet.default) initWallet()
+      this.$store.state.wallets.tokens = []
+      initWallet()
 
       this.$q.notify({
         color: 'positive',

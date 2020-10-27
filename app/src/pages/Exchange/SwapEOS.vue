@@ -343,6 +343,7 @@ import {
   JsSignatureProvider
 } from 'eosjs/dist/eosjs-jssig'
 let rpc, api, signatureProvider
+import initWallet from '@/util/Wallets2Tokens'
 export default {
   components: {},
   data () {
@@ -589,8 +590,7 @@ export default {
         this.transactionStatus = 'Success'
         this.spinnervisible = false
         this.transactionHash = result.transaction_id
-        let initWallet = require('@/util/Wallets2Tokens')
-        if (!this.$store.state.wallets.tokens) initWallet()
+        initWallet()
         if (this.transaction.name === 'createpair') {
           this.getPools()
         }
