@@ -153,7 +153,7 @@ export default {
             throw new Error('Incorrect Password')
           }
           // updateProgress(1)
-          this.$store.commit('settings/temporary', this.password)
+          this.$store.commit('settings/temporary', that.addWallet.vertoPassword)
           this.applicationRefreshing = true
           that.$q.notify({ color: 'positive', message: 'Application refreshing' })
           setTimeout(function () {
