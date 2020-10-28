@@ -609,12 +609,26 @@ export default {
                 }
             }
         }
+      }
+      .qbtn-custom{
+        border-radius: 30px;
+        height: 34px;
+        background: #EFF5F9 !important;
+        /deep/ .q-btn__wrapper{
+            min-height: unset;
+            padding: 0px 0px;
+            .q-btn__content{
+                text-transform: initial;
+                font-size: 12px;
+                color: #627797;
+            }
 
-        /deep/ .transaction-section {
-            box-shadow: none;
+            /deep/ .transaction-section {
+                box-shadow: none;
 
-            .history-icon {
-                display: none;
+                .history-icon {
+                    display: none;
+                }
             }
         }
     }

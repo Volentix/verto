@@ -210,7 +210,6 @@
                         <q-btn @click="step = 2" v-if="condition === 3" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
                       </q-stepper-navigation>
                     </q-step>
-
                     <q-step v-if="isPrivateKeyEncrypted" title="Sign & Submit"
                       :name="2"
                       prefix="2"
@@ -247,7 +246,6 @@
                         <q-btn @click="sendTransaction()" color="deep-purple-14" class="--next-btn" rounded label="Submit" />
                       </q-stepper-navigation>
                     </q-step>
-
                     <q-step v-else title="Confirm & Submit"
                       :name="2"
                       prefix="2"
@@ -257,13 +255,11 @@
 
                       <div class="text-black">
                         <div class="text-h4 --subtitle">Are you sure?</div>
-
                       </div>
                       <q-stepper-navigation class="flex justify-end">
                         <q-btn @click="sendTransaction()" color="deep-purple-14" class="--next-btn" rounded label="Submit" />
                       </q-stepper-navigation>
                     </q-step>
-
                     <q-step title="Result"
                       :name="4"
                       prefix="3"
@@ -396,6 +392,23 @@ export default {
     }
 
     // console.log('this.currentAccount ----------------- ', this.currentAccount)
+    let stepParam = this.$route.params.step
+    if (this.stakes.length === 0) {
+      this.tab = 'stake'
+    }
+    if (stepParam !== undefined) {
+      // console.log('step staking = ', stepParam)
+      let highestVTXAccount = this.$store.state.highestVTXAccount.wallet
+      this.$store.state.currentwallet.wallet = highestVTXAccount
+      this.currentAccount = highestVTXAccount
+      this.params = this.$store.state.highestVTXAccount.params
+      this.slider = 100
+      this.changeSlider()
+      this.stakePeriod = 10
+      this.changeSlider()
+      this.step = parseInt(stepParam)
+      this.tab = 'stake'
+    }
 
     if (eos.isPrivKeyValid(this.currentAccount.privateKey)) {
       this.privateKey.key = this.currentAccount.privateKey
@@ -434,24 +447,9 @@ export default {
     }
 
     // console.log('stakes', this.stakes)
-    if (this.stakes.length === 0) {
-      this.tab = 'stake'
-    }
   },
   async mounted () {
-    let stepParam = this.$route.params.step
-    if (stepParam !== undefined) {
-      // console.log('step staking = ', stepParam)
-      let highestVTXAccount = this.$store.state.highestVTXAccount.wallet
-      this.$store.state.currentwallet.wallet = this.$store.state.highestVTXAccount.wallet
-      this.currentAccount = highestVTXAccount
-      this.params = this.$store.state.highestVTXAccount.params
-      this.slider = 100
-      this.changeSlider()
-      this.stakePeriod = 10
-      this.changeSlider()
-      this.step = parseInt(stepParam)
-    }
+
   },
   methods: {
     sliderToPercent (percent) {
