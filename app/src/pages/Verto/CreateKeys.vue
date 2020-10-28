@@ -123,25 +123,22 @@ export default {
       })
     },
     async putAddress () {
+      const self = this
       let count = this.names.length
       let i = 0
 
-      this.names.map(async n => {
+      for (const name of this.names) {
         i++
         this.progress = Math.round(i / count * 10000) / 100
         console.log('this.progress', this.progress)
-        this.status = 'Creating keys for: ' + n.value
+        this.status = 'Creating keys for: ' + name.value
 
-        // let keys = await HD.Wallet(n.value)
-        // let result = await this.$configManager.saveWalletAndKey(n.label, this.vertoPassword, null, keys.publicKey, keys.privateKey, n.value, 'mnemonic')
-
-        let result = ''
-        HD.Wallet(n.value).then(keys => {
-          result = this.$configManager.saveWalletAndKey(n.label, this.vertoPassword, null, keys.publicKey, keys.privateKey, n.value, 'mnemonic')
+        let results = await HD.Wallet(name.value).then(async keys => {
+          return self.$configManager.saveWalletAndKey(name.label, self.vertoPassword, null, keys.publicKey, keys.privateKey, name.value, 'mnemonic')
         })
 
-        console.log('key creation', result)
-      })
+        console.log('key creation: ', results)
+      }
 
       // console.log('map', map)
       this.mapped = true
@@ -151,8 +148,12 @@ export default {
       const self = this
       this.$store.state.wallets.tokens = null
 
-      let initWallet = require('@/util/Wallets2Tokens')
-      if (initWallet.default) initWallet()
+      try {
+        let initWallet = require('@/util/Wallets2Tokens')
+        if (initWallet.default) initWallet()
+      } catch (error) {
+        console.log('initWallet error', error)
+      }
 
       this.$q.notify({
         color: 'positive',
