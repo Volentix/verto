@@ -153,10 +153,13 @@ export default {
             throw new Error('Incorrect Password')
           }
           // updateProgress(1)
+          this.$store.commit('settings/temporary', this.password)
           this.applicationRefreshing = true
           that.$q.notify({ color: 'positive', message: 'Application refreshing' })
           setTimeout(function () {
-            that.$router.push({ name: 'wallet' })
+            self.$router.push({
+              path: '/verto/dashboard'
+            })
             this.spinnervisible = false
           }, 300)
         } catch (e) {

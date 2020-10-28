@@ -148,8 +148,12 @@ export default {
       const self = this
       this.$store.state.wallets.tokens = null
 
-      let initWallet = require('@/util/Wallets2Tokens')
-      if (initWallet.default) initWallet()
+      try {
+        let initWallet = require('@/util/Wallets2Tokens')
+        if (initWallet.default) initWallet()
+      } catch (error) {
+        console.log('initWallet error', error)
+      }
 
       this.$q.notify({
         color: 'positive',
