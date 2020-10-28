@@ -700,11 +700,11 @@ export default {
       &__form{
         .tokenID{
           text-transform: uppercase;
-          font-size: 20px;
-          font-weight: 900;
+          font-size: 16px;
+          font-weight: 700;
           color: #7271fa;
           padding-top: 0px;
-          margin-top: -5px;
+          margin-top: -1px;
         }
         /deep/ .q-field__native{
           padding-left: 8px;
