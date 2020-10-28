@@ -1444,7 +1444,6 @@ export default {
             }
         }
     }
-
     &--title {
         font-size: 35px;
         font-weight: $bold;
@@ -1465,33 +1464,28 @@ export default {
             top: 10px;
         }
     }
-
-    &--desc {
-        margin-top: -20px;
+    &__form{
+      /deep/ .q-field__bottom{
+        font-size: 10px;
       }
-      &__form{
-        /deep/ .q-field__bottom{
-          font-size: 10px;
-        }
-        .pay-get-wrapper{
-          // border-bottom: 1px solid rgba(#707070, .4);
-          padding: 0px;
-          padding-bottom: 10px;
-          margin-bottom: 20px;
-          .pay-wrapper{}
-          .exchange-btn{
-            height: fit-content;
-            align-self: flex-end;
-            padding-top: 15px;
-            transform: rotate(90deg);
-            margin-bottom: 40px;
-            font-size: 18px;
-            font-weight: $regular;
-            position: relative;
-            line-height: 26px;
-            font-family: $Titillium;
-            color: $mainColor;
-          }
+      .pay-get-wrapper{
+        // border-bottom: 1px solid rgba(#707070, .4);
+        padding: 0px;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        .pay-wrapper{}
+        .exchange-btn{
+          height: fit-content;
+          align-self: flex-end;
+          padding-top: 15px;
+          transform: rotate(90deg);
+          margin-bottom: 40px;
+          font-size: 18px;
+          font-weight: $regular;
+          position: relative;
+          line-height: 26px;
+          font-family: $Titillium;
+          color: $mainColor;
         }
       }
     }
@@ -1500,7 +1494,6 @@ export default {
           max-width: 150px;
           margin: auto;
           margin-top: 20px;
-
           .title {
               font-size: 13px;
               color: #7272FA;
@@ -1516,7 +1509,6 @@ export default {
       }
       &__img {
           min-height: 250px;
-
           img {
               max-width: 90%;
           }
@@ -1589,13 +1581,11 @@ export default {
 
               .get-wrapper {}
           }
-
           /deep/ .q-field__native {
               padding-left: 8px;
               font-size: 16px;
               font-weight: $regular;
           }
-
           /deep/ .q-field__label {
               font-family: $Titillium;
               font-weight: $regular;
@@ -1702,7 +1692,7 @@ export default {
         }
 
     }
-
+}
 .select-input {
     border-radius: 100px !important;
     $height: 50px;
