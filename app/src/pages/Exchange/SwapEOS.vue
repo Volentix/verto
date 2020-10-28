@@ -571,7 +571,7 @@ export default {
         rpc,
         signatureProvider
       })
-      api.transact({
+      let transactionObject = {
         actions: [{
           account: this.transaction.name !== 'createpair' ? this.depositCoin.contract : 'swap.defi',
           name: transaction.name,
@@ -581,7 +581,10 @@ export default {
           }],
           data: transaction.data
         }]
-      }, {
+      }
+
+      console.log(transactionObject, JSON.stringify(transactionObject), 'transactionObject')
+      api.transact(transactionObject, {
         blocksBehind: 3,
         expireSeconds: 30
       }).then((result) => {

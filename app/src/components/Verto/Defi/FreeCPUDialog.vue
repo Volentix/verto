@@ -1,16 +1,31 @@
 <template>
 <q-card class="q-pa-lg modal-dialog-wrapper" style="width: 500px; ">
     <q-toolbar>
-        <q-toolbar-title><span class="text-weight-bold q-pl-sm">Borrowing CPU</span></q-toolbar-title>
+        <q-toolbar-title><span class="text-weight-bold q-pl-sm">FREE CPU</span></q-toolbar-title>
         <q-select v-model="currentExrternalWallet" label="Account" />
 
         <q-btn flat round dense icon="close" v-close-popup />
     </q-toolbar>
-    <q-card-section class="text-h6" v-if="!transactionStatus">
+    <q-card-section class="text-h6" v-if="!transactionStatus && eosAccount">
 
         <div class="row">
-
-            <div class="col-12 text-h6 q-mb-md q-pl-sm flex items-center">
+            <pre>
+            {
+        account: 'eosio.token',
+        name: 'transfer',
+        authorization: [{
+          'actor': {{eosAccount.name}},
+          'permission': 'active'
+        }],
+        data: {
+          'from': 'berthonythe3',
+          'to': 'swap.defi',
+          'quantity': '{{parseFloat(sendAmount).toFixed(4)}} EOS',
+          'memo': 'swap,1,448'
+        }
+      }
+      </pre>
+            <div class="col-12 text-h6 q-mb-md q-pl-sm flex items-center" v-if="false">
                 <h4 class="lab-title q-pr-md">Borrow CPU: <span class="text-grey">{{sendAmount}} </span></h4>
 
             </div>
@@ -18,7 +33,9 @@
                 <!-- <q-input class="input-input" filled rounded outlined color="purple" value="0.1" suffix="MAX" /> -->
                 <q-input min="0" @input="validateInput(); error = null" v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number" />
             </div>
-
+            <div class="text-red text-body1 q-mt-sm" v-if="error">
+                {{error}}
+            </div>
         </div>
         <hr style="opacity: .1">
 
@@ -61,9 +78,14 @@
 
 <script>
 import {
+  Api,
   JsonRpc
 } from 'eosjs'
+import {
+  JsSignatureProvider
+} from 'eosjs/dist/eosjs-jssig'
 import EOSContract from '../../../mixins/EOSContract'
+import initWallet from '@/util/Wallets2Tokens'
 export default {
   name: 'FreeCPUDIalog',
   data () {
@@ -72,7 +94,7 @@ export default {
       invalidTransaction: false,
       currentExrternalWallet: '',
       transactionHash: null,
-      sendAmount: 0,
+      sendAmount: 1,
       eosAccount: null
     }
   },
@@ -85,72 +107,151 @@ export default {
   },
 
   methods: {
+
+    async sendCosignedTransaction (actions) {
+      let rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
+
+      let signatureProvider = new JsSignatureProvider([this.eosAccount.privateKey])
+      let eosApi = new Api({
+        rpc,
+        signatureProvider
+      })
+
+      const transactionHeader = {
+        blocksBehind: 3,
+        expireSeconds: 60
+      }
+      const tx = {
+        actions
+      }
+
+      let pushTransactionArgs, serverTransactionPushArgs
+      try {
+        serverTransactionPushArgs = await this.serverSign(tx, this.eosAccount.name, transactionHeader)
+      } catch (error) {
+        console.error(`Error when requesting server signature: `, error.message)
+      }
+
+      if (serverTransactionPushArgs) {
+        await eosApi.transact(tx, {
+          ...transactionHeader,
+          sign: false,
+          broadcast: false
+        })
+
+        // fake requiredKeys to only be user's keys
+        const requiredKeys = await eosApi.signatureProvider.getAvailableKeys()
+
+        // must use server tx here because blocksBehind header might lead to different TAPOS tx header
+        const serializedTx = serverTransactionPushArgs.serializedTransaction
+
+        const signArgs = {
+          chainId: eosApi.chainId,
+          requiredKeys,
+          serializedTransaction: serializedTx,
+          abis: []
+        }
+
+        pushTransactionArgs = await eosApi.signatureProvider.sign(signArgs)
+
+        console.log(eosApi.chainId, pushTransactionArgs, 'pushTransactionArgs')
+        // add server signature
+        pushTransactionArgs.signatures.unshift(
+          serverTransactionPushArgs.signatures[0]
+        )
+      } else {
+        console.log('nooo')
+        // no server response => sign original tx
+        pushTransactionArgs = await eosApi.transact(tx, {
+          ...transactionHeader,
+          sign: true,
+          broadcast: false
+        })
+      }
+
+      eosApi.pushSignedTransaction(pushTransactionArgs).then((result) => {
+        this.transactionStatus = 'Success'
+
+        this.transactionHash = result.transaction_id
+        initWallet()
+      }).catch((error) => {
+        this.step = 1
+        this.error = error
+        this.transactionStatus = null
+        this.spinnervisible = false
+      })
+    },
+    async serverSign (transaction, user, txHeaders) {
+      let serverEndpoint = 'http://34.200.68.128:3031/api/eos/sign'
+      let config = {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }
+      try {
+        const rawResponse = await this.$axios.post(serverEndpoint, JSON.stringify({
+          tx: transaction,
+          user,
+          txHeaders
+        }), config)
+        console.log()
+        const content = rawResponse.data
+        if (content.error) {
+          // show error to User
+        }
+
+        const pushTransactionArgs = {
+          ...content,
+          serializedTransaction: Buffer.from(content.serializedTransaction, `hex`)
+        }
+
+        console.log(pushTransactionArgs, 'pushTransactionArgs')
+        return pushTransactionArgs
+      } catch (error) {
+        console.log(error, 'Cannot get CoSignature')
+      }
+    },
     setDialogData () {
 
     },
     async doTransaction () {
-      let transactionObject = {
-        actions: [{
-          account: 'tippedtipped',
-          name: 'transfer',
-          authorization: [{
-            actor: 'tippedtipped',
-            permission: 'payforcpu'
-          }],
-          data: {
-            from: 'tippedtipped',
-            to: this.eosAccount.name,
-            quantity: '1.0 CPU',
-            memo: ''
-          }
-        },
-        {
-          account: 'eosio',
-          name: 'deposit',
-          authorization: [{
-            actor: this.eosAccount.name,
-            permission: 'active'
-          }],
-          data: {
-
-            owner: this.eosAccount.name,
-            amount: '0.0010 EOS'
-          }
-        }, {
-          account: 'eosio',
-          name: 'rentcpu',
-          authorization: [{
-            actor: this.eosAccount.name,
-            permission: 'active'
-          }],
-          data: {
-            from: this.eosAccount.name,
-            receiver: this.eosAccount.name,
-            loan_payment: '1.0 CPU',
-            loan_fund: '0.0000 EOS'
-          }
+      let transactionObject = [{
+        account: 'eosio.token',
+        name: 'transfer',
+        authorization: [{
+          'actor': this.eosAccount.name,
+          'permission': 'active'
+        }],
+        data: {
+          'from': 'berthonythe3',
+          'to': 'swap.defi',
+          'quantity': parseFloat(this.sendAmount).toFixed(4) + ' EOS',
+          'memo': 'swap,1,448'
         }
-        ]
-      }
-      let header = {
-        blocksBehind: 3,
-        expireSeconds: 30,
-        sign: false,
-        broadcast: false
-      }
-      // TU es quelqu'un que j'apprécie beaucoup. J'aurais aimé avoir des nouvelles de toi plus re
-      let rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
-      try {
-        let info = await rpc.get_info()
-        let block = await rpc.get_block(info.last_irreversible_block_num)
-        console.log(block)
-        // {cs:e.ref_block_prefix-e.ref_block_num-1}
-      } catch (error) {
-        console.error(JSON.stringify(error))
-      }
-      this.sendTransaction(transactionObject, null, header)
-      console.log(rpc)
-      //  this.signTransaction({ transactionObject, transactionHeader })
+      }]
+
+      this.sendCosignedTransaction(transactionObject)
+      /*
+    let header = {
+      blocksBehind: 3,
+      expireSeconds: 30,
+      sign: false,
+      broadcast: false
+    }
+    let rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
+    try {
+      let info = await rpc.get_info()
+      let block = await rpc.get_block(info.last_irreversible_block_num)
+      console.log(block)
+      // {cs:e.ref_block_prefix-e.ref_block_num-1}
+    } catch (error) {
+      console.error(JSON.stringify(error))
+    }
+    this.sendTransaction(transactionObject, null, header)
+    console.log(rpc)
+    //  this.signTransaction({ transactionObject, transactionHeader })
+    } */
     },
     validateInput () {
       //  this.sendAmount = this.sendAmount > this.stakeData.token ? this.stakeData.token : this.sendAmount
