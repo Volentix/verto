@@ -67,7 +67,7 @@
                     </div>
                 </div>
             </div>
-            <q-scroll-area :visible="true" class="q-mr-sm" style="height: 300px;">
+            <q-scroll-area :visible="true" class="q-mr-sm" style="height: 170px;">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty">
                         <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">

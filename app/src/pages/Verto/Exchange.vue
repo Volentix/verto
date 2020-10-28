@@ -14,15 +14,20 @@
                 <div class="desktop-card-style apps-section q-mb-sm">
                     <div class="chain-tools-wrapper">
                         <div class="standard-content">
-                            <h2 class="standard-content--title flex justify-start">Exchange</h2>
+                            <h2 class="standard-content--title flex justify-start">vDex</h2>
                             <!-- <div class="exchange_picto flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div> -->
                         </div>
-                        <div class="chain-tools-wrapper--list open">
+                        <div class="chain-tools-wrapper--list chain-tools-wrapper--list___2 open">
                             <div class="list-wrapper">
                                 <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                                    <div class="row q-mb-md">
-                                        <q-select class="default-view col-md-3 col-6 offset-md-9" v-model="defaultView" :options="['Coinswitch', '1Inch', 'Swap EOS']" label="Default view" />
+                                    <div class="select-provider-wrapper flex justify-start">
+                                      <div class="choice choice1 q-pa-sm q-pl-lg q-pr-lg" :class="{'active': defaultView === 'Coinswitch'}" @click="defaultView = 'Coinswitch'">Coinswitch</div>
+                                      <div class="choice choice2 q-ml-sm q-pl-lg q-pr-lg q-mr-sm q-pa-sm" :class="{'active': defaultView === '1Inch'}" @click="defaultView = '1Inch'">1Inch</div>
+                                      <div class="choice choice3 q-pa-sm q-pl-lg q-pr-lg" :class="{'active': defaultView === 'Swap EOS'}" @click="defaultView = 'Swap EOS'">Swap EOS</div>
                                     </div>
+                                    <!-- <div class="row q-mb-md">
+                                        <q-select class="default-view col-md-3 col-6 offset-md-9" v-model="defaultView" :options="['Coinswitch', '1Inch', 'Swap EOS']" label="Default view" />
+                                    </div> -->
                                     <OneInchExhange v-if="defaultView == '1Inch'"></OneInchExhange>
                                     <SwapEOS v-if="defaultView == 'Swap EOS'"></SwapEOS>
                                     <q-stepper v-else-if="defaultView == 'Coinswitch'" v-model="step" done-color="green" ref="stepper" class="stepper--desktop" alternative-labels color="primary" animated flat>
@@ -328,7 +333,7 @@
             </h2>
             <div class="exchange_picto flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div>
         </div>
-        <div class="chain-tools-wrapper--list open">
+        <div class="chain-tools-wrapper--list chain-tools-wrapper--list___1 open">
             <div class="list-wrapper">
                 <div class="list-wrapper--chain__eos-to-vtx-convertor">
                     <q-stepper v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
@@ -1815,7 +1820,30 @@ export default {
             margin-bottom: 10px;
             color: #7272FA !important;
         }
-
+        .select-provider-wrapper{
+          position: absolute;
+          right: 20px;
+          z-index: 999;
+          top: -40px;
+          .choice{
+            font-size: 14px;
+            font-weight: $bold;
+            border: 1px solid rgba($mainColor, .2);
+            opacity: .5;
+            border-radius: 4px;
+            box-shadow: 0px 2px 5px 0px rgba(black, .2);
+            cursor: pointer;
+            &:hover{
+              background-color: rgba($mainColor, .1);
+            }
+            &.active{
+              opacity: 1;
+              background-color: $mainColor;
+              color: #FFF;
+              box-shadow: 0px 2px 5px 0px rgba($mainColor, .2);
+            }
+          }
+        }
         .list-wrapper {
             overflow: hidden;
             visibility: hidden;
@@ -2304,6 +2332,7 @@ export default {
 }
 
 .stepper--desktop {
+    margin-top: 30px;
     /deep/ .q-stepper__content {
         max-width: 600px;
         margin: auto;
@@ -2413,5 +2442,10 @@ export default {
 
 .default-view {
     max-width: 200px;
+}
+body .chain-tools-wrapper--list___2.chain-tools-wrapper--list.open{
+  padding-left: 0%;
+  padding-right: 0%;
+  margin-top: -20px;
 }
 </style>
