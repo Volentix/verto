@@ -191,7 +191,7 @@ export default {
             this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
           //   this.$router.push('wallet')
           }
-          this.$router.push('create-keys/')
+          this.$router.push({ path: '/create-keys' })
         }
       } else {
         this.$q.notify({ color: 'negative', message: 'The words are not yet in the right order' })
