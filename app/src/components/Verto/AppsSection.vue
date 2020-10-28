@@ -83,9 +83,9 @@ export default {
           strong{
             font-weight: $bold;
             text-transform: uppercase;
-            font-size: 12px;
-            margin-top: -6px;
-            margin-bottom: -4px;
+            font-size: 10px;
+            margin-top: -4px;
+            margin-bottom: -2px;
           }
           img{
             max-width: 35px;

@@ -2,6 +2,7 @@
 <div class="menu-top-wrapper">
     <div class="row">
         <div class="col col-3 app-logo flex q-pl-xl items-center">
+            <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;">
             <router-link to="/verto/dashboard">VERTO</router-link>
         </div>
         <div class="col col-3 flex items-center">2020-05-22 - 16:15:31</div>
