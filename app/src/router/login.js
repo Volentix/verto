@@ -27,8 +27,16 @@ export default [
         }
       },
       {
+        name: 'create-keys',
+        path: '/create-keys',
+        component: () => import('pages/Verto/CreateKeys.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'cruxpay',
-        path: '/cruxpay',
+        path: '/cruxpay/:fromStep',
         component: () => import('pages/Verto/CruxPaySetup.vue'),
         meta: {
           authRequired: false
@@ -70,6 +78,13 @@ export default [
         name: 'exchange',
         path: '/exchange',
         component: () => import('pages/Exchange/CoinSwitch.vue'),
+        meta: {
+          authRequired: true
+        }
+      }, {
+        name: 'oneInch',
+        path: '/verto/oneInch',
+        component: () => import('pages/Exchange/oneInch.vue'),
         meta: {
           authRequired: true
         }

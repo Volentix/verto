@@ -44,7 +44,6 @@
                                     class="pay-coin-select"
                                     popup-content-class="pay-coin-select-popup"
                                     v-model="depositCoin"
-                                    @popup-show="addSearchField"
                                     @filter="filterDepositCoin"
                                     @input="checkGetPairs()"
                                     :disabled="!depositCoinOptions"
@@ -755,7 +754,7 @@
     <div v-else class="chain-tools-wrapper">
         <div class="standard-content">
             <h2 class="standard-content--title flex justify-center">
-                <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" />
+                <q-btn flat unelevated class="btn-align-left" to="goBack" text-color="black" icon="keyboard_backspace" />
                   Exchange
             </h2>
             <div class="exchange_picto flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div>

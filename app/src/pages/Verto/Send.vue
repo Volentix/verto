@@ -363,15 +363,22 @@ export default {
   },
   watch: {
     currentToken: function (newVal) {
-      this.from = newVal.label
-      this.currentAccount = this.tableData.find(w => w.chain === newVal.chainID && w.type === newVal.type && (
-        w.chain === 'eos' ? w.name.toLowerCase() === newVal.label : w.key === newVal.label)
-      )
-      this.$store.state.currentwallet.wallet = this.currentAccount
-      this.sendAmount = 0
+      if (newVal) {
+        /*
+        this.from = newVal.label
+        this.currentAccount = this.tableData.find(w => w.chain === newVal.chainID && w.type === newVal.type && (
+          w.chain === 'eos' ? w.name.toLowerCase() === newVal.label : w.key === newVal.label)
+        )
+        */
+        console.log(this.currentAccount, this.tableData, newVal, 'currentAccount wallet')
+
+        // this.$store.commit('currentwallet/updateCurrentWallet', this.currentAccount)
+        this.sendAmount = 0
+      }
     }
   },
   async created () {
+    console.log(this.currentAccount, this.currentToken, 'currentAccount 1')
     let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     this.osName = osName
     this.getWindowWidth()
@@ -380,6 +387,8 @@ export default {
     this.params = this.$store.state.currentwallet.params
     this.tableData = await this.$store.state.wallets.tokens
     // console.log('this.tableData', this.tableData)
+
+    console.log(this.tableData, 'tableData')
     let self = this
     this.tableData.map(token => {
       if (!token.disabled && token.type.toLowerCase() !== 'verto' && parseFloat(token.amount) > 0) {
@@ -393,6 +402,8 @@ export default {
         })
       }
     })
+    console.log(this.currentAccount, this.currentToken, 'currentAccount 6')
+
     if (this.selectedCoin) {
       this.currentAccount = this.selectedCoin
       this.currentToken = {
@@ -408,6 +419,8 @@ export default {
         w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
       )
     }
+    console.log(this.currentAccount, this.currentToken, 'currentAccount 5')
+
     this.currentAccount = this.currentAccount || this.currentToken
     if (this.params.chainID === undefined) {
       this.params = {
@@ -423,6 +436,7 @@ export default {
     }
 
     // console.log('this.currentAccount sur la page send', this.currentAccount)
+    console.log(this.currentAccount, this.currentToken, 'currentAccount 4')
 
     if (this.currentAccount.privateKey) {
       this.privateKey.key = this.currentAccount.privateKey
@@ -438,6 +452,7 @@ export default {
       privateKey: this.cruxKey.privateKey
     })
     await cruxClient.init()
+    console.log(this.currentAccount, this.currentToken, 'currentAccount 25')
   },
   mounted () {
   },

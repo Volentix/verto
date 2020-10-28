@@ -11,15 +11,13 @@ class Wallets2Tokens {
     // console.log('wallets in the config', store.state.currentwallet.config.keys)
     // let list = ''
     // axios.get('https://api.coingecko.com/api/v3/coins/list').then(res => list = res.data)
-
     const self = this
     this.eosUSD = 0
-    axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { self.eosUSD = res.data.data.price })
+    axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { self.eosUSD = res.data.data.price })
     store.state.wallets.portfolioTotal = 0
     this.tableData = [ ...store.state.currentwallet.config.keys ]
-    this.tableData.map(wallet => {
-      wallet.type = wallet.type ? wallet.type : 'verto'
 
+    this.tableData.map(wallet => {
       // let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
       // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === vtxCoin.toLowerCase())
 
@@ -28,6 +26,7 @@ class Wallets2Tokens {
       //   vespucciScore = result.vespucciScore
       //   wallet.vespucciScore = vespucciScore
       // })
+
       if (wallet.type === 'eos') {
         wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
@@ -39,10 +38,11 @@ class Wallets2Tokens {
       } else {
         wallet.to = '/verto/wallets/' + wallet.type + '/' + wallet.type + '/' + wallet.key
         wallet.chain = wallet.type
-        wallet.disabled = true
+        wallet.disabled = wallet.type !== 'eth'
         wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
         // wallet.vespucciScore = vespucciScore
       }
+      wallet.disabled = false
 
       if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'bnb' || wallet.type === 'dash') {
         Lib.balance(wallet.type, wallet.key).then(result => {
@@ -125,7 +125,11 @@ class Wallets2Tokens {
           })
         })
       } else if (wallet.type === 'eth') {
-        // wallet.key = '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' // temporary account override for testing
+      //  wallet.key = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
+
+        // wallet.privateKey = ''
+
+        // temporary account override for testing
         axios.get('https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
           let ethplorer = res.data
           self.tableData.filter(w => w.key === wallet.key).map(eth => {
@@ -135,13 +139,13 @@ class Wallets2Tokens {
 
           // console.log('ethplorer', ethplorer)
 
-          axios.get('https://cors-anywhere.herokuapp.com/https://api.tokensets.com/v1/rebalancing_sets', {
+          axios.get(process.env[store.state.settings.network].CACHE + 'https://api.tokensets.com/v1/rebalancing_sets', {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
           }).then(res => {
             let tokenSets = res.data.rebalancing_sets
-            // console.log('tokenSets', tokenSets)
+            console.log('ethplorer.tokens', ethplorer.tokens)
             if (ethplorer.tokens) {
-              ethplorer.tokens.filter(t => t.balance > 0).map(t => {
+              ethplorer.tokens.filter(t => t.balance > 0 && t.symbol).map(t => {
                 t.tokenInfo.image = t.tokenInfo.image ? t.tokenInfo.image : 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + Web3.utils.toChecksumAddress(t.tokenInfo.address) + '/logo.png'
                 const csa = Web3.utils.toChecksumAddress(t.tokenInfo.address)
 
@@ -160,7 +164,7 @@ class Wallets2Tokens {
                 self.tableData.push({
                   selected: false,
                   disabled: false,
-                  type: t.tokenInfo.symbol.toLowerCase(),
+                  type: t.tokenInfo.symbol ? t.tokenInfo.symbol.toLowerCase() : '',
                   name: t.tokenInfo.name,
                   amount: t.balance / (10 ** t.tokenInfo.decimals),
                   usd: (t.balance / (10 ** t.tokenInfo.decimals)) * t.tokenInfo.price.rate,
@@ -201,7 +205,7 @@ class Wallets2Tokens {
     }
 
     // 'https://api.coingecko.com/api/v3/simple/price?ids=' + +'&vs_currencies=usd'
-    let coinEOS = (await axios.get('https://cors-anywhere.herokuapp.com/https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
+    let coinEOS = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
     let coinUSD = coinEOS * this.eosUSD
     // console.log(coin, ' --> USD', coinUSD)
 
@@ -232,5 +236,7 @@ class Wallets2Tokens {
     return currentAsset
   }
 }
-
-export default new Wallets2Tokens()
+const initWallet = () => {
+  return new Wallets2Tokens()
+}
+export default initWallet

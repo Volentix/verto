@@ -1,4 +1,5 @@
 import store from '@/store'
+import { Keyring } from '@polkadot/api'
 
 // Hierarchical Deterministic Wallets
 // https://iancoleman.io/bip39/ used to validate the derived keys as per bip44 non-hardened addresses.
@@ -16,6 +17,14 @@ class HD {
     const seed = bip39.mnemonicToSeedSync(mnemonic)
 
     const keys = {
+      dot () {
+        const keyring = new Keyring({ type: 'sr25519' })
+        const newPair = keyring.addFromUri(mnemonic)
+        const publicKey = newPair.publicKey
+        const privateKey = 'not implemented'
+
+        return { publicKey, privateKey }
+      },
       eos () {
         const hdkey = require('hdkey')
         const wif = require('wif')
