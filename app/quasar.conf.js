@@ -85,6 +85,7 @@ module.exports = function (ctx) {
         'QToggle',
         'QUploader',
         'QEditor',
+        'QImg',
         'Loading'
       ],
 
@@ -131,12 +132,15 @@ module.exports = function (ctx) {
     },
 
     devServer: {
+      // before (app) {
+      //   const cors = require('cors')
+      //   app.use(cors())
+      // },
       // https: true,
       // port: 8080,
       open: true // opens browser window automatically
     },
 
-    animations: 'all', // --- includes all animations
     animations: [],
 
     ssr: {

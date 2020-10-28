@@ -1,29 +1,39 @@
 <template>
-  <div class="menu-top-wrapper">
+<div class="menu-top-wrapper">
     <div class="row">
-      <div class="col col-3 app-logo flex q-pl-xl items-center">
-        <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;">
-        <!-- add the vulps logo before  -->
-        <router-link to="/verto/dashboard">VERTO</router-link>
-      </div>
-      <div class="col col-3 flex items-center">2020-05-22 - 16:15:31</div>
-      <div class="col col-6 flex justify-end q-pr-xl items-center menu">
-        <!-- to="/verto/earn/use-referral-account" -->
-        <!-- <router-link disabled>Refer & Earn</router-link> -->
-        <router-link to="/verto/exchange">Exchange</router-link>
-        <a href="javascript:void(0)" @click="logout"><q-icon class="reverse" name="exit_to_app" /> Logout</a>
-      </div>
+        <div class="col col-3 app-logo flex q-pl-xl items-center">
+            <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;">
+            <router-link to="/verto/dashboard">VERTO</router-link>
+        </div>
+        <div class="col col-3 flex items-center">2020-05-22 - 16:15:31</div>
+        <div class="col col-6 flex justify-end q-pr-xl items-center menu">
+            <!-- to="/verto/earn/use-referral-account" -->
+            <!-- <router-link disabled>Refer & Earn</router-link> -->
+            <span @click="temp = true">Free* CPU</span>
+            <router-link to="/verto/exchange4">New UI (Temp)</router-link>
+            <router-link to="/verto/exchange">Exchange</router-link>
+            <a href="javascript:void(0)" @click="logout">
+                <q-icon class="reverse" name="exit_to_app" /> Logout
+            </a>
+        </div>
     </div>
-  </div>
+     <q-dialog v-model="temp">
+    <FreeCPUDialog />
+    </q-dialog>
+</div>
 </template>
 
 <script>
 // import configManager from '@/util/ConfigManager'
-
+import FreeCPUDialog from './Defi/FreeCPUDialog'
 export default {
   name: 'TopMenu',
+  components: {
+    FreeCPUDialog
+  },
   data () {
     return {
+      temp: false
     }
   },
   methods: {
@@ -37,9 +47,10 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-  @import "~@/assets/styles/variables.scss";
-  .menu-top-wrapper{
+<style lang="scss" scoped>
+@import "~@/assets/styles/variables.scss";
+
+.menu-top-wrapper {
     position: fixed;
     left: 0px;
     top: 0px;
@@ -49,40 +60,46 @@ export default {
     background-color: #fff;
     z-index: 9;
     @extend .shad;
-    .row{
-      .col{
-        height: $height;
-        &.menu{
-          a{
-            font-weight: $regular;
-            font-family: $Titillium;
-            font-size: 16px;
-            color: #333;
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            &:hover{
-              background-color: rgba(black, .02);
-            }
-          }
-        }
-        &.app-logo{
-          a{
-            font-weight: $bold;
-            text-transform: uppercase;
-            font-family: $Titillium;
-            font-size: 20px;
-            color: #333;
-            text-decoration: none;
-          }
-        }
-        cursor: pointer;
-        position: relative;
 
-      }
+    .row {
+        .col {
+            height: $height;
+
+            &.menu {
+                a {
+                    font-weight: $regular;
+                    font-family: $Titillium;
+                    font-size: 16px;
+                    color: #333;
+                    text-decoration: none;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+
+                    &:hover {
+                        background-color: rgba(black, .02);
+                    }
+                }
+            }
+
+            &.app-logo {
+                a {
+                    font-weight: $bold;
+                    text-transform: uppercase;
+                    font-family: $Titillium;
+                    font-size: 20px;
+                    color: #333;
+                    text-decoration: none;
+                }
+            }
+
+            cursor: pointer;
+            position: relative;
+
+        }
     }
-  }
-  .reverse{
+}
+
+.reverse {
     transform: scaleX(-1);
-  }
+}
 </style>

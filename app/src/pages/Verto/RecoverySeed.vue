@@ -98,7 +98,7 @@
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link back" color="black" text-color="white" label="Back" @click="step=1" />
-         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="saveMnemonic()" :disable="!mnemonicValidated" />
+         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="saveMnemonic(true)" :disable="!mnemonicValidated" />
       </div>
     </div>
   </q-page>
@@ -166,16 +166,17 @@ export default {
 
       this.step = 2
     },
-    async saveMnemonic () {
+    async saveMnemonic (isRecovering = false) {
       if (this.goodPassword && (this.$store.state.settings.rightOrder || this.step === 4)) {
         // console.log('we are good with order')
 
         if (this.vertoPassword) {
           // console.log('in saveMnemonic with password')
           this.config.mnemonic = this.mnemonic
-          await this.$configManager.updateConfig(this.vertoPassword, this.config)
+          let updateReturn = await this.$configManager.updateConfig(this.vertoPassword, this.config)
           const keys = await HD.Wallet('eos')
           const result = await this.$configManager.saveWalletAndKey('EOS Key - HD', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
+          console.log(keys, 'keys', result, 'result', this.mnemonic, 'this.mnemonic', 'updateReturn', updateReturn)
 
           if (result && result.success) {
           //   try {
@@ -190,7 +191,7 @@ export default {
             this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
           //   this.$router.push('wallet')
           }
-          this.$router.push('cruxpay')
+          this.$router.push('create-keys/')
         }
       } else {
         this.$q.notify({ color: 'negative', message: 'The words are not yet in the right order' })

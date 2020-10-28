@@ -1,46 +1,8 @@
 <template>
 <q-page class="text-black bg-white">
-    <div v-if="step===0" class="standard-content" style="padding-bottom: 0px">
-        <div class="standard-content--body">
-            <h2 class="standard-content--title">Checking linked CRUX ID...</h2>
-            <!-- <p class="diclaimer"> {{ status }} </p> -->
-            <div class="standard-content--body__form">
-                <div class="send-modal__content--body column flex-center">
-                    <q-circular-progress size="170px" :thickness="0.05" color="cyan-5" track-color="grey-3" class="q-ma-md" show-value indeterminate font-size="20px" />
-                    <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58">
-                        <path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path>
-                    </svg>
-                </div>
-                <div class="send-modal__content--footer">
-                    <div class="text-h4 --status">Please wait...</div>
-                </div>
-            </div>
-        </div>
-        <div class="standard-content--footer">
-            <p class="crux-label">Powered by cruxpay.</p>
-        </div>
-    </div>
-    <div v-if="step===1" class="standard-content" style="padding-bottom: 0px">
-        <div class="standard-content--body column">
-            <h2 class="standard-content--title">Create the Verto ID</h2>
-            <div class="standard-content--body__form">
-                <div class="standard-content--body__img column flex-center">
-                    <img src="statics/crux_id_bg.svg" alt="">
-                </div>
-                <label class="label">choose an ID</label>
-                <q-input v-model="cruxID" ref="cruxID" @input="getAvailable()" rounded outlined color="deep-purple-14" type="text" class="text-lowercase" :loading="!cruxKey || loading" :suffix="'@' + walletClientName + '.crux'" :error="error" :error-message="errorMessage" autofocus />
-                <div class="flex-end flex justify-end">
-                    <q-btn class="action-link next" color="deep-purple-14" text-color="white" @click="register()" label="Register" :disable="!available" />
-                </div>
-            </div>
-        </div>
-        <div class="standard-content--footer">
-            <p class="crux-label">Powered by cruxpay.</p>
-        </div>
-    </div>
     <div v-if="step===2" class="standard-content" style="padding-bottom: 0px">
         <div class="standard-content--body">
-            <h2 class="standard-content--title"> Registering your wallet addresses in your ID</h2>
+            <h2 class="standard-content--title"> Creating </h2>
             <!-- <p class="diclaimer"> {{ status }} </p> -->
             <div class="standard-content--body__form">
                 <div class="send-modal__content--body column flex-center">
@@ -58,19 +20,11 @@
                 </div>
             </div>
         </div>
-        <div class="standard-content--footer">
-            <p class="crux-label">Powered by cruxpay.</p>
-        </div>
     </div>
     <div v-if="step===3" class="standard-content" style="padding-bottom: 0px">
         <div class="standard-content--body">
             <h2 class="standard-content--title">You're all set.
-                <span class="cruxid full-width flex justify-between items-center">
-                    <q-input flat v-model="existingCruxID" class="cruxid-input" readonly color="deep-purple-14" />
-                    <q-btn flat unelevated text-color="grey" @click="copyToClipboard(existingCruxID , 'VERTO ID')" round class="btn-copy" icon="o_file_copy" />
-                </span>
-                Enjoy using verto
-            </h2>
+                Enjoy using verto</h2>
             <br>
             <p class="diclaimer"><strong>Disclaimer</strong>
                 Your 24 words are very important! <br>
@@ -85,21 +39,12 @@
                 </div>
             </div>
         </div>
-        <div class="standard-content--body__form">
-            <div class="standard-content--footer">
-                <p class="crux-label">Powered by cruxpay.</p>
-            </div>
-        </div>
     </div>
 </q-page>
 </template>
 
 <script>
-import {
-  CruxPay
-} from '@cruxpay/js-sdk'
 import HD from '@/util/hdwallet'
-let cruxClient
 
 // I have setup your symbols into a sandbox wallet named testwallet.
 // You can proceed with development with this as your walletName.
@@ -108,9 +53,7 @@ let cruxClient
 export default {
   data () {
     return {
-      step: 1,
-      cruxKey: null,
-      existingCruxID: null,
+      step: 2,
       error: false,
       errorMessage: '',
       walletClientName: 'verto', // should be 'verto' when in prod // testwallet
@@ -118,21 +61,14 @@ export default {
       config: this.$store.state.currentwallet.config,
       loading: false,
       mapped: false,
-      cruxID: null,
-      cruxIDRegistered: false,
       addressMap: null,
       showMap: false,
-      showAvailableCruxID: true,
       state: null,
       status: '',
       progress: 0,
       available: false,
       assets: {},
       names: [{
-        'value': 'eos',
-        'label': 'EOS Key - HD'
-      },
-      {
         'value': 'btc',
         'label': 'Bitcoin - HD'
       },
@@ -152,11 +88,10 @@ export default {
         'value': 'dash',
         'label': 'DASH - HD'
       },
-      {
-        'value': 'steem',
-        'label': 'STEEM Key - HD'
-      },
+      // { 'value': 'eos', 'label': 'EOS Key - HD' },
+      // { 'value': 'steem', 'label': 'STEEM Key - HD' },
       // { 'value': 'xrp', 'label': 'Ripple - HD' },
+      // { 'value': 'ada', 'label': 'Cardano - HD' },
       {
         'value': 'xlm',
         'label': 'Stellar Lumens - HD'
@@ -164,52 +99,15 @@ export default {
       {
         'value': 'xtz',
         'label': 'Tezos - HD'
-      },
-      {
-        'value': 'ada',
-        'label': 'Cardano - HD'
       }
       ]
     }
   },
-  created () {
-    if (this.$route.params.fromStep === 'recover') {
-      this.step = 0
-    }
-  },
+  created () {},
   async mounted () {
-    this.cruxKey = await HD.Wallet('crux')
-    console.log('this.walletClientName', this.walletClientName, 'crux', this.cruxKey, 'verto wallet', this.$store.state.currentwallet, 'password length', this.vertoPassword.toString().length)
-
-    cruxClient = new CruxPay.CruxClient({
-      walletClientName: this.walletClientName,
-      privateKey: this.cruxKey.privateKey
-    })
-    console.log(125)
-    await cruxClient.init().catch(console.log)
-    console.log(12)
-    this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
-    console.log('this.existingCruxID', this.existingCruxID, 'crux', this.cruxKey, this.config)
-
-    // Subdomain is queued for update and should be announced within the next few blocks.
-    // Your subdomain was registered in transaction 6a24c1ad453a09a740f7792ca07f0f95cac530728cbfa35f32be6a0e0a550c01 -- it should propagate on the network once it has 6 confirmations."
-    if (this.existingCruxID) {
-      this.cruxIDRegistered = true
-      console.log(2)
-      /*
-                                                      this.addressMap = await cruxClient.getAddressMap().catch(err => { console.log(err , 'wallet error') })
-                                                      this.showMap = !!this.addressMap
-                                                      */
-      this.config.cruxID = this.existingCruxID
-      await this.$configManager.updateConfig(this.vertoPassword, this.config)
-      console.log(3)
-      this.putAddress()
-      console.log(3)
-      this.step = 3
-      // console.log('addressMap', this.addressMap, 'show?', this.showMap)
-    } else {
-      this.step = 1
-    }
+    this.step = 2
+    this.putAddress()
+    // console.log('addressMap', this.addressMap, 'show?', this.showMap)
   },
   computed: {},
   methods: {
@@ -224,86 +122,30 @@ export default {
         position: 'top'
       })
     },
-    async register () {
-      if (this.available) {
-        this.loading = true
-        const res = await cruxClient.registerCruxID(this.cruxID.toLowerCase())
-        // console.log('response should be undef:', res)
-        if (!res) {
-          // Deal with: keypair is already used in registration of CruxID: 'helo@testwallet.crux'
-          this.cruxIDRegistered = true
-          this.existingCruxID = this.cruxID.toLowerCase() + '@' + this.walletClientName + '.crux'
-
-          this.config.cruxID = this.existingCruxID
-          await this.$configManager.updateConfig(this.vertoPassword, this.config)
-
-          this.step = 2
-          this.$nextTick(() => {
-            this.putAddress()
-          })
-        } else {
-          // this.existingCruxID = err.split('CruxID: ')[1].replace(/'/g, '')
-          this.step = 2
-          // console.log('err', res)
-        }
-      }
-    },
-    async getAvailable () {
-      if (this.cruxID.length >= 4 && this.cruxID.length <= 20) {
-        this.available = await cruxClient.isCruxIDAvailable(this.cruxID.toLowerCase())
-        if (this.available) {
-          this.error = false
-        } else {
-          this.error = true
-          this.errorMessage = 'This ID is already taken'
-        }
-      } else {
-        this.error = true
-        this.errorMessage = 'Must start with a letter & length must be between 4 to 20, all lowercase.'
-      }
-    },
     async putAddress () {
-      this.assets = await cruxClient.getAssetMap()
-      delete this.assets['xrp'] // Libs fails on Apple devices.
-      delete this.assets['ada'] // Key generation not working yet.
-      delete this.assets['eos'] // Need account to be created first!
-      let count = Object.keys(this.assets).length
-      let map = []
+      let count = this.names.length
       let i = 0
 
-      for (const symbol of Object.keys(this.assets)) {
+      this.names.map(async n => {
         i++
         this.progress = Math.round(i / count * 10000) / 100
         console.log('this.progress', this.progress)
-        this.status = 'Creating keys for: ' + symbol
-        let keys = await HD.Wallet(symbol)
-        let result = await this.$configManager.saveWalletAndKey(this.names.find(o => o.value === symbol).label, this.vertoPassword, null, keys.publicKey, keys.privateKey, symbol, 'mnemonic')
+        this.status = 'Creating keys for: ' + n.value
+
+        // let keys = await HD.Wallet(n.value)
+        // let result = await this.$configManager.saveWalletAndKey(n.label, this.vertoPassword, null, keys.publicKey, keys.privateKey, n.value, 'mnemonic')
+
+        let result = ''
+        HD.Wallet(n.value).then(keys => {
+          result = this.$configManager.saveWalletAndKey(n.label, this.vertoPassword, null, keys.publicKey, keys.privateKey, n.value, 'mnemonic')
+        })
+
         console.log('key creation', result)
-        map[symbol] = {
-          'addressHash': keys.publicKey
-        }
-      }
+      })
 
       // console.log('map', map)
-      cruxClient.putAddressMap(map)
-      // await this.$configManager.backupConfig()
       this.mapped = true
-    },
-    async getAssets () {
-      this.assets = await cruxClient.getAssetMap()
-      // console.log('pre assets', this.assets)
-
-      Object.keys(this.assets).forEach(async symbol => {
-        // console.log('creating keys for: ', symbol)
-        if (symbol === 'ada') {
-          this.assets[symbol].keys = {
-            publicKey: 'no key for ada'
-          }
-        } else {
-          this.assets[symbol].keys = await HD.Wallet(symbol)
-        }
-      })
-      // console.log('post assets', this.assets)
+      // this.step = 3
     },
     dataRefresh () {
       const self = this
