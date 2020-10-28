@@ -70,8 +70,8 @@
       <q-btn v-if="!$store.state.currentwallet.wallet.empty" outline round @click="resetSelectedWallet()" to="/verto/dashboard" color="white" class="reset-btn" text-color="white" icon="close" />
       <h3 class="profile-wrapper--header__title text-white" v-if="!$store.state.currentwallet.wallet.empty">{{$store.state.currentwallet.wallet.name}}</h3>
       <h3 class="profile-wrapper--header__title text-white" v-else>Main Portfolio</h3>
-      <h2 class="profile-wrapper--header__balance text-white" v-if="!$store.state.currentwallet.wallet.empty">${{ new Number($store.state.currentwallet.wallet.usd).toFixed(2) }} USD <span class="profile-wrapper--header__equivalent">Equivalent to <b>{{ new Number(+$store.state.currentwallet.wallet.amount).toFixed(2) + ' ' + $store.state.currentwallet.wallet.type.toUpperCase() }}</b></span></h2>
-      <h2 class="profile-wrapper--header__balance text-white" v-else>${{ new Number(this.$store.state.wallets.portfolioTotal).toFixed(2) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
+      <h2 class="profile-wrapper--header__balance text-white" v-if="!$store.state.currentwallet.wallet.empty">${{ nFormatter2($store.state.currentwallet.wallet.usd, 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent to <b>{{ nFormatter2(+$store.state.currentwallet.wallet.amount,3) + ' ' + $store.state.currentwallet.wallet.type.toUpperCase() }}</b></span></h2>
+      <h2 class="profile-wrapper--header__balance text-white" v-else>${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <!-- {{$store.state.wallets.portfolioTotal}} -->
       <div class="profile-wrapper--header__action">
         <q-btn unelevated v-if="screenSize <= 1024" :disable="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
@@ -240,6 +240,25 @@ export default {
         type: 'warning',
         position: 'top'
       })
+    },
+    nFormatter2 (num, digits) {
+      var si = [
+        { value: 1, symbol: '' },
+        { value: 1E3, symbol: 'k' },
+        { value: 1E6, symbol: 'M' },
+        { value: 1E9, symbol: 'G' },
+        { value: 1E12, symbol: 'T' },
+        { value: 1E15, symbol: 'P' },
+        { value: 1E18, symbol: 'E' }
+      ]
+      var rx = /\.0+$|(\.[0-9]*[1-9])0+$/
+      var i
+      for (i = si.length - 1; i > 0; i--) {
+        if (num >= si[i].value) {
+          break
+        }
+      }
+      return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol
     }
   }
 }
@@ -265,6 +284,7 @@ export default {
         color: #FFF;
         font-size: 10px;
         font-weight: $light;
+        width: 100%;
       }
       &.desktop-ui{
         border-radius: 10px;
@@ -278,9 +298,10 @@ export default {
             font-size: 18px;
           }
           &__balance{
-            font-size: 32px;
+            font-size: 26px;
             position: relative;
             width: fit-content;
+            min-width: 200px;
           }
           &__action-btn{
             margin-bottom: -20px;
