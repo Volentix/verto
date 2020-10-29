@@ -32,6 +32,9 @@ class Wallets2Tokens {
       //   vespucciScore = result.vespucciScore
       //   wallet.vespucciScore = vespucciScore
       // })
+      if (!wallet.hasOwnProperty('type')) {
+        wallet.type = 'verto'
+      }
 
       if (wallet.type === 'eos') {
         wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()

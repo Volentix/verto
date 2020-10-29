@@ -67,7 +67,7 @@
                     </div>
                 </div>
             </div>
-            <q-scroll-area :visible="true" class="q-mr-sm" style="height: 300px;">
+            <q-scroll-area :visible="true" class="q-mr-sm" style="height: 170px;">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty">
                         <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
@@ -164,7 +164,7 @@
                                     <span class="item-date--value column"> {{item.date}} </span>
                                 </q-item-section>
                                 <q-item-section class="item-trans">
-                                    <span class="item-trans--transID" @click="launchEosExplorer(item.transID)"><a :h="item.transID">Tx: {{item.transID.substring(0, 8)}}</a></span>
+                                    <span class="item-trans--transID" @click="launchExplorer(item.transID)"><a :h="item.transID">Tx: {{item.transID.substring(0, 8)}}</a></span>
                                     <span class="item-trans--desc"> <span class="type" :clas="item.typeTran">{{item.typeTran}}</span> {{item.desc}}</span>
                                 </q-item-section>
                                 <q-item-section class="item-amount">
@@ -449,8 +449,17 @@ export default {
     }
   },
   methods: {
-    launchEosExplorer (tx) {
-      openURL(process.env[this.$store.state.settings.network].EOS_TRANSACTION_EXPLORER + tx)
+    launchExplorer (tx) {
+      switch (this.$store.state.currentwallet.wallet.type) {
+        case 'eos':
+          openURL(process.env[this.$store.state.settings.network].EOS_TRANSACTION_EXPLORER + tx)
+          break
+        case 'eth':
+          openURL(process.env[this.$store.state.settings.network].ETH_TRANSACTION_EXPLORER + tx)
+          break
+        default:
+          break
+      }
     },
     goToStake () {
       this.$router.push({

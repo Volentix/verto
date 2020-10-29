@@ -1,8 +1,8 @@
 <template>
   <div class="desktop-card-style make-vtx q-mb-sm">
     <br>
-    <div class="row flex justify-between q-pb-lg q-pt-lg">
-      <div class="col col-8 flex items-center q-pl-md" style="min-height: 180px">
+    <div class="row flex justify-between q-pb-sm q-pt-sm">
+      <div class="col col-8 flex items-center q-pl-md" style="min-height: 140px">
         <strong class="earn-exchange">Exchange</strong>
         <i class="step-1-lab flex ">Step<b>1</b> Select coin to send</i>
         <div class="call-action">
@@ -264,12 +264,12 @@ export default {
     .row{
       .col{
         .step-1-lab{
-          font-size: 9px;
+          font-size: 8px;
           color: #7272FA;
           font-style: normal;
           background: #FFF;
           font-weight: $regular;
-          margin-bottom: -8px;
+          margin-bottom: -23px;
           margin-left: 8px;
           position: relative;
           z-index: 2;

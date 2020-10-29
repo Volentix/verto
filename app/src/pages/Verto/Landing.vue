@@ -182,7 +182,7 @@ export default {
       position: relative;
       padding-left: 20px;
       line-height: 24px;
-      font-family: $Titillium;
+      font-family: $Franklin;
       position: relative;
       margin-left: 32%;
       img{
@@ -235,7 +235,7 @@ export default {
       bottom: 20px;
       transform: scale(.55);
       img{top: 7px;position: relative; width: 40px;}
-      &:after { content: "Volentix"; font-family: $Titillium; font-weight: $light; position: relative; left: 0px; top: 0px;margin-left: 10px; }
+      &:after { content: "Volentix"; font-family: $Franklin; font-weight: $light; position: relative; left: 0px; top: 0px;margin-left: 10px; }
       &:after {top: -8px;}
     }
     &--bottom-bar{

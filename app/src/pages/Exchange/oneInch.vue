@@ -1,16 +1,15 @@
 <template>
 <div class="" v-if="$q.screen.width > 1024 && depositCoin && destinationCoin">
     <div class="row">
-
-        <div class="col col-md-9">
-            <div class=" apps-section q-mb-sm">
+        <div class="col col-md-12">
+            <div class="apps-section q-mb-sm">
 
                 <!-- 1inch component -->
                 <!-- add your code here -->
 
                 <!-- Vdex component -->
                 <div class="">
-                    <div class="standard-content"></div>
+                    <!-- <div class="standard-content"></div> -->
                     <div class="chain-tools-wrapper--list open">
                         <div class="list-wrapper">
                             <div class="row">
@@ -21,7 +20,7 @@
                                             <div class="head">Token swap</div>
                                             <div class="you-pay">
                                                 <div class="you-pay-head row items-center">
-                                                    <div class="col col-6">From</div>
+                                                    <div class="col col-6">You Pay</div>
                                                     <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
                                                 </div>
                                                 <div class="you-pay-body row items-center">
@@ -2038,8 +2037,8 @@ export default {
 
         &.open {
             margin-bottom: 0px;
-            padding-left: 6%;
-            padding-right: 6%;
+            padding-left: 0%;
+            padding-right: 0%;
 
             .list-wrapper {
                 visibility: visible;
@@ -2170,9 +2169,9 @@ export default {
     // font-family: $Franklin;
     font-size: 18px;
     font-weight: $bold;
-    border: 1px solid #CCC;
+    // border: 1px solid #CCC;
     border-radius: 10px;
-    max-width: 500px;
+    // max-width: 500px;
     padding-bottom: 10px;
 
     .prototype {

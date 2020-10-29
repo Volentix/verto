@@ -14,15 +14,20 @@
                 <div class="desktop-card-style apps-section q-mb-sm">
                     <div class="chain-tools-wrapper">
                         <div class="standard-content">
-                            <h2 class="standard-content--title flex justify-start">Exchange</h2>
+                            <h2 class="standard-content--title flex justify-start">vDex</h2>
                             <!-- <div class="exchange_picto flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div> -->
                         </div>
-                        <div class="chain-tools-wrapper--list open">
+                        <div class="chain-tools-wrapper--list chain-tools-wrapper--list___2 open">
                             <div class="list-wrapper">
                                 <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                                    <div class="row q-mb-md">
-                                        <q-select class="default-view col-md-3 col-6 offset-md-9" v-model="defaultView" :options="['Coinswitch', '1Inch', 'Swap EOS']" label="Default view" />
+                                    <div class="select-provider-wrapper flex justify-start">
+                                      <div class="choice choice1 q-pa-sm q-pl-lg q-pr-lg" :class="{'active': defaultView === 'Coinswitch'}" @click="defaultView = 'Coinswitch'">Coinswitch</div>
+                                      <div class="choice choice2 q-ml-sm q-pl-lg q-pr-lg q-mr-sm q-pa-sm" :class="{'active': defaultView === '1Inch'}" @click="defaultView = '1Inch'">1Inch</div>
+                                      <div class="choice choice3 q-pa-sm q-pl-lg q-pr-lg" :class="{'active': defaultView === 'Swap EOS'}" @click="defaultView = 'Swap EOS'">Swap EOS</div>
                                     </div>
+                                    <!-- <div class="row q-mb-md">
+                                        <q-select class="default-view col-md-3 col-6 offset-md-9" v-model="defaultView" :options="['Coinswitch', '1Inch', 'Swap EOS']" label="Default view" />
+                                    </div> -->
                                     <OneInchExhange v-if="defaultView == '1Inch'"></OneInchExhange>
                                     <SwapEOS v-if="defaultView == 'Swap EOS'"></SwapEOS>
                                     <q-stepper v-else-if="defaultView == 'Coinswitch'" v-model="step" done-color="green" ref="stepper" class="stepper--desktop" alternative-labels color="primary" animated flat>
@@ -328,7 +333,7 @@
             </h2>
             <div class="exchange_picto flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div>
         </div>
-        <div class="chain-tools-wrapper--list open">
+        <div class="chain-tools-wrapper--list chain-tools-wrapper--list___1 open">
             <div class="list-wrapper">
                 <div class="list-wrapper--chain__eos-to-vtx-convertor">
                     <q-stepper v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
@@ -601,21 +606,22 @@
         </div>
     </div>
     <q-dialog persistent v-model="showDisclaimerWrapper">
-        <q-card class="q-pa-md" style="width: 700px; max-width: 92vw;">
-            <q-toolbar>
-                <q-avatar><img src="statics/icon.png"></q-avatar>
-                <q-toolbar-title><span class="text-weight-bold">Disclaimer</span> </q-toolbar-title>
-            </q-toolbar>
-            <q-card-section class="text-h6">
-                <div class="parg">
-                    This transaction is carried out using an open API linked to various Exchanges.<br>
-                    By sending coins to the above address, you agreed to <a href="https://coinswitch.co/terms" target="_blank">the terms and conditions</a> of the selected provider.
-                </div>
-            </q-card-section>
-            <q-card-actions align="right" class="q-pr-sm">
-                <q-btn flat label="Accept" class="accept-disclaimer" @click="disclaimerCheck = true" color="primary" v-close-popup />
-            </q-card-actions>
-        </q-card>
+      <q-card class="q-pa-md" style="width: 700px; max-width: 92vw;">
+        <q-toolbar>
+          <q-avatar><img src="statics/icon.png"></q-avatar>
+          <q-toolbar-title><span class="text-weight-bold">Disclaimer</span> </q-toolbar-title>
+        </q-toolbar>
+        <q-card-section class="text-h6">
+          <div class="parg">
+            This transaction is carried out using an <a href="https://coinswitch.co/terms" target="_blank">open API</a> linked to various Exchanges.<br>
+            By sending coins to the above address, you agreed to <a href="https://eos.io/legal/important-notice/" target="_blank">the terms and conditions</a> of the selected provider.<br>
+            I have read the terms and conditions and I agree
+          </div>
+        </q-card-section>
+        <q-card-actions align="right" class="q-pr-sm">
+          <q-btn flat label="Accept" class="accept-disclaimer" @click="disclaimerCheck = true" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
     </q-dialog>
 </q-page>
 </template>
@@ -794,13 +800,13 @@ export default {
       })
     })
     this.optionsFrom.unshift({
-      label: 'New Public Key',
+      label: 'Other public key / Account',
       value: '',
       image: '/statics/img/door-key.png',
       type: 'new_public_key'
     })
     this.optionsTo.unshift({
-      label: 'New Public Key',
+      label: 'Other public key / Account',
       value: '',
       image: '/statics/img/door-key.png',
       type: 'new_public_key'
@@ -1127,13 +1133,13 @@ export default {
         }
       })
       this.optionsFrom.unshift({
-        label: 'New Public Key',
+        label: 'Other public key / Account',
         value: '',
         image: '/statics/img/door-key.png',
         type: 'new_public_key'
       })
       this.optionsTo.unshift({
-        label: 'New Public Key',
+        label: 'Other public key / Account',
         value: '',
         image: '/statics/img/door-key.png',
         type: 'new_public_key'
@@ -1443,7 +1449,6 @@ export default {
             }
         }
     }
-
     &--title {
         font-size: 35px;
         font-weight: $bold;
@@ -1464,182 +1469,199 @@ export default {
             top: 10px;
         }
     }
-
-    &--desc {
-        margin-top: -20px;
-        margin-bottom: 40px;
-        font-size: 18px;
-        font-weight: $regular;
-        position: relative;
-        line-height: 26px;
-        font-family: $Titillium;
-        color: $mainColor;
+    &__form{
+      /deep/ .q-field__bottom{
+        font-size: 10px;
+      }
+      .pay-get-wrapper{
+        // border-bottom: 1px solid rgba(#707070, .4);
+        padding: 0px;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        .pay-wrapper{}
+        .exchange-btn{
+          height: fit-content;
+          align-self: flex-end;
+          padding-top: 15px;
+          transform: rotate(90deg);
+          margin-bottom: 40px;
+          font-size: 18px;
+          font-weight: $regular;
+          position: relative;
+          line-height: 26px;
+          font-family: $Titillium;
+          color: $mainColor;
+        }
+      }
     }
-
     &--body {
-        .progress-custom-volentix {
-            max-width: 150px;
-            margin: auto;
-            margin-top: 20px;
+      .progress-custom-volentix {
+          max-width: 150px;
+          margin: auto;
+          margin-top: 20px;
+          .title {
+              font-size: 13px;
+              color: #7272FA;
+              font-weight: $light;
+              font-family: $Titillium;
+              margin-bottom: -10px;
+              margin-top: 10px;
+          }
 
-            .title {
-                font-size: 13px;
-                color: #7272FA;
-                font-weight: $light;
-                font-family: $Titillium;
-                margin-bottom: -10px;
-                margin-top: 10px;
-            }
-
-            /deep/ .q-linear-progress__model {
-                background: #7272FA;
-            }
+          /deep/ .q-linear-progress__model {
+              background: #7272FA;
+          }
+      }
+      &__img {
+          min-height: 250px;
+          img {
+              max-width: 90%;
+          }
+      }
+      .rate-value {
+          padding: 0px 0px;
+          font-family: $Titillium;
+          font-weight: $regular;
+          color: #B0B0B0;
+          font-size: 16px;
+          margin-bottom: -20px;
+          margin-top: -20px;
+      }
+      .input-input{
+        height: 50px;
+        padding-bottom: 0px;
+        /deep/ .q-field__control{
+          height: 50px;
+          min-height: unset;
+          @media screen and (min-width: 1024px) {
+            margin-left: 20px;
+          }
         }
+      }
+      // margin-left: 20px;
+      &__form {
+          .pay-get-wrapper {
+              // border-bottom: 1px solid rgba(#707070, .4);
+              padding: 0px;
+              padding-bottom: 10px;
+              margin-bottom: 20px;
 
-        &__img {
-            min-height: 250px;
+              .pay-wrapper {}
 
-            img {
-                max-width: 90%;
-            }
-        }
+              .exchange-btn {
+                  height: fit-content;
+                  align-self: flex-end;
+                  padding-top: 15px;
+                  transform: rotate(90deg);
+                  margin: auto;
+                  margin-top: 10px;
+                  padding: 12px 10px 0px 10px;
 
-        .rate-value {
-            padding: 0px 0px;
-            font-family: $Titillium;
-            font-weight: $regular;
-            color: #B0B0B0;
-            font-size: 16px;
-            margin-bottom: -20px;
-            margin-top: -20px;
-        }
+                  .left-icon {
+                      transform: scaleX(-1);
+                      margin-left: 0px;
+                      margin-right: -26px;
+                      margin-top: -24px;
+                      color: #7272FA;
+                  }
 
-        &__form {
-            .pay-get-wrapper {
-                // border-bottom: 1px solid rgba(#707070, .4);
-                padding: 0px;
-                padding-bottom: 10px;
-                margin-bottom: 20px;
+                  .right-icon {
+                      color: #7272FA;
+                  }
+              }
 
-                .pay-wrapper {}
+              .label {
+                  font-size: 17px;
+                  color: #2A2A2A;
+                  font-family: $Titillium;
+                  font-weight: $light;
+              }
 
-                .exchange-btn {
-                    height: fit-content;
-                    align-self: flex-end;
-                    padding-top: 15px;
-                    transform: rotate(90deg);
-                    margin: auto;
-                    margin-top: 10px;
-                    padding: 12px 10px 0px 10px;
+              .value {
+                  font-size: 33px;
+                  color: #B0B0B0;
+                  font-family: $Titillium;
+                  font-weight: $regular;
+              }
 
-                    .left-icon {
-                        transform: scaleX(-1);
-                        margin-left: 0px;
-                        margin-right: -26px;
-                        margin-top: -24px;
-                        color: #7272FA;
-                    }
+              .get-wrapper {}
+          }
+          /deep/ .q-field__native {
+              padding-left: 8px;
+              font-size: 16px;
+              font-weight: $regular;
+          }
+          /deep/ .q-field__label {
+              font-family: $Titillium;
+              font-weight: $regular;
+              font-size: 18px;
+              padding-left: 10px;
+              margin-top: -2px;
+          }
 
-                    .right-icon {
-                        color: #7272FA;
-                    }
-                }
+          .input-input {
+              height: 50px;
+              padding-bottom: 0px;
 
-                .label {
-                    font-size: 17px;
-                    color: #2A2A2A;
-                    font-family: $Titillium;
-                    font-weight: $light;
-                }
+              /deep/ .q-field__control {
+                  height: 50px;
+                  min-height: unset;
 
-                .value {
-                    font-size: 33px;
-                    color: #B0B0B0;
-                    font-family: $Titillium;
-                    font-weight: $regular;
-                }
+                  @media screen and (min-width: 1024px) {
+                      margin-left: 20px;
+                  }
+              }
 
-                .get-wrapper {}
-            }
+              .btn-copy {
+                  // height: 30px;
+                  position: relative;
+                  top: -3px;
+                  margin-right: 0px;
+                  padding: 6px 13px;
+              }
 
-            /deep/ .q-field__native {
-                padding-left: 8px;
-                font-size: 16px;
-                font-weight: $regular;
-            }
+              .qr-btn {
+                  width: 30px;
+                  height: 30px;
+                  padding-right: 8px;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
 
-            /deep/ .q-field__label {
-                font-family: $Titillium;
-                font-weight: $regular;
-                font-size: 18px;
-                padding-left: 10px;
-                margin-top: -2px;
-            }
+                  img {
+                      width: 25px;
+                      height: 25px;
+                      position: relative;
+                      right: -5px;
+                      transform: scale3d(1, 1, 1);
+                  }
+              }
+          }
 
-            .input-input {
-                height: 50px;
-                padding-bottom: 0px;
+          /deep/ .option--avatar {
+              border: 1px solid;
+              width: 35px;
+              height: 35px;
+              max-width: 40px;
+              padding: 0px;
+              min-width: unset;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              border-radius: 50px;
+              overflow: hidden;
+              margin-left: -10px;
+              padding-right: 0px;
 
-                /deep/ .q-field__control {
-                    height: 50px;
-                    min-height: unset;
-
-                    @media screen and (min-width: 1024px) {
-                        margin-left: 20px;
-                    }
-                }
-
-                .btn-copy {
-                    // height: 30px;
-                    position: relative;
-                    top: -3px;
-                    margin-right: 0px;
-                    padding: 6px 13px;
-                }
-
-                .qr-btn {
-                    width: 30px;
-                    height: 30px;
-                    padding-right: 8px;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-
-                    img {
-                        width: 25px;
-                        height: 25px;
-                        position: relative;
-                        right: -5px;
-                        transform: scale3d(1, 1, 1);
-                    }
-                }
-            }
-
-            /deep/ .option--avatar {
-                border: 1px solid;
-                width: 35px;
-                height: 35px;
-                max-width: 40px;
-                padding: 0px;
-                min-width: unset;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                border-radius: 50px;
-                overflow: hidden;
-                margin-left: -10px;
-                padding-right: 0px;
-
-                &.vtx {
-                    background-color: #000;
-                    padding: 3px;
-                }
-            }
-        }
+              &.vtx {
+                  background-color: #000;
+                  padding: 3px;
+              }
+          }
+      }
     }
-
     &--footer {
         display: flex;
         flex-direction: row;
@@ -1676,7 +1698,6 @@ export default {
 
     }
 }
-
 .select-input {
     border-radius: 100px !important;
     $height: 50px;
@@ -1799,7 +1820,30 @@ export default {
             margin-bottom: 10px;
             color: #7272FA !important;
         }
-
+        .select-provider-wrapper{
+          position: absolute;
+          right: 20px;
+          z-index: 999;
+          top: -40px;
+          .choice{
+            font-size: 14px;
+            font-weight: $bold;
+            border: 1px solid rgba($mainColor, .2);
+            opacity: .5;
+            border-radius: 4px;
+            box-shadow: 0px 2px 5px 0px rgba(black, .2);
+            cursor: pointer;
+            &:hover{
+              background-color: rgba($mainColor, .1);
+            }
+            &.active{
+              opacity: 1;
+              background-color: $mainColor;
+              color: #FFF;
+              box-shadow: 0px 2px 5px 0px rgba($mainColor, .2);
+            }
+          }
+        }
         .list-wrapper {
             overflow: hidden;
             visibility: hidden;
@@ -1812,7 +1856,85 @@ export default {
             @media screen and (min-width: 1024px) {
                 overflow: visible;
             }
-
+            .--slider{
+              /deep/ &.q-slider--dark {
+                .q-slider__track-container{
+                  background: rgba(0, 0, 0, 0.3);
+                }
+                .q-slider__pin-value-marker-text{
+                  font-weight: $bold;
+                  font-size: 11px;
+                }
+                .q-slider__pin-value-marker-bg{
+                  background: #FFB200 !important;
+                }
+                .text-green{
+                  background: #FFB200 !important;
+                }
+              }
+            }
+            .--next-btn{
+              width: 150px;
+              text-transform: initial !important;
+            }
+            .--progress{
+              height: 20px;
+              /deep/ .q-linear-progress{
+                margin-top: 8px;
+                height: 5px !important;
+                max-width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+                .q-linear-progress__track{
+                  background: #FFB200;
+                }
+                .q-linear-progress__model--indeterminate:before,
+                .q-linear-progress__model--indeterminate:after{
+                  background: #FFB200;
+                }
+              }
+            }
+            .--back-btn{
+              position: absolute;
+              right: 0px;
+              top: 6px;
+              @media screen and (min-width: 1024px) {
+                right: unset;
+                left: 5px;
+                top: 5px;
+                width: 90px;
+                /deep/ .q-focus-helper{
+                  display: none !important;
+                }
+                /deep/ .q-btn__wrapper{
+                  padding-left: 0px;
+                  padding-right: 0px;
+                }
+              }
+            }
+            .--subtitle{
+              font-size: 16px;
+              color: #000;
+              font-family: $Titillium;
+              font-weight: $light;
+              line-height: 20px;
+              margin-top: 10px;
+              margin-bottom: 10px;
+              ul{
+                padding: 0px;
+                margin: 0px;
+                margin-left: 20px;
+                li{
+                  font-size: 15px;
+                  font-weight: $light;
+                  margin-bottom: 10px;
+                  line-height: 21px;
+                  color: #FFB200;
+                  span{
+                  }
+                }
+              }
+            }
             &--chain {
                 &__type {
                     background-color: #fff;
@@ -2210,6 +2332,7 @@ export default {
 }
 
 .stepper--desktop {
+    margin-top: 30px;
     /deep/ .q-stepper__content {
         max-width: 600px;
         margin: auto;
@@ -2319,5 +2442,10 @@ export default {
 
 .default-view {
     max-width: 200px;
+}
+body .chain-tools-wrapper--list___2.chain-tools-wrapper--list.open{
+  padding-left: 0%;
+  padding-right: 0%;
+  margin-top: -20px;
 }
 </style>
