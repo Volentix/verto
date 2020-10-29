@@ -51,120 +51,120 @@ import initWallet from '@/util/Wallets2Tokens'
 // IDs will be created as foo@testwallet.crux
 
 export default {
-    data() {
-        return {
-            step: 2,
-            error: false,
-            errorMessage: '',
-            walletClientName: 'verto', // should be 'verto' when in prod // testwallet
-            vertoPassword: this.$store.state.settings.temporary, // TODO empty temporary
-            config: this.$store.state.currentwallet.config,
-            loading: false,
-            mapped: false,
-            addressMap: null,
-            showMap: false,
-            state: null,
-            status: '',
-            progress: 0,
-            available: false,
-            assets: {},
-            names: [{
-                    'value': 'btc',
-                    'label': 'Bitcoin - HD'
-                },
-                {
-                    'value': 'eth',
-                    'label': 'Ethereum - HD'
-                },
-                {
-                    'value': 'bnb',
-                    'label': 'Binance Coin - HD'
-                },
-                {
-                    'value': 'ltc',
-                    'label': 'Litecoin - HD'
-                },
-                {
-                    'value': 'dash',
-                    'label': 'DASH - HD'
-                },
-                // { 'value': 'eos', 'label': 'EOS Key - HD' },
-                // { 'value': 'steem', 'label': 'STEEM Key - HD' },
-                // { 'value': 'xrp', 'label': 'Ripple - HD' },
-                // { 'value': 'ada', 'label': 'Cardano - HD' },
-                {
-                    'value': 'xlm',
-                    'label': 'Stellar Lumens - HD'
-                },
-                {
-                    'value': 'xtz',
-                    'label': 'Tezos - HD'
-                }
-            ]
-        }
-    },
-    created() {},
-    async mounted() {
-        this.step = 2
-        this.putAddress()
-        // console.log('addressMap', this.addressMap, 'show?', this.showMap)
-    },
-    computed: {},
-    methods: {
-        copyToClipboard(key, copied) {
-            this.$clipboardWrite(key)
-            this.$q.notify({
-                message: copied ? copied + ' Copied' : 'Key Copied',
-                timeout: 2000,
-                icon: 'check',
-                textColor: 'white',
-                type: 'warning',
-                position: 'top'
-            })
-        },
-        async putAddress() {
-            const self = this
-            let count = this.names.length
-            let i = 0
-
-            for (const name of this.names) {
-                i++
-                this.progress = Math.round(i / count * 10000) / 100
-                console.log('this.progress', this.progress)
-                this.status = 'Creating keys for: ' + name.value
-
-                let results = await HD.Wallet(name.value).then(async keys => {
-                    return self.$configManager.saveWalletAndKey(name.label, self.vertoPassword, null, keys.publicKey, keys.privateKey, name.value, 'mnemonic')
-                })
-
-                console.log('key creation: ', results)
-            }
-
-            // console.log('map', map)
-            this.mapped = true
-            // this.step = 3
-        },
-        dataRefresh() {
-            const self = this
-            this.$store.state.wallets.tokens = null
-
-            try {
-                initWallet()
-            } catch (error) {
-                console.log('initWallet error', error)
-            }
-
-            this.$q.notify({
-                color: 'positive',
-                message: 'Application refreshing'
-            })
-            setTimeout(function () {
-                self.$router.push({
-                    path: '/verto/dashboard'
-                })
-            }, 300)
-        }
+  data () {
+    return {
+      step: 2,
+      error: false,
+      errorMessage: '',
+      walletClientName: 'verto', // should be 'verto' when in prod // testwallet
+      vertoPassword: this.$store.state.settings.temporary, // TODO empty temporary
+      config: this.$store.state.currentwallet.config,
+      loading: false,
+      mapped: false,
+      addressMap: null,
+      showMap: false,
+      state: null,
+      status: '',
+      progress: 0,
+      available: false,
+      assets: {},
+      names: [{
+        'value': 'btc',
+        'label': 'Bitcoin - HD'
+      },
+      {
+        'value': 'eth',
+        'label': 'Ethereum - HD'
+      },
+      {
+        'value': 'bnb',
+        'label': 'Binance Coin - HD'
+      },
+      {
+        'value': 'ltc',
+        'label': 'Litecoin - HD'
+      },
+      {
+        'value': 'dash',
+        'label': 'DASH - HD'
+      },
+      // { 'value': 'eos', 'label': 'EOS Key - HD' },
+      // { 'value': 'steem', 'label': 'STEEM Key - HD' },
+      // { 'value': 'xrp', 'label': 'Ripple - HD' },
+      // { 'value': 'ada', 'label': 'Cardano - HD' },
+      {
+        'value': 'xlm',
+        'label': 'Stellar Lumens - HD'
+      },
+      {
+        'value': 'xtz',
+        'label': 'Tezos - HD'
+      }
+      ]
     }
+  },
+  created () {},
+  async mounted () {
+    this.step = 2
+    this.putAddress()
+    // console.log('addressMap', this.addressMap, 'show?', this.showMap)
+  },
+  computed: {},
+  methods: {
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    },
+    async putAddress () {
+      const self = this
+      let count = this.names.length
+      let i = 0
+
+      for (const name of this.names) {
+        i++
+        this.progress = Math.round(i / count * 10000) / 100
+        console.log('this.progress', this.progress)
+        this.status = 'Creating keys for: ' + name.value
+
+        let results = await HD.Wallet(name.value).then(async keys => {
+          return self.$configManager.saveWalletAndKey(name.label, self.vertoPassword, null, keys.publicKey, keys.privateKey, name.value, 'mnemonic')
+        })
+
+        console.log('key creation: ', results)
+      }
+
+      // console.log('map', map)
+      this.mapped = true
+      // this.step = 3
+    },
+    dataRefresh () {
+      const self = this
+      this.$store.state.wallets.tokens = null
+
+      try {
+        initWallet()
+      } catch (error) {
+        console.log('initWallet error', error)
+      }
+
+      this.$q.notify({
+        color: 'positive',
+        message: 'Application refreshing'
+      })
+      setTimeout(function () {
+        self.$router.push({
+          path: '/verto/dashboard'
+        })
+      }, 300)
+    }
+  }
 }
 </script>
 
