@@ -341,6 +341,7 @@ import {
 } from 'eosjs/dist/eosjs-jssig'
 let rpc, api, signatureProvider
 import initWallet from '@/util/Wallets2Tokens'
+import EOSContract from '../../mixins/EOSContract'
 export default {
   components: {},
   data () {
@@ -440,7 +441,7 @@ export default {
         let next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
 
         multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price1_last) : parseFloat(pair.price0_last)
-        let url = 'https://ndi.340wan.com/eos/' + next.contract + '-' + next.symbol.split(',')[1].toLowerCase() + '.png'
+        let url = this.getEOSTokenImageUrl(next.symbol.split(',')[1], next.contract)
         this.path.push({
           id: pair.id,
           token: next,
@@ -455,7 +456,7 @@ export default {
         next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
         multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price0_last) : parseFloat(pair.price1_last)
         this.swapData.toAmount = parseFloat(parseFloat(this.swapData.toAmount) * multiplier).toFixed(this.depositCoin.precision)
-        url = 'https://ndi.340wan.com/eos/' + next.contract + '-' + next.symbol.split(',')[1].toLowerCase() + '.png'
+        url = this.getEOSTokenImageUrl(next.symbol.split(',')[1], next.contract)
         this.path.push({
           id: pair.id,
           token: next,
@@ -491,14 +492,14 @@ export default {
       let infosArray = value[key].symbol.split(',')
       let item = this.coins.find(o => o.value.toLowerCase() === infosArray[1].toLowerCase())
       if (!item && !isNaN(value.price0_last)) {
-        let url = 'https://ndi.340wan.com/eos/' + value[key].contract + '-' + infosArray[1].toLowerCase() + '.png'
+        let url = this.getEOSTokenImageUrl(infosArray[1], value[key].contract)
         let account = this.eosAccounts.find(o => o.type === infosArray[1].toLowerCase())
         let option = {
           label: infosArray[1],
           precision: infosArray[0],
           value: infosArray[1],
           contract: value[key].contract,
-          image: this.urlExists(url) ? url : 'https://dbds.340wan.com/static/img/eos.png',
+          image: url,
           data: {
             amount: account ? parseFloat(account.amount) : 0
           }
@@ -622,7 +623,8 @@ export default {
       })
     }
 
-  }
+  },
+  mixins: [EOSContract]
 }
 </script>
 
