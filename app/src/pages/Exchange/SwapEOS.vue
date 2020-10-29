@@ -2,8 +2,8 @@
 <div class="" v-if="$q.screen.width > 1024 && depositCoin && destinationCoin">
     <div class="row">
 
-        <div class="col col-md-6">
-            <div class=" apps-section q-mb-sm">
+        <div class="col col-md-8">
+            <div class="apps-section">
 
                 <!-- 1inch component -->
                 <!-- add your code here -->
@@ -17,8 +17,7 @@
                                     <div class="trade-component">
                                         <!-- <img src="statics/theme1/Screenshot_208.png" alt="" style="opacity: .1"> -->
                                         <div v-if="step === 1" class="prototype">
-
-                                            <q-tabs @click="getPairData()" v-model="tab" indicator-color="indigo-5" no-caps inline-label class="shadow-2 text-h6">
+                                            <q-tabs @click="getPairData()" flat v-model="tab" indicator-color="indigo-5" no-caps inline-label class="shadow-1 text-h6">
                                                 <q-tab name="swap" icon="swap_vert" label="Swap" />
                                                 <q-tab name="liquidity" icon="add" label="Add Liquidity" />
                                             </q-tabs>
@@ -240,15 +239,14 @@
                       <img src="statics/theme1/Screenshot_208.png" alt="">
                     </div> -->
                             </div>
-
-                            <br><br><br>
+                            <!-- <br><br><br> -->
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col col-md-3">
-            <div class="text-h6"> Summary</div>
+        <div class="col summary-wrapper shadow-1 col-md-4 q-pa-lg column justify-center items-center">
+            <div class="text-h6">Summary</div>
             <q-list separator>
                 <q-item class="q-my-sm" clickable v-ripple>
                     <q-item-section avatar>
@@ -328,7 +326,6 @@
                 <p class=" q-pt-md"> Create liquidity and become the first liquidity provider</p>
                 <p class=" q-pt-md">Set the initial swap price freely</p>
             </div>
-
         </div>
     </div>
 </div>
@@ -1415,9 +1412,9 @@ export default {
 
         &.open {
             margin-bottom: 0px;
-            padding-left: 6%;
-            padding-right: 6%;
-
+            padding-left: 0%;
+            padding-right: 0%;
+            margin-top: 30px;
             .list-wrapper {
                 visibility: visible;
                 height: auto;
@@ -1547,9 +1544,9 @@ export default {
     // font-family: $Franklin;
     font-size: 18px;
     font-weight: $bold;
-    border: 1px solid #CCC;
+    // border: 1px solid #CCC;
     border-radius: 10px;
-    max-width: 500px;
+    // max-width: 500px;
     padding-bottom: 10px;
 
     .prototype {
@@ -1649,17 +1646,6 @@ export default {
 
             /deep/ .chose_accounts {
                 background-color: #dfdff1 !important;
-                font-weight: $bold;
-                font-size: 14px !important;
-                // font-family: $Franklin !important;
-                color: #5e5e88 !important;
-                border-radius: 10px;
-                margin-top: 20px;
-                height: 54px;
-            }
-
-            /deep/ .invalid_btn {
-
                 font-weight: $bold;
                 font-size: 14px !important;
                 // font-family: $Franklin !important;
@@ -1828,5 +1814,17 @@ export default {
 
 .q-field__messages {
     margin-top: 5px;
+}
+.summary-wrapper{
+    background-color: rgba(black, .06);
+    margin-top: 29px;
+    max-height: 300px;
+    margin-top: 212px;
+    border-radius: 8px;
+}
+.prototype{
+    /deep/ .q-tabs{
+        border-radius: 8px;
+    }
 }
 </style>

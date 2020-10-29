@@ -304,14 +304,24 @@ export default {
         }
     }
 }
-</style><style lang="scss" scoped>
+</style>
+<style>
+    .q-page{
+        background: #E7E8E8 !important;
+    }
+</style>
+<style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
 
 .desktop-version {
     background: #E7E8E8;
     padding-top: 13vh;
     padding-left: 12vh;
-    padding-bottom: 50px
+    padding-bottom: 50px;
+    @media screen and (min-width: 768px) {
+        padding-top: 11vh;
+        padding-bottom: 0px;
+    }
 }
 
 .mobile-pad {
@@ -346,7 +356,14 @@ export default {
         h4 {
             margin-bottom: -20px;
         }
-
+        .body-table-col{
+          font-size: 12px;
+          .imgs{
+            img{
+              margin-right: 10px !important;
+            }
+          }
+        }
         .header-table-col {
             h3 {
                 font-weight: $bold;
@@ -434,7 +451,17 @@ export default {
                 line-height: 20px;
             }
         }
-
+        .pairs{
+          font-size: 12px;
+          .pair{
+            font-weight: $bold;
+            color: #2A2A2A;
+            margin-bottom: -2px;
+          }
+          .value{
+            color: #627797;
+          }
+        }
         h4 {
             margin-bottom: 0px;
         }
@@ -457,7 +484,21 @@ export default {
                 }
             }
         }
-
+      }
+      .qbtn-custom{
+        border-radius: 30px;
+        height: 34px;
+        background: #EFF5F9 !important;
+        font-family: $Franklin;
+        /deep/ .q-btn__wrapper{
+          min-height: unset;
+          padding: 0px 5px;
+          .q-btn__content{
+            text-transform: initial;
+            font-size: 10px;
+            color: #627797;
+          }
+        }
         /deep/ .transaction-section {
             box-shadow: none;
 

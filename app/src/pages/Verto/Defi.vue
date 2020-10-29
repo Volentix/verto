@@ -31,12 +31,23 @@
                 </q-tab-panels>
             </div>
             <div class="col-4">
-                <q-select color="primary" class="q-mb-md" @input="getAccountInformation({address:accountOption})" v-model="accountOption" :options="accountOptions" label="Change account">
-                    <template v-slot:append>
+                <q-select light separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation({address:accountOption})" v-model="accountOption" :options="accountOptions">
+                    <template v-slot:selected>
+                        <q-item>
+                            <q-item-section avatar>
+                                <q-icon class="option--avatar" :name="`img:statics/icon.png`" />
+                            </q-item-section>
+                            <q-item-section>
+                                <q-item-label>Change account</q-item-label>
+                                <q-item-label caption class="ellipsis mw200">{{ accountOption }}</q-item-label>
+                            </q-item-section>
+                        </q-item>
+                    </template>
+                    <!-- <template v-slot:append>
                         <q-avatar>
                             <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
                         </q-avatar>
-                    </template>
+                    </template> -->
                 </q-select>
             </div>
             <div class="col col-md-5 q-pr-md">
@@ -45,21 +56,21 @@
                         <div class="col-8">
                             <h4 class="q-pl-md">Available balances</h4>
                             <div class="header-table-col row q-pl-md q-mb-md">
-                                <div class="col-5">
+                                <div class="col-3">
                                     <h3>Token</h3>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-6">
                                     <h3>Balance</h3>
                                 </div>
                             </div>
-                            <q-scroll-area :visible="true" class="q-pr-lg q-mb-md q-mr-sm" style="height: 230px;">
+                            <q-scroll-area :visible="true" class="q-pr-lg q-mb-md q-mr-sm" style="height: 68px;">
                                 <div v-for="(token, index) in ethTokens" :key="index" class="body-table-col border row items-center q-pl-md q-pb-sm q-pt-sm">
-                                    <div class="col-5 flex items-center">
+                                    <div class="col-3 flex items-center">
                                         <span class="token flex items-center">
                                             <img :src="'https://files.coinswitch.co/public/coins/'+token.type+'.png'" class="q-mr-sm" alt=""> <strong>{{token.type}}</strong>
                                         </span>
                                     </div>
-                                    <div class="col-4 q-pl-sm">
+                                    <div class="col-6">
                                         <span class="balance">${{token.usd.toFixed(3)}} USD</span>
                                     </div>
                                 </div>
@@ -78,6 +89,22 @@
                             <!-- <span>28.35 USD</span> -->
                         </div>
                     </div>
+                </div>
+                <div class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken">
+                    <q-item>
+                        <q-item-section>
+                            <span class="text-h5 text-bold ">
+                                Convert {{maxToken.amount.toFixed(4)}} {{maxToken.type}} to {{maxDeFiYield.token}}
+                            </span>
+                        </q-item-section>
+                        <q-item-section>
+                            <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
+                                <q-icon name="arrow_right_alt" />
+                                <div class="flex justify-between items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""> <strong>{{maxDeFiYield.toTokenAmount}} <b>{{maxDeFiYield.token}}</b></strong></div>
+                                <q-btn unelevated class="qbtn-download" color="black" text-color="white" label="Confirm" @click="goToExchange()" />
+                            </h4>
+                        </q-item-section>
+                    </q-item>
                 </div>
             </div>
             <div class="col col-md-7">
@@ -105,23 +132,6 @@
 
                 <div class="desktop-card-style current-investments explore-opportunities q-mb-md">
                     <LiquidityPoolsTable />
-                </div>
-                <div class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken">
-                    <q-item>
-                        <q-item-section>
-                            <span class="q-pl-md  text-h5 text-bold ">
-
-                                Convert {{maxToken.amount.toFixed(4)}} {{maxToken.type}} to {{maxDeFiYield.token}}
-                            </span>
-                        </q-item-section>
-                        <q-item-section>
-                            <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
-                                <q-icon name="arrow_right_alt" />
-                                <div class="flex justify-between items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""> <strong>{{maxDeFiYield.toTokenAmount}} <b>{{maxDeFiYield.token}}</b></strong></div>
-                                <q-btn unelevated class="qbtn-download q-mr-md" color="black" text-color="white" label="Confirm" @click="goToExchange()" />
-                            </h4>
-                        </q-item-section>
-                    </q-item>
                 </div>
             </div>
             <div class="col col-5 q-pr-md">
@@ -431,9 +441,12 @@ export default {
     background: #E7E8E8;
     padding-top: 13vh;
     padding-left: 12vh;
-    padding-bottom: 50px;
     padding-right: 2%;
-    // height: fit-content;
+    padding-bottom: 50px;
+    @media screen and (min-width: 768px) {
+        padding-top: 11vh;
+        padding-bottom: 0px;
+    }
 }
 
 .desktop-card-style {
@@ -570,7 +583,7 @@ export default {
     &.yearn-finance {
         img {
             width: 30px;
-            margin-right: 10px;
+            margin-right: 30px;
         }
 
         strong {
@@ -609,12 +622,26 @@ export default {
                 }
             }
         }
+      }
+      .qbtn-custom{
+        border-radius: 30px;
+        height: 34px;
+        background: #EFF5F9 !important;
+        /deep/ .q-btn__wrapper{
+            min-height: unset;
+            padding: 0px 0px;
+            .q-btn__content{
+                text-transform: initial;
+                font-size: 12px;
+                color: #627797;
+            }
 
-        /deep/ .transaction-section {
-            box-shadow: none;
+            /deep/ .transaction-section {
+                box-shadow: none;
 
-            .history-icon {
-                display: none;
+                .history-icon {
+                    display: none;
+                }
             }
         }
     }
@@ -820,46 +847,6 @@ export default {
                 }
             }
 
-            .select-input {
-                border-radius: 100px !important;
-                $height: 50px;
-                height: $height;
-
-                /deep/ .q-field__marginal {
-                    height: $height;
-                    min-height: unset;
-                }
-
-                /deep/ .q-field__control {
-                    height: $height;
-                    min-height: unset;
-
-                    .q-field__native {
-                        padding-left: 0px;
-                        padding-top: 0px;
-                        padding-bottom: 0px;
-                        height: $height;
-                        min-height: unset;
-
-                        .q-item {
-                            padding: 0px;
-                            padding-left: 18px;
-                            min-height: $height;
-                            padding-bottom: 0px;
-
-                            .q-item__section {
-                                padding-right: 0px;
-                                min-width: 36px;
-
-                                .q-item__label+.q-item__label {
-                                    margin-top: 0px;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
             .lab-input {
                 font-family: $Titillium;
                 font-weight: $regular;
@@ -916,7 +903,54 @@ export default {
 
     }
 }
+.select-input {
+    border-radius: 100px !important;
+    $height: 50px;
+    height: $height;
+    margin-top: -10px;
+    // .ellipsis{
+    //     /deep/ .q-field__native {
+    //         max-width: 100px;
+    //     }
+    // }
+    // .mw200{
+    //     /deep/ .q-field__native {
+    //         max-width: 100px;
+    //     }
+    // }
+    /deep/ .q-field__marginal {
+        height: $height;
+        min-height: unset;
+    }
 
+    /deep/ .q-field__control {
+        height: $height;
+        min-height: unset;
+        background-color: #fff !important;
+
+        .q-field__native {
+            padding-left: 0px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+            height: $height;
+            min-height: unset;
+            .q-item {
+                padding: 0px;
+                padding-left: 10px;
+                min-height: $height;
+                padding-bottom: 0px;
+                .q-item__section {
+                    padding-right: 0px;
+                    min-width: 36px;
+
+                    .q-item__label+.q-item__label {
+                        margin-top: 0px;
+                    }
+                }
+            }
+        }
+    }
+}
 .send-modal {
     position: fixed;
     width: 100vw;
@@ -1044,5 +1078,8 @@ export default {
 
 /deep/ .q-btn__wrapper {
     min-height: 30px !important;
+}
+.text-h5{
+    font-size: 16px;
 }
 </style>

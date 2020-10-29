@@ -140,27 +140,30 @@ export default {
       }
     },
     async restoreConfig () {
-      const that = this
+      const self = this
       const reader = new FileReader()
       reader.onload = async function () {
         try {
-          this.spinnervisible = true
-          const results = await configManager.restoreConfig(reader.result, that.addWallet.vertoPassword)
+          self.spinnervisible = true
+          const results = await configManager.restoreConfig(reader.result, self.addWallet.vertoPassword)
           console.log(results, 'results restoreConfig')
           if (results.message === 'bad_password') {
-            // that.startRestoreConfig()
-            this.spinnervisible = false
+            // self.startRestoreConfig()
+            self.spinnervisible = false
             throw new Error('Incorrect Password')
           }
           // updateProgress(1)
-          this.applicationRefreshing = true
-          that.$q.notify({ color: 'positive', message: 'Application refreshing' })
+          self.$store.commit('settings/temporary', self.addWallet.vertoPassword)
+          self.applicationRefreshing = true
+          self.$q.notify({ color: 'positive', message: 'Application refreshing' })
           setTimeout(function () {
-            that.$router.push({ name: 'wallet' })
-            this.spinnervisible = false
+            self.$router.push({
+              path: '/verto/dashboard'
+            })
+            self.spinnervisible = false
           }, 300)
         } catch (e) {
-          this.spinnervisible = false
+          self.spinnervisible = false
           console.log(e, 'restoreConfig error')
           userError(e)
         }

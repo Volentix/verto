@@ -2,6 +2,7 @@ import EosWrapper from '@/util/EosWrapper'
 import axios from 'axios'
 import store from '@/store'
 import { userError } from '@/util/errorHandler'
+import { date } from 'quasar'
 
 class Lib {
   history = async (walletType, key, token) => {
@@ -16,7 +17,7 @@ class Lib {
               result.data.actions.map(a => {
                 console.log('walletlib history actions', a)
                 actions.push({
-                  date: a.block_time,
+                  date: date.formatDate(a.block_time, 'YYYY-MM-DD HH:mm'),
                   transID: a.action_trace.trx_id,
                   from: a.action_trace.act.data.from,
                   to: a.action_trace.act.data.to,
@@ -43,17 +44,15 @@ class Lib {
         await axios.get('http://api.etherscan.io/api?module=account&action=txlist&startblock=0&endblock=99999999&sort=desc&address=' + key)
           .then(function (result) {
             if (result.length !== 0) {
-              // console.log('walletlib history actions', result)
               result.data.result.map(a => {
-                console.log('walletlib history actions', a)
                 actions.push({
-                  date: a.timeStamp,
+                  date: date.formatDate(a.timeStamp * 1000, 'YYYY-MM-DD HH:mm'),
                   transID: a.hash,
                   from: a.from,
                   to: a.to,
                   typeTran: '',
                   desc: '',
-                  amount: a.value
+                  amount: (a.value / 1000000000000000000) + ' ETH'
                 })
               })
               return actions
