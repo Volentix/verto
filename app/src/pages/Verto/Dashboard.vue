@@ -169,7 +169,6 @@ export default {
     // console.log('beforeCreate event')
   },
   async created () {
-    initWallet()
     let exchangeNotif = document.querySelector('.exchange-notif')
     if (exchangeNotif !== null) {
       exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click'))
@@ -184,8 +183,7 @@ export default {
     if (!store.state.currentwallet.config.mnemonic) {
       this.$router.push('recovery-seed')
     } else {
-      let wallets2Tokens = require('@/util/Wallets2Tokens')
-      if (!store.state.wallets.tokens) wallets2Tokens()
+      initWallet()
     }
     this.$store.dispatch('investment/getMarketDataVsUSD')
     // Adds the eos account name when it is found to the cruxID
@@ -194,6 +192,7 @@ export default {
       if (token.hidden === undefined) {
         token.hidden = false
       }
+      return token
     })
     this.$store.state.currentwallet.wallet = {
       empty: true
