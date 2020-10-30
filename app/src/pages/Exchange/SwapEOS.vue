@@ -34,7 +34,7 @@
                                                     <div class="col col-2 choose-coin">
                                                         <span class="cursor">
 
-                                                            <q-select class="select-input" light separator use-input borderless rounded v-model="depositCoin" @input="swapData.error = false; getDestinationCoinOptions() ; getPairData() ; " @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                                                            <q-select class="select-input" light separator use-input borderless rounded v-model="depositCoin" @input="swapData.error = false;  getDestinationCoinOptions() ; getPairData() ; " @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
@@ -186,11 +186,17 @@
                                                             <path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path>
                                                         </svg>
                                                         <span class="title">{{ transactionStatus }}</span>
-                                                        <q-linear-progress v-if="transactionStatus == 'Pending'" indeterminate stripe rounded size="md" :value="progress" class="q-mt-md" />
+                                                        <q-linear-progress v-if="transactionStatus == 'Pending'" indeterminate stripe rounded size="md" class="q-mt-md" />
+
                                                     </div>
                                                     <hr style="height:15px;opacity:0" />
                                                     <div class="text-black">
                                                         <div class="text-h4 --subtitle">{{''}}</div>
+                                                        <p v-if="transactionHash && freeCPU" class="text-body2 text-center">
+                                                            <b>Volentix.io paid the CPU cost of this transaction.</b><br>
+                                                            <a href="">Click here to learn more</a>
+                                                        </p>
+
                                                         <q-input v-if="transactionHash" bottom-slots v-model="transactionHash" readonly rounded class="input-input pr80" outlined color="purple" type="text">
                                                             <template v-slot:append>
                                                                 <div class="flex justify-end">
@@ -208,7 +214,6 @@
                                                                 </a>
                                                             </template>
                                                         </q-input>
-
                                                     </div>
                                                     <div style="margin-top:40px;" class="prototype text-center q-pa-md q-mt-lg" v-if="tab == 'liquidity' && transactionStatus == 'Success'">
                                                         <div v-if="this.transaction.name === 'createpair'">
@@ -219,7 +224,7 @@
                                                         </div>
                                                         <div v-else>
                                                             <p>Successfully joined the liquidity pool</p>
-                                                            <p>LP Tokens BOXQF <br>has been released to your account</p>
+                                                            <p>LP Tokens {{pairData && pairData.miningData && pairData.miningData.code ? pairData.miningData.code : 'BOX*'}} <br>has been released to your account</p>
 
                                                             <p class="text-body2 text-left"> Important reminder, please read carefully:</p>
                                                             <p class="text-body2 text-left">
@@ -349,6 +354,7 @@ export default {
       step: 1,
       tab: 'swap',
       transactionStatus: 'Pending',
+      freeCPU: false,
       spinnervisible: false,
       transactionHash: null,
       error: null,
@@ -581,24 +587,44 @@ export default {
         }]
       }
 
-      console.log(transactionObject, JSON.stringify(transactionObject), 'transactionObject')
+      if (this.tab === 'liquidity' && this.transaction.name !== 'createpair') {
+        transactionObject.actions.push({
+          account: this.transaction.name !== 'createpair' ? this.depositCoin.contract : 'swap.defi',
+          name: transaction.name,
+          authorization: [{
+            actor: this.eosAccount.name,
+            permission: 'active'
+          }],
+          data: {
+            from: this.eosAccount.name,
+            to: 'swap.defi',
+            quantity: this.swapData.toAmount + ' ' + this.destinationCoin.value,
+            memo: this.getMemo()
+          }
+        })
+      }
       api.transact(transactionObject, {
         blocksBehind: 3,
         expireSeconds: 30
       }).then((result) => {
         this.step = 2
-        console.log(result)
         this.transactionStatus = 'Success'
         this.spinnervisible = false
         this.transactionHash = result.transaction_id
         initWallet()
-        if (this.transaction.name === 'createpair') {
+        if (this.tab !== 'swap') {
           this.getPools()
         }
       }).catch((error) => {
-        this.error = error
-        this.transactionStatus = 'Failed'
-        this.spinnervisible = false
+        console.log(error.toString(), 'error')
+        if (error.toString().includes('is greater than the maximum billable CPU time for the transaction')) {
+          this.freeCPU = true
+          this.sendFreeCPUTransaction(transactionObject.actions)
+        } else {
+          this.error = error
+          this.transactionStatus = 'Failed'
+          this.spinnervisible = false
+        }
       })
     },
     getMemo () {
@@ -611,7 +637,7 @@ export default {
           memo = memo.concat(this.pairData.id)
         }
       } else {
-        memo += 'deposit,'
+        memo += 'deposit,'.concat(this.pairData.id)
       }
 
       return memo
@@ -623,6 +649,11 @@ export default {
       })
     }
 
+  },
+  watch: {
+    depositCoin: function (newVal, oldVal) {
+      this.swapData.fromAmount = newVal.data.amount.toFixed(this.depositCoin.precision)
+    }
   },
   mixins: [EOSContract]
 }
@@ -1417,6 +1448,7 @@ export default {
             padding-left: 0%;
             padding-right: 0%;
             margin-top: 30px;
+
             .list-wrapper {
                 visibility: visible;
                 height: auto;
@@ -1817,15 +1849,17 @@ export default {
 .q-field__messages {
     margin-top: 5px;
 }
-.summary-wrapper{
+
+.summary-wrapper {
     background-color: rgba(black, .06);
     margin-top: 29px;
     max-height: 300px;
     margin-top: 212px;
     border-radius: 8px;
 }
-.prototype{
-    /deep/ .q-tabs{
+
+.prototype {
+    /deep/ .q-tabs {
         border-radius: 8px;
     }
 }

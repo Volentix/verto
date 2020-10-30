@@ -52,7 +52,7 @@
         <div v-else class="else-is-desktop wallets-wrapper--list open">
             <div class="wallets-wrapper--list_title q-pa-md q-ml-md">
                 <q-icon name="o_account_balance_wallet" /> {{$store.state.currentwallet.wallet.empty ? 'Wallets' : 'Wallet : '+ $store.state.currentwallet.wallet.name.toUpperCase()}}
-                <q-btn class="float-right" flat icon-right="cached" @click="refreshWallet()" label="Refresh" />
+                <q-btn v-if="$store.state.currentwallet.wallet.empty" class="float-right" flat icon-right="cached" @click="refreshWallet()" label="Refresh" />
             </div>
             <div v-if="$store.state.currentwallet.wallet.empty" class="header-list-table">
                 <div class="row q-pl-lg q-pr-lg">
