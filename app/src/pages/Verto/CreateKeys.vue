@@ -49,7 +49,8 @@ import initWallet from '@/util/Wallets2Tokens'
 // I have setup your symbols into a sandbox wallet named testwallet.
 // You can proceed with development with this as your walletName.
 // IDs will be created as foo@testwallet.crux
-
+import EosWrapper from '@/util/EosWrapper'
+const eos = new EosWrapper()
 export default {
   data () {
     return {
@@ -144,12 +145,30 @@ export default {
       this.mapped = true
       // this.step = 3
     },
-    dataRefresh () {
+    associateEOSAccount (key) {
+      eos.getAccountNamesFromPubKeyP(key)
+        .then((result) => {
+          if (result.account_names.length) {
+            let tableData = this.$store.state.wallets.tokens
+            let currentAccount = tableData.find(w => w.chain === 'eos' && w.type === 'verto')
+            currentAccount.type = 'eos'
+            currentAccount.name = result.account_names[0]
+            currentAccount.to = `/verto/wallets/${currentAccount.chain}/${currentAccount.type}/${currentAccount.name}`
+            currentAccount.icon = 'https://files.coinswitch.co/public/coins/eos.png'
+            this.$configManager.updateCurrentWallet(currentAccount)
+            this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
+          }
+        }).catch((err) => {
+          console.log('There was a problem getting account names', err)
+        })
+    },
+    async dataRefresh () {
       const self = this
       this.$store.state.wallets.tokens = null
 
       try {
-        initWallet()
+        await initWallet()
+        this.associateEOSAccount()
       } catch (error) {
         console.log('initWallet error', error)
       }
