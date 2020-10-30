@@ -115,7 +115,9 @@ export default {
       currentExrternalWallet: '',
       transactionHash: null,
       sendAmount: 0,
-      eosAccount: null
+      eosAccount: null,
+      spinnervisible: false,
+      error: null
     }
   },
   props: ['notWidget', 'stakeData'],

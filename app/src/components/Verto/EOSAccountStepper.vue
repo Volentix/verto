@@ -259,9 +259,9 @@ export default {
     })
 
     /*
-                this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-                  w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName))
-                  */
+                    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+                      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName))
+                      */
     this.currentAccount = this.tableData.find(w => w.chain === 'eos' && w.type === 'verto')
 
     this.currentToken = {
