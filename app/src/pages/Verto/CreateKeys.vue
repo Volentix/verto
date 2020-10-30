@@ -145,18 +145,18 @@ export default {
       this.mapped = true
       // this.step = 3
     },
-    associateEOSAccount (key) {
-      eos.getAccountNamesFromPubKeyP(key)
+    associateEOSAccount () {
+      let tableData = this.$store.state.wallets.tokens
+      let currentAccount = tableData.find(w => w.chain === 'eos' && w.type === 'verto')
+      eos.getAccountNamesFromPubKeyP(currentAccount.key)
         .then((result) => {
           if (result.account_names.length) {
-            let tableData = this.$store.state.wallets.tokens
-            let currentAccount = tableData.find(w => w.chain === 'eos' && w.type === 'verto')
             currentAccount.type = 'eos'
             currentAccount.name = result.account_names[0]
             currentAccount.to = `/verto/wallets/${currentAccount.chain}/${currentAccount.type}/${currentAccount.name}`
             currentAccount.icon = 'https://files.coinswitch.co/public/coins/eos.png'
-            this.$configManager.updateCurrentWallet(currentAccount)
             this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
+            initWallet()
           }
         }).catch((err) => {
           console.log('There was a problem getting account names', err)
