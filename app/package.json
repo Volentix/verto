@@ -1,6 +1,6 @@
 {
   "name": "verto",
-  "version": "0.9.26-alpha",
+  "version": "0.9.28-alpha",
   "description": "A multi-currency crypto wallet with initial support for EOS & VTX",
   "productName": "Verto",
   "cordovaId": "org.cordova.verto",
@@ -78,6 +78,7 @@
     "fs-web": "^1.0.1",
     "hdkey": "^1.1.1",
     "js-chain-libs": "^0.3.0",
+    "leaflet": "^1.7.1",
     "litecore-lib": "^0.13.22",
     "mobile-device-detect": "^0.4.3",
     "oip-hdmw": "^1.3.27",

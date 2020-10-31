@@ -43,6 +43,27 @@ export default [
         }
       },
       {
+        path: '/vdexnode',
+        component: () => import('pages/vDexNode/Index.vue'),
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        path: '/vdexnode/settings',
+        component: () => import('pages/vDexNode/Settings.vue'),
+        meta: {
+          requiresAuth: true
+        }
+      },
+      // {
+      //   path: '/vdexnode/login',
+      //   component: () => import('pages/vDexNode/Login.vue'),
+      //   meta: {
+      //     requiresAuth: true
+      //   }
+      // },
+      {
         name: 'create-wallet-options',
         path: '/create-wallet-options',
         component: () => import('pages/Intro/CreateWalletOptions.vue'),
