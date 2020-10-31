@@ -11,6 +11,7 @@
             <!-- <router-link disabled>Refer & Earn</router-link> -->
             <span @click="temp = true">Free* CPU</span>
             <router-link to="/verto/exchange4">New UI (Temp)</router-link>
+            <router-link to="/vdexnode/">vDexNode</router-link>
             <router-link to="/verto/exchange">Exchange</router-link>
             <a href="javascript:void(0)" @click="logout">
                 <q-icon class="reverse" name="exit_to_app" /> Logout
