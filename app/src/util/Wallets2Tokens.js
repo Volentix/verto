@@ -16,7 +16,13 @@ class Wallets2Tokens {
     axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { self.eosUSD = res.data.data.price })
     store.state.wallets.portfolioTotal = 0
     this.tableData = [ ...store.state.currentwallet.config.keys ]
-
+    /* this.tableData.push({
+      key: '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1',
+      type: 'eth',
+      chain: 'eth',
+      name: 'ETH WALLET'
+    })
+    */
     this.tableData.map(wallet => {
       // let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
       // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === vtxCoin.toLowerCase())
@@ -184,7 +190,7 @@ class Wallets2Tokens {
     })
 
     this.tableData.sort(function (a, b) {
-      if (a.name.toLowerCase() < b.name.toLowerCase()) {
+      if (a.name && b.name && a.name.toLowerCase() < b.name.toLowerCase()) {
         return -1
       }
       return 1
