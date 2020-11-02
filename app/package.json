@@ -95,6 +95,7 @@
     "vue-i18n": "^8.11.1",
     "vue-social-sharing": "^2.4.6",
     "vue-template-compiler": "^2.6.10",
+    "vue-text-marquee": "^1.1.0",
     "vuelidate": "^0.7.4",
     "web3": "1.2.9",
     "wif": "^2.0.6",

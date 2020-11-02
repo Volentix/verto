@@ -178,6 +178,11 @@ export default {
   @import "~@/assets/styles/variables.scss";
   .chain-tools-wrapper{
     // padding: 0px 6%;
+    @media screen and (min-width: 768px) {
+      max-width: 700px;
+      width: 100%;
+      margin: auto;
+    }
     &--list{
       &__hide-chain-tools{
         text-transform: initial !important;
