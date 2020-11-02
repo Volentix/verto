@@ -131,7 +131,7 @@
           </div> -->
 
                 <div class="desktop-card-style current-investments explore-opportunities q-mb-md">
-                    <LiquidityPoolsTable />
+                    <LiquidityPoolsTable :rowsPerPage="5" />
                 </div>
             </div>
             <div class="col col-5 q-pr-md">
@@ -318,7 +318,6 @@ export default {
         address: ethACcount.key
       }
       this.accountOption = account.address
-      this.$store.dispatch('investment/getZapperTokens')
       this.getAccountInformation(account)
     }
   },
@@ -443,6 +442,7 @@ export default {
     padding-left: 12vh;
     padding-right: 2%;
     padding-bottom: 50px;
+
     @media screen and (min-width: 768px) {
         padding-top: 11vh;
         padding-bottom: 0px;
@@ -622,15 +622,18 @@ export default {
                 }
             }
         }
-      }
-      .qbtn-custom{
+    }
+
+    .qbtn-custom {
         border-radius: 30px;
         height: 34px;
         background: #EFF5F9 !important;
-        /deep/ .q-btn__wrapper{
+
+        /deep/ .q-btn__wrapper {
             min-height: unset;
             padding: 0px 0px;
-            .q-btn__content{
+
+            .q-btn__content {
                 text-transform: initial;
                 font-size: 12px;
                 color: #627797;
@@ -903,11 +906,13 @@ export default {
 
     }
 }
+
 .select-input {
     border-radius: 100px !important;
     $height: 50px;
     height: $height;
     margin-top: -10px;
+
     // .ellipsis{
     //     /deep/ .q-field__native {
     //         max-width: 100px;
@@ -934,11 +939,13 @@ export default {
             padding-bottom: 0px;
             height: $height;
             min-height: unset;
+
             .q-item {
                 padding: 0px;
                 padding-left: 10px;
                 min-height: $height;
                 padding-bottom: 0px;
+
                 .q-item__section {
                     padding-right: 0px;
                     min-width: 36px;
@@ -951,6 +958,7 @@ export default {
         }
     }
 }
+
 .send-modal {
     position: fixed;
     width: 100vw;
@@ -1079,7 +1087,8 @@ export default {
 /deep/ .q-btn__wrapper {
     min-height: 30px !important;
 }
-.text-h5{
+
+.text-h5 {
     font-size: 16px;
 }
 </style>

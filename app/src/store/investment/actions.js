@@ -66,7 +66,6 @@ export const getBalancerPools = ({ rootState, commit, state }, payload) => {
           pool.value = value.address
           pool.liquidity = parseInt(pool.liquidity)
           if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
-            pool.index = state.pools.length
             commit('updatePools', pool)
           }
         })
@@ -141,7 +140,6 @@ export const getUniswapPools = ({ rootState, context, commit, state }, payload) 
         pool.platform = 'Uniswap V2'
         pool.liquidity = parseInt(pool.liquidity)
         if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
-          pool.index = state.pools.length
           commit('updatePools', pool)
         }
       })
@@ -174,7 +172,6 @@ export const getYvaultsPools = ({ rootState, commit, state }, payload) => {
         pool.liquidity = parseInt(pool.liquidity)
         pool.value = value.address
         if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
-          pool.index = state.pools.length
           commit('updatePools', pool)
         }
       })
@@ -205,7 +202,6 @@ export const getCurvesPools = ({ rootState, commit, state }, payload) => {
         pool.liquidity = parseInt(pool.liquidity)
 
         if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
-          pool.index = state.pools.length
           commit('updatePools', pool)
         }
       })
@@ -221,6 +217,10 @@ export const getZapperTokens = (context, payload) => {
         context.commit('setTokens', result.data[prop])
         break
       }
+      context.dispatch('getYvaultsPools')
+      context.dispatch('getCurvesPools')
+      context.dispatch('getUniswapPools')
+      context.dispatch('getBalancerPools')
     }
   })
 }

@@ -255,9 +255,7 @@ export default {
     let tableData = await this.$store.state.wallets.tokens
     this.ethAccount = tableData.filter(w => w.chain === 'eth')
       .filter(w => this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() === w.type.toLowerCase()))
-    if (this.notWidget === null) {
-      await this.$store.dispatch('investment/getZapperTokens')
-    } else {
+    if (this.notWidget !== null) {
       this.setDialogData()
     }
     this.approvalRequired = false
@@ -907,17 +905,19 @@ a {
 .modal-dialog-wrapper .input-input {
     height: auto;
 }
-.gasfield{
-  /deep/ .q-item.gasSelector{
-    padding-left: 0px;
-    padding-right: 0px;
-    .q-item__section{
-      .q-item--clickable{
-        border-radius: 40px;
-        margin-right: 20px;
-        padding: 15px 30px;
-      }
+
+.gasfield {
+    /deep/ .q-item.gasSelector {
+        padding-left: 0px;
+        padding-right: 0px;
+
+        .q-item__section {
+            .q-item--clickable {
+                border-radius: 40px;
+                margin-right: 20px;
+                padding: 15px 30px;
+            }
+        }
     }
-  }
 }
 </style>
