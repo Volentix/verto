@@ -169,6 +169,13 @@ export default {
     // console.log('beforeCreate event')
   },
   async created () {
+    this.tableData = await store.state.wallets.tokens.map(token => {
+      token.selected = false
+      if (token.hidden === undefined) {
+        token.hidden = false
+      }
+      return token
+    })
     let exchangeNotif = document.querySelector('.exchange-notif')
     if (exchangeNotif !== null) {
       exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click'))
@@ -183,17 +190,11 @@ export default {
     if (!store.state.currentwallet.config.mnemonic) {
       this.$router.push('recovery-seed')
     } else {
-      initWallet()
+      if (this.tableData.length < 6) { initWallet() }
     }
     this.$store.dispatch('investment/getMarketDataVsUSD')
     // Adds the eos account name when it is found to the cruxID
-    this.tableData = await store.state.wallets.tokens.map(token => {
-      token.selected = false
-      if (token.hidden === undefined) {
-        token.hidden = false
-      }
-      return token
-    })
+
     this.$store.state.currentwallet.wallet = {
       empty: true
     }
@@ -226,8 +227,6 @@ export default {
         }
       }
     }
-
-    this.$store.dispatch('investment/getZapperTokens')
     // this.$store.dispatch('investment/getUniSwapHistoricalData')
     // this.$store.dispatch('investment/getBalancerHistoricalData')
   },
