@@ -5,8 +5,11 @@
             <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;">
             <router-link to="/verto/dashboard">VERTO</router-link>
         </div>
-        <div class="col col-3 flex items-center">2020-05-22 - 16:15:31</div>
-        <div class="col col-6 flex justify-end q-pr-xl items-center menu">
+        <div class="col col-5 flex items-center date-scrolling-msg">
+          <div class="date">{{currentDate}}</div>
+          <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content="This app is in beta, please send us bug reports if you find any. <b>t.me/vertosupport</b>" />
+        </div>
+        <div class="col col-4 flex justify-end q-pr-xl items-center menu">
             <!-- to="/verto/earn/use-referral-account" -->
             <!-- <router-link disabled>Refer & Earn</router-link> -->
             <span @click="temp = true">Free* CPU</span>
@@ -26,17 +29,37 @@
 <script>
 // import configManager from '@/util/ConfigManager'
 import FreeCPUDialog from './Defi/FreeCPUDialog'
+import { date } from 'quasar'
+import { VTextMarquee } from 'vue-text-marquee'
+
+// 2020-05-22 - 16:15:31
+// let formattedString = date.formatDate(timeStamp, 'YYYY-MM-DD - HH:mm:ss')
 export default {
   name: 'TopMenu',
   components: {
-    FreeCPUDialog
+    FreeCPUDialog,
+    VTextMarquee: VTextMarquee
   },
   data () {
     return {
-      temp: false
+      temp: false,
+      currentDate: '',
+      animate: true
     }
   },
+  created () {
+    setTimeout(() => {
+      this.refreshDate()
+    }, 1000)
+  },
   methods: {
+    refreshDate () {
+      let timeStamp = Date.now()
+      this.currentDate = date.formatDate(timeStamp, 'YYYY-MM-DD - HH:mm:ss')
+      setTimeout(() => {
+        this.refreshDate()
+      }, 1000)
+    },
     logout () {
       // configManager.logout()
       this.$router.push({
@@ -101,5 +124,11 @@ export default {
 
 .reverse {
     transform: scaleX(-1);
+}
+.date-scrolling-msg{
+  /deep/ .v-marquee{
+    max-width: 390px;
+    margin-left: 20px;
+  }
 }
 </style>

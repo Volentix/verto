@@ -245,9 +245,9 @@
                 </div>
             </div>
         </div>
-        <div class="col summary-wrapper shadow-1 col-md-4 q-pa-lg column justify-center items-center">
+        <div class="col summary-wrapper shadow-1 col-md-4 q-pa-lg column justify-center items-start">
             <div class="text-h6">Summary</div>
-            <q-list separator>
+            <q-list class="summary-wrapper__list" separator>
                 <q-item class="q-my-sm" clickable v-ripple>
                     <q-item-section avatar>
                         <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
@@ -1814,10 +1814,16 @@ export default {
 }
 .summary-wrapper{
     background-color: rgba(black, .06);
-    margin-top: 29px;
-    max-height: 300px;
-    margin-top: 212px;
+    // min-height: 300px;
+    margin-top: 31px;
+    margin-left: 10px;
+    max-width: 32%;
     border-radius: 8px;
+    display: flex;
+    flex-direction: row;
+    &__list{
+        width: 100%;
+    }
 }
 .prototype{
     /deep/ .q-tabs{
