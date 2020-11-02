@@ -67,7 +67,7 @@
                     </div>
                 </div>
             </div>
-            <q-scroll-area :visible="true" class="q-mr-sm" style="height: 170px;">
+            <q-scroll-area :visible="true" class="q-mr-sm" :style="$store.state.currentwallet.wallet.empty ? 'height: 172px;': 'height: 310px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty">
                         <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
@@ -270,8 +270,8 @@
                     </div>
                 </q-list>
             </q-scroll-area>
-            <div class="add-remove-wrapper flex column flex-center item-center content-center">
-                <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Conceal Hidden Currencies' : 'Reveal Hidden Currencies'" :class="showText ? 'open': 'hide'" />
+            <div v-if="$store.state.currentwallet.wallet.empty" class="add-remove-wrapper flex column flex-center item-center content-center">
+                <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Hide Currencies' : 'Show Currencies'" :class="showText ? 'open': 'hide'" />
                 <span class="add-remove-wrapper--desc text-black">Main chains and balances above zero will show in this list</span>
             </div>
         </div>
@@ -696,6 +696,7 @@ export default {
         background-color: #fff;
         padding: 4% 0%;
         border-radius: 0px 0px 25px 25px;
+        overflow: hidden;
 
         @media screen and (min-width: 768px) {
             box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.19) !important;
@@ -733,7 +734,7 @@ export default {
         }
 
         &_title {
-            font-size: 16px;
+            font-size: 12px;
             font-family: $Titillium;
             font-weight: $bold;
             line-height: 30px;
@@ -877,7 +878,8 @@ export default {
                 border-top: 1px solid rgba(0, 0, 0, 0.06);
 
                 @media screen and (min-width: 768px) {
-                    max-width: 90%;
+                    max-width: 100%;
+                    // padding-right: 30px;
                     margin: auto;
                 }
 
@@ -1056,8 +1058,8 @@ export default {
                 font-size: 16px;
 
                 @media screen and (min-width: 768px) {
-                    font-size: 12px;
-                    margin-bottom: -5px;
+                    font-size: 10px;
+                    margin-bottom: 0px;
                 }
             }
 
@@ -1286,7 +1288,7 @@ export default {
             text-align: right;
             font-family: $Titillium;
             font-weight: $bold;
-            font-size: 12px;
+            font-size: 10px;
             color: #2A2A2A;
             justify-content: flex-start;
             margin-top: 10px;
