@@ -35,7 +35,7 @@
                     <template v-slot:selected>
                         <q-item>
                             <q-item-section avatar>
-                                <q-icon class="option--avatar" :name="`img:statics/icon.png`" />
+                                <q-icon class="option--avatar" :name="`img:https://zapper.fi/images/ETH-icon.png`" />
                             </q-item-section>
                             <q-item-section>
                                 <q-item-label>Change account</q-item-label>
