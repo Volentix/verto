@@ -5,11 +5,11 @@
             <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;">
             <router-link to="/verto/dashboard">VERTO</router-link>
         </div>
-        <div class="col col-3 flex items-center">2020-05-22 - 16:15:31</div>
+        <div class="col col-3 flex items-center" :key="key">{{getDate()}}</div>
         <div class="col col-6 flex justify-end q-pr-xl items-center menu">
             <!-- to="/verto/earn/use-referral-account" -->
             <!-- <router-link disabled>Refer & Earn</router-link> -->
-            <span @click="temp = true">Free* CPU</span>
+
             <router-link to="/verto/exchange4">New UI (Temp)</router-link>
             <router-link to="/vdexnode/">vDexNode</router-link>
             <router-link to="/verto/exchange">Exchange</router-link>
@@ -18,8 +18,8 @@
             </a>
         </div>
     </div>
-     <q-dialog v-model="temp">
-    <FreeCPUDialog />
+    <q-dialog v-model="temp">
+        <FreeCPUDialog />
     </q-dialog>
 </div>
 </template>
@@ -34,16 +34,27 @@ export default {
   },
   data () {
     return {
-      temp: false
+      temp: false,
+      key: 0
     }
   },
+
   methods: {
+    getDate () {
+      let date = new Date()
+      return date.toDateString() + ',  ' + date.getHours() + ':' + date.getMinutes()
+    },
     logout () {
       // configManager.logout()
       this.$router.push({
         path: '/login'
       })
     }
+  },
+  mounted () {
+    setInterval(() => {
+      this.key++
+    }, 60000)
   }
 }
 </script>
