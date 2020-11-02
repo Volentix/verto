@@ -716,7 +716,7 @@ export default {
         position: relative;
         line-height: 50px;
         font-family: $Titillium;
-        margin-top: -10px;
+        margin-top: 0px;
         margin-bottom: 10px;
     }
 }
@@ -907,7 +907,7 @@ export default {
     border-radius: 100px !important;
     $height: 50px;
     height: $height;
-    margin-top: -10px;
+    margin-top: 0px;
     // .ellipsis{
     //     /deep/ .q-field__native {
     //         max-width: 100px;

@@ -50,8 +50,9 @@
             <q-btn unelevated v-if="!showWallets" flat @click="toggleWallets()" :icon-right="showText ? 'keyboard_arrow_up': 'keyboard_arrow_down'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showText ? 'Hide all wallets' : 'Show all wallets'" :class="showText ? 'open': 'hide'" />
         </div>
         <div v-else class="else-is-desktop wallets-wrapper--list open">
-            <div class="wallets-wrapper--list_title q-pa-md q-ml-md">
-                <q-icon name="o_account_balance_wallet" /> {{$store.state.currentwallet.wallet.empty ? 'Wallets' : 'Wallet : '+ $store.state.currentwallet.wallet.name.toUpperCase()}}
+            <div class="wallets-wrapper--list_title q-pa-md q-pt-lg q-ml-md flex items-center justify-between">
+                <span class="flex items-center"><q-icon name="o_account_balance_wallet" /> {{$store.state.currentwallet.wallet.empty ? 'Wallets' : 'Wallet : '+ $store.state.currentwallet.wallet.name.toUpperCase()}}</span>
+                <q-icon v-if="!$store.state.currentwallet.wallet.empty" style="font-size: 25px" :name="`img:${$store.state.currentwallet.wallet.type !== 'usdt' ? $store.state.currentwallet.wallet.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'}`" />
                 <q-btn v-if="$store.state.currentwallet.wallet.empty" class="float-right" flat icon-right="cached" @click="refreshWallet()" label="Refresh" />
             </div>
             <div v-if="$store.state.currentwallet.wallet.empty" class="header-list-table">
@@ -67,7 +68,7 @@
                     </div>
                 </div>
             </div>
-            <q-scroll-area :visible="true" class="q-mr-sm" :style="$store.state.currentwallet.wallet.empty ? 'height: 172px;': 'height: 310px;'">
+            <q-scroll-area :visible="true" class="q-mr-sm" :style="$store.state.currentwallet.wallet.empty ? 'height: 160px;': 'height: 302px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty">
                         <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
