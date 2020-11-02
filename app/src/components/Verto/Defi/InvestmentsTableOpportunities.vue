@@ -111,9 +111,6 @@ export default {
   },
   computed: {
     ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools'])
-  },
-  created () {
-    this.$store.dispatch('investment/getZapperTokens')
   }
 }
 </script>

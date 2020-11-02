@@ -1,7 +1,7 @@
 <template>
 <div>
-    <q-table dense :loading="!$store.state.investment.pools.length" :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.pools" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
-        <template v-slot:body-cell-name="props">
+   <q-table :pagination="initialPagination" dense :loading="!$store.state.investment.pools.length" :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+           <template v-slot:body-cell-name="props">
             <q-td :props="props" class="body-table-col">
                 <div class="col-3 flex items-center">
                     <span class="imgs q-mr-lg" v-if="props.row.icons.length">
@@ -24,7 +24,7 @@
         </template>
 
         <template v-slot:top-right>
-            <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+            <q-input borderless dense filled debounce="300" v-model="filter" placeholder="Search">
                 <template v-slot:append>
                     <q-icon name="search" />
                 </template>
@@ -46,8 +46,12 @@ export default {
   components: {
     AddLiquidityDialog
   },
+  props: ['rowsPerPage'],
   data () {
     return {
+      initialPagination: {
+        rowsPerPage: 10
+      },
       poolsData: [],
       filter: '',
       columns: [{
@@ -74,21 +78,21 @@ export default {
         label: 'Liquidity',
         field: 'liquidity',
         sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : parseInt(val)?.toLocaleString()}`
+        format: val => `${typeof val === 'undefined' ? 0 : '$' + parseInt(val).toLocaleString()}`
       },
       {
         name: 'volume',
         label: 'Volume(24h)',
         field: 'volume',
         sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : parseInt(val)?.toLocaleString()}`
+        format: val => `${typeof val === 'undefined' ? 0 : '$' + parseInt(val).toLocaleString()}`
       },
       {
         name: 'fees',
         label: 'Fees(24h)',
         field: 'fees',
         sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : parseInt(val)?.toLocaleString()}`
+        format: val => `${typeof val === 'undefined' ? 0 : '$' + parseInt(val).toLocaleString()}`
       },
       {
         name: 'action',
@@ -107,23 +111,17 @@ export default {
       )
     }
   },
-  watch: {
-    zapperTokens (newVal, old) {
-      if (!newVal.length) return
-      this.$store.dispatch('investment/getYvaultsPools')
-      this.$store.dispatch('investment/getCurvesPools')
-      this.$store.dispatch('investment/getUniswapPools')
-      this.$store.dispatch('investment/getBalancerPools')
-      this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0])
-    }
-  },
   computed: {
     ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools'])
   },
   created () {
-    this.$store.dispatch('investment/getZapperTokens')
+    if (this.rowsPerPage) { this.initialPagination.rowsPerPage = this.rowsPerPage }
+    if (!this.$store.state.investment.zapperTokens.length) {
+      this.$store.dispatch('investment/getZapperTokens')
+    }
   }
 }
+
 </script>
 
 <style lang="scss" scoped>

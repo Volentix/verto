@@ -5,14 +5,15 @@
             <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;">
             <router-link to="/verto/dashboard">VERTO</router-link>
         </div>
+
         <div class="col col-5 flex items-center date-scrolling-msg">
-          <div class="date">{{currentDate}}</div>
+          <div class="date">{{refreshDate()}}</div>
           <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content="This app is in beta, please send us bug reports if you find any. <b>t.me/vertosupport</b>" />
         </div>
         <div class="col col-4 flex justify-end q-pr-xl items-center menu">
             <!-- to="/verto/earn/use-referral-account" -->
             <!-- <router-link disabled>Refer & Earn</router-link> -->
-            <span @click="temp = true">Free* CPU</span>
+
             <router-link to="/verto/exchange4">New UI (Temp)</router-link>
             <router-link to="/vdexnode/">vDexNode</router-link>
             <router-link to="/verto/exchange">Exchange</router-link>
@@ -21,8 +22,8 @@
             </a>
         </div>
     </div>
-     <q-dialog v-model="temp">
-    <FreeCPUDialog />
+    <q-dialog v-model="temp">
+        <FreeCPUDialog />
     </q-dialog>
 </div>
 </template>
@@ -44,22 +45,15 @@ export default {
   data () {
     return {
       temp: false,
-      currentDate: '',
-      animate: true
+      interval:null,
+      key: 0
     }
   },
-  created () {
-    setTimeout(() => {
-      this.refreshDate()
-    }, 1000)
-  },
+
   methods: {
     refreshDate () {
-      let timeStamp = Date.now()
-      this.currentDate = date.formatDate(timeStamp, 'YYYY-MM-DD - HH:mm:ss')
-      setTimeout(() => {
-        this.refreshDate()
-      }, 1000)
+      let date = new Date()
+      return date.toDateString() + ',  ' + date.getHours() + ':' + date.getMinutes()
     },
     logout () {
       // configManager.logout()
@@ -67,6 +61,14 @@ export default {
         path: '/login'
       })
     }
+  },
+    destroyed(){
+    clearInterval(this.interval)
+  },
+  mounted () {
+  this.interval =  setInterval(() => {
+      this.key++
+    }, 60000)
   }
 }
 </script>
