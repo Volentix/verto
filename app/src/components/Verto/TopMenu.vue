@@ -31,7 +31,7 @@
 <script>
 // import configManager from '@/util/ConfigManager'
 import FreeCPUDialog from './Defi/FreeCPUDialog'
-import { date } from 'quasar'
+// import { date } from 'quasar'
 import { VTextMarquee } from 'vue-text-marquee'
 
 // 2020-05-22 - 16:15:31
@@ -45,7 +45,7 @@ export default {
   data () {
     return {
       temp: false,
-      interval:null,
+      interval: null,
       key: 0
     }
   },
@@ -62,11 +62,11 @@ export default {
       })
     }
   },
-    destroyed(){
+  destroyed () {
     clearInterval(this.interval)
   },
   mounted () {
-  this.interval =  setInterval(() => {
+    this.interval = setInterval(() => {
       this.key++
     }, 60000)
   }
