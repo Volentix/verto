@@ -192,7 +192,7 @@
                         bottom-slots
                         :error="toError"
                         :error-message="toErrorMessage"
-                        :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? currentAccount.type.toUpperCase() + ' Address' : 'Account name'"
+                        :label="currentAccount.chain.toUpperCase() + ' Address'"
                       >
                         <template v-slot:append>
                           <div class="flex justify-end">
