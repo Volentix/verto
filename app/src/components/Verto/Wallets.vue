@@ -68,10 +68,11 @@
                     </div>
                 </div>
             </div>
-            <q-scroll-area :visible="true" class="q-mr-sm" :style="$store.state.currentwallet.wallet.empty ? 'height: 160px;': 'height: 302px;'">
+
+            <q-scroll-area :visible="true" class="q-mr-sm" :style="$store.state.currentwallet.wallet.empty ? 'height: 172px;': 'height: 410px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty">
-                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar>
@@ -81,7 +82,7 @@
                                         <span class="item-name--name">{{item.name}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
-                                        <span class="item-info--amount">{{item.amount ? new Number(item.amount).toFixed(8) : 0 }} {{item.type.toUpperCase()}}</span>
+                                        <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
                                         <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-else>
