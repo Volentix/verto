@@ -719,7 +719,7 @@ export default {
         position: relative;
         line-height: 50px;
         font-family: $Titillium;
-        margin-top: -10px;
+        margin-top: 0px;
         margin-bottom: 10px;
     }
 }
