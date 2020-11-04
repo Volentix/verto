@@ -7,11 +7,17 @@ export const setSelectedPool = (state, pool) => {
   state.selectedPool = pool
 }
 export const setPools = (state, pools) => {
-  console.log(pools, 'pools')
   state.pools = pools
 }
 export const updatePools = (state, pool) => {
-  state.pools.push(pool)
+  let volume = parseInt(pool.volume)
+  if (pool.liquidity !== 0 && volume !== 0 && !isNaN(volume)) {
+    state.pools.push(pool)
+    state.pools = state.pools.sort((a, b) => parseInt(b.liquidity) - parseInt(a.liquidity)).map((o, index) => {
+      o.index = index
+      return o
+    })
+  }
 }
 export const setTokens = (state, tokens) => {
   state.zapperTokens = tokens
