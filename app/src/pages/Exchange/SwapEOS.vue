@@ -19,7 +19,7 @@
                                         <div v-if="step === 1" class="prototype">
                                             <q-tabs @click="getPairData()" flat v-model="tab" indicator-color="indigo-5" no-caps inline-label class="shadow-1 text-h6">
                                                 <q-tab name="swap" icon="swap_vert" label="Swap" />
-                                                <q-tab name="liquidity" icon="add" label="Add Liquidity" />
+                                                <q-tab name="liquidity" icon="add" label="Liquidity" />
                                             </q-tabs>
                                             <div class="head" v-if="tab == 'swap'">Get {{destinationCoin.label}} with {{depositCoin.label}} with one click</div>
                                             <div class="head" v-else-if="tab == 'liquidity'">Add liquidity to the {{destinationCoin.label}} + {{depositCoin.label}} pool</div>
