@@ -7,7 +7,7 @@
         </div>
         <div class="col col-5 flex items-center date-scrolling-msg">
           <div class="date">{{currentDate}}</div>
-          <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content="This app is in beta, please send us bug reports if you find any. <b>t.me/vertosupport</b>" />
+          <VTextMarquee :speed="30" @click="animate = !animate" :animate="animate" content="This app is in beta, please send us bug reports if you find any. <b>t.me/vertosupport</b>" />
         </div>
         <div class="col col-5 flex justify-end q-pr-xl items-center menu">
             <!-- to="/verto/earn/use-referral-account" -->
