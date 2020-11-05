@@ -31,7 +31,7 @@
 <script>
 // import configManager from '@/util/ConfigManager'
 import FreeCPUDialog from './Defi/FreeCPUDialog'
-// import { date } from 'quasar'
+import { date } from 'quasar'
 import { VTextMarquee } from 'vue-text-marquee'
 
 // 2020-05-22 - 16:15:31
@@ -46,13 +46,10 @@ export default {
   data () {
     return {
       temp: false,
-<<<<<<< HEAD
       currentDate: formattedString,
-      animate: true
-=======
+      animate: true,
       interval: null,
       key: 0
->>>>>>> 736ed32341934abe0d38482b4e51c95d6057b6e2
     }
   },
 
