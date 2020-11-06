@@ -1,7 +1,7 @@
 <template>
 <div class="menu-top-wrapper">
     <div class="row">
-        <div class="col col-3 app-logo flex q-pl-xl items-center">
+        <div class="col col-2 app-logo flex q-pl-xl items-center">
             <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;">
             <router-link to="/verto/dashboard">VERTO</router-link>
         </div>
@@ -10,7 +10,7 @@
             <div class="date">{{refreshDate()}}</div>
             <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content='This app is in beta, please send us bug reports if you find any. <b><a target="_blank" href="https://t.me/vertosupport">t.me/vertosupport</a></b>' />
         </div>
-        <div class="col col-4 flex justify-end q-pr-xl items-center menu">
+        <div class="col col-5 flex justify-end q-pr-xl items-center menu">
             <!-- to="/verto/earn/use-referral-account" -->
             <!-- <router-link disabled>Refer & Earn</router-link> -->
 
@@ -34,8 +34,6 @@ import {
   VTextMarquee
 } from 'vue-text-marquee'
 
-// 2020-05-22 - 16:15:31
-// let formattedString = date.formatDate(timeStamp, 'YYYY-MM-DD - HH:mm:ss')
 export default {
   name: 'TopMenu',
   components: {
@@ -45,9 +43,9 @@ export default {
   data () {
     return {
       temp: false,
+      animate: true,
       interval: null,
-      key: 0,
-      animate: true
+      key: 0
     }
   },
 

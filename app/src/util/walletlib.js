@@ -190,7 +190,7 @@ class Lib {
       async eos (token, from, to, value, memo, key, contract) {
         let message, success
         try {
-          const formatedAmount = await formatAmountString(value, token, key)
+          const formatedAmount = await formatAmountString(value, token, from)
           const transaction = await (new EosWrapper()).transferToken(
             contract,
             from.toLowerCase(),
@@ -209,10 +209,11 @@ class Lib {
 
         return { success, message }
 
-        async function formatAmountString (value, token, key) {
+        async function formatAmountString (value, token, from) {
           let numberOfDecimals = 0
           let tableData = await store.state.wallets.tokens
-          let currentAccount = tableData.find(w => w.privateKey === key && w.type === token)
+          // Can't try to find using privateKey since legacy wallets use encrypted keys
+          let currentAccount = tableData.find(w => w.name === from && w.type === token)
           let stringAmount = (Math.round(+value * Math.pow(10, currentAccount.precision)) / Math.pow(10, currentAccount.precision)).toString()
 
           const amountParsed = stringAmount.split('.')
