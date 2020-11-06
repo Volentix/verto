@@ -7,14 +7,13 @@
         </div>
 
         <div class="col col-5 flex items-center date-scrolling-msg">
-          <div class="date">{{refreshDate()}}</div>
-          <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content="This app is in beta, please send us bug reports if you find any. <b>t.me/vertosupport</b>" />
+            <div class="date">{{refreshDate()}}</div>
+            <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content='This app is in beta, please send us bug reports if you find any. <b><a target="_blank" href="https://t.me/vertosupport">t.me/vertosupport</a></b>' />
         </div>
         <div class="col col-5 flex justify-end q-pr-xl items-center menu">
             <!-- to="/verto/earn/use-referral-account" -->
             <!-- <router-link disabled>Refer & Earn</router-link> -->
 
-            <router-link to="/verto/exchange4">New UI (Temp)</router-link>
             <router-link to="/vdexnode/">vDexNode</router-link>
             <router-link to="/verto/exchange">Exchange</router-link>
             <a href="javascript:void(0)" @click="logout">
@@ -31,12 +30,10 @@
 <script>
 // import configManager from '@/util/ConfigManager'
 import FreeCPUDialog from './Defi/FreeCPUDialog'
-import { date } from 'quasar'
-import { VTextMarquee } from 'vue-text-marquee'
+import {
+  VTextMarquee
+} from 'vue-text-marquee'
 
-// 2020-05-22 - 16:15:31
-let timeStamp = Date.now()
-let formattedString = date.formatDate(timeStamp, 'YYYY-MM-DD - HH:mm:ss')
 export default {
   name: 'TopMenu',
   components: {
@@ -46,7 +43,6 @@ export default {
   data () {
     return {
       temp: false,
-      currentDate: formattedString,
       animate: true,
       interval: null,
       key: 0
@@ -131,10 +127,11 @@ export default {
 .reverse {
     transform: scaleX(-1);
 }
-.date-scrolling-msg{
-  /deep/ .v-marquee{
-    max-width: 390px;
-    margin-left: 20px;
-  }
+
+.date-scrolling-msg {
+    /deep/ .v-marquee {
+        max-width: 390px;
+        margin-left: 20px;
+    }
 }
 </style>

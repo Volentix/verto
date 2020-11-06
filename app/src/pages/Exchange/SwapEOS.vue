@@ -43,12 +43,14 @@
                                                                         <q-item-section>
                                                                             <q-item-label v-html="scope.opt.label" />
                                                                             <q-item-label caption>{{ scope.opt.contract }}</q-item-label>
-                                                                            <q-item-label v-if="scope.opt.data.amount" caption>{{ scope.opt.data.amount }}</q-item-label>
+                                                                            <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
+                                                                            <q-item-label v-if="scope.opt.name" caption>{{ scope.opt.name }}</q-item-label>
                                                                         </q-item-section>
                                                                     </q-item>
                                                                 </template>
                                                                 <template v-slot:selected>
-                                                                    <span class="text-h5">{{depositCoin.value}}</span>
+                                                                    <span class="text-h5 text-bold">{{depositCoin.value.toUpperCase()}}</span>
+                                                                    <q-item-label v-if="depositCoin.name" caption>{{ depositCoin.name }}</q-item-label>
 
                                                                 </template>
                                                             </q-select>
@@ -56,13 +58,13 @@
                                                         </span>
                                                     </div>
                                                     <div class="col col-8 offset-2">
-                                                        <q-input @blur="swapData.fromAmount = parseFloat(swapData.fromAmount).toFixed(depositCoin.precision)" outlined class="bg-white text-h5" ref="depositQuantity" @input="swapData.error = false; getPairData()" v-model="swapData.fromAmount" type="number" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val <= depositCoin.data.amount || 'Insufficient funds']">
+                                                        <q-input @blur="swapData.fromAmount = parseFloat(swapData.fromAmount).toFixed(depositCoin.precision)" outlined class="bg-white text-h5" ref="depositQuantity" @input="swapData.error = false; getPairData()" v-model="swapData.fromAmount" type="number" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val <= depositCoin.amount || 'Insufficient funds']">
                                                             <div class="flex justify-end items-center" style="width: 60px">
                                                                 <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
                                                             </div>
                                                             <template v-slot:hint>
                                                                 <div class=" text-body1">
-                                                                    Balance: {{depositCoin.data.amount}}
+                                                                    Balance: {{depositCoin.amount}}
                                                                 </div>
                                                             </template>
                                                         </q-input>
@@ -115,11 +117,14 @@
                                                                         <q-item-section>
                                                                             <q-item-label v-html="scope.opt.label" />
                                                                             <q-item-label caption>{{ scope.opt.contract }}</q-item-label>
+                                                                            <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
+                                                                            <q-item-label v-if="scope.opt.name" caption>{{ scope.opt.name }}</q-item-label>
                                                                         </q-item-section>
                                                                     </q-item>
                                                                 </template>
                                                                 <template v-slot:selected>
-                                                                    <span class="text-h5">{{destinationCoin.value}}</span>
+                                                                    <span class="text-h5 text-bold">{{destinationCoin.value.toUpperCase()}}</span>
+                                                                     <q-item-label v-if="destinationCoin.name" caption>{{ destinationCoin.name }}</q-item-label>
                                                                 </template>
                                                             </q-select>
                                                         </span></div>
@@ -130,7 +135,7 @@
                                                             </div>
                                                             <template v-slot:hint>
                                                                 <div class=" text-body1">
-                                                                    Balance: {{depositCoin.data.amount}}
+                                                                    Balance: {{depositCoin.amount}}
                                                                 </div>
                                                             </template>
                                                         </q-input>
@@ -346,6 +351,7 @@ import {
 } from 'eosjs/dist/eosjs-jssig'
 let rpc, api, signatureProvider
 import initWallet from '@/util/Wallets2Tokens'
+import DexInteraction from '../../mixins/DexInteraction'
 import EOSContract from '../../mixins/EOSContract'
 export default {
   components: {},
@@ -401,6 +407,14 @@ export default {
     let tableData = await this.$store.state.wallets.tokens
     this.eosAccounts = tableData.filter(w => w.chain === 'eos')
     rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
+
+    if (this.$store.state.settings.dexData.depositCoin) {
+      this.depositCoin = this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
+    }
+    if (this.$store.state.settings.dexData.destinationCoin) {
+      this.destinationCoin = this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
+    }
+
     this.getMinePair()
     this.getPools()
   },
@@ -522,15 +536,12 @@ export default {
         table: 'pairs',
         limit: -1
       })).rows
-      this.pairs.forEach((value, index, array) => {
-        this.addCoinToGlobalList(value, 'token0')
-        this.addCoinToGlobalList(value, 'token1')
-      })
+      this.coins = this.getAllCoins()
       this.depositCoinOptions = this.coins
       this.depositCoinUnfilter = this.coins
-      this.depositCoin = this.coins.find(w => w.value.toLowerCase() === 'eos')
+      this.depositCoin = this.depositCoin ? this.coins.find(w => w.value.toLowerCase() === this.depositCoin.value.toLowerCase()) : this.coins.find(w => w.value.toLowerCase() === 'eos')
       this.getDestinationCoinOptions()
-      this.destinationCoin = this.destinationCoinOptions[0]
+      this.destinationCoin = this.destinationCoin ? this.coins.find(w => w.value.toLowerCase() === this.destinationCoin.value.toLowerCase()) : this.destinationCoinOptions[0]
       this.getPairData()
     },
     getDestinationCoinOptions () {
@@ -547,9 +558,9 @@ export default {
     },
     validateTransaction () {
       this.error = null
-      if (this.depositCoin.data.amount < this.swapData.fromAmount) {
+      if (this.depositCoin.amount < this.swapData.fromAmount) {
         this.error = 'Insufficient ' + this.depositCoin.label + ' balance'
-      } else if (this.tab === 'liquidity' && this.destinationCoin.data.amount < parseFloat(this.swapData.toAmount)) {
+      } else if (this.tab === 'liquidity' && this.destinationCoin.amount < parseFloat(this.swapData.toAmount)) {
         this.error = 'Insufficient ' + this.destinationCoin.label + ' balance'
       }
     },
@@ -652,10 +663,23 @@ export default {
   },
   watch: {
     depositCoin: function (newVal, oldVal) {
-      this.swapData.fromAmount = newVal.data.amount.toFixed(this.depositCoin.precision)
+      this.swapData.fromAmount = parseFloat(newVal.amount).toFixed(this.depositCoin.precision)
+    },
+    tab: function (newVal) {
+      if (newVal === 'liquidity') {
+        this.coins = this.$store.state.settings.coins.defibox
+        this.depositCoinOptions = this.coins
+        this.depositCoinUnfilter = this.coins
+        this.getDestinationCoinOptions()
+      } else {
+        this.coins = this.getAllCoins()
+        this.depositCoinOptions = this.coins
+        this.depositCoinUnfilter = this.coins
+        this.getDestinationCoinOptions()
+      }
     }
   },
-  mixins: [EOSContract]
+  mixins: [EOSContract, DexInteraction]
 }
 </script>
 
@@ -1859,7 +1883,8 @@ export default {
     border-radius: 8px;
     display: flex;
     flex-direction: row;
-    &__list{
+
+    &__list {
         width: 100%;
     }
 }

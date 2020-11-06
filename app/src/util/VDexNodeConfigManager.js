@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import { Dialog } from 'quasar'
-// import { EosRPC, EosAPI } from '@/util/EosWrapper'
 import { userError } from '@/util/errorHandler'
 import { userResult } from '@/util/resultHandler'
 // import * as utils from '@/util/utils'
 import store from '@/store'
 import router from '@/router'
+
 // import path from 'path'
 // import { config } from 'bluebird-lst'
 // import ScatterJS from '@scatterjs/core'
@@ -60,7 +60,7 @@ class VDexNodeConfigManager {
   //   throw error
   // }
   // try {
-  //   Vue.prototype.$eos = new EosAPI(rpc, identity.privateKey)
+  //   eosApi = new EosAPI(rpc, identity.privateKey)
   // } catch (error) {
   //   userError(error, 'Login action: instance of EosAPI')
   //   throw error
@@ -104,9 +104,31 @@ class VDexNodeConfigManager {
     //   }
     // })
   }
+  getEndpoint (endpoint) {
+    const schema = {
+      eos_endpoint: {
+        type: 'string',
+        format: 'url',
+        default: 'https://eos.greymass.com:443'
+      },
+      nodes_api: {
+        type: 'string',
+        format: 'url',
+        default: 'http://45.77.137.183:8000'
+      },
+      jungle_api: {
+        default: 'https://jungle2.cryptolions.io:443'
+      },
+      node_readme: {
+        type: 'string',
+        format: 'url'
+      }
+    }
 
+    return schema[endpoint].default
+  }
   logout () {
-    store.dispatch('logout').then(() => {
+    store.dispatch('vdexnode/logout').then(() => {
       router.push('/login')
     })
   }
@@ -116,10 +138,10 @@ class VDexNodeConfigManager {
       const result = await Vue.prototype.$rpc.getTable('vdexdposvote', 'vdexdposvote', 'producers')
       let nodeStats = result.find(row => row.owner === accountName)
       if (nodeStats) {
-        store.commit('setAccountRegistered', true)
+        store.commit('vdexnode/setAccountRegistered', true)
       } else {
         userResult('Account: ' + accountName + ' is not registered to the voting contract. Please Register it.')
-        store.commit('setAccountRegistered', false)
+        store.commit('vdexnode/setAccountRegistered', false)
       }
     } catch (error) {
       userError(error, 'Account register status check')
@@ -132,14 +154,14 @@ class VDexNodeConfigManager {
       const result = await Vue.prototype.$rpc.getTable('vdexdposvote', 'vdexdposvote', 'producers')
       let nodeStats = result.find(row => row.owner === accountName)
       if (nodeStats) {
-        store.commit('setAccountRun', true)
+        store.commit('vdexnode/setAccountRun', true)
       } else {
         userResult(
           'Account: ' +
           accountName +
           ' is not initialized for getting the reward in the voting contract. Please Init it by clicking the Run button.'
         )
-        store.commit('setAccountRun', false)
+        store.commit('vdexnode/setAccountRun', false)
       }
     } catch (error) {
       userError(error, 'Account run status check')
@@ -156,7 +178,7 @@ class VDexNodeConfigManager {
       let dailyRewardRules = rewardRules.find(row => row.reward_id === 1)
       let dailyRewardPeriod = dailyRewardRules.reward_period
       let dailyRewardNextCalculation = dailyRewardLastCalculation && dailyRewardPeriod ? dailyRewardLastCalculation + dailyRewardPeriod : 0
-      store.commit('setDailyRewardNextCalculation', dailyRewardNextCalculation)
+      store.commit('vdexnode/setDailyRewardNextCalculation', dailyRewardNextCalculation)
     } catch (error) {
       userError(error, 'Get last reward calculation timestaml')
     }
@@ -166,7 +188,7 @@ class VDexNodeConfigManager {
     try {
       const result = await Vue.prototype.$rpc.getTable('vtxdistribut', accountName, 'nodereward')
       let amount = result.map(item => parseFloat(item.amount)).reduce((a, b) => a + b, 0).toFixed(4)
-      store.commit('setAvailbleForRetrieval', `${amount} VTX`)
+      store.commit('vdexnode/setAvailbleForRetrieval', `${amount} VTX`)
     } catch (error) {
       userError(error, 'Get availble for retrieval')
     }
@@ -184,11 +206,11 @@ class VDexNodeConfigManager {
           ranks.push({ owner, votes })
         })
         ranks.sort((a, b) => b.votes - a.votes)
-        store.commit('setRank', ranks.map(e => e.owner).indexOf(accountName) + 1)
-        store.commit('setTotalRanks', ranks.length)
+        store.commit('vdexnode/setRank', ranks.map(e => e.owner).indexOf(accountName) + 1)
+        store.commit('vdexnode/setTotalRanks', ranks.length)
       } else {
-        store.commit('setRank', 0)
-        store.commit('setTotalRanks', 0)
+        store.commit('vdexnode/setRank', 0)
+        store.commit('vdexnode/setTotalRanks', 0)
       }
     } catch (error) {
       userError(error, 'Get rank action')
@@ -199,7 +221,7 @@ class VDexNodeConfigManager {
     try {
       let result = await Vue.prototype.$rpc.getBalance(accountName)
       let balance = parseFloat(result.balance).toFixed(4) + ' ' + result.token
-      store.commit('setBalance', balance)
+      store.commit('vdexnode/setBalance', balance)
     } catch (error) {
       userError(error, 'Get balance action')
     }
@@ -208,7 +230,7 @@ class VDexNodeConfigManager {
   async getUserResources (accountName) {
     try {
       const result = await Vue.prototype.$rpc.getResources(accountName)
-      store.commit('setAccountResources', {
+      store.commit('vdexnode/setAccountResources', {
         ram: result.ram ? result.ram : 'unknown',
         cpu: result.cpu ? result.cpu : 'unknown',
         net: result.net ? result.net : 'unknown'
@@ -223,9 +245,9 @@ class VDexNodeConfigManager {
       const result = await Vue.prototype.$rpc.getTable('vdexdposvote', 'vdexdposvote', 'voters')
       let nodeStats = result.find(row => row.owner === accountName)
       if (nodeStats) {
-        store.commit('setVotedI', nodeStats.producers)
+        store.commit('vdexnode/setVotedI', nodeStats.producers)
       } else {
-        store.commit('setVotedI', [])
+        store.commit('vdexnode/setVotedI', [])
       }
       var votedFor = []
       result.forEach(function (item) {
@@ -233,7 +255,7 @@ class VDexNodeConfigManager {
           votedFor.push(item.owner)
         }
       })
-      store.commit('setVotedFor', votedFor)
+      store.commit('vdexnode/setVotedFor', votedFor)
     } catch (error) {
       userError(error, 'Get voted lists action')
     }
@@ -246,14 +268,14 @@ class VDexNodeConfigManager {
       registeredNodes.push(item.owner)
     })
     if (registeredNodes.length) {
-      store.commit('setRegisteredNodes', registeredNodes)
+      store.commit('vdexnode/setRegisteredNodes', registeredNodes)
     } else {
       throw Error
     }
   }
 
-  async addNode (accountName) {
-    await Vue.prototype.$eos.transaction(
+  async addNode (accountName, eosApi) {
+    await eosApi.transaction(
       'vtxdistribut',
       'addnode',
       accountName,
@@ -265,7 +287,7 @@ class VDexNodeConfigManager {
     )
   }
 
-  async registerNode (accountName, options) {
+  async registerNode (accountName, options, eosApi) {
     var jobs = new Int32Array()
     options.forEach(element => {
     // cf https://github.com/Volentix/volentix_contracts/blob/216e81a4b916684bd361c6f6092f093dbce27a6d/vdexdposvote/vdexdposvote.hpp#L17
@@ -275,7 +297,7 @@ class VDexNodeConfigManager {
         jobs[1] = 2
       }
     })
-    await Vue.prototype.$eos.transaction(
+    await eosApi.transaction(
       'vdexdposvote',
       'regproducer',
       accountName,
@@ -288,12 +310,13 @@ class VDexNodeConfigManager {
         job_ids: jobs
       },
       'The account registered successfully!',
-      'Register the account action'
+      'Register the account action',
+      eosApi
     )
   }
 
-  async retreiveReward (accountName) {
-    await Vue.prototype.$eos.transaction(
+  async retreiveReward (accountName, eosApi) {
+    await eosApi.transaction(
       'vtxdistribut',
       'getreward',
       accountName,
@@ -306,13 +329,13 @@ class VDexNodeConfigManager {
     await this.getAvailbleForRetrieval()
   }
 
-  async vote (votingList, accountName) {
+  async vote (votingList, accountName, eosApi) {
     let nodesToVote = []
     for (var i = 0; i < votingList.length; i++) {
       nodesToVote.push(votingList[i].account)
     }
     if (nodesToVote.length) {
-      Vue.prototype.$eos.transaction(
+      eosApi.transaction(
         'vdexdposvote',
         'voteproducer',
         accountName,
