@@ -1,8 +1,8 @@
 <template>
 <q-layout>
     <div class="titlebar"></div>
-    <q-page-container>
-        <q-page class="bg-vblack q-pa-lg" :class="blur ? 'blur' : ''">
+    <q-page-container class="vdexNode">
+        <q-page class="bg-vblack q-pa-lg " :class="blur ? 'blur' : ''">
             <!-- Topbar -->
             <div class="row bg-vdark items-center q-mb-lg titilium">
                 <div class="col q-py-sm q-px-md">
@@ -33,7 +33,7 @@
                     <div class="row justify-end">
                         <q-btn outline rounded color="vgreen" class="q-mx-xs" label="Get vDex node" @click="installDialog = true" />
                         <q-btn flat round color="vgold" class="q-mx-xs" icon="fas fa-sliders-h" to="/settings" />
-                        <q-btn flat round color="vgold" class="q-mx-xs" icon="fas fa-sign-out-alt" @click="$vDexNodeConfigManager.logout()" />
+                        <q-btn flat round color="vgold" class="q-mx-xs" icon="fas fa-sign-out-alt" to="/verto/dashboard" />
                     </div>
                 </div>
             </div>
@@ -522,6 +522,8 @@
 <script>
 import MapWidget from '../../components/vDexNode/MapWidget.vue'
 import ChatWidget from '../../components/vDexNode/ChatWidget.vue'
+
+let rpc
 // import ualTrigger from '../../components/vDexNode/ualTrigger.vue'
 
 /**
@@ -551,6 +553,13 @@ import ChatWidget from '../../components/vDexNode/ChatWidget.vue'
  * @vue-event {} vote
  * @vue-event {} retreiveReward
  */
+import {
+  mapState
+} from 'vuex'
+import EosRPC from '@/util/EosWrapper'
+import {
+  EosAPI
+} from '@/util/EosInterac'
 export default {
   name: 'index',
   components: {
@@ -686,6 +695,7 @@ export default {
       },
       script: '',
       now: '',
+      eosApi: null,
       daily_reward_calculation_countdown: {
         hours: '',
         minutes: '',
@@ -694,39 +704,36 @@ export default {
     }
   },
   computed: {
+    ...mapState('vdexnode', ['loggedIn', 'status', 'identity', 'registered_nodes', 'daily_reward_next_calculation']),
     blur: function () {
       return this.helpDialog || this.rankDialog || this.rulesDialog || this.publicDialog || this.installDialog
-    },
-    loggedIn: function () {
-      return this.$store.getters.isLoggedIn
-    },
-    identity: function () {
-      return this.$store.getters.getIdentity
-    },
-    status: function () {
-      return this.$store.getters.getStatus
-    },
-    registered_nodes: function () {
-      return this.$store.getters.getRegisteredNodes
-    },
-    daily_reward_next_calculation: function () {
-      return this.$store.getters.getDailyRewardNextCalculation
     }
   },
+
   mounted () {
+    rpc = new EosRPC()
+    let tableData = this.$store.state.wallets.tokens
+    let account = tableData.find(w => w.chain === 'eos' && w.type === 'eos')
+
+    this.$store.commit('vdexnode/setAccountName', account.name)
+    this.$store.commit('vdexnode/setPublicKey', account.key)
+
+    this.initEosAPI(account.privateKey)
+
     // to load countdown faster call getRewardHistoryData firstly
     this.$vDexNodeConfigManager.getRewardHistoryData()
     this.$vDexNodeConfigManager.getAvailbleForRetrieval(this.identity.accountName)
     this.int1 = setInterval(() => this.updateNow(), 1000)
     this.int2 = setInterval(() => this.updateDailyRewardCountdown(), 1000)
     this.int3 = setInterval(() => this.$vDexNodeConfigManager.getAvailbleForRetrieval(this.identity.accountName), 15000)
-    this.version = this.$utils.getVersion()
+    this.version = '1.0' // this.$utils.getVersion()
     this.$vDexNodeConfigManager.accountRegistered(this.identity.accountName)
     this.$vDexNodeConfigManager.accountRun(this.identity.accountName)
     // TODO: not implemented yet
-    this.$store.commit('setEarned', '0.0000')
-    this.$store.state.status.time = this.$utils.getTime()
+    this.$store.commit('vdexnode/setEarned', '0.0000')
+    this.$store.state.vdexnode.status.time = this.$utils.getTime()
     this.m1 = this.getInfoRare()
+
     this.m2 = this.getInfoOften()
     this.m3 = setInterval(() => this.getInfoOften(), 60000) // 60 sec
     // TODO: uncomment when API fix the issue with different number of nodes in response
@@ -763,6 +770,9 @@ export default {
     clearInterval(this.int3)
   },
   methods: {
+    initEosAPI (privateKey) {
+      this.eosApi = new EosAPI(privateKey)
+    },
     updateNow () {
       this.now = Math.round(new Date().getTime() / 1000)
     },
@@ -855,15 +865,16 @@ export default {
     },
     addNode () {
       this.$vDexNodeConfigManager
-        .addNode(this.identity.accountName)
+        .addNode(this.identity.accountName, this.eosApi)
         .then(() => {})
         .catch(error => {
           throw new Error(error)
         })
     },
     registerNode () {
+      console.log(this.eosApi)
       this.$vDexNodeConfigManager
-        .registerNode(this.identity.accountName, this.group)
+        .registerNode(this.identity.accountName, this.group, this.eosApi)
         .then(() => {})
         .catch(error => {
           throw new Error(error)
@@ -871,7 +882,7 @@ export default {
     },
     retreiveReward () {
       this.$vDexNodeConfigManager
-        .retreiveReward(this.identity.accountName)
+        .retreiveReward(this.identity.accountName, this.eosApi)
         .then(() => {
           setTimeout(() => this.getInfoOften(), 3000)
         })
@@ -881,7 +892,7 @@ export default {
     },
     vote () {
       this.$vDexNodeConfigManager
-        .vote(this.voting_list, this.identity.accountName)
+        .vote(this.voting_list, this.identity.accountName, this.eosApi)
         .then(() => {
           this.voting_list = []
           setTimeout(() => {
@@ -895,15 +906,16 @@ export default {
     },
     async getListOfNodes () {
       await this.getNodes()
-      const ranks = await this.$rpc.getTable('vdexdposvote', 'vdexdposvote', 'producers')
+      const ranks = await rpc.getTable('vdexdposvote', 'vdexdposvote', 'producers')
       for (var id in this.nodes) {
         this.getNodesData(id, this.nodes[id].key, ranks)
       }
     },
     async getNodes () {
-      return new Promise(resolve => {
-        this.$http
-          .get(this.$configStore.get('node_api') + '/getConnectedNodes')
+      return new Promise((resolve) => {
+        console.log(this.$vDexNodeConfigManager.getEndpoint('nodes_api'), 'this.$configManager.getEndpoint(\'nodes_api\')')
+        this.$axios
+          .get(this.$vDexNodeConfigManager.getEndpoint('nodes_api') + '/getConnectedNodes')
           .then(result => {
             // TODO: Handler if the object is empty of has result: null or result: try later
             for (var key in result.data) {
@@ -930,10 +942,10 @@ export default {
     },
     async getNodesData (id, key, ranks) {
       try {
-        let accounts = await this.$rpc.getAccounts(key)
+        let accounts = await rpc.getAccounts(key)
         let name = accounts.account_names[0] ? accounts.account_names[0] : ''
         if (name) {
-          let balance = await this.$rpc.getBalance(name)
+          let balance = await rpc.getBalance(name)
           this.nodes[id].account = name
           this.nodes[id].balance = Math.floor(balance.balance)
           this.nodes[id].vote = this.registered_nodes.includes(name)
@@ -971,4 +983,157 @@ export default {
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Titillium+Web&display=swap');
+@import url('https://unpkg.com/leaflet@1.5.1/dist/leaflet.css');
+
+.vdexNode .bg-vblack {
+    background: #000 !important;
+}
+
+.vdexNode ::-webkit-scrollbar {
+    width: 5px;
+}
+
+.vdexNode ::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 20px #161616;
+    border-radius: 0px;
+}
+
+.vdexNode ::-webkit-scrollbar-thumb {
+    border-radius: 0px;
+    -webkit-box-shadow: inset 0 0 10px #000000;
+}
+
+.vdexNode .titilium {
+    font-family: 'Titillium Web', sans-serif;
+}
+
+.vdexNode .code {
+    font-family: 'Source Code Pro', monospace;
+}
+
+.vdexNode .blink {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+.vdexNode .background-gradient {
+    background-image: linear-gradient(to bottom right, #00F7A9, #A000FD);
+}
+
+.vdexNode .blur {
+    opacity: 0.7;
+    -webkit-filter: blur(10px) grayscale(90%);
+    -moz-filter: blur(10px) grayscale(90%);
+    -o-filter: blur(10px) grayscale(90%);
+    -ms-filter: blur(10px) grayscale(90%);
+    filter: blur(10px) grayscale(90%);
+}
+
+.vdexNode .border-right {
+    border-right: 1px solid #CECFD0;
+}
+
+.vdexNode .bg-vgrey {
+    background: #CECFD0;
+}
+
+.vdexNode .bg-vpurple {
+    background: #A000FD;
+}
+
+.vdexNode .bg-vgreen {
+    background: #00F7A9;
+}
+
+.vdexNode .bg-vdark {
+    background: #1F1F1F;
+}
+
+.vdexNode .bg-vdarker {
+    background: #161616;
+}
+
+.vdexNode .bg-vblack {
+    background: #000;
+}
+
+.vdexNode .bg-vdarkgrey {
+    background: #514f4f;
+}
+
+.vdexNode .bg-vgold {
+    background: #c5c6a6;
+}
+
+.vdexNode .bg-vred {
+    background: #FF0066;
+}
+
+.vdexNode .bg-vseparator {
+    background: #333333;
+}
+
+.vdexNode .text-vgrey {
+    color: #CECFD0;
+}
+
+.vdexNode .text-vpurple {
+    color: #A000FD !important;
+}
+
+.vdexNode .text-vgreen {
+    color: #00F7A9 !important;
+}
+
+.vdexNode .text-vdark {
+    color: #1F1F1F !important;
+}
+
+.vdexNode .text-vblack {
+    color: #000 !important;
+}
+
+.vdexNode .text-vdarkgrey {
+    color: #CECFD0 !important;
+}
+
+.vdexNode .text-vgold {
+    color: #c5c6a6 !important;
+}
+
+.vdexNode .text-vseparator {
+    color: #3333333 !important;
+}
+
+.vdexNode .text-vred {
+    color: #FF0066 !important;
+}
+
+.vdexNode .pointer-cursor {
+    cursor: pointer;
+}
+
+.vdexNode .titlebar {
+    -webkit-app-region: drag;
+    width: 100%;
+    height: 20pt;
+    background-color: #000;
+    top: 0;
+    left: 0;
+    position: absolute;
+}
+
+.vdexNode .q-table thead,
+.vdexNode .q-table tr,
+.vdexNode .q-table th,
+.vdexNode .q-table td {
+    border-color: #333333;
+}
 </style>

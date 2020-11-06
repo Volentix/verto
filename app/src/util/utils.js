@@ -1,10 +1,10 @@
 import Vue from 'vue'
-import { shell, clipboard } from 'electron'
+// import { shell, clipboard } from 'electron'
 import { userError } from '@/util/errorHandler'
 import { userResult } from '@/util/resultHandler'
 import axios from 'axios'
-const { app, dialog } = require('electron').remote
-const fs = require('fs')
+// const { app, dialog } = require('electron').remote
+// const fs = require('fs')
 
 /**
  * Function returns an array with removed duplicates by any field in the object
@@ -57,12 +57,12 @@ function getUniqueLocations (locations) {
 }
 
 function openExternal (link, parameter = '') {
-  shell.openExternal(link + parameter)
+  // shell.openExternal(link + parameter)
 }
 
 function copyToClipboard (data) {
   try {
-    clipboard.writeText(data)
+  //  clipboard.writeText(data)
   } catch (error) {
     userError(error, 'Copy to clipboard action')
   } finally {
@@ -71,7 +71,7 @@ function copyToClipboard (data) {
 }
 
 function getVersion () {
-  return app.getVersion()
+//  return app.getVersion()
 }
 
 function getTime () {
@@ -109,17 +109,17 @@ function getInstaller () {
 }
 
 function forceFileDownload (response) {
-  var options = {
+  /* var options = {
     title: 'Save installer',
     defaultPath: 'installer',
     buttonLabel: 'Save',
 
     filters: [{ name: 'sh', extensions: ['sh'] }]
   }
-
-  dialog.showSaveDialog(options, filename => {
-    fs.writeFileSync(filename, response.data, 'utf-8')
-  })
+*/
+  // dialog.showSaveDialog(options, filename => {
+  //  fs.writeFileSync(filename, response.data, 'utf-8')
+  // })
 }
 
 /**

@@ -14,6 +14,7 @@ export default function () {
     defaultAccount: null,
     metamaskConnected: false,
     tableLoading: true,
-    eosInvestments: []
+    eosInvestments: [],
+    globalTokens: []
   }
 }
