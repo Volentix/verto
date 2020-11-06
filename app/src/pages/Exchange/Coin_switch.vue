@@ -1,7 +1,7 @@
 <template>
 <div class="column text-black bg-grey-12" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
     <!-- padding-bottom: 100px;background: #f3f3f3 !important -->
-    <div class="desktop-version" v-if="screenSize > 1024">
+    <div v-if="screenSize > 1024">
         <div class="row">
 
             <div class="col col-md-12">
@@ -51,7 +51,7 @@
                                                                         <q-item-section>
                                                                             <q-item-label caption>{{ depositCoin.value }}</q-item-label>
                                                                             <q-item-label v-html="depositCoin.label" />
-                                                                        </q-item-section>
+                                                                                  </q-item-section>
                                                                     </q-item>
                                                                     <q-item v-else>
                                                                     </q-item>
@@ -84,12 +84,31 @@
                                                                 </template>
                                                             </q-select>
                                                         </div>
-                                                        <div class="col col-6 choose-coin">
-                                                            <span class="cursor" @click="triggerPayCoinSelect">{{payCoin}}
-                                                                <q-icon name="keyboard_arrow_down" />
+                                                        <div class="col col-2 choose-coin">
+                                                            <span class="cursor">
+                                                                <q-select class="select-input" light separator use-input borderless rounded v-model="depositCoin" @input="updateCoinName()" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                                                                    <template v-slot:option="scope">
+                                                                        <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                                                            <q-item-section avatar>
+                                                                                <q-icon :name="`img:${scope.opt.image}`" />
+                                                                            </q-item-section>
+                                                                            <q-item-section>
+                                                                                <q-item-label v-html="scope.opt.label" />
+                                                                                <q-item-label caption>{{ scope.opt.contract }}</q-item-label>
+                                                                                <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
+                                                                                <q-item-label v-if="scope.opt.name" caption>{{ scope.opt.name }}</q-item-label>
+                                                                            </q-item-section>
+                                                                        </q-item>
+                                                                    </template>
+                                                                    <template v-slot:selected>
+                                                                        <span class="text-h5 text-bold">{{depositCoin.value.toUpperCase()}}</span>
+                                                                        <q-item-label v-if="depositCoin.name" caption>{{ depositCoin.name }}</q-item-label>
+                                                                    </template>
+                                                                </q-select>
+
                                                             </span>
                                                         </div>
-                                                        <div class="col col-6">
+                                                        <div class="col col-6 offset-4">
                                                             <q-input outlined class="bg-white text-h5" ref="depositQuantity" @input="quantityFromDeposit()" v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
                                                                 <div class="flex justify-end items-center" style="width: 60px">
                                                                     <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
@@ -134,10 +153,30 @@
                                                         </div>
                                                     </div>
                                                     <div class="you-receive-body row items-center">
-                                                        <div class="col col-6 choose-coin"><span class="cursor" @click="triggerReceiveCoinSelect">{{receiveCoin}}
-                                                                <q-icon name="keyboard_arrow_down" />
+                                                        <div class="col col-2 choose-coin"><span class="cursor">
+
+                                                                <q-select class="select-input" light separator use-input borderless rounded v-model="destinationCoin" @input="updateCoinName()" @filter="filterDestinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                                                                    <template v-slot:option="scope">
+                                                                        <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                                                            <q-item-section avatar>
+                                                                                <q-icon :name="`img:${scope.opt.image}`" />
+                                                                            </q-item-section>
+                                                                            <q-item-section>
+                                                                                <q-item-label v-html="scope.opt.label" />
+                                                                                <q-item-label caption>{{ scope.opt.contract }}</q-item-label>
+                                                                                <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
+                                                                                <q-item-label v-if="scope.opt.name" caption>{{ scope.opt.name }}</q-item-label>
+                                                                            </q-item-section>
+                                                                        </q-item>
+                                                                    </template>
+                                                                    <template v-slot:selected>
+                                                                        <span class="text-h5 text-bold">{{destinationCoin.value.toUpperCase()}}</span>
+                                                                        <q-item-label v-if="destinationCoin.name" caption>{{ destinationCoin.name }}</q-item-label>
+
+                                                                    </template>
+                                                                </q-select>
                                                             </span></div>
-                                                        <div class="col col-6">
+                                                        <div class="col col-6 offset-4">
                                                             <q-input outlined class="bg-white text-h5" ref="destinationQuantity" v-model="destinationQuantity" @input="quantityFromDestination()" :disabled="!rateData" :loading="!rateData" type="number" :rules="[ val => val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']">
                                                                 <div class="flex justify-end items-center" style="width: 60px">
                                                                     <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
@@ -921,7 +960,7 @@ const typeUpper = function (thing) {
     return ''
   }
 }
-
+import DexInteraction from '../../mixins/DexInteraction'
 import Lib from '@/util/walletlib'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
@@ -1234,48 +1273,28 @@ export default {
   },
   async mounted () {
     const self = this
-    await this.$axios.get(url + '/v2/coins', {
-      headers
-    }).then((result) => {
-      // will be using this coins array later with the destination select
-      self.coins = result.data.data
-      self.depositCoinOptions = self.coins.map(function (coin) {
-        if (coin.isActive === true) {
-          let row = {
-            'label': coin.name,
-            'value': coin.symbol,
-            'image': coin.logoUrl
-          }
-          return row
-        }
-      }).filter(function (el) {
-        return el != null
-      }).sort(function (a, b) {
-        if (a.label.toLowerCase() < b.label.toLowerCase()) {
-          return -1
-        }
-        return 1
-      })
 
-      self.depositCoinUnfilter = self.depositCoinOptions
+    self.coins = this.getAllCoins()
+    self.depositCoinOptions = self.coins
+    self.destinationCoinUnfilter = self.coins
+    self.depositCoinUnfilter = self.depositCoinOptions
 
-      if (this.$route.params.depositCoin !== undefined) {
-        // console.log(this.$route.params.depositCoin, this.$route.params.destinationCoin)
-        this.depositCoin = this.$route.params.depositCoin
-        this.checkGetPairs()
-        this.checkToGetPairs()
-        this.step = 2
-        if (this.$route.params.destinationCoin !== undefined) {
-          this.destinationCoin = this.$route.params.destinationCoin
-          this.updateCoinName()
-          this.checkToGetRate()
-          this.step = 3
-        }
-      } else {
-        this.depositCoin = this.depositCoinOptions[0]
-        this.destinationCoin = this.depositCoinOptions[1]
+    if (this.$store.state.settings.dexData.depositCoin) {
+      // console.log(this.$route.params.depositCoin, this.$route.params.destinationCoin)
+      this.depositCoin = this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
+      this.checkGetPairs()
+      this.checkToGetPairs()
+      this.step = 2
+      if (this.$store.state.settings.dexData.destinationCoin) {
+        this.destinationCoin = this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
+        this.updateCoinName()
+        this.checkToGetRate()
+        this.step = 3
       }
-    })
+    } else {
+      this.depositCoin = this.depositCoinOptions[0]
+      this.destinationCoin = this.depositCoinOptions[1]
+    }
   },
   methods: {
     getWindowWidth () {
@@ -1579,6 +1598,7 @@ export default {
             }
             return 1
           })
+          console.log(self.destinationCoinOptions, 'self.destinationCoinOptions')
           self.destinationCoinUnfilter = self.destinationCoinOptions
         })
         .catch((err) => {
@@ -1662,7 +1682,8 @@ export default {
       // paycoin-search
       // pay-coin-select-popup
     }
-  }
+  },
+  mixins: [DexInteraction]
 }
 </script>
 
@@ -2592,7 +2613,7 @@ export default {
     font-weight: $bold;
     border: 1px solid #CCC;
     border-radius: 10px;
-    max-width: 500px;
+    //max-width: 500px;
     padding-bottom: 10px;
 
     .prototype {

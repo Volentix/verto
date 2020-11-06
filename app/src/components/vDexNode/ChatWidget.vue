@@ -110,7 +110,7 @@ export default {
       this.streamsController[room] = controller
       try {
         // This streams will get new messages and is stopped whenever controller is aborted
-        await fetch(this.$configStore.get('node_api') + '/room/' + room, {
+        await fetch(this.$vDexNodeConfigManager.getEndpoint('nodes_api') + '/room/' + room, {
           method: 'get',
           signal: signal
         })
@@ -168,7 +168,7 @@ export default {
       if (this.selectedRoom === '' || this.messageToSend === '') return
       this.isSending = true
       this.$http
-        .post(this.$configStore.get('node_api') + '/room/' + this.selectedRoom, {
+        .post(this.$vDexNodeConfigManager.getEndpoint('nodes_api') + '/room/' + this.selectedRoom, {
           'message': this.messageToSend
         })
         .then((response) => {
@@ -180,8 +180,8 @@ export default {
         })
     },
     getNodeId () {
-      this.$http
-        .get(this.$configStore.get('node_api'))
+      this.$axios
+        .get(this.$vDexNodeConfigManager.getEndpoint('nodes_api'))
         .then((response) => {
           this.nodeId = response.data.public_key
         }, (error) => {
