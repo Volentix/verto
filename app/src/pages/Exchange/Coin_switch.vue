@@ -51,7 +51,7 @@
                                                                         <q-item-section>
                                                                             <q-item-label caption>{{ depositCoin.value }}</q-item-label>
                                                                             <q-item-label v-html="depositCoin.label" />
-                                                                                  </q-item-section>
+                                                                        </q-item-section>
                                                                     </q-item>
                                                                     <q-item v-else>
                                                                     </q-item>
