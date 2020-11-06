@@ -360,7 +360,7 @@ import {
 import Lib from '@/util/walletlib'
 import Wallets from '../../components/Verto/Wallets'
 import OneInchExhange from '../../pages/Exchange/oneInch'
-import Coinswitch from '../../pages/Exchange/Coin_switch'
+import Coinswitch from '../../pages/Exchange/Coinswitch'
 import SwapEOS from '../../pages/Exchange/SwapEOS'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EosWrapper from '@/util/EosWrapper'
