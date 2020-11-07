@@ -16,7 +16,7 @@
                 <chainToolsSection />
                 <div class="desktop-card-style current-investments explore-opportunities q-mb-sm">
 
-                    <liquidityPoolsTable />
+                    <liquidityPoolsTable :rowsPerPage="10" />
 
                     <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 392px;" v-if="false">
                         <div v-for="(pool, index) in $store.state.investment.pools" :key="index" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
@@ -119,6 +119,7 @@ import {
 } from '@cruxpay/js-sdk'
 let cruxClient
 
+import DexInteraction from '../../mixins/DexInteraction'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 
@@ -168,8 +169,18 @@ export default {
   beforeCreate () {
     // console.log('beforeCreate event')
   },
+  watch: {
+    '$store.state.wallets.tokens': function (val) {
+      console.log(val, 'val')
+      if (val) {
+        this.getCoinswitchCoins()
+        this.get1inchCoins()
+        this.getDefiboxCoins()
+      }
+    }
+  },
   async created () {
-    this.tableData = await store.state.wallets.tokens.map(token => {
+    this.tableData = store.state.wallets.tokens.map(token => {
       token.selected = false
       if (token.hidden === undefined) {
         token.hidden = false
@@ -190,7 +201,9 @@ export default {
     if (!store.state.currentwallet.config.mnemonic) {
       this.$router.push('recovery-seed')
     } else {
-      if (this.tableData.length < 6) { initWallet() }
+      if (this.tableData.length < 6) {
+        initWallet()
+      }
     }
     this.$store.dispatch('investment/getMarketDataVsUSD')
     // Adds the eos account name when it is found to the cruxID
@@ -263,7 +276,8 @@ export default {
 
   computed: {
     ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools'])
-  }
+  },
+  mixins: [DexInteraction]
 }
 </script>
 
@@ -327,13 +341,11 @@ export default {
         }
     }
 }
-</style>
-<style>
-    .q-page{
-        background: #E7E8E8 !important;
-    }
-</style>
-<style lang="scss" scoped>
+</style><style>
+.q-page {
+    background: #E7E8E8 !important;
+}
+</style><style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
 
 .desktop-version {
@@ -341,6 +353,7 @@ export default {
     padding-top: 13vh;
     padding-left: 12vh;
     padding-bottom: 50px;
+
     @media screen and (min-width: 768px) {
         padding-top: 11vh;
         padding-bottom: 0px;
@@ -380,14 +393,17 @@ export default {
         h4 {
             margin-bottom: -20px;
         }
-        .body-table-col{
-          font-size: 12px;
-          .imgs{
-            img{
-              margin-right: 10px !important;
+
+        .body-table-col {
+            font-size: 12px;
+
+            .imgs {
+                img {
+                    margin-right: 10px !important;
+                }
             }
-          }
         }
+
         .header-table-col {
             h3 {
                 font-weight: $bold;
@@ -475,17 +491,21 @@ export default {
                 line-height: 20px;
             }
         }
-        .pairs{
-          font-size: 12px;
-          .pair{
-            font-weight: $bold;
-            color: #2A2A2A;
-            margin-bottom: -2px;
-          }
-          .value{
-            color: #627797;
-          }
+
+        .pairs {
+            font-size: 12px;
+
+            .pair {
+                font-weight: $bold;
+                color: #2A2A2A;
+                margin-bottom: -2px;
+            }
+
+            .value {
+                color: #627797;
+            }
         }
+
         h4 {
             margin-bottom: 0px;
         }
@@ -508,21 +528,25 @@ export default {
                 }
             }
         }
-      }
-      .qbtn-custom{
+    }
+
+    .qbtn-custom {
         border-radius: 30px;
         height: 34px;
         background: #EFF5F9 !important;
         font-family: $Franklin;
-        /deep/ .q-btn__wrapper{
-          min-height: unset;
-          padding: 0px 5px;
-          .q-btn__content{
-            text-transform: initial;
-            font-size: 10px;
-            color: #627797;
-          }
+
+        /deep/ .q-btn__wrapper {
+            min-height: unset;
+            padding: 0px 5px;
+
+            .q-btn__content {
+                text-transform: initial;
+                font-size: 10px;
+                color: #627797;
+            }
         }
+
         /deep/ .transaction-section {
             box-shadow: none;
 

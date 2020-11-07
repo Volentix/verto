@@ -169,14 +169,14 @@
                             <strong>Refresh</strong>
                         </q-tooltip>
                     </q-btn>
-                    <q-btn v-if="$store.state.currentwallet.wallet.empty" flat icon-right="search" @click="searchWallet()">
+                    <!-- <q-btn v-if="$store.state.currentwallet.wallet.empty" flat icon-right="search" @click="searchWallet()">
                         <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
                             <strong>Search a coin</strong>
                         </q-tooltip>
-                    </q-btn>
+                    </q-btn> -->
                 </span>
             </div>
-            <q-input v-if="$store.state.currentwallet.wallet.empty" v-model="searchAccount" class="input-input search_account" rounded outlined color="purple" label="Ex: account" type="text" />
+            <!-- <q-input v-if="$store.state.currentwallet.wallet.empty" v-model="searchAccount" class="input-input search_account" rounded outlined color="purple" label="Ex: account" type="text" /> -->
             <div v-if="$store.state.currentwallet.wallet.empty" class="header-list-table">
                 <div class="row q-pl-lg q-pr-lg">
                     <div class="col col-6 q-pl-sm pointer" @click="sortBy('account')" :class="{'active' : directionAccount}">

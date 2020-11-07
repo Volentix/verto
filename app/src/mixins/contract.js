@@ -171,6 +171,7 @@ export default {
       // */
     },
     converGasPriceToUSD (gweiPrice, gasNumber) {
+      console.log(this.web3, ' this.dweb3')
       let ethToUsd = this.$store.state.investment.marketData.find(o => o.symbol.toLowerCase() === 'eth').current_price
       return this.web3.utils.fromWei(Math.round((gweiPrice * gasNumber * 1000000000)).toString(), 'ether') * ethToUsd
     }
