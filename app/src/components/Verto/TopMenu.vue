@@ -5,7 +5,6 @@
             <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;">
             <router-link to="/verto/dashboard">VERTO</router-link>
         </div>
-
         <div class="col col-5 flex items-center date-scrolling-msg">
           <div class="date">{{refreshDate()}}</div>
           <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content="This app is in beta, please send us bug reports if you find any. <b>t.me/vertosupport</b>" />
@@ -13,7 +12,6 @@
         <div class="col col-5 flex justify-end q-pr-xl items-center menu">
             <!-- to="/verto/earn/use-referral-account" -->
             <!-- <router-link disabled>Refer & Earn</router-link> -->
-
             <router-link to="/verto/exchange4">New UI (Temp)</router-link>
             <router-link to="/vdexnode/">vDexNode</router-link>
             <router-link to="/verto/exchange">Exchange</router-link>
@@ -31,7 +29,7 @@
 <script>
 // import configManager from '@/util/ConfigManager'
 import FreeCPUDialog from './Defi/FreeCPUDialog'
-// import { date } from 'quasar'
+import { date } from 'quasar'
 import { VTextMarquee } from 'vue-text-marquee'
 
 // 2020-05-22 - 16:15:31
@@ -46,13 +44,10 @@ export default {
   data () {
     return {
       temp: false,
-<<<<<<< HEAD
       currentDate: formattedString,
-      animate: true
-=======
+      animate: true,
       interval: null,
       key: 0
->>>>>>> 736ed32341934abe0d38482b4e51c95d6057b6e2
     }
   },
 
@@ -136,7 +131,7 @@ export default {
 }
 .date-scrolling-msg{
   /deep/ .v-marquee{
-    max-width: 390px;
+    max-width: 360px;
     margin-left: 20px;
   }
 }

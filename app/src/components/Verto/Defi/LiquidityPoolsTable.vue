@@ -1,50 +1,57 @@
 <template>
-<div>
-   <q-table :pagination="initialPagination" dense :loading="!$store.state.investment.pools.length" :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
-           <template v-slot:body-cell-name="props">
-            <q-td :props="props" class="body-table-col">
-                <div class="col-3 flex items-center">
-                    <span class="imgs q-mr-lg" v-if="props.row.icons.length">
-                        <img v-for="(icon, index) in props.row.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
-                    </span>
-                    <span class="column pairs">
-                        <span class="pair">{{props.row.poolName}}</span>
-                        <span class="value">{{props.row.platform}}</span>
-                    </span>
-                </div>
-            </q-td>
-        </template>
+  <div>
+    <q-scroll-area :visible="true" class="" style="height: 352px;">
+      <q-table :pagination="initialPagination" dense :loading="!$store.state.investment.pools.length" :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+              <template v-slot:body-cell-name="props">
+              <q-td :props="props" class="body-table-col">
+                  <div class="col-3 flex items-center">
+                      <span class="imgs q-mr-lg" v-if="props.row.icons.length">
+                          <img v-for="(icon, index) in props.row.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
+                      </span>
+                      <span class="column pairs">
+                          <span class="pair">{{props.row.poolName}}</span>
+                          <span class="value">{{props.row.platform}}</span>
+                      </span>
+                  </div>
+              </q-td>
+          </template>
 
-        <template v-slot:body-cell-action="props">
-            <q-td :props="props" class="body-table-col">
-                <div class="col-2 flex justify-end">
-                    <q-btn unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="grey" label="Add" />
-                </div>
-            </q-td>
-        </template>
+          <template v-slot:body-cell-action="props">
+              <q-td :props="props" class="body-table-col">
+                  <div class="col-2 flex justify-end">
+                      <q-btn unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="grey" label="Add" />
+                  </div>
+              </q-td>
+          </template>
 
-        <template v-slot:top-right>
-            <q-input borderless dense filled debounce="300" v-model="filter" placeholder="Search">
-                <template v-slot:append>
-                    <q-icon name="search" />
-                </template>
-            </q-input>
-        </template>
-    </q-table>
+          <template v-slot:top-right>
+              <q-input borderless dense filled debounce="300" v-model="filter" placeholder="Search">
+                  <template v-slot:append>
+                      <q-icon name="search" />
+                  </template>
+              </q-input>
+          </template>
+      </q-table>
+    </q-scroll-area>
     <q-dialog v-model="openDialog">
         <AddLiquidityDialog :notWidget="true" v-if="$store.state.investment.selectedPool" />
     </q-dialog>
-</div>
+  </div>
 </template>
 
 <script>
 import AddLiquidityDialog from './AddLiquidityDialog'
 import {
+  QScrollArea
+} from 'quasar'
+import {
   mapState
 } from 'vuex'
 export default {
   components: {
-    AddLiquidityDialog
+    AddLiquidityDialog,
+    QScrollArea
+
   },
   props: ['rowsPerPage'],
   data () {
