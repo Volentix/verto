@@ -21,13 +21,13 @@
             </div>
             <div class="menu-wallet">
               <q-list bordered separator class="sub-list-menu">
-                <q-item class="p-relative full-width">
+                <!-- <q-item class="p-relative full-width">
                   <div class="vespucci-score--wrapper full-width flex justify-between items-center">
                     <span class="label">{{ currentAccount.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
                     <span class="value">{{ currentAccount.vespucciScore }}</span>
                     <span class="powered">Powered by Vespucci</span>
                   </div>
-                </q-item>
+                </q-item> -->
                 <q-separator style="margin-top: 10px" />
                 <q-item data-name='Trade' clickable v-ripple class="p-relative" to="/verto/exchange">Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item data-name='Transaction History' clickable v-ripple class="p-relative" to="/verto/wallet/coinHistory">Transaction History<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>

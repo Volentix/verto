@@ -5,45 +5,155 @@
         <div v-if="isMobile" class="wallets-wrapper--list" :class="{'open': !walletShowHide}">
             <q-scroll-area :visible="true" class="scrollarea" :class="{'height' : !walletShowHide}">
                 <q-list bordered separator class="list-wrapper">
-                    <q-item v-for="(item, index) in $store.state.wallets.tokens.filter(f => !f.hidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
+                    <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
                         <div class="header-wallet-wrapper culumn full-width">
-                            <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
+                            <div :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                 <q-item-section avatar>
-                                    <img class="coin-icon" width="35px" :src="item.icon" alt="">
+                                    <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
                                 </q-item-section>
                                 <q-item-section class="item-name">
                                     <span class="item-name--name">{{item.name}}</span>
-                                    <span class="item-name--percent">{{item.percent}}</span>
+                                    <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
                                 </q-item-section>
-                                <q-item-section class="item-info">
-                                    <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{ item.type.toUpperCase() }}</span>
+                                <q-item-section class="item-info" v-if="!item.disabled">
+                                    <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
                                     <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
                                 </q-item-section>
+                                <q-item-section class="item-info" v-else>
+                                    <span class="item-info--amount">in progress</span>
+                                </q-item-section>
+                            </div>
+                            <div class="menu-wallet">
+                                <q-list bordered separator class="sub-list-menu">
+                                    <!-- <q-item v-if="false" class="p-relative full-width no-pad">
+                                        <div class="vespucci-score--wrapper full-width flex justify-between items-center">
+                                            <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
+                                            <span class="value">{{ item.vespucciScore }}</span>
+                                            <span class="powered">Powered by Vespucci</span>
+                                        </div>
+                                    </q-item> -->
+                                    <q-separator style="margin-top: 10px" />
+                                    <q-item data-name='Trade' v-if="item.disabled" clickable v-ripple class="p-relative" to="/verto/exchange">Trade
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                    <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                    <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                    <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                    <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
+                                        <q-item-section>
+                                            <q-item-label>{{item.hidden ? 'Reveal' : 'Hide'}} Currency Chain</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section avatar>
+                                            <q-toggle class="p-abs" color="blue" @input="hideCurrency()" v-model="item.hidden" />
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
                             </div>
                         </div>
                     </q-item>
-                    <q-item v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.hidden && this.showHidden)" :key="index" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
-                        <div class="header-wallet-wrapper culumn full-width" style="opacity: .4">
-                            <div @click="showMenu(item)" class="header-wallet full-width flex justify-between items-center">
+                    <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                        <div class="header-wallet-wrapper culumn full-width">
+                            <div @click="showMenu(item)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                 <q-item-section avatar>
                                     <img class="coin-icon" width="35px" :src="item.icon" alt="">
                                 </q-item-section>
                                 <q-item-section class="item-name">
                                     <span class="item-name--name">{{item.name}}</span>
-                                    <span class="item-name--percent">{{item.percent}}</span>
                                 </q-item-section>
-                                <q-item-section class="item-info" style="font-size: 1.6em;">
-                                    <q-icon name="visibility_off" />
-                                    <!-- <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{ item.type.toUpperCase() }}</span>
-                  <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span> -->
+                                <q-item-section class="item-info" v-if="!item.disabled">
+                                    <span class="item-info--amount">{{item.amount ? new Number(item.amount).toFixed(8) : 0 }} {{item.type.toUpperCase()}}</span>
                                 </q-item-section>
+                                <q-item-section class="item-info" v-else>
+                                    <span class="item-info--amount">in progress</span>
+                                </q-item-section>
+                            </div>
+                            <div class="menu-wallet">
+                                <q-list bordered separator class="sub-list-menu">
+                                    <!-- <q-item class="p-relative full-width no-pad">
+                                        <div class="vespucci-score--wrapper full-width flex justify-between items-center">
+                                            <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
+                                            <span class="value">{{ item.vespucciScore }}</span>
+                                            <span class="powered">Powered by Vespucci</span>
+                                        </div>
+                                    </q-item> -->
+                                    <q-separator style="margin-top: 10px" />
+                                    <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                    <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
+                                        <q-item-section>
+                                            <q-item-label>{{item.hidden ? 'Reveal' : 'Hide'}} Currency Chain</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section avatar>
+                                            <q-toggle class="p-abs" color="blue" @input="hideCurrency()" v-model="item.hidden" />
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
+                            </div>
+                        </div>
+                    </q-item>
+                    <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => f.hidden && this.showHidden)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                        <div class="header-wallet-wrapper culumn full-width" style="opacity: .4">
+                            <div class="header-wallet-wrapper culumn full-width">
+                                <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
+                                    <q-item-section avatar>
+                                        <img class="coin-icon" width="35px" :src="item.icon" alt="">
+                                    </q-item-section>
+                                    <q-item-section class="item-name">
+                                        <span class="item-name--name">{{item.name}}</span>
+                                    </q-item-section>
+                                    <q-item-section class="item-info">
+                                        <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{item.type.toUpperCase()}}</span>
+                                    </q-item-section>
+                                </div>
+                                <div class="menu-wallet">
+                                    <q-list bordered separator class="sub-list-menu">
+                                        <!-- <q-item class="p-relative full-width no-pad">
+                                            <div class="vespucci-score--wrapper full-width flex justify-between items-center">
+                                                <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
+                                                <span class="value">{{ item.vespucciScore }}</span>
+                                                <span class="powered">Powered by Vespucci</span>
+                                            </div>
+                                        </q-item> -->
+                                        <q-separator style="margin-top: 10px" />
+                                        <q-item data-name='Trade' clickable v-ripple class="p-relative" to="/verto/exchange">Trade
+                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                        </q-item>
+                                        <q-item data-name='Transaction History' clickable v-ripple class="p-relative" to="/verto/wallet/coinHistory">Transaction History
+                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                        </q-item>
+                                        <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative">Associate with EOS
+                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                        </q-item>
+                                        <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
+                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                        </q-item>
+                                        <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
+                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                        </q-item>
+                                        <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
+                                            <q-item-section>
+                                                <q-item-label>{{item.hidden ? 'Reveal' : 'Hide'}} Currency Chain</q-item-label>
+                                            </q-item-section>
+                                            <q-item-section avatar>
+                                                <q-toggle class="p-abs" color="blue" @input="hideCurrency()" v-model="item.hidden" />
+                                            </q-item-section>
+                                        </q-item>
+                                    </q-list>
+                                </div>
                             </div>
                         </div>
                     </q-item>
                 </q-list>
             </q-scroll-area>
             <div v-if="!walletShowHide" class="add-remove-wrapper flex column flex-center item-center content-center">
-                <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Conceal Hidden Currencies' : 'Reveal Hidden Currencies'" :class="showText ? 'open': 'hide'" />
+                <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Hide all wallets' : 'Show all wallets'" :class="showText ? 'open': 'hide'" />
                 <span class="add-remove-wrapper--desc text-black">Main chains and balances above zero will show in this list</span>
                 <!-- <q-btn class="add-remove-wrapper--btn" unelevated color="indigo-6" text-color="white" label="+" /> -->
             </div>
@@ -53,8 +163,20 @@
             <div class="wallets-wrapper--list_title q-pa-md q-pt-lg q-ml-md flex items-center justify-between">
                 <span class="flex items-center"><q-icon name="o_account_balance_wallet" /> {{$store.state.currentwallet.wallet.empty ? 'Wallets' : 'Wallet : '+ $store.state.currentwallet.wallet.name.toUpperCase()}}</span>
                 <q-icon v-if="!$store.state.currentwallet.wallet.empty" style="font-size: 25px" :name="`img:${$store.state.currentwallet.wallet.type !== 'usdt' ? $store.state.currentwallet.wallet.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'}`" />
-                <q-btn v-if="$store.state.currentwallet.wallet.empty" class="float-right" flat icon-right="cached" @click="refreshWallet()" label="Refresh" />
+                <span class="flex items-center">
+                    <q-btn v-if="$store.state.currentwallet.wallet.empty" flat icon-right="cached" @click="refreshWallet()">
+                        <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                            <strong>Refresh</strong>
+                        </q-tooltip>
+                    </q-btn>
+                    <q-btn v-if="$store.state.currentwallet.wallet.empty" flat icon-right="search" @click="searchWallet()">
+                        <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                            <strong>Search a coin</strong>
+                        </q-tooltip>
+                    </q-btn>
+                </span>
             </div>
+            <q-input v-if="$store.state.currentwallet.wallet.empty" v-model="searchAccount" class="input-input search_account" rounded outlined color="purple" label="Ex: account" type="text" />
             <div v-if="$store.state.currentwallet.wallet.empty" class="header-list-table">
                 <div class="row q-pl-lg q-pr-lg">
                     <div class="col col-6 q-pl-sm pointer" @click="sortBy('account')" :class="{'active' : directionAccount}">
@@ -68,8 +190,7 @@
                     </div>
                 </div>
             </div>
-
-            <q-scroll-area :visible="true" class="q-mr-sm" :style="$store.state.currentwallet.wallet.empty ? 'height: 172px;': 'height: 410px;'">
+            <q-scroll-area :visible="true" class="q-mr-sm" :style="$store.state.currentwallet.wallet.empty ? 'height: 172px;': 'height: 315px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty">
                         <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
@@ -80,6 +201,7 @@
                                     </q-item-section>
                                     <q-item-section class="item-name">
                                         <span class="item-name--name">{{item.name}}</span>
+                                        <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
                                         <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
@@ -91,13 +213,13 @@
                                 </div>
                                 <div class="menu-wallet">
                                     <q-list bordered separator class="sub-list-menu">
-                                        <q-item v-if="false" class="p-relative full-width no-pad">
+                                        <!-- <q-item v-if="false" class="p-relative full-width no-pad">
                                             <div class="vespucci-score--wrapper full-width flex justify-between items-center">
                                                 <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
                                                 <span class="value">{{ item.vespucciScore }}</span>
                                                 <span class="powered">Powered by Vespucci</span>
                                             </div>
-                                        </q-item>
+                                        </q-item> -->
                                         <q-separator style="margin-top: 10px" />
                                         <q-item data-name='Trade' v-if="item.disabled" clickable v-ripple class="p-relative" to="/verto/exchange">Trade
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
@@ -125,7 +247,7 @@
                         </q-item>
                     </div>
                     <div v-else>
-                        <q-item class="selected" clickable active-class="bg-teal-1 text-grey-8">
+                        <q-item class="selected selected22222" clickable active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div class="menu-wallet">
                                     <q-list bordered separator class="sub-list-menu">
@@ -194,13 +316,13 @@
                                 </div>
                                 <div class="menu-wallet">
                                     <q-list bordered separator class="sub-list-menu">
-                                        <q-item class="p-relative full-width no-pad">
+                                        <!-- <q-item class="p-relative full-width no-pad">
                                             <div class="vespucci-score--wrapper full-width flex justify-between items-center">
                                                 <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
                                                 <span class="value">{{ item.vespucciScore }}</span>
                                                 <span class="powered">Powered by Vespucci</span>
                                             </div>
-                                        </q-item>
+                                        </q-item> -->
                                         <q-separator style="margin-top: 10px" />
                                         <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
@@ -233,13 +355,13 @@
                                     </div>
                                     <div class="menu-wallet">
                                         <q-list bordered separator class="sub-list-menu">
-                                            <q-item class="p-relative full-width no-pad">
+                                            <!-- <q-item class="p-relative full-width no-pad">
                                                 <div class="vespucci-score--wrapper full-width flex justify-between items-center">
                                                     <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
                                                     <span class="value">{{ item.vespucciScore }}</span>
                                                     <span class="powered">Powered by Vespucci</span>
                                                 </div>
-                                            </q-item>
+                                            </q-item> -->
                                             <q-separator style="margin-top: 10px" />
                                             <q-item data-name='Trade' clickable v-ripple class="p-relative" to="/verto/exchange">Trade
                                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
@@ -337,6 +459,7 @@ export default {
   },
   data () {
     return {
+      searchAccount: '',
       history: [],
       toggled: false,
       alertSecurity: false,
@@ -444,8 +567,26 @@ export default {
         accountName: this.accountName
       })
     }
+
+    this.$store.state.wallets.tokens.map(async (f) => {
+      let stakedAmounts = 0
+      if (f.type === 'vtx') {
+        let stakes = await eos.getTable('vtxstake1111', f.name, 'accounts')
+        stakes.map(s => {
+          s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
+          s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+          stakedAmounts += +s.stake_amount
+        })
+        f.staked = stakedAmounts
+      }
+      console.log('f.staked', f.staked)
+    })
   },
   computed: {
+    //   $store.state.wallets.tokens.filter(this.filterdWalletList)
+    // filterdWalletList (f) {
+    //   return !f.hidden
+    // },
     walletShowHide () {
       return this.toggled ? this.showWallets : !this.showWallets
     }
@@ -555,16 +696,16 @@ export default {
           tokenID: this.$route.params.tokenID || this.selectedCoin.type,
           accountName: this.$route.params.accountName || this.selectedCoin.name
         })
-        let stakedAmounts = 0
-        if (this.selectedCoin.type === 'vtx') {
-          let stakes = await eos.getTable('vtxstake1111', this.selectedCoin.name, 'accounts')
-          stakes.map(s => {
-            s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
-            s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
-            stakedAmounts += +s.stake_amount
-          })
-          this.selectedCoin.staked = stakedAmounts
-        }
+        // let stakedAmounts = 0
+        // if (this.selectedCoin.type === 'vtx') {
+        //   let stakes = await eos.getTable('vtxstake1111', this.selectedCoin.name, 'accounts')
+        //   stakes.map(s => {
+        //     s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
+        //     s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+        //     stakedAmounts += +s.stake_amount
+        //   })
+        //   this.selectedCoin.staked = stakedAmounts
+        // }
         // this.$store.state.currentwallet.wallet = this.currentAccount
         this.$store.state.currentwallet.wallet = this.selectedCoin
         // console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
@@ -699,12 +840,36 @@ export default {
         padding: 4% 0%;
         border-radius: 0px 0px 25px 25px;
         overflow: hidden;
-
         @media screen and (min-width: 768px) {
             box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.19) !important;
             border-radius: 0px 0px 8px 8px !important;
         }
-
+        .input-input{
+          height: 40px;
+          max-width: 90%;
+          margin: auto;
+          background: #FFF;
+          position: relative;
+          z-index: 2;
+          margin-top: 0px;
+          margin-bottom: 10px;
+          padding-bottom: 20px;
+          /deep/ .q-field__label{
+              font-size: 12px;
+              top: 10px;
+          }
+          /deep/ .q-field__control{
+            height: 40px;
+            min-height: unset;
+            input{
+                padding-top: 15px;
+                padding-bottom: 5px;
+                font-size: 12px;
+                font-weight: $bold;
+                letter-spacing: 1px;
+            }
+          }
+        }
         .header-list-table {
             padding-right: 5px;
             margin-top: -10px;
@@ -1030,7 +1195,10 @@ export default {
             color: #000;
             font-weight: 700;
             max-width: fit-content;
-
+            &--staked{
+                font-size: 13px;
+                color: #B0B0B0;
+            }
             &--name {
                 font-size: 14px;
 

@@ -230,6 +230,30 @@ export default {
     // this.$store.dispatch('investment/getUniSwapHistoricalData')
     // this.$store.dispatch('investment/getBalancerHistoricalData')
   },
+  async mounted () {
+    setTimeout(async () => {
+      let manualSelectCurrentWallet = false
+      await store.state.wallets.tokens.map(async (f) => {
+        let stakedAmounts = 0
+        if (f.type === 'vtx') {
+          let stakes = await eos.getTable('vtxstake1111', f.name, 'accounts')
+          stakes.map(s => {
+            s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
+            s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+            stakedAmounts += +s.stake_amount
+          })
+          f.staked = stakedAmounts
+          console.log('f.staked', f.staked)
+          if (!manualSelectCurrentWallet && this.screenSize <= 1024) {
+            manualSelectCurrentWallet = true
+            this.$store.state.currentwallet.wallet = f
+            console.log('this.$store.state.currentwallet.wallet = f', this.$store.state.currentwallet.wallet)
+          }
+        }
+      })
+    }, 5000)
+    // console.log('tokensFilterd', tokensFilterd)
+  },
   methods: {
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
@@ -324,7 +348,8 @@ export default {
 }
 
 .mobile-pad {
-    padding-bottom: 50px
+    padding-bottom: 50px;
+    background: #FFF !important;
 }
 
 .desktop-card-style {
