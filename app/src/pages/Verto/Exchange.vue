@@ -359,7 +359,7 @@ import {
 } from 'mobile-device-detect'
 import Lib from '@/util/walletlib'
 import Wallets from '../../components/Verto/Wallets'
-import OneInchExhange from '../../pages/Exchange/oneInch'
+import OneInchExhange from '../../pages/Exchange/OneInch'
 import Coinswitch from '../../pages/Exchange/Coinswitch'
 import SwapEOS from '../../pages/Exchange/SwapEOS'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
