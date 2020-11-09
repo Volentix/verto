@@ -18,9 +18,7 @@ export default {
       if (this.destinationCoin.value.toLowerCase() === this.depositCoin.value.toLowerCase()) {
         this.destinationCoin = this.destinationCoinOptions.find(o => o.value.toLowerCase() !== this.depositCoin.value.toLowerCase())
       }
-      if (this.depositCoin && !this.depositCoin.amount) {
-        this.error = 'Insuficient balance'
-      }
+      this.checkBalance()
       if (val) {
         this.checkPair()
       }
@@ -28,10 +26,18 @@ export default {
     destinationCoin (val) {
       if (val) {
         this.checkPair()
+        this.checkBalance()
       }
     }
   },
   methods: {
+    checkBalance () {
+      if ((this.depositCoin && (!this.depositCoin.amount || parseFloat(this.depositCoin.amount) === 0))) {
+        this.error = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance'
+      } else if ((this.tab === 'liquidity' && (!this.destinationCoin.amount || parseFloat(this.depositCoin.amount) === 0))) {
+        this.error = 'Insuficient ' + this.destinationCoin.value.toUpperCase() + ' balance'
+      }
+    },
     getCoinsData () {
       let depositCoin = this.$store.state.settings.coins[this.$store.state.settings.selectedDex].find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
       let destinationCoin = this.$store.state.settings.coins[this.$store.state.settings.selectedDex].find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())
