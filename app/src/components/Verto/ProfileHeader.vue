@@ -29,7 +29,7 @@
     </div>
     <div v-else-if="version === 'type2'" class="profile-wrapper--header static_with_image" style="background: url('statics/header_bg.png');">
       <div class="flex justify-between flex-row item-center content-center full-width">
-        <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="white" icon="keyboard_backspace" />
+        <q-btn flat unelevated class="btn-align-left" to="/verto/wallets/" text-color="white" icon="keyboard_backspace" />
         <h3 class="flex flex-center text-white static__holder_title">Making VTX while you sleep, will be available soon.</h3>
         <span class="static__holder_img flex flex-center"><img src="statics/stake-vtx-bg.svg" alt=""></span>
       </div>
@@ -41,7 +41,7 @@
     <div v-else-if="version === 'type3'" class="column flex-center profile-wrapper--header wallet-detail" style="background: url('statics/header_bg.png');">
       <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="white" icon="keyboard_backspace" />
       <h3 class="profile-wrapper--header__title text-white">{{ currentAccount.name.toUpperCase() }}</h3>
-      <h2 class="profile-wrapper--header__balance text-white">{{ new Number(currentAccount.amount).toFixed(8) }} {{ currentAccount.type.toUpperCase() }}</h2>
+      <h2 class="profile-wrapper--header__balance text-white">{{ nFormatter2(currentAccount.amount, 3) }} {{ currentAccount.type.toUpperCase() }}</h2>
       <div class="profile-wrapper--header__action">
         <q-btn unelevated to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
         <q-btn unelevated to="/verto/wallets/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
@@ -66,11 +66,11 @@
       </div>
     </div>
     <div v-else-if="version === 'type6'" class="profile-wrapper--header static" style="background: url(statics/refer_friend_bg.png) center bottom / cover no-repeat rgb(255, 255, 255) !important; min-height: 390px; box-shadow: none !important; border-radius: 0px;" />
-    <div v-else class="column flex-center profile-wrapper--header" :class="{'desktop-ui' : !isMobile, 'selected-wallet': !$store.state.currentwallet.wallet.empty}" style="background: url('statics/header_bg.png');">
-      <q-btn v-if="!$store.state.currentwallet.wallet.empty" outline round @click="resetSelectedWallet()" to="/verto/dashboard" color="white" class="reset-btn" text-color="white" icon="close" />
-      <h3 class="profile-wrapper--header__title text-white" v-if="!$store.state.currentwallet.wallet.empty">{{$store.state.currentwallet.wallet.name}}</h3>
+    <div v-else class="column flex-center profile-wrapper--header" :class="{'desktop-ui' : !isMobile, 'selected-wallet':  !isMobile && !$store.state.currentwallet.wallet.empty}" style="background: url('statics/header_bg.png');">
+      <q-btn v-if="!isMobile && !$store.state.currentwallet.wallet.empty" outline round @click="resetSelectedWallet()" to="/verto/dashboard" color="white" class="reset-btn" text-color="white" icon="close" />
+      <h3 class="profile-wrapper--header__title text-white" v-if="!isMobile && !$store.state.currentwallet.wallet.empty">{{$store.state.currentwallet.wallet.name}}</h3>
       <h3 class="profile-wrapper--header__title text-white" v-else>Main Portfolio</h3>
-      <h2 class="profile-wrapper--header__balance text-white" v-if="!$store.state.currentwallet.wallet.empty">${{ nFormatter2($store.state.currentwallet.wallet.usd, 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent to <b>{{ nFormatter2(+$store.state.currentwallet.wallet.amount,3) + ' ' + $store.state.currentwallet.wallet.type.toUpperCase() }}</b></span></h2>
+      <h2 class="profile-wrapper--header__balance text-white" v-if="!isMobile && !$store.state.currentwallet.wallet.empty">${{ nFormatter2($store.state.currentwallet.wallet.usd, 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent to <b>{{ nFormatter2(+$store.state.currentwallet.wallet.amount,3) + ' ' + $store.state.currentwallet.wallet.type.toUpperCase() }}</b></span></h2>
       <h2 class="profile-wrapper--header__balance text-white" v-else>${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <!-- {{$store.state.wallets.portfolioTotal}} -->
       <div class="profile-wrapper--header__action">
@@ -444,6 +444,9 @@ export default {
         margin-bottom: 5px;
         letter-spacing: 1px;
         position: relative;
+        @media screen and (max-width: 768px) {
+          font-size: 32px;
+        }
       }
       &__action{
         text-align: center;
