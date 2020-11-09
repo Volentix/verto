@@ -49,7 +49,7 @@
                                                         </span>
                                                     </div>
                                                     <div class="col col-6 offset-4">
-                                                        <q-input outlined class="bg-white text-h5" ref="depositQuantity" @input="swapData.error = false; getSwapQuote()" v-model="swapData.fromAmount" type="number" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val <= depositCoin.data.amount || 'Insufficient funds']">
+                                                        <q-input outlined class="bg-white text-h5" ref="depositQuantity" @input="swapData.error = false; getSwapQuote()" v-model="swapData.fromAmount" type="number" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val <= depositCoin.amount || 'Insufficient funds']">
                                                             <div class="flex justify-end items-center" style="width: 60px">
                                                                 <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
                                                             </div>
@@ -134,7 +134,7 @@
                                                         {{error}}
                                                     </span>
                                                 </div>
-                                                <div class="text-body2 text-red q-pa-md" v-if="approvalRequired">
+                                                <div class="text-body2 text-red q-pa-md" v-if="approvalRequired  && !error">
 
                                                     <span>
                                                         Before swaping {{depositCoin.value}} with {{destinationCoin.value}}, you need to process an approval transaction
@@ -156,9 +156,9 @@
                                                         </q-item-section>
                                                     </q-item>
                                                 </q-list>
-                                                <q-btn v-if="approvalRequired" unelevated @click="processERC20Approval()" :loading="spinnervisible" :disable="spinnervisible || gasOptions.length == 0" color="primary" text-color="black" label="Approve token" class="text-capitalize chose_accounts full-width" />
+                                                <q-btn v-if="approvalRequired" unelevated @click="processERC20Approval()" :loading="spinnervisible" :disable="error !== false || spinnervisible || gasOptions.length == 0" color="primary" text-color="black" label="Approve token" class="text-capitalize chose_accounts full-width" />
 
-                                                <q-btn v-else unelevated @click="doSwap()" :loading="spinnervisible" :disable="error !== false || gasOptions.length == 0 || spinnervisible || depositCoin.data.amount < swapData.fromAmount " color="primary" text-color="black" label="Swap now" class="text-capitalize chose_accounts full-width" />
+                                                <q-btn v-else unelevated @click="doSwap()" :loading="spinnervisible" :disable="error !== false || gasOptions.length == 0 || spinnervisible || depositCoin.amount < swapData.fromAmount " color="primary" text-color="black" label="Swap now" class="text-capitalize chose_accounts full-width" />
                                             </div>
                                         </div>
 
@@ -697,8 +697,11 @@ const typeUpper = function (thing) {
     return ''
   }
 }
+import DexInteraction from '../../mixins/DexInteraction'
 const _1inchApprovalAddress = '0xe4c9194962532feb467dce8b3d42419641c6ed2e'
 import contract from '../../mixins/contract'
+const Web3 = require('web3')
+let web3 = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
 export default {
   components: {},
   data () {
@@ -940,24 +943,22 @@ export default {
     }
   },
   async created () {
-    this.getMarketDataVsUSD()
-    this.getCoins()
-    this.getExchanges()
-    let tableData = await this.$store.state.wallets.tokens
+    this.web3 = web3
+    if (this.$store.state.settings.dexData.depositCoin) {
+      this.depositCoin = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
+    }
+    if (this.$store.state.settings.dexData.destinationCoin) {
+      this.destinationCoin = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
+    }
+  },
+  async mounted () {
+    let tableData = this.$store.state.wallets.tokens
     this.ethAccount = tableData.find(w => w.chain === 'eth' && w.type === 'eth')
     this.ethTokens = tableData.filter(w => w.chain === 'eth')
     this.$store.dispatch('investment/getGasPrice')
-  },
-  mounted () {
-    const Web3 = require('web3')
-    this.web3 = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
-
-    if (this.$route.params.depositCoin !== undefined) {
-      this.depositCoin = this.$route.params.depositCoin
-    }
-    if (this.$route.params.destinationCoin !== undefined) {
-      this.destinationCoin = this.$route.params.destinationCoin
-    }
+    this.getMarketDataVsUSD()
+    this.getCoins()
+    this.getExchanges()
   },
   watch: {
     step (newVal, oldVal) {
@@ -973,64 +974,25 @@ export default {
     }
   },
   methods: {
-    checkPais () {
-
-    },
     switchAmounts () {
       let depositCoinVar = this.depositCoin
       this.depositCoin = this.destinationCoin
       this.destinationCoin = depositCoinVar
-
       let fromCoinTypeVar = this.fromCoinType
       this.fromCoinType = this.toCoinType
       this.toCoinType = fromCoinTypeVar
-
       let depositQuantityVar = this.depositQuantity
       this.depositQuantity = this.destinationQuantity
       this.destinationQuantity = depositQuantityVar
-
       this.getRate()
     },
     getCoins () {
-      const self = this
-      this.$axios.get(_1inch + '/v1.1/tokens').then(function (result) {
-        // will be using this coins array later with the destination select
-        self.coins = result.data
-
-        let tokensArray = self.ethTokens.map(function (val, index) {
-          return val.type.toLowerCase()
-        })
-        self.coins = Object.keys(self.coins).map(function (key, index) {
-          let row = {
-            'label': self.coins[key].name,
-            'value': self.coins[key].symbol,
-            'image': 'https://1inch.exchange/assets/tokens/' + self.coins[key].address.toLowerCase() + '.png',
-            'address': self.coins[key].address,
-            'price': self.coins[key].current_price
-          }
-          return row
-        })
-        self.depositCoinOptions = self.coins.filter(function (el) {
-          return el != null
-        }).sort(function (a, b) {
-          if (a.label.toLowerCase() < b.label.toLowerCase()) {
-            return -1
-          }
-          return 1
-        })
-
-        self.destinationCoin = !self.destinationCoin.value.length ? self.depositCoinOptions[self.depositCoinOptions.length - 1] : self.destinationCoin
-        self.depositCoinUnfilter = self.depositCoinOptions.filter(o => tokensArray.includes(o.value.toLowerCase())).map(function (val, index) {
-          let item = self.ethTokens.find(o => o.type.toLowerCase() === val.value.toLowerCase())
-          val.data = item
-          return val
-        })
-        self.destinationCoinUnfilter = self.depositCoinOptions.filter(o => !tokensArray.includes(o.value.toLowerCase()))
-
-        self.depositCoin = !self.depositCoin ? self.depositCoinUnfilter[0] : self.depositCoin
-
-        self.getSwapQuote()
-      })
+      this.depositCoinOptions = this.getAllCoins()
+      // this.destinationCoin = !this.destinationCoin.value.length ? this.$store.state.settings.coins.oneinch[this.$store.state.settings.coins.oneinch.length - 1] : this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
+      this.depositCoinUnfilter = this.depositCoinOptions
+      this.destinationCoinUnfilter = this.depositCoinOptions
+      // this.depositCoin = !this.depositCoin ? this.$store.state.settings.coins.oneinch[0] : this.depositCoinUnfilter.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
+      this.getSwapQuote()
     },
     getExchanges () {
       const self = this
@@ -1055,12 +1017,14 @@ export default {
     getSwapQuote () {
       const self = this
       this.error = false
+      this.getCoinsData()
+      if (!self.depositCoin || !self.destinationCoin) return
       if (self.swapData.fromAmount <= 0) return
       self.spinnervisible = true
       let data = {
         fromTokenSymbol: self.depositCoin.value,
         toTokenSymbol: self.destinationCoin.value,
-        amount: self.web3.utils.toWei(self.swapData.fromAmount.toString(), 'ether'),
+        amount: web3.utils.toWei(self.swapData.fromAmount.toString(), 'ether'),
         slippage: 2,
         fromAddress: self.ethAccount.key,
         toAddress: self.destinationCoin.address,
@@ -1069,7 +1033,7 @@ export default {
       let swapRequestUrl = _1inch + '/v1.1/swapQuote?' + new URLSearchParams(data).toString()
       this.$axios.get(swapRequestUrl)
         .then(async function (result) {
-          self.swapData.toAmount = parseFloat(self.web3.utils.fromWei(result.data.toTokenAmount.toString(), 'ether'))
+          self.swapData.toAmount = parseFloat(web3.utils.fromWei(result.data.toTokenAmount.toString(), 'ether'))
           self.spinnervisible = false
           self.swapData.gas = result.data.gas
           self.swapData.gasPrice = result.data.gasPrice
@@ -1079,20 +1043,20 @@ export default {
           if (isERC2O) {
             approvedRequired = await self.isApprovalRequired(self.depositCoin.address, _1inchApprovalAddress, self.swapData.fromAmount)
           }
-          console.log(approvedRequired, 'approvedRequired')
           if (!approvedRequired) {
-            let nonce = await self.web3.eth.getTransactionCount(self.ethAccount.key, 'latest')
+            let nonce = await web3.eth.getTransactionCount(self.ethAccount.key, 'latest')
             let transactionObject = {
               from: self.ethAccount.key,
               to: result.data.to,
-              value: self.web3.utils.toWei(self.swapData.fromAmount.toString(), 'ether'),
+              value: web3.utils.toWei(self.swapData.fromAmount.toString(), 'ether'),
               data: result.data.data,
               nonce: nonce
             }
+            console.log(transactionObject, 'transactionObject')
             self.getGasOptions(transactionObject)
           }
           // Calculate total gas price and convert it to USD
-          self.swapData.gasUsd = self.convertETHToUSD(self.web3.utils.fromWei((result.data.gasPrice * result.data.gas).toString()))
+          self.swapData.gasUsd = self.convertETHToUSD(web3.utils.fromWei((result.data.gasPrice * result.data.gas).toString()))
           console.log('getSwapQuote', result)
         }).catch(error => {
           self.approvalRequired = false
@@ -1150,7 +1114,7 @@ export default {
       let data = {
         fromTokenSymbol: this.depositCoin.value,
         toTokenSymbol: this.destinationCoin.value,
-        amount: self.web3.utils.toWei(this.swapData.fromAmount.toString(), 'ether'),
+        amount: web3.utils.toWei(this.swapData.fromAmount.toString(), 'ether'),
         slippage: 1,
         fromAddress: this.depositCoin.address,
         toAddress: this.destinationCoin.address,
@@ -1161,14 +1125,13 @@ export default {
       this.$axios.get(swapRequestUrl)
         .then(async function (result) {
           self.spinnervisible = false
-          let nonce = await self.web3.eth.getTransactionCount(self.ethAccount.key, 'latest')
-
+          let nonce = await web3.eth.getTransactionCount(self.ethAccount.key, 'latest')
           let transactionObject = {
             from: self.ethAccount.key,
             to: result.data.to,
             value: parseInt(result.data.value),
-            gas: self.web3.utils.toHex(self.gasSelected.gas),
-            gasPrice: self.web3.utils.toHex(self.gasSelected.gasPrice),
+            gas: web3.utils.toHex(self.gasSelected.gas),
+            gasPrice: web3.utils.toHex(self.gasSelected.gasPrice),
             data: result.data.data,
             nonce: nonce
           }
@@ -1183,12 +1146,10 @@ export default {
     convertETHToUSD (ethAmount) {
       const self = this
       let ethToUsd = self.swapData.marketData.find(o => o.symbol.toLowerCase() === 'eth').current_price
-
       return ethToUsd ? `~ USD ${ethToUsd * ethAmount}` : null
     },
     async sendTransaction (rawTransaction) {
-      const self = this
-      let receipt = await self.web3.eth.sendSignedTransaction(rawTransaction, (error, txHash) => {
+      let receipt = await web3.eth.sendSignedTransaction(rawTransaction, (error, txHash) => {
         if (error) {
           return console.error(error, 'sendSignedTransaction error')
         }
@@ -1211,11 +1172,9 @@ export default {
     },
     convertWeiToUsd (weiAmount) {
       const self = this
-      const ethAmount = parseFloat(self.web3.utils.fromWei(weiAmount.toString(), 'ether'))
+      const ethAmount = parseFloat(web3.utils.fromWei(weiAmount.toString(), 'ether'))
       let ethToUsd = self.swapData.marketData.find(o => o.symbol.toLowerCase() === 'eth').current_price
-
       console.log('convertEtherToUSD', 'WEI ' + weiAmount, 'ETH' + ethAmount, ethToUsd)
-
       return '~ USD ' + (ethToUsd * ethAmount)
     },
     filterDepositCoin (val, update, abort) {
@@ -1231,7 +1190,7 @@ export default {
       })
     }
   },
-  mixins: [contract]
+  mixins: [contract, DexInteraction]
 }
 </script>
 
@@ -1550,7 +1509,6 @@ export default {
             //   background-color: #B0B0B0 !important;
             // }
         }
-
     }
 }
 
