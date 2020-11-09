@@ -1,6 +1,7 @@
 <template>
 <q-page class="column text-black bg-grey-12" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
     <!-- padding-bottom: 100px;background: #f3f3f3 !important -->
+
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
             <div class="col col-md-3">
@@ -25,8 +26,8 @@
                                         <q-select class="default-view col-md-3 col-6 offset-md-9" v-model="defaultView" :options="['Coinswitch', '1Inch', 'Swap EOS']" label="Default view" />
                                     </div> -->
 
-                                    <OneInchExhange v-if="$store.state.settings.selectedDex == 'oneinch'"></OneInchExhange>
-                                    <SwapEOS v-else-if="$store.state.settings.selectedDex == 'defibox'"></SwapEOS>
+                                    <Oneinch v-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
+                                    <Swapeos v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
                                     <Coinswitch v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
                                 </div>
                                 <br><br><br>
@@ -359,9 +360,9 @@ import {
 } from 'mobile-device-detect'
 import Lib from '@/util/walletlib'
 import Wallets from '../../components/Verto/Wallets'
-import OneInchExhange from '../../pages/Exchange/OneInch'
-import Coinswitch from '../../pages/Exchange/Coinswitch'
-import SwapEOS from '../../pages/Exchange/SwapEOS'
+import Oneinch from '../../components/Verto/Exchange/Oneinch'
+import Coinswitch from '../../components/Verto/Exchange/Coinswitch'
+import Swapeos from '../../components/Verto/Exchange/Swapeos'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
@@ -371,8 +372,8 @@ export default {
     // desktop components
     ProfileHeader,
     Wallets,
-    OneInchExhange,
-    SwapEOS,
+    Oneinch,
+    Swapeos,
     Coinswitch
   },
   data () {
