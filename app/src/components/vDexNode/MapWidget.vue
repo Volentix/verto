@@ -90,8 +90,8 @@ export default {
     },
     async getLocationsData () {
       return new Promise(resolve => {
-        this.$http
-          .get(this.$configStore.get('node_api') + '/getNodesLocation')
+        this.$axios
+          .get(this.$vDexNodeConfigManager.getEndpoint('nodes_api') + '/getNodesLocation')
           .then(result => {
             let locations = []
             for (var key in result.data) {

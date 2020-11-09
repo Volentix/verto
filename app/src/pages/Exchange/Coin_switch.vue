@@ -950,740 +950,740 @@ import store from '@/store'
 
 const url = 'https://api.coinswitch.co'
 let headers = {
-    'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
+  'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
 }
 
 const typeUpper = function (thing) {
-    if (typeof thing === 'string' && thing.length >= 1) {
-        return thing.toUpperCase()
-    } else {
-        return ''
-    }
+  if (typeof thing === 'string' && thing.length >= 1) {
+    return thing.toUpperCase()
+  } else {
+    return ''
+  }
 }
 import DexInteraction from '../../mixins/DexInteraction'
 import Lib from '@/util/walletlib'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 export default {
-    components: {
+  components: {
 
+  },
+  data () {
+    return {
+      pStep: 1,
+      fetchingRate: false,
+      model: null,
+      receiveCoin: 'ETH',
+      payCoin: 'BTC',
+      osName: '',
+      disclaimerCheck: false,
+      showDisclaimerWrapper: false,
+      fromCoin: null,
+      fromCoinAmount: 0,
+      toCoinAmount: 0,
+      fromCoinType: 'BTC',
+      toCoinType: 'ETH',
+      toCoin: null,
+      progress: 0.2,
+      to: '',
+      amount: '',
+      memo: '',
+      optionsFrom: [],
+      optionsTo: [],
+      minimizedModal: false,
+      params: null,
+      tableData: [],
+      currentAccount: null,
+      goBack: '/verto/dashboard',
+      fetchCurrentWalletFromState: true,
+      fromCoinMemo: false,
+      toCoinMemo: false,
+      // -------------------------
+      timeoutNotif: 0,
+      notif: false,
+      step: 1,
+      optionsSanitize: false,
+      spinnervisible: false,
+      lastChangedValue: 'deposit',
+      coins: [],
+      depositCoin: {
+        'label': 'Bitcoin',
+        'value': 'btc',
+        'image': 'https://files.coinswitch.co/public/coins/btc.png'
+      },
+      depositQuantity: 0,
+      depositCoinOptions: null,
+      depositCoinUnfilter: null,
+      destinationCoin: {
+        'label': 'Ethereum',
+        'value': 'eth',
+        'image': 'https://files.coinswitch.co/public/coins/eth.png'
+      },
+      destinationQuantity: 0,
+      destinationCoinOptions: null,
+      destinationCoinUnfilter: null,
+      rateData: null,
+      rateDataTemplate: {
+        rate: 1,
+        minerFee: 0,
+        limitMinDepositCoin: 0,
+        limitMaxDepositCoin: 1,
+        limitMinDestinationCoin: 1,
+        limitMaxDestinationCoin: 2
+      },
+      destinationAddress: {
+        address: '',
+        tag: null
+      },
+      refundAddress: {
+        address: '',
+        tag: null
+      },
+      exchangeAddress: {
+        address: '',
+        tag: null
+      },
+      expectedDepositCoinAmount: 0,
+      expectedDestinationCoinAmount: 0,
+      orderId: null,
+      status: null,
+      requestStop: false,
+      destinationCoinAmount: null,
+      vtxEosPrice: null,
+      rateDataVtx: null,
+      rateDataEos: null
+    }
+  },
+  updated () {},
+  watch: {
+    depositCoin (val) {
+      console.log('new val', val)
+      this.payCoin = val.value.toUpperCase()
     },
-    data() {
-        return {
-            pStep: 1,
-            fetchingRate: false,
-            model: null,
-            receiveCoin: 'ETH',
-            payCoin: 'BTC',
-            osName: '',
-            disclaimerCheck: false,
-            showDisclaimerWrapper: false,
-            fromCoin: null,
-            fromCoinAmount: 0,
-            toCoinAmount: 0,
-            fromCoinType: 'BTC',
-            toCoinType: 'ETH',
-            toCoin: null,
-            progress: 0.2,
-            to: '',
-            amount: '',
-            memo: '',
-            optionsFrom: [],
-            optionsTo: [],
-            minimizedModal: false,
-            params: null,
-            tableData: [],
-            currentAccount: null,
-            goBack: '/verto/dashboard',
-            fetchCurrentWalletFromState: true,
-            fromCoinMemo: false,
-            toCoinMemo: false,
-            // -------------------------
-            timeoutNotif: 0,
-            notif: false,
-            step: 1,
-            optionsSanitize: false,
-            spinnervisible: false,
-            lastChangedValue: 'deposit',
-            coins: [],
-            depositCoin: {
-                'label': 'Bitcoin',
-                'value': 'btc',
-                'image': 'https://files.coinswitch.co/public/coins/btc.png'
-            },
-            depositQuantity: 0,
-            depositCoinOptions: null,
-            depositCoinUnfilter: null,
-            destinationCoin: {
-                'label': 'Ethereum',
-                'value': 'eth',
-                'image': 'https://files.coinswitch.co/public/coins/eth.png'
-            },
-            destinationQuantity: 0,
-            destinationCoinOptions: null,
-            destinationCoinUnfilter: null,
-            rateData: null,
-            rateDataTemplate: {
-                rate: 1,
-                minerFee: 0,
-                limitMinDepositCoin: 0,
-                limitMaxDepositCoin: 1,
-                limitMinDestinationCoin: 1,
-                limitMaxDestinationCoin: 2
-            },
-            destinationAddress: {
-                address: '',
-                tag: null
-            },
-            refundAddress: {
-                address: '',
-                tag: null
-            },
-            exchangeAddress: {
-                address: '',
-                tag: null
-            },
-            expectedDepositCoinAmount: 0,
-            expectedDestinationCoinAmount: 0,
-            orderId: null,
-            status: null,
-            requestStop: false,
-            destinationCoinAmount: null,
-            vtxEosPrice: null,
-            rateDataVtx: null,
-            rateDataEos: null
-        }
+    destinationCoin (val) {
+      console.log('new val', val)
+      this.receiveCoin = val.value.toUpperCase()
     },
-    updated() {},
-    watch: {
-        depositCoin(val) {
-            console.log('new val', val)
-            this.payCoin = val.value.toUpperCase()
-        },
-        destinationCoin(val) {
-            console.log('new val', val)
-            this.receiveCoin = val.value.toUpperCase()
-        },
-        fromCoin(val) {
-            if (val.type !== 'new_public_key') {
-                this.fromCoinType = this.fromCoin.type
-            } else {
-                return 'EOS'
-            }
-        },
-        toCoin(val) {
-            if (val.type !== 'new_public_key') {
-                this.toCoinType = this.toCoin.type
-            } else {
-                return 'VTX'
-            }
-        }
+    fromCoin (val) {
+      if (val.type !== 'new_public_key') {
+        this.fromCoinType = this.fromCoin.type
+      } else {
+        return 'EOS'
+      }
     },
-    async created() {
-        this.getWindowWidth()
-        window.addEventListener('resize', this.getWindowWidth)
-        this.params = this.$store.state.currentwallet.params
-        this.tableData = await this.$store.state.wallets.tokens
-        let self = this
-        this.tableData.map(token => {
-            self.optionsFrom.push({
-                label: token.name.toLowerCase(),
-                value: token.key,
-                image: token.icon,
-                type: token.type
-            })
-            self.optionsTo.push({
-                label: token.name.toLowerCase(),
-                value: token.key,
-                privateKey: token.privateKey,
-                image: token.icon,
-                type: token.type
-            })
-        })
-        this.optionsFrom.unshift({
-            label: 'Other public key / Account',
-            value: '',
-            image: '/statics/img/door-key.png',
-            type: 'new_public_key'
-        })
-        this.optionsTo.unshift({
-            label: 'Other public key / Account',
-            value: '',
-            image: '/statics/img/door-key.png',
-            type: 'new_public_key'
-        })
-        this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-            w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName))
-        // console.log('this.currentAccount', this.currentAccount)
-        if (this.currentAccount !== null && this.currentAccount !== undefined) {
-            // this.fromCoin = {
-            //   label: this.currentAccount.name,
-            //   value: this.currentAccount.key,
-            //   image: this.currentAccount.icon,
-            //   type: this.currentAccount.type
-            // }
-            this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
-        }
-        this.$q.notify.registerType('my-notif', {
-            icon: 'announcement',
-            progress: false,
-            persistent: true,
-            timeout: this.timeoutNotif,
-            color: 'deep-purple-14',
-            textColor: 'white',
-            position: 'bottom-right'
-        })
-        this.checkGetPairs()
+    toCoin (val) {
+      if (val.type !== 'new_public_key') {
+        this.toCoinType = this.toCoin.type
+      } else {
+        return 'VTX'
+      }
+    }
+  },
+  async created () {
+    this.getWindowWidth()
+    window.addEventListener('resize', this.getWindowWidth)
+    this.params = this.$store.state.currentwallet.params
+    this.tableData = await this.$store.state.wallets.tokens
+    let self = this
+    this.tableData.map(token => {
+      self.optionsFrom.push({
+        label: token.name.toLowerCase(),
+        value: token.key,
+        image: token.icon,
+        type: token.type
+      })
+      self.optionsTo.push({
+        label: token.name.toLowerCase(),
+        value: token.key,
+        privateKey: token.privateKey,
+        image: token.icon,
+        type: token.type
+      })
+    })
+    this.optionsFrom.unshift({
+      label: 'Other public key / Account',
+      value: '',
+      image: '/statics/img/door-key.png',
+      type: 'new_public_key'
+    })
+    this.optionsTo.unshift({
+      label: 'Other public key / Account',
+      value: '',
+      image: '/statics/img/door-key.png',
+      type: 'new_public_key'
+    })
+    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName))
+    // console.log('this.currentAccount', this.currentAccount)
+    if (this.currentAccount !== null && this.currentAccount !== undefined) {
+      // this.fromCoin = {
+      //   label: this.currentAccount.name,
+      //   value: this.currentAccount.key,
+      //   image: this.currentAccount.icon,
+      //   type: this.currentAccount.type
+      // }
+      this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
+    }
+    this.$q.notify.registerType('my-notif', {
+      icon: 'announcement',
+      progress: false,
+      persistent: true,
+      timeout: this.timeoutNotif,
+      color: 'deep-purple-14',
+      textColor: 'white',
+      position: 'bottom-right'
+    })
+    this.checkGetPairs()
+    this.checkToGetRate()
+  },
+  computed: {
+    getStatus () {
+      let value = 0
+
+      switch (this.status) {
+        case null:
+        case 'no_deposit':
+        case 'failed':
+        case 'refunded':
+        case 'timeout':
+          value = 0
+          break
+        case 'confirming':
+          value = 25
+          break
+        case 'exchanging':
+          value = 50
+          break
+        case 'sending':
+          value = 75
+          break
+        case 'complete':
+          value = 100
+          break
+      }
+
+      return value
+    },
+    friendlyStatus () {
+      let value = ''
+
+      switch (this.status) {
+        case null:
+          value = ''
+          break
+        case 'limit_exceeded':
+          value = 'The destination amount limit was exceeded'
+          break
+        case 'invalid_address':
+          value = 'The destination address is invalid'
+          break
+        case 'no_deposit':
+          value = 'No deposit detected yet'
+          break
+        case 'failed':
+          value = 'The transaction has failed'
+          break
+        case 'refunded':
+          value = 'The transaction has been refunded'
+          break
+        case 'timeout':
+          value = 'The transaction has timed out'
+          break
+        case 'confirming':
+          value = 'The transaction is confirming'
+          break
+        case 'exchanging':
+          value = 'The transaction is exchanging'
+          break
+        case 'sending':
+          value = 'The coins are being sent'
+          break
+        case 'complete':
+          value = 'The transaction is complete'
+          break
+      }
+
+      return value
+    },
+    trackColor () {
+      let value = ''
+
+      switch (this.status) {
+        case null:
+        case 'no_deposit':
+        case 'confirming':
+        case 'exchanging':
+        case 'limit_exceeded':
+        case 'invalid_address':
+        case 'sending':
+        case 'complete':
+          value = 'white'
+          break
+        case 'failed':
+        case 'refunded':
+        case 'timeout':
+          value = 'red'
+          break
+      }
+
+      return value
+    },
+    logoUrl () {
+      if (this.destinationCoin != null) {
+        return this.coins.filter(coins => coins.symbol === this.destinationCoin.value)[0].logoUrl
+      } else {
+        return '/static/icon.png'
+      }
+    },
+    exchangeLabel () {
+      if (this.depositCoin != null) {
+        return 'Complete this exchange by sending ' + this.expectedDepositCoinAmount + ' ' + typeUpper(this.depositCoin.value) + ' to this address within the next 1 hour'
+      } else {
+        return 'Complete this exchange by sending the coins to this address within the next 1 hour'
+      }
+    },
+    depositQuantityLabel () {
+      if (this.depositCoin != null) {
+        return typeUpper(this.depositCoin.value) + ' to Send'
+      } else {
+        return 'Coin to Send'
+      }
+    },
+    destinationQuantityLabel () {
+      if (this.destinationCoin != null) {
+        return typeUpper(this.destinationCoin.value) + ' to Receive'
+      } else {
+        return 'Coin to Receive'
+      }
+    },
+    returnAddressLabel () {
+      if (this.depositCoin != null) {
+        return 'Your ' + typeUpper(this.depositCoin.value) + ' return address [in case the transaction does not complete]'
+      } else {
+        return 'Your return address [in case the transaction does not complete]'
+      }
+    },
+    destinationAddressLabel () {
+      if (this.destinationCoin != null) {
+        return 'Address to receive new ' + typeUpper(this.destinationCoin.value)
+      } else {
+        return 'Address to receive new coin'
+      }
+    }
+  },
+  async mounted () {
+    const self = this
+
+    self.coins = this.getAllCoins()
+    self.depositCoinOptions = self.coins
+    self.destinationCoinUnfilter = self.coins
+    self.depositCoinUnfilter = self.depositCoinOptions
+
+    if (this.$store.state.settings.dexData.depositCoin) {
+      // console.log(this.$route.params.depositCoin, this.$route.params.destinationCoin)
+      this.depositCoin = this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
+      this.checkGetPairs()
+      this.checkToGetPairs()
+      this.step = 2
+      if (this.$store.state.settings.dexData.destinationCoin) {
+        this.destinationCoin = this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
+        this.updateCoinName()
         this.checkToGetRate()
+        this.step = 3
+      }
+    } else {
+      this.depositCoin = this.depositCoinOptions[0]
+      this.destinationCoin = this.depositCoinOptions[1]
+    }
+  },
+  methods: {
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
     },
-    computed: {
-        getStatus() {
-            let value = 0
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+    },
+    checkAddressMatchCoins () {
+      this.pStep = 3
+      this.postOrder()
+      // this.$refs.stepper.next()
+    },
+    checkDepositAndDestination () {
+      if (this.destinationAddress.address === '' || this.depositCoin.address === '') {}
+    },
+    updateCoinName () {
+      if (this.destinationCoin !== null) {
+        this.toCoinType = this.destinationCoin.value
+        this.getPairs()
+        this.checkToGetRate()
+      } else {
+        this.toCoinType = this.toCoin.type
+      }
+    },
+    checkGetPairs () {
+      if (this.depositCoin !== null) {
+        this.fromCoinType = this.depositCoin.value
+        this.getPairs()
+        this.checkToGetPairs()
+        this.checkToGetRate()
+      } else {
+        this.fromCoinType = this.fromCoin.type
+      }
+    },
+    switchAmounts () {
+      let depositCoinVar = this.depositCoin
+      this.depositCoin = this.destinationCoin
+      this.destinationCoin = depositCoinVar
 
-            switch (this.status) {
-                case null:
-                case 'no_deposit':
-                case 'failed':
-                case 'refunded':
-                case 'timeout':
-                    value = 0
-                    break
-                case 'confirming':
-                    value = 25
-                    break
-                case 'exchanging':
-                    value = 50
-                    break
-                case 'sending':
-                    value = 75
-                    break
-                case 'complete':
-                    value = 100
-                    break
-            }
+      let fromCoinTypeVar = this.fromCoinType
+      this.fromCoinType = this.toCoinType
+      this.toCoinType = fromCoinTypeVar
 
-            return value
-        },
-        friendlyStatus() {
-            let value = ''
+      let depositQuantityVar = this.depositQuantity
+      this.depositQuantity = this.destinationQuantity
+      this.destinationQuantity = depositQuantityVar
 
-            switch (this.status) {
-                case null:
-                    value = ''
-                    break
-                case 'limit_exceeded':
-                    value = 'The destination amount limit was exceeded'
-                    break
-                case 'invalid_address':
-                    value = 'The destination address is invalid'
-                    break
-                case 'no_deposit':
-                    value = 'No deposit detected yet'
-                    break
-                case 'failed':
-                    value = 'The transaction has failed'
-                    break
-                case 'refunded':
-                    value = 'The transaction has been refunded'
-                    break
-                case 'timeout':
-                    value = 'The transaction has timed out'
-                    break
-                case 'confirming':
-                    value = 'The transaction is confirming'
-                    break
-                case 'exchanging':
-                    value = 'The transaction is exchanging'
-                    break
-                case 'sending':
-                    value = 'The coins are being sent'
-                    break
-                case 'complete':
-                    value = 'The transaction is complete'
-                    break
-            }
-
-            return value
-        },
-        trackColor() {
-            let value = ''
-
-            switch (this.status) {
-                case null:
-                case 'no_deposit':
-                case 'confirming':
-                case 'exchanging':
-                case 'limit_exceeded':
-                case 'invalid_address':
-                case 'sending':
-                case 'complete':
-                    value = 'white'
-                    break
-                case 'failed':
-                case 'refunded':
-                case 'timeout':
-                    value = 'red'
-                    break
-            }
-
-            return value
-        },
-        logoUrl() {
-            if (this.destinationCoin != null) {
-                return this.coins.filter(coins => coins.symbol === this.destinationCoin.value)[0].logoUrl
-            } else {
-                return '/static/icon.png'
-            }
-        },
-        exchangeLabel() {
-            if (this.depositCoin != null) {
-                return 'Complete this exchange by sending ' + this.expectedDepositCoinAmount + ' ' + typeUpper(this.depositCoin.value) + ' to this address within the next 1 hour'
-            } else {
-                return 'Complete this exchange by sending the coins to this address within the next 1 hour'
-            }
-        },
-        depositQuantityLabel() {
-            if (this.depositCoin != null) {
-                return typeUpper(this.depositCoin.value) + ' to Send'
-            } else {
-                return 'Coin to Send'
-            }
-        },
-        destinationQuantityLabel() {
-            if (this.destinationCoin != null) {
-                return typeUpper(this.destinationCoin.value) + ' to Receive'
-            } else {
-                return 'Coin to Receive'
-            }
-        },
-        returnAddressLabel() {
-            if (this.depositCoin != null) {
-                return 'Your ' + typeUpper(this.depositCoin.value) + ' return address [in case the transaction does not complete]'
-            } else {
-                return 'Your return address [in case the transaction does not complete]'
-            }
-        },
-        destinationAddressLabel() {
-            if (this.destinationCoin != null) {
-                return 'Address to receive new ' + typeUpper(this.destinationCoin.value)
-            } else {
-                return 'Address to receive new coin'
-            }
+      this.getRate()
+    },
+    filterDepositCoin (val, update, abort) {
+      update(() => {
+        const needle = val.toLowerCase()
+        this.depositCoinOptions = this.depositCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+      })
+    },
+    filterDestinationCoin (val, update, abort) {
+      update(() => {
+        const needle = val.toLowerCase()
+        this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+      })
+    },
+    copy2clip (value) {
+      // more generic copy
+      this.$clipboardWrite(value)
+      this.$q.notify({
+        message: this.$t('Main.copied'),
+        color: 'positive'
+      })
+    },
+    checkToPostOrder () {
+      if (this.$refs.depositQuantity.hasError || this.$refs.destinationQuantity.hasError) {
+        // userError()
+        // console.error('There is a problem with the quantities')
+      } else {
+        this.postOrder()
+        // this.$refs.stepper.next()
+      }
+    },
+    checkToGetPairs () {
+      if (this.depositCoin === null) {
+        // userError('There is a problem with the coin selection')
+        // console.error('There is a problem with the coin selection')
+      } else {
+        this.getPairs()
+        // this.$refs.stepper.next()
+      }
+    },
+    checkToGetRate () {
+      // if (this.$refs.destinationAddressAddress.hasError || this.destinationAddress.address === '' ||
+      // console.log('this.depositCoin.value', this.depositCoin.value)
+      let self = this
+      this.optionsFrom = []
+      this.optionsTo = []
+      this.tableData.map(token => {
+        if (this.depositCoin.value.toLowerCase() === token.type) {
+          self.optionsFrom.push({
+            label: token.name.toLowerCase(),
+            value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
+            key: token.key,
+            image: token.icon,
+            type: token.type
+          })
         }
+        if ((this.destinationCoin.value.toLowerCase() === token.type) || (this.destinationCoin.value.toLowerCase() === 'vtx' && token.type === 'eos')) {
+          self.optionsTo.push({
+            label: token.name.toLowerCase(),
+            value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
+            key: token.key,
+            privateKey: token.privateKey,
+            image: token.icon,
+            type: token.type
+          })
+        }
+      })
+      this.optionsFrom.unshift({
+        label: 'Other public key / Account',
+        value: '',
+        image: '/statics/img/door-key.png',
+        type: 'new_public_key'
+      })
+      this.optionsTo.unshift({
+        label: 'Other public key / Account',
+        value: '',
+        image: '/statics/img/door-key.png',
+        type: 'new_public_key'
+      })
+      if (this.destinationCoin === null) {
+        // userError()
+        // console.error('There is a problem with the destination address or the coin is not selected')
+      } else {
+        this.getRate()
+        // this.$refs.stepper.next()
+      }
     },
-    async mounted() {
-        const self = this
-
-        self.coins = this.getAllCoins()
-        self.depositCoinOptions = self.coins
-        self.destinationCoinUnfilter = self.coins
-        self.depositCoinUnfilter = self.depositCoinOptions
-
-        if (this.$store.state.settings.dexData.depositCoin) {
-            // console.log(this.$route.params.depositCoin, this.$route.params.destinationCoin)
-            this.depositCoin = this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
-            this.checkGetPairs()
-            this.checkToGetPairs()
-            this.step = 2
-            if (this.$store.state.settings.dexData.destinationCoin) {
-                this.destinationCoin = this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
-                this.updateCoinName()
-                this.checkToGetRate()
-                this.step = 3
-            }
+    verifyAddress () {
+      // check validity of all keys
+    },
+    quantityFromDeposit () {
+      // deal with precision
+      this.destinationQuantity = (+this.depositQuantity * +this.rateData.rate) - +this.rateData.minerFee
+      this.lastChangedValue = 'deposit'
+    },
+    quantityFromDestination () {
+      // deal with precision
+      this.depositQuantity = (+this.destinationQuantity + +this.rateData.minerFee) / +this.rateData.rate
+      this.lastChangedValue = 'destination'
+    },
+    orderStatus () {
+      const self = this
+      this.$axios.get(url + '/v2/order/' + this.orderId, {
+        headers
+      }).then(function (result) {
+        self.status = result.data.data.status
+        if (self.status === 'no_deposit') {
+          if (!self.notif) {
+            self.triggerCustomRegisteredType1()
+          }
         } else {
-            this.depositCoin = this.depositCoinOptions[0]
-            this.destinationCoin = this.depositCoinOptions[1]
+          self.timeoutNotif = 1000
         }
-    },
-    methods: {
-        getWindowWidth() {
-            this.screenSize = document.querySelector('#q-app').offsetWidth
-        },
-        copyToClipboard(key, copied) {
-            this.$clipboardWrite(key)
-            this.$q.notify({
-                message: copied ? copied + ' Copied' : 'Key Copied',
-                timeout: 2000,
-                icon: 'check',
-                textColor: 'white',
-                type: 'warning',
-                position: 'top'
-            })
-        },
-        checkAddressMatchCoins() {
-            this.pStep = 3
-            this.postOrder()
-            // this.$refs.stepper.next()
-        },
-        checkDepositAndDestination() {
-            if (this.destinationAddress.address === '' || this.depositCoin.address === '') {}
-        },
-        updateCoinName() {
-            if (this.destinationCoin !== null) {
-                this.toCoinType = this.destinationCoin.value
-                this.getPairs()
-                this.checkToGetRate()
-            } else {
-                this.toCoinType = this.toCoin.type
-            }
-        },
-        checkGetPairs() {
-            if (this.depositCoin !== null) {
-                this.fromCoinType = this.depositCoin.value
-                this.getPairs()
-                this.checkToGetPairs()
-                this.checkToGetRate()
-            } else {
-                this.fromCoinType = this.fromCoin.type
-            }
-        },
-        switchAmounts() {
-            let depositCoinVar = this.depositCoin
-            this.depositCoin = this.destinationCoin
-            this.destinationCoin = depositCoinVar
-
-            let fromCoinTypeVar = this.fromCoinType
-            this.fromCoinType = this.toCoinType
-            this.toCoinType = fromCoinTypeVar
-
-            let depositQuantityVar = this.depositQuantity
-            this.depositQuantity = this.destinationQuantity
-            this.destinationQuantity = depositQuantityVar
-
-            this.getRate()
-        },
-        filterDepositCoin(val, update, abort) {
-            update(() => {
-                const needle = val.toLowerCase()
-                this.depositCoinOptions = this.depositCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
-            })
-        },
-        filterDestinationCoin(val, update, abort) {
-            update(() => {
-                const needle = val.toLowerCase()
-                this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
-            })
-        },
-        copy2clip(value) {
-            // more generic copy
-            this.$clipboardWrite(value)
-            this.$q.notify({
-                message: this.$t('Main.copied'),
-                color: 'positive'
-            })
-        },
-        checkToPostOrder() {
-            if (this.$refs.depositQuantity.hasError || this.$refs.destinationQuantity.hasError) {
-                // userError()
-                // console.error('There is a problem with the quantities')
-            } else {
-                this.postOrder()
-                // this.$refs.stepper.next()
-            }
-        },
-        checkToGetPairs() {
-            if (this.depositCoin === null) {
-                // userError('There is a problem with the coin selection')
-                // console.error('There is a problem with the coin selection')
-            } else {
-                this.getPairs()
-                // this.$refs.stepper.next()
-            }
-        },
-        checkToGetRate() {
-            // if (this.$refs.destinationAddressAddress.hasError || this.destinationAddress.address === '' ||
-            // console.log('this.depositCoin.value', this.depositCoin.value)
-            let self = this
-            this.optionsFrom = []
-            this.optionsTo = []
-            this.tableData.map(token => {
-                if (this.depositCoin.value.toLowerCase() === token.type) {
-                    self.optionsFrom.push({
-                        label: token.name.toLowerCase(),
-                        value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
-                        key: token.key,
-                        image: token.icon,
-                        type: token.type
-                    })
-                }
-                if ((this.destinationCoin.value.toLowerCase() === token.type) || (this.destinationCoin.value.toLowerCase() === 'vtx' && token.type === 'eos')) {
-                    self.optionsTo.push({
-                        label: token.name.toLowerCase(),
-                        value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
-                        key: token.key,
-                        privateKey: token.privateKey,
-                        image: token.icon,
-                        type: token.type
-                    })
-                }
-            })
-            this.optionsFrom.unshift({
-                label: 'Other public key / Account',
-                value: '',
-                image: '/statics/img/door-key.png',
-                type: 'new_public_key'
-            })
-            this.optionsTo.unshift({
-                label: 'Other public key / Account',
-                value: '',
-                image: '/statics/img/door-key.png',
-                type: 'new_public_key'
-            })
-            if (this.destinationCoin === null) {
-                // userError()
-                // console.error('There is a problem with the destination address or the coin is not selected')
-            } else {
-                this.getRate()
-                // this.$refs.stepper.next()
-            }
-        },
-        verifyAddress() {
-            // check validity of all keys
-        },
-        quantityFromDeposit() {
-            // deal with precision
-            this.destinationQuantity = (+this.depositQuantity * +this.rateData.rate) - +this.rateData.minerFee
-            this.lastChangedValue = 'deposit'
-        },
-        quantityFromDestination() {
-            // deal with precision
-            this.depositQuantity = (+this.destinationQuantity + +this.rateData.minerFee) / +this.rateData.rate
-            this.lastChangedValue = 'destination'
-        },
-        orderStatus() {
-            const self = this
-            this.$axios.get(url + '/v2/order/' + this.orderId, {
-                headers
-            }).then(function (result) {
-                self.status = result.data.data.status
-                if (self.status === 'no_deposit') {
-                    if (!self.notif) {
-                        self.triggerCustomRegisteredType1()
-                    }
-                } else {
-                    self.timeoutNotif = 1000
-                }
-                if (self.status === 'no_deposit' ||
+        if (self.status === 'no_deposit' ||
                     self.status === 'confirming' ||
                     self.status === 'exchanging' ||
                     self.status === 'sending') {
-                    setTimeout(() => {
-                        self.orderStatus()
-                    }, 30000)
-                }
-                if (self.status === 'complete' && self.destinationCoin.value === 'vtx') {
-                    self.destinationCoinAmount = Math.trunc(result.data.data.destinationCoinAmount * 10000) / 10000
-                    self.orderVTX()
-                }
-            })
-        },
-        async orderVTX() {
-            // check balance then...
-            // let eosBal = Lib.balance('eos', this.toCoin.value, 'eos')
-            let eosBal = (await eos.getCurrencyBalanceP(this.toCoin.value)).toString().split(' ')[0]
-            console.log('eosBal', eosBal)
-            if (+eosBal < +this.destinationCoinAmount) {
-                console.log('eos balance is yet to low to proceed: ', eosBal)
-                setTimeout(() => {
-                    self.orderVTX()
-                }, 1000)
-            } else {
-                Lib.send(
-                    'eos',
-                    'eos',
-                    this.toCoin.value,
-                    'swap.defi', // 'newdexpublic',
-                    this.destinationCoinAmount,
-                    'swap,0,448', // '{"type":"buy-market","symbol":"volentixgsys-vtx-eos","price":"0.00000","channel":"dapp","ref":"verto"}',
-                    this.toCoin.privateKey,
-                    'eosio.token'
-                ).then(result => {
-                    console.log('send result', result)
-                    if (result.success) {
-                        this.$q.notify({
-                            message: 'Your VTX have been received',
-                            color: 'positive'
-                        })
-                    } else {
-                        this.$q.notify({
-                            message: 'Could not convert EOS to VTX',
-                            color: 'negative',
-                            type: 'warning'
-                        })
-                    }
-                })
-            }
-        },
-        postOrder() {
-            const self = this
-            console.log('postOrder called', self.depositQuantity, ' + ', self.destinationQuantity)
-            let depositCoinAmount = null
-            let destinationCoinAmount = null
-
-            if (self.lastChangedValue === 'deposit') {
-                depositCoinAmount = self.depositQuantity
-            } else {
-                destinationCoinAmount = self.destinationCoin.value === 'vtx' ? self.destinationQuantity * self.vtxEosPrice : self.destinationQuantity
-            }
-
-            this.refundAddress.address = this.refundAddress.address === '' ? this.fromCoin.value : this.refundAddress.address
-            // console.log('this.refundAddress', this.refundAddress)
-            this.destinationAddress.address = this.destinationAddress.address === '' ? this.toCoin.value : this.destinationAddress.address
-
-            this.$axios.post(url + '/v2/order', {
-                    depositCoin: self.depositCoin.value,
-                    destinationCoin: self.destinationCoin.value === 'vtx' ? 'eos' : self.destinationCoin.value,
-                    depositCoinAmount,
-                    destinationCoinAmount,
-                    destinationAddress: self.destinationAddress,
-                    refundAddress: self.refundAddress
-                }, {
-                    headers
-                })
-                .then((response) => {
-                    // console.log('response - order', response)
-                    self.orderId = response.data.data.orderId
-                    self.exchangeAddress = response.data.data.exchangeAddress
-                    self.expectedDepositCoinAmount = response.data.data.expectedDepositCoinAmount
-                    self.expectedDestinationCoinAmount = response.data.data.expectedDestinationCoinAmount
-
-                    this.orderStatus()
-                })
-                .catch((err) => {
-                    if (err) {}
-                    // userError()
-                    // console.error('There was a problem posting the order', err)
-                })
-        },
-        getPairs() {
-            const self = this
-            this.$axios.post(url + '/v2/pairs', {
-                    depositCoin: self.depositCoin.value
-                }, {
-                    headers
-                })
-                .then((response) => {
-                    // console.log('------------Response------------', response)
-                    let inject = {}
-                    self.destinationCoinOptions = response.data.data.map(function (coin) {
-                        if (coin.isActive === true) {
-                            let row = {
-                                'label': self.coins.filter(coins => coins.symbol === coin.destinationCoin)[0].name,
-                                'value': coin.destinationCoin,
-                                'image': self.coins.filter(coins => coins.symbol === coin.destinationCoin)[0].logoUrl
-                            }
-                            if (coin.destinationCoin === 'eos') {
-                                inject = {
-                                    'label': 'Volentix',
-                                    'value': 'vtx',
-                                    'chain': 'eos',
-                                    'image': '/statics/vtx_icon.png'
-                                }
-                            }
-                            return row
-                        } // deal with false, should not create empty option.
-                    }).filter(function (el) {
-                        return el != null
-                    }).sort(function (a, b) {
-                        if (a.label.toLowerCase() < b.label.toLowerCase()) {
-                            return -1
-                        }
-                        return 1
-                    })
-                    self.destinationCoinOptions.push(inject)
-                    self.destinationCoinOptions.sort(function (a, b) {
-                        if (a.label.toLowerCase() < b.label.toLowerCase()) {
-                            return -1
-                        }
-                        return 1
-                    })
-                    console.log(self.destinationCoinOptions, 'self.destinationCoinOptions')
-                    self.destinationCoinUnfilter = self.destinationCoinOptions
-                })
-                .catch((err) => {
-                    if (err) {}
-                    // userError()
-                    // console.error('There was a problem getting the destination coins', err)
-                })
-        },
-        async getRate() {
-            const self = this
-            if (self.destinationCoin.value === 'vtx') {
-                this.vtxEosPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
-            }
-            this.$axios.post(url + '/v2/rate', {
-                    depositCoin: self.depositCoin.value,
-                    destinationCoin: self.destinationCoin.value === 'vtx' ? 'eos' : self.destinationCoin.value
-                }, {
-                    headers
-                })
-                .then((response) => {
-                    self.rateData = response.data.data
-                    if (self.destinationCoin.value === 'vtx') {
-                        self.rateDataVtx = {
-                            limitMaxDepositCoin: self.rateData.limitMaxDepositCoin,
-                            limitMaxDestinationCoin: self.rateData.limitMaxDestinationCoin / self.vtxEosPrice,
-                            limitMinDepositCoin: self.rateData.limitMinDepositCoin,
-                            limitMinDestinationCoin: self.rateData.limitMinDestinationCoin / self.vtxEosPrice,
-                            minerFee: self.rateData.minerFee,
-                            rate: self.rateData.rate / self.vtxEosPrice
-                        }
-                        self.rateDataEos = self.rateData
-                        self.rateData = self.rateDataVtx
-                    }
-                    console.log('self.rateData -------------- ', self.rateData)
-                })
-                .catch((err) => {
-                    if (err) {}
-                    // userError()
-                    // console.error('There was a problem getting the rate data', err)
-                })
-        },
-        triggerCustomRegisteredType1() {
-            this.notif = true
-            this.$q.notify({
-                type: 'my-notif',
-                closeBtn: '+',
-                classes: 'exchange-notif',
-                message: `This may take a few minutes.`,
-                caption: 'If you leave this page, you will no longer be able to track the status of this transaction.'
-            })
-        },
-        addSearchField() {
-            console.log('addSearchField triggered')
-        },
-        changeText() {
-            console.log('changeText triggered')
-        },
-        triggerPayCoinSelect() {
-            // console.log('triggerPayCoinSelect triggered')
-            document.querySelector('.pay-coin-select .q-field__control').dispatchEvent(new Event('click'))
-            setTimeout(() => {
-                let payCoinSelectPopup = document.querySelector('.pay-coin-select-popup')
-                let paycoinSearch = document.querySelector('.paycoin-search').cloneNode(true)
-                // console.log('paycoinSearch', paycoinSearch)
-                payCoinSelectPopup.prepend(paycoinSearch)
-                payCoinSelectPopup.querySelector('.paycoin-search').classList.remove('hidden')
-            }, 100)
-            // paycoin-search
-            // pay-coin-select-popup
-        },
-        triggerReceiveCoinSelect() {
-            // console.log('triggerReceiveCoinSelect triggered')
-            document.querySelector('.receive-coin-select .q-field__control').dispatchEvent(new Event('click'))
-            setTimeout(() => {
-                let receiveCoinSelectPopup = document.querySelector('.receive-coin-select-popup')
-                let receivecoinSearch = document.querySelector('.receivecoin-search').cloneNode(true)
-                // console.log('receivecoinSearch', receivecoinSearch)
-                receiveCoinSelectPopup.prepend(receivecoinSearch)
-                receiveCoinSelectPopup.querySelector('.receivecoin-search').classList.remove('hidden')
-            }, 100)
-            // paycoin-search
-            // pay-coin-select-popup
+          setTimeout(() => {
+            self.orderStatus()
+          }, 30000)
         }
+        if (self.status === 'complete' && self.destinationCoin.value === 'vtx') {
+          self.destinationCoinAmount = Math.trunc(result.data.data.destinationCoinAmount * 10000) / 10000
+          self.orderVTX()
+        }
+      })
     },
-    mixins: [DexInteraction]
+    async orderVTX () {
+      // check balance then...
+      // let eosBal = Lib.balance('eos', this.toCoin.value, 'eos')
+      let eosBal = (await eos.getCurrencyBalanceP(this.toCoin.value)).toString().split(' ')[0]
+      console.log('eosBal', eosBal)
+      if (+eosBal < +this.destinationCoinAmount) {
+        console.log('eos balance is yet to low to proceed: ', eosBal)
+        setTimeout(() => {
+          self.orderVTX()
+        }, 1000)
+      } else {
+        Lib.send(
+          'eos',
+          'eos',
+          this.toCoin.value,
+          'swap.defi', // 'newdexpublic',
+          this.destinationCoinAmount,
+          'swap,0,448', // '{"type":"buy-market","symbol":"volentixgsys-vtx-eos","price":"0.00000","channel":"dapp","ref":"verto"}',
+          this.toCoin.privateKey,
+          'eosio.token'
+        ).then(result => {
+          console.log('send result', result)
+          if (result.success) {
+            this.$q.notify({
+              message: 'Your VTX have been received',
+              color: 'positive'
+            })
+          } else {
+            this.$q.notify({
+              message: 'Could not convert EOS to VTX',
+              color: 'negative',
+              type: 'warning'
+            })
+          }
+        })
+      }
+    },
+    postOrder () {
+      const self = this
+      console.log('postOrder called', self.depositQuantity, ' + ', self.destinationQuantity)
+      let depositCoinAmount = null
+      let destinationCoinAmount = null
+
+      if (self.lastChangedValue === 'deposit') {
+        depositCoinAmount = self.depositQuantity
+      } else {
+        destinationCoinAmount = self.destinationCoin.value === 'vtx' ? self.destinationQuantity * self.vtxEosPrice : self.destinationQuantity
+      }
+
+      this.refundAddress.address = this.refundAddress.address === '' ? this.fromCoin.value : this.refundAddress.address
+      // console.log('this.refundAddress', this.refundAddress)
+      this.destinationAddress.address = this.destinationAddress.address === '' ? this.toCoin.value : this.destinationAddress.address
+
+      this.$axios.post(url + '/v2/order', {
+        depositCoin: self.depositCoin.value,
+        destinationCoin: self.destinationCoin.value === 'vtx' ? 'eos' : self.destinationCoin.value,
+        depositCoinAmount,
+        destinationCoinAmount,
+        destinationAddress: self.destinationAddress,
+        refundAddress: self.refundAddress
+      }, {
+        headers
+      })
+        .then((response) => {
+          // console.log('response - order', response)
+          self.orderId = response.data.data.orderId
+          self.exchangeAddress = response.data.data.exchangeAddress
+          self.expectedDepositCoinAmount = response.data.data.expectedDepositCoinAmount
+          self.expectedDestinationCoinAmount = response.data.data.expectedDestinationCoinAmount
+
+          this.orderStatus()
+        })
+        .catch((err) => {
+          if (err) {}
+          // userError()
+          // console.error('There was a problem posting the order', err)
+        })
+    },
+    getPairs () {
+      const self = this
+      this.$axios.post(url + '/v2/pairs', {
+        depositCoin: self.depositCoin.value
+      }, {
+        headers
+      })
+        .then((response) => {
+          // console.log('------------Response------------', response)
+          let inject = {}
+          self.destinationCoinOptions = response.data.data.map(function (coin) {
+            if (coin.isActive === true) {
+              let row = {
+                'label': self.coins.filter(coins => coins.symbol === coin.destinationCoin)[0].name,
+                'value': coin.destinationCoin,
+                'image': self.coins.filter(coins => coins.symbol === coin.destinationCoin)[0].logoUrl
+              }
+              if (coin.destinationCoin === 'eos') {
+                inject = {
+                  'label': 'Volentix',
+                  'value': 'vtx',
+                  'chain': 'eos',
+                  'image': '/statics/vtx_icon.png'
+                }
+              }
+              return row
+            } // deal with false, should not create empty option.
+          }).filter(function (el) {
+            return el != null
+          }).sort(function (a, b) {
+            if (a.label.toLowerCase() < b.label.toLowerCase()) {
+              return -1
+            }
+            return 1
+          })
+          self.destinationCoinOptions.push(inject)
+          self.destinationCoinOptions.sort(function (a, b) {
+            if (a.label.toLowerCase() < b.label.toLowerCase()) {
+              return -1
+            }
+            return 1
+          })
+          console.log(self.destinationCoinOptions, 'self.destinationCoinOptions')
+          self.destinationCoinUnfilter = self.destinationCoinOptions
+        })
+        .catch((err) => {
+          if (err) {}
+          // userError()
+          // console.error('There was a problem getting the destination coins', err)
+        })
+    },
+    async getRate () {
+      const self = this
+      if (self.destinationCoin.value === 'vtx') {
+        this.vtxEosPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
+      }
+      this.$axios.post(url + '/v2/rate', {
+        depositCoin: self.depositCoin.value,
+        destinationCoin: self.destinationCoin.value === 'vtx' ? 'eos' : self.destinationCoin.value
+      }, {
+        headers
+      })
+        .then((response) => {
+          self.rateData = response.data.data
+          if (self.destinationCoin.value === 'vtx') {
+            self.rateDataVtx = {
+              limitMaxDepositCoin: self.rateData.limitMaxDepositCoin,
+              limitMaxDestinationCoin: self.rateData.limitMaxDestinationCoin / self.vtxEosPrice,
+              limitMinDepositCoin: self.rateData.limitMinDepositCoin,
+              limitMinDestinationCoin: self.rateData.limitMinDestinationCoin / self.vtxEosPrice,
+              minerFee: self.rateData.minerFee,
+              rate: self.rateData.rate / self.vtxEosPrice
+            }
+            self.rateDataEos = self.rateData
+            self.rateData = self.rateDataVtx
+          }
+          console.log('self.rateData -------------- ', self.rateData)
+        })
+        .catch((err) => {
+          if (err) {}
+          // userError()
+          // console.error('There was a problem getting the rate data', err)
+        })
+    },
+    triggerCustomRegisteredType1 () {
+      this.notif = true
+      this.$q.notify({
+        type: 'my-notif',
+        closeBtn: '+',
+        classes: 'exchange-notif',
+        message: `This may take a few minutes.`,
+        caption: 'If you leave this page, you will no longer be able to track the status of this transaction.'
+      })
+    },
+    addSearchField () {
+      console.log('addSearchField triggered')
+    },
+    changeText () {
+      console.log('changeText triggered')
+    },
+    triggerPayCoinSelect () {
+      // console.log('triggerPayCoinSelect triggered')
+      document.querySelector('.pay-coin-select .q-field__control').dispatchEvent(new Event('click'))
+      setTimeout(() => {
+        let payCoinSelectPopup = document.querySelector('.pay-coin-select-popup')
+        let paycoinSearch = document.querySelector('.paycoin-search').cloneNode(true)
+        // console.log('paycoinSearch', paycoinSearch)
+        payCoinSelectPopup.prepend(paycoinSearch)
+        payCoinSelectPopup.querySelector('.paycoin-search').classList.remove('hidden')
+      }, 100)
+      // paycoin-search
+      // pay-coin-select-popup
+    },
+    triggerReceiveCoinSelect () {
+      // console.log('triggerReceiveCoinSelect triggered')
+      document.querySelector('.receive-coin-select .q-field__control').dispatchEvent(new Event('click'))
+      setTimeout(() => {
+        let receiveCoinSelectPopup = document.querySelector('.receive-coin-select-popup')
+        let receivecoinSearch = document.querySelector('.receivecoin-search').cloneNode(true)
+        // console.log('receivecoinSearch', receivecoinSearch)
+        receiveCoinSelectPopup.prepend(receivecoinSearch)
+        receiveCoinSelectPopup.querySelector('.receivecoin-search').classList.remove('hidden')
+      }, 100)
+      // paycoin-search
+      // pay-coin-select-popup
+    }
+  },
+  mixins: [DexInteraction]
 }
 </script>
 

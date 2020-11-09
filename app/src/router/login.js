@@ -94,14 +94,6 @@ export default [
         meta: {
           authRequired: true
         }
-      },
-      {
-        name: 'exchange',
-        path: '/exchange',
-        component: () => import('pages/Exchange/CoinSwitch.vue'),
-        meta: {
-          authRequired: true
-        }
       }, {
         name: 'oneInch',
         path: '/verto/oneInch',
