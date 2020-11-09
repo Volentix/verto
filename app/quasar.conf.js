@@ -107,6 +107,9 @@ module.exports = function (ctx) {
     supportIE: true,
 
     build: {
+      uglifyOptions: {
+        compress: { drop_console: true }
+      },
       scopeHoisting: true,
       vueRouterMode: 'history',
       // vueCompiler: true,
