@@ -355,12 +355,13 @@ import {
 } from 'eosjs/dist/eosjs-jssig'
 let rpc, api, signatureProvider
 import initWallet from '@/util/Wallets2Tokens'
-import DexInteraction from '../../mixins/DexInteraction'
-import EOSContract from '../../mixins/EOSContract'
+import DexInteraction from '../../../mixins/DexInteraction'
+import EOSContract from '../../../mixins/EOSContract'
 export default {
   components: {},
   data () {
     return {
+      name: 'Swapeos',
       openModal: false,
       getPassword: false,
       privateKeyPassword: null,
@@ -697,6 +698,7 @@ export default {
     },
     getMemo () {
       let memo = ''
+
       if (this.tab === 'swap') {
         memo += 'swap,'.concat('1', ',')
         if (this.path.length) {
@@ -707,7 +709,6 @@ export default {
       } else {
         memo += 'deposit,'.concat(this.pairData.id)
       }
-
       return memo
     },
     filterDestinationCoin (val, update, abort) {

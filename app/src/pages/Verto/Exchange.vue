@@ -1,6 +1,31 @@
 <template>
 <q-page class="column text-black bg-grey-12" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
     <!-- padding-bottom: 100px;background: #f3f3f3 !important -->
+    <div v-if="getPassword" class="send-modal flex flex-center" :class="{'open' : openModal}">
+        <div class="send-modal__content column flex-center">
+            <div class="send-modal__content--head">
+                <span class="text-h5 --amount">Private key password</span>
+                <q-btn color="white" rounded flat unelevated @click="hideModalFun()" class="close-btn" text-color="black" label="+" />
+            </div>
+            <div class="send-modal__content--body column flex-center full-width">
+                <q-input v-model="privateKeyPassword" light rounded outlined class="full-width" color="green" label="Private Key Password" @input="checkPrivateKeyPassword" debounce="500" @keyup.enter="toSummary" :type="isPwd ? 'password' : 'text'" :error="invalidPrivateKeyPassword" error-message="The private key password is invalid">
+                    <template v-slot:append>
+                        <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                    </template>
+                </q-input>
+
+                <div class="flex justify-start full-width">
+                    <q-btn @click="openModal = false" unelevated color="grey" class="--next-btn mr10" rounded label="Cancel" />
+                    <q-btn @click="toSummary()" unelevated color="deep-purple-14" class="--next-btn" rounded label="Submit transaction" />
+                </div>
+
+            </div>
+            <div class="send-modal__content--footer">
+                <div class="text-h4 --error">{{ ErrorMessage }}</div>
+            </div>
+        </div>
+    </div>
+
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
             <div class="col col-md-3">
@@ -25,8 +50,8 @@
                                         <q-select class="default-view col-md-3 col-6 offset-md-9" v-model="defaultView" :options="['Coinswitch', '1Inch', 'Swap EOS']" label="Default view" />
                                     </div> -->
 
-                                    <OneInchExhange v-if="$store.state.settings.selectedDex == 'oneinch'"></OneInchExhange>
-                                    <SwapEOS v-else-if="$store.state.settings.selectedDex == 'defibox'"></SwapEOS>
+                                    <Oneinch v-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
+                                    <Swapeos v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
                                     <Coinswitch v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
                                 </div>
                                 <br><br><br>
@@ -359,9 +384,9 @@ import {
 } from 'mobile-device-detect'
 import Lib from '@/util/walletlib'
 import Wallets from '../../components/Verto/Wallets'
-import OneInchExhange from '../../pages/Exchange/OneInch'
-import Coinswitch from '../../pages/Exchange/Coinswitch'
-import SwapEOS from '../../pages/Exchange/SwapEOS'
+import Oneinch from '../../components/Verto/Exchange/Oneinch'
+import Coinswitch from '../../components/Verto/Exchange/Coinswitch'
+import Swapeos from '../../components/Verto/Exchange/Swapeos'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
@@ -371,8 +396,8 @@ export default {
     // desktop components
     ProfileHeader,
     Wallets,
-    OneInchExhange,
-    SwapEOS,
+    Oneinch,
+    Swapeos,
     Coinswitch
   },
   data () {
