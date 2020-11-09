@@ -37,7 +37,7 @@
             </div>
             <i class="step-2-lab step-1-lab flex ">Step<b>2</b> Select coin to receive</i>
             <div class="call-action">
-                <q-select light separator rounded outlined class="select-input" use-input v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                <q-select light separator rounded outlined class="select-input" use-input @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                     <template v-slot:option="scope">
                         <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                             <q-item-section avatar>
@@ -72,7 +72,7 @@
         </div>
         <div class="col col-4 flex items-center">
             <img src="statics/exchange_picto.svg" class="full-width picto" alt="">
-            <q-btn unelevated class="qbtn-start" color="black" :disable="depositCoin && !depositCoin.amount" @click="goToExchange" text-color="white" label="Next" />
+            <q-btn unelevated class="qbtn-start" color="black" :disable="!depositCoin || !depositCoin.amount" @click="goToExchange" text-color="white" label="Next" />
         </div>
     </div>
     <br>
@@ -134,6 +134,8 @@ export default {
       this.destinationCoinOptions = this.depositCoinOptions
       if (this.$store.state.settings.dexData.depositCoin) {
         this.depositCoin = this.depositCoinOptions.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
+      } else {
+        this.depositCoin = this.depositCoinOptions.find(o => o.value.toLowerCase() === 'eos')
       }
       if (this.$store.state.settings.dexData.destinationCoin) {
         this.destinationCoin = this.depositCoinOptions.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())

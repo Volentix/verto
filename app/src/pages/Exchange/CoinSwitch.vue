@@ -88,21 +88,18 @@
                                                             <span class="cursor">
                                                                 <q-select class="select-input" light separator use-input borderless rounded v-model="depositCoin" @input="updateCoinName()" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                                                     <template v-slot:option="scope">
-                                                                        <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                                                        <q-item class="custom-menu" @click="depositCoin = scope.opt" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                             <q-item-section avatar>
                                                                                 <q-icon :name="`img:${scope.opt.image}`" />
                                                                             </q-item-section>
                                                                             <q-item-section>
                                                                                 <q-item-label v-html="scope.opt.label" />
                                                                                 <q-item-label caption>{{ scope.opt.contract }}</q-item-label>
-                                                                                <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
-                                                                                <q-item-label v-if="scope.opt.name" caption>{{ scope.opt.name }}</q-item-label>
                                                                             </q-item-section>
                                                                         </q-item>
                                                                     </template>
                                                                     <template v-slot:selected>
                                                                         <span class="text-h5 text-bold">{{depositCoin.value.toUpperCase()}}</span>
-                                                                        <q-item-label v-if="depositCoin.name" caption>{{ depositCoin.name }}</q-item-label>
                                                                     </template>
                                                                 </q-select>
 
@@ -164,15 +161,11 @@
                                                                             <q-item-section>
                                                                                 <q-item-label v-html="scope.opt.label" />
                                                                                 <q-item-label caption>{{ scope.opt.contract }}</q-item-label>
-                                                                                <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
-                                                                                <q-item-label v-if="scope.opt.name" caption>{{ scope.opt.name }}</q-item-label>
                                                                             </q-item-section>
                                                                         </q-item>
                                                                     </template>
                                                                     <template v-slot:selected>
                                                                         <span class="text-h5 text-bold">{{destinationCoin.value.toUpperCase()}}</span>
-                                                                        <q-item-label v-if="destinationCoin.name" caption>{{ destinationCoin.name }}</q-item-label>
-
                                                                     </template>
                                                                 </q-select>
                                                             </span></div>
@@ -1275,18 +1268,18 @@ export default {
     const self = this
 
     self.coins = this.getAllCoins()
-    self.depositCoinOptions = self.coins
-    self.destinationCoinUnfilter = self.coins
+    self.depositCoinOptions = this.getUniqueTokens(self.coins)
+    self.destinationCoinUnfilter = self.depositCoinOptions
     self.depositCoinUnfilter = self.depositCoinOptions
 
     if (this.$store.state.settings.dexData.depositCoin) {
       // console.log(this.$route.params.depositCoin, this.$route.params.destinationCoin)
-      this.depositCoin = this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
+      this.depositCoin = this.$store.state.settings.dexData.depositCoin
       this.checkGetPairs()
       this.checkToGetPairs()
       this.step = 2
       if (this.$store.state.settings.dexData.destinationCoin) {
-        this.destinationCoin = this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
+        this.destinationCoin = this.$store.state.settings.dexData.destinationCoin
         this.updateCoinName()
         this.checkToGetRate()
         this.step = 3
@@ -1295,6 +1288,7 @@ export default {
       this.depositCoin = this.depositCoinOptions[0]
       this.destinationCoin = this.depositCoinOptions[1]
     }
+    console.log(this.depositCoin, ' this.depositCoin')
   },
   methods: {
     getWindowWidth () {
@@ -1632,7 +1626,7 @@ export default {
             self.rateDataEos = self.rateData
             self.rateData = self.rateDataVtx
           }
-          console.log('self.rateData -------------- ', self.rateData)
+          // console.log('self.rateData -------------- ', self.rateData)
         })
         .catch((err) => {
           if (err) {}
