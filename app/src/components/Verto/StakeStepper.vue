@@ -377,6 +377,7 @@ export default {
     let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     // console.log('---this.wallet---', this.wallet)
     if (this.wallet) {
+      console.log('this.wallet, this.wallet, this.wallet', this.wallet)
       this.currentAccount = this.wallet
       this.params = {
         chainID: this.currentAccount.chain,
