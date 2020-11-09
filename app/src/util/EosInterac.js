@@ -1,7 +1,7 @@
 import { Api, JsonRpc } from 'eosjs'
 import { userError } from '@/util/errorHandler'
 import { userResult } from '@/util/resultHandler'
-import * as configManager from '@/util/ConfigManager'
+import VDexNodeConfigManager from '@/util/VDexNodeConfigManager'
 import ecc from 'eosjs-ecc'
 import {
   JsSignatureProvider
@@ -17,7 +17,7 @@ var fetch = require('isomorphic-fetch')
 
 class EosRPC {
   constructor (network) {
-    let address = configManager.configStore.get('eos_endpoint') + ':443'
+    let address = VDexNodeConfigManager.getEndpoint('eos_endpoint')
     this.rpc = new JsonRpc(address, { fetch })
     // this.rpc = new JsonRpc('https:////api.eosio.cr', { fetch })
   }
