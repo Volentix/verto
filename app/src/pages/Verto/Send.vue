@@ -628,8 +628,9 @@ export default {
       }
     }
   }
-  .mobile-pad{
-    padding-bottom: 50px
+  .mobile-pad {
+    padding-bottom: 50px;
+    background: #FFF !important;
   }
   .desktop-version{
     background: #E7E8E8;

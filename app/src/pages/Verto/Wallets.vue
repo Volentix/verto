@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px">
+  <q-page class="column text-black bg-grey-12">
     <profile-header version="type1" class="marg" :showWallets="true" :isWalletsPage="false" :isWalletDetail="true" />
     <wallets :showWallets="true" :isWalletsPage="false" :isWalletDetail="true" />
   </q-page>
@@ -25,6 +25,10 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+  .mobile-pad {
+    padding-bottom: 50px;
+    background: #FFF !important;
+  }
   .marg{
     /deep/ .profile-wrapper{
       &--header{

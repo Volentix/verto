@@ -1,5 +1,5 @@
 <template>
-  <q-page class="text-black bg-white">
+  <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
     <div class="desktop-version" v-if="screenSize > 1024">
       <div class="row">
         <div class="col col-md-3">
@@ -460,6 +460,10 @@ export default {
         margin-bottom: 0px;
       }
     }
+  }
+  .mobile-pad {
+    padding-bottom: 50px;
+    background: #FFF !important;
   }
   .desktop-version{
     background: #E7E8E8;
