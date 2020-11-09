@@ -8,19 +8,19 @@ class Lib {
   history = async (walletType, key, token) => {
     const wallet = {
       async eos (token, key) {
-        console.log('history eos!', key, token)
+        // console.log('history eos!', key, token)
         let actions = []
         await axios.post(process.env[store.state.settings.network].CACHE + process.env[store.state.settings.network].EOS_HISTORYAPI + '/v1/history/get_actions', { 'account_name': key })
           .then(function (result) {
             if (result.length !== 0) {
               result.data.actions.map(a => {
-                console.log('split', a.action_trace.act.name === 'transfer' ? a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() : 'not transfer')
+                // console.log('split', a.action_trace.act.name === 'transfer' ? a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() : 'not transfer')
                 if (token === 'eos' || (
                   a.action_trace.act.name === 'transfer' &&
                     a.action_trace.receiver === key &&
                     a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() === token)
                 ) {
-                  console.log('walletlib history actions', a)
+                  // console.log('walletlib history actions', a)
 
                   let amount = ''
                   switch (a.action_trace.act.name) {
@@ -50,7 +50,7 @@ class Lib {
             }
           }).catch(function (error) {
             // TODO: Exception handling
-            console.log('history error', error)
+            // console.log('history error', error)
             userError(error)
             return false
           })
@@ -59,7 +59,7 @@ class Lib {
         return { history: actions }
       },
       async eth (token, key) {
-        console.log('history eth!', key)
+        // console.log('history eth!', key)
         let actions = []
         await axios.get('http://api.etherscan.io/api?module=account&action=txlist&startblock=0&endblock=99999999&sort=desc&address=' + key)
           .then(function (result) {
@@ -79,7 +79,7 @@ class Lib {
             }
           }).catch(function (error) {
             // TODO: Exception handling
-            console.log('history error', error)
+            // console.log('history error', error)
             userError(error)
             return false
           })
@@ -103,7 +103,7 @@ class Lib {
         // const balProm =
         await eos.getCurrencyBalanceP(key, tokenContract[token])
           .then(function (result) {
-            // console.log('walletlib', key, tokenContract[token], bal)
+            // //console.log('walletlib', key, tokenContract[token], bal)
             if (result.length) {
               float = result[0].split(' ')[0]
               return float
@@ -143,9 +143,9 @@ class Lib {
               amount = +b.free + +b.frozen + +b.locked
             })
           }
-          // console.log('bnb', balances, amount)
+          // //console.log('bnb', balances, amount)
         } catch (err) {
-          // console.log('', err)
+          // //console.log('', err)
         }
         const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')).data.binancecoin.usd
         return { amount, usd }
@@ -174,9 +174,9 @@ class Lib {
 
           insight.getUnspentUtxos(from, function (error, utxos) {
             if (error) {
-              // console.log(error)
+              // //console.log(error)
             } else {
-              // console.log(utxos)
+              // //console.log(utxos)
               var tx = new bitcore.Transaction()
                 .from(utxos)
                 .to(to, value * 100000000)
@@ -187,10 +187,10 @@ class Lib {
               return new Promise(async (resolve, reject) => {
                 insight.broadcast(tx, function (error, transactionId) {
                   if (error) {
-                    // console.log(error)
+                    // //console.log(error)
                     return reject()
                   } else {
-                    // console.log(transactionId)
+                    // //console.log(transactionId)
                     resolve({
                       message: `https://www.blockchain.com/btc/tx/${transactionId}`,
                       success: true
@@ -268,7 +268,7 @@ class Lib {
             chainId: 1 // EIP 155 chainId - mainnet: 1, rinkeby: 4,  Ropsten: 3
           }
 
-          // console.log('details', details)
+          // //console.log('details', details)
 
           const transaction = new EthereumTx(details)
           transaction.sign(Buffer.from(key.substring(2), 'hex'))
@@ -277,7 +277,7 @@ class Lib {
           return new Promise(async (resolve, reject) => {
             web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, id) => {
               if (err) {
-                // console.log(err)
+                // //console.log(err)
                 return reject()
               }
               resolve({
