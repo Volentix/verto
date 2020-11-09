@@ -114,7 +114,7 @@ class VDexNodeConfigManager {
       nodes_api: {
         type: 'string',
         format: 'url',
-        default: 'http://45.77.137.183:8000'
+        default: 'http://95.179.176.91:8000/'
       },
       jungle_api: {
         default: 'https://jungle2.cryptolions.io:443'

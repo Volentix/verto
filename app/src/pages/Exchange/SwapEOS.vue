@@ -36,7 +36,7 @@
 
                                                             <q-select class="select-input" light separator use-input borderless rounded v-model="depositCoin" @input="swapData.error = false;  getDestinationCoinOptions() ; getPairData() ; " @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                                                 <template v-slot:option="scope">
-                                                                    <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                                                    <q-item class="custom-menu" @click="depositCoin = scope.opt" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
                                                                             <q-icon :name="`img:${scope.opt.image}`" />
                                                                         </q-item-section>
@@ -117,14 +117,11 @@
                                                                         <q-item-section>
                                                                             <q-item-label v-html="scope.opt.label" />
                                                                             <q-item-label caption>{{ scope.opt.contract }}</q-item-label>
-                                                                            <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
-                                                                            <q-item-label v-if="scope.opt.name" caption>{{ scope.opt.name }}</q-item-label>
                                                                         </q-item-section>
                                                                     </q-item>
                                                                 </template>
                                                                 <template v-slot:selected>
                                                                     <span class="text-h5 text-bold">{{destinationCoin.value.toUpperCase()}}</span>
-                                                                     <q-item-label v-if="destinationCoin.name" caption>{{ destinationCoin.name }}</q-item-label>
                                                                 </template>
                                                             </q-select>
                                                         </span></div>
@@ -175,7 +172,7 @@
 
                                                 <q-btn v-if="error" unelevated :disable="true" color="grey-4" text-color="black" :label="error" class="text-capitalize invalid_btn full-width" />
 
-                                                <q-btn v-else unelevated @click="sendTransaction()" :loading="spinnervisible" :disable=" spinnervisible " color="primary" text-color="black" :label="tab != 'liquidity' ? 'Swap now' : 'Add liquidity'" class="text-capitalize chose_accounts full-width" />
+                                                <q-btn v-else unelevated @click="sendTransaction()" :loading="spinnervisible" :disable="!depositCoin.name || parseFloat(depositCoin.amount) < swapData.fromAmount || spinnervisible " color="primary" text-color="black" :label="tab != 'liquidity' ? 'Swap now' : 'Add liquidity'" class="text-capitalize chose_accounts full-width" />
                                             </div>
                                         </div>
 
@@ -451,38 +448,40 @@ export default {
     getPairData () {
       let multiplier = 0
       this.path = []
+      let next = null,
+        url = null
       this.transaction = {}
       this.swapData.fromAmount = parseFloat(this.swapData.fromAmount).toFixed(this.depositCoin.precision)
       this.pairData = this.pairs.find(w => (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) || (w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase()))
       this.getLiquidityMultiplier()
       if (!this.pairData || this.pairData.liquidity_token === 0) {
         let pair = this.pairs.find(w => (w.token1.symbol.split(',')[1].toLowerCase() === 'eos' && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) || (w.token0.symbol.split(',')[1].toLowerCase() === 'eos' && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase()))
+        if (pair) {
+          let next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
+          multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price1_last) : parseFloat(pair.price0_last)
+          let url = this.getEOSTokenImageUrl(next.symbol.split(',')[1], next.contract)
+          this.path.push({
+            id: pair.id,
+            token: next,
+            multiplier: multiplier,
+            url: url
+          })
 
-        let next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
-
-        multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price1_last) : parseFloat(pair.price0_last)
-        let url = this.getEOSTokenImageUrl(next.symbol.split(',')[1], next.contract)
-        this.path.push({
-          id: pair.id,
-          token: next,
-          multiplier: multiplier,
-          url: url
-        })
-
-        this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
-
+          this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
+        }
         pair = this.pairs.find(w => (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && w.token0.symbol.split(',')[1].toLowerCase() === 'eos') || (w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && w.token1.symbol.split(',')[1].toLowerCase() === 'eos'))
-
-        next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
-        multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price0_last) : parseFloat(pair.price1_last)
-        this.swapData.toAmount = parseFloat(parseFloat(this.swapData.toAmount) * multiplier).toFixed(this.depositCoin.precision)
-        url = this.getEOSTokenImageUrl(next.symbol.split(',')[1], next.contract)
-        this.path.push({
-          id: pair.id,
-          token: next,
-          multiplier: multiplier,
-          url: url
-        })
+        if (pair) {
+          next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
+          multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price0_last) : parseFloat(pair.price1_last)
+          this.swapData.toAmount = parseFloat(parseFloat(this.swapData.toAmount) * multiplier).toFixed(this.depositCoin.precision)
+          url = this.getEOSTokenImageUrl(next.symbol.split(',')[1], next.contract)
+          this.path.push({
+            id: pair.id,
+            token: next,
+            multiplier: multiplier,
+            url: url
+          })
+        }
         if (this.tab !== 'swap' && !this.pairData) {
           this.eosAccount = this.eosAccounts.find(o => o.type.toLowerCase() === this.depositCoin.value.toLowerCase())
           if (this.eosAccount) {
@@ -566,13 +565,15 @@ export default {
     },
     async sendTransaction () {
       this.spinnervisible = true
-      this.eosAccount = this.eosAccounts.find(o => o.type.toLowerCase() === this.depositCoin.value.toLowerCase())
+      console.log(this.eosAccounts)
+      this.eosAccount = this.eosAccounts.find(o => o.type.toLowerCase() === this.depositCoin.value.toLowerCase() && o.name.toLowerCase() === this.depositCoin.name.toLowerCase())
+      console.log(this.eosAccount, this.depositCoin)
       let transaction = {
         name: 'transfer',
         data: {
           from: this.eosAccount.name,
           to: 'swap.defi',
-          quantity: this.swapData.fromAmount + ' ' + this.depositCoin.value,
+          quantity: this.swapData.fromAmount + ' ' + this.depositCoin.value.toUpperCase(),
           memo: this.getMemo()
         }
       }
@@ -609,11 +610,13 @@ export default {
           data: {
             from: this.eosAccount.name,
             to: 'swap.defi',
-            quantity: this.swapData.toAmount + ' ' + this.destinationCoin.value,
+            quantity: this.swapData.toAmount + ' ' + this.destinationCoin.value.toUpperCase(),
             memo: this.getMemo()
           }
         })
       }
+
+      console.log(transactionObject, 'transactionObject')
       api.transact(transactionObject, {
         blocksBehind: 3,
         expireSeconds: 30
