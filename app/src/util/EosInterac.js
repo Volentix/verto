@@ -1,7 +1,7 @@
 import { Api, JsonRpc } from 'eosjs'
 import { userError } from '@/util/errorHandler'
 import { userResult } from '@/util/resultHandler'
-import * as configManager from '@/util/configManager'
+import * as configManager from '@/util/ConfigManager'
 import ecc from 'eosjs-ecc'
 import {
   JsSignatureProvider
