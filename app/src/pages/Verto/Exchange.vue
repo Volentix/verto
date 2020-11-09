@@ -1,30 +1,6 @@
 <template>
 <q-page class="column text-black bg-grey-12" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
     <!-- padding-bottom: 100px;background: #f3f3f3 !important -->
-    <div v-if="getPassword" class="send-modal flex flex-center" :class="{'open' : openModal}">
-        <div class="send-modal__content column flex-center">
-            <div class="send-modal__content--head">
-                <span class="text-h5 --amount">Private key password</span>
-                <q-btn color="white" rounded flat unelevated @click="hideModalFun()" class="close-btn" text-color="black" label="+" />
-            </div>
-            <div class="send-modal__content--body column flex-center full-width">
-                <q-input v-model="privateKeyPassword" light rounded outlined class="full-width" color="green" label="Private Key Password" @input="checkPrivateKeyPassword" debounce="500" @keyup.enter="toSummary" :type="isPwd ? 'password' : 'text'" :error="invalidPrivateKeyPassword" error-message="The private key password is invalid">
-                    <template v-slot:append>
-                        <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
-                    </template>
-                </q-input>
-
-                <div class="flex justify-start full-width">
-                    <q-btn @click="openModal = false" unelevated color="grey" class="--next-btn mr10" rounded label="Cancel" />
-                    <q-btn @click="toSummary()" unelevated color="deep-purple-14" class="--next-btn" rounded label="Submit transaction" />
-                </div>
-
-            </div>
-            <div class="send-modal__content--footer">
-                <div class="text-h4 --error">{{ ErrorMessage }}</div>
-            </div>
-        </div>
-    </div>
 
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
