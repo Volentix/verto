@@ -283,12 +283,12 @@
                             <q-icon :name="'img:statics/history_icon-black.svg'" class="q-mr-sm" /> Transaction History
                         </h2>
                         <q-list bordered separator class="list-wrapper history-list-wrapper">
-                            <q-item v-for="(item, index) in history" :key="index" clickable v-ripple>
+                            <q-item v-for="(item, index) in history" :key="index" clickable v-ripple @click="launchExplorer(item.transID)">
                                 <q-item-section class="item-date">
                                     <span class="item-date--value column"> {{item.date}} </span>
                                 </q-item-section>
                                 <q-item-section class="item-trans">
-                                    <span class="item-trans--transID" @click="launchExplorer(item.transID)"><a :h="item.transID">Tx: {{item.transID.substring(0, 8)}}</a></span>
+                                    <span class="item-trans--transID">Tx: {{item.transID.substring(0, 8)}}</span>
                                     <span class="item-trans--desc"> <span class="type" :clas="item.typeTran">{{item.typeTran}}</span> {{item.desc}}</span>
                                 </q-item-section>
                                 <q-item-section class="item-amount">
@@ -487,55 +487,6 @@ export default {
       directionAccount: false,
       // false is ASC
       // true is DESC
-      fakeHistory: [{
-        date: '<b>27</b> Today  ',
-        transID: 'Transaction ID',
-        to: '/transaction',
-        typeTran: 'sent',
-        desc: ' to kkkljo...',
-        amount: '-2.0084'
-      },
-      {
-        date: '<b>26</b> 5:15 AM',
-        transID: 'Transaction ID',
-        to: '/transaction',
-        typeTran: 'received',
-        desc: ' to kkkljo...',
-        amount: '-2.0084'
-      },
-      {
-        date: '<b>24</b> 6:15 PM',
-        transID: 'Transaction ID',
-        to: '/transaction',
-        typeTran: 'sent',
-        desc: ' to kkkljo...',
-        amount: '-2.0084'
-      },
-      {
-        date: '<b>27</b> Today  ',
-        transID: 'Transaction ID',
-        to: '/transaction',
-        typeTran: 'sent',
-        desc: ' to kkkljo...',
-        amount: '-2.0084'
-      },
-      {
-        date: '<b>27</b> Today  ',
-        transID: 'Transaction ID',
-        to: '/transaction',
-        typeTran: 'sent',
-        desc: ' to kkkljo...',
-        amount: '-2.0084'
-      },
-      {
-        date: '<b>24</b> 6:15 PM',
-        transID: 'Transaction ID',
-        to: '/transaction',
-        typeTran: 'sent',
-        desc: ' to kkkljo...',
-        amount: '-2.0084'
-      }
-      ],
       currentAccount: {
         selected: false,
         type: '',
@@ -593,7 +544,7 @@ export default {
   },
   methods: {
     launchExplorer (tx) {
-      switch (this.$store.state.currentwallet.wallet.type) {
+      switch (this.$store.state.currentwallet.wallet.chain) {
         case 'eos':
           openURL(process.env[this.$store.state.settings.network].EOS_TRANSACTION_EXPLORER + tx)
           break
@@ -711,7 +662,7 @@ export default {
         // console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
 
         if (this.selectedCoin.chain !== 'eos' && this.selectedCoin.chain !== 'eth') {
-          this.history = this.fakeHistory
+          this.history = []
         } else {
           let nameOrKey = this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.name
           this.history = (await Lib.history(this.selectedCoin.chain, this.selectedCoin.type, nameOrKey)).history

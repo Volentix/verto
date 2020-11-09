@@ -8,23 +8,43 @@ class Lib {
   history = async (walletType, key, token) => {
     const wallet = {
       async eos (token, key) {
-        console.log('history eos!', key)
+        console.log('history eos!', key, token)
         let actions = []
         await axios.post(process.env[store.state.settings.network].CACHE + process.env[store.state.settings.network].EOS_HISTORYAPI + '/v1/history/get_actions', { 'account_name': key })
           .then(function (result) {
             if (result.length !== 0) {
-              // console.log('walletlib history actions', result)
               result.data.actions.map(a => {
-                console.log('walletlib history actions', a)
-                actions.push({
-                  date: date.formatDate(a.block_time, 'YYYY-MM-DD HH:mm'),
-                  transID: a.action_trace.trx_id,
-                  from: a.action_trace.act.data.from,
-                  to: a.action_trace.act.data.to,
-                  typeTran: a.action_trace.act.name,
-                  desc: a.action_trace.act.data.memo ? a.action_trace.act.data.memo.substring(0, 20) : '',
-                  amount: a.action_trace.act.data.quantity
-                })
+                console.log('split', a.action_trace.act.name === 'transfer' ? a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() : 'not transfer')
+                if (token === 'eos' || (
+                  a.action_trace.act.name === 'transfer' &&
+                    a.action_trace.receiver === key &&
+                    a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() === token)
+                ) {
+                  console.log('walletlib history actions', a)
+
+                  let amount = ''
+                  switch (a.action_trace.act.name) {
+                    case 'transfer':
+                      amount = a.action_trace.act.data.to !== key ? '-' + a.action_trace.act.data.quantity : a.action_trace.act.data.quantity
+                      break
+                    case 'deposit':
+                      amount = a.action_trace.act.data.to !== key ? '-' + a.action_trace.act.data.amount : a.action_trace.act.data.amount
+                      break
+                    case 'rentcpu':
+                      amount = a.action_trace.act.data.to !== key ? '-' + a.action_trace.act.data.loan_payment : a.action_trace.act.data.loan_payment
+                      break
+                  }
+
+                  actions.push({
+                    date: date.formatDate(a.block_time, 'YYYY-MM-DD HH:mm'),
+                    transID: a.action_trace.trx_id,
+                    from: a.action_trace.act.data.from,
+                    to: a.action_trace.act.data.to,
+                    typeTran: a.action_trace.act.name,
+                    desc: a.action_trace.act.data.memo ? a.action_trace.act.data.memo.substring(0, 20) : '',
+                    amount
+                  })
+                }
               })
               return actions
             }
@@ -200,7 +220,7 @@ class Lib {
             key
           )
 
-          message = `https://bloks.io/transaction/${transaction.transaction_id}`
+          message = process.env[store.state.settings.network].EOS_TRANSACTION_EXPLORER + transaction.transaction_id
           success = true
         } catch (err) {
           message = err
@@ -261,7 +281,7 @@ class Lib {
                 return reject()
               }
               resolve({
-                message: `https://etherscan.io/tx/${id}`,
+                message: process.env[store.state.settings.network].ETH_TRANSACTION_EXPLORER + id,
                 success: true
               })
             })
