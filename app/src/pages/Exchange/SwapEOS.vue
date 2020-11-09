@@ -7,7 +7,36 @@
 
                 <!-- 1inch component -->
                 <!-- add your code here -->
+                <q-dialog v-model="getPassword" persistent>
+                    <q-card>
+                        <q-card-section>
+                            <div class="send-modal flex flex-center" :class="{'open' : openModal}">
+                                <div class="send-modal__content  q-pa-md column flex-center">
+                                    <div class="send-modal__content--head">
+                                        <span class="text-h5 --amount">Private key password</span>
+                                        <q-btn color="white" rounded flat unelevated @click="hideModalFun()" class="close-btn" text-color="black" label="+" />
+                                    </div>
+                                    <div class="send-modal__content--body column flex-center full-width">
+                                        <q-input v-model="privateKeyPassword" light rounded outlined class="full-width" color="green" label="Private Key Password" @input="checkPrivateKeyPassword" debounce="500" @keyup.enter="toSummary" :type="isPwd ? 'password' : 'text'" :error="invalidPrivateKeyPassword" error-message="The private key password is invalid">
+                                            <template v-slot:append>
+                                                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                                            </template>
+                                        </q-input>
 
+                                        <div class="flex justify-start full-width">
+                                            <q-btn v-close-popup @click="spinnervisible = false" unelevated color="grey" class="--next-btn mr10" rounded label="Cancel" />
+                                            <q-btn @click="sendTransaction()" unelevated color="deep-purple-14" class="--next-btn q-ml-md" rounded label="Submit transaction" />
+                                        </div>
+
+                                    </div>
+                                    <div class="send-modal__content--footer">
+                                        <div class="text-h4 --error" v-if="ErrorMessage">{{ ErrorMessage }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </q-card-section>
+                    </q-card>
+                </q-dialog>
                 <!-- Vdex component -->
                 <div class="">
                     <div class="chain-tools-wrapper--list open">
@@ -17,7 +46,7 @@
                                     <div class="trade-component">
                                         <!-- <img src="statics/theme1/Screenshot_208.png" alt="" style="opacity: .1"> -->
                                         <div v-if="step === 1" class="prototype">
-                                            <q-tabs @click="getPairData()" flat v-model="tab" indicator-color="indigo-5" no-caps inline-label class="shadow-1 text-h6">
+                                            <q-tabs @click="getPairData() ; checkBalance()" flat v-model="tab" indicator-color="indigo-5" no-caps inline-label class="shadow-1 text-h6">
                                                 <q-tab name="swap" icon="swap_vert" label="Swap" />
                                                 <q-tab name="liquidity" icon="add" label="Liquidity" />
                                             </q-tabs>
@@ -147,32 +176,10 @@
                                                         {{error}}
                                                     </span>
                                                 </div>
-                                                <div class="text-body2 text-red q-pa-md" v-if="approvalRequired">
-
-                                                    <span>
-                                                        Before swaping {{depositCoin.value}} with {{destinationCoin.value}}, you need to process an approval transaction
-                                                    </span>
-                                                </div>
-                                                <q-list class="gasfield q-mt-md" v-if="gasOptions.length" separator>
-                                                    <span class="text-body1 q-pl-md q-mb-md">Select gas price option</span>
-                                                    <q-item dense class="gasSelector q-pt-sm">
-                                                        <q-item-section v-for="(gas, index) in gasOptions" :key="index">
-                                                            <q-item :class="[gasSelected.label == gas.label ? 'selected bg-black ' : 'bg-white' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
-                                                                <q-item-section>
-                                                                    <q-item-label>${{gas.value }}</q-item-label>
-                                                                    <q-item-label class="text-body1 text-grey"> {{gas.label }}</q-item-label>
-                                                                </q-item-section>
-                                                                <q-item-section avatar>
-                                                                    <q-icon color="primary" name="local_gas_station" />
-                                                                </q-item-section>
-                                                            </q-item>
-                                                        </q-item-section>
-                                                    </q-item>
-                                                </q-list>
 
                                                 <q-btn v-if="error" unelevated :disable="true" color="grey-4" text-color="black" :label="error" class="text-capitalize invalid_btn full-width" />
 
-                                                <q-btn v-else unelevated @click="sendTransaction()" :loading="spinnervisible" :disable="!depositCoin.name || parseFloat(depositCoin.amount) < swapData.fromAmount || spinnervisible " color="primary" text-color="black" :label="tab != 'liquidity' ? 'Swap now' : 'Add liquidity'" class="text-capitalize chose_accounts full-width" />
+                                                <q-btn v-else unelevated @click="sendTransaction()" :loading="spinnervisible" :disable="parseFloat(swapData.toAmount) === 0 || !depositCoin.name || parseFloat(depositCoin.amount) < parseFloat(swapData.fromAmount) || spinnervisible " color="primary" text-color="black" :label="tab != 'liquidity' ? 'Swap now' : 'Add liquidity'" class="text-capitalize chose_accounts full-width" />
                                             </div>
                                         </div>
 
@@ -277,7 +284,7 @@
 
                 </q-item>
 
-                <q-item class="q-my-sm" v-if="tab == 'liquidity' &&  depositCoin.liquidityMultiplier && pairData.miningData" clickable v-ripple>
+                <q-item class="q-my-sm" v-if="tab == 'liquidity' &&  depositCoin.liquidityMultiplier && pairData && pairData.miningData" clickable v-ripple>
 
                     <q-item-section>
                         <q-item-label>You will receive</q-item-label>
@@ -328,7 +335,7 @@
                 </q-item>
 
             </q-list>
-            <div v-if="pairData && tab == 'liquidity' && pairData.liquidity_token === 0">
+            <div v-if="tab == 'liquidity' && (!pairData || (pairData && pairData.liquidity_token === 0))">
                 <p class=" q-pt-md"> Liquidity has not been created yet</p>
                 <p class=" q-pt-md"> Create liquidity and become the first liquidity provider</p>
                 <p class=" q-pt-md">Set the initial swap price freely</p>
@@ -354,6 +361,12 @@ export default {
   components: {},
   data () {
     return {
+      openModal: false,
+      getPassword: false,
+      privateKeyPassword: null,
+      invalidPrivateKeyPassword: false,
+      ErrorMessage: false,
+      isPwd: true,
       step: 1,
       tab: 'swap',
       transactionStatus: 'Pending',
@@ -431,9 +444,29 @@ export default {
         this.miningData = result.data.data
       })
     },
-    getLiquidityMultiplier () {
+    async getMiningData (pairId) {
+      let endpoint = process.env[this.$store.state.settings.network].CACHE + 'https://defibox.io/api/swap/getMarket'
+
+      let val = null
+      await this.$axios.post(endpoint, {
+        pairId: pairId.toString()
+      }).then((result) => {
+        if (result.data.data) {
+          let data = result.data.data[0]
+          if (data) {
+            data.pair_id = pairId
+            this.miningData.push(data)
+            val = data
+          }
+        }
+      })
+
+      return val
+    },
+    async getLiquidityMultiplier () {
       if (this.pairData) {
-        this.pairData.miningData = this.miningData.find(o => o.pair_id === this.pairData.id)
+        let data = this.miningData.find(o => o.pair_id === this.pairData.id)
+        this.pairData.miningData = data || await this.getMiningData(this.pairData.id)
 
         if (this.pairData.reserve0.includes(this.depositCoin.value)) {
           this.depositCoin.liquidityMultiplier = this.pairData.liquidity_token / parseFloat(this.pairData.reserve0.split(' ')[0])
@@ -442,7 +475,6 @@ export default {
           this.depositCoin.liquidityMultiplier = this.pairData.liquidity_token / parseFloat(this.pairData.reserve1.split(' ')[0])
           this.destinationCoin.liquidityMultiplier = this.pairData.liquidity_token / parseFloat(this.pairData.reserve0.split(' ')[0])
         }
-        console.log(this.depositCoin, this.destinationCoin)
       }
     },
     getPairData () {
@@ -505,7 +537,7 @@ export default {
         this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
       }
       this.validateTransaction()
-      console.log(this.pairData, ' this.pairData')
+      console.log(this.pairData, ' this.pairData', this.miningData)
     },
     addCoinToGlobalList (value, key) {
       let infosArray = value[key].symbol.split(',')
@@ -563,11 +595,35 @@ export default {
         this.error = 'Insufficient ' + this.destinationCoin.label + ' balance'
       }
     },
+    checkPrivateKeyPassword () {
+      this.eosAccount = this.eosAccounts.find(o => o.type.toLowerCase() === this.depositCoin.value.toLowerCase() && o.name.toLowerCase() === this.depositCoin.name.toLowerCase())
+
+      const privateKeyEncrypted = JSON.stringify(this.eosAccount.privateKeyEncrypted)
+      let privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+      console.log(this.eosAccount, this.privateKeyPassword, privateKey)
+      if (privateKey.success) {
+        this.eosAccount.privateKey = privateKey.key
+        this.invalidPrivateKeyPassword = false
+      } else {
+        this.invalidPrivateKeyPassword = true
+        return false
+      }
+    },
+    hideModalFun: function () {
+      this.openModal = false
+      this.openModalProgress = false
+    },
     async sendTransaction () {
       this.spinnervisible = true
-      console.log(this.eosAccounts)
+
       this.eosAccount = this.eosAccounts.find(o => o.type.toLowerCase() === this.depositCoin.value.toLowerCase() && o.name.toLowerCase() === this.depositCoin.name.toLowerCase())
-      console.log(this.eosAccount, this.depositCoin)
+
+      if (!this.eosAccount.privateKey) {
+        this.getPassword = true
+        this.openModal = true
+        return
+      }
+
       let transaction = {
         name: 'transfer',
         data: {
@@ -601,7 +657,7 @@ export default {
 
       if (this.tab === 'liquidity' && this.transaction.name !== 'createpair') {
         transactionObject.actions.push({
-          account: this.transaction.name !== 'createpair' ? this.depositCoin.contract : 'swap.defi',
+          account: this.transaction.name !== 'createpair' ? this.destinationCoin.contract : 'swap.defi',
           name: transaction.name,
           authorization: [{
             actor: this.eosAccount.name,
@@ -615,8 +671,7 @@ export default {
           }
         })
       }
-
-      console.log(transactionObject, 'transactionObject')
+      console.log(this.eosAccount, transactionObject, this.transaction)
       api.transact(transactionObject, {
         blocksBehind: 3,
         expireSeconds: 30
@@ -734,6 +789,114 @@ export default {
         justify-content: flex-start;
         min-height: unset !important;
         padding-bottom: 20px;
+    }
+
+    .send-modal {
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(black, .5);
+        left: 0px;
+        top: 0px;
+        z-index: 999999;
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity ease .4s;
+
+        &.open {
+            visibility: visible;
+            opacity: 1;
+
+            .send-modal__content {
+                transform: scale(1);
+            }
+        }
+
+        &__content {
+            background-color: #fff;
+            border-radius: 20px;
+            max-width: 400px;
+            padding: 20px;
+            width: 100%;
+            box-shadow: 0px -2px 9px 0px rgba(black, .29);
+            position: relative;
+            transform: scale(0);
+            transition: ease transform .3s, opacity ease .2s;
+
+            &--head {
+                margin-bottom: 20px;
+
+                .close-btn {
+                    position: absolute;
+                    right: 10px;
+                    top: 10px;
+                    font-size: 40px;
+                    font-weight: $light;
+                    font-family: $Titillium;
+                    height: 40px;
+                    width: 40px;
+                    min-height: unset;
+                    opacity: .3;
+
+                    /deep/ .q-btn__content {
+                        transform: rotate(45deg);
+                        min-height: unset;
+                        line-height: 30px;
+                        margin-left: 5px;
+                        margin-top: -4px;
+                    }
+                }
+
+                .--amount {
+                    font-size: 25px;
+                    font-weight: $bold;
+                    font-family: $Titillium;
+                    margin-top: 20px;
+                    position: relative;
+                    top: -9px;
+                }
+            }
+
+            &--body {
+                position: relative;
+
+                .svg_logo {
+                    fill: #00D0CA;
+                    position: absolute;
+                    margin-top: 5px;
+                    width: 50px;
+                }
+
+                .--label {
+                    font-size: 14px;
+                    font-weight: $light;
+                    font-family: $Titillium;
+                    position: absolute;
+                    bottom: -15px;
+                    width: 150%;
+                    text-align: center;
+                    letter-spacing: 1.5px;
+                }
+            }
+
+            &--footer {
+                .--email {
+                    font-size: 16px;
+                    font-weight: $bold;
+                    font-family: $Titillium;
+                    margin-top: 20px;
+                }
+
+                .--error {
+                    color: red;
+                    font-size: 14px;
+                    margin-top: 20px;
+                    font-weight: $bold;
+                    font-family: $Titillium;
+                    line-height: 16px;
+                }
+            }
+        }
     }
 
     .exchange_picto {
