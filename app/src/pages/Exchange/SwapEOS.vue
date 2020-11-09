@@ -537,7 +537,6 @@ export default {
         this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
       }
       this.validateTransaction()
-      console.log(this.pairData, ' this.pairData', this.miningData)
     },
     addCoinToGlobalList (value, key) {
       let infosArray = value[key].symbol.split(',')
@@ -671,7 +670,7 @@ export default {
           }
         })
       }
-      console.log(this.eosAccount, transactionObject, this.transaction)
+
       api.transact(transactionObject, {
         blocksBehind: 3,
         expireSeconds: 30
