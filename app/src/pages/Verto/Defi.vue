@@ -94,7 +94,7 @@
                     <q-item>
                         <q-item-section>
                             <span class="text-h5 text-bold ">
-                                Convert {{maxToken.amount.toFixed(4)}} {{maxToken.type}} to {{maxDeFiYield.token}}
+                                Convert {{maxToken.amount.toFixed(4)}} {{maxToken.type.toUpperCase()}} to {{maxDeFiYield.token}}
                             </span>
                         </q-item-section>
                         <q-item-section>
@@ -337,14 +337,9 @@ export default {
         value: this.maxDeFiYield.token.toLowerCase(),
         image: 'https://zapper.fi/images/' + this.maxDeFiYield.token + '-icon.png'
       }
-      this.$router.push({
-        path: '/verto/exchange/:coinToSend/:coinToReceive',
-        name: 'exchange-v3',
-        params: {
-          depositCoin: depositCoin,
-          destinationCoin: destinationCoin
-        }
-      })
+      this.$store.commit('settings/setDex', { dex: 'oneinch', destinationCoin: destinationCoin, depositCoin: depositCoin })
+
+      this.$router.push('/verto/exchange/')
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
