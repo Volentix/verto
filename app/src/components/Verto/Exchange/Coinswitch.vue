@@ -953,14 +953,12 @@ const typeUpper = function (thing) {
     return ''
   }
 }
-import DexInteraction from '../../mixins/DexInteraction'
+import DexInteraction from '../../../mixins/DexInteraction'
 import Lib from '@/util/walletlib'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 export default {
-  components: {
-
-  },
+  name: 'Coinswitch',
   data () {
     return {
       pStep: 1,

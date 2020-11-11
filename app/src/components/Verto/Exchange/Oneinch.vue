@@ -697,12 +697,13 @@ const typeUpper = function (thing) {
     return ''
   }
 }
-import DexInteraction from '../../mixins/DexInteraction'
+import DexInteraction from '../../../mixins/DexInteraction'
 const _1inchApprovalAddress = '0xe4c9194962532feb467dce8b3d42419641c6ed2e'
-import contract from '../../mixins/contract'
+import contract from '../../../mixins/contract'
 const Web3 = require('web3')
 let web3 = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
 export default {
+  name: 'Oneinch',
   components: {},
   data () {
     return {
