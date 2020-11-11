@@ -171,7 +171,7 @@ export default {
   },
   watch: {
     '$store.state.wallets.tokens': function (val) {
-      console.log(val, 'val')
+      // console.log(val, 'val')
       if (val) {
         this.getCoinswitchCoins()
         this.get1inchCoins()
@@ -256,11 +256,11 @@ export default {
             stakedAmounts += +s.stake_amount
           })
           f.staked = stakedAmounts
-          console.log('f.staked', f.staked)
+          // console.log('f.staked', f.staked)
           if (!manualSelectCurrentWallet && this.screenSize <= 1024) {
             manualSelectCurrentWallet = true
             this.$store.state.currentwallet.wallet = f
-            console.log('this.$store.state.currentwallet.wallet = f', this.$store.state.currentwallet.wallet)
+            // console.log('this.$store.state.currentwallet.wallet = f', this.$store.state.currentwallet.wallet)
           }
         }
       })
