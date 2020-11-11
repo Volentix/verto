@@ -23,7 +23,7 @@ export default {
 
       return abi
     },
-    async isApprovalRequired (fromTokenAddress, toAddress, amountToSend, setGas = false) {
+    async isApprovalRequired (fromTokenAddress, toAddress, amountToSend, setGas = false, nonce = false) {
       let tx = null, transactionObject = {}
       let account = Array.isArray(this.ethAccount) ? this.ethAccount.find(o => o.type === 'eth') : this.ethAccount
       let tokenABI = await this.getContractABI('default', true)
@@ -33,7 +33,7 @@ export default {
       const allowance = await tokenContract.methods.allowance(account.key, toAddress).call()
 
       if (allowance === 0 || allowance < amountToSend) {
-        let nonce = await this.web3.eth.getTransactionCount(account.key, 'latest')
+        nonce = !nonce ? await this.web3.eth.getTransactionCount(account.key, 'latest') : nonce
 
         transactionObject = {
           from: account.key,
