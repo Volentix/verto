@@ -260,8 +260,12 @@
             </div>
         </div>
         <div class="col summary-wrapper shadow-1 col-md-4 q-pa-lg column justify-center items-start">
-            <div class="text-h6">Summary</div>
+
             <q-list class="summary-wrapper__list" separator>
+
+                <q-item class="q-my-sm" clickable v-ripple>
+                    <div class="text-h6">Summary</div>
+                </q-item>
                 <q-item class="q-my-sm" clickable v-ripple>
                     <q-item-section avatar>
                         <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
@@ -604,6 +608,7 @@ export default {
       if (privateKey.success) {
         this.eosAccount.privateKey = privateKey.key
         this.invalidPrivateKeyPassword = false
+        this.hideModalFun()
       } else {
         this.invalidPrivateKeyPassword = true
         return false
