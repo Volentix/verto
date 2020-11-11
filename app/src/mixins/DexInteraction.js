@@ -151,16 +151,19 @@ export default {
 
         coins = Object.keys(coins).map((key, index) => {
           let item = this.$store.state.wallets.tokens.find(o => o.type.toLowerCase() === coins[key].symbol.toLowerCase())
+          let image = coins[key].symbol.toLowerCase() === 'eth' ? 'https://1inch.exchange/assets/images/eth.png' : 'https://1inch.exchange/assets/token-logo/' + coins[key].address.toLowerCase() + '.png'
+
           let row = {
             'label': coins[key].name,
             'value': coins[key].symbol,
-            'image': 'https://1inch.exchange/assets/tokens/' + coins[key].address.toLowerCase() + '.png',
+            'image': image,
             'address': coins[key].address,
             'price': coins[key].current_price,
             'dex': 'oneinch',
             'amount': item ? item.amount : 0,
             'amountUSD': item ? item.usd : 0
           }
+
           return row
         })
         coins = coins.filter(function (el) {
