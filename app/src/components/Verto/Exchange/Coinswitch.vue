@@ -1348,13 +1348,13 @@ export default {
     filterDepositCoin (val, update, abort) {
       update(() => {
         const needle = val.toLowerCase()
-        this.depositCoinOptions = this.depositCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+        this.depositCoinOptions = this.depositCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1 || v.label.toLowerCase().indexOf(needle) > -1)
       })
     },
     filterDestinationCoin (val, update, abort) {
       update(() => {
         const needle = val.toLowerCase()
-        this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+        this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1 || v.label.toLowerCase().indexOf(needle) > -1)
       })
     },
     copy2clip (value) {
@@ -1464,7 +1464,9 @@ export default {
             self.orderStatus()
           }, 30000)
         }
+        console.log(self.status, self.destinationCoin, 'self.destinationCoin')
         if (self.status === 'complete' && self.destinationCoin.value === 'vtx') {
+          console.log(1222)
           self.destinationCoinAmount = Math.trunc(result.data.data.destinationCoinAmount * 10000) / 10000
           self.orderVTX()
         }
@@ -1491,7 +1493,6 @@ export default {
           this.toCoin.privateKey,
           'eosio.token'
         ).then(result => {
-          console.log('send result', result)
           if (result.success) {
             this.$q.notify({
               message: 'Your VTX have been received',
@@ -1576,7 +1577,7 @@ export default {
               return row
             } // deal with false, should not create empty option.
           }).filter(function (el) {
-            return el != null
+            return el != null && el.depositCoin
           }).sort(function (a, b) {
             if (a.label.toLowerCase() < b.label.toLowerCase()) {
               return -1
@@ -1590,8 +1591,7 @@ export default {
             }
             return 1
           })
-          console.log(self.destinationCoinOptions, 'self.destinationCoinOptions')
-          self.destinationCoinUnfilter = self.destinationCoinOptions
+          if (self.destinationCoinOptions.length) { self.destinationCoinUnfilter = self.destinationCoinOptions }
         })
         .catch((err) => {
           if (err) {}

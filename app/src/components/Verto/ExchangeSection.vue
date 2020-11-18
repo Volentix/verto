@@ -72,7 +72,7 @@
         </div>
         <div class="col col-4 flex items-center">
             <img src="statics/exchange_picto.svg" class="full-width picto" alt="">
-            <q-btn unelevated class="qbtn-start" color="black" :disable="!depositCoin || !depositCoin.amount" @click="goToExchange" text-color="white" label="Next" />
+            <q-btn unelevated class="qbtn-start" color="black" @click="goToExchange" text-color="white" label="Next" />
         </div>
     </div>
     <br>
