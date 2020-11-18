@@ -303,12 +303,12 @@
             <!-- Map, chat -->
             <div class="row q-col-gutter-x-lg titilium">
                 <!-- Map Widget -->
-                <div class="col-7">
+                <div class="col-12">
                     <MapWidget v-bind:nodes="nodes" />
                 </div>
                 <!-- Chat -->
                 <div class="col-5">
-                    <ChatWidget />
+                    <ChatWidget v-if="false" />
                 </div>
             </div>
 
@@ -385,25 +385,9 @@
                         <q-separator dark />
                     </q-card-section>
                     <q-card-section>
-                        <div class="text-subtitle1">1. Choose your node's features</div>
-                        <template>
-                            <div class="q-pa-md">
-                                <q-option-group inline :options="options" label="Options" type="checkbox" v-model="group" />
-                            </div>
-                        </template>
-                        <!--<div class="text-subtitle2">Future features:</div>
-              <template>
-                <div class="q-pa-md">
-                  <q-option-group inline disabled
-                    :options="future_options"
-                    label="Options"
-                    type="checkbox"
-                    v-model="future_group"
-                  />
-                </div>
-              </template>-->
+
                         <div v-if="!status.accountRegistered">
-                            <div class="text-subtitle1">2. Register node</div>
+                            <div class="text-subtitle1">1. Register node</div>
                             <template>
                                 <div class="q-pa-md" style="max-width: auto">
                                     <q-btn outline rounded color="vgreen" icon="fas fa-address-card" class="q-mx-xs" @click="registerNode()" label="Register">
@@ -412,20 +396,20 @@
                                 </div>
                             </template>
                         </div>
-                        <div v-if="!status.accountRegistered" class="text-subtitle1">3. Get the install script</div>
-                        <div v-if="status.accountRegistered" class="text-subtitle1">2. Get the install script</div>
+                        <div v-if="!status.accountRegistered" class="text-subtitle1">2.  Get the instructions</div>
+                        <div v-if="status.accountRegistered" class="text-subtitle1">1.  Get the instructions</div>
                         <template>
                             <div class="q-pa-md" style="max-width: auto">
                                 <q-input v-model="script" filled color="vgreen" style="background-color: white;" type="textarea" />
                             </div>
                         </template>
 
-                        <q-btn outline rounded color="vgreen" class="q-mx-xs" label="Copy script" @click="$utils.copyToClipboard(script)">
+                        <q-btn outline rounded color="vgreen" class="q-mx-xs" label="Copy instructions" @click="$utils.copyToClipboard(script)">
                             <q-icon color="vgreen" style="margin-left: 20px" name="fas fa-copy" />
                         </q-btn>
 
-                        <div v-if="!status.accountRegistered" class="text-subtitle1" style="margin-top: 20px">4. Execute the script (replace parameters at the top)</div>
-                        <div v-if="status.accountRegistered" class="text-subtitle1" style="margin-top: 20px">3. Execute the script (replace parameters at the top)</div>
+                        <div v-if="!status.accountRegistered" class="text-subtitle1" style="margin-top: 20px">Instructions are taken from the <a href="https://github.com/Volentix/vdexnode" target="_blank">official Github repository</a> </div>
+                        <div v-if="status.accountRegistered" class="text-subtitle1" style="margin-top: 20px">Instructions are taken from the <a href="https://github.com/Volentix/vdexnode" target="_blank">official Github repository</a></div>
 
                         <q-card-section>
                             <q-list bordered round class="bg-vgrey text-vdark">
@@ -556,9 +540,8 @@ let rpc
 import {
   mapState
 } from 'vuex'
-import EosRPC from '@/util/EosWrapper'
 import {
-  EosAPI
+  EosRPC, EosAPI
 } from '@/util/EosInterac'
 export default {
   name: 'index',
@@ -569,7 +552,7 @@ export default {
   data () {
     return {
       version: '',
-      commandLine: './install.sh',
+      commandLine: 'https://github.com/Volentix/vdexnode',
       publicDialog: false,
       helpDialog: false,
       installDialog: false,
@@ -741,7 +724,7 @@ export default {
     this.m5 = setInterval(() => this.refresh(), 300000) // 5 min
     this.m6 = setInterval(() => this.$vDexNodeConfigManager.getUserResources(this.identity.accountName), 5000)
     this.getInstallScript()
-
+    this.getReadmeFromRepo()
     // Pass public key
     var re = '\neoskey="KEY"\n'
         var newValue = `\neoskey="${this.identity.publicKey }"\n` // eslint-disable-line
@@ -770,11 +753,19 @@ export default {
     clearInterval(this.int3)
   },
   methods: {
+
     initEosAPI (privateKey) {
       this.eosApi = new EosAPI(privateKey)
     },
     updateNow () {
       this.now = Math.round(new Date().getTime() / 1000)
+    },
+    getReadmeFromRepo () {
+      this.$axios.get('https://raw.githubusercontent.com/Volentix/vdexnode/master/README.md')
+        .then((response) => {
+          console.log(response)
+          this.script = response.data
+        })
     },
     updateDailyRewardCountdown () {
       let timeDelta = this.daily_reward_next_calculation > this.now ? this.daily_reward_next_calculation - this.now : 0
@@ -913,11 +904,11 @@ export default {
     },
     async getNodes () {
       return new Promise((resolve) => {
-        console.log(this.$vDexNodeConfigManager.getEndpoint('nodes_api'), 'this.$configManager.getEndpoint(\'nodes_api\')')
         this.$axios
           .get(this.$vDexNodeConfigManager.getEndpoint('nodes_api') + '/getConnectedNodes')
           .then(result => {
             // TODO: Handler if the object is empty of has result: null or result: try later
+            // result.data = result.data.concat(result.data).concat(result.data).concat(result.data).concat(result.data).concat(result.data)
             for (var key in result.data) {
               if (result.data[key].includes('EOS')) {
                 this.nodes.push({
@@ -944,7 +935,9 @@ export default {
       try {
         let accounts = await rpc.getAccounts(key)
         let name = accounts.account_names[0] ? accounts.account_names[0] : ''
+
         if (name) {
+          console.log(name, ' name')
           let balance = await rpc.getBalance(name)
           this.nodes[id].account = name
           this.nodes[id].balance = Math.floor(balance.balance)

@@ -151,7 +151,6 @@ export default {
         }]
       }
 
-      console.log(transactionObject, 'transactionObject')
       this.sendTransaction(transactionObject)
     },
     validateInput () {

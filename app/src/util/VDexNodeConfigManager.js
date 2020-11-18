@@ -132,7 +132,6 @@ class VDexNodeConfigManager {
       router.push('/login')
     })
   }
-
   async accountRegistered (accountName) {
     try {
       const result = await Vue.prototype.$rpc.getTable('vdexdposvote', 'vdexdposvote', 'producers')

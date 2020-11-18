@@ -23,7 +23,7 @@ export default {
     getEOSTokenImageUrl (symbol, contract) {
       return this.invalidImages.find(o => o === symbol.toLowerCase()) ? 'https://dbds.340wan.com/static/img/eos.png' : 'https://ndi.340wan.com/eos/' + contract + '-' + symbol.toLowerCase() + '.png'
     },
-    async sendTransaction (transactionObject, externalRpc = null, header = null) {
+    async sendTransaction (transactionObject, externalRpc = null, header = null, step = null) {
       let transactionHeader = header || {
         blocksBehind: 3,
         expireSeconds: 30
@@ -36,15 +36,18 @@ export default {
         rpc,
         signatureProvider
       })
-      api.transact(transactionObject, transactionHeader).then((result) => {
+      let value = await api.transact(transactionObject, transactionHeader).then((result) => {
         this.transactionStatus = 'Success'
         this.spinnervisible = false
         this.transactionHash = result.transaction_id
+        if (step) this.step = step
       }).catch((error) => {
         this.error = error
         this.transactionStatus = null
         this.spinnervisible = false
       })
+
+      return value
     },
     async sendFreeCPUTransaction (actions) {
       let rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
@@ -119,7 +122,7 @@ export default {
       })
     },
     async serverSign (transaction, user, txHeaders) {
-      let serverEndpoint = 'http://34.200.68.128:3031/api/eos/sign'
+      let serverEndpoint = 'https://cpu.volentix.io/api/eos/sign'
       let config = {
         headers: {
           'Accept': 'application/json',
