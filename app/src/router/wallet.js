@@ -126,9 +126,26 @@ export default [
         }
       },
       {
+        name: 'buycpu',
+        path: '/verto/buycpu',
+        component: () => import('pages/Verto/BuyCPU.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
         name: 'stake',
         path: '/verto/stake',
         component: () => import('pages/Verto/Stake.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        name: 'stakeproxy',
+        path: '/verto/stakeproxy',
+        component: () => import('pages/Verto/StakeProxyEos.vue'),
         meta: {
           authRequired: true
         }

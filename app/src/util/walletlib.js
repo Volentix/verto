@@ -13,7 +13,7 @@ class Lib {
         await axios.post(process.env[store.state.settings.network].CACHE + process.env[store.state.settings.network].EOS_HISTORYAPI + '/v1/history/get_actions', { 'account_name': key })
           .then(function (result) {
             if (result.length !== 0) {
-              result.data.actions.map(a => {
+              result.data.actions.reverse().map(a => {
                 // console.log('split', a.action_trace.act.name === 'transfer' ? a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() : 'not transfer')
                 if (token === 'eos' || (
                   a.action_trace.act.name === 'transfer' &&

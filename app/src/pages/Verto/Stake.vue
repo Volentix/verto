@@ -12,10 +12,11 @@
         <div class="col col-md-9">
           <div class="desktop-card-style apps-section q-mb-sm">
             <div class="standard-content">
-              <h2 class="standard-content--title flex justify-start">Staking</h2>
+              <h2 class="standard-content--title flex justify-start">{{$store.state.currentwallet.params.tokenID == 'eos' ? 'Staking / Unstaking' :  'Staking' }}</h2>
               <div class="standard-content--body">
                 <div class="standard-content--body__form">
-                  <stake-stepper />
+                  <stake-stepper v-if="$store.state.currentwallet.params.tokenID == 'vtx'" />
+                  <EosStakeStepper v-else-if="$store.state.currentwallet.params.tokenID == 'eos'"/>
                 </div>
               </div>
             </div>
@@ -31,6 +32,7 @@
 </template>
 
 <script>
+import EosStakeStepper from '../../components/Verto/EOSStakeStepper'
 import StakeStepper from '../../components/Verto/StakeStepper'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import { osName } from 'mobile-device-detect'
@@ -40,7 +42,8 @@ export default {
   components: {
     StakeStepper,
     ProfileHeader,
-    Wallets
+    Wallets,
+    EosStakeStepper
   },
   data () {
     return {
