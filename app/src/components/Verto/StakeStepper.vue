@@ -187,7 +187,7 @@
                                   outlined
                                   class="--input"
                                   @input="changeAmount()"
-                                  :rules="[val => val >= 1000 || '1000 VTX Minimum']"
+                                  :rules="[val => val >= 10000 || '10000 VTX Minimum']"
                                 />
                                 <br>
                               </div>
@@ -204,7 +204,7 @@
                           </div>
                         </div>
                       </div>
-                      <q-stepper-navigation class="flex justify-end" v-show="sendAmount >= 1000">
+                      <q-stepper-navigation class="flex justify-end" v-show="sendAmount >= 10000">
                         <q-btn @click="step = 2" v-if="condition === 1" unelevated color="deep-purple-14" class="--next-btn" rounded :label="`Get ${ params.tokenID.toUpperCase() }`" />
                         <q-btn @click="step = 2" v-if="condition === 2" unelevated color="deep-purple-14" class="--next-btn" rounded label="Get EOS account" />
                         <q-btn @click="step = 2" v-if="condition === 3" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
