@@ -37,6 +37,7 @@ class EosRPC {
       let accounts = await this.rpc.history_get_key_accounts(wif)
       return accounts
     } catch (error) {
+      console.log(error, wif)
       userError(error, 'Get accounts by public key')
       throw error
     }
