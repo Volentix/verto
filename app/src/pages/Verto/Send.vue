@@ -558,7 +558,7 @@ export default {
       Lib.send(
         this.currentAccount.chain,
         this.currentAccount.type,
-        this.currentAccount.name,
+        this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name,
         this.sendToResolved,
         this.sendAmount,
         this.sendMemo,
