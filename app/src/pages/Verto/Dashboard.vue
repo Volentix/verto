@@ -25,7 +25,7 @@
                             </div>
                             <div class="col-3 flex items-center">
                                 <span class="imgs q-mr-lg" v-if="pool.icons.length">
-                                    <img v-for="(icon, index) in pool.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
+                                    <img v-for="(icon, index2) in pool.icons" :key="index2" :src="'https://zapper.fi/images/'+icon" alt="">
                                 </span>
                                 <span class="column pairs">
                                     <span class="pair">{{pool.poolName}}</span>
@@ -129,7 +129,6 @@ if (platformTools.default) platformTools = platformTools.default
 import {
   osName
 } from 'mobile-device-detect'
-import initWallet from '@/util/Wallets2Tokens'
 export default {
   components: {
     // ConvertAnyCoin,
@@ -200,12 +199,8 @@ export default {
     // console.log('store.state.currentwallet.config', store.state.currentwallet.config)
     if (!store.state.currentwallet.config.mnemonic) {
       this.$router.push('recovery-seed')
-    } else {
-      if (this.tableData.length < 6) {
-        initWallet()
-      }
     }
-    this.$store.dispatch('investment/getMarketDataVsUSD')
+
     // Adds the eos account name when it is found to the cruxID
 
     this.$store.state.currentwallet.wallet = {

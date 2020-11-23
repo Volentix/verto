@@ -55,7 +55,7 @@ import configManager from '@/util/ConfigManager'
 import {
   version
 } from '../../../package.json'
-
+import initWallet from '@/util/Wallets2Tokens'
 export default {
   name: 'Login',
   data () {
@@ -115,9 +115,11 @@ export default {
       }
       const results = await configManager.login(this.password)
       if (results.success) {
+        initWallet()
+        this.$store.dispatch('investment/getMarketDataVsUSD')
         this.$store.commit('settings/temporary', this.password)
         this.$router.push({
-          path: '/verto/dashboard'
+          path: this.$route.params.nextUrl ? this.$route.params.nextUrl : '/verto/dashboard'
         })
         // this.$router.push({ path: 'vertomanager' })
       } else {

@@ -152,7 +152,7 @@ class Wallets2Tokens {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
           }).then(res => {
             let tokenSets = res.data.rebalancing_sets
-            console.log('ethplorer.tokens', ethplorer.tokens)
+
             if (ethplorer.tokens) {
               ethplorer.tokens.filter(t => t.balance > 0 && t.tokenInfo.symbol).map(t => {
                 const csa = Web3.utils.toChecksumAddress(t.tokenInfo.address)

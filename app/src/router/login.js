@@ -12,6 +12,10 @@ export default [
         name: 'login',
         path: '/login',
         component: () => import('pages/Verto/Landing.vue')
+      }, {
+        name: 'login',
+        path: '/login/:nextUrl',
+        component: () => import('pages/Verto/ConnectToVerto.vue')
       },
       {
         name: 'create-password',
@@ -40,20 +44,6 @@ export default [
         component: () => import('pages/Verto/CruxPaySetup.vue'),
         meta: {
           authRequired: false
-        }
-      },
-      {
-        path: '/vdexnode',
-        component: () => import('pages/vDexNode/Index.vue'),
-        meta: {
-          requiresAuth: true
-        }
-      },
-      {
-        path: '/vdexnode/settings',
-        component: () => import('pages/vDexNode/Settings.vue'),
-        meta: {
-          requiresAuth: true
         }
       },
       // {
