@@ -20,7 +20,7 @@
         <div class="standard-content--footer full-width justify-end">
             <span v-show="!passHasError" class="q-pl-md q-pt-md cursor-pointer text-grey" @click="passHasError = true">Restore</span>
             <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" />
-            <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Connect" @click="login" />
+            <q-btn class="action-link next" :loading="spinnerVisible" color="deep-purple-14" text-color="white" label="Connect" @click="spinnerVisible = true ; login()" />
         </div>
         <div class="standard-content--footer auto full-width justify-center">
             <span></span>
@@ -68,6 +68,7 @@ export default {
       deleteConfig: false,
       version: {},
       restoreFromWords: false,
+      spinnerVisible: false,
       showSubmit: false
     }
   },
@@ -113,14 +114,18 @@ export default {
         this.passHasError = true
         return
       }
+      this.spinnerVisible = true
       const results = await configManager.login(this.password)
       if (results.success) {
-        await initWallet()
-        this.$store.dispatch('investment/getMarketDataVsUSD')
-        this.$store.commit('settings/temporary', this.password)
-        this.$router.push({
-          path: this.$route.params.nextUrl ? this.$route.params.nextUrl : '/verto/dashboard'
-        })
+        initWallet()
+        setTimeout(() => {
+          this.$store.dispatch('investment/getMarketDataVsUSD')
+          this.$store.commit('settings/temporary', this.password)
+          this.$router.push({
+            path: this.$route.params.nextUrl ? this.$route.params.nextUrl : '/verto/dashboard'
+          })
+        },
+        3000)
         // this.$router.push({ path: 'vertomanager' })
       } else {
         if (results.message === 'no_default_key') {
@@ -131,6 +136,7 @@ export default {
           // this.startRestoreConfig()
           this.passHasError = true
         }
+        this.spinnerVisible = false
       }
     },
     async destroyData () {
