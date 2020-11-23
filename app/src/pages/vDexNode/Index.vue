@@ -736,14 +736,14 @@ export default {
     }
   },
   beforeDestroy () {
-    this.destroIntervals()
+    this.destroyIntervals()
   },
   methods: {
     initAccount (account) {
-      this.destroIntervals()
+      this.destroyIntervals()
       this.$store.commit('vdexnode/setAccountName', account.name)
       this.$store.commit('vdexnode/setPublicKey', account.key)
-      account.privateKey = this.accounts[0].privateKey
+      // account.privateKey = this.accounts[0].privateKey
       this.initEosAPI(account.privateKey)
 
       // to load countdown faster call getRewardHistoryData firstly
@@ -773,7 +773,7 @@ export default {
         var newValue = `\neoskey="${this.identity.publicKey }"\n` // eslint-disable-line
       this.script = this.script.replace(new RegExp(re, 'g'), newValue)
     },
-    destroIntervals () {
+    destroyIntervals () {
       clearInterval(this.m3)
       // TODO: uncomment when feature will be enabled
       // clearInterval(this.m4)
