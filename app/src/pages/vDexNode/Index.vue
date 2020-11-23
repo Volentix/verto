@@ -32,8 +32,7 @@
                 <div class="col q-py-sm q-px-sm">
                     <div class="row justify-end">
                         <q-btn outline rounded color="vgreen" class="q-mx-xs" label="Get vDex node" @click="installDialog = true" />
-                        <q-btn flat round color="vgold" class="q-mx-xs" icon="fas fa-sliders-h" to="/settings" />
-                        <q-btn flat round color="vgold" class="q-mx-xs" icon="fas fa-sign-out-alt" to="/verto/dashboard" />
+                        <q-btn icon="arrow_back_ios" label="Back to verto" flat rounded color="vgreen" class="q-mx-xs" to="/verto/dashboard" />
                     </div>
                 </div>
             </div>
