@@ -115,7 +115,7 @@ export default {
       }
       const results = await configManager.login(this.password)
       if (results.success) {
-        initWallet()
+        await initWallet()
         this.$store.dispatch('investment/getMarketDataVsUSD')
         this.$store.commit('settings/temporary', this.password)
         this.$router.push({
