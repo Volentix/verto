@@ -1,0 +1,471 @@
+<template>
+<q-page class="column flex-center text-black bg-white">
+    <div class="landing" style="background: url('statics/landing_bg.png');">
+        <transition enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
+            <h2 class="landing--title">
+                <strong>VERTO</strong> <b class="version">{{ version }}</b>
+                <span>Connect to your wallet </span>
+                <img src="statics/picto_verto.svg" alt="">
+            </h2>
+        </transition>
+        <div v-if="transactionHash" class="standard-content--body full-width" >
+            <div class="standard-content--body__form">
+              <p class="text-body1">Transaction submitted <router-link class="float-right" to="/verto/dashboard">Dashboard <q-icon name="chevron_right" /></router-link></p>
+                  <q-input  bottom-slots v-model="transactionHash" readonly rounded class="input-input pr80" outlined color="purple" type="text">
+                                <template v-slot:append>
+                                  <div class="flex justify-end">
+                                    <q-btn flat unelevated text-color="grey" @click="copyToClipboard(transactionHash, 'Transaction  hash')" round class="btn-copy" icon="file_copy" />
+                                  </div>
+                                </template>
+                                <template v-slot:hint>
+                                  <div class="cursor-pointer q-pl-lg q-pt-sm" @click="step = 1"><q-icon name="keyboard_backspace" /> Go Back</div>
+                                </template>
+                                <template v-slot:counter>
+                                  <a :href="'https://bloks.io/transaction/' + transactionHash" class="text-body2 text-black" target="_blank"> Follow <img width="18" src="https://bloks.io/favicon-32x32.png?v=BG7PP2QPNi" /> </a>
+                                </template>
+                              </q-input>
+            </div>
+        </div>
+        <div class="standard-content--body full-width" v-else-if="!$store.state.wallets.tokens.length">
+            <div class="standard-content--body__form">
+                <q-input ref="psswrd" v-model="password" @keyup.enter="login" @input="checkPassword" :error="passHasError" rounded outlined color="deep-purple-14" :type="isPwd ? 'password' : 'text'" label="Verto Password" hint="*Minimum of 8 characters">
+                    <template v-slot:append>
+                        <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                    </template>
+                </q-input>
+            </div>
+        </div>
+        <div class="standard-content--body full-width q-pb-lg" v-else>
+            <div class="standard-content--body__form">
+                  <q-select
+                    class="select-input"
+                    light
+                    separator
+                    filled
+                    rounded
+                    v-model="account"
+                    :options="$store.state.wallets.tokens.filter(o => ['eth','eos'].includes(o.type)).map(token => {
+                      return  {
+                        label: token.name.toLowerCase(),
+                        value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
+                        key: token.key,
+                        image: token.icon,
+                        amount:token.amount,
+                        type: token.type
+                      }
+                    })"
+                  >
+                    <template v-slot:option="scope">
+                      <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                        <q-item-section avatar>
+                          <q-icon :name="`img:${scope.opt.image}`" />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label v-html="scope.opt.label" />
+                          <q-item-label>
+                           Balance: {{parseFloat(scope.opt.amount).toFixed(4)}} {{scope.opt.type.toUpperCase()}}
+                          </q-item-label>
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                    <template v-slot:selected>
+                     <q-item-section avatar>
+                          <q-icon :name="`img:${account.image}`" />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label v-html="account.label" />
+                           <q-item-label v-if="account.amount">
+                           Balance: {{parseFloat(account.amount).toFixed(4)}} {{account.type.toUpperCase()}}
+                          </q-item-label>
+                        </q-item-section>
+                    </template>
+                </q-select>
+
+         <q-list separator>
+      <q-item v-if="account.value.length">
+        <q-item-section>
+          <q-item-label class="text-bold">From:</q-item-label>
+          <q-item-label caption lines="2">{{account.label}}</q-item-label>
+        </q-item-section>
+
+        <q-item-section side top>
+           <q-icon :name="`img:${account.image}`" />
+        </q-item-section>
+      </q-item>
+
+      <q-item>
+        <q-item-section>
+          <q-item-label class="text-bold">To</q-item-label>
+          <q-item-label caption lines="2">berthonythe4</q-item-label>
+          </q-item-section>
+
+        <q-item-section  v-if="account.value.length" side top>
+           <q-icon :name="`img:${account.image}`" />
+        </q-item-section>
+      </q-item>
+
+      <q-item>
+        <q-item-section>
+          <q-item-label class="text-bold">Amount </q-item-label>
+          <q-item-label caption lines="2">3 EOS</q-item-label>
+          </q-item-section>
+
+      </q-item>
+     </q-list>
+      </div>
+        </div>
+        <div v-if="!transactionHash" class="standard-content--footer full-width flex  justify-end">
+            <span v-show="!passHasError" :class="[loggedIn ? '' : '' , 'q-pl-md q-pt-md cursor-pointer text-grey']" @click="passHasError = true">{{loggedIn ? 'Cancel' : 'Restore'}}</span>
+            <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" />
+            <q-btn class="action-link next" :disable="loggedIn && !account.value.length" color="deep-purple-14" text-color="white" :label="loggedIn ? 'Sign' : 'Connect'" @click="loggedIn ? transactionHash = 'f1b275b26029fd9e8e34a8f77058ff842e29a5a4f62516b2ccd57f00c3d0d7ae': login()" />
+        </div>
+        <div class="standard-content--footer auto full-width justify-center">
+            <span></span>
+            <q-btn flat v-show="passHasError" @click="restoreFromWords = true" outline class="back" text-color="deep-purple-14" label="Restore from 24 Words" />
+            <span></span>
+        </div>
+        <div class="landing--volentix-logo">
+            <a href="https://www.volentix.io" target="_blank"><img src="statics/vtx_black.svg" class="svg" /></a>
+        </div>
+        <span class="landing--bottom-bar"></span>
+    </div>
+    <q-dialog v-model="restoreFromWords">
+        <q-card class="q-pa-lg">
+            <q-toolbar>
+                <q-avatar><img src="statics/icon.png"></q-avatar>
+                <q-toolbar-title><span class="text-weight-bold">Restore from</span> 24 Words</q-toolbar-title>
+                <q-btn flat round dense icon="close" v-close-popup />
+            </q-toolbar>
+            <q-card-section class="text-h6">
+                Are you sure? This is irriversible! Current config will be errased and Restore process will begin after selecting a new verto password.
+            </q-card-section>
+            <q-card-actions align="right" class="q-pr-sm">
+                <q-btn label="Yes" flat @click="destroyData()" class="yes-btn" color="primary" v-close-popup />
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
+</q-page>
+</template>
+
+<script>
+import configManager from '@/util/ConfigManager'
+import {
+  version
+} from '../../../package.json'
+import initWallet from '@/util/Wallets2Tokens'
+export default {
+  name: 'Login',
+  data () {
+    return {
+      hasConfig: false,
+      passHasError: false,
+      password: '',
+      transactionHash: false,
+      isPwd: true,
+      deleteConfigFail: false,
+      deleteConfig: false,
+      version: {},
+      restoreFromWords: false,
+      showSubmit: false,
+      accounts: [],
+      loggedIn: false,
+      account: {
+        label: 'Select a wallet',
+        image: '/statics/picto_verto.svg',
+        value: '',
+        amaount: 0,
+        type: ''
+      }
+    }
+  },
+  async created () {
+    this.accounts = this.$store.state.wallets.tokens.map(token => {
+      return {
+        label: token.name.toLowerCase(),
+        value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
+        key: token.key,
+        image: token.icon,
+        type: token.type
+      }
+    })
+
+    this.hasConfig = !!await configManager.hasVertoConfig()
+    if (!this.hasConfig) {
+      this.$router.push({
+        name: 'create-password'
+      })
+    }
+    this.$q.notify.registerType('my-notif', {
+      icon: 'announcement',
+      progress: true,
+      color: 'deep-purple-14',
+      textColor: 'white',
+      position: 'top'
+    })
+    this.triggerCustomRegisteredType1()
+  },
+  async mounted () {
+    this.version = version
+    this.$refs.psswrd.focus()
+  },
+  methods: {
+    checkPassword () {
+      if (this.password.length > 1) {
+        this.showSubmit = true
+      } else {
+        this.showSubmit = false
+      }
+    },
+    async startRestoreConfig () {
+      this.$router.push({
+        name: 'restoreWallet',
+        params: {
+          returnto: 'settings'
+        }
+      })
+    },
+    signTransaction () {
+
+    },
+    async login () {
+      this.passHasError = false
+      if (!this.password) {
+        this.passHasError = true
+        return
+      }
+      const results = await configManager.login(this.password)
+      if (results.success) {
+        this.$store.commit('settings/temporary', this.password)
+        initWallet()
+        this.loggedIn = true
+        this.login = 'Sign'
+      } else {
+        if (results.message === 'no_default_key') {
+          this.$router.push({
+            path: 'vertomanager'
+          })
+        } else {
+          // this.startRestoreConfig()
+          this.passHasError = true
+        }
+      }
+    },
+    async destroyData () {
+      try {
+        await configManager.destroyConfig()
+        this.hasConfig = false
+        this.deleteConfig = false
+        this.$q.notify({
+          color: 'positive',
+          message: 'Config successfully deleted'
+        })
+        this.$router.push({
+          name: 'create-password'
+        })
+      } catch (e) {
+        this.deleteConfigFail = true
+        this.deleteConfig = false
+      }
+    },
+    triggerCustomRegisteredType1 () {
+      this.$q.notify({
+        type: 'my-notif',
+        message: `This app is in beta, use at your own risk.`
+      })
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+@import "~@/assets/styles/variables.scss";
+a {
+    text-decoration: none;
+}
+.landing {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+
+    &--title {
+        font-size: 30px;
+        font-weight: 100;
+        position: relative;
+        padding-left: 20px;
+        line-height: 24px;
+        font-family: $Franklin;
+        position: relative;
+        margin-left: 32%;
+
+        img {
+            position: absolute;
+            max-width: 170px;
+            right: 100%;
+            top: -60px;
+            width: 200px;
+            opacity: .6;
+        }
+
+        b.version {
+            // position: absolute;
+            // right: 0px;
+            // bottom: -26px;
+            font-weight: $regular;
+            font-size: 15px;
+            margin-left: 10px;
+        }
+
+        span {
+            font-size: 20px;
+            margin-top: 8px;
+            display: block;
+            color: #000000;
+            font-weight: $regular;
+        }
+
+        &__sub {
+            font-size: 18px;
+            text-align: center;
+            line-height: 30px;
+            margin-top: 0px;
+        }
+
+        strong {
+            font-weight: bold;
+        }
+
+        &:before {
+            content: "";
+            width: 14px;
+            height: 100%;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            background: #7900FF;
+            background: transparent linear-gradient(180deg, #7900FF 0%, #00D0DF 100%) 0% 0% no-repeat padding-box;
+        }
+    }
+
+    &--volentix-logo {
+        margin-top: 9px;
+        text-decoration: none;
+        color: #000 !important;
+        font-size: 29px;
+        position: relative;
+        text-transform: uppercase;
+        margin-top: 0px;
+        color: #000 !important;
+        position: absolute;
+        bottom: 20px;
+        transform: scale(.55);
+
+        img {
+            top: 7px;
+            position: relative;
+            width: 40px;
+        }
+
+        &:after {
+            content: "Volentix";
+            font-family: $Franklin;
+            font-weight: $light;
+            position: relative;
+            left: 0px;
+            top: 0px;
+            margin-left: 10px;
+        }
+
+        &:after {
+            top: -8px;
+        }
+    }
+
+    &--bottom-bar {
+        position: absolute;
+        bottom: 10px;
+        width: 130px;
+        height: 4px;
+        background-color: #555869;
+        opacity: .2;
+    }
+
+    @media screen and (min-width: 768px) {
+        &--title {
+            margin-left: 8%;
+        }
+    }
+}
+
+.standard-content {
+    padding: 5% 10%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &--body {
+        margin-top: 35%;
+        margin-bottom: 5%;
+
+        @media screen and (min-width: 768px) {
+            margin-top: 5%;
+            margin-bottom: 0%;
+            max-width: 400px;
+        }
+    }
+
+    &--footer {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-center;
+        min-height: 100px;
+
+        &.auto {
+            min-height: unset;
+        }
+
+        @media screen and (min-width: 768px) {
+            max-width: 400px;
+        }
+
+        .action-link {
+            height: 50px;
+            text-transform: initial !important;
+            font-size: 16px;
+            letter-spacing: .5px;
+            border-radius: 40px;
+            width: 48%;
+            margin-left: 0px;
+
+            &.back {
+                background-color: #B0B0B0 !important;
+            }
+        }
+
+    }
+}
+
+.q-card {
+    border-radius: 25px;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 35px rgba(0, 0, 0, 0.14), 0 1px 10px rgba(0, 0, 0, 0.12);
+}
+
+.yes-btn {
+    color: #FFF !important;
+    background-color: #00D0DF !important;
+    text-transform: initial !important;
+    padding: 10px 30px;
+    border-radius: 50px;
+    font-weight: $light;
+}
+</style>
