@@ -42,8 +42,6 @@ export default function (/* { store, ssrContext } */) {
   })
 
   Router.beforeEach((to, from, next) => {
-    console.log(777, to, to.matched.some(record => record.meta.authRequired))
-
     if (to.matched.some(record => record.meta.needskeyscreated)) {
       if (!store.state.currentwallet || !store.state.currentwallet.config.keys || store.state.currentwallet.config.keys.length < 1) {
         next({
@@ -54,11 +52,10 @@ export default function (/* { store, ssrContext } */) {
         next()
       }
     } else if (to.matched.some(record => record.meta.authRequired)) {
-      console.log(666, to)
       if (!store.state.currentwallet || store.state.currentwallet.loggedIn === false) {
         next({
-          path: '/login',
-          params: { nextUrl: to.fullPath }
+          name: 'login',
+          params: { nextUrl: to.path }
         })
       } else {
         next()
