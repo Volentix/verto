@@ -161,13 +161,13 @@ export default {
     filterDepositCoin (val, update, abort) {
       update(() => {
         const needle = val.toLowerCase()
-        this.depositCoinOptions = this.depositCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+        this.depositCoinOptions = this.depositCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1 || v.label.toLowerCase().indexOf(needle) > -1)
       })
     },
     filterDestinationCoin (val, update, abort) {
       update(() => {
         const needle = val.toLowerCase()
-        this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1)
+        this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1 || v.label.toLowerCase().indexOf(needle) > -1)
       })
     }
   },
