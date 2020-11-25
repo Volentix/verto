@@ -166,17 +166,18 @@ class Lib {
         // const bitcore = require('bitcore-lib')
         const bitcore = require('bitcore-lib')
         const explorers = require('bitcore-explorers')
-        const insight = new explorers.Insight()
+        const insight = new explorers.Insight(process.env[store.state.settings.network].CACHE + 'https://insight.bitpay.com')
 
         let message, success
         try {
-          let privateKey = new bitcore.PrivateKey(key)
+          // eslint-disable-next-line new-cap
+          let privateKey = new bitcore.PrivateKey.fromWIF(key)
 
           insight.getUnspentUtxos(from, function (error, utxos) {
             if (error) {
-              // //console.log(error)
+              console.log(error)
             } else {
-              // //console.log(utxos)
+              console.log(utxos)
               var tx = new bitcore.Transaction()
                 .from(utxos)
                 .to(to, value * 100000000)
@@ -187,10 +188,10 @@ class Lib {
               return new Promise(async (resolve, reject) => {
                 insight.broadcast(tx, function (error, transactionId) {
                   if (error) {
-                    // //console.log(error)
+                    console.log(error)
                     return reject()
                   } else {
-                    // //console.log(transactionId)
+                    console.log(transactionId)
                     resolve({
                       message: `https://www.blockchain.com/btc/tx/${transactionId}`,
                       success: true
