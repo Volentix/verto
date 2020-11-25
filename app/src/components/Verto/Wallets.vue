@@ -532,6 +532,7 @@ export default {
       }
       console.log('f.staked', f.staked)
     })
+    console.log(JSON.stringify(this.$store.state.wallets.tokens))
   },
   computed: {
     //   $store.state.wallets.tokens.filter(this.filterdWalletList)
