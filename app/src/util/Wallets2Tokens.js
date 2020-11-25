@@ -152,24 +152,22 @@ class Wallets2Tokens {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
           }).then(res => {
             let tokenSets = res.data.rebalancing_sets
-            console.log('ethplorer.tokens', ethplorer.tokens)
+
             if (ethplorer.tokens) {
-              ethplorer.tokens.filter(t => t.balance > 0 && t.symbol).map(t => {
-                t.tokenInfo.image = t.tokenInfo.image ? t.tokenInfo.image : 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + Web3.utils.toChecksumAddress(t.tokenInfo.address) + '/logo.png'
+              ethplorer.tokens.filter(t => t.balance > 0 && t.tokenInfo.symbol).map(t => {
                 const csa = Web3.utils.toChecksumAddress(t.tokenInfo.address)
 
-                if (!t.tokenInfo.image) {
-                  try {
-                    const status = (axios.get('https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + csa + '/logo.png', { validateStatus: false })).status
-                    if (status === 200) {
-                      t.tokenInfo.image = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/' + csa + '/logo.png'
-                    }
-                  } catch (error) {
-                    t.tokenInfo.image = tokenSets.find(s => s.address === t.tokenInfo.address).image
-                    // console.log('eth token not on trustwallet', t, csa)
+                try {
+                  const status = (axios.get('https://tokens.1inch.exchange/' + csa.toLowerCase() + '.png', { validateStatus: false })).status
+                  if (status === 200) {
+                    t.tokenInfo.image = 'https://tokens.1inch.exchange/' + csa.toLowerCase() + '.png'
+                  } else {
+                    t.tokenInfo.image = 'https://etherscan.io/images/main/empty-token.png'
                   }
+                } catch (error) {
+                  t.tokenInfo.image = tokenSets.find(s => s.address === t.tokenInfo.address).image
+                  // console.log('eth token not on trustwallet', t, csa)
                 }
-
                 self.tableData.push({
                   selected: false,
                   disabled: false,

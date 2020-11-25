@@ -18,6 +18,13 @@ export default [
         }
       },
       {
+        path: '/verto/vdexnode',
+        component: () => import('pages/vDexNode/Index.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'secret-words',
         path: '/verto/secret-words',
         component: () => import('pages/Verto/SecretWords.vue'),
@@ -126,9 +133,26 @@ export default [
         }
       },
       {
+        name: 'buycpu',
+        path: '/verto/buycpu',
+        component: () => import('pages/Verto/BuyCPU.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
         name: 'stake',
         path: '/verto/stake',
         component: () => import('pages/Verto/Stake.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        name: 'stakeproxy',
+        path: '/verto/stakeproxy',
+        component: () => import('pages/Verto/StakeProxyEos.vue'),
         meta: {
           authRequired: true
         }
