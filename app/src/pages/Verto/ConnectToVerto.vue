@@ -232,31 +232,29 @@ export default {
       this.passHasError = false
       if (!this.password) {
         this.passHasError = true
+        this.spinnerVisible = false
         return
       }
       const results = await configManager.login(this.password)
       if (results.success) {
         this.$store.commit('settings/temporary', this.password)
-        initWallet()
-
-        setTimeout(() => {
-        },
-        3000)
+        await initWallet()
 
         if (this.$route.query.url) {
-          let accounts = this.$store.state.wallets.tokens.map(token => {
-            delete token.privateKey
-            delete token.privateKeyEncrypted
-            delete token.origin
+          setTimeout(() => {
+            let accounts = this.$store.state.wallets.tokens.map(token => {
+              delete token.privateKey
+              delete token.privateKeyEncrypted
+              delete token.origin
 
-            return token
-          })
-
-          window.top.postMessage({ accounts: accounts }, '*')
-
-          if (this.$route.query.redirect === 'true') {
-            window.top.location.href = this.$route.query.url + '?accounts=' + encodeURIComponent(JSON.stringify(accounts))
-          }
+              return token
+            })
+            window.top.postMessage({ accounts: accounts }, '*')
+            if (this.$route.query.redirect === 'true') {
+              window.top.location.href = this.$route.query.url + '?accounts=' + encodeURIComponent(JSON.stringify(accounts))
+            }
+          },
+          3000)
         } else {
           this.loggedIn = true
           this.login = 'Sign'
@@ -271,7 +269,6 @@ export default {
           this.passHasError = true
         }
       }
-      this.spinnerVisible = false
     },
     async destroyData () {
       try {
