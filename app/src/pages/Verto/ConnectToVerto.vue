@@ -26,7 +26,7 @@
                               </q-input>
             </div>
         </div>
-        <div class="standard-content--body full-width" v-else-if="!$store.state.wallets.tokens.length">
+        <div class="standard-content--body full-width" v-else-if="!$store.state.wallets.tokens.length && !loggedIn">
             <div class="standard-content--body__form">
                 <q-input ref="psswrd" v-model="password" @keyup.enter="login" @input="checkPassword" :error="passHasError" rounded outlined color="deep-purple-14" :type="isPwd ? 'password' : 'text'" label="Verto Password" hint="*Minimum of 8 characters">
                     <template v-slot:append>
@@ -35,7 +35,7 @@
                 </q-input>
             </div>
         </div>
-        <div class="standard-content--body full-width q-pb-lg" v-else>
+        <div class="standard-content--body full-width q-pb-lg" v-else-if="loggedIn">
             <div class="standard-content--body__form">
                   <q-select
                     class="select-input"
@@ -117,7 +117,7 @@
         <div v-if="!transactionHash" class="standard-content--footer full-width flex  justify-end">
             <span v-show="!passHasError" :class="[loggedIn ? '' : '' , 'q-pl-md q-pt-md cursor-pointer text-grey']" @click="passHasError = true">{{loggedIn ? 'Cancel' : 'Restore'}}</span>
             <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" />
-            <q-btn class="action-link next" :disable="loggedIn && !account.value.length" color="deep-purple-14" text-color="white" :label="loggedIn ? 'Sign' : 'Connect'" @click="loggedIn ? transactionHash = 'f1b275b26029fd9e8e34a8f77058ff842e29a5a4f62516b2ccd57f00c3d0d7ae': login()" />
+            <q-btn class="action-link next" :disable="loggedIn && !account.value.length" color="deep-purple-14" text-color="white" :label="loggedIn ? 'Sign' : 'Connect'" :loading="spinnerVisible" @click="spinnerVisible = true ; loggedIn ? transactionHash = 'f1b275b26029fd9e8e34a8f77058ff842e29a5a4f62516b2ccd57f00c3d0d7ae': login()" />
         </div>
         <div class="standard-content--footer auto full-width justify-center">
             <span></span>
@@ -169,6 +169,7 @@ export default {
       showSubmit: false,
       accounts: [],
       loggedIn: false,
+      spinnerVisible: false,
       account: {
         label: 'Select a wallet',
         image: '/statics/picto_verto.svg',
@@ -231,14 +232,33 @@ export default {
       this.passHasError = false
       if (!this.password) {
         this.passHasError = true
+        this.spinnerVisible = false
         return
       }
       const results = await configManager.login(this.password)
       if (results.success) {
         this.$store.commit('settings/temporary', this.password)
-        initWallet()
-        this.loggedIn = true
-        this.login = 'Sign'
+        await initWallet()
+
+        if (this.$route.query.url) {
+          setTimeout(() => {
+            let accounts = this.$store.state.wallets.tokens.map(token => {
+              delete token.privateKey
+              delete token.privateKeyEncrypted
+              delete token.origin
+
+              return token
+            })
+            window.top.postMessage({ accounts: accounts }, '*')
+            if (this.$route.query.redirect === 'true') {
+              window.top.location.href = this.$route.query.url + '?accounts=' + encodeURIComponent(JSON.stringify(accounts))
+            }
+          },
+          3000)
+        } else {
+          this.loggedIn = true
+          this.login = 'Sign'
+        }
       } else {
         if (results.message === 'no_default_key') {
           this.$router.push({
