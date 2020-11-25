@@ -264,9 +264,6 @@
                                          <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Stake Proxy EOS
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
-                                        <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Buy CPU / NET' clickable v-ripple class="p-relative" to="/verto/buycpu">Buy CPU
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
                                         <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>

@@ -101,7 +101,11 @@ export default {
       if (!this.dex) {
         this.error = 'Cannot swap ' + this.depositCoin.value.toUpperCase() + ' to ' + this.destinationCoin.value
       } else {
-        this.$store.commit('settings/setDex', { dex: this.dex, destinationCoin: this.destinationCoin, depositCoin: this.depositCoin })
+        this.$store.commit('settings/setDex', {
+          dex: this.dex,
+          destinationCoin: this.destinationCoin,
+          depositCoin: this.depositCoin
+        })
       }
     },
     getCoinswitchCoins () {
@@ -109,7 +113,9 @@ export default {
       let headers = {
         'x-api-key': process.env[this.$store.state.settings.network].COINSWITCH_APIKEY
       }
-      this.$axios.get(url + '/v2/coins', { headers }).then((result) => {
+      this.$axios.get(url + '/v2/coins', {
+        headers
+      }).then((result) => {
         let coins = result.data.data
         coins.push({
           isActive: true,
@@ -140,7 +146,10 @@ export default {
           return 1
         })
 
-        this.$store.commit('settings/setCoinData', { source: 'coinswitch', data: coins })
+        this.$store.commit('settings/setCoinData', {
+          source: 'coinswitch',
+          data: coins
+        })
       })
     },
     get1inchCoins () {
@@ -174,7 +183,10 @@ export default {
           }
           return 1
         })
-        this.$store.commit('settings/setCoinData', { source: 'oneinch', data: coins })
+        this.$store.commit('settings/setCoinData', {
+          source: 'oneinch',
+          data: coins
+        })
       })
     },
     async getDefiboxCoins () {
@@ -189,11 +201,18 @@ export default {
       let coins = []
       pairs.forEach((value, index, array) => {
         let val = this.addCoinToGlobalList(value, 'token0', coins)
-        if (val) { coins.push(val) }
+        if (val && val.contract !== 'issue.newdex') {
+          coins.push(val)
+        }
         val = this.addCoinToGlobalList(value, 'token1', coins)
-        if (val) { coins.push(val) }
+        if (val && val.contract !== 'issue.newdex') {
+          coins.push(val)
+        }
       })
-      this.$store.commit('settings/setCoinData', { source: 'defibox', data: coins })
+      this.$store.commit('settings/setCoinData', {
+        source: 'defibox',
+        data: coins
+      })
     },
     addCoinToGlobalList (value, key, data) {
       let infosArray = value[key].symbol.split(',')

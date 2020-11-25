@@ -11,6 +11,49 @@
                     <!-- add your code here -->
 
                     <!-- Vdex component -->
+                     <q-dialog v-model="getPassword" persistent>
+            <q-card>
+              <q-card-section>
+                <div class="send-modal flex flex-center" :class="{ open: openModal }">
+                  <div class="send-modal__content q-pa-md column flex-center">
+                    <div class="send-modal__content--head">
+                      <span class="text-h5 --amount">Private key password</span>
+                      <q-btn color="white" rounded flat unelevated @click="hideModalFun()" class="close-btn" text-color="black" label="+" />
+                    </div>
+                    <div class="send-modal__content--body column flex-center full-width">
+                      <q-input
+                        v-model="privateKeyPassword"
+                        light
+                        rounded
+                        outlined
+                        class="full-width"
+                        color="green"
+                        label="Private Key Password"
+                        @input="checkPrivateKeyPassword"
+                        debounce="500"
+                        @keyup.enter="postOrder()"
+                        :type="isPwd ? 'password' : 'text'"
+                        :error="invalidPrivateKeyPassword"
+                        error-message="The private key password is invalid"
+                      >
+                        <template v-slot:append>
+                          <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                        </template>
+                      </q-input>
+
+                      <div class="flex justify-start full-width">
+                        <q-btn v-close-popup @click="spinnervisible = false" unelevated color="grey" class="--next-btn mr10" rounded label="Cancel" />
+                        <q-btn @click="postOrder();" unelevated color="deep-purple-14" class="--next-btn q-ml-md" rounded label="Submit transaction" />
+                      </div>
+                    </div>
+                    <div class="send-modal__content--footer">
+                      <div class="text-h4 --error" v-if="ErrorMessage">{{ ErrorMessage }}</div>
+                    </div>
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+          </q-dialog>
                     <div class="chain-tools-wrapper">
                         <div class="standard-content"></div>
                         <div class="chain-tools-wrapper--list open">
@@ -110,6 +153,11 @@
                                                                 <div class="flex justify-end items-center" style="width: 60px">
                                                                     <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
                                                                 </div>
+                                                                <template v-slot:hint>
+                                                                <span v-if="rateData">
+                                                                 Min: {{rateData.limitMinDepositCoin}}
+                                                                </span>
+                                                                </template>
                                                             </q-input>
                                                         </div>
                                                     </div>
@@ -174,10 +222,16 @@
                                                                 <div class="flex justify-end items-center" style="width: 60px">
                                                                     <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
                                                                 </div>
+                                                                <template v-slot:hint>
+                                                                <span v-if="rateData">
+                                                                Max: {{rateData.limitMaxDepositCoin}}
+                                                                </span>
+                                                                </template>
                                                             </q-input>
                                                         </div>
                                                     </div>
-                                                    <q-btn unelevated @click="pStep = 2" color="light-grey" text-color="black" label="Choose Accounts" class="text-capitalize chose_accounts full-width" />
+
+                                                    <q-btn unelevated :disable="depositQuantity == 0 || depositQuantity < rateData.limitMinDepositCoin || destinationQuantity > rateData.limitMaxDestinationCoin" @click="pStep = 2" color="light-grey" text-color="black" label="Choose Accounts" class="text-capitalize chose_accounts full-width" />
                                                 </div>
                                             </div>
                                             <div v-if="pStep === 2" class="prototype">
@@ -961,6 +1015,13 @@ export default {
   name: 'Coinswitch',
   data () {
     return {
+      openModal: false,
+      getPassword: false,
+      privateKey: false,
+      privateKeyPassword: null,
+      invalidPrivateKeyPassword: false,
+      ErrorMessage: false,
+      isPwd: true,
       pStep: 1,
       fetchingRate: false,
       model: null,
@@ -1286,7 +1347,6 @@ export default {
       this.depositCoin = this.depositCoinOptions[0]
       this.destinationCoin = this.depositCoinOptions[1]
     }
-    console.log(this.depositCoin, ' this.depositCoin')
   },
   methods: {
     getWindowWidth () {
@@ -1304,7 +1364,6 @@ export default {
       })
     },
     checkAddressMatchCoins () {
-      this.pStep = 3
       this.postOrder()
       // this.$refs.stepper.next()
     },
@@ -1466,7 +1525,6 @@ export default {
         }
         console.log(self.status, self.destinationCoin, 'self.destinationCoin')
         if (self.status === 'complete' && self.destinationCoin.value === 'vtx') {
-          console.log(1222)
           self.destinationCoinAmount = Math.trunc(result.data.data.destinationCoinAmount * 10000) / 10000
           self.orderVTX()
         }
@@ -1476,7 +1534,7 @@ export default {
       // check balance then...
       // let eosBal = Lib.balance('eos', this.toCoin.value, 'eos')
       let eosBal = (await eos.getCurrencyBalanceP(this.toCoin.value)).toString().split(' ')[0]
-      console.log('eosBal', eosBal)
+
       if (+eosBal < +this.destinationCoinAmount) {
         console.log('eos balance is yet to low to proceed: ', eosBal)
         setTimeout(() => {
@@ -1508,9 +1566,33 @@ export default {
         })
       }
     },
+    checkPrivateKeyPassword () {
+      const privateKeyEncrypted = JSON.stringify(this.toCoin.privateKeyEncrypted)
+      let privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
+
+      if (privateKey.success) {
+        this.privateKey = privateKey.key
+        this.invalidPrivateKeyPassword = false
+        this.hideModalFun()
+      } else {
+        this.invalidPrivateKeyPassword = true
+        return false
+      }
+    },
+    hideModalFun: function () {
+      this.openModal = false
+      this.openModalProgress = false
+    },
+    isPrivateKeyEncrypted () {
+      if (this.destinationCoin.value === 'vtx' && !this.toCoin.privateKey && this.toCoin.privateKeyEncrypted) {
+        this.getPassword = true
+        this.openModal = true
+        this.checkPrivateKeyPassword()
+      }
+    },
     postOrder () {
       const self = this
-      console.log('postOrder called', self.depositQuantity, ' + ', self.destinationQuantity)
+
       let depositCoinAmount = null
       let destinationCoinAmount = null
 
@@ -1523,7 +1605,9 @@ export default {
       this.refundAddress.address = this.refundAddress.address === '' ? this.fromCoin.value : this.refundAddress.address
       // console.log('this.refundAddress', this.refundAddress)
       this.destinationAddress.address = this.destinationAddress.address === '' ? this.toCoin.value : this.destinationAddress.address
-
+      this.isPrivateKeyEncrypted()
+      if (this.openModal) return
+      this.pStep = 3
       this.$axios.post(url + '/v2/order', {
         depositCoin: self.depositCoin.value,
         destinationCoin: self.destinationCoin.value === 'vtx' ? 'eos' : self.destinationCoin.value,
