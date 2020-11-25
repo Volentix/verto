@@ -18,6 +18,13 @@ export default [
         }
       },
       {
+        path: '/verto/vdexnode',
+        component: () => import('pages/vDexNode/Index.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'secret-words',
         path: '/verto/secret-words',
         component: () => import('pages/Verto/SecretWords.vue'),

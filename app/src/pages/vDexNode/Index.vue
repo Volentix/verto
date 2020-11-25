@@ -31,9 +31,26 @@
 
                 <div class="col q-py-sm q-px-sm">
                     <div class="row justify-end">
+                      <q-select   class="text-vgreen"  color="vgreen" rounded outline  @input="initAccount(account)" v-model="account" :options="accounts">
+                    <template v-slot:selected>
+                        <q-item>
+                            <q-item-section avatar>
+                                <q-icon class="option--avatar" :name="`img:https://files.coinswitch.co/public/coins/eos.png`" />
+                            </q-item-section>
+                            <q-item-section>
+                                <q-item-label class="text-vgreen">Change account</q-item-label>
+                                <q-item-label caption class="ellipsis mw200 text-white">{{ account.name }}</q-item-label>
+                            </q-item-section>
+                        </q-item>
+                    </template>
+                    <!-- <template v-slot:append>
+                        <q-avatar>
+                            <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
+                        </q-avatar>
+                    </template> -->
+                </q-select>
                         <q-btn outline rounded color="vgreen" class="q-mx-xs" label="Get vDex node" @click="installDialog = true" />
-                        <q-btn flat round color="vgold" class="q-mx-xs" icon="fas fa-sliders-h" to="/settings" />
-                        <q-btn flat round color="vgold" class="q-mx-xs" icon="fas fa-sign-out-alt" to="/verto/dashboard" />
+                        <q-btn icon="arrow_back_ios" label="Back to verto" flat rounded color="vgreen" class="q-mx-xs" to="/verto/dashboard" />
                     </div>
                 </div>
             </div>
@@ -679,6 +696,8 @@ export default {
       script: '',
       now: '',
       eosApi: null,
+      account: {},
+      accounts: [],
       daily_reward_calculation_countdown: {
         hours: '',
         minutes: '',
@@ -696,39 +715,14 @@ export default {
   mounted () {
     rpc = new EosRPC()
     let tableData = this.$store.state.wallets.tokens
-    let account = tableData.find(w => w.chain === 'eos' && w.type === 'eos')
-
-    this.$store.commit('vdexnode/setAccountName', account.name)
-    this.$store.commit('vdexnode/setPublicKey', account.key)
-
-    this.initEosAPI(account.privateKey)
-
-    // to load countdown faster call getRewardHistoryData firstly
-    this.$vDexNodeConfigManager.getRewardHistoryData()
-    this.$vDexNodeConfigManager.getAvailbleForRetrieval(this.identity.accountName)
-    this.int1 = setInterval(() => this.updateNow(), 1000)
-    this.int2 = setInterval(() => this.updateDailyRewardCountdown(), 1000)
-    this.int3 = setInterval(() => this.$vDexNodeConfigManager.getAvailbleForRetrieval(this.identity.accountName), 15000)
-    this.version = '1.0' // this.$utils.getVersion()
-    this.$vDexNodeConfigManager.accountRegistered(this.identity.accountName)
-    this.$vDexNodeConfigManager.accountRun(this.identity.accountName)
-    // TODO: not implemented yet
-    this.$store.commit('vdexnode/setEarned', '0.0000')
-    this.$store.state.vdexnode.status.time = this.$utils.getTime()
-    this.m1 = this.getInfoRare()
-
-    this.m2 = this.getInfoOften()
-    this.m3 = setInterval(() => this.getInfoOften(), 60000) // 60 sec
-    // TODO: uncomment when API fix the issue with different number of nodes in response
-    // this.m4 = setInterval(() => this.checkAccountRun(), 3600000)
-    this.m5 = setInterval(() => this.refresh(), 300000) // 5 min
-    this.m6 = setInterval(() => this.$vDexNodeConfigManager.getUserResources(this.identity.accountName), 5000)
-    this.getInstallScript()
-    this.getReadmeFromRepo()
-    // Pass public key
-    var re = '\neoskey="KEY"\n'
-        var newValue = `\neoskey="${this.identity.publicKey }"\n` // eslint-disable-line
-    this.script = this.script.replace(new RegExp(re, 'g'), newValue)
+    this.accounts = tableData.filter(w => w.chain === 'eos' && w.type === 'eos').map(o => {
+      o.label = o.name
+      o.value = o.name
+      return o
+    })
+    console.log(this.accounts)
+    this.account = this.accounts[0]
+    this.initAccount(this.account)
   },
   watch: {
     group: function (val, oldVal) {
@@ -742,18 +736,54 @@ export default {
     }
   },
   beforeDestroy () {
-    clearInterval(this.m3)
-    // TODO: uncomment when feature will be enabled
-    // clearInterval(this.m4)
-    clearInterval(this.m5)
-    clearInterval(this.m6)
-    clearInterval(this.m7)
-    clearInterval(this.int1)
-    clearInterval(this.int2)
-    clearInterval(this.int3)
+    this.destroyIntervals()
   },
   methods: {
+    initAccount (account) {
+      this.destroyIntervals()
+      this.$store.commit('vdexnode/setAccountName', account.name)
+      this.$store.commit('vdexnode/setPublicKey', account.key)
+      // account.privateKey = this.accounts[0].privateKey
+      this.initEosAPI(account.privateKey)
 
+      // to load countdown faster call getRewardHistoryData firstly
+      this.$vDexNodeConfigManager.getRewardHistoryData()
+      this.$vDexNodeConfigManager.getAvailbleForRetrieval(this.identity.accountName)
+      this.int1 = setInterval(() => this.updateNow(), 1000)
+      this.int2 = setInterval(() => this.updateDailyRewardCountdown(), 1000)
+      this.int3 = setInterval(() => this.$vDexNodeConfigManager.getAvailbleForRetrieval(this.identity.accountName), 15000)
+      this.version = '1.0' // this.$utils.getVersion()
+      this.$vDexNodeConfigManager.accountRegistered(this.identity.accountName)
+      this.$vDexNodeConfigManager.accountRun(this.identity.accountName)
+      // TODO: not implemented yet
+      this.$store.commit('vdexnode/setEarned', '0.0000')
+      this.$store.state.vdexnode.status.time = this.$utils.getTime()
+      this.m1 = this.getInfoRare()
+
+      this.m2 = this.getInfoOften()
+      this.m3 = setInterval(() => this.getInfoOften(), 60000) // 60 sec
+      // TODO: uncomment when API fix the issue with different number of nodes in response
+      // this.m4 = setInterval(() => this.checkAccountRun(), 3600000)
+      this.m5 = setInterval(() => this.refresh(), 300000) // 5 min
+      this.m6 = setInterval(() => this.$vDexNodeConfigManager.getUserResources(this.identity.accountName), 5000)
+      this.getInstallScript()
+      this.getReadmeFromRepo()
+      // Pass public key
+      var re = '\neoskey="KEY"\n'
+        var newValue = `\neoskey="${this.identity.publicKey }"\n` // eslint-disable-line
+      this.script = this.script.replace(new RegExp(re, 'g'), newValue)
+    },
+    destroyIntervals () {
+      clearInterval(this.m3)
+      // TODO: uncomment when feature will be enabled
+      // clearInterval(this.m4)
+      clearInterval(this.m5)
+      clearInterval(this.m6)
+      clearInterval(this.m7)
+      clearInterval(this.int1)
+      clearInterval(this.int2)
+      clearInterval(this.int3)
+    },
     initEosAPI (privateKey) {
       this.eosApi = new EosAPI(privateKey)
     },

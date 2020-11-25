@@ -12,7 +12,7 @@
         <div class="col col-5 flex justify-end q-pr-xl items-center menu">
             <!-- to="/verto/earn/use-referral-account" -->
             <!-- <router-link disabled>Refer & Earn</router-link> -->
-            <router-link to="/vdexnode/">vDexNode</router-link>
+            <router-link to="/verto/vdexnode/">vDexNode</router-link>
             <router-link to="/verto/exchange">Exchange</router-link>
             <a href="javascript:void(0)" @click="logout">
                 <q-icon class="reverse" name="exit_to_app" /> Logout
@@ -27,13 +27,11 @@
 
 <script>
 // import configManager from '@/util/ConfigManager'
-import FreeCPUDialog from './Defi/FreeCPUDialog'
 import { VTextMarquee } from 'vue-text-marquee'
 
 export default {
   name: 'TopMenu',
   components: {
-    FreeCPUDialog,
     VTextMarquee: VTextMarquee
   },
   data () {

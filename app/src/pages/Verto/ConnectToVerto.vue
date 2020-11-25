@@ -4,11 +4,29 @@
         <transition enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
             <h2 class="landing--title">
                 <strong>VERTO</strong> <b class="version">{{ version }}</b>
-                <span>Multi-Currency wallet</span>
+                <span>Connect to your wallet </span>
                 <img src="statics/picto_verto.svg" alt="">
             </h2>
         </transition>
-        <div class="standard-content--body full-width">
+        <div v-if="transactionHash" class="standard-content--body full-width" >
+            <div class="standard-content--body__form">
+              <p class="text-body1">Transaction submitted <router-link class="float-right" to="/verto/dashboard">Dashboard <q-icon name="chevron_right" /></router-link></p>
+                  <q-input  bottom-slots v-model="transactionHash" readonly rounded class="input-input pr80" outlined color="purple" type="text">
+                                <template v-slot:append>
+                                  <div class="flex justify-end">
+                                    <q-btn flat unelevated text-color="grey" @click="copyToClipboard(transactionHash, 'Transaction  hash')" round class="btn-copy" icon="file_copy" />
+                                  </div>
+                                </template>
+                                <template v-slot:hint>
+                                  <div class="cursor-pointer q-pl-lg q-pt-sm" @click="step = 1"><q-icon name="keyboard_backspace" /> Go Back</div>
+                                </template>
+                                <template v-slot:counter>
+                                  <a :href="'https://bloks.io/transaction/' + transactionHash" class="text-body2 text-black" target="_blank"> Follow <img width="18" src="https://bloks.io/favicon-32x32.png?v=BG7PP2QPNi" /> </a>
+                                </template>
+                              </q-input>
+            </div>
+        </div>
+        <div class="standard-content--body full-width" v-else-if="!$store.state.wallets.tokens.length">
             <div class="standard-content--body__form">
                 <q-input ref="psswrd" v-model="password" @keyup.enter="login" @input="checkPassword" :error="passHasError" rounded outlined color="deep-purple-14" :type="isPwd ? 'password' : 'text'" label="Verto Password" hint="*Minimum of 8 characters">
                     <template v-slot:append>
@@ -17,10 +35,89 @@
                 </q-input>
             </div>
         </div>
-        <div class="standard-content--footer full-width justify-end">
-            <span v-show="!passHasError" class="q-pl-md q-pt-md cursor-pointer text-grey" @click="passHasError = true">Restore</span>
+        <div class="standard-content--body full-width q-pb-lg" v-else>
+            <div class="standard-content--body__form">
+                  <q-select
+                    class="select-input"
+                    light
+                    separator
+                    filled
+                    rounded
+                    v-model="account"
+                    :options="$store.state.wallets.tokens.filter(o => ['eth','eos'].includes(o.type)).map(token => {
+                      return  {
+                        label: token.name.toLowerCase(),
+                        value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
+                        key: token.key,
+                        image: token.icon,
+                        amount:token.amount,
+                        type: token.type
+                      }
+                    })"
+                  >
+                    <template v-slot:option="scope">
+                      <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                        <q-item-section avatar>
+                          <q-icon :name="`img:${scope.opt.image}`" />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label v-html="scope.opt.label" />
+                          <q-item-label>
+                           Balance: {{parseFloat(scope.opt.amount).toFixed(4)}} {{scope.opt.type.toUpperCase()}}
+                          </q-item-label>
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                    <template v-slot:selected>
+                     <q-item-section avatar>
+                          <q-icon :name="`img:${account.image}`" />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label v-html="account.label" />
+                           <q-item-label v-if="account.amount">
+                           Balance: {{parseFloat(account.amount).toFixed(4)}} {{account.type.toUpperCase()}}
+                          </q-item-label>
+                        </q-item-section>
+                    </template>
+                </q-select>
+
+         <q-list separator>
+      <q-item v-if="account.value.length">
+        <q-item-section>
+          <q-item-label class="text-bold">From:</q-item-label>
+          <q-item-label caption lines="2">{{account.label}}</q-item-label>
+        </q-item-section>
+
+        <q-item-section side top>
+           <q-icon :name="`img:${account.image}`" />
+        </q-item-section>
+      </q-item>
+
+      <q-item>
+        <q-item-section>
+          <q-item-label class="text-bold">To</q-item-label>
+          <q-item-label caption lines="2">berthonythe4</q-item-label>
+          </q-item-section>
+
+        <q-item-section  v-if="account.value.length" side top>
+           <q-icon :name="`img:${account.image}`" />
+        </q-item-section>
+      </q-item>
+
+      <q-item>
+        <q-item-section>
+          <q-item-label class="text-bold">Amount </q-item-label>
+          <q-item-label caption lines="2">3 EOS</q-item-label>
+          </q-item-section>
+
+      </q-item>
+     </q-list>
+      </div>
+        </div>
+        <div v-if="!transactionHash" class="standard-content--footer full-width flex  justify-end">
+            <span v-show="!passHasError" :class="[loggedIn ? '' : '' , 'q-pl-md q-pt-md cursor-pointer text-grey']" @click="passHasError = true">{{loggedIn ? 'Cancel' : 'Restore'}}</span>
             <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" />
-            <q-btn class="action-link next" :loading="spinnerVisible" color="deep-purple-14" text-color="white" label="Connect" @click="spinnerVisible = true ; login()" />
+            <q-btn class="action-link next" :disable="loggedIn && !account.value.length" color="deep-purple-14" text-color="white" :label="loggedIn ? 'Sign' : 'Connect'" @click="loggedIn ? transactionHash = 'f1b275b26029fd9e8e34a8f77058ff842e29a5a4f62516b2ccd57f00c3d0d7ae': login()" />
         </div>
         <div class="standard-content--footer auto full-width justify-center">
             <span></span>
@@ -63,16 +160,35 @@ export default {
       hasConfig: false,
       passHasError: false,
       password: '',
+      transactionHash: false,
       isPwd: true,
       deleteConfigFail: false,
       deleteConfig: false,
       version: {},
       restoreFromWords: false,
-      spinnerVisible: false,
-      showSubmit: false
+      showSubmit: false,
+      accounts: [],
+      loggedIn: false,
+      account: {
+        label: 'Select a wallet',
+        image: '/statics/picto_verto.svg',
+        value: '',
+        amaount: 0,
+        type: ''
+      }
     }
   },
   async created () {
+    this.accounts = this.$store.state.wallets.tokens.map(token => {
+      return {
+        label: token.name.toLowerCase(),
+        value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
+        key: token.key,
+        image: token.icon,
+        type: token.type
+      }
+    })
+
     this.hasConfig = !!await configManager.hasVertoConfig()
     if (!this.hasConfig) {
       this.$router.push({
@@ -108,25 +224,21 @@ export default {
         }
       })
     },
+    signTransaction () {
+
+    },
     async login () {
       this.passHasError = false
       if (!this.password) {
         this.passHasError = true
         return
       }
-      this.spinnerVisible = true
       const results = await configManager.login(this.password)
       if (results.success) {
+        this.$store.commit('settings/temporary', this.password)
         initWallet()
-        setTimeout(() => {
-          this.$store.dispatch('investment/getMarketDataVsUSD')
-          this.$store.commit('settings/temporary', this.password)
-          this.$router.push({
-            path: this.$route.params.nextUrl ? this.$route.params.nextUrl : '/verto/dashboard'
-          })
-        },
-        3000)
-        // this.$router.push({ path: 'vertomanager' })
+        this.loggedIn = true
+        this.login = 'Sign'
       } else {
         if (results.message === 'no_default_key') {
           this.$router.push({
@@ -136,7 +248,6 @@ export default {
           // this.startRestoreConfig()
           this.passHasError = true
         }
-        this.spinnerVisible = false
       }
     },
     async destroyData () {
@@ -168,7 +279,9 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
-
+a {
+    text-decoration: none;
+}
 .landing {
     height: 100%;
     width: 100%;
