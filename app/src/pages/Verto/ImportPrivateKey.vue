@@ -32,7 +32,7 @@
                                                     <span v-else>
                                                         <q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip>
                                                     </span>
-                                                    A valid EOS active key
+                                                    A valid EOS private key
                                                 </span>
                                             </li>
                                         </ul>
