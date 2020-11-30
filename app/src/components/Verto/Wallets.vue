@@ -17,7 +17,7 @@
                                 </q-item-section>
                                 <q-item-section class="item-info" v-if="!item.disabled">
                                     <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
-                                    <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
+                                    <span class="item-info--amountUSD">${{new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2)}}</span>
                                 </q-item-section>
                                 <q-item-section class="item-info" v-else>
                                     <span class="item-info--amount">in progress</span>
@@ -205,7 +205,7 @@
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
                                         <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
-                                        <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
+                                        <span class="item-info--amountUSD">${{new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-else>
                                         <span class="item-info--amount">in progress</span>
