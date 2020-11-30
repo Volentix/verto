@@ -115,8 +115,9 @@
       </div>
         </div>
         <div v-if="!transactionHash" class="standard-content--footer full-width flex  justify-end">
-            <span v-show="!passHasError" :class="[loggedIn ? '' : '' , 'q-pl-md q-pt-md cursor-pointer text-grey']" @click="passHasError = true">{{loggedIn ? 'Cancel' : 'Restore'}}</span>
-            <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" />
+            <!-- <span v-show="!passHasError" :class="[loggedIn ? '' : '' , 'q-pl-md q-pt-md cursor-pointer text-grey']" @click="passHasError = true">{{loggedIn ? 'Cancel' : 'Restore'}}</span> -->
+            <!-- <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" /> -->
+            <span></span>
             <q-btn class="action-link next" :disable="loggedIn && !account.value.length" color="deep-purple-14" text-color="white" :label="loggedIn ? 'Sign' : 'Connect'" :loading="spinnerVisible" @click="spinnerVisible = true ; loggedIn ? transactionHash = 'f1b275b26029fd9e8e34a8f77058ff842e29a5a4f62516b2ccd57f00c3d0d7ae': login()" />
         </div>
         <div class="standard-content--footer auto full-width justify-center">
@@ -254,7 +255,7 @@ export default {
               window.top.location.href = this.$route.query.url + '?accounts=' + encodeURIComponent(JSON.stringify(accounts))
             }
           },
-          3000)
+          7000)
         } else {
           this.loggedIn = true
           this.login = 'Sign'
@@ -433,7 +434,7 @@ a {
     justify-content: space-between;
 
     &--body {
-        margin-top: 35%;
+        margin-top: 9%;
         margin-bottom: 5%;
 
         @media screen and (min-width: 768px) {
