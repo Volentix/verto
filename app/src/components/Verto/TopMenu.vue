@@ -1,13 +1,13 @@
 <template>
 <div class="menu-top-wrapper">
     <div class="row">
-        <div class="col col-2 app-logo flex q-pl-xl items-center">
+        <div class="col col-2 app-logo flex q-pl-md items-center">
             <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;">
             <router-link to="/verto/dashboard">VERTO</router-link>
         </div>
         <div class="col col-5 flex items-center date-scrolling-msg">
             <div class="date">{{refreshDate()}}</div>
-            <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content='This app is in beta, please send us bug reports if you find any. <b><a target="_blank" href="https://t.me/vertosupport">t.me/vertosupport</a></b>' />
+            <!-- <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content='This app is in beta, please send us bug reports if you find any. <b><a target="_blank" href="https://t.me/vertosupport">t.me/vertosupport</a></b>' /> -->
         </div>
         <div class="col col-5 flex justify-end q-pr-xl items-center menu">
             <!-- to="/verto/earn/use-referral-account" -->
@@ -27,12 +27,12 @@
 
 <script>
 // import configManager from '@/util/ConfigManager'
-import { VTextMarquee } from 'vue-text-marquee'
+// import { VTextMarquee } from 'vue-text-marquee'
 
 export default {
   name: 'TopMenu',
   components: {
-    VTextMarquee: VTextMarquee
+    // VTextMarquee: VTextMarquee
   },
   data () {
     return {
@@ -76,14 +76,13 @@ export default {
     width: 100%;
     $height: 60px;
     height: $height;
-    background-color: #fff;
+    // background-color: #fff;
+    background: #E7E8E8;
     z-index: 9;
-    @extend .shad;
-
+    // @extend .shad;
     .row {
         .col {
             height: $height;
-
             &.menu {
                 a {
                     font-weight: $regular;

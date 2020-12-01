@@ -123,7 +123,7 @@
                               </q-step>
                           </q-stepper>
                       </div>
-                      <br><br><br>
+                      <!-- <br><br><br> -->
                   </div>
               </div>
           </div>
@@ -400,9 +400,13 @@ export default {
   .desktop-version{
     background: #E7E8E8;
     padding-top: 13vh;
-    padding-left: 12vh;
+    padding-left: 20vh;
     padding-bottom: 50px;
     padding-right: 2%;
+    @media screen and (min-width: 768px) {
+      padding-top: 11vh;
+      padding-bottom: 0px;
+    }
   }
   .desktop-card-style{
     height: 100%;
@@ -741,11 +745,11 @@ export default {
     justify-content: space-between;
     // padding-bottom: 100px;
     .privatekey_bg{
-        margin-top: -30px;
-        img{
-            width: 100%;
-            max-width: 330px;
-        }
+      margin-top: -30px;
+      img{
+        width: 100%;
+        max-width: 200px;
+      }
     }
     &--title{
       font-size: 35px;

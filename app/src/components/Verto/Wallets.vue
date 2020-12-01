@@ -160,13 +160,19 @@
             <q-btn unelevated v-if="!showWallets" flat @click="toggleWallets()" :icon-right="showText ? 'keyboard_arrow_up': 'keyboard_arrow_down'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showText ? 'Hide all wallets' : 'Show all wallets'" :class="showText ? 'open': 'hide'" />
         </div>
         <div v-else class="else-is-desktop wallets-wrapper--list open">
-            <div class="wallets-wrapper--list_title q-pa-md q-pt-lg q-ml-md flex items-center justify-between">
+            <div class="wallets-wrapper--list_title q-pa-sm q-pt-md q-ml-sm flex items-center justify-between">
                 <span class="flex items-center"><q-icon name="o_account_balance_wallet" /> {{$store.state.currentwallet.wallet.empty ? 'Wallets' : 'Wallet : '+ $store.state.currentwallet.wallet.name.toUpperCase()}}</span>
                 <q-icon v-if="!$store.state.currentwallet.wallet.empty" style="font-size: 25px" :name="`img:${$store.state.currentwallet.wallet.type !== 'usdt' ? $store.state.currentwallet.wallet.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'}`" />
                 <span class="flex items-center">
                     <q-btn v-if="$store.state.currentwallet.wallet.empty" flat icon-right="cached" @click="refreshWallet()">
                         <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
                             <strong>Refresh</strong>
+                        </q-tooltip>
+                    </q-btn>
+                    <!-- <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Hide Currencies' : 'Show Currencies'" :class="showText ? 'open': 'hide'" /> -->
+                    <q-btn v-if="$store.state.currentwallet.wallet.empty" flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" :class="showText ? 'open': 'hide'">
+                        <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                            <strong>{{showHidden ? 'Hide Currencies' : 'Show Currencies'}}</strong>
                         </q-tooltip>
                     </q-btn>
                     <!-- <q-btn v-if="$store.state.currentwallet.wallet.empty" flat icon-right="search" @click="searchWallet()">
@@ -178,7 +184,7 @@
             </div>
             <!-- <q-input v-if="$store.state.currentwallet.wallet.empty" v-model="searchAccount" class="input-input search_account" rounded outlined color="purple" label="Ex: account" type="text" /> -->
             <div v-if="$store.state.currentwallet.wallet.empty" class="header-list-table">
-                <div class="row q-pl-lg q-pr-lg">
+                <div class="row q-pl-sm q-pr-sm">
                     <div class="col col-6 q-pl-sm pointer" @click="sortBy('account')" :class="{'active' : directionAccount}">
                         <span class="sort">Account name</span>
                         <q-icon name="swap_vert" class="text-grey" />
@@ -190,7 +196,7 @@
                     </div>
                 </div>
             </div>
-            <q-scroll-area :visible="true" class="q-mr-sm" :style="$store.state.currentwallet.wallet.empty ? 'height: 172px;': 'height: 315px;'">
+            <q-scroll-area :visible="true" ref="walletsScrollArea" class="q-mr-sm q-ml-xs" :style="$store.state.currentwallet.wallet.empty ? 'height: 276px;': 'height: 314px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty">
                         <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
@@ -345,8 +351,9 @@
                                 </div>
                             </div>
                         </q-item>
+                        <q-separator v-if="showHidden" inset="item" id="hidden__holder--sep" />
                         <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => f.hidden && this.showHidden)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
-                            <div class="header-wallet-wrapper culumn full-width" style="opacity: .4">
+                            <div class="header-wallet-wrapper culumn full-width hidden__holder" style="opacity: .4">
                                 <div class="header-wallet-wrapper culumn full-width">
                                     <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
@@ -400,10 +407,10 @@
                     </div>
                 </q-list>
             </q-scroll-area>
-            <div v-if="$store.state.currentwallet.wallet.empty" class="add-remove-wrapper flex column flex-center item-center content-center">
+            <!-- <div v-if="$store.state.currentwallet.wallet.empty" class="add-remove-wrapper flex column flex-center item-center content-center">
                 <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Hide Currencies' : 'Show Currencies'" :class="showText ? 'open': 'hide'" />
                 <span class="add-remove-wrapper--desc text-black">Main chains and balances above zero will show in this list</span>
-            </div>
+            </div> -->
         </div>
     </div>
     <q-dialog v-model="alertSecurity">
@@ -621,6 +628,12 @@ export default {
     },
     revealHide () {
       this.showHidden = !this.showHidden
+      console.log('this.showHidden', this.showHidden)
+      console.log("document.getElementById('hidden__holder--sep')", document.getElementById('hidden__holder--sep'))
+      setTimeout(() => {
+        let position = document.getElementById('hidden__holder--sep') ? document.getElementById('hidden__holder--sep').offsetTop : 0
+        this.$refs.walletsScrollArea.setScrollPosition(position, position === 0 ? 50 : 300)
+      }, 500)
     },
     togglePrivateKey () {
       this.showPrivate = !this.showPrivate
@@ -635,6 +648,9 @@ export default {
     async showMenu (menu) {
       // console.log(menu.selected)
       if (!menu.selected) {
+        setTimeout(() => {
+          this.$refs.walletsScrollArea.setScrollPosition(0, 50)
+        }, 500)
         this.removeClassSelected()
         menu.selected = true
         this.selectedCoin = menu

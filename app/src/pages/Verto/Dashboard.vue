@@ -18,7 +18,7 @@
 
                     <liquidityPoolsTable :rowsPerPage="10" />
 
-                    <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 392px;" v-if="false">
+                    <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 362px;" v-if="false">
                         <div v-for="(pool, index) in $store.state.investment.pools" :key="index" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
                             <div class="col-1 flex items-center">
                                 <strong>{{(index + 1)}}</strong>
@@ -346,9 +346,8 @@ export default {
 .desktop-version {
     background: #E7E8E8;
     padding-top: 13vh;
-    padding-left: 12vh;
+    padding-left: 20vh;
     padding-bottom: 50px;
-
     @media screen and (min-width: 768px) {
         padding-top: 11vh;
         padding-bottom: 0px;
