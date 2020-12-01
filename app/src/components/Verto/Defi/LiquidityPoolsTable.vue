@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-scroll-area :visible="true" class="" style="height: 352px;">
+    <q-scroll-area :visible="true" class="" style="height: 338px;">
       <q-table :pagination="initialPagination" dense :loading="!$store.state.investment.pools.length" :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
               <template v-slot:body-cell-name="props">
               <q-td :props="props" class="body-table-col">

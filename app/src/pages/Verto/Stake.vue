@@ -90,9 +90,13 @@ export default {
   .desktop-version{
     background: #E7E8E8;
     padding-top: 13vh;
-    padding-left: 12vh;
+    padding-left: 20vh;
     padding-bottom: 50px;
     padding-right: 2%;
+    @media screen and (min-width: 768px) {
+      padding-top: 11vh;
+      padding-bottom: 0px;
+    }
   }
   .desktop-card-style{
     height: 100%;
