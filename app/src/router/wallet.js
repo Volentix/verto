@@ -73,6 +73,14 @@ export default [
     ]
   },
   {
+    name: 'embed',
+    path: '/verto/embed',
+    component: () => import('components/Verto/External/IframeWallet.vue'),
+    meta: {
+      authRequired: true
+    }
+  },
+  {
     path: '/verto',
     component: () => import('layouts/IntroWithTabs.vue'),
     children: [
@@ -253,9 +261,17 @@ export default [
           authRequired: true
         }
       },
+
       {
         name: 'send',
         path: '/verto/wallets/send',
+        component: () => import('pages/Verto/Send.vue'),
+        meta: {
+          authRequired: true
+        }
+      }, {
+        name: 'send',
+        path: '/verto/wallets/send/:chainID/:tokenID/:accountName?',
         component: () => import('pages/Verto/Send.vue'),
         meta: {
           authRequired: true

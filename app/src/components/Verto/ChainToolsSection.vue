@@ -1,5 +1,5 @@
 <template>
-  <div class="desktop-card-style apps-section q-mb-sm" :class="{'disabled' : wallet.type !== 'vtx'}">
+  <div class="desktop-card-style apps-section q-mb-sm" :class="{'disabled' : wallet.type !== 'vtx', 'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <div class="row flex justify-between q-pt-sm q-pb-sm">
       <div class="col col-3 flex items-center chain-icon"><q-icon :name="'img:statics/chain-tools_icon-black.svg'" />Chain Tools</div>
       <div class="col col-4 flex items-center justify-end chain-token q-pr-sm">
@@ -18,6 +18,17 @@
       </div>
       <div class="col col-5 flex items-center justify-end dropdown q-pr-sm">
         <q-select
+          v-if="$store.state.lightMode.lightMode === 'true'"
+          dark
+          separator
+          rounded
+          outlined
+          class="select-input"
+          v-model="chainToolModel"
+          @input="goToChainTool"
+          :options="['Staking']" />
+        <q-select
+          v-else
           light
           separator
           rounded
@@ -133,6 +144,26 @@ export default {
               }
             }
           }
+        }
+      }
+    }
+    &.dark-theme{
+      color: #FFF;
+      .row .col{
+        &.chain-icon{
+          color: #FFF;
+        }
+        &.chain-token{
+          color: #FFF;
+          .label{
+            color: #FFF;
+          }
+        }
+      }
+      .logo-vtx{
+        color: #FFF;
+        .svg_logo{
+          fill: #FFF;
         }
       }
     }

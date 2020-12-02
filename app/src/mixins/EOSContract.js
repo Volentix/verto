@@ -146,7 +146,6 @@ export default {
           serializedTransaction: Buffer.from(content.serializedTransaction, `hex`)
         }
 
-        console.log(pushTransactionArgs, 'pushTransactionArgs')
         return pushTransactionArgs
       } catch (error) {
         console.log(error, 'Cannot get CoSignature')

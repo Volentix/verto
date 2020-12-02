@@ -14,6 +14,10 @@ export default [
         component: () => import('pages/Verto/Landing.vue')
       }, {
         name: 'login',
+        path: '/login/transaction/:fromCoin/:toCoin/:amount',
+        component: () => import('pages/Verto/ConnectToVerto.vue')
+      }, {
+        name: 'login',
         path: '/login/:nextUrl',
         component: () => import('pages/Verto/ConnectToVerto.vue')
       },

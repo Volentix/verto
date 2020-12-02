@@ -1,6 +1,6 @@
 <template>
 <div>
-    <div class="wallets-wrapper">
+    <div class="wallets-wrapper" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
         <!-- <q-toggle v-model="active" label="Active" /> -->
         <div v-if="isMobile" class="wallets-wrapper--list" :class="{'open': !walletShowHide}">
             <q-scroll-area :visible="true" class="scrollarea" :class="{'height' : !walletShowHide}">
@@ -17,7 +17,7 @@
                                 </q-item-section>
                                 <q-item-section class="item-info" v-if="!item.disabled">
                                     <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
-                                    <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
+                                    <span class="item-info--amountUSD">${{new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2)}}</span>
                                 </q-item-section>
                                 <q-item-section class="item-info" v-else>
                                     <span class="item-info--amount">in progress</span>
@@ -160,13 +160,19 @@
             <q-btn unelevated v-if="!showWallets" flat @click="toggleWallets()" :icon-right="showText ? 'keyboard_arrow_up': 'keyboard_arrow_down'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showText ? 'Hide all wallets' : 'Show all wallets'" :class="showText ? 'open': 'hide'" />
         </div>
         <div v-else class="else-is-desktop wallets-wrapper--list open">
-            <div class="wallets-wrapper--list_title q-pa-md q-pt-lg q-ml-md flex items-center justify-between">
+            <div class="wallets-wrapper--list_title q-pa-sm q-pt-md q-ml-sm flex items-center justify-between">
                 <span class="flex items-center"><q-icon name="o_account_balance_wallet" /> {{$store.state.currentwallet.wallet.empty ? 'Wallets' : 'Wallet : '+ $store.state.currentwallet.wallet.name.toUpperCase()}}</span>
                 <q-icon v-if="!$store.state.currentwallet.wallet.empty" style="font-size: 25px" :name="`img:${$store.state.currentwallet.wallet.type !== 'usdt' ? $store.state.currentwallet.wallet.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'}`" />
                 <span class="flex items-center">
                     <q-btn v-if="$store.state.currentwallet.wallet.empty" flat icon-right="cached" @click="refreshWallet()">
                         <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
                             <strong>Refresh</strong>
+                        </q-tooltip>
+                    </q-btn>
+                    <!-- <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Hide Currencies' : 'Show Currencies'" :class="showText ? 'open': 'hide'" /> -->
+                    <q-btn v-if="$store.state.currentwallet.wallet.empty" flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" :class="showText ? 'open': 'hide'">
+                        <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                            <strong>{{showHidden ? 'Hide Currencies' : 'Show Currencies'}}</strong>
                         </q-tooltip>
                     </q-btn>
                     <!-- <q-btn v-if="$store.state.currentwallet.wallet.empty" flat icon-right="search" @click="searchWallet()">
@@ -178,7 +184,7 @@
             </div>
             <!-- <q-input v-if="$store.state.currentwallet.wallet.empty" v-model="searchAccount" class="input-input search_account" rounded outlined color="purple" label="Ex: account" type="text" /> -->
             <div v-if="$store.state.currentwallet.wallet.empty" class="header-list-table">
-                <div class="row q-pl-lg q-pr-lg">
+                <div class="row q-pl-sm q-pr-sm">
                     <div class="col col-6 q-pl-sm pointer" @click="sortBy('account')" :class="{'active' : directionAccount}">
                         <span class="sort">Account name</span>
                         <q-icon name="swap_vert" class="text-grey" />
@@ -190,10 +196,10 @@
                     </div>
                 </div>
             </div>
-            <q-scroll-area :visible="true" class="q-mr-sm" :style="$store.state.currentwallet.wallet.empty ? 'height: 172px;': 'height: 315px;'">
+            <q-scroll-area :visible="true" ref="walletsScrollArea" class="q-mr-sm q-ml-xs" :style="$store.state.currentwallet.wallet.empty ? 'height: 276px;': 'height: 314px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty">
-                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f =>( f.chain == 'eos' ||  f.chain == 'eth') && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar>
@@ -205,7 +211,7 @@
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
                                         <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
-                                        <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
+                                        <span class="item-info--amountUSD">${{new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-else>
                                         <span class="item-info--amount">in progress</span>
@@ -285,7 +291,7 @@
                                 <q-icon style="font-size: 20px" :name="'img:'+ $store.state.currentwallet.wallet.icon" class="q-mr-xs q-mb-xs" /> <span class="small">{{$store.state.currentwallet.wallet.type.toUpperCase()}}</span>
                             </span>
                         </h2>
-                        <h2 class="wallets-wrapper--list_title q-pa-md q-ml-md flex items-center">
+                        <h2 class="wallets-wrapper--list_title q-pa-md q-pl-xs q-ml-sm flex items-center">
                             <q-icon :name="'img:statics/history_icon-black.svg'" class="q-mr-sm" /> Transaction History
                         </h2>
                         <q-list bordered separator class="list-wrapper history-list-wrapper">
@@ -304,7 +310,7 @@
                         </q-list>
                     </div>
                     <div v-if="$store.state.currentwallet.wallet.empty">
-                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => ( f.chain == 'eos' ||  f.chain == 'eth') && !f.hidden && f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="showMenu(item)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar>
@@ -345,8 +351,10 @@
                                 </div>
                             </div>
                         </q-item>
-                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => f.hidden && this.showHidden)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
-                            <div class="header-wallet-wrapper culumn full-width" style="opacity: .4">
+                        <q-separator v-if="showHidden" inset="item" id="hidden__holder--sep" />
+                           <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => ( f.chain == 'eos' ||  f.chain == 'eth') && f.hidden && this.showHidden)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                              <div class="header-wallet-wrapper culumn full-width hidden__holder" style="opacity: .4">
+
                                 <div class="header-wallet-wrapper culumn full-width">
                                     <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
@@ -400,10 +408,10 @@
                     </div>
                 </q-list>
             </q-scroll-area>
-            <div v-if="$store.state.currentwallet.wallet.empty" class="add-remove-wrapper flex column flex-center item-center content-center">
+            <!-- <div v-if="$store.state.currentwallet.wallet.empty" class="add-remove-wrapper flex column flex-center item-center content-center">
                 <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Hide Currencies' : 'Show Currencies'" :class="showText ? 'open': 'hide'" />
                 <span class="add-remove-wrapper--desc text-black">Main chains and balances above zero will show in this list</span>
-            </div>
+            </div> -->
         </div>
     </div>
     <q-dialog v-model="alertSecurity">
@@ -524,7 +532,7 @@ export default {
         accountName: this.accountName
       })
     }
-
+    console.log(this.$store.state.wallets.tokens, 'this.$store.state.wallets.tokens')
     this.$store.state.wallets.tokens.map(async (f) => {
       let stakedAmounts = 0
       if (f.type === 'vtx') {
@@ -538,6 +546,7 @@ export default {
       }
       console.log('f.staked', f.staked)
     })
+    console.log(JSON.stringify(this.$store.state.wallets.tokens))
   },
   computed: {
     //   $store.state.wallets.tokens.filter(this.filterdWalletList)
@@ -620,6 +629,12 @@ export default {
     },
     revealHide () {
       this.showHidden = !this.showHidden
+      console.log('this.showHidden', this.showHidden)
+      console.log("document.getElementById('hidden__holder--sep')", document.getElementById('hidden__holder--sep'))
+      setTimeout(() => {
+        let position = document.getElementById('hidden__holder--sep') ? document.getElementById('hidden__holder--sep').offsetTop : 0
+        this.$refs.walletsScrollArea.setScrollPosition(position, position === 0 ? 50 : 300)
+      }, 500)
     },
     togglePrivateKey () {
       this.showPrivate = !this.showPrivate
@@ -634,6 +649,9 @@ export default {
     async showMenu (menu) {
       // console.log(menu.selected)
       if (!menu.selected) {
+        setTimeout(() => {
+          this.$refs.walletsScrollArea.setScrollPosition(0, 50)
+        }, 500)
         this.removeClassSelected()
         menu.selected = true
         this.selectedCoin = menu
@@ -647,7 +665,6 @@ export default {
         //   accountName: this.selectedCoin.name
         // })
 
-        console.log(this.$route.params.chainID, this.selectedCoin.chain, 'this.$route.params.chainID || this.selectedCoin.chain')
         this.$store.commit('currentwallet/updateParams', {
           chainID: this.$route.params.chainID || this.selectedCoin.chain,
           tokenID: this.$route.params.tokenID || this.selectedCoin.type,
@@ -1203,6 +1220,59 @@ export default {
             }
         }
     }
+    &.dark-theme{
+        @media screen and (min-width: 768px){
+            background-color: #04111F;
+            border: 1px solid #627797;
+        }
+        .history-list-wrapper {
+            .q-item{
+                padding-left: 5px;
+            }
+            .item-trans--transID{
+                color: #FFF;
+            }
+            .item-amount{
+                color: #FFF;
+                margin-left: 0px;
+            }
+        }
+        .wallets-wrapper--list{
+            background-color: #04111F;
+            border-top: none;
+            &_title{
+                color: #FFF;
+                background: transparent !important;
+                // margin-left: 0px !important;
+            }
+            .q-list--bordered {
+                .q-item{
+                    &:first-child{
+                        border-top: 1px solid rgba(0, 0, 0, 0);
+                    }
+                }
+                .q-link {
+                    border-top: 1px solid rgba(#627797, 0.2);
+                    &.bgblack{
+                        background-color: #0b1f35;
+                    }
+                    @media screen and (min-width: 768px){
+                        .menu-wallet .sub-list-menu .q-link{
+                            color: #FFF;
+                        }
+                    }
+                }
+            }
+            .item-name, .item-info{
+                color: #FFF;
+            }
+            .header-list-table{
+                .sort{
+                    color: rgba(#FFF, .7);
+                }
+            }
+        }
+    }
 }
 
 .header-wallet-wrapper {}
@@ -1418,7 +1488,8 @@ export default {
             font-size: 10px;
             color: #2A2A2A;
             justify-content: flex-start;
-            margin-top: 10px;
+            margin-top: 5px;
+            word-break: break-all;
         }
     }
 
