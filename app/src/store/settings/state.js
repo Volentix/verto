@@ -10,6 +10,7 @@ export default {
   selectedDex: 'coinswitch',
   dexData: {
     depositCoin: null,
-    destinationCoin: null
+    destinationCoin: null,
+    fromAmount: null
   }
 }

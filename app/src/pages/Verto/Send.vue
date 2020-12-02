@@ -308,6 +308,7 @@ export default {
       transStatus: 'Sent Successfully',
       currentWallet: null,
       sendTo: '',
+      screenSize: 1024,
       to: '',
       goBack: '',
       fetchCurrentWalletFromState: true,
@@ -324,7 +325,9 @@ export default {
       chainID: '',
       tokenID: '',
       accountName: '',
-      params: null,
+      params: {
+        tokenID: ''
+      },
       getPassword: false,
       walletClientName: 'verto', // should be 'verto' when in prod
       cruxKey: {},
@@ -371,7 +374,6 @@ export default {
           w.chain === 'eos' ? w.name.toLowerCase() === newVal.label : w.key === newVal.label)
         )
         */
-        console.log(this.currentAccount, this.tableData, newVal, 'currentAccount wallet')
 
         // this.$store.commit('currentwallet/updateCurrentWallet', this.currentAccount)
         this.sendAmount = 0
@@ -379,17 +381,22 @@ export default {
     }
   },
   async created () {
-    console.log(this.currentAccount, this.currentToken, 'currentAccount 1')
+    this.tableData = await this.$store.state.wallets.tokens
+
+    if (this.$route.params.chainID && this.$route.params.chainID) {
+      this.params = {
+        chainID: this.$route.params.chainID,
+        tokenID: this.$route.params.tokenID,
+        accountName: this.$route.params.accountName
+      }
+      this.$store.commit('currentwallet/updateParams', this.params)
+      this.$store.state.currentwallet.wallet = this.getCurrentWallet()
+    }
     let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     this.osName = osName
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
-    // console.log('this.osName', this.osName)
-    this.params = this.$store.state.currentwallet.params
-    this.tableData = await this.$store.state.wallets.tokens
-    // console.log('this.tableData', this.tableData)
 
-    console.log(this.tableData, 'tableData')
     let self = this
     this.tableData.map(token => {
       if (!token.disabled && token.type.toLowerCase() !== 'verto' && parseFloat(token.amount) > 0) {
@@ -403,7 +410,6 @@ export default {
         })
       }
     })
-    console.log(this.currentAccount, this.currentToken, 'currentAccount 6')
 
     if (this.selectedCoin) {
       this.currentAccount = this.selectedCoin
@@ -416,11 +422,8 @@ export default {
         amount: this.selectedCoin.amount
       }
     } else {
-      this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-        w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
-      )
+      this.currentAccount = this.getCurrentWallet()
     }
-    console.log(this.currentAccount, this.currentToken, 'currentAccount 5')
 
     this.currentAccount = this.currentAccount || this.currentToken
     if (this.params.chainID === undefined) {
@@ -430,14 +433,11 @@ export default {
         accountName: this.currentAccount.name
       }
     }
-    // console.log('this.params', this.params.chainID)
+
     if (this.currentAccount !== undefined) {
       this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
       this.from = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
     }
-
-    // console.log('this.currentAccount sur la page send', this.currentAccount)
-    console.log(this.currentAccount, this.currentToken, 'currentAccount 4')
 
     if (this.currentAccount.privateKey) {
       this.privateKey.key = this.currentAccount.privateKey
@@ -447,17 +447,21 @@ export default {
     }
 
     this.cruxKey = await HD.Wallet('crux')
-    // console.log('crux privateKey', this.cruxKey.privateKey)
+
     cruxClient = new CruxPay.CruxClient({
       walletClientName: this.walletClientName,
       privateKey: this.cruxKey.privateKey
     })
     await cruxClient.init()
-    console.log(this.currentAccount, this.currentToken, 'currentAccount 25')
   },
   mounted () {
   },
   methods: {
+    getCurrentWallet () {
+      return this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+        w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : true)
+      )
+    },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },

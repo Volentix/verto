@@ -168,16 +168,6 @@ export default {
   beforeCreate () {
     // console.log('beforeCreate event')
   },
-  watch: {
-    '$store.state.wallets.tokens': function (val) {
-      // console.log(val, 'val')
-      if (val) {
-        this.getCoinswitchCoins()
-        this.get1inchCoins()
-        this.getDefiboxCoins()
-      }
-    }
-  },
   async created () {
     this.tableData = store.state.wallets.tokens.map(token => {
       token.selected = false

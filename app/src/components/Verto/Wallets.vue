@@ -17,7 +17,7 @@
                                 </q-item-section>
                                 <q-item-section class="item-info" v-if="!item.disabled">
                                     <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
-                                    <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
+                                    <span class="item-info--amountUSD">${{new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2)}}</span>
                                 </q-item-section>
                                 <q-item-section class="item-info" v-else>
                                     <span class="item-info--amount">in progress</span>
@@ -199,7 +199,7 @@
             <q-scroll-area :visible="true" ref="walletsScrollArea" class="q-mr-sm q-ml-xs" :style="$store.state.currentwallet.wallet.empty ? 'height: 276px;': 'height: 314px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty">
-                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f =>( f.chain == 'eos' ||  f.chain == 'eth') && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar>
@@ -211,7 +211,7 @@
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
                                         <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
-                                        <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
+                                        <span class="item-info--amountUSD">${{new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-else>
                                         <span class="item-info--amount">in progress</span>
@@ -310,7 +310,7 @@
                         </q-list>
                     </div>
                     <div v-if="$store.state.currentwallet.wallet.empty">
-                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => ( f.chain == 'eos' ||  f.chain == 'eth') && !f.hidden && f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="showMenu(item)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar>
@@ -352,8 +352,9 @@
                             </div>
                         </q-item>
                         <q-separator v-if="showHidden" inset="item" id="hidden__holder--sep" />
-                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => f.hidden && this.showHidden)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" :active-class="$store.state.lightMode.lightMode === 'true' ? 'bgblack' : 'bg-teal-1 text-grey-8'">
-                            <div class="header-wallet-wrapper culumn full-width hidden__holder" style="opacity: .4">
+                           <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => ( f.chain == 'eos' ||  f.chain == 'eth') && f.hidden && this.showHidden)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                              <div class="header-wallet-wrapper culumn full-width hidden__holder" style="opacity: .4">
+
                                 <div class="header-wallet-wrapper culumn full-width">
                                     <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
@@ -531,7 +532,7 @@ export default {
         accountName: this.accountName
       })
     }
-
+    console.log(this.$store.state.wallets.tokens, 'this.$store.state.wallets.tokens')
     this.$store.state.wallets.tokens.map(async (f) => {
       let stakedAmounts = 0
       if (f.type === 'vtx') {
@@ -664,7 +665,6 @@ export default {
         //   accountName: this.selectedCoin.name
         // })
 
-        console.log(this.$route.params.chainID, this.selectedCoin.chain, 'this.$route.params.chainID || this.selectedCoin.chain')
         this.$store.commit('currentwallet/updateParams', {
           chainID: this.$route.params.chainID || this.selectedCoin.chain,
           tokenID: this.$route.params.tokenID || this.selectedCoin.type,
