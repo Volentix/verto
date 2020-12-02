@@ -404,6 +404,7 @@
           <p class="q-pt-md">Set the initial swap price freely</p>
         </div>
       </div>
+      <vpoolsComponent v-if="false" />
     </div>
   </div>
 </template>
@@ -415,8 +416,11 @@ let rpc, api, signatureProvider
 import initWallet from '@/util/Wallets2Tokens'
 import DexInteraction from '../../../mixins/DexInteraction'
 import EOSContract from '../../../mixins/EOSContract'
+import vpoolsComponent from '../../../components/Verto/Defi/vpoolsComponent.vue'
 export default {
-  components: {},
+  components: {
+    vpoolsComponent
+  },
   props: ['disableDestinationCoin'],
   data () {
     return {
