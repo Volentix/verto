@@ -8,6 +8,7 @@ import settings from './settings'
 import wallets from './wallets'
 import investment from './investment'
 import vdexnode from './vdexnode'
+import lightMode from './lightMode'
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
@@ -17,7 +18,8 @@ const store = new Vuex.Store({
     settings,
     wallets,
     highestVTXAccount,
-    investment
+    investment,
+    lightMode
   }
 })
 
@@ -32,8 +34,9 @@ if (process.env.DEV && module.hot) {
     const newSettings = require('./settings').default
     const newWallets = require('./wallets').default
     const investment = require('./investment').default
+    const newLightMode = require('./lightMode').default
 
-    store.hotUpdate({ modules: { vdexnode: vdexnode, investment: investment, currentwallet: newCurrentwallet, highestVTXAccount: newHighestVTXAccount, settings: newSettings, wallets: newWallets } })
+    store.hotUpdate({ modules: { vdexnode: vdexnode, investment: investment, currentwallet: newCurrentwallet, highestVTXAccount: newHighestVTXAccount, settings: newSettings, wallets: newWallets, lightMode: newLightMode } })
   })
 }
 

@@ -1,32 +1,34 @@
 <template>
   <q-page class="column text-black bg-grey-12" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
-    <div class="desktop-version" v-if="screenSize > 1024">
-      <div class="row">
-        <div class="col col-md-3">
-          <div class="wallets-container">
-            <profile-header :isMobile="false" class="marg" version="type2222" :fetchCurrentWalletFromState="true" />
-            <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
-            <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+    <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+      <div class="desktop-version" v-if="screenSize > 1024">
+        <div class="row">
+          <div class="col col-md-3">
+            <div class="wallets-container">
+              <profile-header :isMobile="false" class="marg" version="type2222" :fetchCurrentWalletFromState="true" />
+              <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+              <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+            </div>
           </div>
-        </div>
-        <div class="col col-md-9">
-          <div class="desktop-card-style apps-section q-mb-sm">
-            <div class="standard-content">
-              <h2 class="standard-content--title flex justify-start">{{$store.state.currentwallet.params.tokenID == 'eos' ? 'Staking / Unstaking' :  'Staking' }}</h2>
-              <div class="standard-content--body">
-                <div class="standard-content--body__form">
-                  <stake-stepper v-if="$store.state.currentwallet.params.tokenID == 'vtx'" />
-                  <EosStakeStepper v-else-if="$store.state.currentwallet.params.tokenID == 'eos'"/>
+          <div class="col col-md-9">
+            <div class="desktop-card-style apps-section q-mb-sm">
+              <div class="standard-content">
+                <h2 class="standard-content--title flex justify-start">{{$store.state.currentwallet.params.tokenID == 'eos' ? 'Staking / Unstaking' :  'Staking' }}</h2>
+                <div class="standard-content--body">
+                  <div class="standard-content--body__form">
+                    <stake-stepper v-if="$store.state.currentwallet.params.tokenID == 'vtx'" />
+                    <EosStakeStepper v-else-if="$store.state.currentwallet.params.tokenID == 'eos'"/>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div v-else>
-      <profile-header version="type2" :fetchCurrentWalletFromState="true" />
-      <stake-stepper />
+      <div v-else>
+        <profile-header version="type2" :fetchCurrentWalletFromState="true" />
+        <stake-stepper />
+      </div>
     </div>
   </q-page>
 </template>
@@ -96,6 +98,19 @@ export default {
     @media screen and (min-width: 768px) {
       padding-top: 11vh;
       padding-bottom: 0px;
+    }
+  }
+  .dark-theme{
+    .desktop-version{
+        background: #04111F;
+        padding-bottom: 8px;
+        min-height: 102vh;
+        overflow: hidden;
+        position: relative;
+        scrollbar-width: 0px;
+        .col-title h4{
+            color: #FFF;
+        }
     }
   }
   .desktop-card-style{

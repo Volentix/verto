@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-scroll-area :visible="true" class="" style="height: 338px;">
-      <q-table :pagination="initialPagination" dense :loading="!$store.state.investment.pools.length" :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+      <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :pagination="initialPagination" dense :loading="!$store.state.investment.pools.length" :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
               <template v-slot:body-cell-name="props">
               <q-td :props="props" class="body-table-col">
                   <div class="col-3 flex items-center">
@@ -25,7 +25,7 @@
           </template>
 
           <template v-slot:top-right>
-              <q-input borderless dense filled debounce="300" v-model="filter" placeholder="Search">
+              <q-input borderless dense :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" filled debounce="300" v-model="filter" placeholder="Search">
                   <template v-slot:append>
                       <q-icon name="search" />
                   </template>
@@ -132,9 +132,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 .desktop-card-style.current-investments .body-table-col .pairs .pair {
     font-weight: 700;
-    color: #2a2a2a;
+    color: inherit;
     margin-bottom: -2px;
 }
 
@@ -170,5 +171,15 @@ export default {
 .desktop-card-style.current-investments .qbtn-custom .q-btn__wrapper .q-btn__content {
     text-transform: none;
     font-size: 10px;
+}
+.explore-opportunities{
+  &.dark-theme{
+    .qbtn-custom {
+        border-radius: 30px;
+        height: 34px;
+        border: 1px solid #627797 !important;
+        background: #0a2138 !important;
+    }
+  }
 }
 </style>

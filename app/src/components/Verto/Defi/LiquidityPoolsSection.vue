@@ -1,5 +1,5 @@
 <template>
-  <div class="desktop-card-style make-vtx q-mb-sm">
+  <div class="desktop-card-style make-vtx q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <br>
     <div class="row flex justify-between q-pb-sm q-pt-md">
       <div class="header-col col-12 flex justify-between items-center">
@@ -157,6 +157,13 @@ export default {
         &.dropdown{
 
         }
+      }
+    }
+    &.dark-theme{
+      color: #FFF;
+      .row .col .step-1-lab{
+          color: #FFF;
+          background: #04111F;
       }
     }
   }
