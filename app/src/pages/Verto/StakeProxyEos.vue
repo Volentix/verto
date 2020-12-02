@@ -1,197 +1,199 @@
 <template>
   <q-page :class="$q.screen.width > 1024 ? 'desktop-marg' : 'mobile-pad'">
-    <div class="desktop-version" v-if="$q.screen.width > 1024">
-      <div class="row">
-        <div class="col col-md-3">
-          <div class="wallets-container">
-            <profile-header :isMobile="false" class="marg" version="type2222" :fetchCurrentWalletFromState="true" />
-            <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
-            <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+    <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+      <div class="desktop-version" v-if="$q.screen.width > 1024">
+        <div class="row">
+          <div class="col col-md-3">
+            <div class="wallets-container">
+              <profile-header :isMobile="false" class="marg" version="type2222" :fetchCurrentWalletFromState="true" />
+              <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+              <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+            </div>
           </div>
-        </div>
-        <div class="col col-md-9">
-          <div class="desktop-card-style apps-section q-mb-sm">
-            <div class="standard-content">
-              <div class="standard-content--body">
-                <div class="standard-content--body__form">
-                  <div class="chain-tools-wrapper">
-                    <!-- <q-toggle v-model="active" label="Active" /> -->
-                    <div class="chain-tools-wrapper--list open">
-                      <div class="list-wrapper">
-                        <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                          <q-card flat style="width: 100%; max-width: 700px">
-                            <q-inner-loading :visible="spinnervisible">
-                              <q-spinner size="50px" color="primary" />
-                            </q-inner-loading>
-                            <q-stepper vertical ref="stepper" alternative-labels animated v-model="step" class="q-pb-md">
-                              <q-step default :name="1" :done="step > 1" title="Staking proxy" class="" v-if="currentProxy.length == 0">
-                                <q-card-section>
-                                  <div class="text-uppercase">
-                                    <q-item class="">
-                                      <q-item-section class="col-auto">
-                                        <q-chip dense :color="currentProxy ? 'deep-purple-14' : 'gray'" class="shadow-1">&nbsp;</q-chip>
-                                      </q-item-section>
-                                      <q-item-label class="col-6 text-left">Current Staking Proxy: {{ currentProxy }}</q-item-label>
-                                    </q-item>
+          <div class="col col-md-9">
+            <div class="desktop-card-style apps-section q-mb-sm">
+              <div class="standard-content">
+                <div class="standard-content--body">
+                  <div class="standard-content--body__form">
+                    <div class="chain-tools-wrapper">
+                      <!-- <q-toggle v-model="active" label="Active" /> -->
+                      <div class="chain-tools-wrapper--list open">
+                        <div class="list-wrapper">
+                          <div class="list-wrapper--chain__eos-to-vtx-convertor">
+                            <q-card flat style="width: 100%; max-width: 700px">
+                              <q-inner-loading :visible="spinnervisible">
+                                <q-spinner size="50px" color="primary" />
+                              </q-inner-loading>
+                              <q-stepper vertical ref="stepper" alternative-labels animated v-model="step" class="q-pb-md">
+                                <q-step default :name="1" :done="step > 1" title="Staking proxy" class="" v-if="currentProxy.length == 0">
+                                  <q-card-section>
+                                    <div class="text-uppercase">
+                                      <q-item class="">
+                                        <q-item-section class="col-auto">
+                                          <q-chip dense :color="currentProxy ? 'deep-purple-14' : 'gray'" class="shadow-1">&nbsp;</q-chip>
+                                        </q-item-section>
+                                        <q-item-label class="col-6 text-left">Current Staking Proxy: {{ currentProxy }}</q-item-label>
+                                      </q-item>
 
-                                    <q-item class="">
-                                      <q-item-section class="col-auto">
-                                        <q-chip dense :color="stakedAmount ? 'deep-purple-14' : 'gray'" class="shadow-1">&nbsp;</q-chip>
-                                      </q-item-section>
-                                      <q-item-label class="col-6 text-left">Staked EOS: {{ stakedAmount }}</q-item-label>
-                                    </q-item>
+                                      <q-item class="">
+                                        <q-item-section class="col-auto">
+                                          <q-chip dense :color="stakedAmount ? 'deep-purple-14' : 'gray'" class="shadow-1">&nbsp;</q-chip>
+                                        </q-item-section>
+                                        <q-item-label class="col-6 text-left">Staked EOS: {{ stakedAmount }}</q-item-label>
+                                      </q-item>
 
-                                    <q-item tag="label" v-ripple>
-                                      <q-item-section>
-                                        <q-item-label>Proxy to EOS Nation for an APR of {{ apr }}%</q-item-label>
-                                        <q-item-label caption>APR is calculated at the time of claim and is subject to change based on the amount of EOS proxied.</q-item-label>
-                                      </q-item-section>
-                                      <q-item-section side>
-                                        <q-toggle checked-icon="check" color="deep-purple-14" unchecked-icon="clear" keep-color v-model="proxyModel" />
-                                      </q-item-section>
-                                    </q-item>
-                                    <p class="text-red q-pt-sm" v-if="stakedAmount < 1.5">Your need 1.5 STAKED EOS minimum to proceed</p>
-                                    <div v-show="showNext" class="q-pa-sm">
-                                      <q-btn label="Next" :disable="stakedAmount < 1.5" @click="step = 2" color="deep-purple-14" />
-                                    </div>
-                                  </div>
-                                </q-card-section>
-                              </q-step>
-
-                              <q-step default :name="1" :done="step > 1" title="Staking proxy" class="" v-else-if="currentProxy == 'proxy4nation'">
-                                <q-card-section>
-                                  <div class="text-uppercase">
-                                    <q-item class="">
-                                      <q-item-section class="col-auto">
-                                        <q-chip dense :color="currentProxy ? 'deep-purple-14' : 'gray'" class="shadow-1">&nbsp;</q-chip>
-                                      </q-item-section>
-                                      <q-item-label class="col-6 text-left">Current Staking Proxy: {{ currentProxy }}</q-item-label>
-                                    </q-item>
-
-                                    <q-item class="">
-                                      <q-item-section class="col-auto">
-                                        <q-chip dense :color="stakedAmount ? 'deep-purple-14' : 'gray'" class="shadow-1">&nbsp;</q-chip>
-                                      </q-item-section>
-                                      <q-item-label class="col-6 text-left">Staked EOS: {{ stakedAmount }}</q-item-label>
-                                    </q-item>
-
-                                    <q-item tag="label" v-ripple>
-                                      <q-item-section>
-                                        <q-item-label>{{ currentProxy }} is your current staking proxy</q-item-label>
-                                        <q-item-label caption>Click the button bellow to unsignup</q-item-label>
-                                      </q-item-section>
-                                    </q-item>
-                                    <div class="q-pa-sm">
-                                      <q-btn label="Unsignup" @click="$store.state.currentwallet.wallet.privateKey ? unsignup() : (step = 4)" color="deep-purple-14" />
-                                    </div>
-                                  </div>
-                                </q-card-section>
-                              </q-step>
-
-                              <q-step v-if="currentProxy != 'proxy4nation'" default :name="2" :done="step > 2" title="Portfolio" class="  ">
-                                <q-card-section>
-                                  <div class="text-uppercase">
-                                    <q-item tag="label">
-                                      <q-item-section>
-                                        <q-item-label>Select your rewards Portfolio %</q-item-label>
-                                        <q-item-label caption></q-item-label>
-                                      </q-item-section>
-                                    </q-item>
-                                    <q-list dense>
-                                      <q-item v-for="(item, index) in rewards" :key="index">
+                                      <q-item tag="label" v-ripple>
                                         <q-item-section>
-                                          <q-item-label caption>
-                                            <q-badge color="deep-purple-14" class="q-mb-lg text-h7">
-                                              {{ item.symbol.split(",")[1] }}
-                                            </q-badge>
-                                          </q-item-label>
-                                          <q-slider v-model="rewards[index].value" :label-value="rewards[index].value || 0 + '%'" :min="0" :max="100" :step="5" color="black" markers label label-always @input="monitor(index)" />
+                                          <q-item-label>Proxy to EOS Nation for an APR of {{ apr }}%</q-item-label>
+                                          <q-item-label caption>APR is calculated at the time of claim and is subject to change based on the amount of EOS proxied.</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section side>
+                                          <q-toggle checked-icon="check" color="deep-purple-14" unchecked-icon="clear" keep-color v-model="proxyModel" />
                                         </q-item-section>
                                       </q-item>
-                                    </q-list>
-
-                                    <div class="q-pa-sm">
-                                      <q-btn label="Next" color="deep-purple-14" @click="formatRewards()" />
-
-                                      <q-icon name="keyboard_arrow_up" size="3rem" @click="step = step - 1" color="black" />
+                                      <p class="text-red q-pt-sm" v-if="stakedAmount < 1.5">Your need 1.5 STAKED EOS minimum to proceed</p>
+                                      <div v-show="showNext" class="q-pa-sm">
+                                        <q-btn label="Next" :disable="stakedAmount < 1.5" @click="step = 2" color="deep-purple-14" />
+                                      </div>
                                     </div>
-                                  </div>
-                                </q-card-section>
-                              </q-step>
+                                  </q-card-section>
+                                </q-step>
 
-                              <q-step v-if="currentProxy != 'proxy4nation'" default :name="3" :done="step > 3" title="Compound" class="  ">
-                                <q-card-section>
-                                  <div class="text-uppercase">
-                                    <q-item tag="label" v-ripple>
+                                <q-step default :name="1" :done="step > 1" title="Staking proxy" class="" v-else-if="currentProxy == 'proxy4nation'">
+                                  <q-card-section>
+                                    <div class="text-uppercase">
+                                      <q-item class="">
+                                        <q-item-section class="col-auto">
+                                          <q-chip dense :color="currentProxy ? 'deep-purple-14' : 'gray'" class="shadow-1">&nbsp;</q-chip>
+                                        </q-item-section>
+                                        <q-item-label class="col-6 text-left">Current Staking Proxy: {{ currentProxy }}</q-item-label>
+                                      </q-item>
+
+                                      <q-item class="">
+                                        <q-item-section class="col-auto">
+                                          <q-chip dense :color="stakedAmount ? 'deep-purple-14' : 'gray'" class="shadow-1">&nbsp;</q-chip>
+                                        </q-item-section>
+                                        <q-item-label class="col-6 text-left">Staked EOS: {{ stakedAmount }}</q-item-label>
+                                      </q-item>
+
+                                      <q-item tag="label" v-ripple>
+                                        <q-item-section>
+                                          <q-item-label>{{ currentProxy }} is your current staking proxy</q-item-label>
+                                          <q-item-label caption>Click the button bellow to unsignup</q-item-label>
+                                        </q-item-section>
+                                      </q-item>
+                                      <div class="q-pa-sm">
+                                        <q-btn label="Unsignup" @click="$store.state.currentwallet.wallet.privateKey ? unsignup() : (step = 4)" color="deep-purple-14" />
+                                      </div>
+                                    </div>
+                                  </q-card-section>
+                                </q-step>
+
+                                <q-step v-if="currentProxy != 'proxy4nation'" default :name="2" :done="step > 2" title="Portfolio" class="  ">
+                                  <q-card-section>
+                                    <div class="text-uppercase">
+                                      <q-item tag="label">
+                                        <q-item-section>
+                                          <q-item-label>Select your rewards Portfolio %</q-item-label>
+                                          <q-item-label caption></q-item-label>
+                                        </q-item-section>
+                                      </q-item>
+                                      <q-list dense>
+                                        <q-item v-for="(item, index) in rewards" :key="index">
+                                          <q-item-section>
+                                            <q-item-label caption>
+                                              <q-badge color="deep-purple-14" class="q-mb-lg text-h7">
+                                                {{ item.symbol.split(",")[1] }}
+                                              </q-badge>
+                                            </q-item-label>
+                                            <q-slider v-model="rewards[index].value" :label-value="rewards[index].value || 0 + '%'" :min="0" :max="100" :step="5" color="black" markers label label-always @input="monitor(index)" />
+                                          </q-item-section>
+                                        </q-item>
+                                      </q-list>
+
+                                      <div class="q-pa-sm">
+                                        <q-btn label="Next" color="deep-purple-14" @click="formatRewards()" />
+
+                                        <q-icon name="keyboard_arrow_up" size="3rem" @click="step = step - 1" color="black" />
+                                      </div>
+                                    </div>
+                                  </q-card-section>
+                                </q-step>
+
+                                <q-step v-if="currentProxy != 'proxy4nation'" default :name="3" :done="step > 3" title="Compound" class="  ">
+                                  <q-card-section>
+                                    <div class="text-uppercase">
+                                      <q-item tag="label" v-ripple>
+                                        <q-item-section>
+                                          <q-item-label>Compound your vote staking rewards</q-item-label>
+                                          <q-item-label caption>You can choose to receive your EOS rewards already staked</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section side>
+                                          <q-toggle v-model="staked" checked-icon="check" color="deep-purple-14" unchecked-icon="clear" :true-value="1" :false-value="0" keep-color />
+                                        </q-item-section>
+                                      </q-item>
+
+                                      <div class="q-pa-sm">
+                                        <q-btn :label="$store.state.currentwallet.wallet.privateKey ? 'Submit' : 'Next'" color="deep-purple-14" @click="$store.state.currentwallet.wallet.privateKey ? voteProxy() : (step = 4)" />
+                                        <q-icon name="keyboard_arrow_up" size="3rem" @click="step = step - 1" color="black" />
+                                      </div>
+                                    </div>
+                                  </q-card-section>
+                                </q-step>
+
+                                <q-step v-if="!$store.state.currentwallet.wallet.privateKey" default :name="4" :done="step > 4" title="Sign & Submit" class="  ">
+                                  <q-card-section>
+                                    <div class="text-uppercase">
                                       <q-item-section>
-                                        <q-item-label>Compound your vote staking rewards</q-item-label>
-                                        <q-item-label caption>You can choose to receive your EOS rewards already staked</q-item-label>
+                                        <q-item-label>Enter your private key password to sign the transaction</q-item-label>
                                       </q-item-section>
-                                      <q-item-section side>
-                                        <q-toggle v-model="staked" checked-icon="check" color="deep-purple-14" unchecked-icon="clear" :true-value="1" :false-value="0" keep-color />
+
+                                      <div class="q-pa-md">
+                                        <q-input v-model="privateKeyPassword" dark color="deep-purple-14" label="Private Key Password" debounce="500" :error="invalidPrivateKeyPassword" error-message="The password is incorrect" @input="checkPrivateKeyPassword" :type="isPwd ? 'password' : 'text'">
+                                          <template v-slot:append>
+                                            <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                                          </template>
+                                        </q-input>
+                                      </div>
+
+                                      <div v-show="privateKey.success" class="q-pa-sm">
+                                        <q-btn label="Submit" color="deep-purple-14" @click="currentProxy != 'proxy4nation' ? voteProxy() : unsignup()" />
+                                        <q-icon name="keyboard_arrow_up" size="3rem" @click="step = step - 1" color="deep-purple-14" />
+                                      </div>
+                                    </div>
+                                  </q-card-section>
+                                </q-step>
+
+                                <q-step default :name="5" :done="step > 5" title="Result" class="  ">
+                                  <q-card-section>
+                                    <div class="text-uppercase">
+                                      <q-inner-loading :visible="spinnervisible">
+                                        <q-spinner size="50px" color="primary" />
+                                      </q-inner-loading>
+
+                                      <q-item-section v-if="spinnervisible">
+                                        <q-item-label>Processing the transaction</q-item-label>
                                       </q-item-section>
-                                    </q-item>
 
-                                    <div class="q-pa-sm">
-                                      <q-btn :label="$store.state.currentwallet.wallet.privateKey ? 'Submit' : 'Next'" color="deep-purple-14" @click="$store.state.currentwallet.wallet.privateKey ? voteProxy() : (step = 4)" />
-                                      <q-icon name="keyboard_arrow_up" size="3rem" @click="step = step - 1" color="black" />
+                                      <div v-show="!voteError" class="text-h6 text-uppercase text-deep-purple-14 q-pa-md">
+                                        {{ SuccessMessage }}
+                                      </div>
+
+                                      <div v-show="voteError" class="text-h6 text-uppercase text-red q-pa-md">
+                                        {{ ErrorMessage }}
+                                      </div>
                                     </div>
-                                  </div>
-                                </q-card-section>
-                              </q-step>
-
-                              <q-step v-if="!$store.state.currentwallet.wallet.privateKey" default :name="4" :done="step > 4" title="Sign & Submit" class="  ">
-                                <q-card-section>
-                                  <div class="text-uppercase">
-                                    <q-item-section>
-                                      <q-item-label>Enter your private key password to sign the transaction</q-item-label>
-                                    </q-item-section>
-
-                                    <div class="q-pa-md">
-                                      <q-input v-model="privateKeyPassword" dark color="deep-purple-14" label="Private Key Password" debounce="500" :error="invalidPrivateKeyPassword" error-message="The password is incorrect" @input="checkPrivateKeyPassword" :type="isPwd ? 'password' : 'text'">
-                                        <template v-slot:append>
-                                          <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
-                                        </template>
-                                      </q-input>
-                                    </div>
-
-                                    <div v-show="privateKey.success" class="q-pa-sm">
-                                      <q-btn label="Submit" color="deep-purple-14" @click="currentProxy != 'proxy4nation' ? voteProxy() : unsignup()" />
-                                      <q-icon name="keyboard_arrow_up" size="3rem" @click="step = step - 1" color="deep-purple-14" />
-                                    </div>
-                                  </div>
-                                </q-card-section>
-                              </q-step>
-
-                              <q-step default :name="5" :done="step > 5" title="Result" class="  ">
-                                <q-card-section>
-                                  <div class="text-uppercase">
-                                    <q-inner-loading :visible="spinnervisible">
-                                      <q-spinner size="50px" color="primary" />
-                                    </q-inner-loading>
-
-                                    <q-item-section v-if="spinnervisible">
-                                      <q-item-label>Processing the transaction</q-item-label>
-                                    </q-item-section>
-
-                                    <div v-show="!voteError" class="text-h6 text-uppercase text-deep-purple-14 q-pa-md">
-                                      {{ SuccessMessage }}
-                                    </div>
-
-                                    <div v-show="voteError" class="text-h6 text-uppercase text-red q-pa-md">
-                                      {{ ErrorMessage }}
-                                    </div>
-                                  </div>
-                                </q-card-section>
-                              </q-step>
-                            </q-stepper>
-                            <q-card-section v-if="false">
-                              <q-item-label
-                                >Provided By:
-                                <img width="100" src="statics/img/eosnation.png" />
-                              </q-item-label>
-                            </q-card-section>
-                          </q-card>
+                                  </q-card-section>
+                                </q-step>
+                              </q-stepper>
+                              <q-card-section v-if="false">
+                                <q-item-label
+                                  >Provided By:
+                                  <img width="100" src="statics/img/eosnation.png" />
+                                </q-item-label>
+                              </q-card-section>
+                            </q-card>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1092,12 +1094,29 @@ export default {
   width: 100%;
   max-width: 145px;
 }
-.desktop-version {
-  background: #e7e8e8;
+.desktop-version{
+  background: #E7E8E8;
   padding-top: 13vh;
-  padding-left: 12vh;
+  padding-left: 20vh;
   padding-bottom: 50px;
   padding-right: 2%;
+  @media screen and (min-width: 768px) {
+    padding-top: 11vh;
+    padding-bottom: 0px;
+  }
+}
+.dark-theme{
+  .desktop-version{
+      background: #04111F;
+      padding-bottom: 8px;
+      min-height: 102vh;
+      overflow: hidden;
+      position: relative;
+      scrollbar-width: 0px;
+      .col-title h4{
+          color: #FFF;
+      }
+  }
 }
 .list-wrapper--chain__eos-to-vtx-convertor > .q-card {
   width: 100%;

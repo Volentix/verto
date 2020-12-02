@@ -158,6 +158,7 @@ export default {
   //   }
   // },
   async created () {
+    console.log('$store.state.wallets.portfolioTotal', this.$store.state.wallets.portfolioTotal)
     // console.log('****_*_*_selectedCoin Profileheader****_*_*_', this.$store.state.currentwallet.wallet)
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)

@@ -36,6 +36,7 @@
             </template>
           </q-input>
         </div>
+
       </div>
      <div class="standard-content--body full-width q-pb-lg" v-else-if="loggedIn">
         <div class="standard-content--body__form">
@@ -121,6 +122,20 @@
               </q-item-section>
             </q-item>
           </q-list>
+
+        <div v-if="!transactionHash" class="standard-content--footer full-width flex  justify-end">
+            <!-- <span v-show="!passHasError" :class="[loggedIn ? '' : '' , 'q-pl-md q-pt-md cursor-pointer text-grey']" @click="passHasError = true">{{loggedIn ? 'Cancel' : 'Restore'}}</span> -->
+            <!-- <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" /> -->
+            <span></span>
+            <q-btn class="action-link next" :disable="loggedIn && !account.value.length" color="deep-purple-14" text-color="white" :label="loggedIn ? 'Sign' : 'Connect'" :loading="spinnerVisible" @click="spinnerVisible = true ; loggedIn ? transactionHash = 'f1b275b26029fd9e8e34a8f77058ff842e29a5a4f62516b2ccd57f00c3d0d7ae': login()" />
+        </div>
+        <div class="standard-content--footer auto full-width justify-center">
+            <span></span>
+            <q-btn flat v-show="passHasError" @click="restoreFromWords = true" outline class="back" text-color="deep-purple-14" label="Restore from 24 Words" />
+            <span></span>
+        </div>
+        <div class="landing--volentix-logo">
+            <a href="https://www.volentix.io" target="_blank"><img src="statics/vtx_black.svg" class="svg" /></a>
         </div>
       </div>
       <div v-if="!transactionHash && !loggedIn" class="standard-content--footer full-width flex justify-end">
@@ -296,8 +311,9 @@ export default {
             window.top.postMessage({ accounts: accounts }, '*')
             if (this.$route.query.redirect === 'true') {
               window.top.location.href = this.$route.query.url + '?accounts=' + encodeURIComponent(JSON.stringify(accounts))
-            }
-          }, 5000)
+            },
+          7000)
+
         } else {
           setTimeout(() => {
             this.$q.notify({
@@ -527,9 +543,10 @@ a {
   flex-direction: column;
   justify-content: space-between;
 
-  &--body {
-    margin-top: 35%;
-    margin-bottom: 5%;
+
+    &--body {
+        margin-top: 9%;
+        margin-bottom: 5%;
 
     @media screen and (min-width: 768px) {
       margin-top: 5%;
