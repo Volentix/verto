@@ -720,7 +720,7 @@ export default {
       o.value = o.name
       return o
     })
-    console.log(this.accounts)
+
     this.account = this.accounts[0]
     this.initAccount(this.account)
   },
