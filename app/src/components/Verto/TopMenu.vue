@@ -62,15 +62,15 @@ export default {
   created () {
     window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false)
     this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false
-    console.log('this.$store.state.lightMode.lightMode', this.$store.state.lightMode.lightMode)
+    // console.log('this.$store.state.lightMode.lightMode', this.$store.state.lightMode.lightMode)
     this.lightMode = window.localStorage.getItem('skin') !== 'false'
   },
   methods: {
     toggleLightDarkMode (val) {
-      console.log('toggleLightDarkMode (val)', val)
+      // console.log('toggleLightDarkMode (val)', val)
       window.localStorage.setItem('skin', val)
       this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin')
-      console.log('this.$store.state.lightMode.lightMode', this.$store.state.lightMode.lightMode)
+      // console.log('this.$store.state.lightMode.lightMode', this.$store.state.lightMode.lightMode)
     },
     refreshDate () {
       let date = new Date()
