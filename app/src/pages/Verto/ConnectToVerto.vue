@@ -38,7 +38,7 @@
         </div>
 
       </div>
-     <div class="standard-content--body full-width q-pb-lg" v-else-if="loggedIn">
+     <div class="standard-content--body full-width q-pb-lg" v-else-if="loggedIn && $route.query.url">
         <div class="standard-content--body__form">
          <Oneinch :disableDestinationCoin="true" v-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
          <Swapeos :disableDestinationCoin="true" v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
@@ -137,6 +137,7 @@
         <div class="landing--volentix-logo">
             <a href="https://www.volentix.io" target="_blank"><img src="statics/vtx_black.svg" class="svg" /></a>
         </div>
+      </div>
       </div>
       <div v-if="!transactionHash && !loggedIn" class="standard-content--footer full-width flex justify-end">
         <span v-show="!passHasError" :class="[loggedIn ? '' : '', 'q-pl-md q-pt-md cursor-pointer text-grey']" @click="passHasError = true">{{ loggedIn ? "Cancel" : "Restore" }}</span>
@@ -294,11 +295,6 @@ export default {
         this.$store.commit('settings/temporary', this.password)
         await initWallet()
 
-        this.depositCoin.value = this.$route.params.fromCoin
-        this.destinationCoin.value = this.$route.params.toCoin
-        this.depositCoin.fromAmount = this.$route.params.amount
-        this.checkPair()
-
         if (this.$route.query.url) {
           setTimeout(() => {
             let accounts = this.$store.state.wallets.tokens.map((token) => {
@@ -311,10 +307,16 @@ export default {
             window.top.postMessage({ accounts: accounts }, '*')
             if (this.$route.query.redirect === 'true') {
               window.top.location.href = this.$route.query.url + '?accounts=' + encodeURIComponent(JSON.stringify(accounts))
-            },
-          7000)
+            }
+          },
 
+          7000)
         } else {
+          this.depositCoin.value = this.$route.params.fromCoin
+          this.destinationCoin.value = this.$route.params.toCoin
+          this.depositCoin.fromAmount = this.$route.params.amount
+          this.checkPair()
+
           setTimeout(() => {
             this.$q.notify({
               message: 'Wallet connected',
@@ -326,8 +328,6 @@ export default {
           }, 3000)
           this.login = 'Sign'
         }
-
-        console.log(this.$route.params, this.$store.state.settings.dexData)
       } else {
         if (results.message === 'no_default_key') {
           this.$router.push({
@@ -542,7 +542,6 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
 
     &--body {
         margin-top: 9%;
