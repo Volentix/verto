@@ -21,7 +21,8 @@ export const setCoinData = (state, payload) => {
   state.coins[payload.source] = payload.data
 }
 export const setDex = (state, data) => {
-  if (state.selectedDex !== data.dex) { state.selectedDex = data.dex }
   state.dexData.depositCoin = data.depositCoin
   state.dexData.destinationCoin = data.destinationCoin
+  state.dexData.fromAmount = data.fromAmount
+  if (state.selectedDex !== data.dex) { state.selectedDex = data.dex }
 }
