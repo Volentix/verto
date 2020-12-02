@@ -166,12 +166,14 @@ class Lib {
         // const bitcore = require('bitcore-lib')
         const bitcore = require('bitcore-lib')
         const explorers = require('bitcore-explorers')
-        const insight = new explorers.Insight(process.env[store.state.settings.network].CACHE + 'https://insight.bitpay.com')
+        const insight = new explorers.Insight(process.env[store.state.settings.network].CACHE + 'https://explorer.btc.zelcore.io/') // 'https://insight.bitpay.com')
 
         let message, success
         try {
           // eslint-disable-next-line new-cap
           let privateKey = new bitcore.PrivateKey.fromWIF(key)
+          let address = bitcore.Address.fromString(from)
+          // console.log('privateKey', privateKey)
 
           insight.getUnspentUtxos(from, function (error, utxos) {
             if (error) {
@@ -181,7 +183,7 @@ class Lib {
               var tx = new bitcore.Transaction()
                 .from(utxos)
                 .to(to, value * 100000000)
-                .change(from)
+                .change(address)
                 .sign(privateKey)
                 .serialize()
 
