@@ -1,5 +1,5 @@
 <template>
-<div class="desktop-card-style make-vtx q-mb-sm">
+<div class="desktop-card-style make-vtx q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <span class="preloader flex flex-center" :class="{'show' : activate}"><img src="statics/preloader.svg" alt=""></span>
     <div class="row flex justify-between q-pb-xl q-pt-lg">
         <div v-if="highestVTXAccount !== null" class="col col-4 flex items-center earn-picto"><img src="statics/earn-picto.svg" class="full-width" alt=""></div>
@@ -352,6 +352,12 @@ export default {
             }
         }
     }
+    &.dark-theme{
+        color: #FFF;
+        .preloader {
+          background-color: #0a2138;
+        }
+    }
 }
 
 .q-card {
@@ -370,7 +376,6 @@ export default {
     transition: opacity ease .5s;
     opacity: 0;
     visibility: hidden;
-
     &.show {
         visibility: visible;
         opacity: 1;
