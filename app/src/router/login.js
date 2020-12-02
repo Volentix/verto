@@ -17,6 +17,7 @@ export default [
         path: '/login/:nextUrl',
         component: () => import('pages/Verto/ConnectToVerto.vue')
       },
+
       {
         name: 'create-password',
         path: '/create-password',

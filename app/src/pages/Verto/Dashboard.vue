@@ -1,5 +1,6 @@
 <template>
 <q-page class="column text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
             <div class="col col-md-3">
@@ -14,11 +15,9 @@
                 <appsSection />
                 <startNodeSection :banner="1" />
                 <chainToolsSection />
-                <div class="desktop-card-style current-investments explore-opportunities q-mb-sm">
-
+                <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <liquidityPoolsTable :rowsPerPage="10" />
-
-                    <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 392px;" v-if="false">
+                    <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 362px;" v-if="false">
                         <div v-for="(pool, index) in $store.state.investment.pools" :key="index" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
                             <div class="col-1 flex items-center">
                                 <strong>{{(index + 1)}}</strong>
@@ -83,6 +82,7 @@
         </div>
         <br><br>
     </div>
+</div>
 </q-page>
 </template>
 
@@ -340,15 +340,15 @@ export default {
 .q-page {
     background: #E7E8E8 !important;
 }
-</style><style lang="scss" scoped>
+</style>
+<style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
 
 .desktop-version {
     background: #E7E8E8;
     padding-top: 13vh;
-    padding-left: 12vh;
+    padding-left: 20vh;
     padding-bottom: 50px;
-
     @media screen and (min-width: 768px) {
         padding-top: 11vh;
         padding-bottom: 0px;
@@ -613,7 +613,23 @@ export default {
         margin-bottom: 20px;
     }
 }
-</style><style>
+.dark-theme{
+    .desktop-version{
+        background: #04111F;
+        padding-bottom: 8px;
+        min-height: 102vh;
+        overflow: hidden;
+        position: relative;
+        scrollbar-width: 0px;
+    }
+    .explore-opportunities{
+        /deep/ .q-dark{
+            background: #04111F;
+        }
+    }
+}
+</style>
+<style>
 .q-scrollarea__bar--v,
 .q-scrollarea__thumb--v {
     width: 6px !important;
