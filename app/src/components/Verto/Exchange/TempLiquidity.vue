@@ -37,7 +37,17 @@
 
                       <div class="flex justify-start full-width">
                         <q-btn v-close-popup @click="spinnervisible = false" unelevated color="grey" class="--next-btn mr10" rounded label="Cancel" />
-                        <q-btn @click="checkPrivateKeyPassword(); sendTransaction()" unelevated color="deep-purple-14" class="--next-btn q-ml-md" rounded label="Submit transaction" />
+                        <q-btn
+                          @click="
+                            checkPrivateKeyPassword();
+                            sendTransaction();
+                          "
+                          unelevated
+                          color="deep-purple-14"
+                          class="--next-btn q-ml-md"
+                          rounded
+                          label="Submit transaction"
+                        />
                       </div>
                     </div>
                     <div class="send-modal__content--footer">
@@ -73,11 +83,15 @@
                           <q-tab name="liquidity" icon="add" label="Liquidity" />
                         </q-tabs>
                         <div class="head" v-if="tab == 'swap'">Get {{ destinationCoin.label }} with {{ depositCoin.label }} with one click</div>
-                        <div class="head" v-else-if="tab == 'liquidity'">Add liquidity to the {{ destinationCoin.label }} + {{ depositCoin.label }} pool</div>
+                        <div class="head" v-else-if="tab == 'liquidity' && (pairData && pairData.liquidity_token !== 0)">Add liquidity to the {{ destinationCoin.label.toUpperCase() }} + {{ depositCoin.label.toUpperCase() }} pool</div>
+                        <div class="q-pl-lg " v-else-if="tab == 'liquidity' && (!pairData || (pairData && pairData.liquidity_token === 0))">
+                        <p class="q-pt-md ">Liquidity has not been created yet</p>
+                        <p class="text-body2 no-padding">Create liquidity and become the first liquidity provider</p>
 
+                      </div>
                         <div class="you-pay">
                           <div class="you-pay-head row items-center">
-                            <div class="col col-6">Payment</div>
+                            <div class="col col-6">Payment {{depositCoinOptions.length}}</div>
                             <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
                           </div>
                           <div class="you-pay-body row items-center">
@@ -122,6 +136,7 @@
                               </span>
                             </div>
                             <div class="col col-8 offset-2">
+                            <p class="no-padding text-body2"  v-if="!pairData && tab != 'swap'">Set the initial {{depositCoin.value.toUpperCase()}} ratio </p>
                               <q-input
                                 @blur="swapData.fromAmount = parseFloat(swapData.fromAmount).toFixed(depositCoin.precision)"
                                 outlined
@@ -130,13 +145,14 @@
                                 @input="
                                   swapData.error = false;
                                   getPairData();
-                                  privateKey = false
+                                  privateKey = false;
                                 "
+
                                 v-model="swapData.fromAmount"
                                 type="number"
                                 :disabled="spinnervisible"
                                 :loading="spinnervisible"
-                                :rules="[(val) => val <= depositCoin.amount || 'Insufficient funds']"
+                                :rules="[(val) => tab == 'liquidity' || val <= depositCoin.amount || 'Insufficient funds']"
                               >
                                 <div class="flex justify-end items-center" style="width: 60px">
                                   <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
@@ -152,7 +168,7 @@
                           <br />
                           <q-btn outline round color="black" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
                           <div class="you-receive-head row items-center">
-                            <div class="col col-6">You Receive</div>
+                            <div class="col col-6" v-if="tab != 'liquidity'">You Receive</div>
                             <div v-if="rateData" class="col col-6 info_rate_holder small text-right flex justify-end items-center" :class="{ _loading: fetchingRate }">
                               <!-- 1 ETH = 374.705 USDT -->
                               <span>{{ "1 " + fromCoinType.toUpperCase() + "&nbsp;= &nbsp;" + rateData.rate.toFixed(5) + " " + destinationCoinType.toUpperCase() }}</span>
@@ -222,7 +238,8 @@
                               </span>
                             </div>
                             <div class="col col-8 offset-2">
-                              <q-input disable outlined class="bg-white text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" type="number">
+                             <p class="no-padding text-body2" v-if="!pairData && tab != 'swap'">Set the initial {{destinationCoin.value.toUpperCase()}} ratio </p>
+                              <q-input  @blur="swapData.toAmount = parseFloat(swapData.toAmount).toFixed(destinationCoin.precision)"  :disable="!(tab == 'liquidity' && (!pairData || (pairData && pairData.liquidity_token === 0)))" outlined class="bg-white text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" type="number">
                                 <div class="flex justify-end items-center" style="width: 60px">
                                   <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
                                 </div>
@@ -232,17 +249,52 @@
                               </q-input>
                             </div>
                           </div>
+                           <div class="you-receive-body row items-center q-mt-sm" v-if="!pairData && tab != 'swap'">
+                            <div class="col col-4 choose-coin">
+                              <span class="cursor text-body1 q-pt-md">
+                                INITIAL FEE <br>
+
+                              </span>
+                            </div>
+                            <div class="col col-3">
+
+                              <q-input   :disable="!(tab == 'liquidity' && (!pairData || (pairData && pairData.liquidity_token === 0)))" outlined class="bg-white text-h5" ref="fees" :loading="spinnervisible" v-model="swapData.feesAmount" @blur="swapData.feesAmount = parseInt(swapData.feesAmount) < 0 || parseInt(swapData.feesAmount) > 100 ? 0 : parseInt(swapData.feesAmount)  " type="number">
+
+                                <template v-slot:append>
+                                  <q-icon name="monetization_on" />
+                                </template>
+                                <template v-slot:hint>
+                                  <div class="text-body1">Balance: {{ depositCoin.amount }}</div>
+                                </template>
+                              </q-input>
+                            </div>
+
+                            <div class="normal-line-height">
+                             <span class="text-body2 q-pl-sm text-bold">A number from:</span><br>
+                              <span class="text-body2 q-pl-sm"> 1 - 100</span>
+                            </div>
+                          </div>
                           <div class="text-red text-body1 q-mt-sm" v-if="error">
                             <span v-if="error == 'gas'">
                               {{ swapData.errorText.replace("[from]", depositCoin.value).replace("[to]", destinationCoin.value) }}
                             </span>
-                            <span v-else>
+                            <span v-else-if="tab == 'liquidity'">
                               {{ error }}
                             </span>
                           </div>
 
-                          <q-btn v-if="error" unelevated :disable="true" color="grey-4" text-color="black" :label="error" class="text-capitalize invalid_btn full-width" />
-
+                          <q-btn v-if="error &&  tab != 'liquidity'" unelevated :disable="true" color="grey-4" text-color="black" :label="error" class="text-capitalize invalid_btn full-width" />
+                            <q-btn
+                            v-else-if="tab == 'liquidity'"
+                            unelevated
+                            @click="addLiquidity()"
+                            :loading="spinnervisible"
+                            :disable="tab != 'liquidity' && (parseFloat(swapData.toAmount) === 0  || parseFloat(depositCoin.amount) < parseFloat(swapData.fromAmount) || spinnervisible)"
+                            color="primary"
+                            text-color="black"
+                            :label="(!pairData || (pairData && pairData.liquidity_token === 0)) ?  'Create liquidity' : 'Add liquidity'"
+                            class="text-capitalize chose_accounts full-width"
+                          />
                           <q-btn
                             v-else
                             unelevated
@@ -299,7 +351,7 @@
                             <div style="margin-top: 40px" class="prototype text-center q-pa-md q-mt-lg" v-if="tab == 'liquidity' && transactionStatus == 'Success'">
                               <div v-if="this.transaction.name === 'createpair'">
                                 <p>You successfully created the liquidity pool</p>
-                                <p>{{ depositCoin.label }} + {{ destinationCoin.label }}</p>
+                                <p>{{ depositCoin.label.toUpperCase() }} + {{ destinationCoin.label.toUpperCase() }}</p>
 
                                 <p class="cursor-pointer" @click="step = 1">Go back to add liquidity</p>
                               </div>
@@ -335,13 +387,13 @@
           <q-item class="q-my-sm" clickable v-ripple>
             <div class="text-h6">Summary</div>
           </q-item>
-          <q-item class="q-my-sm text-left" clickable v-ripple >
+          <q-item class="q-my-sm text-left" clickable v-ripple>
             <q-item-section avatar>
               <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
             </q-item-section>
 
             <q-item-section>
-              <q-item-label >You send</q-item-label>
+              <q-item-label>You send</q-item-label>
               <q-item-label caption class="text-bold" lines="1">{{ this.swapData.fromAmount }} {{ depositCoin.label.toUpperCase() }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -367,8 +419,8 @@
             <q-item-section>
               <q-item-label class="text-bold">Liquidity</q-item-label>
 
-              <q-item-label lines="1">{{ pairData.reserve0 }}</q-item-label>
-              <q-item-label lines="1">{{ pairData.reserve1 }}</q-item-label>
+              <q-item-label lines="1">{{ pairData.pool1.quantity }}</q-item-label>
+              <q-item-label lines="1">{{ pairData.pool2.quantity }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -397,14 +449,28 @@
               <q-item-label class="text-bold text-center q-mt-sm" caption>{{ destinationCoin.label }}</q-item-label>
             </q-item-section>
           </q-item>
+
+          <q-item class="q-my-sm" clickable v-ripple>
+            <div class="text-h6">Summary</div>
+          </q-item>
+          <q-item class="q-my-sm text-left" clickable v-ripple>
+            <q-item-section avatar>
+              <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>You send</q-item-label>
+              <q-item-label caption class="text-bold" lines="1">{{ this.swapData.fromAmount }} {{ depositCoin.label.toUpperCase() }}</q-item-label>
+            </q-item-section>
+          </q-item>
         </q-list>
-        <div v-if="tab == 'liquidity' && (!pairData || (pairData && pairData.liquidity_token === 0))">
+        <div v-if="false && tab == 'liquidity' && (!pairData || (pairData && pairData.liquidity_token === 0))">
           <p class="q-pt-md">Liquidity has not been created yet</p>
           <p class="q-pt-md">Create liquidity and become the first liquidity provider</p>
           <p class="q-pt-md">Set the initial swap price freely</p>
         </div>
       </div>
-      <vpoolsComponent v-if="false" />
+      <vpoolsComponent :key="vpoolsTrigger" />
     </div>
   </div>
 </template>
@@ -417,6 +483,11 @@ import initWallet from '@/util/Wallets2Tokens'
 import DexInteraction from '../../../mixins/DexInteraction'
 import EOSContract from '../../../mixins/EOSContract'
 import vpoolsComponent from '../../../components/Verto/Defi/vpoolsComponent.vue'
+import {
+  EosRPC, EosAPI
+} from '@/util/EosInterac'
+const testnetApiObject = new EosAPI('5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc', 'http://140.82.56.143:8888')
+const testnetRpc = new EosRPC('http://140.82.56.143:8888')
 export default {
   components: {
     vpoolsComponent
@@ -424,6 +495,9 @@ export default {
   props: ['disableDestinationCoin'],
   data () {
     return {
+      eosAccountName: 'berthonytha1',
+      tokensBalance: [],
+      openChannels: [],
       name: 'Swapeos',
       openModal: false,
       getPassword: false,
@@ -434,6 +508,7 @@ export default {
       isPwd: true,
       step: 1,
       tab: 'swap',
+      vpoolsTrigger: 110,
       transactionStatus: 'Pending',
       freeCPU: false,
       spinnervisible: false,
@@ -446,6 +521,7 @@ export default {
         marketData: [],
         fromAmount: 1,
         toAmount: 1,
+        feesAmount: 0,
         errorText: 'Converting [from] to [to] cannot be done at this moment please try another coin',
         error: false,
         customPriceSlipage: null,
@@ -474,15 +550,25 @@ export default {
       destinationCoinOptions: [],
       pairData: null,
       path: [],
+      vpoolsTransactions: {
+        initToken: false,
+        actions: []
+      },
       miningData: [],
       transaction: {}
+
     }
   },
   async created () {
+    console.log(testnetApiObject, 'api')
+    this.tokensBalance = await testnetRpc.getTable('vpools', this.eosAccount, 'accounts')
+    this.openChannels = await testnetRpc.getTable('vpools', this.eosAccount, 'stat')
+    console.log(this.tokensBalance, this.openChannels)
+
     let tableData = await this.$store.state.wallets.tokens
     this.eosAccounts = tableData.filter((w) => w.chain === 'eos')
     rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
-    console.log(this.$store.state.settings.dexData, 'insaide ')
+
     if (this.$store.state.settings.dexData.depositCoin) {
       this.depositCoin = this.$store.state.settings.coins.defibox.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
     }
@@ -534,7 +620,7 @@ export default {
 
       return val
     },
-    async getLiquidityMultiplier () {
+    async getLiquidityMultiplier_old () {
       if (this.pairData) {
         let data = this.miningData.find((o) => o.pair_id === this.pairData.id)
         this.pairData.miningData = data || (await this.getMiningData(this.pairData.id))
@@ -548,75 +634,136 @@ export default {
         }
       }
     },
-    getPairData () {
-      let multiplier = 0
-      this.path = []
-      let next = null,
-        url = null
-      this.transaction = {}
+    getLiquidityMultiplier () {
+      if (this.pairData.pool1.quantity.includes(this.depositCoin.value)) {
+        this.depositCoin.liquidityMultiplier = parseFloat(this.pairData.supply.split(' ')[0]) / parseFloat(this.pairData.pool1.quantity.split(' ')[0])
+        this.destinationCoin.liquidityMultiplier = parseFloat(this.pairData.supply.split(' ')[0]) / parseFloat(this.pairData.pool1.quantity.split(' ')[0])
+      } else {
+        this.depositCoin.liquidityMultiplier = parseFloat(this.pairData.supply.split(' ')[0]) / parseFloat(this.pairData.pool2.quantity.split(' ')[0])
+        this.destinationCoin.liquidityMultiplier = parseFloat(this.pairData.supply.split(' ')[0]) / parseFloat(this.pairData.pool2.quantity.split(' ')[0])
+      }
+    },
+    async getPairData () {
       this.swapData.fromAmount = parseFloat(this.swapData.fromAmount).toFixed(this.depositCoin.precision)
+      /*
       this.pairData = this.pairs.find(
         (w) =>
           (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) ||
           (w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase())
       )
+      console.log(this.pairData, 'this.pairData')
+      */
 
-      this.getLiquidityMultiplier()
-      if (!this.pairData || this.pairData.liquidity_token === 0) {
-        let pair = this.pairs.find(
-          (w) => (w.token1.symbol.split(',')[1].toLowerCase() === 'eos' && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) || (w.token0.symbol.split(',')[1].toLowerCase() === 'eos' && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase())
-        )
-        if (pair) {
-          let next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
-          multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price1_last) : parseFloat(pair.price0_last)
-          let url = this.getEOSTokenImageUrl(next.symbol.split(',')[1], next.contract)
-          this.path.push({
-            id: pair.id,
-            token: next,
-            multiplier: multiplier,
-            url: url
-          })
+      let data = await testnetRpc.getTable('vpools', this.depositCoin.value.toUpperCase() + this.destinationCoin.value.toUpperCase(), 'stat')
+      console.log(data, 'data')
 
-          this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
-        }
-        pair = this.pairs.find(
-          (w) => (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && w.token0.symbol.split(',')[1].toLowerCase() === 'eos') || (w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && w.token1.symbol.split(',')[1].toLowerCase() === 'eos')
-        )
-        if (pair) {
-          next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
-          multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price0_last) : parseFloat(pair.price1_last)
-          this.swapData.toAmount = parseFloat(parseFloat(this.swapData.toAmount) * multiplier).toFixed(this.depositCoin.precision)
-          url = this.getEOSTokenImageUrl(next.symbol.split(',')[1], next.contract)
-          this.path.push({
-            id: pair.id,
-            token: next,
-            multiplier: multiplier,
-            url: url
-          })
-        }
-        if (this.tab !== 'swap' && !this.pairData) {
-          this.eosAccount = this.eosAccounts.find((o) => o.type.toLowerCase() === this.depositCoin.value.toLowerCase())
-          if (this.eosAccount) {
-            this.transaction.name = 'createpair'
-            this.transaction.data = {
-              creator: this.eosAccount.name,
-              token0: {
-                contract: this.depositCoin.contract,
-                symbol: this.depositCoin.precision + ',' + this.depositCoin.value
+      if (this.tab !== 'swap') {
+        this.eosAccount = {
+          name: 'berthonytha1'
+        } // this.eosAccounts.find((o) => o.type.toLowerCase() === this.depositCoin.value.toLowerCase())
+        if (this.eosAccount) {
+          this.transaction.name = 'createpair'
+          this.vpoolsTransactions.actions = {
+            actions:
+              [{
+                account: 'vpools',
+                name: 'openext',
+                authorization: [{ actor: this.eosAccount.name, permission: 'active' }],
+                data: {
+                  user: this.eosAccount.name,
+                  payer: this.eosAccount.name,
+                  ext_symbol: { contract: 'eosio.token', 'sym': this.destinationCoin.precision + ',' + this.destinationCoin.value.toUpperCase() }
+
+                }
               },
-              token1: {
-                contract: this.destinationCoin.contract,
-                symbol: this.destinationCoin.precision + ',' + this.destinationCoin.value
+
+              {
+                account: 'vpools',
+                name: 'openext',
+                authorization: [{ actor: this.eosAccount.name, 'permission': 'active' }],
+                data: {
+                  user: this.eosAccount.name,
+                  payer: this.eosAccount.name,
+                  ext_symbol: { contract: this.depositCoin.value.toUpperCase() === 'VTX' ? 'volentixgsys' : 'eosio.token', 'sym': this.depositCoin.precision + ',' + this.depositCoin.value.toUpperCase() }
+                }
+              }, {
+                account: 'eosio.token',
+                name: 'transfer',
+                authorization: [{ actor: this.eosAccount.name, permission: 'active' }],
+                data: {
+                  from: this.eosAccount.name,
+                  to: 'vpools',
+                  quantity: parseFloat(this.swapData.fromAmount).toFixed(this.depositCoin.precision) + ' ' + this.depositCoin.value.toUpperCase(),
+                  memo: 'memo'
+                }
+              },
+              {
+                account: 'volentixgsys',
+                name: 'transfer',
+                authorization: [{ actor: this.eosAccount.name, permission: 'active' }],
+                data: {
+                  from: this.eosAccount.name,
+                  to: 'vpools',
+                  quantity: parseFloat(this.swapData.toAmount).toFixed(this.destinationCoin.precision) + ' ' + this.destinationCoin.value.toUpperCase(),
+                  memo: 'memo'
+                }
               }
-            }
+              ]
           }
         }
-      } else {
-        multiplier = this.pairData.token0.symbol.split(',')[1].toLowerCase() === this.depositCoin.value.toLowerCase() ? parseFloat(this.pairData.price0_last) : parseFloat(this.pairData.price1_last)
+      }
+      if (data.length) {
+        this.pairData = data[0]
+        this.getLiquidityMultiplier()
 
-        this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
+        this.swapData.toAmount = parseFloat(this.swapData.fromAmount * this.destinationCoin.liquidityMultiplier).toFixed(this.depositCoin.precision)
+      } else {
+        this.pairData = false
+        if (!this.pairData) {
+          this.vpoolsTransactions.actions.actions.push({
+            account: 'vpools',
+            name: 'inittoken',
+            authorization: [{ actor: this.eosAccount.name, permission: 'active' }],
+            data: {
+              user: this.eosAccount.name,
+              new_symbol: '8,' + this.depositCoin.value.toUpperCase() + this.destinationCoin.value.toUpperCase(),
+              initial_pool1: { contract: 'eosio.token', 'quantity': parseFloat(this.swapData.fromAmount).toFixed(this.depositCoin.precision) + ' ' + this.depositCoin.value.toUpperCase() },
+              initial_pool2: { contract: 'volentixgsys', 'quantity': parseFloat(this.swapData.toAmount).toFixed(this.destinationCoin.precision) + ' ' + this.destinationCoin.value.toUpperCase() },
+              initial_fee: this.swapData.feesAmount,
+              fee_contract: this.eosAccount.name
+
+            }
+          })
+        }
       }
       this.validateTransaction()
+    },
+    addLiquidity () {
+      this.getPairData()
+      console.log(this.vpoolsTransactions.actions, this.pairData)
+      testnetApiObject.api.transact(this.vpoolsTransactions.actions, {
+        blocksBehind: 3,
+        expireSeconds: 30
+      })
+        .then((result) => {
+          this.step = 2
+          this.transactionStatus = 'Success'
+          this.spinnervisible = false
+          this.transactionHash = result.transaction_id
+          if (this.tab !== 'swap') {
+            this.vpoolsTrigger++
+            this.getPairData()
+          }
+        }).catch((error) => {
+          if (error.toString().includes('is greater than the maximum billable CPU time for the transaction')) {
+            this.freeCPU = true
+            this.sendFreeCPUTransaction(this.vpoolsTransactions.actions)
+          } else {
+            this.error = error.toString()
+            this.transactionStatus = 'Failed'
+            this.spinnervisible = false
+          }
+        })
     },
     addCoinToGlobalList (value, key) {
       let infosArray = value[key].symbol.split(',')
@@ -834,7 +981,9 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
-
+  .normal-line-height {
+        line-height: normal;
+  }
 .q-tab--active {
   background: #dfdff1;
 }

@@ -56,6 +56,7 @@ import {
   version
 } from '../../../package.json'
 import initWallet from '@/util/Wallets2Tokens'
+import DexInteraction from '../../mixins/DexInteraction'
 export default {
   name: 'Login',
   data () {
@@ -87,6 +88,9 @@ export default {
       position: 'top'
     })
     this.triggerCustomRegisteredType1()
+    this.getCoinswitchCoins()
+    this.get1inchCoins()
+    this.getDefiboxCoins()
   },
   async mounted () {
     this.version = version
@@ -162,7 +166,8 @@ export default {
         message: `This app is in beta, use at your own risk.`
       })
     }
-  }
+  },
+  mixins: [DexInteraction]
 }
 </script>
 

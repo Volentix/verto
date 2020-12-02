@@ -18,7 +18,7 @@ var fetch = require('isomorphic-fetch')
 class EosRPC {
   constructor (network) {
     let address = VDexNodeConfigManager.getEndpoint('eos_endpoint')
-    this.rpc = new JsonRpc(address, { fetch })
+    this.rpc = new JsonRpc(network || address, { fetch })
     // this.rpc = new JsonRpc('https:////api.eosio.cr', { fetch })
   }
 
@@ -96,9 +96,9 @@ class EosRPC {
 }
 
 class EosAPI {
-  constructor (privateKey) {
+  constructor (privateKey, provider = 'https://eos.greymass.com:443') {
     let signatureProvider = new JsSignatureProvider([privateKey])
-    let rpc = new JsonRpc('https://eos.greymass.com:443')
+    let rpc = new JsonRpc(provider)
     this.api = new Api({
       rpc,
       signatureProvider
