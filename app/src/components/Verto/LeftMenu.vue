@@ -1,5 +1,5 @@
 <template>
-  <div class="menu-left-wrapper">
+  <div class="menu-left-wrapper" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <q-tabs
         v-model="tab"
         indicator-color="transparent"
@@ -155,6 +155,22 @@ export default {
         cursor: pointer;
         position: relative;
 
+      }
+    }
+    &.dark-theme{
+      background-color: #04111F;
+      background: #04111F;
+      .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab.q-router-link--active .svg-icon{
+        fill: rgba(white, 1);
+      }
+      .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab .svg-icon{
+        fill: rgba(white, .8);
+      }
+      .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab.q-router-link--active .text-tab-name{
+        color: rgba(white, 1);
+      }
+      .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab .text-tab-name{
+        color: rgba(white, .8);
       }
     }
   }

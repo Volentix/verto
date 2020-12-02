@@ -1,5 +1,6 @@
 <template>
 <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
             <div class="col-8 col-title">
@@ -166,6 +167,7 @@
             <q-btn flat unelevated class="btn-align-left" text-color="black" icon="keyboard_backspace" /> Liquidity pool
         </h2>
     </div>
+</div>
 </q-page>
 </template>
 
@@ -440,6 +442,19 @@ export default {
     @media screen and (min-width: 768px) {
       padding-top: 11vh;
       padding-bottom: 0px;
+    }
+}
+.dark-theme{
+    .desktop-version{
+        background: #04111F;
+        padding-bottom: 8px;
+        min-height: 102vh;
+        overflow: hidden;
+        position: relative;
+        scrollbar-width: 0px;
+        .col-title h4{
+            color: #FFF;
+        }
     }
 }
 

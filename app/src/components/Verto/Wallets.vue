@@ -1,6 +1,6 @@
 <template>
 <div>
-    <div class="wallets-wrapper">
+    <div class="wallets-wrapper" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
         <!-- <q-toggle v-model="active" label="Active" /> -->
         <div v-if="isMobile" class="wallets-wrapper--list" :class="{'open': !walletShowHide}">
             <q-scroll-area :visible="true" class="scrollarea" :class="{'height' : !walletShowHide}">
@@ -291,7 +291,7 @@
                                 <q-icon style="font-size: 20px" :name="'img:'+ $store.state.currentwallet.wallet.icon" class="q-mr-xs q-mb-xs" /> <span class="small">{{$store.state.currentwallet.wallet.type.toUpperCase()}}</span>
                             </span>
                         </h2>
-                        <h2 class="wallets-wrapper--list_title q-pa-md q-ml-md flex items-center">
+                        <h2 class="wallets-wrapper--list_title q-pa-md q-pl-xs q-ml-sm flex items-center">
                             <q-icon :name="'img:statics/history_icon-black.svg'" class="q-mr-sm" /> Transaction History
                         </h2>
                         <q-list bordered separator class="list-wrapper history-list-wrapper">
@@ -352,7 +352,7 @@
                             </div>
                         </q-item>
                         <q-separator v-if="showHidden" inset="item" id="hidden__holder--sep" />
-                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => f.hidden && this.showHidden)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => f.hidden && this.showHidden)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" :active-class="$store.state.lightMode.lightMode === 'true' ? 'bgblack' : 'bg-teal-1 text-grey-8'">
                             <div class="header-wallet-wrapper culumn full-width hidden__holder" style="opacity: .4">
                                 <div class="header-wallet-wrapper culumn full-width">
                                     <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
@@ -1220,6 +1220,59 @@ export default {
             }
         }
     }
+    &.dark-theme{
+        @media screen and (min-width: 768px){
+            background-color: #04111F;
+            border: 1px solid #627797;
+        }
+        .history-list-wrapper {
+            .q-item{
+                padding-left: 5px;
+            }
+            .item-trans--transID{
+                color: #FFF;
+            }
+            .item-amount{
+                color: #FFF;
+                margin-left: 0px;
+            }
+        }
+        .wallets-wrapper--list{
+            background-color: #04111F;
+            border-top: none;
+            &_title{
+                color: #FFF;
+                background: transparent !important;
+                // margin-left: 0px !important;
+            }
+            .q-list--bordered {
+                .q-item{
+                    &:first-child{
+                        border-top: 1px solid rgba(0, 0, 0, 0);
+                    }
+                }
+                .q-link {
+                    border-top: 1px solid rgba(#627797, 0.2);
+                    &.bgblack{
+                        background-color: #0b1f35;
+                    }
+                    @media screen and (min-width: 768px){
+                        .menu-wallet .sub-list-menu .q-link{
+                            color: #FFF;
+                        }
+                    }
+                }
+            }
+            .item-name, .item-info{
+                color: #FFF;
+            }
+            .header-list-table{
+                .sort{
+                    color: rgba(#FFF, .7);
+                }
+            }
+        }
+    }
 }
 
 .header-wallet-wrapper {}
@@ -1435,7 +1488,8 @@ export default {
             font-size: 10px;
             color: #2A2A2A;
             justify-content: flex-start;
-            margin-top: 10px;
+            margin-top: 5px;
+            word-break: break-all;
         }
     }
 
