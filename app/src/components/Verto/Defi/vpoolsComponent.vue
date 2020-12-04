@@ -5,7 +5,8 @@
 
       <q-tabs v-model="tab" dense class="bg-grey-3" align="justify" narrow-indicator>
         <q-tab name="channels" label="Balances" />
-        <q-tab name="tokens" label="Tokens" />
+         <q-tab name="balances" v-show="false" label="Balances" />
+        <q-tab name="tokens" label="Pools & Investments" />
         <q-tab name="movies" label="Opportunities" />
       </q-tabs>
         <q-separator />
@@ -20,22 +21,20 @@
                 </q-avatar>
               </q-item-section>
 
-              <q-item-section>
-                <q-item-label>{{ token.balance.quantity }}</q-item-label>
-                <q-item-label caption>{{ token.balance.contract }}</q-item-label>
-              </q-item-section>
               <q-item-section top>
                 <q-item-label >{{token.balance.quantity.split(' ')[1]}} balance</q-item-label>
                   <q-item-label caption>{{balances[token.balance.quantity.split(' ')[1]+'_'+token.balance.contract] ? balances[token.balance.quantity.split(' ')[1]+'_'+token.balance.contract] : balanceStatus}}</q-item-label>
-              </q-item-section>
-         <q-item-section top class="col-2 gt-sm">
+               <q-item-label caption>{{ token.balance.contract }}</q-item-label>
+
+           </q-item-section>
+         <q-item-section v-if="false" top class="col-2 gt-sm">
          <q-btn class="gt-xs" size="12px" flat dense round icon="add" label="Add"/>
         </q-item-section>
-        <q-item-section top class="col-2 gt-sm">
+        <q-item-section  v-if="false" top class="col-2 gt-sm">
          <q-btn class="gt-xs" size="12px" flat dense round icon="remove" label="Remove"/>
         </q-item-section>
 
-              <q-item-section side>
+              <q-item-section   v-if="false" side>
                 <q-btn icon="clear" color="grey"  label="Close"   dense flat  />
               </q-item-section>
             </q-item>
@@ -103,7 +102,7 @@ export default {
       eosAccount: 'berthonytha1',
       tokensBalance: [],
       openChannels: [],
-      tab: 'channels',
+      tab: 'tokens',
       balanceStatus: 'Fetching...',
       balances: {
 
@@ -119,7 +118,7 @@ export default {
       this.$set(this.balances, currency + '_' + contract, balance)
     }
   },
-  async created () {
+  async mounted () {
     this.tokensBalance = await testnetRpc.getTable('vpools', this.eosAccount, 'accounts')
     this.openChannels = await testnetRpc.getTable('vpools', this.eosAccount, 'vpoolsacnts')
 
