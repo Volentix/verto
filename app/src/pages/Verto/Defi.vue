@@ -2,7 +2,10 @@
 <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
 <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <div class="desktop-version" v-if="screenSize > 1024">
-        <div class="row">
+        <div class="text-h6 row flex flex-center" v-if="!accountOption">
+         NO EOS or ETH wallet available
+        </div>
+        <div class="row" v-else-if="accountOption.chain == 'eos' || accountOption.chain == 'eth'">
             <div class="col-8 col-title">
                 <h4>Account overview</h4>
             </div>
@@ -32,18 +35,44 @@
                 </q-tab-panels>
             </div>
             <div class="col-4">
-                <q-select light separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation({address:accountOption})" v-model="accountOption" :options="accountOptions">
+                <q-select light separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation({address:accountOption, chain:accountOption.chain})" v-model="accountOption" :options="accountOptions">
                     <template v-slot:selected>
                         <q-item>
-                            <q-item-section avatar>
-                                <q-icon class="option--avatar" :name="`img:https://zapper.fi/images/ETH-icon.png`" />
+                            <q-item-section v-if="accountOption.image" avatar>
+                                <q-icon class="option--avatar" :name="'img:'+accountOption.image" />
                             </q-item-section>
                             <q-item-section>
                                 <q-item-label>Change account</q-item-label>
-                                <q-item-label caption class="ellipsis mw200">{{ accountOption }}</q-item-label>
+                                <q-item-label caption class="ellipsis mw200">{{ accountOption.key }}</q-item-label>
                             </q-item-section>
                         </q-item>
                     </template>
+
+                    <template v-slot:option="scope">
+                  <q-item
+                   class="custom-menu"
+
+                   v-bind="scope.itemProps"
+                   v-on="scope.itemEvents"
+                  >
+                   <q-item-section avatar>
+                    <q-icon
+                     :name="`img:${scope.opt.image}`"
+                    />
+                   </q-item-section>
+                   <q-item-section>
+                    <q-item-label
+                     v-html="scope.opt.label"
+                    />
+
+                    <q-item-label
+                     v-if="scope.opt.name"
+                     caption
+                     >{{ scope.opt.name }}</q-item-label
+                    >
+                   </q-item-section>
+                  </q-item>
+                 </template>
                     <!-- <template v-slot:append>
                         <q-avatar>
                             <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
@@ -51,7 +80,8 @@
                     </template> -->
                 </q-select>
             </div>
-            <div class="col col-md-5 q-pr-md">
+            <vpoolsComponent v-show="accountOption.chain == 'eos'"/>
+            <div v-if="accountOption.chain == 'eth'" class="col col-md-5 q-pr-md">
                 <div class="desktop-card-style account-overview q-mb-md">
                     <div class="row">
                         <div class="col-8">
@@ -82,7 +112,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="desktop-card-style wallet-snapshot q-mb-md" style="background: url(statics/header_bg.png) no-repeat; background-position: 20% 75%; background-size: 100%;">
+                <div v-if="accountOption.chain == 'eth'"  class="desktop-card-style wallet-snapshot q-mb-md" style="background: url(statics/header_bg.png) no-repeat; background-position: 20% 75%; background-size: 100%;">
                     <div class="flex justify-between items-center q-pt-sm q-pb-sm">
                         <h3 class="text-white q-pl-md">Max DeFi Yield</h3>
                         <div class="text-white q-pr-md amount flex items-center">
@@ -91,7 +121,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken">
+                <div   class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken && accountOption.chain == 'eth'">
                     <q-item>
                         <q-item-section>
                             <span class="text-h5 text-bold ">
@@ -108,7 +138,7 @@
                     </q-item>
                 </div>
             </div>
-            <div class="col col-md-7">
+            <div v-if="accountOption.chain == 'eth'"  class="col col-md-7">
                 <!-- <div class="desktop-card-style current-investments wallet-col q-mb-sm">
             <h4 class="q-pl-md">Wallet - $5,846.31</h4>
             <div class="header-table-col row q-pl-md q-pr-lg">
@@ -135,8 +165,8 @@
                     <LiquidityPoolsTable :rowsPerPage="5" />
                 </div>
             </div>
-            <div class="col col-5 q-pr-md">
-                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
+            <div v-if="accountOption.chain == 'eth'"  class="col col-5 q-pr-md">
+                <div  class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
                     <InvestmentsTable />
                 </div>
                 <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
@@ -148,10 +178,10 @@
                 </div>
             </div>
             <div class="col col-7">
-                <div class="desktop-card-style current-investments wallet-col deposits-col q-mb-md">
+                <div v-if="accountOption.chain == 'eth'" class="desktop-card-style current-investments wallet-col deposits-col q-mb-md">
                     <TransactionsTable />
                 </div>
-                <div class="desktop-card-style current-investments wallet-col deposits-col q-mb-md">
+                <div v-if="accountOption.chain == 'eth'" class="desktop-card-style current-investments wallet-col deposits-col q-mb-md">
                     <EosInvestmentsTable />
                 </div>
 
@@ -190,7 +220,7 @@ import InvestmentsTable from '../../components/Verto/Defi/InvestmentsTable'
 import EosInvestmentsTable from '../../components/Verto/Defi/EosInvestmentsTable'
 import InvestmentsOpportunitiesTable from '../../components/Verto/Defi/InvestmentsTableOpportunities'
 import DebtsTable from '../../components/Verto/Defi/DebtsTable'
-// let cruxClient
+import vpoolsComponent from '../../components/Verto/Defi/vpoolsComponent.vue'
 
 export default {
   components: {
@@ -198,6 +228,7 @@ export default {
     // TransactionsSection,
     // desktop components
     AddLiquidityDialog,
+    vpoolsComponent,
     LiquidityPoolsTable,
     InvestmentsTable,
     TransactionsTable,
@@ -213,7 +244,7 @@ export default {
       tab: 'mails',
       osName: '',
       accountOptions: [],
-      accountOption: '',
+      accountOption: null,
       progressValue: 20,
       openModal: false,
       openModalProgress: false,
@@ -314,17 +345,31 @@ export default {
 
   await cruxClient.init()
     */
-    let ethACcount = tableData.find(w => w.chain === 'eth' && w.type === 'eth')
+    let eosWallets = tableData.filter(w => w.chain === 'eos' && w.type === 'eos' && this.accountOptions.push({
+      value: w.name,
+      key: w.key,
+      chain: 'eos',
+      image: w.icon,
+      label: w.name
+    }))
+    let ethACcount = tableData.find(w => w.chain === 'eth' && w.type === 'eth' && this.accountOptions.push({
+      value: w.key,
+      key: w.key,
+      chain: 'eth',
+      image: w.icon,
+      label: w.key
+    }))
     if (ethACcount) {
-      let account = {
-        address: ethACcount.key
-      }
-      this.accountOption = account.address
-      this.getAccountInformation(account)
+      this.getMaxDeFiYield()
+    }
+    console.log(this.accountOptions, 'this.accountOptions')
+    if (this.accountOptions.length) {
+      this.accountOption = ethACcount || eosWallets[0]
+      this.getAccountInformation({ address: ethACcount.key, chain: 'eth' })
     }
   },
   async mounted () {
-    this.getMaxDeFiYield()
+
   },
   methods: {
     goToExchange () {
@@ -347,6 +392,8 @@ export default {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
     async getAccountInformation (account) {
+      if (account.chain !== 'eth') return
+      if (!account) account = { address: this.accountOption.key }
       this.$store.commit('investment/setTableLoadingStatus', true)
       this.$store.commit('investment/resetAccountDetails', account.address)
       this.$store.dispatch('investment/getTransactions', {
