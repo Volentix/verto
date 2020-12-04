@@ -252,19 +252,30 @@ class Lib {
           return stringAmount + ' ' + token.toUpperCase()
         }
       },
-      async eth (token, from, to, value, memo, key) {
+      async eth (token, from, to, amount, memo, key) {
         const Web3 = require('web3')
         const EthereumTx = require('ethereumjs-tx').Transaction
         const web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
 
         let nonce = await web3.eth.getTransactionCount(from)
         let gasPrices = await getCurrentGasPrices()
+        let data = '0x0'
+        let value = web3.utils.toHex(web3.utils.toWei(amount.toString()))
+
+        if (token !== 'eth') {
+          let contractAddress = '0xe6...'
+          let abiArray = JSON.parse(`/statics/abi/erc20.json`)
+          let contract = new web3.eth.Contract(abiArray, contractAddress, { from })
+          data = contract.methods.transfer(to, value).encodeABI()
+          value = '0x0'
+        }
 
         try {
           let details = {
             from,
             to,
-            value: web3.utils.toHex(web3.utils.toWei(value.toString())),
+            value,
+            data,
             gas: 21000,
             gasPrice: gasPrices.low * 1000000000, // converts the gwei price to wei
             nonce,
