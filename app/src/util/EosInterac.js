@@ -77,6 +77,23 @@ class EosRPC {
       throw error
     }
   }
+  async getTableByScope (code, scope, table) {
+    // TODO: Made async query with chunks instead of limits
+    try {
+      const resp = await this.rpc.get_table_by_scope({
+        code: code,
+        scope: scope,
+        table: table,
+        json: true,
+        limit: 999999999999
+      })
+      return resp.rows
+    } catch (error) {
+      userError(error, 'Get table')
+      console.log(error, 'Get table')
+      throw error
+    }
+  }
 
   async getResources (name) {
     try {
