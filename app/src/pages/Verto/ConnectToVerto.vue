@@ -38,7 +38,7 @@
         </div>
 
       </div>
-     <div class="standard-content--body full-width q-pb-lg" v-else-if="loggedIn && $route.query.url">
+     <div class="standard-content--body full-width q-pb-lg" v-else-if="loggedIn && !$route.query.url">
         <div class="standard-content--body__form">
          <Oneinch :disableDestinationCoin="true" v-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
          <Swapeos :disableDestinationCoin="true" v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
@@ -325,7 +325,7 @@ export default {
 
             this.loggedIn = true
             this.spinnerVisible = false
-          }, 3000)
+          }, 5000)
           this.login = 'Sign'
         }
       } else {

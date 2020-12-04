@@ -148,6 +148,7 @@
 
                                                             </span>
                                                         </div>
+
                                                         <div class="col col-6 offset-4">
                                                             <q-input outlined class="bg-white text-h5" ref="depositQuantity" @input="quantityFromDeposit()" v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
                                                                 <div class="flex justify-end items-center" style="width: 60px">
@@ -1333,10 +1334,9 @@ export default {
     self.depositCoinUnfilter = self.depositCoinOptions
 
     if (this.$store.state.settings.dexData.depositCoin) {
-      // console.log(this.$route.params.depositCoin, this.$route.params.destinationCoin)
-      this.depositCoin = this.$store.state.settings.dexData.depositCoin
+      this.depositCoin = this.$store.state.settings.coins.coinswitch.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
       if (this.$store.state.settings.dexData.destinationCoin) {
-        this.destinationCoin = this.$store.state.settings.dexData.destinationCoin
+        this.destinationCoin = this.$store.state.settings.coins.coinswitch.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
       }
       this.checkGetPairs()
       this.checkToGetPairs()
