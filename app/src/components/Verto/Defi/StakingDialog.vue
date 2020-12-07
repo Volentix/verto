@@ -1,17 +1,16 @@
 <template>
-<q-card class="q-pa-lg modal-dialog-wrapper" style="width: 800px; max-width: 90vw;">
+<q-card :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" class="q-pa-lg modal-dialog-wrapper" style="width: 800px; max-width: 90vw;">
     <q-toolbar>
         <q-toolbar-title><span class="text-weight-bold q-pl-sm">Stake</span></q-toolbar-title>
-        <q-select v-model="currentExrternalWallet" label="Account" />
+        <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="currentExrternalWallet" label="Account" />
         <q-item dense v-if="false">
             <q-item-section class="text-body1 q-pr-sm">
                 <q-btn v-if="!transactionStatus" :loading="connectLoading.metamask" :class="externalWallets.metamask.length ? 'bg-green-1' : 'bg-red-1'" @click="conectWallet('metamask')" flat icon="fiber_manual_record" :color="!externalWallets.metamask.length ? 'red' : 'green'" :label="!externalWallets.metamask.length ? 'Connect' : 'Connected'">
                     <img style="width: 35px;" class="q-pl-sm" src="https://cdn.freebiesupply.com/logos/large/2x/metamask-logo-png-transparent.png">
                 </q-btn>
             </q-item-section>
-
         </q-item>
-        <q-btn flat round dense icon="close" v-close-popup />
+        <q-btn :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" flat round dense icon="close" v-close-popup />
     </q-toolbar>
     <q-card-section class="text-h6" v-if="!transactionStatus">
 

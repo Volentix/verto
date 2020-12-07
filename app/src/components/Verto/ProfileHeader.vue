@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <div class="send-modal flex flex-center" :class="{'open' : openModal}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
           <span class="text-h5 --amount">{{ currentAccount.name.toUpperCase() }}</span>
-          <q-btn color="white" rounded flat unelevated @click="openModal = false" class="close-btn" text-color="black" label="+" />
+          <q-btn color="white" rounded flat unelevated @click="openModal = false" class="close-btn" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'" label="+" />
         </div>
         <div class="send-modal__content--body qrcode-wrapper column flex-center">
           <qrcode :value="currentAccount.key" :options="{size: 200}"></qrcode>
@@ -513,7 +513,7 @@ export default {
         .close-btn{
           position: absolute;
           right: 10px;
-          top: 10px;
+          top: -20px;
           font-size: 40px;
           font-weight: $light;
           font-family: $Titillium;
@@ -589,5 +589,43 @@ export default {
     // width: 35px;
     transform: scale(.5);
 
+  }
+  .dark-theme{
+    .send-modal__content{
+      background-color: #04111F !important;
+      border: 1px solid #627797;
+      .send-modal__content--body .--label{
+        background-color: #04111F;
+        color: #FFF;
+        bottom: -20px;
+        border-radius: 5px;
+      }
+      .send-modal__content--footer .--email{
+        color: #FFF;
+      }
+      .send-modal__content--head .--amount{
+        color: #FFF;
+      }
+    }
+    .profile-wrapper{
+      &--header{
+        &__action{
+          .qr-btn{
+            border: 1px solid rgba(255, 255, 255, .2);
+          }
+          &-btn{
+            background: #FFF !important;
+            color: #000 !important;
+            margin: 0px 10px;
+            width: 100px;
+            border-radius: 30px;
+            height: 40px;
+            text-transform: initial !important;
+            font-size: 16px;
+            letter-spacing: .3px;
+          }
+        }
+      }
+    }
   }
 </style>

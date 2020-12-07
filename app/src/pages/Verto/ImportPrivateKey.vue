@@ -1,13 +1,13 @@
 <template>
-<q-page class="column text-black bg-grey-12" style="padding-bottom: 50px;background: #f3f3f3 !important">
+<q-page class="column import-private-key" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-grey-12': $store.state.lightMode.lightMode === 'false'}">
     <div class="chain-tools-wrapper">
         <div class="standard-content">
             <h2 v-show="showMainSteps" class="standard-content--title flex justify-center">
-                <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" />
+                <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.lightMode.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
                 Import EOS Account
             </h2>
             <h2 v-show="!showMainSteps" class="standard-content--title flex justify-center">
-                <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" />
+                <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.lightMode.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
                 Save Private Key
             </h2>
             <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
@@ -16,7 +16,7 @@
             <div class="list-wrapper">
                 <div class="list-wrapper--chain__eos-to-vtx-convertor">
                     <div v-show="showMainSteps">
-                        <q-stepper v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
+                        <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
                             <!--
                                     1.Private key
                                     -->
@@ -38,7 +38,7 @@
                                         </ul>
                                     </div>
                                     <span>
-                                        <q-input light debounce="500" rounded outlined color="purple" v-model="addWallet.addressPriv" :error="addWallet.addressError" @input="showEosKeyNext" @keyup.enter="nextFromPriv" :label="$t('EosAccount.enter_private_key')" />
+                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.addressPriv" :error="addWallet.addressError" @input="showEosKeyNext" @keyup.enter="nextFromPriv" :label="$t('EosAccount.enter_private_key')" />
                                     </span>
                                     <div v-show="eosKeyInvalid" class="text-h6 text-red">
                                         Key invalid
@@ -94,7 +94,7 @@
                                 <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
                                 <div class="text-black">
                                     <div>
-                                        <q-input light debounce="500" rounded outlined color="purple" v-model="addWallet.vertoPassword" @input="showSubmitKey" @keyup.enter="addEosAddress" v-bind:label="$t('CreateVertoPassword.vertopassword')" :type="isPwd ? 'password' : 'text'">
+                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.vertoPassword" @input="showSubmitKey" @keyup.enter="addEosAddress" v-bind:label="$t('CreateVertoPassword.vertopassword')" :type="isPwd ? 'password' : 'text'">
                                             <template v-slot:append>
                                                 <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                                             </template>
@@ -117,7 +117,7 @@
                         </q-stepper>
                     </div>
                     <div v-show="!showMainSteps">
-                        <q-stepper v-model="step2" done-color="green" ref="stepperFilePassword" alternative-labels vertical color="primary" animated flat>
+                        <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step2" done-color="green" ref="stepperFilePassword" alternative-labels vertical color="primary" animated flat>
                             <!--
                                 1.Private key
                                 -->
@@ -139,7 +139,7 @@
                                         </ul>
                                     </div>
                                     <span class="q-pa-sm">
-                                        <q-input light debounce="500" rounded outlined color="purple" v-model="addWallet.filePassword" @input="filePasswordCheck" label="Password For The File" @keyup.enter="gotoFileConfirmPassword()" :type="isPwd ? 'password' : 'text'">
+                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePassword" @input="filePasswordCheck" label="Password For The File" @keyup.enter="gotoFileConfirmPassword()" :type="isPwd ? 'password' : 'text'">
                                             <template v-slot:append>
                                                 <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                                             </template>
@@ -157,7 +157,7 @@
                                 <q-btn flat @click="$refs.stepperFilePassword.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
                                 <div class="text-black">
                                     <span class="q-pa-sm">
-                                        <q-input light debounce="500" rounded outlined color="purple" v-model="addWallet.filePasswordConfirm" @input="filePasswordConfirmCheck" label="Confirm Password For The File" @keyup.enter="gotToSaveFileInWallet()" :type="isPwd ? 'password' : 'text'">
+                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePasswordConfirm" @input="filePasswordConfirmCheck" label="Confirm Password For The File" @keyup.enter="gotToSaveFileInWallet()" :type="isPwd ? 'password' : 'text'">
                                             <template v-slot:append>
                                                 <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                                             </template>
@@ -744,7 +744,7 @@ export default {
     }
 
     &--title {
-        font-size: 35px;
+        font-size: 30px;
         font-weight: $bold;
         position: relative;
         line-height: 50px;
@@ -805,4 +805,45 @@ export default {
     padding: 0px;
     margin-left: -20px;
 }
+.import-private-key{
+    padding-bottom: 50px;
+    background: #f3f3f3 !important;
+    &.dark-theme{
+        .chain-tools-wrapper{
+            background: #04111F;
+            .standard-content--title{
+                color: #FFF !important;
+            }
+        }
+    }
+}
+.dark-theme{
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+      background-color: #04111F;
+    }
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--subtitle{
+        color: #CCC;
+    }
+    .chain-tools-wrapper--list .list-wrapper .select-input .q-field__control .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{
+        color: #CCC !important;
+    }
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--amount{
+      color: #FFF !important;
+    }
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--subtitle ul li span{
+      color: #CCC;
+    }
+
+}
+  /deep/ .q-stepper{
+    &.q-dark{
+      background: #04111F;
+      .q-tab-panels{
+        background: #04111F;
+      }
+      .q-stepper__title{
+        color: #CCC !important;
+      }
+    }
+  }
 </style>

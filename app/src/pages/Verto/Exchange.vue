@@ -1,5 +1,5 @@
 <template>
-<q-page class="column text-black bg-grey-12" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+<q-page class="column" :class="{'desktop-marg':screenSize > 1024, 'mobile-pad': screenSize < 1024 , 'text-black bg-grey-12': $store.state.lightMode.lightMode === 'false'}">
     <!-- padding-bottom: 100px;background: #f3f3f3 !important -->
     <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
         <div class="desktop-version" v-if="screenSize > 1024">
@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="col col-md-9">
-                    <div class="desktop-card-style apps-section q-mb-sm">
+                    <div class="desktop-card-style apps-section q-mb-sm"  :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                         <div class="chain-tools-wrapper">
                             <div class="standard-content">
                                 <h2 class="standard-content--title flex justify-start">vDex</h2>
@@ -38,10 +38,10 @@
                 </div>
             </div>
         </div>
-        <div v-else class="chain-tools-wrapper">
+        <div v-else class="mobile-version chain-tools-wrapper" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
             <div class="standard-content">
                 <h2 class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" />
+                    <q-btn flat unelevated class="btn-align-left" :to="goBack" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white' : 'black'" icon="keyboard_backspace" />
                     Exchange
                 </h2>
                 <div class="exchange_picto flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div>
@@ -49,12 +49,12 @@
             <div class="chain-tools-wrapper--list chain-tools-wrapper--list___1 open">
                 <div class="list-wrapper">
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                        <q-stepper v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
+                        <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
                             <!-- 1. Select Coin to Send -->
                             <q-step default title="Select Coin to Send" :name="1" prefix="1" :done="step > 1">
                                 <div class="text-black">
                                     <!-- <span class="lab-input">Select Coin to Send</span> -->
-                                    <q-select light separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" @input="checkGetPairs()" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                                    <q-select :dark="$store.state.lightMode.lightMode === 'true'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" @input="checkGetPairs()" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                         <template v-slot:option="scope">
                                             <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                 <q-item-section avatar>
@@ -87,10 +87,10 @@
                             </q-step>
                             <!-- 2. Select Coin to Receive -->
                             <q-step default title="Select Coin to Receive" :name="2" prefix="2" :done="step > 2">
-                                <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" color="primary" label="Back" class="--back-btn" />
+                                <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" :color="$store.state.lightMode.lightMode === 'true' ? 'white':'primary'" class="--back-btn" />
                                 <div class="text-black">
                                     <!-- <span class="lab-input">Select Coin to receive</span> -->
-                                    <q-select light separator rounded outlined class="select-input" v-model="destinationCoin" use-input @filter="filterDestinationCoin" @input="updateCoinName()" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                                    <q-select :dark="$store.state.lightMode.lightMode === 'true'" separator rounded outlined class="select-input" v-model="destinationCoin" use-input @filter="filterDestinationCoin" @input="updateCoinName()" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                                         <template v-slot:option="scope">
                                             <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                 <q-item-section avatar>
@@ -130,17 +130,17 @@
                                             <div class="pay-wrapper column">
                                                 <span class="label">you pay</span>
                                                 <span class="value">
-                                                    <q-input ref="depositQuantity" @input="quantityFromDeposit()" :suffix="fromCoinType.toUpperCase()" rounded class="full-width pl0" flat v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']" />
+                                                    <q-input :dark="$store.state.lightMode.lightMode === 'true'" ref="depositQuantity" @input="quantityFromDeposit()" :suffix="fromCoinType.toUpperCase()" rounded class="full-width pl0" flat v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']" />
                                                 </span>
                                             </div>
-                                            <q-btn flat unelevated class="exchange-btn" @click="switchAmounts()" text-color="black">
+                                            <q-btn :dark="$store.state.lightMode.lightMode === 'true'" flat unelevated class="exchange-btn" @click="switchAmounts()" text-color="black">
                                                 <q-icon name="keyboard_backspace" class="left-icon" />
                                                 <q-icon name="keyboard_backspace" class="right-icon" />
                                             </q-btn>
                                             <div class="get-wrapper column">
                                                 <span class="label">you get</span>
                                                 <span class="value">
-                                                    <q-input rounded class="full-width pl0" flat ref="destinationQuantity" :suffix="toCoinType.toUpperCase()" v-model="destinationQuantity" @input="quantityFromDestination()" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']" type="number" />
+                                                    <q-input :dark="$store.state.lightMode.lightMode === 'true'" rounded class="full-width pl0" flat ref="destinationQuantity" :suffix="toCoinType.toUpperCase()" v-model="destinationQuantity" @input="quantityFromDestination()" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']" type="number" />
                                                 </span>
                                             </div>
                                         </div>
@@ -161,7 +161,7 @@
                                 <div class="standard-content--body">
                                     <div class="standard-content--body__form">
                                         <span v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" class="lab-input">From</span>
-                                        <q-select v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" light separator rounded outlined class="select-input" @input="checkGetPairs()" v-model="fromCoin" :options="optionsFrom">
+                                        <q-select :dark="$store.state.lightMode.lightMode === 'true'" v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" light separator rounded outlined class="select-input" @input="checkGetPairs()" v-model="fromCoin" :options="optionsFrom">
                                             <template v-slot:option="scope">
                                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                     <q-item-section avatar>
@@ -188,7 +188,7 @@
                                             </template>
                                         </q-select>
                                         <span v-show="fromCoin !== null && (fromCoin.type === 'new_public_key')" class="lab-input">Your <strong>{{ depositCoin !== null ? depositCoin.value.toUpperCase() : '' }}</strong> return address </span>
-                                        <q-input v-show="fromCoin !== null && (fromCoin.type === 'new_public_key')" v-model="refundAddress.address" @input="verifyAddress()" class="input-input" rounded outlined color="purple" type="text" hint="[ in case the transaction does not complete ]">
+                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" v-show="fromCoin !== null && (fromCoin.type === 'new_public_key')" v-model="refundAddress.address" @input="verifyAddress()" class="input-input" rounded outlined color="purple" type="text" hint="[ in case the transaction does not complete ]">
                                             <template v-slot:append>
                                                 <div class="flex justify-end">
                                                     <q-btn color="purple" rounded class="q-mb-sm" @click="fromCoin = null" outlined unelevated flat text-color="black" label="Hide" />
@@ -1020,7 +1020,7 @@ export default {
 }
 
 .mobile-pad {
-    padding-bottom: 100px;
+    padding-bottom: 60px;
     background: #f3f3f3 !important
 }
 
@@ -1045,6 +1045,44 @@ export default {
         scrollbar-width: 0px;
         .col-title h4{
             color: #FFF;
+        }
+    }
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+        background-color: #04111F;
+    }
+    &.mobile-version{
+        .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+            background-color: #04111F;
+        }
+        .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--subtitle{
+            color: #CCC;
+        }
+        .chain-tools-wrapper--list .list-wrapper .select-input .q-field__control .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{
+            color: #CCC !important;
+        }
+        .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--amount{
+            color: #FFF !important;
+        }
+        .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--subtitle ul li span{
+            color: #CCC;
+        }
+        /deep/ .q-stepper{
+            &.q-dark{
+                background: #04111F;
+                .q-tab-panels{
+                    background: #04111F;
+                }
+                .q-stepper__title{
+                    color: #CCC !important;
+                }
+            }
+        }
+        &.chain-tools-wrapper{
+            background-color: #04111F;
+            .standard-content--title{
+                color: #FFF;
+                margin-bottom: 10px;
+            }
         }
     }
 }
@@ -1571,6 +1609,9 @@ export default {
                 position: absolute;
                 right: 0px;
                 top: 6px;
+                @media screen and (max-width: 768px) {
+                    transform: rotate(90deg);
+                }
 
                 @media screen and (min-width: 1024px) {
                     right: unset;

@@ -103,6 +103,7 @@ export default {
           max-width: 120px;
           transform: translateX(-10px);
           margin-top: -30px;
+          margin-bottom: 10px;
         }
         strong{
           margin-bottom: 0px;
@@ -171,5 +172,6 @@ export default {
     font-size: 14px;
     font-weight: $bold;
     margin-bottom: 0px;
+    padding-right: 10px;
   }
 </style>
