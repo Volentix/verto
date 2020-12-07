@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column text-black bg-grey-12">
+  <q-page class="column" :class="{'text-black bg-grey-12':$store.state.lightMode.lightMode === 'false','':$store.state.lightMode.lightMode === 'true','dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <profile-header version="type1" class="marg" :showWallets="true" :isWalletsPage="false" :isWalletDetail="true" />
     <wallets :showWallets="true" :isWalletsPage="false" :isWalletDetail="true" />
   </q-page>
@@ -35,5 +35,8 @@ export default {
         margin-bottom: 0px;
       }
     }
+  }
+  .dark-theme{
+    background-color: #04111F;
   }
 </style>

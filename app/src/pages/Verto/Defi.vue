@@ -3,36 +3,11 @@
 <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
-            <div class="col-8 col-title">
+            <div class="col-7 col-title">
                 <h4>Account overview</h4>
             </div>
-            <div class="col-12 col-title" v-if="false">
-                <q-tabs v-model="tab" inline-label switch-indicator indicator-color="primary" class="bg-white shadow-2">
-                    <q-tab name="dashboard" icon="mail" label="Dashboard" />
-                    <q-tab name="mails" icon="mail" label="Investments" />
-                    <q-tab name="alarms" icon="alarm" label="Transactions" />
-                    <q-tab name="movies" icon="movie" label="Debts" />
-                </q-tabs>
-
-                <q-tab-panels v-model="tab" animated>
-                    <q-tab-panel name="dashboard">
-                        <div class="text-h6">Mails</div>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    </q-tab-panel>
-
-                    <q-tab-panel name="alarms">
-                        <div class="text-h6">Alarms</div>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    </q-tab-panel>
-
-                    <q-tab-panel name="movies">
-                        <div class="text-h6">Movies</div>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    </q-tab-panel>
-                </q-tab-panels>
-            </div>
-            <div class="col-4">
-                <q-select light separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation({address:accountOption})" v-model="accountOption" :options="accountOptions">
+            <div class="col-5">
+                <q-select :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation({address:accountOption})" v-model="accountOption" :options="accountOptions">
                     <template v-slot:selected>
                         <q-item>
                             <q-item-section avatar>
@@ -51,8 +26,32 @@
                     </template> -->
                 </q-select>
             </div>
+            <div class="col-12 col-title" v-if="false">
+                <q-tabs v-model="tab" inline-label switch-indicator indicator-color="primary" class="bg-white shadow-2">
+                    <q-tab name="dashboard" icon="mail" label="Dashboard" />
+                    <q-tab name="mails" icon="mail" label="Investments" />
+                    <q-tab name="alarms" icon="alarm" label="Transactions" />
+                    <q-tab name="movies" icon="movie" label="Debts" />
+                </q-tabs>
+                <q-tab-panels v-model="tab" animated>
+                    <q-tab-panel name="dashboard">
+                        <div class="text-h6">Mails</div>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    </q-tab-panel>
+
+                    <q-tab-panel name="alarms">
+                        <div class="text-h6">Alarms</div>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    </q-tab-panel>
+
+                    <q-tab-panel name="movies">
+                        <div class="text-h6">Movies</div>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    </q-tab-panel>
+                </q-tab-panels>
+            </div>
             <div class="col col-md-5 q-pr-md">
-                <div class="desktop-card-style account-overview q-mb-md">
+                <div class="desktop-card-style account-overview q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <div class="row">
                         <div class="col-8">
                             <h4 class="q-pl-md">Available balances</h4>
@@ -78,7 +77,7 @@
                             </q-scroll-area>
                         </div>
                         <div class="col-4">
-                            <img src="statics/liquidity_pool.png" class="full-width q-pt-sm" alt="">
+                            <img src="statics/liquidity_pool.png" class="full-width q-pt-md q-pr-md" alt="">
                         </div>
                     </div>
                 </div>
@@ -91,7 +90,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken">
+                <div class="desktop-card-style yearn-finance q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}" v-if="maxToken">
                     <q-item>
                         <q-item-section>
                             <span class="text-h5 text-bold ">
@@ -131,27 +130,27 @@
             </q-scroll-area>
           </div> -->
 
-                <div class="desktop-card-style current-investments explore-opportunities q-mb-md">
+                <div class="desktop-card-style current-investments explore-opportunities q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <LiquidityPoolsTable :rowsPerPage="5" />
                 </div>
             </div>
             <div class="col col-5 q-pr-md">
-                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
+                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <InvestmentsTable />
                 </div>
-                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
+                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <InvestmentsOpportunitiesTable />
                 </div>
 
-                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-sm">
+                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <DebtsTable />
                 </div>
             </div>
             <div class="col col-7">
-                <div class="desktop-card-style current-investments wallet-col deposits-col q-mb-md">
+                <div class="desktop-card-style current-investments wallet-col deposits-col q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <TransactionsTable />
                 </div>
-                <div class="desktop-card-style current-investments wallet-col deposits-col q-mb-md">
+                <div class="desktop-card-style current-investments wallet-col deposits-col q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <EosInvestmentsTable />
                 </div>
 
@@ -456,6 +455,25 @@ export default {
             color: #FFF;
         }
     }
+    .select-input {
+        /deep/ .q-field__control {
+            background-color: transparent !important;
+        }
+        /deep/ .q-item__label--caption{
+            color: #CCC;
+            padding-left: 10px;
+        }
+        /deep/ .q-item__section{
+            .q-item__label{
+                padding-left: 10px;
+            }
+        }
+    }
+    // .explore-opportunities{
+        /deep/ .q-dark{
+            background: #04111F;
+        }
+    // }
 }
 
 .desktop-card-style {

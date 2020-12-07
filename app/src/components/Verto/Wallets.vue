@@ -2,7 +2,7 @@
 <div>
     <div class="wallets-wrapper" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
         <!-- <q-toggle v-model="active" label="Active" /> -->
-        <div v-if="isMobile" class="wallets-wrapper--list" :class="{'open': !walletShowHide}">
+        <div v-if="isMobile" class="is-mobile wallets-wrapper--list" :class="{'open': !walletShowHide}">
             <q-scroll-area :visible="true" class="scrollarea" :class="{'height' : !walletShowHide}">
                 <q-list bordered separator class="list-wrapper">
                     <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
@@ -414,7 +414,7 @@
         </div>
     </div>
     <q-dialog v-model="alertSecurity">
-        <q-card style="width: 100%; max-width: 400px">
+        <q-card style="width: 100%; max-width: 400px" :dark="$store.state.lightMode.lightMode === 'true'">
             <q-card-section>
                 <div class="icon-alert flex flex-center q-mt-lg">
                     <img src="statics/alert.svg" style="max-width: 100px" alt="">
@@ -426,7 +426,7 @@
             </q-card-section>
 
             <q-card-actions align="right" class="q-pb-lg q-pr-lg">
-                <q-btn flat label="Got it" class="go-to-security" @click="goToSecurity()" color="primary" v-close-popup />
+                <q-btn :dark="$store.state.lightMode.lightMode === 'true'" flat label="Got it" class="go-to-security" @click="goToSecurity()" color="primary" v-close-popup />
             </q-card-actions>
         </q-card>
     </q-dialog>
@@ -1221,9 +1221,22 @@ export default {
         }
     }
     &.dark-theme{
+        background-color: #04111F;
+        .wallets-wrapper--list{
+            &.is-mobile{
+
+            }
+        }
         @media screen and (min-width: 768px){
             background-color: #04111F;
             border: 1px solid #627797;
+        }
+        .wallets-wrapper--list .add-remove-wrapper--desc{
+            color: #FFF !important;
+        }
+        .go-to-security{
+            color: inherit !important;
+            background-color: inherit !important;
         }
         .history-list-wrapper {
             .q-item{
@@ -1494,7 +1507,14 @@ export default {
     }
 
 }
-
+.go-to-security{
+    color: #FFF !important;
+    background-color: #00D0DF !important;
+    text-transform: initial !important;
+    padding: 10px 30px;
+    border-radius: 50px;
+    font-weight: $light;
+  }
 .goToStake {
     margin-top: 2px;
     margin-bottom: 20px;

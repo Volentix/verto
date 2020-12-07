@@ -85,7 +85,8 @@
                               <span class="cursor">
                                 <q-select
                                   class="select-input"
-                                  light
+                                  :dark="$store.state.lightMode.lightMode === 'true'"
+                                  :light="$store.state.lightMode.lightMode === 'false'"
                                   separator
                                   use-input
                                   borderless
@@ -189,7 +190,8 @@
                               <span class="cursor">
                                 <q-select
                                   class="select-input"
-                                  light
+                                  :dark="$store.state.lightMode.lightMode === 'true'"
+                                  :light="$store.state.lightMode.lightMode === 'false'"
                                   separator
                                   use-input
                                   rounded

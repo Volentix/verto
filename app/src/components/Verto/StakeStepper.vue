@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <div class="chain-tools-wrapper">
       <!-- <q-toggle v-model="active" label="Active" /> -->
       <div class="chain-tools-wrapper--list open">
@@ -8,6 +8,7 @@
             <q-tabs
               v-model="tab"
               dense
+              :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
               class="text-grey"
               active-color="primary"
               indicator-color="primary"
@@ -29,6 +30,7 @@
                     color="primary"
                     animated
                     flat
+                    :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
                   >
                     <q-step title="Choose an account"
                       :name="0"
@@ -36,7 +38,7 @@
                       :done="step > 0"
                     >
                       <q-select
-                          light
+                          :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
                           separator
                           rounded
                           outlined
@@ -179,10 +181,10 @@
                                 <span class="--title row text-h6"> Amount to stake </span>
                                 <span class="--amount row text-h4"> {{  sendAmount }} {{ params.tokenID.toUpperCase() }}</span>
                                 <q-input
+                                 :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
                                   v-model="sendAmount"
                                   type="number"
                                   :suffix="params.tokenID.toUpperCase()"
-                                  light
                                   rounded
                                   outlined
                                   class="--input"
@@ -221,7 +223,7 @@
                         <div class="text-h4 --subtitle">Enter your password to sign the transaction.</div>
                         <q-input
                           v-model="privateKeyPassword"
-                          light
+                          :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
                           rounded
                           outlined
                           class="--input"
@@ -1016,5 +1018,27 @@ export default {
     overflow: hidden;
     width: 100%;
     max-width: 145px;
+  }
+  .dark-theme{
+    .vtx-converter-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+      background-color: #04111F;
+    }
+    .vtx-converter-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor--title{
+      color: #FFF;
+    }
+    .vtx-converter-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--subtitle{
+        color: #CCC;
+    }
+    .vtx-converter-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--amount{
+      color: #FFF !important;
+    }
+  }
+  /deep/ .q-stepper{
+    &.q-dark{
+      background: #04111F;
+      .q-stepper__title{
+        color: #CCC !important;
+      }
+    }
   }
 </style>

@@ -177,6 +177,8 @@ export default {
     .qbtn-custom {
         border-radius: 30px;
         height: 34px;
+        width: 70px;
+        font-size: 12px !important;
         border: 1px solid #627797 !important;
         background: #0a2138 !important;
     }
