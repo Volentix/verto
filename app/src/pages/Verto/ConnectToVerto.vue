@@ -309,8 +309,7 @@ export default {
               window.top.location.href = this.$route.query.url + '?accounts=' + encodeURIComponent(JSON.stringify(accounts))
             }
           },
-
-          7000)
+          10000)
         } else {
           this.depositCoin.value = this.$route.params.fromCoin
           this.destinationCoin.value = this.$route.params.toCoin
