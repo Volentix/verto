@@ -200,7 +200,6 @@
                                                     </div>
                                                     <div class="you-receive-body row items-center">
                                                         <div class="col col-2 choose-coin"><span class="cursor">
-
                                                                 <q-select class="select-input" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator use-input borderless rounded v-model="destinationCoin"  @input="updateCoinName()" @filter="filterDestinationCoin" :disable="disableDestinationCoin || !destinationCoinOptions" :loading="!destinationCoinOptions && !disableDestinationCoin" :options="destinationCoinOptions">
                                                                     <template v-slot:option="scope">
                                                                         <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">

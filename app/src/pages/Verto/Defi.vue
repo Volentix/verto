@@ -9,52 +9,6 @@
             <div class="col-7 col-title">
                 <h4>Account overview</h4>
             </div>
-            <div class="col-5">
-                <q-select :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation({address:accountOption})" v-model="accountOption" :options="accountOptions">
-                    <template v-slot:selected>
-                        <q-item>
-                            <q-item-section v-if="accountOption.image" avatar>
-                                <q-icon class="option--avatar" :name="'img:'+accountOption.image" />
-                            </q-item-section>
-                            <q-item-section>
-                                <q-item-label>Change account</q-item-label>
-                                <q-item-label caption class="ellipsis mw200">{{ accountOption.key }}</q-item-label>
-                            </q-item-section>
-                        </q-item>
-                    </template>
-
-                    <template v-slot:option="scope">
-                        <q-item
-                        class="custom-menu"
-
-                        v-bind="scope.itemProps"
-                        v-on="scope.itemEvents"
-                        >
-                        <q-item-section avatar>
-                            <q-icon
-                            :name="`img:${scope.opt.image}`"
-                            />
-                        </q-item-section>
-                        <q-item-section>
-                            <q-item-label
-                            v-html="scope.opt.label"
-                            />
-
-                            <q-item-label
-                            v-if="scope.opt.name"
-                            caption
-                            >{{ scope.opt.name }}</q-item-label
-                            >
-                        </q-item-section>
-                        </q-item>
-                    </template>
-                    <!-- <template v-slot:append>
-                        <q-avatar>
-                            <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
-                        </q-avatar>
-                    </template> -->
-                </q-select>
-            </div>
             <div class="col-12 col-title" v-if="false">
                 <q-tabs v-model="tab" inline-label switch-indicator indicator-color="primary" class="bg-white shadow-2">
                     <q-tab name="dashboard" icon="mail" label="Dashboard" />
@@ -79,8 +33,54 @@
                     </q-tab-panel>
                 </q-tab-panels>
             </div>
+            <div class="col-5">
+                <q-select light separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation({address:accountOption, chain:accountOption.chain})" v-model="accountOption" :options="accountOptions">
+                    <template v-slot:selected>
+                        <q-item>
+                            <q-item-section v-if="accountOption.image" avatar>
+                                <q-icon class="option--avatar" :name="'img:'+accountOption.image" />
+                            </q-item-section>
+                            <q-item-section>
+                                <q-item-label>Change account</q-item-label>
+                                <q-item-label caption class="ellipsis mw200">{{ accountOption.key }}</q-item-label>
+                            </q-item-section>
+                        </q-item>
+                    </template>
+
+                    <template v-slot:option="scope">
+                  <q-item
+                   class="custom-menu"
+
+                   v-bind="scope.itemProps"
+                   v-on="scope.itemEvents"
+                  >
+                   <q-item-section avatar>
+                    <q-icon
+                     :name="`img:${scope.opt.image}`"
+                    />
+                   </q-item-section>
+                   <q-item-section>
+                    <q-item-label
+                     v-html="scope.opt.label"
+                    />
+
+                    <q-item-label
+                     v-if="scope.opt.name"
+                     caption
+                     >{{ scope.opt.name }}</q-item-label
+                    >
+                   </q-item-section>
+                  </q-item>
+                 </template>
+                    <!-- <template v-slot:append>
+                        <q-avatar>
+                            <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
+                        </q-avatar>
+                    </template> -->
+                </q-select>
+            </div>
             <vpoolsComponent v-show="accountOption.chain == 'eos'"/>
-            <div class="col col-md-5 q-pr-md">
+            <div v-if="accountOption.chain == 'eth'" class="col col-md-5 q-pr-md">
                 <div class="desktop-card-style account-overview q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <div class="row">
                         <div class="col-8">
@@ -120,7 +120,7 @@
                         </div>
                     </div>
                 </div>
-                <div   class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken && accountOption.chain == 'eth'" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+                <div class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken && accountOption.chain == 'eth'" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <q-item>
                         <q-item-section>
                             <span class="text-h5 text-bold ">
@@ -164,7 +164,7 @@
                     <LiquidityPoolsTable :rowsPerPage="5" />
                 </div>
             </div>
-            <div v-if="accountOption.chain == 'eth'"  class="col col-5 q-pr-md">
+            <div v-if="accountOption.chain == 'eth'" class="col col-5 q-pr-md">
                 <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <InvestmentsTable />
                 </div>
