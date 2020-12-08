@@ -148,6 +148,7 @@
 
                                                             </span>
                                                         </div>
+
                                                         <div class="col col-6 offset-4">
                                                             <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="quantityFromDeposit()" v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
                                                                 <div class="flex justify-end items-center" style="width: 60px">
@@ -1013,6 +1014,7 @@ import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 export default {
   name: 'Coinswitch',
+  props: ['disableDestinationCoin'],
   data () {
     return {
       openModal: false,
@@ -1332,16 +1334,25 @@ export default {
     self.depositCoinUnfilter = self.depositCoinOptions
 
     if (this.$store.state.settings.dexData.depositCoin) {
-      // console.log(this.$route.params.depositCoin, this.$route.params.destinationCoin)
-      this.depositCoin = this.$store.state.settings.dexData.depositCoin
+      this.depositCoin = this.$store.state.settings.coins.coinswitch.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
+      if (this.$store.state.settings.dexData.destinationCoin) {
+        this.destinationCoin = this.$store.state.settings.coins.coinswitch.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
+      }
       this.checkGetPairs()
       this.checkToGetPairs()
       this.step = 2
+
       if (this.$store.state.settings.dexData.destinationCoin) {
-        this.destinationCoin = this.$store.state.settings.dexData.destinationCoin
         this.updateCoinName()
         this.checkToGetRate()
         this.step = 3
+      }
+
+      if (this.$route.params.amount) {
+        this.depositQuantity = this.$route.params.amount
+        setTimeout(() => {
+          this.quantityFromDeposit()
+        }, 2000)
       }
     } else {
       this.depositCoin = this.depositCoinOptions[0]
@@ -1522,11 +1533,11 @@ export default {
           setTimeout(() => {
             self.orderStatus()
           }, 30000)
-        }
-        console.log(self.status, self.destinationCoin, 'self.destinationCoin')
-        if (self.status === 'complete' && self.destinationCoin.value === 'vtx') {
-          self.destinationCoinAmount = Math.trunc(result.data.data.destinationCoinAmount * 10000) / 10000
-          self.orderVTX()
+
+          if (self.status === 'complete' && self.destinationCoin.value === 'vtx') {
+            self.destinationCoinAmount = Math.trunc(result.data.data.destinationCoinAmount * 10000) / 10000
+            self.orderVTX()
+          }
         }
       })
     },
@@ -1708,7 +1719,7 @@ export default {
             self.rateDataEos = self.rateData
             self.rateData = self.rateDataVtx
           }
-          // console.log('self.rateData -------------- ', self.rateData)
+          this.quantityFromDeposit()
         })
         .catch((err) => {
           if (err) {}

@@ -17,7 +17,7 @@
                                 </q-item-section>
                                 <q-item-section class="item-info" v-if="!item.disabled">
                                     <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
-                                    <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
+                                    <span class="item-info--amountUSD">${{new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2)}}</span>
                                 </q-item-section>
                                 <q-item-section class="item-info" v-else>
                                     <span class="item-info--amount">in progress</span>
@@ -199,7 +199,7 @@
             <q-scroll-area :visible="true" ref="walletsScrollArea" class="q-mr-sm q-ml-xs" :style="$store.state.currentwallet.wallet.empty ? 'height: 276px;': 'height: 314px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty">
-                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f =>  !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar>
@@ -211,7 +211,7 @@
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
                                         <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
-                                        <span class="item-info--amountUSD">${{new Number(item.usd).toFixed(2)}}</span>
+                                        <span class="item-info--amountUSD">${{new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-else>
                                         <span class="item-info--amount">in progress</span>
@@ -310,7 +310,7 @@
                         </q-list>
                     </div>
                     <div v-if="$store.state.currentwallet.wallet.empty">
-                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f =>  !f.hidden && f.disabled)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="showMenu(item)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar>
@@ -352,8 +352,9 @@
                             </div>
                         </q-item>
                         <q-separator v-if="showHidden" inset="item" id="hidden__holder--sep" />
-                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => f.hidden && this.showHidden)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" :active-class="$store.state.lightMode.lightMode === 'true' ? 'bgblack' : 'bg-teal-1 text-grey-8'">
-                            <div class="header-wallet-wrapper culumn full-width hidden__holder" style="opacity: .4">
+                           <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => f.hidden && this.showHidden)" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                              <div class="header-wallet-wrapper culumn full-width hidden__holder" style="opacity: .4">
+
                                 <div class="header-wallet-wrapper culumn full-width">
                                     <div @click="showMenu(item)" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
@@ -515,10 +516,10 @@ export default {
   },
   async mounted () {},
   async updated () {
-    // console.log('updated')
+    // //console.log('updated')
   },
   async created () {
-    // console.log('created')
+    // //console.log('created')
     // this.params = this.$store.state.currentwallet.params
     if (this.$route.params.chainID) {
       this.chainID = this.$route.params.chainID
@@ -531,7 +532,7 @@ export default {
         accountName: this.accountName
       })
     }
-
+    // console.log(this.$store.state.wallets.tokens, 'this.$store.state.wallets.tokens')
     this.$store.state.wallets.tokens.map(async (f) => {
       let stakedAmounts = 0
       if (f.type === 'vtx') {
@@ -543,9 +544,9 @@ export default {
         })
         f.staked = stakedAmounts
       }
-      console.log('f.staked', f.staked)
+      // console.log('f.staked', f.staked)
     })
-    console.log(JSON.stringify(this.$store.state.wallets.tokens))
+    // console.log(JSON.stringify(this.$store.state.wallets.tokens))
   },
   computed: {
     //   $store.state.wallets.tokens.filter(this.filterdWalletList)
@@ -579,9 +580,9 @@ export default {
         let nonAmountCoins = this.$store.state.wallets.tokens.filter(f => f.usd === undefined)
         for (let n of nonAmountCoins) {
           this.$store.state.wallets.tokens.push(this.$store.state.wallets.tokens.splice(this.$store.state.wallets.tokens.indexOf(n), 1)[0])
-          // console.log('n', n)
+          // //console.log('n', n)
         }
-        // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
+        // //console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
         this.directionAccount = false
         if (this.direction) {
           this.$store.state.wallets.tokens.sort(function (a, b) {
@@ -592,29 +593,29 @@ export default {
             return b.usd - a.usd
           })
         }
-        // console.log('tokens of table', tokens)
+        // //console.log('tokens of table', tokens)
         this.direction = !this.direction
         // this.$store.state.wallets.tokens.map((a) => {
-        // console.log('a.amount', a.amount)
+        // //console.log('a.amount', a.amount)
         // })
       }
       if (type === 'account') {
         let nonAmountCoins = this.$store.state.wallets.tokens.filter(f => f.name === undefined)
         for (let n of nonAmountCoins) {
           this.$store.state.wallets.tokens.push(this.$store.state.wallets.tokens.splice(this.$store.state.wallets.tokens.indexOf(n), 1)[0])
-          // console.log('n', n)
+          // //console.log('n', n)
         }
-        // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
+        // //console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
         this.direction = false
         if (this.directionAccount) {
           this.$store.state.wallets.tokens.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
         } else {
           this.$store.state.wallets.tokens.sort((a, b) => (b.name > a.name) ? 1 : ((a.name > b.name) ? -1 : 0))
         }
-        // console.log('tokens of table', tokens)
+        // //console.log('tokens of table', tokens)
         this.directionAccount = !this.directionAccount
         // this.$store.state.wallets.tokens.map((a) => {
-        // console.log('a.amount', a.amount)
+        // //console.log('a.amount', a.amount)
         // })
       }
     },
@@ -628,8 +629,8 @@ export default {
     },
     revealHide () {
       this.showHidden = !this.showHidden
-      console.log('this.showHidden', this.showHidden)
-      console.log("document.getElementById('hidden__holder--sep')", document.getElementById('hidden__holder--sep'))
+      // console.log('this.showHidden', this.showHidden)
+      // console.log("document.getElementById('hidden__holder--sep')", document.getElementById('hidden__holder--sep'))
       setTimeout(() => {
         let position = document.getElementById('hidden__holder--sep') ? document.getElementById('hidden__holder--sep').offsetTop : 0
         this.$refs.walletsScrollArea.setScrollPosition(position, position === 0 ? 50 : 300)
@@ -646,7 +647,7 @@ export default {
       this.openModal = true
     },
     async showMenu (menu) {
-      // console.log(menu.selected)
+      // //console.log(menu.selected)
       if (!menu.selected) {
         setTimeout(() => {
           this.$refs.walletsScrollArea.setScrollPosition(0, 50)
@@ -664,7 +665,6 @@ export default {
         //   accountName: this.selectedCoin.name
         // })
 
-        console.log(this.$route.params.chainID, this.selectedCoin.chain, 'this.$route.params.chainID || this.selectedCoin.chain')
         this.$store.commit('currentwallet/updateParams', {
           chainID: this.$route.params.chainID || this.selectedCoin.chain,
           tokenID: this.$route.params.tokenID || this.selectedCoin.type,
@@ -682,7 +682,7 @@ export default {
         // }
         // this.$store.state.currentwallet.wallet = this.currentAccount
         this.$store.state.currentwallet.wallet = this.selectedCoin
-        // console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
+        // //console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
 
         if (this.selectedCoin.chain !== 'eos' && this.selectedCoin.chain !== 'eth') {
           this.history = []
@@ -747,7 +747,7 @@ export default {
       this.showText = !this.showText
     },
     async hideCurrency () {
-      // console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
+      // //console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
 
       this.$store.state.wallets.tokens.filter(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
         w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)).map(t => {
@@ -755,7 +755,7 @@ export default {
       })
 
       await this.$configManager.updateConfig(this.$store.state.settings.temporary, this.$store.state.currentwallet.config)
-      // console.log('hidden', this.currentAccount.hidden)
+      // //console.log('hidden', this.currentAccount.hidden)
     }
   }
 }

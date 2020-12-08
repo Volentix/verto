@@ -704,6 +704,7 @@ let web3 = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe
 export default {
   name: 'Oneinch',
   components: {},
+  props: ['disableDestinationCoin'],
   data () {
     return {
       tableData: null,
@@ -949,6 +950,10 @@ export default {
     }
     if (this.$store.state.settings.dexData.destinationCoin) {
       this.destinationCoin = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
+    }
+
+    if (this.$store.state.settings.dexData.depositCoin.fromAmount) {
+      this.depositQuantity = this.$store.state.settings.dexData.depositCoin.fromAmount
     }
   },
   async mounted () {

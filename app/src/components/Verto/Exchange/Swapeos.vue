@@ -337,24 +337,24 @@
           <q-item class="q-my-sm" clickable v-ripple>
             <div class="text-h6">Summary</div>
           </q-item>
-          <q-item class="q-my-sm" clickable v-ripple>
+          <q-item class="q-my-sm text-left" clickable v-ripple >
             <q-item-section avatar>
               <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
             </q-item-section>
 
             <q-item-section>
-              <q-item-label>You send</q-item-label>
-              <q-item-label caption class="text-bold" lines="1">{{ this.swapData.fromAmount }} {{ depositCoin.label }}</q-item-label>
+              <q-item-label >You send</q-item-label>
+              <q-item-label caption class="text-bold" lines="1">{{ this.swapData.fromAmount }} {{ depositCoin.label.toUpperCase() }}</q-item-label>
             </q-item-section>
           </q-item>
-          <q-item class="q-my-sm" clickable v-ripple>
+          <q-item class="q-my-sm text-left" clickable v-ripple>
             <q-item-section avatar>
               <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
             </q-item-section>
 
             <q-item-section>
               <q-item-label>{{ tab == "swap" ? "You will receive" : "You send" }}</q-item-label>
-              <q-item-label class="text-bold" caption lines="1">{{ this.swapData.toAmount }} {{ destinationCoin.label }}</q-item-label>
+              <q-item-label class="text-bold" caption lines="1">{{ this.swapData.toAmount }} {{ destinationCoin.label.toUpperCase() }}</q-item-label>
             </q-item-section>
           </q-item>
 
@@ -365,7 +365,7 @@
             </q-item-section>
           </q-item>
 
-          <q-item class="q-my-sm" v-if="pairData">
+          <q-item class="q-my-sm text-left" v-if="pairData">
             <q-item-section>
               <q-item-label class="text-bold">Liquidity</q-item-label>
 
@@ -406,6 +406,7 @@
           <p class="q-pt-md">Set the initial swap price freely</p>
         </div>
       </div>
+      <vpoolsComponent v-if="false" />
     </div>
   </div>
 </template>
@@ -417,8 +418,12 @@ let rpc, api, signatureProvider
 import initWallet from '@/util/Wallets2Tokens'
 import DexInteraction from '../../../mixins/DexInteraction'
 import EOSContract from '../../../mixins/EOSContract'
+import vpoolsComponent from '../../../components/Verto/Defi/vpoolsComponent.vue'
 export default {
-  components: {},
+  components: {
+    vpoolsComponent
+  },
+  props: ['disableDestinationCoin'],
   data () {
     return {
       name: 'Swapeos',
@@ -479,16 +484,20 @@ export default {
     let tableData = await this.$store.state.wallets.tokens
     this.eosAccounts = tableData.filter((w) => w.chain === 'eos')
     rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
-
+    console.log(this.$store.state.settings.dexData, 'insaide ')
     if (this.$store.state.settings.dexData.depositCoin) {
       this.depositCoin = this.$store.state.settings.coins.defibox.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
     }
     if (this.$store.state.settings.dexData.destinationCoin) {
       this.destinationCoin = this.$store.state.settings.coins.defibox.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
     }
+    await this.getMinePair()
+    await this.getPools()
 
-    this.getMinePair()
-    this.getPools()
+    if (this.$store.state.settings.dexData.fromAmount) {
+      this.swapData.fromAmount = parseFloat(this.$store.state.settings.dexData.fromAmount)
+      this.getPairData()
+    }
   },
   methods: {
     urlExists (url) {
@@ -553,6 +562,7 @@ export default {
           (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) ||
           (w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase())
       )
+
       this.getLiquidityMultiplier()
       if (!this.pairData || this.pairData.liquidity_token === 0) {
         let pair = this.pairs.find(
