@@ -21,12 +21,12 @@
                             <div class="chain-tools-wrapper--list chain-tools-wrapper--list___2 open">
                                 <div class="list-wrapper">
                                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-
+                                          <q-checkbox v-model="vpoolsTestMode" label="Enable vpools" color="primary" />
                                         <!-- <div class="row q-mb-md">
                                             <q-select class="default-view col-md-3 col-6 offset-md-9" v-model="defaultView" :options="['Coinswitch', '1Inch', 'Swap EOS']" label="Default view" />
                                         </div> -->
-
-                                        <Oneinch v-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
+                                        <VolentixLiquidity v-if="vpoolsTestMode" />
+                                        <Oneinch v-else-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
                                         <Swapeos v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
                                         <Coinswitch v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
                                     </div>
@@ -364,6 +364,7 @@ import Wallets from '../../components/Verto/Wallets'
 import Oneinch from '../../components/Verto/Exchange/Oneinch'
 import Coinswitch from '../../components/Verto/Exchange/Coinswitch'
 import Swapeos from '../../components/Verto/Exchange/Swapeos'
+import VolentixLiquidity from '../../components/Verto/Exchange/VolentixLiquidity'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
@@ -373,6 +374,7 @@ export default {
     // desktop components
     ProfileHeader,
     Wallets,
+    VolentixLiquidity,
     Oneinch,
     Swapeos,
     Coinswitch
@@ -384,6 +386,7 @@ export default {
       showDisclaimerWrapper: false,
       fromCoin: null,
       defaultView: '1Inch',
+      vpoolsTestMode: false,
       fromCoinAmount: 0,
       toCoinAmount: 0,
       fromCoinType: 'EOS',

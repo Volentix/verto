@@ -23,6 +23,16 @@ export default {
         this.checkPair()
       }
     },
+    '$store.state.settings.coins': function () {
+      this.checkPair()
+    },
+    '$store.state.wallets.tokens': function (val) {
+      if (val && !this.$store.state.settings.coins.coinswitch.length) {
+        this.getCoinswitchCoins()
+        this.get1inchCoins()
+        this.getDefiboxCoins()
+      }
+    },
     destinationCoin (val) {
       if (val) {
         this.checkPair()
@@ -71,7 +81,8 @@ export default {
           'value': coin.type,
           'contract': coin.contract,
           'precision': coin.precision,
-          'image': 'https://ndi.340wan.com/eos/' + coin.contract + '-' + coin.type + '.png',
+          'image': coin.chain === 'eos' ? 'https://ndi.340wan.com/eos/' + coin.contract + '-' + coin.type + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type + '.png',
+          // 'image': 'https://ndi.340wan.com/eos/' + coin.contract + '-' + coin.type + '.png',
           'dex': 'coinswitch',
           'amount': parseFloat(coin.amount),
           'amountUSD': coin.usd
@@ -86,6 +97,7 @@ export default {
     },
     checkPair () {
       this.dex = null
+      this.error = false
       let crosschain = ['eth', 'btc']
       if (this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
         this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
@@ -97,14 +109,15 @@ export default {
         this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
         this.dex = 'coinswitch'
       }
-
+      console.log(this.$store.state.settings.dexData, 'init', this.depositCoin)
       if (!this.dex) {
-        this.error = 'Cannot swap ' + this.depositCoin.value.toUpperCase() + ' to ' + this.destinationCoin.value
+        if (this.$store.state.settings.coins.oneinch.length) { this.error = 'Cannot swap ' + this.depositCoin.value.toUpperCase() + ' to ' + this.destinationCoin.value.toUpperCase() }
       } else {
         this.$store.commit('settings/setDex', {
           dex: this.dex,
           destinationCoin: this.destinationCoin,
-          depositCoin: this.depositCoin
+          depositCoin: this.depositCoin,
+          fromAmount: this.depositCoin.fromAmount
         })
       }
     },

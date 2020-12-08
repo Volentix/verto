@@ -18,7 +18,7 @@ var fetch = require('isomorphic-fetch')
 class EosRPC {
   constructor (network) {
     let address = VDexNodeConfigManager.getEndpoint('eos_endpoint')
-    this.rpc = new JsonRpc(address, { fetch })
+    this.rpc = new JsonRpc(network || address, { fetch })
     // this.rpc = new JsonRpc('https:////api.eosio.cr', { fetch })
   }
 
@@ -77,6 +77,23 @@ class EosRPC {
       throw error
     }
   }
+  async getTableByScope (code, scope, table) {
+    // TODO: Made async query with chunks instead of limits
+    try {
+      const resp = await this.rpc.get_table_by_scope({
+        code: code,
+        scope: scope,
+        table: table,
+        json: true,
+        limit: 999999999999
+      })
+      return resp.rows
+    } catch (error) {
+      userError(error, 'Get table')
+      console.log(error, 'Get table')
+      throw error
+    }
+  }
 
   async getResources (name) {
     try {
@@ -96,9 +113,9 @@ class EosRPC {
 }
 
 class EosAPI {
-  constructor (privateKey) {
+  constructor (privateKey, provider = 'https://eos.greymass.com:443') {
     let signatureProvider = new JsSignatureProvider([privateKey])
-    let rpc = new JsonRpc('https://eos.greymass.com:443')
+    let rpc = new JsonRpc(provider)
     this.api = new Api({
       rpc,
       signatureProvider
