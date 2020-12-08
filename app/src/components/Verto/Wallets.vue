@@ -12,7 +12,7 @@
                                     <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
                                 </q-item-section>
                                 <q-item-section class="item-name">
-                                    <span class="item-name--name">{{item.name}}</span>
+                                    <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
                                     <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
                                 </q-item-section>
                                 <q-item-section class="item-info" v-if="!item.disabled">
@@ -64,7 +64,7 @@
                                     <img class="coin-icon" width="35px" :src="item.icon" alt="">
                                 </q-item-section>
                                 <q-item-section class="item-name">
-                                    <span class="item-name--name">{{item.name}}</span>
+                                    <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
                                 </q-item-section>
                                 <q-item-section class="item-info" v-if="!item.disabled">
                                     <span class="item-info--amount">{{item.amount ? new Number(item.amount).toFixed(8) : 0 }} {{item.type.toUpperCase()}}</span>
@@ -106,7 +106,7 @@
                                         <img class="coin-icon" width="35px" :src="item.icon" alt="">
                                     </q-item-section>
                                     <q-item-section class="item-name">
-                                        <span class="item-name--name">{{item.name}}</span>
+                                        <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info">
                                         <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{item.type.toUpperCase()}}</span>
@@ -161,7 +161,7 @@
         </div>
         <div v-else class="else-is-desktop wallets-wrapper--list open">
             <div class="wallets-wrapper--list_title q-pa-sm q-pt-md q-ml-sm flex items-center justify-between">
-                <span class="flex items-center"><q-icon name="o_account_balance_wallet" /> {{$store.state.currentwallet.wallet.empty ? 'Wallets' : 'Wallet : '+ $store.state.currentwallet.wallet.name.toUpperCase()}}</span>
+                <span class="flex items-center"><q-icon name="o_account_balance_wallet" /> {{$store.state.currentwallet.wallet.empty ? 'Wallets' : 'Wallet : '+ $store.state.currentwallet.wallet.name.toUpperCase().replace('- HD', '')}}</span>
                 <q-icon v-if="!$store.state.currentwallet.wallet.empty" style="font-size: 25px" :name="`img:${$store.state.currentwallet.wallet.type !== 'usdt' ? $store.state.currentwallet.wallet.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'}`" />
                 <span class="flex items-center">
                     <q-btn v-if="$store.state.currentwallet.wallet.empty" flat icon-right="cached" @click="refreshWallet()">
@@ -207,7 +207,7 @@
                                         <span class="item-name--name">{{item.type.toUpperCase()}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-name">
-                                        <span class="item-name--name">{{item.name}}</span>
+                                        <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
                                         <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
@@ -318,7 +318,7 @@
                                         <img class="coin-icon" width="35px" :src="item.icon" alt="">
                                     </q-item-section>
                                     <q-item-section class="item-name">
-                                        <span class="item-name--name">{{item.name}}</span>
+                                        <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
                                         <span class="item-info--amount">{{item.amount ? new Number(item.amount).toFixed(8) : 0 }} {{item.type.toUpperCase()}}</span>
@@ -362,7 +362,7 @@
                                             <img class="coin-icon" width="35px" :src="item.icon" alt="">
                                         </q-item-section>
                                         <q-item-section class="item-name">
-                                            <span class="item-name--name">{{item.name}}</span>
+                                            <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
                                         </q-item-section>
                                         <q-item-section class="item-info">
                                             <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{item.type.toUpperCase()}}</span>
