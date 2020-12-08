@@ -4166,7 +4166,7 @@ bfj@^6.1.1:
     hoopy "^0.1.4"
     tryer "^1.0.1"
 
-big-integer@1.6.48:
+big-integer@1.6.48, big-integer@^1.6.48:
   version "1.6.48"
   resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.48.tgz#8fd88bd1632cba4a1c8c3e3d7159f08bb95b4b9e"
   integrity sha512-j51egjPa7/i+RdiRuJbPdJ2FIUYYPhvYLjzoYbcMMm62ooO6F94fETG4MTs46zPAF9Brs04OajboA/qTGuz78w==
@@ -7240,6 +7240,13 @@ env-paths@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/env-paths/-/env-paths-2.2.0.tgz#cdca557dc009152917d6166e2febe1f039685e43"
   integrity sha512-6u0VYSCo/OW6IoD5WCLLy9JUGARbamfSavcNXry/eu8aHVFei6CD3Sw+VGX5alea1i9pgPHW0mbu6Xj0uBh7gA==
+
+eos-common@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/eos-common/-/eos-common-0.8.0.tgz#c3fa90ffc5bca344c10bf7b07be3163fc60a451b"
+  integrity sha512-Ptqg1JzwE296667+M2J02H8vXej2SHWF/KX8dnf3+q7A9tvBi/pJ9P8IDkEhffFJklD1z2v12q4621Xpjj/2LQ==
+  dependencies:
+    big-integer "^1.6.48"
 
 eosjs-api@7.0.4:
   version "7.0.4"

@@ -5,7 +5,7 @@
     <div class="card-make-VTX--wrapper--header">
       <div class="card-make-VTX--wrapper--header__holder full-width">
         <span class="card-make-VTX--wrapper--header__holder_img"><img src="statics/make_vtx_bg.png" alt=""></span>
-        <h3 class="text-black card-make-VTX--wrapper--header__holder_title">Make VTX while you’re sleeping</h3>
+        <h3 class="text-black card-make-VTX--wrapper--header__holder_title">Make VTX while you sleep</h3>
       </div>
       <q-btn unelevated class="card-make-VTX--wrapper--header_btn" to="/verto/stake" color="black" text-color="white" label="Stake" />
     </div>
