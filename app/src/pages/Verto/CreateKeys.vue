@@ -71,35 +71,35 @@ export default {
       assets: {},
       names: [{
         'value': 'btc',
-        'label': 'Bitcoin - HD'
+        'label': 'Bitcoin'
       },
       {
         'value': 'eth',
-        'label': 'Ethereum - HD'
+        'label': 'Ethereum'
       },
       {
         'value': 'bnb',
-        'label': 'Binance Coin - HD'
+        'label': 'Binance Coin'
       },
       {
         'value': 'ltc',
-        'label': 'Litecoin - HD'
+        'label': 'Litecoin'
       },
       {
         'value': 'dash',
-        'label': 'DASH - HD'
+        'label': 'DASH'
       },
-      // { 'value': 'eos', 'label': 'EOS Key - HD' },
-      // { 'value': 'steem', 'label': 'STEEM Key - HD' },
-      // { 'value': 'xrp', 'label': 'Ripple - HD' },
-      // { 'value': 'ada', 'label': 'Cardano - HD' },
+      // { 'value': 'eos', 'label': 'EOS Key' },
+      // { 'value': 'steem', 'label': 'STEEM Key' },
+      // { 'value': 'xrp', 'label': 'Ripple' },
+      // { 'value': 'ada', 'label': 'Cardano' },
       {
         'value': 'xlm',
-        'label': 'Stellar Lumens - HD'
+        'label': 'Stellar Lumens'
       },
       {
         'value': 'xtz',
-        'label': 'Tezos - HD'
+        'label': 'Tezos'
       }
       ]
     }
