@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column text-black bg-grey-12" style="padding-bottom: 0px">
+  <q-page class="column convert-page" :class="{'desktop-marg':screenSize > 1024, 'mobile-pad': screenSize < 1024,'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-grey-12': $store.state.lightMode.lightMode === 'false'}">
     <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
@@ -11,7 +11,7 @@
             </div>
           </div>
           <div class="col col-md-9">
-            <div class="desktop-card-style vtx-converter q-mb-sm">
+            <div class="desktop-card-style vtx-converter q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
               <VTXConverter />
             </div>
           </div>
@@ -93,6 +93,9 @@ export default {
     }
   }
   .dark-theme{
+    &.convert-page{
+      background: #04111F !important;
+    }
     .desktop-version{
         background: #04111F;
         padding-bottom: 8px;

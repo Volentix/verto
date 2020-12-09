@@ -6,7 +6,7 @@
          NO EOS or ETH wallet available
         </div>
         <div class="row" v-else-if="accountOption.chain == 'eos' || accountOption.chain == 'eth'">
-            <div class="col-8 col-title">
+            <div class="col-7 col-title">
                 <h4>Account overview</h4>
             </div>
             <div class="col-12 col-title" v-if="false">
@@ -16,7 +16,6 @@
                     <q-tab name="alarms" icon="alarm" label="Transactions" />
                     <q-tab name="movies" icon="movie" label="Debts" />
                 </q-tabs>
-
                 <q-tab-panels v-model="tab" animated>
                     <q-tab-panel name="dashboard">
                         <div class="text-h6">Mails</div>
@@ -34,7 +33,7 @@
                     </q-tab-panel>
                 </q-tab-panels>
             </div>
-            <div class="col-4">
+            <div class="col-5">
                 <q-select light separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation({address:accountOption, chain:accountOption.chain})" v-model="accountOption" :options="accountOptions">
                     <template v-slot:selected>
                         <q-item>
@@ -82,7 +81,7 @@
             </div>
             <vpoolsComponent v-show="accountOption.chain == 'eos'"/>
             <div v-if="accountOption.chain == 'eth'" class="col col-md-5 q-pr-md">
-                <div class="desktop-card-style account-overview q-mb-md">
+                <div class="desktop-card-style account-overview q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <div class="row">
                         <div class="col-8">
                             <h4 class="q-pl-md">Available balances</h4>
@@ -108,7 +107,7 @@
                             </q-scroll-area>
                         </div>
                         <div class="col-4">
-                            <img src="statics/liquidity_pool.png" class="full-width q-pt-sm" alt="">
+                            <img src="statics/liquidity_pool.png" class="full-width q-pt-md q-pr-md" alt="">
                         </div>
                     </div>
                 </div>
@@ -121,7 +120,7 @@
                         </div>
                     </div>
                 </div>
-                <div   class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken && accountOption.chain == 'eth'">
+                <div class="desktop-card-style yearn-finance q-mb-md" v-if="maxToken && accountOption.chain == 'eth'" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <q-item>
                         <q-item-section>
                             <span class="text-h5 text-bold ">
@@ -161,27 +160,27 @@
             </q-scroll-area>
           </div> -->
 
-                <div class="desktop-card-style current-investments explore-opportunities q-mb-md">
+                <div class="desktop-card-style current-investments explore-opportunities q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <LiquidityPoolsTable :rowsPerPage="5" />
                 </div>
             </div>
-            <div v-if="accountOption.chain == 'eth'"  class="col col-5 q-pr-md">
-                <div  class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
+            <div v-if="accountOption.chain == 'eth'" class="col col-5 q-pr-md">
+                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <InvestmentsTable />
                 </div>
-                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md">
+                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <InvestmentsOpportunitiesTable />
                 </div>
 
-                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-sm">
+                <div class="desktop-card-style current-investments wallet-col debt-col q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <DebtsTable />
                 </div>
             </div>
             <div class="col col-7">
-                <div v-if="accountOption.chain == 'eth'" class="desktop-card-style current-investments wallet-col deposits-col q-mb-md">
+                <div v-if="accountOption.chain == 'eth'" class="desktop-card-style current-investments wallet-col deposits-col q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <TransactionsTable />
                 </div>
-                <div v-if="accountOption.chain == 'eth'" class="desktop-card-style current-investments wallet-col deposits-col q-mb-md">
+                <div v-if="accountOption.chain == 'eth'" class="desktop-card-style current-investments wallet-col deposits-col q-mb-md" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                     <EosInvestmentsTable />
                 </div>
 
@@ -503,6 +502,25 @@ export default {
             color: #FFF;
         }
     }
+    .select-input {
+        /deep/ .q-field__control {
+            background-color: transparent !important;
+        }
+        /deep/ .q-item__label--caption{
+            color: #CCC;
+            padding-left: 10px;
+        }
+        /deep/ .q-item__section{
+            .q-item__label{
+                padding-left: 10px;
+            }
+        }
+    }
+    // .explore-opportunities{
+        /deep/ .q-dark{
+            background: #04111F;
+        }
+    // }
 }
 
 .desktop-card-style {

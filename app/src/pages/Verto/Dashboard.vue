@@ -1,5 +1,5 @@
 <template>
-<q-page class="column text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+<q-page class="column" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-white': $store.state.lightMode.lightMode === 'false', 'desktop-marg' : screenSize > 1024, 'mobile-pad': screenSize < 1024}">
 <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
@@ -70,8 +70,8 @@
         <div class="cards-wrapper--content">
             <card-make-VTX />
             <hr style="height:0px;opacity:0" />
-            <card-WPS />
-            <hr style="height:0px;opacity:0" />
+            <!-- <card-WPS /> -->
+            <!-- <hr style="height:0px;opacity:0" /> -->
             <card-convert-any-to-VTX />
             <hr style="height:0px;opacity:0" />
             <card-import-EOS-account />
@@ -90,7 +90,7 @@
 import store from '../../store'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import CardMakeVTX from '../../components/Verto/CardMakeVTX'
-import CardWPS from '../../components/Verto/CardWPS'
+// import CardWPS from '../../components/Verto/CardWPS'
 import CardConvertAnyToVTX from '../../components/Verto/CardConvertAnyToVTX'
 import CardImportEOSAccount from '../../components/Verto/CardImportEOSAccount'
 // import CardCreateWallet from '../../components/Verto/CardCreateWallet'
@@ -139,7 +139,7 @@ export default {
     CardImportEOSAccount,
     CardConvertAnyToVTX,
     CardMakeVTX,
-    CardWPS,
+    // CardWPS,
     // desktop components
     AppsSection,
     StartNodeSection,
@@ -616,6 +616,9 @@ export default {
         /deep/ .q-dark{
             background: #04111F;
         }
+    }
+    .mobile-version{
+        background: #04111F;
     }
 }
 </style>

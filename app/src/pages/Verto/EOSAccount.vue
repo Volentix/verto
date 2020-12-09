@@ -1,27 +1,29 @@
 <template>
   <q-page class="column text-black bg-grey-12" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
-    <div class="desktop-version" v-if="screenSize > 1024">
-      <div class="row">
-        <div class="col col-md-3">
-          <div class="wallets-container">
-            <profile-header :isMobile="false" class="marg" version="type2222" />
-            <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
-            <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+    <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+      <div class="desktop-version" v-if="screenSize > 1024">
+        <div class="row">
+          <div class="col col-md-3">
+            <div class="wallets-container">
+              <profile-header :isMobile="false" class="marg" version="type2222" />
+              <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+              <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+            </div>
           </div>
-        </div>
-        <div class="col col-md-9">
-          <div class="desktop-card-style apps-section q-mb-sm">
-            <div class="standard-content">
-              <h2 class="standard-content--title flex justify-start">Create EOS Account</h2>
-              <EOS-account-stepper />
+          <div class="col col-md-9">
+            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+              <div class="standard-content">
+                <h2 class="standard-content--title flex justify-start">Create EOS Account</h2>
+                <EOS-account-stepper />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div v-else>
-      <profile-header version="type4" />
-      <EOS-account-stepper />
+      <div v-else>
+        <profile-header version="type4" />
+        <EOS-account-stepper />
+      </div>
     </div>
   </q-page>
 </template>
@@ -79,12 +81,34 @@ export default {
   .mobile-pad{
     padding-bottom: 50px
   }
-  .desktop-version{
+  .desktop-version {
     background: #E7E8E8;
     padding-top: 13vh;
-    padding-left: 12vh;
+    padding-left: 20vh;
     padding-bottom: 50px;
-    padding-right: 2%;
+    @media screen and (min-width: 768px) {
+        padding-top: 11vh;
+        padding-bottom: 0px;
+    }
+  }
+  .dark-theme{
+    .desktop-version{
+      background: #04111F;
+      padding-bottom: 8px;
+      min-height: 102vh;
+      overflow: hidden;
+      position: relative;
+      scrollbar-width: 0px;
+      .col-title h4{
+          color: #FFF;
+      }
+      .standard-content--body__form .lab-input{
+        color: #FFF;
+      }
+    }
+    .standard-content--body__form .select-input .q-field__control .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{
+      color: #CCC;
+    }
   }
   .desktop-card-style{
     height: 100%;

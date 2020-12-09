@@ -1,5 +1,5 @@
 <template>
-<div>
+<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
   <div class="card-import-EOS-account--wrapper">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="card-import-EOS-account--wrapper--header">
@@ -113,6 +113,24 @@ export default {
           left: 0px;
           border-radius: 0px 0px 20px 20px;
           box-shadow: 0px 3px 6px 0px rgba(black, .19);
+        }
+      }
+    }
+    .dark-theme{
+      .card-import-EOS-account--wrapper{
+        background-color: #04111F;
+        border: 1px solid #627797;
+        &:after{
+          background-color: rgba(#627797, .12);
+        }
+        &--header__holder_img img{
+          border-radius: 250px;
+          height: 110px;
+          width: 110px;
+          max-width: unset;
+        }
+        &--header__holder_title{
+          color: #FFF !important;
         }
       }
     }

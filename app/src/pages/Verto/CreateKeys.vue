@@ -1,5 +1,5 @@
 <template>
-<q-page class="text-black bg-white">
+<q-page :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-white': $store.state.lightMode.lightMode === 'false'}">
     <div v-if="step===2" class="standard-content" style="padding-bottom: 0px">
         <div class="standard-content--body">
             <h2 class="standard-content--title"> Creating </h2>
@@ -71,35 +71,35 @@ export default {
       assets: {},
       names: [{
         'value': 'btc',
-        'label': 'Bitcoin - HD'
+        'label': 'Bitcoin'
       },
       {
         'value': 'eth',
-        'label': 'Ethereum - HD'
+        'label': 'Ethereum'
       },
       {
         'value': 'bnb',
-        'label': 'Binance Coin - HD'
+        'label': 'Binance Coin'
       },
       {
         'value': 'ltc',
-        'label': 'Litecoin - HD'
+        'label': 'Litecoin'
       },
       {
         'value': 'dash',
-        'label': 'DASH - HD'
+        'label': 'DASH'
       },
-      // { 'value': 'eos', 'label': 'EOS Key - HD' },
-      // { 'value': 'steem', 'label': 'STEEM Key - HD' },
-      // { 'value': 'xrp', 'label': 'Ripple - HD' },
-      // { 'value': 'ada', 'label': 'Cardano - HD' },
+      // { 'value': 'eos', 'label': 'EOS Key' },
+      // { 'value': 'steem', 'label': 'STEEM Key' },
+      // { 'value': 'xrp', 'label': 'Ripple' },
+      // { 'value': 'ada', 'label': 'Cardano' },
       {
         'value': 'xlm',
-        'label': 'Stellar Lumens - HD'
+        'label': 'Stellar Lumens'
       },
       {
         'value': 'xtz',
-        'label': 'Tezos - HD'
+        'label': 'Tezos'
       }
       ]
     }
@@ -376,5 +376,17 @@ export default {
     /deep/ .q-field__control:before {
         border: none;
     }
+}
+.dark-theme{
+  background: #04111F !important;
+  .send-modal__content--footer .--status{
+    color: #FFF;
+  }
+  .diclaimer{
+    color: #CCC;
+  }
+  .standard-content--title{
+    color: #FFF;
+  }
 }
 </style>
