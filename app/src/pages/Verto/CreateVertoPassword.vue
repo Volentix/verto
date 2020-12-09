@@ -1,5 +1,5 @@
 <template>
-  <q-page class="text-black bg-white">
+  <q-page :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-white': $store.state.lightMode.lightMode === 'false'}">
     <div v-if="step===1" class="standard-content">
       <h2 class="standard-content--title">Create your Verto Password</h2>
       <h2 class="standard-content--desc">
@@ -16,6 +16,7 @@
         </div>
         <div class="standard-content--body__form">
           <q-input
+            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
             ref="psswrd"
             v-model="password"
             @input="passwordCheck"
@@ -49,6 +50,7 @@
         <br>
         <div class="standard-content--body__form">
           <q-input
+            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
             ref="psswrdConfirm"
             v-model="confirmPassword"
             @input="confirmPasswordCheck"
@@ -240,6 +242,12 @@ export default {
       }
     }
 
+  }
+}
+.dark-theme{
+  background: #04111F !important;
+  .standard-content--title{
+    color: #FFF;
   }
 }
 </style>

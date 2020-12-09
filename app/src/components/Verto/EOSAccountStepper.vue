@@ -1,5 +1,5 @@
 <template>
-<div>
+<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <div class="chain-tools-wrapper">
         <!-- <q-toggle v-model="active" label="Active" /> -->
         <div class="chain-tools-wrapper--list open">
@@ -8,7 +8,7 @@
                     <div v-if="step >= 0" class="">
                         <div v-show="!Array.isArray(accountNames) || !accountNames.length">
                             <div class="text-h6 --title">There are no EOS accounts attached to this public key.</div>
-                            <q-stepper light flat v-model="step" vertical ref="stepper" color="primary" animated>
+                            <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" flat v-model="step" vertical ref="stepper" color="primary" animated>
                                 <q-step :name="1" title="Select a new account name" icon="settings" :done="step > 1">
                                     <div class="text-black">
                                         <div class="text-h4 --subtitle">
@@ -17,7 +17,7 @@
                                                 <!-- <li><span>0.35 EOS is required to be transferred to the new account</span></li> -->
                                             </ul>
                                         </div>
-                                        <q-input v-model="accountNew" light color="green" label="Account Name" hint="Choose a 12 Letter and/or Number (1-5)" :error="inError" :error-message="errorMessage" @input="checkName" @keyup.enter="step = 2">
+                                        <q-input v-model="accountNew" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" color="green" label="Account Name" hint="Choose a 12 Letter and/or Number (1-5)" :error="inError" :error-message="errorMessage" @input="checkName" @keyup.enter="step = 2">
                                         </q-input>
                                     </div>
                                     <q-stepper-navigation class="flex justify-end" v-show="!inError">
@@ -25,11 +25,11 @@
                                     </q-stepper-navigation>
                                 </q-step>
                                 <q-step title="Select public key" :name="2" prefix="2" :done="step > 2">
-                                    <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                    <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" :color="$store.state.lightMode.lightMode === 'false' ? 'primary' : 'white'" class="--back-btn" />
 
                                     <div class="text-black">
                                         <div class="text-h4 --subtitle --subtitle__summary">Select the public key for this account</div>
-                                        <q-select light separator rounded outlined class="select-input" v-model="currentToken" :options="tokensOption">
+                                        <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" v-model="currentToken" :options="tokensOption">
 
                                             <template v-slot:option="scope">
                                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
@@ -62,14 +62,14 @@
                                             </template>
                                         </q-select>
                                         <div class="text-h4 --subtitle --subtitle__summary">or paste it below</div>
-                                        <q-input v-model="publicKey" light rounded outlined class="--input" color="deep-purple-14" label="Public key" debounce="500" />
+                                        <q-input v-model="publicKey" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" rounded outlined class="--input" color="deep-purple-14" label="Public key" debounce="500" />
                                     </div>
                                     <q-stepper-navigation class="flex justify-end">
                                         <q-btn @click="step = 3" v-if="currentAccount !== null || publicKey !== ''" color="deep-purple-14" class="--next-btn" rounded label="Next" />
                                     </q-stepper-navigation>
                                 </q-step>
                                 <q-step :name="3" title="Send 0.35" icon="money" :done="step > 3">
-                                    <q-btn flat @click="step = 2" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                    <q-btn flat @click="step = 2" unelevated icon="keyboard_arrow_up" :color="$store.state.lightMode.lightMode === 'false' ? 'primary' : 'white'" class="--back-btn" />
                                     <div class="text-black">
                                         <div class="text-h4 --subtitle">
                                             <ul>
@@ -77,17 +77,17 @@
                                                 <!-- <li><span>0.35 EOS is required to be transferred to the new account</span></li> -->
                                             </ul>
                                         </div>
-                                        <q-input v-model="accountAmount" light color="green" label="Minimum Amount:" readonly>
+                                        <q-input v-model="accountAmount" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" color="green" label="Minimum Amount:" readonly>
                                             <template v-slot:append>
                                                 <q-icon name="file_copy" @click="copyToClipboard(accountAmount, 'Amount')" />
                                             </template>
                                         </q-input>
-                                        <q-input v-model="accountTo" light color="green" label="Send To:" readonly>
+                                        <q-input v-model="accountTo" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" color="green" label="Send To:" readonly>
                                             <template v-slot:append>
                                                 <q-icon name="file_copy" @click="copyToClipboard(accountTo, 'To Account')" />
                                             </template>
                                         </q-input>
-                                        <q-input v-model="accountMemo" light color="green" label="Mandatory Memo:" readonly>
+                                        <q-input v-model="accountMemo" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" color="green" label="Mandatory Memo:" readonly>
                                             <template v-slot:append>
                                                 <q-icon name="file_copy" @click="copyToClipboard(accountMemo, 'Memo')" />
                                             </template>
@@ -98,7 +98,7 @@
                                     </q-stepper-navigation>
                                 </q-step>
                                 <q-step :name="4" title="Retry Associate with EOS Account" icon="restore" :done="step > 4">
-                                    <q-btn flat @click="step = 3" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                    <q-btn flat @click="step = 3" unelevated icon="keyboard_arrow_up" :color="$store.state.lightMode.lightMode === 'false' ? 'primary' : 'white'" class="--back-btn" />
 
                                     <div class="text-h4 --subtitle --subtitle__summary">Summary</div>
                                     <ul class="--subtitle__summary--list">
@@ -109,7 +109,7 @@
                         </div>
                         <div v-show="Array.isArray(accountNames) && accountNames.length">
                             <div class="text-h6 --title">There is an EOS accounts to be attached to this public key.</div>
-                            <q-stepper light flat v-model="step" vertical ref="stepper" color="primary" animated>
+                            <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" flat v-model="step" vertical ref="stepper" color="primary" animated>
                                 <q-step :name="1" title="Select account name" icon="settings" :done="step > 1">
                                     <div class="text-black">
                                         <div class="text-h4 --subtitle">
@@ -117,18 +117,18 @@
                                                 <li><span>Choose EOS account</span></li>
                                             </ul>
                                         </div>
-                                        <q-select label="Select an EOS Account Name in the list" light separator rounded outlined class="select-input" v-model="accountName" :options="accountNames" :error="accountNameError" error-message='This account name is already in your wallet, upgrade the other one instead if you have not done so yet.' :loading="!accountNames" @input="validAccountName" />
+                                        <q-select label="Select an EOS Account Name in the list" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" v-model="accountName" :options="accountNames" :error="accountNameError" error-message='This account name is already in your wallet, upgrade the other one instead if you have not done so yet.' :loading="!accountNames" @input="validAccountName" />
                                     </div>
                                 </q-step>
                                 <q-step :name="2" title="Validate Private Key" icon="assignment" :disable="noPrivateKey" :done="step > 2">
-                                    <q-input v-model="privateKeyPassword" light color="green" label="Private Key Password" debounce="500" :error="invalidPrivateKeyPassword" error-message="The password is incorrect" @input="checkPrivateKeyPassword" :type="isPwd ? 'password' : 'text'">
+                                    <q-input v-model="privateKeyPassword" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" color="green" label="Private Key Password" debounce="500" :error="invalidPrivateKeyPassword" error-message="The password is incorrect" @input="checkPrivateKeyPassword" :type="isPwd ? 'password' : 'text'">
                                         <template v-slot:append>
                                             <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                                         </template>
                                     </q-input>
                                 </q-step>
                                 <q-step :name="3" title="Confirm Verto Password" icon="add_comment" :done="step > 3">
-                                    <q-input v-model="vertoPassword" light color="green" label="Verto Password" debounce="500" :error="vertoPasswordWrong" error-message="The password is incorrect" @input="checkVertoPassword" @keyup.enter="upgradeAccountName(); prompt=false" :type="isPwd ? 'password' : 'text'">
+                                    <q-input v-model="vertoPassword" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" color="green" label="Verto Password" debounce="500" :error="vertoPasswordWrong" error-message="The password is incorrect" @input="checkVertoPassword" @keyup.enter="upgradeAccountName(); prompt=false" :type="isPwd ? 'password' : 'text'">
                                         <template v-slot:append>
                                             <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                                         </template>
@@ -862,4 +862,33 @@ export default {
     margin-left: -10px;
     padding-right: 0px;
 }
+.dark-theme{
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+      background-color: #04111F;
+    }
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--subtitle{
+        color: #CCC;
+    }
+    .chain-tools-wrapper--list .list-wrapper .select-input .q-field__control .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{
+        color: #CCC !important;
+    }
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--amount{
+      color: #FFF !important;
+    }
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--subtitle ul li span{
+      color: #CCC;
+    }
+
+}
+  /deep/ .q-stepper{
+    &.q-dark{
+      background: #04111F;
+      .q-tab-panels{
+        background: #04111F;
+      }
+      .q-stepper__title{
+        color: #CCC !important;
+      }
+    }
+  }
 </style>

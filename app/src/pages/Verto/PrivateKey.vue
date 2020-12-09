@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column text-black bg-grey-12"  :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+  <q-page class="column import-private-key" :class="{'desktop-marg':screenSize > 1024, 'mobile-pad': screenSize < 1024,'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-grey-12': $store.state.lightMode.lightMode === 'false'}">
     <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
@@ -11,7 +11,7 @@
             </div>
           </div>
           <div class="col col-md-9">
-            <div class="desktop-card-style private-key q-mb-sm">
+            <div class="desktop-card-style private-key q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
               <div class="chain-tools-wrapper">
                 <div class="standard-content">
                     <h2 class="standard-content--title flex justify-start items-center">
@@ -21,11 +21,11 @@
                 <div class="chain-tools-wrapper--list open">
                     <div class="list-wrapper">
                         <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                          <q-stepper v-if="currentWallet.privateKey" v-model="step2" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
+                          <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-if="currentWallet.privateKey" v-model="step2" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
                             <q-step title="Private key" :name="1" icon="fas fa-check-double" :done="step2 > 1">
                                 <div class="text-black" style="margin-left: -35px">
                                   <br>
-                                  <q-input readonly v-model="currentWallet.privateKey" rounded class="input-input pr80" outlined color="purple" type="text">
+                                  <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" readonly v-model="currentWallet.privateKey" rounded class="input-input pr80" outlined color="purple" type="text">
                                     <template v-slot:append>
                                       <div class="flex justify-end">
                                         <q-btn flat unelevated text-color="grey" @click="copyToClipboard(currentWallet.privateKey , 'Private Key')" round class="btn-copy" icon="o_file_copy" />
@@ -36,7 +36,7 @@
                                 </div>
                             </q-step>
                           </q-stepper>
-                          <q-stepper v-else v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
+                          <q-stepper v-else :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
                               <!--
                               1. Paid to
                               -->
@@ -49,7 +49,7 @@
                                       </div>
                                       <div class="flex full-width file-select-wrapper flex-center q-pa-sm">
                                           <file-select @input="checksFile" v-model="file" />
-                                          <q-icon name="cloud_upload" class="icon-upload" />
+                                          <q-icon :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" name="cloud_upload" class="icon-upload" />
                                       </div>
                                       <div v-show="passwordFileError" class="text-h6 text-uppercase text-red q-pa-md">
                                           Error Getting File
@@ -66,7 +66,7 @@
                                   <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
                                   <q-input
                                       v-model="privateKeyPassword"
-                                      light
+                                      :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
                                       debounce="500"
                                       rounded outlined color="purple"
                                       label="Private Key Password"
@@ -96,7 +96,7 @@
                                   <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
                                       <q-input
                                           v-model="vertoPassword"
-                                          light
+                                          :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
                                           debounce="500"
                                           rounded outlined color="purple"
                                           label="Verto Password"
@@ -134,7 +134,7 @@
         <div class="chain-tools-wrapper">
           <div class="standard-content">
               <h2 class="standard-content--title flex justify-center">
-                  <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" />
+                  <q-btn flat unelevated class="btn-align-left" :to="goBack" :text-color="$store.state.lightMode.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
                     {{ currentWallet.privateKey ?  'Show private key' : 'Add private key' }}
               </h2>
               <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
@@ -142,11 +142,11 @@
           <div class="chain-tools-wrapper--list open">
               <div class="list-wrapper">
                   <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                    <q-stepper v-if="currentWallet.privateKey" v-model="step2" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
+                    <q-stepper v-if="currentWallet.privateKey" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step2" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
                       <q-step title="Private key" :name="1" icon="fas fa-check-double" :done="step2 > 1">
                           <div class="text-black" style="margin-left: -35px">
                             <br>
-                            <q-input readonly v-model="currentWallet.privateKey" rounded class="input-input pr80" outlined color="purple" type="text">
+                            <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" readonly v-model="currentWallet.privateKey" rounded class="input-input pr80" outlined color="purple" type="text">
                               <template v-slot:append>
                                 <div class="flex justify-end">
                                   <q-btn flat unelevated text-color="grey" @click="copyToClipboard(currentWallet.privateKey , 'Private Key')" round class="btn-copy" icon="o_file_copy" />
@@ -157,7 +157,7 @@
                           </div>
                       </q-step>
                     </q-stepper>
-                    <q-stepper v-else v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
+                    <q-stepper v-else :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
                         <!--
                         1. Paid to
                         -->
@@ -170,7 +170,7 @@
                                 </div>
                                 <div class="flex full-width file-select-wrapper flex-center q-pa-sm">
                                     <file-select @input="checksFile" v-model="file" />
-                                    <q-icon name="cloud_upload" class="icon-upload" />
+                                    <q-icon :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" name="cloud_upload" class="icon-upload" />
                                 </div>
                                 <div v-show="passwordFileError" class="text-h6 text-uppercase text-red q-pa-md">
                                     Error Getting File
@@ -187,7 +187,7 @@
                             <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
                             <q-input
                                 v-model="privateKeyPassword"
-                                light
+                                :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
                                 debounce="500"
                                 rounded outlined color="purple"
                                 label="Private Key Password"
@@ -217,7 +217,7 @@
                             <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
                                 <q-input
                                     v-model="vertoPassword"
-                                    light
+                                    :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
                                     debounce="500"
                                     rounded outlined color="purple"
                                     label="Verto Password"
@@ -439,6 +439,9 @@ export default {
     }
   }
   .dark-theme{
+    &.import-private-key{
+      background: #04111F !important;
+    }
     .desktop-version{
         background: #04111F;
         padding-bottom: 8px;
@@ -835,6 +838,54 @@ export default {
       span{
         color: #000;
         padding: 0px 15px;
+      }
+    }
+  }
+  /deep/ .q-stepper{
+    &.q-dark{
+      background: #04111F;
+      .q-stepper__title{
+        color: #CCC !important;
+      }
+    }
+  }
+  .dark-theme{
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+      background-color: #04111F;
+    }
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--subtitle{
+        color: #CCC;
+    }
+    .chain-tools-wrapper--list .list-wrapper .select-input .q-field__control .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{
+        color: #CCC !important;
+    }
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--amount{
+      color: #FFF !important;
+    }
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--subtitle ul li span{
+      color: #CCC;
+    }
+    /deep/ .file-select-wrapper {
+      .file-select > .select-button span{
+        color: #FFF;
+      }
+      .file-select > .select-button{
+        background-color: #04111F !important;
+        border: 1px solid #627797;
+      }
+    }
+    .standard-content--title{
+      color: #FFF;
+    }
+}
+  /deep/ .q-stepper{
+    &.q-dark{
+      background: #04111F;
+      .q-tab-panels{
+        background: #04111F;
+      }
+      .q-stepper__title{
+        color: #CCC !important;
       }
     }
   }

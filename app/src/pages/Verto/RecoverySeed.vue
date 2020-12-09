@@ -1,5 +1,5 @@
 <template>
-  <q-page class="text-black bg-white">
+  <q-page :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-white': $store.state.lightMode.lightMode === 'false'}">
     <div v-if="step===1" class="standard-content">
       <h2 class="standard-content--desc"></h2>
       <div class="standard-content--body">
@@ -25,6 +25,7 @@
             <q-btn round flat unelevated text-color="grey" class="btn-copy" @click="copy2clip(mnemonic)" icon="o_file_copy" />
           </h4>
           <q-input
+            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
             ref="mnemonic"
             type="textarea"
             v-model="mnemonic"
@@ -44,7 +45,7 @@
         <div v-if="!vertoPassword">
           <q-input
             v-model="vertoPasswordTemp"
-            light
+            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
             color="green"
             label="Verto Password"
             debounce="500"
@@ -87,6 +88,7 @@
             Mnemonic
           </h4>
           <q-input
+            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
             ref="mnemonic"
             type="textarea"
             @input="validateMnemonic()"
@@ -175,7 +177,7 @@ export default {
           this.config.mnemonic = this.mnemonic
           let updateReturn = await this.$configManager.updateConfig(this.vertoPassword, this.config)
           const keys = await HD.Wallet('eos')
-          const result = await this.$configManager.saveWalletAndKey('EOS Key - HD', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
+          const result = await this.$configManager.saveWalletAndKey('EOS Key', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
           console.log(keys, 'keys', result, 'result', this.mnemonic, 'this.mnemonic', 'updateReturn', updateReturn)
 
           if (result && result.success) {
@@ -321,6 +323,17 @@ export default {
       // }
     }
 
+  }
+}
+.dark-theme{
+  background: #04111F !important;
+  ul{
+    li{
+      color: #FFF;
+    }
+  }
+  .standard-content--title{
+    color: #FFF;
   }
 }
 </style>

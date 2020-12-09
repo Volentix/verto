@@ -11,7 +11,7 @@
             </div>
           </div>
           <div class="col col-md-9">
-            <div class="desktop-card-style apps-section q-mb-sm">
+            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
               <div class="standard-content">
                 <h2 class="standard-content--title flex">Receive</h2>
                 <div class="standard-content--body">
@@ -20,7 +20,7 @@
                       <div class="col col-6 q-pr-md">
                         <span class="lab-input">To <b class="verto-id">{{existingCruxID}}</b></span>
                         <q-select
-                            light
+                            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
                             separator
                             rounded
                             outlined
@@ -74,10 +74,10 @@
                         <div class="qrcode-wrapper">
                           <div class="wallet-address flex justify-between">
                             <span class="title">Wallet address</span>
-                            <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy" text-color="grey" icon="o_file_copy" />
+                            <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white' : 'grey'" icon="o_file_copy" />
                           </div>
                           <span class="qrcode-widget">
-                            <qrcode :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
+                            <qrcode dark :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
                             <span class="exchange-address full-width text-center">{{currentToken.type === 'eos' ? currentToken.label : currentToken.value}}</span>
                           </span>
                         </div>
@@ -96,16 +96,16 @@
           </div>
         </div>
       </div>
-      <div v-else class="standard-content">
+      <div v-else class="standard-content mobile-version">
         <h2 class="standard-content--title flex justify-center">
-          <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="black" icon="keyboard_backspace" />
+          <q-btn flat unelevated class="btn-align-left" :to="goBack" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'" icon="keyboard_backspace" />
           Receive
         </h2>
         <div class="standard-content--body">
           <div class="standard-content--body__form">
             <span class="lab-input">To</span>
             <q-select
-                light
+                :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
                 separator
                 rounded
                 outlined
@@ -151,7 +151,7 @@
             <div class="qrcode-wrapper">
               <div class="wallet-address flex justify-between">
                 <span class="title">Wallet address</span>
-                <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy" text-color="grey" icon="o_file_copy" />
+                <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy"  :text-color="$store.state.lightMode.lightMode === 'true' ? 'white' : 'grey'" icon="o_file_copy" />
               </div>
               <span class="qrcode-widget">
                 <qrcode :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
@@ -166,7 +166,7 @@
       </div>
     </div>
     <q-dialog v-model="showShareWrapper">
-      <q-card class="q-pa-lg">
+      <q-card class="q-pa-lg" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"  :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
         <q-toolbar>
           <q-avatar><img src="statics/icon.png"></q-avatar>
           <q-toolbar-title><span class="text-weight-bold">Share</span> Public Key</q-toolbar-title>
@@ -282,10 +282,10 @@
                 </social-sharing>
               </span>
               <div id="copy-btn flex">
-                <q-btn color="white" text-color="black" @click="copyToClipboard(exchangeAddress , 'Link')" class="copy-link-button" flat label="Copy link">
+                <q-btn :color="$store.state.lightMode.lightMode === 'true' ? 'black':'white'" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'"  @click="copyToClipboard(exchangeAddress , 'Link')" class="copy-link-button" flat label="Copy link">
                   <img src="/statics/social/copy.svg" alt="">
                 </q-btn>
-                <q-btn color="white" text-color="black" @click="copyToClipboard(existingCruxID , 'Link')" class="copy-link-button q-ml-sm" flat label="Copy VERTO ID">
+                <q-btn :color="$store.state.lightMode.lightMode === 'true' ? 'black':'white'" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'"  @click="copyToClipboard(existingCruxID , 'Link')" class="copy-link-button q-ml-sm" flat label="Copy VERTO ID">
                   <img src="/statics/social/copy.svg" alt="">
                 </q-btn>
               </div>
@@ -479,16 +479,45 @@ export default {
     }
   }
   .dark-theme{
-    .desktop-version{
-        background: #04111F;
-        padding-bottom: 8px;
-        min-height: 102vh;
-        overflow: hidden;
-        position: relative;
-        scrollbar-width: 0px;
-        .col-title h4{
-            color: #FFF;
+    .mobile-version{
+      background: #04111F;
+      .standard-content--body__form .qrcode-wrapper .title{
+        color: #FFF;
+      }
+      .standard-content--title{
+        color: #FFF;
+      }
+      .standard-content--body__form .lab-input{
+        color: #FFF;
+      }
+      .standard-content--body__form .input-input{
+        /deep/ button{
+          color: #FFF !important;
         }
+      }
+    }
+    &.q-card{
+      border: 1px solid #627797;
+    }
+    .standard-content--body__form .qrcode-wrapper{
+      border: 1px solid #627797;
+    }
+    .desktop-version{
+      background: #04111F;
+      padding-bottom: 8px;
+      min-height: 102vh;
+      overflow: hidden;
+      position: relative;
+      scrollbar-width: 0px;
+      .col-title h4{
+          color: #FFF;
+      }
+      .standard-content--body__form .lab-input{
+        color: #FFF;
+      }
+      .standard-content--body__form .select-input .q-field__control .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{
+        color: #CCC;
+      }
     }
   }
   .desktop-card-style{
@@ -770,10 +799,22 @@ export default {
   .mw200{
     max-width: 220px;
   }
+  .social-media-wrapper{
+    /deep/ .share_wrapper .q-btn.q-btn-item img{
+      @media screen and (max-width: 768px) {
+        margin-left: 20px;
+      }
+    }
+  }
   /deep/ .copy-link-button{
     border: 1px solid #f7f7f7;
     background: #fdfdfd;
     border-radius: 0px;
+    @media screen and (max-width: 768px) {
+      margin-left: 0px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
     .q-btn__content{
       flex-direction: row-reverse !important;
       font-size: 18px;
@@ -797,5 +838,11 @@ export default {
   .pd20{
     padding-left: 20px;
     padding-right: 20px;
+  }
+  .q-dark{
+    /deep/ .copy-link-button{
+      background-color: #04111F !important;
+      border: 1px solid #627797 !important;
+    }
   }
 </style>

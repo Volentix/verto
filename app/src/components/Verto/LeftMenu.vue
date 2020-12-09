@@ -158,6 +158,9 @@ export default {
       }
     }
     &.dark-theme{
+      .version{
+        color: #CCC;
+      }
       background-color: #04111F;
       background: #04111F;
       .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab.q-router-link--active .svg-icon{
