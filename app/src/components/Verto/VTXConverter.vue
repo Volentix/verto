@@ -1,5 +1,5 @@
 <template>
-<div>
+<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
   <div class="vtx-converter-wrapper">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="vtx-converter-wrapper--list open">
@@ -16,6 +16,7 @@
               color="primary"
               animated
               flat
+              :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
             >
               <q-step title="How many EOS"
                 :name="1"
@@ -50,7 +51,7 @@
                       :step="5"
                       color="orange"
                       :label-color="progColor"
-                      dark
+                      :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
                       markers
                       label
                       class="--slider"
@@ -60,7 +61,7 @@
                     <q-input
                       type="number"
                       v-model="sendAmount"
-                      light
+                      :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
                       rounded
                       outlined
                       class="--input"
@@ -663,6 +664,25 @@ export default {
           transform: translateY(0px) scaleY(1);
           margin-bottom: 10px;
         }
+      }
+    }
+  }
+  .dark-theme{
+    .vtx-converter-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+      background-color: #04111F;
+    }
+    .vtx-converter-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor--title{
+      color: #FFF;
+    }
+    .vtx-converter-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--amount{
+      color: #FFF !important;
+    }
+  }
+  /deep/ .q-stepper{
+    &.q-dark{
+      background: #04111F;
+      .q-stepper__title{
+        color: #CCC !important;
       }
     }
   }

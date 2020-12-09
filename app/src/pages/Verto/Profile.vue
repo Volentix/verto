@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+  <q-page class="column" :class="{'text-black': $store.state.lightMode.lightMode === 'false', 'bg-white': $store.state.lightMode.lightMode === 'false','desktop-marg':screenSize > 1024, 'mobile-pad':screenSize < 1024, 'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
@@ -11,7 +11,7 @@
             </div>
           </div>
           <div class="col col-md-9">
-            <div class="desktop-card-style apps-section q-mb-sm">
+            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
               <div class="standard-content">
                 <h2 class="standard-content--title flex justify-start">Profile</h2>
                 <profile />
@@ -20,7 +20,7 @@
           </div>
         </div>
       </div>
-      <div v-else>
+      <div v-else class="mobile-version">
         <profile-header />
         <profile />
       </div>
@@ -128,16 +128,38 @@ export default {
     }
   }
   .dark-theme{
-    .desktop-version{
-        background: #04111F;
-        padding-bottom: 8px;
-        min-height: 102vh;
-        overflow: hidden;
-        position: relative;
-        scrollbar-width: 0px;
-        .col-title h4{
+    background: #04111F;
+    .mobile-version{
+      background: #04111F;
+      /deep/ .profile-wrapper{
+        &--list{
+          .item-name{
             color: #FFF;
+          }
+          .icons{
+            color: #FFF;
+          }
         }
+      }
+    }
+    .desktop-version{
+      background: #04111F;
+      padding-bottom: 8px;
+      min-height: 102vh;
+      overflow: hidden;
+      position: relative;
+      scrollbar-width: 0px;
+      .col-title h4{
+          color: #FFF;
+      }
+      /deep/ .profile-wrapper--list{
+        .item-name{
+          color: #FFF;
+        }
+        .icons{
+          color: #FFF;
+        }
+      }
     }
   }
   .desktop-card-style{
