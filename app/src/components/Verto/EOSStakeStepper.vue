@@ -1,5 +1,5 @@
 <template>
-<div>
+<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <div class="chain-tools-wrapper">
         <!-- <q-toggle v-model="active" label="Active" /> -->
         <div class="chain-tools-wrapper--list open">
@@ -11,9 +11,9 @@
                     <q-tab-panels v-model="tab" animated>
                         <q-tab-panel name="stake">
                             <div v-if="step >= 0" class="">
-                                <q-stepper v-model="step" vertical color="primary" animated flat>
+                                <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step" vertical color="primary" animated flat>
                                     <q-step title="Selected account" :name="0" prefix="0" :done="step > 0">
-                                        <q-select light separator rounded outlined class="select-input" v-model="currentAccount" use-input :options="tableData">
+                                        <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" v-model="currentAccount" use-input :options="tableData">
                                             <template v-slot:option="scope">
                                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                     <q-item-section avatar>
@@ -84,6 +84,7 @@
                                                     <q-tabs
                                                         v-model="action"
                                                         dense
+                                                        :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
                                                         class="text-grey q-mt-md"
                                                         active-color="primary"
                                                         indicator-color="primary"
@@ -98,9 +99,9 @@
                                                         <q-separator />
 
                                                         <q-tab-panels v-model="action" animated>
-                                                        <q-tab-panel name="staking">
+                                                        <q-tab-panel :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" name="staking">
                                                             <div class="full-width">
-                                                                    <q-input v-model="sendAmount" type="number" :suffix="params.tokenID.toUpperCase()" light rounded outlined class="--input" @input="changeAmount()" />
+                                                                    <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="params.tokenID.toUpperCase()" rounded outlined class="--input" @input="changeAmount()" />
                                                                 <br>
                                                                 <span class="--title row text-h6"> Amount to stake </span>
                                                                 <span class="--amount row text-h4"> {{ sendAmount }} {{ params.tokenID.toUpperCase() }}</span>
@@ -109,7 +110,7 @@
 
                                                         <q-tab-panel name="unstaking">
                                                             <div class="full-width">
-                                                                <q-input v-model="sendAmount" type="number" :suffix="params.tokenID.toUpperCase()" light rounded outlined class="--input" @input="changeAmount()" />
+                                                                <q-input  v-model="sendAmount" type="number" :suffix="params.tokenID.toUpperCase()" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" rounded outlined class="--input" @input="changeAmount()" />
                                                             <br>
                                                             <span class="--title row text-h6"> Amount to unstake </span>
                                                             <span class="--amount row text-h4"> {{ sendAmount }} {{ params.tokenID.toUpperCase() }}</span>
@@ -997,4 +998,30 @@ export default {
     width: 100%;
     max-width: 145px;
 }
+.dark-theme{
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+      background-color: #04111F;
+    }
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--subtitle{
+        color: #CCC;
+    }
+    .chain-tools-wrapper--list .list-wrapper .select-input .q-field__control .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{
+        color: #CCC !important;
+    }
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--amount{
+      color: #FFF !important;
+    }
+
+}
+  /deep/ .q-stepper{
+    &.q-dark{
+      background: #04111F;
+      .q-tab-panels{
+        background: #04111F;
+      }
+      .q-stepper__title{
+        color: #CCC !important;
+      }
+    }
+  }
 </style>

@@ -1,10 +1,10 @@
 <template>
-<div>
+<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
   <div class="wallets-wrapper padtop" style="padding-bottom: 50px">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="wallets-wrapper--list open" :class="{'opacity' : currentAccount.hidden}">
       <q-list bordered separator class="list-wrapper">
-        <q-item class="selected" clickable>
+        <q-item class="selected" clickable >
           <div class="header-wallet-wrapper culumn full-width">
             <div class="header-wallet full-width flex justify-between">
               <q-item-section avatar>
@@ -30,11 +30,11 @@
                 </q-item> -->
                 <q-separator style="margin-top: 10px" />
                 <q-item data-name='Trade' clickable v-ripple class="p-relative" to="/verto/exchange">Trade <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item data-name='Transaction History' clickable v-ripple class="p-relative" to="/verto/wallet/coinHistory">Transaction History<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <!-- <q-item data-name='Transaction History' clickable v-ripple class="p-relative" to="/verto/wallet/coinHistory">Transaction History<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item> -->
                 <q-item data-name='Associate with EOS' v-if="currentAccount.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative">Associate with EOS <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item data-name='Staking' clickable v-ripple class="p-relative" to="/verto/stake">Staking<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item data-name='Voting' clickable v-ripple class="p-relative" to="/verto/card-wps/public-proposals">Voting<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
-                <q-item data-name='Lending' clickable v-ripple class="p-relative" to="">Lending<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
+                <!-- <q-item data-name='Voting' clickable v-ripple class="p-relative" to="/verto/card-wps/public-proposals">Voting<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item> -->
+                <!-- <q-item data-name='Lending' clickable v-ripple class="p-relative" to="">Lending<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item> -->
                 <q-item v-if="currentAccount.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter<q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" /></q-item>
                 <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
@@ -52,7 +52,7 @@
       </q-list>
     </div>
     <q-dialog v-model="alertSecurity">
-      <q-card style="width: 100%; max-width: 400px">
+      <q-card style="width: 100%; max-width: 400px" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
         <q-card-section>
           <div class="icon-alert flex flex-center">
             <img src="statics/alert.svg" alt="">
@@ -567,5 +567,19 @@ export default {
     padding: 10px 30px;
     border-radius: 50px;
     font-weight: $light;
+  }
+  .dark-theme{
+    &.q-card{
+      background-color: #04111F;
+      border: 1px solid #627797;
+    }
+    background-color: #04111F;
+    .wallets-wrapper--list{
+      background-color: #04111F;
+      box-shadow: none;
+      .item-info, .item-name{
+        color: #FFF;
+      }
+    }
   }
 </style>

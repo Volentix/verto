@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column text-black bg-grey-12" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+  <q-page class="column stake-page" :class="{'desktop-marg':screenSize > 1024, 'mobile-pad': screenSize < 1024,'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-grey-12': $store.state.lightMode.lightMode === 'false'}">
     <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
@@ -11,7 +11,7 @@
             </div>
           </div>
           <div class="col col-md-9">
-            <div class="desktop-card-style apps-section q-mb-sm">
+            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
               <div class="standard-content">
                 <h2 class="standard-content--title flex justify-start">{{$store.state.currentwallet.params.tokenID == 'eos' ? 'Staking / Unstaking' :  'Staking' }}</h2>
                 <div class="standard-content--body">
@@ -25,7 +25,7 @@
           </div>
         </div>
       </div>
-      <div v-else>
+      <div v-else class="mobile-version">
         <profile-header version="type2" :fetchCurrentWalletFromState="true" />
         <stake-stepper />
       </div>
@@ -101,6 +101,36 @@ export default {
     }
   }
   .dark-theme{
+    .mobile-version{
+      background: #04111F;
+      min-height: 100vh;
+      /deep/ .chain-tools-wrapper--list .list-wrapper{
+        /deep/ .select-input .q-field__control .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{
+          color: #CCC;
+        }
+      }
+      /deep/ .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor {
+        .staked-wrapper{
+          background: #04111F;
+          border: 1px solid #627797;
+          .border{
+            border: 1px solid #627797;
+          }
+          .col strong{
+            color: #FFF;
+          }
+          .total{
+            color: #627797 !important;
+            strong{
+              color: #FFF !important;
+            }
+          }
+        }
+        .--amount{
+          color: #FFF !important;
+        }
+      }
+    }
     .desktop-version{
         background: #04111F;
         padding-bottom: 8px;
@@ -111,6 +141,9 @@ export default {
         .col-title h4{
             color: #FFF;
         }
+    }
+    /deep/ .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+        background-color: #04111F;
     }
   }
   .desktop-card-style{

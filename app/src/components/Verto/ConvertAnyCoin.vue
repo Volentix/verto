@@ -1,5 +1,5 @@
 <template>
-<div>
+<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
   <div class="convert-any-coin--wrapper">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="convert-any-coin--wrapper--header">
@@ -136,5 +136,17 @@ export default {
       left: -3px;
       width: 80px;
       opacity: .45;
+    }
+    .dark-theme{
+      .card-convert-any-to-VTX--wrapper{
+        background-color: rgba(#627797, .12);
+        border: 1px solid #627797;
+        &:after{
+          background-color: #04111F;
+        }
+        &--header__holder_title{
+          color: #FFF !important;
+        }
+      }
     }
 </style>
