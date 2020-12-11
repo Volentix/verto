@@ -409,7 +409,7 @@ class ConfigManager {
           await platformTools.downloadFile(JSON.stringify(walletInformation.addressPrivateEncrypted), walletInformation.address + '.priv')
         }
         const wallet = {
-          name: '',
+          name: walletInformation.walletName,
           type: 'eth',
           key: walletInformation.address,
           defaultKey: config.keys.length < 1
