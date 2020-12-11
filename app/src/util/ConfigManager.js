@@ -388,6 +388,43 @@ class ConfigManager {
       }
     }
 
+    async createEthWallet (walletInformation) {
+      try {
+        const result = await this.getConfig(walletInformation.vertoPassword)
+        if (!result.success) {
+          return result
+        }
+        let config = result.config
+        let i
+
+        for (i = 0; i < config.keys.length; i++) {
+          const wallet = config.keys[i]
+
+          if (wallet.key.toLowerCase() === walletInformation.address.toLowerCase()) {
+            return { success: false, message: 'address_already_used' }
+          }
+        }
+        if (walletInformation.filePassword) {
+          walletInformation.addressPrivateEncrypted = JSON.parse(sjcl.encrypt(walletInformation.filePassword, JSON.stringify(walletInformation.addressPriv)))
+          await platformTools.downloadFile(JSON.stringify(walletInformation.addressPrivateEncrypted), walletInformation.address + '.priv')
+        }
+        const wallet = {
+          name: '',
+          type: 'eth',
+          key: walletInformation.address,
+          defaultKey: config.keys.length < 1
+        }
+        if (walletInformation.storeInWallet) {
+          wallet.privateKeyEncrypted = walletInformation.addressPrivateEncrypted
+        }
+        config.keys.push(wallet)
+        await this.saveConfig(walletInformation.vertoPassword, wallet, config)
+        return { success: true }
+      } catch (e) {
+        return e
+      }
+    }
+
     // Function takes two strings, not objects
     decryptPrivateKey (password, encryptedText) {
       try {
