@@ -1,32 +1,4 @@
 <template>
-<<<<<<< HEAD
-<q-page class="column text-black bg-grey-12 desktop-version" style="padding-bottom: 50px;background: #f3f3f3 !important">
-    <div class="chain-tools-wrapper">
-        <div class="standard-content">
-            <h2 v-show="showMainSteps" class="standard-content--title flex justify-center">
-                <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" />
-                Import EOS Account
-            </h2>
-            <h2 v-show="!showMainSteps" class="standard-content--title flex justify-center">
-                <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="black" icon="keyboard_backspace" />
-                Save Private Key
-            </h2>
-            <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
-        </div>
-        <div class="chain-tools-wrapper--list open">
-            <div class="list-wrapper">
-                <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                    <div v-show="showMainSteps">
-                        <q-stepper v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
-                            <!--
-                                    1.Private key
-                                    -->
-                            <q-step title="Private Key" :name="1" prefix="1" order="10" :done="step > 1">
-                                <div class="text-black">
-                                    <div class="text-h4 --subtitle">
-                                        <ul>
-                                            <li>
-=======
 <q-page class="column import-private-key" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-grey-12': $store.state.lightMode.lightMode === 'false', 'desktop-marg': screenSize > 1024,  'mobile-pad': screenSize < 1024}">
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
@@ -70,7 +42,6 @@
                                                         </li>
                                                     </ul>
                                                 </div>
->>>>>>> 23ea34bfda04ee41bfdce97b0742485423fe31c6
                                                 <span>
                                                     <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.addressPriv" :error="addWallet.addressError" @input="showEosKeyNext" @keyup.enter="nextFromPriv" :label="$t('EosAccount.enter_private_key')" />
                                                 </span>
@@ -620,19 +591,6 @@ export default {
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
 
-<<<<<<< HEAD
-.desktop-version {
-    padding-top: 2vh;
-    padding-bottom: 0px;
-}
-.desktop-version {
-    background: #E7E8E8;
-
-    padding-left: 20vh;
-    padding-bottom: 50px;
-    padding-right: 2%;
-}
-=======
 .desktop-version{
     background: #E7E8E8;
     padding-top: 13vh;
@@ -690,7 +648,6 @@ export default {
     }
   }
 
->>>>>>> 23ea34bfda04ee41bfdce97b0742485423fe31c6
 .chain-tools-wrapper {
 
     // padding: 0px 6%;

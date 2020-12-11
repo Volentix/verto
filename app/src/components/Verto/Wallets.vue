@@ -211,7 +211,7 @@
 
                         <q-item-section side>
                            <div class="row items-center text-bold">
-                                ${{item.total ? item.total.toFixed(0) : item.total}}
+                                ${{item.total ? item.total.toFixed(0) : 0}}
                             </div>
                         </q-item-section>
                         </template>
