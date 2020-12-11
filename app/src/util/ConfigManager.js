@@ -411,7 +411,9 @@ class ConfigManager {
         const wallet = {
           name: walletInformation.walletName,
           type: 'eth',
+          privateKey: walletInformation.addressPriv,
           key: walletInformation.address,
+          origin: 'imported',
           defaultKey: config.keys.length < 1
         }
         if (walletInformation.storeInWallet) {
