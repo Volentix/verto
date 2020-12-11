@@ -266,17 +266,19 @@ class Lib {
         let data = '0x00'
         let web3Value = web3.utils.toHex(web3.utils.toWei(value.toString()))
         let transactionHash = ''
+        let sendTo = to
 
         if (token !== 'eth') {
           let web3Contract = new web3.eth.Contract(abiArray, contract)
           data = web3Contract.methods.transfer(to, web3Value).encodeABI()
           console.log('data for', token, data)
+          sendTo = contract
           web3Value = '0x00'
         }
 
         let rawTx = {
           from,
-          to,
+          to: sendTo,
           value: web3Value,
           data,
           gasPrice: gasPrices.medium * 1000000000,
@@ -315,25 +317,12 @@ class Lib {
                   success: true
                 })
               }
-              console.log('receipt:', receipt)
+              console.log('receipt:', confirmationNumber, receipt)
             })
 
             tx.on('transactionHash', hash => {
               transactionHash = hash
-              var receipt = web3.eth.getTransactionReceipt(hash).then(console.log)
-              console.log('receipt:', receipt)
-            })
-
-            tx.on('receipt', receipt => {
-              console.log(receipt, 'success')
-            }).catch(error => {
-              console.log(error, 'receipt error')
-              return reject()
-            })
-
-            tx.on('error', error => {
-              console.log(error, 'error')
-              return reject()
+              console.log('hash:', hash)
             })
           })
         } catch (err) {
