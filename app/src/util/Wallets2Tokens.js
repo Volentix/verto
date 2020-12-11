@@ -25,6 +25,7 @@ class Wallets2Tokens {
       name: 'ETH WALLET'
     })
     */
+    console.log(this.tableData.filter(o => o.type === 'eth'), 'Keys')
     this.tableData.map(wallet => {
       // let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
       // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === vtxCoin.toLowerCase())
