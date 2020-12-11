@@ -15,7 +15,7 @@ export default {
       if (!this.destinationCoinOptions) this.destinationCoinOptions = this.getAllCoins()
       this.destinationCoinOptions = this.destinationCoinOptions.filter(o => o.value !== this.depositCoin.value)
 
-      if (this.destinationCoin.value.toLowerCase() === this.depositCoin.value.toLowerCase()) {
+      if (this.destinationCoin && this.depositCoin && this.destinationCoin.value.toLowerCase() === this.depositCoin.value.toLowerCase()) {
         this.destinationCoin = this.destinationCoinOptions.find(o => o.value.toLowerCase() !== this.depositCoin.value.toLowerCase())
       }
       this.checkBalance()
@@ -49,8 +49,8 @@ export default {
       }
     },
     getCoinsData () {
-      let depositCoin = this.$store.state.settings.coins[this.$store.state.settings.selectedDex].find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
-      let destinationCoin = this.$store.state.settings.coins[this.$store.state.settings.selectedDex].find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())
+      let depositCoin = this.depositCoin ? this.$store.state.settings.coins[this.$store.state.settings.selectedDex].find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) : 0
+      let destinationCoin = this.destinationCoin ? this.$store.state.settings.coins[this.$store.state.settings.selectedDex].find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase()) : 0
       if (depositCoin) this.depositCoin = depositCoin
       if (destinationCoin) this.destinationCoin = destinationCoin
     },
@@ -99,19 +99,19 @@ export default {
       this.dex = null
       this.error = false
       let crosschain = ['eth', 'btc']
-      if (this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
+      if (this.destinationCoin && this.destinationCoin && this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
         this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
         this.dex = 'oneinch'
-      } else if (!crosschain.includes(this.depositCoin.value.toLowerCase()) && !crosschain.includes(this.destinationCoin.value.toLowerCase()) && this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
+      } else if (this.destinationCoin && this.destinationCoin && !crosschain.includes(this.depositCoin.value.toLowerCase()) && !crosschain.includes(this.destinationCoin.value.toLowerCase()) && this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
         this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
         this.dex = 'defibox'
-      } else if (this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
+      } else if (this.destinationCoin && this.destinationCoin && this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
         this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
         this.dex = 'coinswitch'
       }
-      console.log(this.$store.state.settings.dexData, 'init', this.depositCoin)
+
       if (!this.dex) {
-        if (this.$store.state.settings.coins.oneinch.length) { this.error = 'Cannot swap ' + this.depositCoin.value.toUpperCase() + ' to ' + this.destinationCoin.value.toUpperCase() }
+        if (this.$store.state.settings.coins.oneinch.length && this.destinationCoin && this.destinationCoin) { this.error = 'Cannot swap ' + this.depositCoin.value.toUpperCase() + ' to ' + this.destinationCoin.value.toUpperCase() }
       } else {
         this.$store.commit('settings/setDex', {
           dex: this.dex,

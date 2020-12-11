@@ -5,7 +5,8 @@
     <q-td :props="props" class="body-table-col">
     <div class="col-3 flex items-center">
         <span class="imgs q-mr-lg"  >
-         <img  :src="!props.row.details ? 'https://zapper.fi/images/'+ props.row.symbol+'-icon.png' : 'https://1inch.exchange/assets/tokens/'+props.row.contract+'.png'" alt="">
+
+         <img  :src="coins.find((w) => w.value.toLowerCase() === props.row.symbol.toLowerCase()) ? coins.find((w) => w.value.toLowerCase() === props.row.symbol.toLowerCase()).image :'https://etherscan.io/images/main/empty-token.png' " alt="">
          </span>
         <span class="column pairs">
         <span class="pair">{{props.row.symbol}}</span>
@@ -40,12 +41,14 @@
 import {
   mapState
 } from 'vuex'
+import DexInteraction from '../../../mixins/DexInteraction'
 export default {
   components: {
 
   },
   data () {
     return {
+      coins: [],
       poolsData: [],
       filter: '',
       columns:
@@ -110,8 +113,9 @@ export default {
     ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools'])
   },
   created () {
-
-  }
+    this.coins = this.getAllCoins()
+  },
+  mixins: [DexInteraction]
 }
 </script>
 

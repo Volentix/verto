@@ -20,7 +20,7 @@
         <div class="standard-content--footer full-width justify-end">
             <span v-show="!passHasError" class="q-pl-md q-pt-md cursor-pointer text-grey" @click="passHasError = true">Restore</span>
             <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" />
-            <q-btn class="action-link next" :loading="spinnerVisible" color="deep-purple-14" text-color="white" label="Connect" @click="spinnerVisible = true ; login()" />
+            <q-btn class="action-link next" :loading="spinnerVisible" color="deep-purple-14" text-color="white" label="Connect" @click="login()" />
         </div>
         <div class="standard-content--footer auto full-width justify-center">
             <span></span>
