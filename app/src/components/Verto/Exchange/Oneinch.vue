@@ -1,5 +1,5 @@
 <template>
-<div class="" v-if="$q.screen.width > 1024 && depositCoin && destinationCoin">
+<div class="" v-if="$q.screen.width > 1024 && depositCoin && destinationCoin" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <div class="row">
         <div class="col col-md-12">
             <div class="apps-section q-mb-sm">
@@ -28,7 +28,7 @@
                                                     <div class="col col-2 choose-coin">
                                                         <span class="cursor">
 
-                                                            <q-select class="select-input" light separator use-input borderless rounded v-model="depositCoin" @input="swapData.error = false; getSwapQuote()" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                                                            <q-select class="select-input" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator use-input borderless rounded v-model="depositCoin" @input="swapData.error = false; getSwapQuote()" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
@@ -49,7 +49,7 @@
                                                         </span>
                                                     </div>
                                                     <div class="col col-6 offset-4">
-                                                        <q-input outlined class="bg-white text-h5" ref="depositQuantity" @input="swapData.error = false; getSwapQuote()" v-model="swapData.fromAmount" type="number" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val <= depositCoin.amount || 'Insufficient funds']">
+                                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="swapData.error = false; getSwapQuote()" v-model="swapData.fromAmount" type="number" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val <= depositCoin.amount || 'Insufficient funds']">
                                                             <div class="flex justify-end items-center" style="width: 60px">
                                                                 <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
                                                             </div>
@@ -97,7 +97,7 @@
                                                 </div>
                                                 <div class="you-receive-body row items-center">
                                                     <div class="col col-2 choose-coin"><span class="cursor">
-                                                            <q-select class="select-input" light separator use-input rounded borderless @input="swapData.error = false; getSwapQuote()" @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="false" :options="destinationCoinOptions">
+                                                            <q-select class="select-input" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator use-input rounded borderless @input="swapData.error = false; getSwapQuote()" @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="false" :options="destinationCoinOptions">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
@@ -115,7 +115,7 @@
                                                             </q-select>
                                                         </span></div>
                                                     <div class="col col-6 offset-4">
-                                                        <q-input disable outlined class="bg-white text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" type="number">
+                                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" disable outlined class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" type="number">
                                                             <div class="flex justify-end items-center" style="width: 60px">
                                                                 <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
                                                             </div>
@@ -231,7 +231,7 @@
                     <q-step default title="Select Coin to Send" :name="1" prefix="1" :done="step > 1">
                         <div class="text-black">
                             <!-- <span class="lab-input">Select Coin to Send</span> -->
-                            <q-select light separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" @input="checkGetPairs()" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                            <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" @input="checkGetPairs()" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                 <template v-slot:option="scope">
                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                         <q-item-section avatar>
@@ -267,7 +267,7 @@
                         <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_left" color="primary" label="Back" class="--back-btn" />
                         <div class="text-black">
                             <!-- <span class="lab-input">Select Coin to receive</span> -->
-                            <q-select light separator rounded outlined class="select-input" v-model="destinationCoin" use-input @filter="filterDestinationCoin" @input="updateCoinName()" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                            <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" v-model="destinationCoin" use-input @filter="filterDestinationCoin" @input="updateCoinName()" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                                 <template v-slot:option="scope">
                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                         <q-item-section avatar>
@@ -338,7 +338,7 @@
                         <div class="standard-content--body">
                             <div class="standard-content--body__form">
                                 <span v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" class="lab-input">From</span>
-                                <q-select v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" light separator rounded outlined class="select-input" @input="checkGetPairs()" v-model="fromCoin" :options="depositCoinOptions">
+                                <q-select v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" @input="checkGetPairs()" v-model="fromCoin" :options="depositCoinOptions">
                                     <template v-slot:option="scope">
                                         <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                             <q-item-section avatar>
@@ -386,7 +386,7 @@
                                 <br>
                                 <hr>
                                 <span v-show="destinationCoin === null || (destinationCoin.type !== 'new_public_key')" class="lab-input">To</span>
-                                <q-select v-show="destinationCoin === null || (destinationCoin.type !== 'new_public_key')" light separator rounded outlined class="select-input" v-model="destinationCoin" @input="updateCoinName()" use-input :options="destinationCoinOptions">
+                                <q-select v-show="destinationCoin === null || (destinationCoin.type !== 'new_public_key')" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" v-model="destinationCoin" @input="updateCoinName()" use-input :options="destinationCoinOptions">
                                     <template v-slot:option="scope">
                                         <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                             <q-item-section avatar>
@@ -491,7 +491,7 @@
     <q-stepper animated :vertical="$q.screen.lt.sm" v-model="step" ref="stepper" class="stepper--desktop" alternative-labels color="primary" flat>
         <q-step :name="1" prefix="1" default title="Select Coin to Send" :done="step > 1">
             <span class="sublab-input">Step 1</span><span class="tlab-input">Select Coin to Send</span>
-            <q-select class="select-input" light separator use-input outlined rounded v-model="depositCoin" @input="swapData.error = false; " @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+            <q-select class="select-input" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator use-input outlined rounded v-model="depositCoin" @input="swapData.error = false; " @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                 <template v-slot:option="scope">
                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                         <q-item-section avatar>
@@ -529,7 +529,7 @@
 
         <q-step :name="2" prefix="2" default title="Select Coin to Receive" :done="step > 2">
             <span class="sublab-input">Step 2</span><span class="tlab-input">Select Coin to Receive</span>
-            <q-select class="select-input" light separator use-input rounded outlined @input="swapData.error = false" @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+            <q-select class="select-input" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator use-input rounded outlined @input="swapData.error = false" @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                 <template v-slot:option="scope">
                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                         <q-item-section avatar>
@@ -1206,7 +1206,6 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
-
 .gasSelector .q-item {
     border: 1px solid #f1e7e7
 }
@@ -2407,5 +2406,15 @@ export default {
 
 .q-field__messages {
     margin-top: 5px;
+}
+.dark-theme{
+    .trade-component{
+        .prototype{
+            .you-receive {
+                background-color: #04111F;
+                border: 1px solid #627797;
+            }
+        }
+    }
 }
 </style>

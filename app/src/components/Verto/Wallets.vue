@@ -2,7 +2,7 @@
 <div>
     <div class="wallets-wrapper" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
         <!-- <q-toggle v-model="active" label="Active" /> -->
-        <div v-if="isMobile" class="wallets-wrapper--list" :class="{'open': !walletShowHide}">
+        <div v-if="isMobile" class="is-mobile wallets-wrapper--list" :class="{'open': !walletShowHide}">
             <q-scroll-area :visible="true" class="scrollarea" :class="{'height' : !walletShowHide}">
                 <q-list bordered separator class="list-wrapper">
                     <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
@@ -12,7 +12,7 @@
                                     <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
                                 </q-item-section>
                                 <q-item-section class="item-name">
-                                    <span class="item-name--name">{{item.name}}</span>
+                                    <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
                                     <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
                                 </q-item-section>
                                 <q-item-section class="item-info" v-if="!item.disabled">
@@ -64,7 +64,7 @@
                                     <img class="coin-icon" width="35px" :src="item.icon" alt="">
                                 </q-item-section>
                                 <q-item-section class="item-name">
-                                    <span class="item-name--name">{{item.name}}</span>
+                                    <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
                                 </q-item-section>
                                 <q-item-section class="item-info" v-if="!item.disabled">
                                     <span class="item-info--amount">{{item.amount ? new Number(item.amount).toFixed(8) : 0 }} {{item.type.toUpperCase()}}</span>
@@ -106,7 +106,7 @@
                                         <img class="coin-icon" width="35px" :src="item.icon" alt="">
                                     </q-item-section>
                                     <q-item-section class="item-name">
-                                        <span class="item-name--name">{{item.name}}</span>
+                                        <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info">
                                         <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{item.type.toUpperCase()}}</span>
@@ -161,7 +161,7 @@
         </div>
         <div v-else class="else-is-desktop wallets-wrapper--list open">
             <div class="wallets-wrapper--list_title q-pa-sm q-pt-md q-ml-sm flex items-center justify-between">
-                <span class="flex items-center"><q-icon name="o_account_balance_wallet" /> {{$store.state.currentwallet.wallet.empty ? 'Wallets' : 'Wallet : '+ $store.state.currentwallet.wallet.name.toUpperCase()}}</span>
+                <span class="flex items-center"><q-icon name="o_account_balance_wallet" /> {{$store.state.currentwallet.wallet.empty ? 'Wallets' : 'Wallet : '+ $store.state.currentwallet.wallet.name.toUpperCase().replace('- HD', '')}}</span>
                 <q-icon v-if="!$store.state.currentwallet.wallet.empty" style="font-size: 25px" :name="`img:${$store.state.currentwallet.wallet.type !== 'usdt' ? $store.state.currentwallet.wallet.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'}`" />
                 <span class="flex items-center">
                     <q-btn v-if="$store.state.currentwallet.wallet.empty" flat icon-right="cached" @click="refreshWallet()">
@@ -350,11 +350,12 @@
                         <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => f.chain != 'eos'  && f.chain != 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
-                                    <q-item-section avatar>
+                                    <q-item-section avatar class="item-coin">
                                         <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
+                                        <span class="item-name--name">{{item.type.toUpperCase()}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-name">
-                                        <span class="item-name--name">{{item.name}}</span>
+                                        <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
                                         <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
@@ -465,7 +466,7 @@
                                         <img class="coin-icon" width="35px" :src="item.icon" alt="">
                                     </q-item-section>
                                     <q-item-section class="item-name">
-                                        <span class="item-name--name">{{item.name}}</span>
+                                        <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
                                         <span class="item-info--amount">{{item.amount ? new Number(item.amount).toFixed(8) : 0 }} {{item.type.toUpperCase()}}</span>
@@ -509,7 +510,7 @@
                                             <img class="coin-icon" width="35px" :src="item.icon" alt="">
                                         </q-item-section>
                                         <q-item-section class="item-name">
-                                            <span class="item-name--name">{{item.name}}</span>
+                                            <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
                                         </q-item-section>
                                         <q-item-section class="item-info">
                                             <span class="item-info--amount">{{new Number(item.amount).toFixed(8)}} {{item.type.toUpperCase()}}</span>
@@ -563,7 +564,7 @@
         </div>
     </div>
     <q-dialog v-model="alertSecurity">
-        <q-card style="width: 100%; max-width: 400px">
+        <q-card style="width: 100%; max-width: 400px" :dark="$store.state.lightMode.lightMode === 'true'">
             <q-card-section>
                 <div class="icon-alert flex flex-center q-mt-lg">
                     <img src="statics/alert.svg" style="max-width: 100px" alt="">
@@ -575,7 +576,7 @@
             </q-card-section>
 
             <q-card-actions align="right" class="q-pb-lg q-pr-lg">
-                <q-btn flat label="Got it" class="go-to-security" @click="goToSecurity()" color="primary" v-close-popup />
+                <q-btn :dark="$store.state.lightMode.lightMode === 'true'" flat label="Got it" class="go-to-security" @click="goToSecurity()" color="primary" v-close-popup />
             </q-card-actions>
         </q-card>
     </q-dialog>
@@ -1312,7 +1313,17 @@ export default {
                 transform: scaleX(-1);
             }
         }
-
+        .item-coin{
+            .item-name--name{
+                color: #CCC;
+                font-weight: 700;
+                font-size: 10px;
+                transform: translate(-36%, 2px);
+                width: fit-content;
+                min-width: 50px;
+                text-align: center;
+            }
+        }
         .item-name {
             color: #000;
             font-weight: 700;
@@ -1369,9 +1380,22 @@ export default {
         }
     }
     &.dark-theme{
+        background-color: #04111F;
+        .wallets-wrapper--list{
+            &.is-mobile{
+
+            }
+        }
         @media screen and (min-width: 768px){
             background-color: #04111F;
             border: 1px solid #627797;
+        }
+        .wallets-wrapper--list .add-remove-wrapper--desc{
+            color: #FFF !important;
+        }
+        .go-to-security{
+            color: inherit !important;
+            background-color: inherit !important;
         }
         .history-list-wrapper {
             .q-item{
@@ -1401,6 +1425,9 @@ export default {
                 }
                 .q-link {
                     border-top: 1px solid rgba(#627797, 0.2);
+                    &.bg-teal-1{
+                        background-color: #152f4b !important;
+                    }
                     &.bgblack{
                         background-color: #0b1f35;
                     }
@@ -1642,7 +1669,14 @@ export default {
     }
 
 }
-
+.go-to-security{
+    color: #FFF !important;
+    background-color: #00D0DF !important;
+    text-transform: initial !important;
+    padding: 10px 30px;
+    border-radius: 50px;
+    font-weight: $light;
+  }
 .goToStake {
     margin-top: 2px;
     margin-bottom: 20px;

@@ -1,6 +1,6 @@
 <template>
 <div>
-    <q-table :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="EOS ivestments" :data="$store.state.investment.eosInvestments" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+    <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="EOS ivestments" :data="$store.state.investment.eosInvestments" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
         <template v-slot:body-cell-asset="props">
             <q-td :props="props" class="body-table-col">
                 <div class="col-3 flex items-center">
@@ -20,7 +20,7 @@
             </q-td>
         </template>
         <template v-slot:top-right>
-            <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+            <q-input :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" borderless dense debounce="300" v-model="filter" placeholder="Search">
                 <template v-slot:append>
                     <q-icon name="search" />
                 </template>
@@ -122,7 +122,7 @@ export default {
 <style lang="scss" scoped>
 .desktop-card-style.current-investments .body-table-col .pairs .pair {
     font-weight: 700;
-    color: #2a2a2a;
+    color: inherit;
     margin-bottom: -2px;
 }
 
