@@ -1,5 +1,5 @@
 <template>
-<q-page class="column text-black bg-grey-12" style="padding-bottom: 50px;background: #f3f3f3 !important">
+<q-page class="column text-black bg-grey-12 desktop-version" style="padding-bottom: 50px;background: #f3f3f3 !important">
     <div class="chain-tools-wrapper">
         <div class="standard-content">
             <h2 v-show="showMainSteps" class="standard-content--title flex justify-center">
@@ -366,6 +366,17 @@ export default {
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
 
+.desktop-version {
+    padding-top: 2vh;
+    padding-bottom: 0px;
+}
+.desktop-version {
+    background: #E7E8E8;
+
+    padding-left: 20vh;
+    padding-bottom: 50px;
+    padding-right: 2%;
+}
 .chain-tools-wrapper {
 
     // padding: 0px 6%;

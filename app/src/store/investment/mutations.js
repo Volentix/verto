@@ -9,6 +9,20 @@ export const setSelectedPool = (state, pool) => {
 export const setPools = (state, pools) => {
   state.pools = pools
 }
+export const setEOSPools = (state, pools) => {
+  state.eosPools = pools
+}
+export const updateEOSPools = (state, pool) => {
+  state.eosPools.push(pool)
+}
+export const setSelectedEOSPool = (state, pool) => {
+  state.selectedEOSPool = pool
+  console.log(pool, 'pool-')
+}
+export const updateTestnetEOSInvestments = (state, data) => {
+  state.testnetEOSInvestments.push(data)
+}
+
 export const updatePools = (state, pool) => {
   let volume = parseInt(pool.volume)
   if (pool.liquidity !== 0 && volume !== 0 && !isNaN(volume)) {

@@ -1,6 +1,7 @@
 export default function () {
   return {
     selectedPool: null,
+    selectedEOSPool: null,
     pools: [],
     zapperTokens: [],
     gasPrice: null,
@@ -15,6 +16,8 @@ export default function () {
     metamaskConnected: false,
     tableLoading: true,
     eosInvestments: [],
-    globalTokens: []
+    globalTokens: [],
+    eosPools: [],
+    testnetEOSInvestments: []
   }
 }

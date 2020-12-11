@@ -1,7 +1,7 @@
 <template>
   <div>
-    <q-scroll-area :visible="true" class="" style="height: 338px;">
-      <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :pagination="initialPagination" dense :loading="!$store.state.investment.pools.length" :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+    <q-scroll-area :visible="true" class="bg-grey-11" style="height: 838px;">
+      <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :pagination="initialPagination"  :loading="!$store.state.investment.pools.length" :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
               <template v-slot:body-cell-name="props">
               <q-td :props="props" class="body-table-col">
                   <div class="col-3 flex items-center">

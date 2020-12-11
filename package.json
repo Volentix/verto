@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "eos-common": "^0.8.0"
+  }
+}
