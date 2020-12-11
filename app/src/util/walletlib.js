@@ -3,6 +3,7 @@ import axios from 'axios'
 import store from '@/store'
 import { userError } from '@/util/errorHandler'
 import { date } from 'quasar'
+import abiArray from '@/statics/abi/erc20.json'
 
 class Lib {
   history = async (walletType, key, token) => {
@@ -252,52 +253,87 @@ class Lib {
           return stringAmount + ' ' + token.toUpperCase()
         }
       },
-      async eth (token, from, to, amount, memo, key) {
+      async eth (token, from, to, value, memo, key, contract) {
+        console.log('token, from, to, value, memo, key, contract', token, from, to, value, memo, key, contract)
+        console.log('abiArray', abiArray)
+
         const Web3 = require('web3')
         const EthereumTx = require('ethereumjs-tx').Transaction
         const web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
 
         let nonce = await web3.eth.getTransactionCount(from)
         let gasPrices = await getCurrentGasPrices()
-        let data = '0x0'
-        let value = web3.utils.toHex(web3.utils.toWei(amount.toString()))
+        let data = '0x00'
+        let web3Value = web3.utils.toHex(web3.utils.toWei(value.toString()))
+        let transactionHash = ''
 
         if (token !== 'eth') {
-          let contractAddress = '0xe6...'
-          let abiArray = JSON.parse(`/statics/abi/erc20.json`)
-          let contract = new web3.eth.Contract(abiArray, contractAddress, { from })
-          data = contract.methods.transfer(to, value).encodeABI()
-          value = '0x0'
+          let web3Contract = new web3.eth.Contract(abiArray, contract)
+          data = web3Contract.methods.transfer(to, web3Value).encodeABI()
+          console.log('data for', token, data)
+          web3Value = '0x00'
         }
 
+        let rawTx = {
+          from,
+          to,
+          value: web3Value,
+          data,
+          gasPrice: gasPrices.medium * 1000000000,
+          nonce,
+          chainId: 1
+        }
+        console.log('rawTx:', rawTx)
+
+        let gas = await web3.eth.estimateGas(rawTx)
+        console.log('gas:', gas)
+        rawTx.gas = gas
+
         try {
-          let details = {
-            from,
-            to,
-            value,
-            data,
-            gas: 21000,
-            gasPrice: gasPrices.low * 1000000000, // converts the gwei price to wei
-            nonce,
-            chainId: 1 // EIP 155 chainId - mainnet: 1, rinkeby: 4,  Ropsten: 3
-          }
-
-          // //console.log('details', details)
-
-          const transaction = new EthereumTx(details)
+          const transaction = new EthereumTx(rawTx)
           transaction.sign(Buffer.from(key.substring(2), 'hex'))
           const serializedTransaction = transaction.serialize()
+          console.log('serializedTransaction', serializedTransaction)
 
           return new Promise(async (resolve, reject) => {
-            web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, id) => {
-              if (err) {
-                // //console.log(err)
-                return reject()
+            // web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, id) => {
+            //   if (err) {
+            //     console.log(err)
+            //     return reject()
+            //   }
+            //   resolve({
+            //     message: process.env[store.state.settings.network].ETH_TRANSACTION_EXPLORER + id,
+            //     success: true
+            //   })
+            // })
+            let tx = web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
+
+            tx.on('confirmation', (confirmationNumber, receipt) => {
+              if (confirmationNumber > 2) {
+                resolve({
+                  message: process.env[store.state.settings.network].ETH_TRANSACTION_EXPLORER + transactionHash,
+                  success: true
+                })
               }
-              resolve({
-                message: process.env[store.state.settings.network].ETH_TRANSACTION_EXPLORER + id,
-                success: true
-              })
+              console.log('receipt:', receipt)
+            })
+
+            tx.on('transactionHash', hash => {
+              transactionHash = hash
+              var receipt = web3.eth.getTransactionReceipt(hash).then(console.log)
+              console.log('receipt:', receipt)
+            })
+
+            tx.on('receipt', receipt => {
+              console.log(receipt, 'success')
+            }).catch(error => {
+              console.log(error, 'receipt error')
+              return reject()
+            })
+
+            tx.on('error', error => {
+              console.log(error, 'error')
+              return reject()
             })
           })
         } catch (err) {
