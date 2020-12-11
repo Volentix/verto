@@ -146,7 +146,8 @@ export const getUniswapPools = ({ rootState, context, commit, state }, payload) 
   })
 }
 export const getYvaultsPools = ({ rootState, commit, state }, payload) => {
-  axios.get(process.env[rootState.settings.network].CACHE + 'https://zapper.fi/api/yvaults', config).then((result) => {
+  axios.get(process.env[rootState.settings.network].CACHE + 'https://zapper.fi/api/vault-stats/yearn', config).then((result) => {
+    console.log(result.data, '  console.log(result.data)')
     if (result.data.length) {
       result.data.filter(function (e) {
         return !e.isBlocked
@@ -154,7 +155,7 @@ export const getYvaultsPools = ({ rootState, commit, state }, payload) => {
         return !e.hideFromExplore
       }).forEach((value, index) => {
         let poolTokens = value.tokens.map(o => state.zapperTokens.find(t => t.address.toLowerCase() === o.address.toLowerCase())).filter((val) => val)
-
+        console.log(poolTokens, 'poolTokens')
         if (!poolTokens.length) return
         let pool = value
         pool.poolName = poolTokens.map(o => o?.label).filter((val) => val).join(' / ')
@@ -171,9 +172,10 @@ export const getYvaultsPools = ({ rootState, commit, state }, payload) => {
         pool.platform = 'yEarn'
         pool.liquidity = parseInt(pool.liquidity)
         pool.value = value.address
-        if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
-          commit('updatePools', pool)
-        }
+        console.log(!(poolTokens.length > 1 && !pool.poolName.includes('/')))
+        // if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
+        commit('updatePools', pool)
+        //   }
       })
     }
   })
@@ -238,7 +240,7 @@ export const getMarketDataVsUSD = (context, payload) => {
 }
 
 export const getTransactions = (context, payload) => {
-  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://zapper.fi/api/transactions?address=' + payload.address
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://zapper.fi/api/transactions?address=' + payload.value
   axios.get(transactionEndpoint, config)
     .then(function (result) {
       if (result.data.length) {
@@ -250,19 +252,19 @@ export const getTransactions = (context, payload) => {
 }
 
 export const getInvestments = (context, payload) => {
-  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://zapper.fi/api/account-balance/' + payload.platform + '?addresses=' + payload.address
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://zapper.fi/api/account-balance/' + payload.platform + '?addresses=' + payload.value
   axios.get(transactionEndpoint, config)
     .then(function (result) {
-      context.commit('setInvestments', result.data[payload.address])
+      context.commit('setInvestments', result.data[payload.value])
     }).catch(error => {
       console.log(error, 'Cannot get market Investments')
     })
 }
 export const getDebts = (context, payload) => {
-  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://zapper.fi/api/account-balance/' + payload.platform + '?addresses=' + payload.address
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://zapper.fi/api/account-balance/' + payload.platform + '?addresses=' + payload.value
   axios.get(transactionEndpoint, config)
     .then(function (result) {
-      context.commit('setDebts', result.data[payload.address])
+      context.commit('setDebts', result.data[payload.value])
     }).catch(error => {
       console.log(error, 'Cannot get Debts')
     })

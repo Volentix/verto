@@ -81,7 +81,7 @@
             </div> -->
             <div class="col col-4 col-md-4 q-pl-md">
                 <strong class="lab-sub q-pl-lg">Approx. Pool Output</strong>
-                <div class="lab-value output column q-pl-lg q-pr-sm">
+                <div class="lab-value output column q-pl-lg q-pr-sm" v-if="pool.tokensData.length">
                     <span class="flex flex-start q-mb-sm" v-for="(icon, index) in pool.tokensData" :key="index"><img :src="'https://zapper.fi/images/'+pool.icons[index]" class="q-mr-sm" alt=""> {{(sendAmount * (currentToken.data.price / pool.tokensData[index].price)  / 2).toFixed(4)}} {{pool.tokensData[index].symbol}}</span>
 
                 </div>
@@ -259,7 +259,7 @@ export default {
     }
     this.approvalRequired = false
     const Web3 = require('web3')
-    console.log(tableData, 'this.ethAccount')
+    this.platformOptions = this.platformOptions.filter(w => this.$store.state.investment.pools.find(o => o.platform.toLowerCase() === w.value.toLowerCase()))
     this.web3Instance = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
     // let t = this.web3Instance.eth.getTransaction('0x51c32feefe4bcfac06b19364e07b7f261138e1760da96a827d6c0954dcb47059')
     if (this.$store.state.investment.metamaskConnected) this.conectWallet('metamask')
@@ -613,7 +613,12 @@ export default {
         o.value = o.id
         return o
       })
-      this.pool = this.poolOptions[0]
+      console.log(this.platform.value, this.poolOptions)
+      if (this.poolOptions.length) {
+        this.pool = this.poolOptions[0]
+      } else {
+        this.error = 'There is no ' + this.platform.value + ' pools available'
+      }
       //  this.tokenOptions = this.pool.tokens ;
       this.isTokenInWallet()
     },
