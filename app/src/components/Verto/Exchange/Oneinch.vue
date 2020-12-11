@@ -158,7 +158,7 @@
                                                 </q-list>
                                                 <q-btn v-if="approvalRequired" unelevated @click="processERC20Approval()" :loading="spinnervisible" :disable="error !== false || spinnervisible || gasOptions.length == 0" color="primary" text-color="black" label="Approve token" class="text-capitalize chose_accounts full-width" />
 
-                                                <q-btn v-else unelevated @click="doSwap()" :loading="spinnervisible" :disable="error || gasOptions.length == 0 || spinnervisible || depositCoin.amount < swapData.fromAmount " color="primary" text-color="black" label="Swap now" class="text-capitalize chose_accounts full-width" />
+                                                <q-btn v-else unelevated @click="doSwap()" :loading="spinnervisible" :disable="error && error.lenght || gasOptions.length == 0 || spinnervisible || depositCoin.amount < swapData.fromAmount " color="primary" text-color="black" label="Swap now" class="text-capitalize chose_accounts full-width" />
 
                                             </div>
                                         </div>
@@ -945,6 +945,11 @@ export default {
   },
   async created () {
     this.web3 = web3
+
+    this.$store.commit('settings/setDex', {
+      dex: 'oneinch'
+    })
+
     if (this.$store.state.settings.dexData.depositCoin) {
       this.depositCoin = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
     }
@@ -952,7 +957,7 @@ export default {
       this.destinationCoin = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
     }
 
-    if (this.$store.state.settings.dexData.depositCoin.fromAmount) {
+    if (this.$store.state.settings.dexData.depositCoin && this.$store.state.settings.dexData.depositCoin.fromAmount) {
       this.depositQuantity = this.$store.state.settings.dexData.depositCoin.fromAmount
     }
   },
@@ -994,10 +999,10 @@ export default {
     },
     getCoins () {
       this.depositCoinOptions = this.getAllCoins()
-      // this.destinationCoin = !this.destinationCoin.value.length ? this.$store.state.settings.coins.oneinch[this.$store.state.settings.coins.oneinch.length - 1] : this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
+      this.destinationCoin = !this.destinationCoin || !this.destinationCoin.value.length ? this.$store.state.settings.coins.oneinch[this.$store.state.settings.coins.oneinch.length - 1] : this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
       this.depositCoinUnfilter = this.depositCoinOptions
       this.destinationCoinUnfilter = this.depositCoinOptions
-      // this.depositCoin = !this.depositCoin ? this.$store.state.settings.coins.oneinch[0] : this.depositCoinUnfilter.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
+      this.depositCoin = !this.depositCoin ? this.$store.state.settings.coins.oneinch[0] : this.depositCoinUnfilter.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
       this.getSwapQuote()
     },
     getExchanges () {
@@ -1063,7 +1068,6 @@ export default {
           }
           // Calculate total gas price and convert it to USD
           self.swapData.gasUsd = self.convertETHToUSD(web3.utils.fromWei((result.data.gasPrice * result.data.gas).toString()))
-          console.log('getSwapQuote', result)
         }).catch(error => {
           self.approvalRequired = false
           self.spinnervisible = false
