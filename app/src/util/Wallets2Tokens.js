@@ -135,10 +135,9 @@ class Wallets2Tokens {
             }
             if (index === balances.data.length - 1) {
               store.commit('wallets/setLoadingState', { eos: true })
+              this.updateWallet()
             }
           })
-
-          this.updateWallet()
         })
 
         self.tableData = self.tableData.map(o => {
@@ -148,11 +147,9 @@ class Wallets2Tokens {
           return o
         })
       } else if (wallet.type === 'eth') {
-
       //  wallet.key = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
 
-        axios.get('https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
-
+        axios.get(process.env[store.state.settings.network].CACHE + 'https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
           let ethplorer = res.data
 
           /* self.tableData.filter(w => w.key === wallet.key).map(eth => {
@@ -162,29 +159,29 @@ class Wallets2Tokens {
            */
           // console.log('ethplorer', ethplorer)
 
-          await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.tokensets.com/v1/rebalancing_sets', {
+          axios.get(process.env[store.state.settings.network].CACHE + 'https://api.tokensets.com/v1/rebalancing_sets', {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
           }).then(res => {
             let tokenSets = res.data.rebalancing_sets
 
             if (ethplorer.tokens) {
-              ethplorer.tokens.filter(t => t.balance > 0 && t.tokenInfo.symbol).map((t, index) => {
+              ethplorer.tokens.filter(t => t.balance > 0 && t.tokenInfo.symbol).map(async (t, index) => {
                 const csa = Web3.utils.toChecksumAddress(t.tokenInfo.address)
-                console.log('t:', t)
+                let token = tokenSets.find(s => s.address.toLowerCase() === t.tokenInfo.address.toLowerCase())
+                t.tokenInfo.image = t.tokenInfo.image && t.tokenInfo.image.includes('https') ? t.tokenInfo.image : (token && token.image ? token.image : false)
 
-                try {
-                  axios.get('https://tokens.1inch.exchange/' + csa.toLowerCase() + '.png', { validateStatus: false }).then(result => {
-                    console.log('result', result)
-                    if (result.status === 200) {
-                      t.tokenInfo.image = 'https://tokens.1inch.exchange/' + csa.toLowerCase() + '.png'
-                    } else {
-                      t.tokenInfo.image = 'https://etherscan.io/images/main/empty-token.png'
-                    }
-                  })
-                } catch (error) {
-                  t.tokenInfo.image = tokenSets.find(s => s.address === t.tokenInfo.address).image
-                  console.log('eth token not on 1inch', t.tokenInfo.image, csa, error)
+                if (!t.tokenInfo.image) {
+                  try {
+                    await axios.get(t.tokenInfo.image, { validateStatus: false }).then(result => {
+                      if (result.status !== 200) {
+                        t.tokenInfo.image = 'https://etherscan.io/images/main/empty-token.png'
+                      }
+                    })
+                  } catch (error) {
+                    console.log('eth token not on 1inch', t.tokenInfo.image, csa, error)
+                  }
                 }
+
                 self.tableData.push({
                   selected: false,
                   disabled: false,
@@ -197,14 +194,14 @@ class Wallets2Tokens {
                   contract: t.tokenInfo.address,
                   chain: 'eth',
                   to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase() + '/' + wallet.key,
-                  icon: t.tokenInfo.image ? t.tokenInfo.image : ''
+                  icon: t.tokenInfo.image
                 })
 
                 if (index === ethplorer.tokens.length - 1) {
                   store.commit('wallets/setLoadingState', { eth: true }, 'balances.data.length')
+                  this.updateWallet()
                 }
               })
-              this.updateWallet()
             }
           })
         })

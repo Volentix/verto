@@ -189,7 +189,7 @@
                     </template> -->
                 </q-select>
 
-               <q-item clickable :key="index"  v-for="(token,index) in $store.state.wallets.tokens.filter(o => o.chain ==  chain && (( o.name == accountOption.label && chain == 'eos') || (showConsole({b:o.key , a:accountOption.value}) || o.key.toLowerCase() == accountOption.value.toLowerCase() && chain == 'eth' )))">
+               <q-item clickable :key="index"  v-for="(token,index) in $store.state.wallets.tokens.filter(o => o.chain ==  chain && (( o.name == accountOption.label && chain == 'eos') || ( o.key.toLowerCase() == accountOption.value.toLowerCase() && chain == 'eth' )))">
          <q-item-section avatar top>
           <q-icon  :name="'img:'+token.icon" color="primary" text-color="white" />
         </q-item-section>
@@ -491,7 +491,7 @@ export default {
       this.chain = account.chain
       if (account.chain !== 'eth') return
 
-      if (!account) account = { address: this.accountOption.key }
+      if (!account) account = { value: this.accountOption.key }
 
       this.$store.commit('investment/setTableLoadingStatus', true)
       this.$store.commit('investment/resetAccountDetails', account.address)
@@ -559,6 +559,9 @@ export default {
 
 @import "~@/assets/styles/variables.scss";
 
+.q-splitter__panel.q-splitter__after.col {
+    background: white;
+}
 .q-splitter__panel.q-splitter__before {
     width: 25%;
 }
