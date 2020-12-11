@@ -1,9 +1,9 @@
 <template>
-  <q-page class="column text-black bg-grey-12" style="padding-bottom: 50px;background: #f3f3f3 !important">
+  <q-page class="column restore-wallet" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-white': $store.state.lightMode.lightMode === 'false'}">
         <div class="chain-tools-wrapper">
             <div class="standard-content">
                 <h2 class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" :to="returnto === 'profile' ? '/verto/profile' : '/login'" text-color="black" icon="keyboard_backspace" />
+                    <q-btn flat unelevated class="btn-align-left" :to="returnto === 'profile' ? '/verto/profile' : '/login'" :text-color="$store.state.lightMode.lightMode === 'false' ? 'black' : 'white'" icon="keyboard_backspace" />
                      {{$t('SettingsView.restore_config')}}
                 </h2>
                 <div class="privatekey_bg flex flex-center"><img src="statics/restore_config.svg" alt=""></div>
@@ -11,7 +11,7 @@
             <div class="chain-tools-wrapper--list open">
                 <div class="list-wrapper">
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                      <q-stepper v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
+                      <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
                         <q-step title="Select Config File" :name="1" prefix="1" :done="step > 1">
                             <div class="flex full-width file-select-wrapper flex-center q-pa-sm">
                               <FileSelect @input="checks" @keyup.enter="showThePasswordScreen" v-model="file" />
@@ -26,7 +26,7 @@
                           <q-card-section class="text-white text-center"  >
                             <div>
                                 <q-input
-                                  light
+                                  :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
                                   v-model="addWallet.vertoPassword"
                                   @input="showSubmitKey"
                                   @keyup.enter="restoreConfig"
@@ -176,6 +176,10 @@ export default {
 
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
+  .restore-wallet{
+    padding-bottom: 50px;
+    background: #f3f3f3 !important
+  }
   .chain-tools-wrapper{
     // padding: 0px 6%;
     @media screen and (min-width: 768px) {
@@ -499,4 +503,30 @@ export default {
       }
     }
   }
+.dark-theme{
+  background: #04111F !important;
+  .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+    background-color: #04111F;
+  }
+  .standard-content--title{
+    color: #FFF;
+  }
+  /deep/ .file-select-wrapper {
+    .file-select > .select-button span{
+      color: #FFF;
+    }
+    .file-select > .select-button{
+      background-color: #04111F !important;
+      border: 1px solid #627797;
+    }
+  }
+}
+/deep/ .q-stepper{
+  &.q-dark{
+    background: #04111F;
+    .q-stepper__title{
+      color: #CCC !important;
+    }
+  }
+}
 </style>

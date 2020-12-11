@@ -1,10 +1,10 @@
 <template>
-<q-card class="q-pa-lg modal-dialog-wrapper" style="width: 500px; ">
+<q-card :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" class="q-pa-lg modal-dialog-wrapper" style="width: 500px; " :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <q-toolbar>
         <q-toolbar-title><span class="text-weight-bold q-pl-sm">Stake</span></q-toolbar-title>
-        <q-select v-model="currentExrternalWallet" label="Account" />
+        <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="currentExrternalWallet" label="Account" />
 
-        <q-btn flat round dense icon="close" v-close-popup />
+        <q-btn :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" flat round dense icon="close" v-close-popup />
     </q-toolbar>
     <q-card-section class="text-h6" v-if="!transactionStatus">
 
@@ -12,11 +12,10 @@
 
             <div class="col-12 text-h6 q-mb-md q-pl-sm flex items-center">
                 <h4 class="lab-title q-pr-md">Staking: <span class="text-grey">{{sendAmount}} {{stakeData.code}} </span></h4>
-
             </div>
             <div class="col col-6">
                 <!-- <q-input class="input-input" filled rounded outlined color="purple" value="0.1" suffix="MAX" /> -->
-                <q-input min="0" :max="stakeData.token" @input="validateInput(); error = null" v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number" />
+                <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" min="0" :max="stakeData.token" @input="validateInput(); error = null" v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number" />
             </div>
 
         </div>
@@ -97,7 +96,7 @@
         </div>
 
     </q-card-section>
-    <q-card-actions align="right" class="q-pr-sm q-mb-sm q-mt-xl" v-if="!transactionStatus">
+    <q-card-actions align="right" class="q-pr-sm q-mb-sm " v-if="!transactionStatus">
         <q-btn label="Cancel" flat class="qbtn-start q-mr-sm cancel" color="black" v-close-popup />
         <q-btn unelevated class="qbtn-start" :disable="sendAmount == 0 || invalidTransaction" color="black" text-color="white" label="Confirm" @click="doTransaction()" />
     </q-card-actions>
@@ -208,6 +207,13 @@ a {
 }
 
 .modal-dialog-wrapper {
+    &.dark-theme{
+      background: #04111F;
+      border: 1px solid #627797;
+      .q-item__label + .q-item__label{
+          color: #CCC;
+      }
+    }
     .qbtn-start {
         border-radius: 30px;
         height: 44px;

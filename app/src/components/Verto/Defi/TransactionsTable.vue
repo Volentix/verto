@@ -1,40 +1,39 @@
 <template>
     <div>
-<q-table :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="Transactions" :data="$store.state.investment.transactions" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
-    <template v-slot:body-cell-asset="props">
-    <q-td :props="props" class="body-table-col">
-    <div class="col-3 flex items-center">
-        <span class="imgs q-mr-lg"  >
+      <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="Transactions" :data="$store.state.investment.transactions" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+          <template v-slot:body-cell-asset="props">
+            <q-td :props="props" class="body-table-col">
+              <div class="col-3 flex items-center">
+                <span class="imgs q-mr-lg"  >
+                  <img  :src="!props.row.details ? 'https://zapper.fi/images/'+ props.row.symbol+'-icon.png' : 'https://1inch.exchange/assets/tokens/'+props.row.contract+'.png'" alt="">
+                </span>
+                <span class="column pairs">
+                  <span class="pair">{{props.row.symbol}}</span>
+                </span>
+              </div>
+            </q-td>
+          </template>
+          <template v-slot:body-cell-amount="props">
+            <q-td :props="props" class="body-table-col">
+            {{props.row.amount+' '+props.row.symbol}}
+            </q-td>
+          </template>
+          <template v-slot:body-cell-action="props">
+            <q-td :props="props" class="body-table-col" v-if="false">
+              <div class="col-2 flex justify-end">
+                <q-btn unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="grey" label="Add" />
+              </div>
+            </q-td>
+          </template>
+          <template v-slot:top-right>
+            <q-input :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" borderless dense debounce="300" v-model="filter" placeholder="Search">
+              <template v-slot:append>
+                  <q-icon name="search" />
+              </template>
+            </q-input>
+          </template>
+      </q-table>
 
-         <img  :src="coins.find((w) => w.value.toLowerCase() === props.row.symbol.toLowerCase()) ? coins.find((w) => w.value.toLowerCase() === props.row.symbol.toLowerCase()).image :'https://etherscan.io/images/main/empty-token.png' " alt="">
-         </span>
-        <span class="column pairs">
-        <span class="pair">{{props.row.symbol}}</span>
-        </span>
-    </div>
-    </q-td>
-</template>
-  <template v-slot:body-cell-amount="props">
-    <q-td :props="props" class="body-table-col">
-    {{props.row.amount+' '+props.row.symbol}}
-    </q-td>
-</template>
-<template v-slot:body-cell-action="props">
-    <q-td :props="props" class="body-table-col" v-if="false">
-        <div class="col-2 flex justify-end">
-            <q-btn unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="grey" label="Add" />
-        </div>
-    </q-td>
-</template>
-
-<template v-slot:top-right>
-    <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
-        <template v-slot:append>
-            <q-icon name="search" />
-    </template>
-        </q-input>
-        </template>
-    </q-table>
     </div>
 </template>
 <script>
