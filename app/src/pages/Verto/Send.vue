@@ -561,6 +561,7 @@ export default {
       // 'memo', this.sendMemo,
       // 'key', this.privateKey.key,
       // 'contract', this.currentAccount.contract)
+      console.log('this.currentAccount', this.currentAccount)
 
       Lib.send(
         this.currentAccount.chain,
