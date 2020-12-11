@@ -134,11 +134,7 @@ class Wallets2Tokens {
           })
         })
       } else if (wallet.type === 'eth') {
-      //  wallet.key = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
-
-        // wallet.privateKey = ''
-
-        // temporary account override for testing
+        //  wallet.key = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
         axios.get('https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
           let ethplorer = res.data
           self.tableData.filter(w => w.key === wallet.key).map(eth => {
@@ -156,23 +152,28 @@ class Wallets2Tokens {
             if (ethplorer.tokens) {
               ethplorer.tokens.filter(t => t.balance > 0 && t.tokenInfo.symbol).map(t => {
                 const csa = Web3.utils.toChecksumAddress(t.tokenInfo.address)
+                console.log('t:', t)
 
                 try {
-                  const status = (axios.get('https://tokens.1inch.exchange/' + csa.toLowerCase() + '.png', { validateStatus: false })).status
-                  if (status === 200) {
-                    t.tokenInfo.image = 'https://tokens.1inch.exchange/' + csa.toLowerCase() + '.png'
-                  } else {
-                    t.tokenInfo.image = 'https://etherscan.io/images/main/empty-token.png'
-                  }
+                  axios.get('https://tokens.1inch.exchange/' + csa.toLowerCase() + '.png', { validateStatus: false }).then(result => {
+                    console.log('result', result)
+                    if (result.status === 200) {
+                      t.tokenInfo.image = 'https://tokens.1inch.exchange/' + csa.toLowerCase() + '.png'
+                    } else {
+                      t.tokenInfo.image = 'https://etherscan.io/images/main/empty-token.png'
+                    }
+                  })
                 } catch (error) {
                   t.tokenInfo.image = tokenSets.find(s => s.address === t.tokenInfo.address).image
-                  // console.log('eth token not on trustwallet', t, csa)
+                  console.log('eth token not on 1inch', t.tokenInfo.image, csa, error)
                 }
                 self.tableData.push({
                   selected: false,
                   disabled: false,
                   type: t.tokenInfo.symbol ? t.tokenInfo.symbol.toLowerCase() : '',
                   name: t.tokenInfo.name,
+                  key: wallet.key,
+                  privateKey: wallet.privateKey,
                   amount: t.balance / (10 ** t.tokenInfo.decimals),
                   usd: (t.balance / (10 ** t.tokenInfo.decimals)) * t.tokenInfo.price.rate,
                   contract: t.tokenInfo.address,
