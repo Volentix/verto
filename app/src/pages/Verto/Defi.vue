@@ -107,7 +107,11 @@
             <q-item clickable @click="menu = 'swap'" :class="[menu == 'swap' ? 'bg-grey-3' : 'bg-white']">
               <q-item-section>Swap</q-item-section>
                <q-item-section side><q-icon name="navigate_next"/></q-item-section>
-        </q-item>
+             </q-item>
+              <q-item clickable @click="menu = 'add_liquidity'" :class="[menu == 'add_liquidity' ? 'bg-grey-3' : 'bg-white']">
+              <q-item-section>Add liquidity</q-item-section>
+               <q-item-section side><q-icon name="navigate_next"/></q-item-section>
+             </q-item>
             <q-item clickable @click="menu = 'liquidity'" :class="[menu == 'liquidity' ? 'bg-grey-3' : 'bg-white']">
               <q-item-section>Liquidity Pools</q-item-section>
                <q-item-section side><q-icon name="navigate_next"/></q-item-section>
@@ -219,6 +223,7 @@
                 <TestnetPools v-show="menu == 'liquidity'" />
                 <TestnetInvestments v-show="menu == 'investments'"  />
                 <VolentixLiquidity :showLiquidity="false" v-show="menu == 'swap'" />
+                <VolentixLiquidity :showLiquidity="true" v-show="menu == 'add_liquidity'" />
         </div>
 
     </div>
