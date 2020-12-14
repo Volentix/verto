@@ -101,6 +101,7 @@
               getPairData();
               checkBalance();
              "
+             v-if="false"
              flat
              v-model="tab"
              indicator-color="indigo-5"
@@ -729,7 +730,10 @@
      </div>
     </div>
    </div>
-   <div class="col col-12 summary-wrapper shadow-1 col-md-4 q-pa-lg column justify-center items-start">
+   <div
+   style="max-width:30%;"
+    class="col summary-wrapper shadow-1 col-md-4 q-pa-lg column justify-center items-start"
+   >
     <q-list class="summary-wrapper__list" separator>
      <q-item class="q-my-sm" clickable v-ripple>
       <div class="text-h6">Summary</div>
@@ -809,7 +813,10 @@
         <q-item-label lines="1">{{
          pairData.supply
        }}</q-item-label>
-
+       <q-item-label lines="1"> Fees: {{
+         pairData.fee * 0.01
+       }}
+       </q-item-label>
       </q-item-section>
      </q-item>
     </q-list>
@@ -894,20 +901,22 @@
      <p class="q-pt-md">Set the initial swap price freely</p>
     </div>
    </div>
-
-   <vpoolsComponent :key="vpoolsTrigger" />
+<TestnetPools class="full-width"/>
   </div>
  </div>
 </template>
 
 <script>
+import {
+  mapState
+} from 'vuex'
 import { Api, JsonRpc } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
 let rpc, api, signatureProvider
+import TestnetPools from '../../../components/Verto/Defi/TestnetPools'
 import initWallet from '@/util/Wallets2Tokens'
 import DexInteraction from '../../../mixins/DexInteraction'
 import EOSContract from '../../../mixins/EOSContract'
-import vpoolsComponent from '../../../components/Verto/Defi/vpoolsComponent.vue'
 import { EosRPC, EosAPI } from '@/util/EosInterac'
 import { asset, number_to_asset } from 'eos-common'
 import { preparePool, computeBackward, computeForward } from '@/util/VolentixPools'
@@ -919,9 +928,9 @@ const testnetApiObject = new EosAPI(
 const testnetRpc = new EosRPC('http://140.82.56.143:8888')
 export default {
   components: {
-    vpoolsComponent
+    TestnetPools
   },
-  props: ['disableDestinationCoin'],
+  props: ['disableDestinationCoin', 'showLiquidity'],
   data () {
     return {
       eosAccountName: 'berthonytha1',
@@ -993,40 +1002,7 @@ export default {
     }
   },
   async created () {
-    this.accounts = await testnetRpc.getTableByScope(
-      'vpools',
-      'stat',
-      'accounts'
-    )
-    this.pools = []
-    this.accounts.forEach(async o => {
-      let balances = await testnetRpc.getTable(
-        'vpools',
-        o.payer,
-        'accounts'
-      )
-      balances.forEach(async o => {
-        let token = asset(o.balance)
-        let pool = await testnetRpc.getTable(
-          'vpools',
-          token.symbol.code().to_string(),
-          'stat'
-        )
-        if (pool[0]) { this.pools.push(preparePool(pool[0])) }
-      })
-    })
-
-    this.tokensBalance = await testnetRpc.getTable(
-      'vpools',
-      this.eosAccount.name,
-      'accounts'
-    )
-    this.openChannels = await testnetRpc.getTable(
-      'vpools',
-      this.eosAccount.name,
-      'stat'
-    )
-
+    this.getEOSPools()
     let tableData = await this.$store.state.wallets.tokens
     this.eosAccounts = tableData.filter((w) => w.chain === 'eos')
     rpc = new JsonRpc(
@@ -1041,12 +1017,20 @@ export default {
      this.$store.state.settings.dexData.depositCoin.value.toLowerCase()
       )
     }
+
+    if (!this.depositCoin) {
+      this.depositCoin = this.$store.state.settings.coins.defibox[0]
+    }
     if (this.$store.state.settings.dexData.destinationCoin) {
       this.destinationCoin = this.$store.state.settings.coins.defibox.find(
         (o) =>
           o.value.toLowerCase() ===
      this.$store.state.settings.dexData.destinationCoin.value.toLowerCase()
       )
+    }
+
+    if (!this.destinationCoin) {
+      this.destinationCoin = this.$store.state.settings.coins.defibox[1]
     }
     // await this.getMinePair()
     // await this.getPools()
@@ -1056,6 +1040,9 @@ export default {
         this.$store.state.settings.dexData.fromAmount
       )
       this.getPairData()
+    }
+    if (this.showLiquidity) {
+      this.tab = 'liquidity'
     }
   },
   computed: {
@@ -1068,10 +1055,11 @@ export default {
         this.pairData.fee
       )
       return to_buy
-    }
+    },
+    ...mapState('investment', ['selectedEOSPool'])
   },
   mounted () {
-    console.log(this.pools, ' this.pools')
+
   },
   methods: {
     async updatePool () {
@@ -1080,16 +1068,15 @@ export default {
         this.pairData ? this.pairData.supply.symbol.code().to_string() : this.getTokenSymbol(),
         'stat'
       ))[0]
-      console.log(pool, 'before', this.getTokenSymbol())
+
       this.pairData = preparePool(pool)
       let index = this.pools.findIndex(x => x.supply.symbol.code().to_string() === this.pairData.supply.symbol.code().to_string())
-      console.log(index, 'index', this.pools)
+
       if (index === -1) {
         this.pools.push(this.pairData)
       } else {
         this.pools[index] = this.pairData
       }
-      console.log(index, 'index', this.pools, this.pairData)
     },
     inputToAsset (input, precision) {
       return asset((parseFloat(input) || 0).toFixed(precision) + ' XXX')
@@ -1221,9 +1208,12 @@ export default {
       console.log(this.vpoolsTransactions, ' this.vpoolsTransactions')
       // this.validateTransaction()
     },
+
     updateSwapAmounts () {
       if (isNaN(this.swapData.fromAmount)) return
-      this.input = 'pool1'
+
+      let input = 'pool1'
+
       if (this.pairData.pool1.quantity.symbol.code().to_string() === this.depositCoin.value.toUpperCase()) {
         this.poolOne = this.pairData.pool1
         this.poolTwo = this.pairData.pool2
@@ -1233,14 +1223,16 @@ export default {
       }
 
       let a = (parseFloat(this.swapData.fromAmount) || 0).toFixed(this.poolOne.quantity.symbol.precision())
-      a = asset(a + ' ' + this.pairData.pool1.quantity.symbol.code().to_string()).amount
+
+      a = asset(a + ' ' + this.poolOne.quantity.symbol.code().to_string()).amount
 
       const p1 = this.poolOne.quantity.amount
       const p2 = this.poolTwo.quantity.amount
 
-      if (this.input === 'pool1') {
+      if (input === 'pool1') {
         const r = number_to_asset(0, this.poolTwo.quantity.symbol)
         r.set_amount(Math.abs(computeForward(a.multiply(-1), p2, p1.plus(a), this.pairData.fee)))
+
         this.amount2 = r.to_string().split(' ')[0]
       } else {
         const result = computeForward(
@@ -1250,11 +1242,12 @@ export default {
           this.pairData.fee
         ).abs()
 
-        const r = number_to_asset(0, this.swapData.pool1.quantity.symbol)
+        const r = number_to_asset(0, this.pairData.pool1.quantity.symbol)
         r.set_amount(result)
+
         this.amount2 = r.to_string().split(' ')[0]
       }
-      console.log(this.amount2)
+
       this.swapData.toAmount = this.amount2
     },
     updateLiquidityAmounts () {
@@ -1297,6 +1290,35 @@ export default {
       }
 
       return symbol
+    },
+    async getEOSPools () {
+      this.accounts = await testnetRpc.getTableByScope(
+        'vpools',
+        'stat',
+        'accounts'
+      )
+      this.pools = []
+      this.accounts.forEach(async o => {
+        let balances = await testnetRpc.getTable(
+          'vpools',
+          o.payer,
+          'accounts'
+        )
+        balances.forEach(async o => {
+          let token = asset(o.balance)
+          let pool = await testnetRpc.getTable(
+            'vpools',
+            token.symbol.code().to_string(),
+            'stat'
+          )
+          // pool[0].pool2.quantity = '4.3898 EOS'
+          // pool[0].pool1.quantity = '7.7223 USD'
+          // pool[0].fee = 1
+          if (pool[0]) {
+            this.pools.push(preparePool(pool[0]))
+          }
+        })
+      })
     },
     pushCreateTokenAction () {
       this.transaction.name = 'createpair'
@@ -1497,7 +1519,7 @@ export default {
       }
     },
     async getPools () {
-      this.coins = this.getAllCoins()
+      this.coins = this.$store.state.settings.coins.defibox
       this.depositCoinOptions = this.coins
       this.depositCoinUnfilter = this.coins
       this.depositCoin = this.depositCoin
@@ -1719,12 +1741,28 @@ export default {
   },
   watch: {
     depositCoin: function (newVal, oldVal) {
-      this.swapData.fromAmount = parseFloat(newVal.amount).toFixed(
-        this.depositCoin.precision
+      if (newVal && newVal.amount) {
+        this.swapData.fromAmount = parseFloat(newVal.amount).toFixed(
+          this.depositCoin.precision
+        )
+      }
+    },
+    selectedEOSPool (val) {
+      this.depositCoin = this.getAllCoins().find(
+        (o) =>
+          o.value.toLowerCase() ===
+     this.$store.state.settings.dexData.depositCoin.value.toLowerCase()
       )
+
+      this.destinationCoin = this.getAllCoins().find(
+        (o) =>
+          o.value.toLowerCase() ===
+     this.$store.state.settings.dexData.destinationCoin.value.toLowerCase()
+      )
+
+      this.getPairData()
     },
     pools () {
-      console.log(this.pools, ' this.pools')
       this.getPairData()
     },
     tab: function (newVal) {

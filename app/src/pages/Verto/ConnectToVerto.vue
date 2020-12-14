@@ -189,6 +189,9 @@ import initWallet from '@/util/Wallets2Tokens'
 import Oneinch from '../../components/Verto/Exchange/Oneinch'
 import Coinswitch from '../../components/Verto/Exchange/Coinswitch'
 import Swapeos from '../../components/Verto/Exchange/Swapeos'
+import {
+  mapState
+} from 'vuex'
 export default {
   name: 'Login',
   components: {
@@ -266,6 +269,56 @@ export default {
     this.version = version
     this.$refs.psswrd.focus()
   },
+  computed: {
+    ...mapState('wallets', ['loaded'])
+  },
+  watch: {
+    loaded: {
+      deep: true,
+      handler (val) {
+        if (val.eos && val.eth) {
+          if (this.$route.query.url) {
+            const sleep = (ms) => {
+              return new Promise(resolve => setTimeout(resolve, ms))
+            }
+            console.log('before')
+            sleep(3000).then(() => {
+              console.log()
+              let accounts = this.$store.state.wallets.tokens.map((token) => {
+                delete token.privateKey
+                delete token.privateKeyEncrypted
+                delete token.origin
+                delete token.privateKey
+
+                return token
+              })
+              console.log(accounts)
+              window.top.postMessage({ accounts: accounts }, '*')
+              if (this.$route.query.redirect === 'true') {
+                window.top.location.href = this.$route.query.url + '?accounts=' + encodeURIComponent(JSON.stringify(accounts))
+              }
+            })
+          } else {
+            this.depositCoin.value = this.$route.params.fromCoin
+            this.destinationCoin.value = this.$route.params.toCoin
+            this.depositCoin.fromAmount = this.$route.params.amount
+            this.checkPair()
+
+            setTimeout(() => {
+              this.$q.notify({
+                message: 'Wallet connected',
+                color: 'positive'
+              })
+
+              this.loggedIn = true
+              this.spinnerVisible = false
+            }, 5000)
+            this.login = 'Sign'
+          }
+        }
+      }
+    }
+  },
   methods: {
     checkPassword () {
       if (this.password.length > 1) {
@@ -294,39 +347,6 @@ export default {
       if (results.success) {
         this.$store.commit('settings/temporary', this.password)
         await initWallet()
-
-        if (this.$route.query.url) {
-          setTimeout(() => {
-            let accounts = this.$store.state.wallets.tokens.map((token) => {
-              delete token.privateKey
-              delete token.privateKeyEncrypted
-              delete token.origin
-
-              return token
-            })
-            window.top.postMessage({ accounts: accounts }, '*')
-            if (this.$route.query.redirect === 'true') {
-              window.top.location.href = this.$route.query.url + '?accounts=' + encodeURIComponent(JSON.stringify(accounts))
-            }
-          },
-          10000)
-        } else {
-          this.depositCoin.value = this.$route.params.fromCoin
-          this.destinationCoin.value = this.$route.params.toCoin
-          this.depositCoin.fromAmount = this.$route.params.amount
-          this.checkPair()
-
-          setTimeout(() => {
-            this.$q.notify({
-              message: 'Wallet connected',
-              color: 'positive'
-            })
-
-            this.loggedIn = true
-            this.spinnerVisible = false
-          }, 5000)
-          this.login = 'Sign'
-        }
       } else {
         if (results.message === 'no_default_key') {
           this.$router.push({
@@ -335,6 +355,7 @@ export default {
         } else {
           // this.startRestoreConfig()
           this.passHasError = true
+          this.spinnerVisible = false
         }
       }
     },
