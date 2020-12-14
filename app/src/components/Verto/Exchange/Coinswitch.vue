@@ -1134,6 +1134,11 @@ export default {
   },
   async created () {
     this.getWindowWidth()
+
+    this.$store.commit('settings/setDex', {
+      dex: 'coinswitch'
+    })
+
     window.addEventListener('resize', this.getWindowWidth)
     this.params = this.$store.state.currentwallet.params
     this.tableData = await this.$store.state.wallets.tokens
