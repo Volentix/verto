@@ -1003,6 +1003,7 @@ export default {
   },
   async created () {
     this.getEOSPools()
+    console.log(this.depositCoinOptions, this.destinationCoinOptions, 'destinationCoinOptions', 'depositCoinOptions')
     let tableData = await this.$store.state.wallets.tokens
     this.eosAccounts = tableData.filter((w) => w.chain === 'eos')
     rpc = new JsonRpc(
@@ -1017,6 +1018,7 @@ export default {
      this.$store.state.settings.dexData.depositCoin.value.toLowerCase()
       )
     }
+    console.log(this.depositCoinOptions, this.destinationCoinOptions, 'destinationCoinOptions', 'depositCoinOptions')
 
     if (!this.depositCoin) {
       this.depositCoin = this.$store.state.settings.coins.defibox[0]
@@ -1028,6 +1030,7 @@ export default {
      this.$store.state.settings.dexData.destinationCoin.value.toLowerCase()
       )
     }
+    console.log(this.depositCoinOptions, this.destinationCoinOptions, 'destinationCoinOptions', 'depositCoinOptions')
 
     if (!this.destinationCoin) {
       this.destinationCoin = this.$store.state.settings.coins.defibox[1]
@@ -1044,6 +1047,7 @@ export default {
     if (this.showLiquidity) {
       this.tab = 'liquidity'
     }
+    console.log(this.depositCoinOptions, this.destinationCoinOptions, 'destinationCoinOptions', 'depositCoinOptions')
   },
   computed: {
     tokenReceive () {
