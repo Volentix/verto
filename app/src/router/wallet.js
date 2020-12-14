@@ -86,8 +86,15 @@ export default [
     children: [
       {
         name: 'import-private-key',
-        path: '/verto/import-private-key',
+        path: '/verto/import-private-key/eos',
         component: () => import('pages/Verto/ImportPrivateKey.vue'),
+        meta: {
+          authRequired: true
+        }
+      }, {
+        name: 'import-eth-private-key',
+        path: '/verto/import-private-key/eth',
+        component: () => import('pages/Verto/ImportETHPrivateKey.vue'),
         meta: {
           authRequired: true
         }

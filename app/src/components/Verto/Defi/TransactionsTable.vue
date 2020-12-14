@@ -33,18 +33,21 @@
             </q-input>
           </template>
       </q-table>
+
     </div>
 </template>
 <script>
 import {
   mapState
 } from 'vuex'
+import DexInteraction from '../../../mixins/DexInteraction'
 export default {
   components: {
 
   },
   data () {
     return {
+      coins: [],
       poolsData: [],
       filter: '',
       columns:
@@ -109,8 +112,9 @@ export default {
     ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools'])
   },
   created () {
-
-  }
+    this.coins = this.getAllCoins()
+  },
+  mixins: [DexInteraction]
 }
 </script>
 

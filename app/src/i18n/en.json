@@ -152,6 +152,7 @@
         "verto_password": "Enter Verto password",
         "agree_before_continuing": "Please Agree Before Continuing",
         "name_is_used": "This wallet name is already used",
+       "address_is_used": "This wallet address is already used",
         "view_keys": "View Keys"
     },
     "CongratsScreen": {
