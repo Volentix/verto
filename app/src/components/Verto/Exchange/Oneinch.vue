@@ -1,5 +1,6 @@
 <template>
-<div class="" v-if="$q.screen.width > 1024 && depositCoin && destinationCoin" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+<div class="" v-if="depositCoin && destinationCoin" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+    <!-- $q.screen.width > 1024 && -->
     <div class="row">
         <div class="col col-md-12">
             <div class="apps-section q-mb-sm">
@@ -25,7 +26,7 @@
                                                 </div>
                                                 <div class="you-pay-body row items-center">
 
-                                                    <div class="col col-2 choose-coin">
+                                                    <div class="col col-3 choose-coin">
                                                         <span class="cursor">
 
                                                             <q-select class="select-input" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator use-input borderless rounded v-model="depositCoin" @input="swapData.error = false; getSwapQuote()" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
@@ -48,7 +49,7 @@
 
                                                         </span>
                                                     </div>
-                                                    <div class="col col-6 offset-4">
+                                                    <div class="col col-8 offset-1">
                                                         <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="swapData.error = false; getSwapQuote()" v-model="swapData.fromAmount" type="number" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val <= depositCoin.amount || 'Insufficient funds']">
                                                             <div class="flex justify-end items-center" style="width: 60px">
                                                                 <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
@@ -96,7 +97,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="you-receive-body row items-center">
-                                                    <div class="col col-2 choose-coin"><span class="cursor">
+                                                    <div class="col col-3 choose-coin"><span class="cursor">
                                                             <q-select class="select-input" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator use-input rounded borderless @input="swapData.error = false; getSwapQuote()" @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="false" :options="destinationCoinOptions">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
@@ -114,7 +115,7 @@
                                                                 </template>
                                                             </q-select>
                                                         </span></div>
-                                                    <div class="col col-6 offset-4">
+                                                    <div class="col col-8 offset-1">
                                                         <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" disable outlined class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" type="number">
                                                             <div class="flex justify-end items-center" style="width: 60px">
                                                                 <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
@@ -125,7 +126,7 @@
                                                         </q-input>
                                                     </div>
                                                 </div>
-                                                <div class="text-red text-body1 q-mt-sm" v-if="error">
+                                                <div class="text-red text-body1 q-mt-sm q-pl-md" v-if="error">
 
                                                     <span v-if="error == 'gas'">
                                                         {{swapData.errorText.replace('[from]',depositCoin.value).replace('[to]',destinationCoin.value)}}
@@ -555,7 +556,7 @@
                     </q-item>
                 </template>
             </q-select>
-            <div class="text-red text-body1 q-mt-sm" v-if="swapData.error">
+            <div class="text-red text-body1 q-mt-sm q-pl-md" v-if="swapData.error">
                 {{swapData.errorText.replace('[from]',depositCoin.value).replace('[to]',destinationCoin.value)}}
             </div>
 
@@ -2402,6 +2403,20 @@ export default {
 
 .q-field__messages {
     margin-top: 5px;
+}
+.gasSelector{
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+        .q-item__section{
+            margin-left: 0px;
+            margin-bottom: 10px;
+        }
+    }
+}
+.you-receive{
+    @media screen and (max-width: 768px) {
+        padding-bottom: 50px !important;
+    }
 }
 .dark-theme{
     .trade-component{

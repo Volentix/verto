@@ -1,6 +1,6 @@
 <template>
   <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
-    <div v-if="getPassword" class="send-modal flex flex-center" :class="{'open' : openModal}">
+    <div v-if="getPassword" class="send-modal flex flex-center" :class="{'open' : openModal, 'dark-theme': $store.state.lightMode.lightMode === 'true'}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
           <span class="text-h5 --amount">Private key password</span>
@@ -42,7 +42,7 @@
         </div>
       </div>
     </div>
-    <div class="send-modal flex flex-center" :class="{'open' : openModalProgress}">
+    <div class="send-modal flex flex-center" :class="{'open' : openModalProgress, 'dark-theme': $store.state.lightMode.lightMode === 'true'}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
           <span class="text-h5 --amount">{{sendAmount + ' ' + currentAccount.type.toUpperCase()}}</span>
@@ -61,7 +61,7 @@
           <div class="--label text-cyan-5 text-h6">{{transStatus}}</div>
         </div>
         <div class="send-modal__content--footer">
-          <div class="text-h4 --email">To {{sendTo}}</div>
+          <div class="text-h4 --email">To SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS{{sendTo}}</div>
         </div>
       </div>
     </div>
@@ -193,7 +193,7 @@
                           bottom-slots
                           :error="toError"
                           :error-message="toErrorMessage"
-                          :label="currentAccount.chain.toUpperCase() + ' Address'"
+                          :label="currentToken.type.toUpperCase() + ' Address'"
                         >
                           <template v-slot:append>
                             <div class="flex justify-end">
@@ -651,6 +651,18 @@ export default {
     }
   }
   .dark-theme{
+    &.send-modal{
+      .send-modal__content{
+        background: #04111F;
+        border: 1px solid #627797;
+        .send-modal__content--head .--amount{
+          color: #FFF;
+        }
+        .send-modal__content--footer .--email{
+          color: #FFF;
+        }
+      }
+    }
     .mobile-version{
       background: #04111F;
       .standard-content--title{
@@ -959,11 +971,16 @@ export default {
         }
       }
       &--footer{
+        width: 100%;
+        max-width: 300px;
         .--email{
           font-size: 16px;
           font-weight: $bold;
+          line-height: 20px;
           font-family: $Titillium;
           margin-top: 20px;
+          word-wrap: break-word !important;
+          max-width: 100%;
         }
         .--error{
           color: red;

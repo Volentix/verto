@@ -129,6 +129,9 @@ export default {
   }
   .dark-theme{
     background: #04111F;
+    /deep/ .mobile-version{
+      background: #04111F;
+    }
     .mobile-version{
       background: #04111F;
       /deep/ .profile-wrapper{
