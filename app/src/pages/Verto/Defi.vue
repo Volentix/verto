@@ -107,7 +107,11 @@
             <q-item clickable @click="menu = 'swap'" :class="[menu == 'swap' ? 'bg-grey-3' : 'bg-white']">
               <q-item-section>Swap</q-item-section>
                <q-item-section side><q-icon name="navigate_next"/></q-item-section>
-        </q-item>
+             </q-item>
+              <q-item clickable @click="menu = 'add_liquidity'" :class="[menu == 'add_liquidity' ? 'bg-grey-3' : 'bg-white']">
+              <q-item-section>Add liquidity</q-item-section>
+               <q-item-section side><q-icon name="navigate_next"/></q-item-section>
+             </q-item>
             <q-item clickable @click="menu = 'liquidity'" :class="[menu == 'liquidity' ? 'bg-grey-3' : 'bg-white']">
               <q-item-section>Liquidity Pools</q-item-section>
                <q-item-section side><q-icon name="navigate_next"/></q-item-section>
@@ -219,6 +223,7 @@
                 <TestnetPools v-show="menu == 'liquidity'" />
                 <TestnetInvestments v-show="menu == 'investments'"  />
                 <VolentixLiquidity :showLiquidity="false" v-show="menu == 'swap'" />
+                <VolentixLiquidity :showLiquidity="true" v-show="menu == 'add_liquidity'" />
         </div>
 
     </div>
@@ -461,12 +466,14 @@ export default {
     },
     switchChain () {
       let tabs = ['swap', 'investments', 'liquidity']
+      this.accountOption = this.accountOptions.find(w => w.chain === this.chain)
       if (this.chain === 'eos') {
         if (!tabs.includes(this.menu)) {
           this.menu = 'liquidity'
         }
+      } else {
+        this.getAccountInformation(this.accountOption)
       }
-      this.accountOption = this.accountOptions.find(w => w.chain === this.chain)
     },
     goToExchange () {
       // console.log('this.depositCoin', this.depositCoin)
@@ -494,9 +501,9 @@ export default {
       if (!account) account = { value: this.accountOption.key }
 
       this.$store.commit('investment/setTableLoadingStatus', true)
-      this.$store.commit('investment/resetAccountDetails', account.address)
+      this.$store.commit('investment/resetAccountDetails', account.value)
       this.$store.dispatch('investment/getTransactions', {
-        address: account.address
+        address: account.value
       })
       account.platform = 'uniswap-v2'
       this.$store.dispatch('investment/getInvestments', account)

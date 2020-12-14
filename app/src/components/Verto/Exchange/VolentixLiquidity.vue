@@ -1059,7 +1059,10 @@ export default {
     ...mapState('investment', ['selectedEOSPool'])
   },
   mounted () {
-
+    this.depositCoinOptions = this.$store.state.settings.coins.defibox
+    this.destinationCoinUnfilter = this.$store.state.settings.coins.defibox
+    this.depositCoinUnfilter = this.$store.state.settings.coins.defibox
+    this.depositCoinOptions = this.$store.state.settings.coins.defibox
   },
   methods: {
     async updatePool () {
