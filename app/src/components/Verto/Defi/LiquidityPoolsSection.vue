@@ -1,23 +1,37 @@
 <template>
   <div class="desktop-card-style make-vtx q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
-    <br>
-    <div class="row flex justify-between q-pb-sm q-pt-md">
-      <div class="header-col col-12 flex justify-between items-center">
-        <h4 class="q-pl-sm">DeFi</h4>
-        <!-- <q-btn unelevated class="qbtn-new" @click="openDialog = true" color="black" text-color="white" label="New" /> -->
+    <div v-if="screenSize > 1024">
+      <br>
+      <div class="row flex justify-between q-pb-sm q-pt-md">
+        <div class="header-col col-12 flex justify-between items-center">
+          <h4 class="q-pl-sm">DeFi</h4>
+          <!-- <q-btn unelevated class="qbtn-new" @click="openDialog = true" color="black" text-color="white" label="New" /> -->
+        </div>
+        <div class="col col-8 flex items-center q-pl-md" style="min-height: 50px">
+          <p class="earn-exchange">Earn exchange fees and pool rewards.</p>
+        </div>
+        <div class="col col-4 flex items-center">
+          <img src="statics/liquidity_pool.png" class="full-width" alt="">
+          <q-btn unelevated class="qbtn-start" @click="openDialog = true" color="black" text-color="white" label="Add liquidity" />
+        </div>
       </div>
-      <div class="col col-8 flex items-center q-pl-md" style="min-height: 50px">
-        <p class="earn-exchange">Earn exchange fees and pool rewards.</p>
-      </div>
-      <div class="col col-4 flex items-center">
-        <img src="statics/liquidity_pool.png" class="full-width" alt="">
-        <q-btn unelevated class="qbtn-start" @click="openDialog = true" color="black" text-color="white" label="Add liquidity" />
+      <br>
+    </div>
+    <div v-else class="card-make-VTX--wrapper">
+      <!-- <q-toggle v-model="active" label="Active" /> -->
+      <div class="card-make-VTX--wrapper--header">
+        <div class="card-make-VTX--wrapper--header__holder full-width">
+          <span class="card-make-VTX--wrapper--header__holder_img">
+            <img src="statics/liquidity_pool.png" class="full-width" alt="">
+          </span>
+          <h3 class="text-black card-make-VTX--wrapper--header__holder_title">Earn exchange fees and pool rewards.</h3>
+        </div>
+        <q-btn unelevated class="card-make-VTX--wrapper--header_btn" @click="openDialog = true" color="black" text-color="white" label="Add liquidity" />
       </div>
     </div>
     <q-dialog v-model="openDialog">
       <AddLiquidityDialog />
     </q-dialog>
-    <br>
   </div>
 </template>
 
@@ -29,12 +43,17 @@ export default {
   components: { AddLiquidityDialog },
   data () {
     return {
-      openDialog: false
+      openDialog: false,
+      screenSize: 0
     }
   },
   methods: {
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
+    }
   },
   mounted () {
+    this.getWindowWidth()
   }
 }
 </script>
@@ -174,4 +193,89 @@ export default {
     margin-bottom: 0px;
     padding-right: 10px;
   }
+</style>
+<style scoped lang="scss">
+  @import "~@/assets/styles/variables.scss";
+    .card-make-VTX{
+      &--wrapper{
+        padding: 5% 7%;
+        background-color: #FFFFFF;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        // box-shadow: 0px 3px 6px 0px rgba(black, .19);
+        // border-radius: 20px;
+        &--header{
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          position: relative;
+          z-index: 4;
+          &__holder{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            &_title{
+              margin: 0px;
+              font-size: 20px;
+              font-family: $Titillium;
+              font-weight: $bold;
+              margin-top: 20px;
+              line-height: 26px;
+              margin-bottom: 30px;
+              padding-left: 10px;
+            }
+            &_img{
+              img{
+                max-width: 120px;
+                @media screen and (min-width: 768px) {
+                  max-width: 90px;
+                }
+              }
+            }
+          }
+          &_btn{
+            background: #7272FA !important;
+            font-size: 16px !important;
+            text-transform: initial !important;
+            border-radius: 40px;
+            height: 45px;
+            padding-left: 30px;
+            padding-right: 30px;
+            margin-bottom: 10px;
+            margin-top: 0px;
+            @media screen and (min-width: 768px) {
+              margin-top: 25px !important;
+            }
+          }
+        }
+        position: relative;
+        &:after{
+          content: '';
+          width: 100%;
+          display: block;
+          height: 50px;
+          background-color: #F3F3F3;
+          position: absolute;
+          z-index: 0;
+          bottom: 0px;
+          left: 0px;
+          border-radius: 0px 0px 20px 20px;
+          box-shadow: 0px 3px 6px 0px rgba(black, .19);
+        }
+      }
+    }
+    .dark-theme{
+      .card-make-VTX--wrapper{
+        background-color: #04111F;
+        // border: 1px solid #627797;
+        &:after{
+          background-color: rgba(#627797, .12);
+        }
+        &--header__holder_title{
+          color: #FFF !important;
+        }
+      }
+    }
 </style>

@@ -1,7 +1,8 @@
 <template>
- <div class="" v-if="$q.screen.width > 1024 && depositCoin && destinationCoin">
+ <div class="" v-if="depositCoin && destinationCoin">
+   <!-- $q.screen.width > 1024 &&  -->
   <div class="row">
-   <div class="col col-md-8">
+   <div class="col col-12 col-md-8">
     <div class="apps-section">
      <!-- 1inch component -->
      <!-- add your code here -->
@@ -155,7 +156,7 @@
               <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
              </div>
              <div class="you-pay-body row items-center">
-              <div class="col col-2 choose-coin">
+              <div class="col col-3 choose-coin">
                <span class="cursor">
                 <q-select
                  class="select-input"
@@ -220,7 +221,7 @@
                 </q-select>
                </span>
               </div>
-              <div class="col col-8 offset-2">
+              <div class="col col-8 offset-1">
                <p
                 class="no-padding text-body2"
                 v-if="!pairData && tab != 'swap'"
@@ -356,7 +357,7 @@
               </div>
              </div>
              <div class="you-receive-body row items-center">
-              <div class="col col-2 choose-coin">
+              <div class="col col-3 choose-coin">
                <span class="cursor">
                 <q-select
                  class="select-input"
@@ -404,7 +405,7 @@
                 </q-select>
                </span>
               </div>
-              <div class="col col-8 offset-2">
+              <div class="col col-8 offset-1">
                <p
                 class="no-padding text-body2"
                 v-if="!pairData && tab != 'swap'"
@@ -565,7 +566,6 @@
              />
             </div>
            </div>
-
            <div v-if="step === 2" class="prototype">
             <div class="head">
              <q-btn
@@ -729,9 +729,7 @@
      </div>
     </div>
    </div>
-   <div
-    class="col summary-wrapper shadow-1 col-md-4 q-pa-lg column justify-center items-start"
-   >
+   <div class="col col-12 summary-wrapper shadow-1 col-md-4 q-pa-lg column justify-center items-start">
     <q-list class="summary-wrapper__list" separator>
      <q-item class="q-my-sm" clickable v-ripple>
       <div class="text-h6">Summary</div>
@@ -3060,7 +3058,9 @@ export default {
  border-radius: 8px;
  display: flex;
  flex-direction: row;
-
+ @media screen and (max-width: 768px) {
+  max-width: 100%;
+ }
  &__list {
   width: 100%;
  }

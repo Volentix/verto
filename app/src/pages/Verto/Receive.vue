@@ -146,7 +146,7 @@
               </template>
             </q-select>
             <span class="lab-input">Or Via Verto ID (Cruxpay)</span>
-            <q-input v-model="vertoID" class="input-input" rounded readonly outlined color="purple" type="text"/>
+            <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="vertoID" class="input-input" rounded readonly outlined color="purple" type="text"/>
             <br>
             <div class="qrcode-wrapper">
               <div class="wallet-address flex justify-between">
@@ -479,6 +479,19 @@ export default {
     }
   }
   .dark-theme{
+    .select-input{
+      /deep/ .q-field__control{
+        .q-field__native{
+          .q-item{
+            .q-item__section{
+              .q-item__label + .q-item__label {
+                color: #CCC;
+              }
+            }
+          }
+        }
+      }
+    }
     .mobile-version{
       background: #04111F;
       .standard-content--body__form .qrcode-wrapper .title{
