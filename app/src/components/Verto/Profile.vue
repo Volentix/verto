@@ -245,7 +245,8 @@ export default {
       { name: 'Personalize your wallet', to: '', icon: 'o_perm_media', info: 'soon' },
       { name: 'Backup Config', to: 'backup', icon: 'o_get_app', info: '' },
       { name: 'Restore Config', to: 'restore', icon: 'cloud_upload', info: '' },
-      { name: 'Add EOS Account', to: '/verto/import-private-key', icon: 'label', info: '' },
+      { name: 'Add EOS Account', to: '/verto/import-private-key/eos', icon: 'label', info: '' },
+      { name: 'Add ETH Account', to: '/verto/import-private-key/eth', icon: 'label', info: '' },
       { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
       { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'Linked' },
       { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' }

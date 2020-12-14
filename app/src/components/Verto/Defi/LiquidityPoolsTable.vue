@@ -2,7 +2,7 @@
   <div>
     <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
       <!-- :grid="$q.screen.xs" -->
-      <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :pagination="initialPagination" dense :loading="!$store.state.investment.pools.length" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+      <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :pagination="initialPagination" :loading="!$store.state.investment.pools.length" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
@@ -20,7 +20,7 @@
           <q-td :props="props">
             <div class="column items-start justify-center q-pl-md">
               <q-btn v-if="screenSize <= 1024" unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom qbtn-custom2 q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="grey" label="Add" />
-              <q-badge color="transparent" :label="props.value" />
+              <span class="value">{{props.value}}</span>
             </div>
           </q-td>
         </template>
