@@ -206,7 +206,7 @@
                         </q-item-section>
 
                         <q-item-section>
-                            {{item.name}}
+                            {{item.name.replace('- HD', '')}}
                         </q-item-section>
 
                         <q-item-section side>
@@ -280,7 +280,7 @@
                         </q-item-section>
 
                         <q-item-section>
-                            {{item.name}}
+                            {{item.name.replace('- HD', '')}}
                         </q-item-section>
 
                         <q-item-section side>
