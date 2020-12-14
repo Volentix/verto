@@ -466,12 +466,14 @@ export default {
     },
     switchChain () {
       let tabs = ['swap', 'investments', 'liquidity']
+      this.accountOption = this.accountOptions.find(w => w.chain === this.chain)
       if (this.chain === 'eos') {
         if (!tabs.includes(this.menu)) {
           this.menu = 'liquidity'
         }
+      } else {
+        this.getAccountInformation(this.accountOption)
       }
-      this.accountOption = this.accountOptions.find(w => w.chain === this.chain)
     },
     goToExchange () {
       // console.log('this.depositCoin', this.depositCoin)
@@ -499,9 +501,9 @@ export default {
       if (!account) account = { value: this.accountOption.key }
 
       this.$store.commit('investment/setTableLoadingStatus', true)
-      this.$store.commit('investment/resetAccountDetails', account.address)
+      this.$store.commit('investment/resetAccountDetails', account.value)
       this.$store.dispatch('investment/getTransactions', {
-        address: account.address
+        address: account.value
       })
       account.platform = 'uniswap-v2'
       this.$store.dispatch('investment/getInvestments', account)

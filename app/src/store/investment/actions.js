@@ -253,6 +253,7 @@ export const getTransactions = (context, payload) => {
 
 export const getInvestments = (context, payload) => {
   let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://zapper.fi/api/account-balance/' + payload.platform + '?addresses=' + payload.value
+
   axios.get(transactionEndpoint, config)
     .then(function (result) {
       context.commit('setInvestments', result.data[payload.value])
