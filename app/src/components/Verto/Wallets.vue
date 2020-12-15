@@ -199,26 +199,26 @@
             <q-scroll-area :visible="true" ref="walletsScrollArea" class="q-mr-sm q-ml-xs" :style="$store.state.currentwallet.wallet.empty ? 'height: 276px;': 'height: 314px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty">
-                      <q-expansion-item v-for="(item) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'eos' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" >
+                      <q-expansion-item v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'eos' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="index" clickable :active="token.hidden" >
                         <template v-slot:header>
                         <q-item-section avatar>
                             <q-icon  name="img:https://files.coinswitch.co/public/coins/eos.png" color="primary" text-color="white" />
                         </q-item-section>
 
                         <q-item-section>
-                            {{item.name.replace('- HD', '')}}
+                            {{token.name.replace('- HD', '')}}
                         </q-item-section>
 
                         <q-item-section side>
                            <div class="row items-center text-bold">
-                                ${{item.total ? item.total.toFixed(0) : 0}}
+                                ${{token.total ? token.total.toFixed(0) : 0}}
                             </div>
                         </q-item-section>
                         </template>
 
                         <q-card>
                         <q-card-section>
-                               <q-item :key="index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f =>  !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                               <q-item :key="index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.name == token.name && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar>
@@ -273,26 +273,26 @@
                         </q-card-section>
                         </q-card>
                     </q-expansion-item>
-                             <q-expansion-item v-for="(item) in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="item.name+'_'+item.type" clickable :active="item.hidden" >
+                             <q-expansion-item v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="index" clickable :active="token.hidden" >
                         <template v-slot:header>
                         <q-item-section avatar>
                             <q-icon  name="img:https://files.coinswitch.co/public/coins/eth.png" color="primary" text-color="white" />
                         </q-item-section>
 
                         <q-item-section>
-                            {{item.name.replace('- HD', '')}}
+                            {{token.name.replace('- HD', '')}}
                         </q-item-section>
 
                         <q-item-section side>
                             <div class="row items-center text-bold">
-                             ${{item.total.toFixed(0)}}
+                             ${{token.total.toFixed(0)}}
                             </div>
                         </q-item-section>
                         </template>
 
                         <q-card>
                         <q-card-section>
-                               <q-item :key="index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eth'  && f.key == item.key  && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                               <q-item :key="index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eth'  && f.key == token.key  && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar>
