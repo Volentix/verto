@@ -2951,9 +2951,11 @@ export default {
 
         &.open {
             margin-bottom: 0px;
-            padding-left: 6%;
-            padding-right: 6%;
+            padding-left: 0%;
+            padding-right: 0%;
+            @media screen {
 
+            }
             .list-wrapper {
                 visibility: visible;
                 height: auto;
@@ -3324,6 +3326,17 @@ export default {
 
     100% {
         opacity: .3;
+    }
+}
+.desktop-marg{
+    background: transparent !important;
+}
+.desktop-card-style{
+    box-shadow: none;
+    margin-bottom: 0px;
+    padding: 0%;
+    .list-wrapper{
+        margin-bottom: 120px;
     }
 }
 .chain-tools-wrapper--list.open {

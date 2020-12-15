@@ -19,7 +19,7 @@
                     <q-btn unelevated class="qbtn-start qbtn-start2 q-mr-md" color="black" :to="`/verto/stake/2`" text-color="white" label="Stake now" />
                 </div>
                 <div v-else class="q-mt-md">
-                    <q-btn unelevated class="qbtn-start q-mr-sm" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Buy with BTC/ETH" />
+                    <q-btn unelevated class="qbtn-start q-mr-sm" color="black" @click="goToExchange" text-color="white" label="Buy with BTC/ETH" />
                 </div>
                 <!-- <q-btn unelevated class="qbtn-start" color="black" @click="modalBuyWithEOS = true" text-color="white" label="Buy with EOS" /> -->
             </div>
@@ -44,7 +44,7 @@
           <h3 v-else class="text-black card-make-VTX--wrapper--header__holder_title">Make VTX while you sleep</h3>
         </div>
         <q-btn v-if="highestVTXAccount !== null" unelevated class="qbtn-start q-mr-sm" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Buy with BTC/ETH" />
-        <q-btn v-else unelevated class="card-make-VTX--wrapper--header_btn" to="/verto/stake/2" color="black" text-color="white" label="Stake" />
+        <q-btn v-else unelevated class="card-make-VTX--wrapper--header_btn" @click="goToExchange" color="black" text-color="white" label="Buy VTX" />
       </div>
     </div>
 
@@ -87,6 +87,16 @@ export default {
   data () {
     return {
       estimatedReward: 0,
+      depositCoin: {
+        label: 'Ethereum',
+        value: 'eth',
+        image: 'https://files.coinswitch.co/public/coins/eth.png'
+      },
+      destinationCoin: {
+        label: 'VTX',
+        value: 'vtx',
+        image: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/volentixgsys/VTX.png'
+      },
       activate: true,
       screenSize: 0,
       base: 'https://files.coinswitch.co/public/coins/',
@@ -106,10 +116,24 @@ export default {
       setTimeout(() => {
         this.setHighestVTXAccount()
         this.activate = false
-      }, 7000)
+      }, 2000)
     }
   },
   methods: {
+    goToExchange () {
+      // console.log('this.depositCoin', this.depositCoin)
+      let depositCoin = this.depositCoin
+      let destinationCoin = this.destinationCoin
+      this.$router.push({
+        path: '/verto/exchange/:coinToSend/:coinToReceive',
+        name: 'exchange-v3',
+        params: {
+          depositCoin: depositCoin,
+          destinationCoin: destinationCoin,
+          dex: this.dex
+        }
+      })
+    },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
@@ -457,8 +481,8 @@ export default {
             text-transform: initial !important;
             border-radius: 40px;
             height: 45px;
-            padding-left: 30px;
-            padding-right: 30px;
+            padding-left: 15px;
+            padding-right: 15px;
             margin-bottom: 10px;
             margin-top: 0px;
             @media screen and (min-width: 768px) {
