@@ -248,7 +248,7 @@ export default {
       { name: 'Add EOS Account', to: '/verto/import-private-key/eos', icon: 'label', info: '' },
       { name: 'Add ETH Account', to: '/verto/import-private-key/eth', icon: 'label', info: '' },
       { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
-      { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'Linked' },
+      { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'soon' },
       { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' }
     ]
     if (this.screenSize <= 1024) {
