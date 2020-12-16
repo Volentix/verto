@@ -280,7 +280,7 @@
                         </q-item-section>
 
                         <q-item-section>
-                            {{token.name.replace('- HD', '')}}
+                            {{token.name.length ? token.name.replace('- HD', '') : 'ETH Account '+(index + 1)}}
                         </q-item-section>
 
                         <q-item-section side>

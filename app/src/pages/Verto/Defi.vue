@@ -435,6 +435,7 @@ export default {
       image: w.icon,
       label: w.name
     }))
+    console.log(tableData.filter(w => w.type === 'eth'), 'tableData.filter(w => w.chain === ')
     let ethACcounts = tableData.filter(w => w.chain === 'eth' && w.type === 'eth' && this.accountOptions.push({
       value: w.key,
       key: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5),
@@ -502,6 +503,7 @@ export default {
     },
     async getAccountInformation (account) {
       this.chain = account.chain
+      console.log(account)
       if (account.chain !== 'eth') return
 
       if (!account) account = { value: this.accountOption.key }
