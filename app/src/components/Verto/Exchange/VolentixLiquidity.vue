@@ -478,15 +478,15 @@
                 v-model="swapData.feesAmount"
                 @blur="
                  swapData.feesAmount =
-                  parseInt(swapData.feesAmount) < 0 ||
-                  parseInt(swapData.feesAmount) > 100
+                  parseFloat(swapData.feesAmount) < 0 ||
+                  parseFloat(swapData.feesAmount) > 1
                    ? 0
-                   : parseInt(swapData.feesAmount)
+                   : parseFloat(swapData.feesAmount)
                 "
                 type="number"
                >
                 <template v-slot:append>
-                 <q-icon name="monetization_on" />
+                 %
                 </template>
                 <template v-slot:hint>
                  <div class="text-body1">
@@ -498,9 +498,9 @@
 
               <div class="normal-line-height">
                <span class="text-body2 q-pl-sm text-bold"
-                >A number from:</span
+                >A decimal number from:</span
                ><br />
-               <span class="text-body2 q-pl-sm"> 1 - 100</span>
+               <span class="text-body2 q-pl-sm"> 0 - 1</span>
               </div>
              </div>
              <div class="text-red text-body1 q-mt-sm" v-if="error">
@@ -960,7 +960,7 @@ export default {
         marketData: [],
         fromAmount: 1,
         toAmount: 1,
-        feesAmount: 0,
+        feesAmount: 0.1,
         errorText:
      'Converting [from] to [to] cannot be done at this moment please try another coin',
         error: false,
@@ -1208,7 +1208,7 @@ export default {
           this.pushLiquidityActions()
         }
       }
-      console.log(this.vpoolsTransactions, ' this.vpoolsTransactions')
+
       // this.validateTransaction()
     },
 
@@ -1357,7 +1357,7 @@ export default {
          ' ' +
          this.destinationCoin.value.toUpperCase()
           },
-          initial_fee: this.swapData.feesAmount,
+          initial_fee: this.swapData.feesAmount * 100,
           fee_contract: this.eosAccount.name
         }
       })

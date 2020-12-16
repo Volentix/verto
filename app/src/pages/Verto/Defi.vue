@@ -84,7 +84,7 @@
 
           inline-label
         >
-         <q-btn-dropdown auto-close stretch flat label="More...">
+         <div >
           <q-list class="text-center flex">
             <q-item clickable @click="chain = 'eth';  switchChain() " :class="[chain == 'eth' ? 'bg-white' :'']">
 
@@ -99,7 +99,7 @@
              <q-item-section class="q-pl-sm">EOS</q-item-section>
             </q-item>
           </q-list>
-        </q-btn-dropdown>
+        </div>
 
           <q-btn-dropdown auto-close stretch flat>
 
@@ -108,7 +108,7 @@
               <q-item-section>Swap</q-item-section>
                <q-item-section side><q-icon name="navigate_next"/></q-item-section>
              </q-item>
-              <q-item clickable @click="menu = 'add_liquidity'" :class="[menu == 'add_liquidity' ? 'bg-grey-3' : 'bg-white']">
+              <q-item v-if="chain == 'eos'" clickable @click="menu = 'add_liquidity'" :class="[menu == 'add_liquidity' ? 'bg-grey-3' : 'bg-white']">
               <q-item-section>Add liquidity</q-item-section>
                <q-item-section side><q-icon name="navigate_next"/></q-item-section>
              </q-item>
@@ -144,7 +144,7 @@
       >
         <q-card flat>
           <q-card-section>
-          <q-select      class="bg-white full-width " @input="getAccountInformation({address:accountOption, chain:accountOption.chain})" v-model="accountOption" :options="accountOptions">
+          <q-select      class="bg-white full-width " @input="getAccountInformation(accountOption)" v-model="accountOption" :options="accountOptions">
                     <template v-slot:selected>
                         <q-item v-if="accountOption">
 
@@ -403,7 +403,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('investment', ['selectedEOSPool'])
+    ...mapState('investment', ['selectedEOSPool', 'defaultAccount'])
   },
   async created () {
     let exchangeNotif = document.querySelector('.exchange-notif')
@@ -416,7 +416,7 @@ export default {
     // console.log('this.osName', this.osName)
     this.params = this.$store.state.currentwallet.params
     // console.log('this.params', this.params)
-    let tableData = await this.$store.state.wallets.tokens
+    let tableData = this.$store.state.wallets.tokens
     this.currentAccount = tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName))
 
@@ -435,6 +435,7 @@ export default {
       image: w.icon,
       label: w.name
     }))
+    console.log(tableData.filter(w => w.type === 'eth'), 'tableData.filter(w => w.chain === ')
     let ethACcounts = tableData.filter(w => w.chain === 'eth' && w.type === 'eth' && this.accountOptions.push({
       value: w.key,
       key: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5),
@@ -451,18 +452,23 @@ export default {
     if (eosWallets.length) {
       this.eosACcount = eosWallets[0]
     }
-
-    if (this.accountOptions.length) {
+    if (this.defaultAccount) {
+      this.accountOption = this.defaultAccount
+      this.chooseAccount = false
+    } else if (this.accountOptions.length) {
       this.accountOption = this.accountOptions[0]
+    }
+
+    if (this.accountOption.value) {
       this.getAccountInformation(this.accountOption)
     }
   },
   async mounted () {
-    console.log(this.$store.state.wallets.tokens)
+
   },
   methods: {
     showConsole (data) {
-      console.log(data)
+
     },
     switchChain () {
       let tabs = ['swap', 'investments', 'liquidity']
@@ -472,6 +478,7 @@ export default {
           this.menu = 'liquidity'
         }
       } else {
+        if (this.menu === 'add_liquidity') this.menu = 'liquidity'
         this.getAccountInformation(this.accountOption)
       }
     },
@@ -496,15 +503,14 @@ export default {
     },
     async getAccountInformation (account) {
       this.chain = account.chain
+      console.log(account)
       if (account.chain !== 'eth') return
 
       if (!account) account = { value: this.accountOption.key }
 
       this.$store.commit('investment/setTableLoadingStatus', true)
-      this.$store.commit('investment/resetAccountDetails', account.value)
-      this.$store.dispatch('investment/getTransactions', {
-        address: account.value
-      })
+      this.$store.commit('investment/resetAccountDetails', account)
+      this.$store.dispatch('investment/getTransactions', account)
       account.platform = 'uniswap-v2'
       this.$store.dispatch('investment/getInvestments', account)
       account.platform = 'uniswap'
