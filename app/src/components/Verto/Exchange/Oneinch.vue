@@ -1176,7 +1176,6 @@ export default {
           if (result.data.length) {
             self.swapData.marketData = result.data
           }
-          console.log('getMarketDataVsUSD', result.data)
         }).catch(error => {
           console.log(error, 'Cannot get market data')
         })

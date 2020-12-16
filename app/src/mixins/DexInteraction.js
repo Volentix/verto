@@ -222,7 +222,7 @@ export default {
           coins.push(val)
         }
       })
-      console.log(coins.map(o => o.value).join(' ').toUpperCase())
+
       this.$store.commit('settings/setCoinData', {
         source: 'defibox',
         data: coins
