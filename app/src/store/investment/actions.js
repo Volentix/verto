@@ -147,7 +147,6 @@ export const getUniswapPools = ({ rootState, context, commit, state }, payload) 
 }
 export const getYvaultsPools = ({ rootState, commit, state }, payload) => {
   axios.get(process.env[rootState.settings.network].CACHE + 'https://zapper.fi/api/vault-stats/yearn', config).then((result) => {
-    console.log(result.data, '  console.log(result.data)')
     if (result.data.length) {
       result.data.filter(function (e) {
         return !e.isBlocked
@@ -155,7 +154,7 @@ export const getYvaultsPools = ({ rootState, commit, state }, payload) => {
         return !e.hideFromExplore
       }).forEach((value, index) => {
         let poolTokens = value.tokens.map(o => state.zapperTokens.find(t => t.address.toLowerCase() === o.address.toLowerCase())).filter((val) => val)
-        console.log(poolTokens, 'poolTokens')
+
         if (!poolTokens.length) return
         let pool = value
         pool.poolName = poolTokens.map(o => o?.label).filter((val) => val).join(' / ')

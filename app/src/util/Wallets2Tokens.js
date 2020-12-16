@@ -25,7 +25,7 @@ class Wallets2Tokens {
       name: 'ETH WALLET'
     })
     */
-    console.log(this.tableData.filter(o => o.type === 'eth'), 'Keys')
+
     this.tableData.map(wallet => {
       // let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
       // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === vtxCoin.toLowerCase())
@@ -116,6 +116,10 @@ class Wallets2Tokens {
                   store.state.wallets.portfolioTotal += usdValue * t.amount
                 })
               }
+              if (index === balances.data.length - 1) {
+                store.commit('wallets/setLoadingState', { eos: true })
+                this.updateWallet()
+              }
             } else {
               eos.getAccount(wallet.name).then(a => {
                 self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(async eos => {
@@ -139,13 +143,6 @@ class Wallets2Tokens {
               this.updateWallet()
             }
           })
-        })
-
-        self.tableData = self.tableData.map(o => {
-          if (o.type === 'eos') {
-            o.total = parseFloat(this.tableData.filter(f => f.name === o.name).map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, c) => a + c))
-          }
-          return o
         })
       } else if (wallet.type === 'eth') {
       //  wallet.key = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
@@ -199,7 +196,7 @@ class Wallets2Tokens {
                 })
 
                 if (index === ethplorer.tokens.length - 1) {
-                  store.commit('wallets/setLoadingState', { eth: true }, 'balances.data.length')
+                  store.commit('wallets/setLoadingState', { eth: true })
                   this.updateWallet()
                 }
               })
