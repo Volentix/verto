@@ -5,7 +5,7 @@
         <q-select :dark="$store.state.lightMode.lightMode === 'true'" v-if="externalWallets.metamask.length" borderless v-model="currentExrternalWallet" :options="externalWallets.metamask" label="Account" />
         <q-item  v-if="screenSize > 1024" dense class="metamask-btn">
             <q-item-section class="text-body1 q-pr-sm">
-                <q-btn v-if="!transactionStatus" :loading="connectLoading.metamask" :class="externalWallets.metamask.length ? 'bg-green-1' : 'bg-red-1'" @click="conectWallet('metamask')" flat icon="fiber_manual_record" :color="!externalWallets.metamask.length ? 'red' : 'green'" :label="!externalWallets.metamask.length ? 'Connect' : 'Connected'">
+                <q-btn v-if="!transactionStatus" :loading="connectLoading.metamask" :class="ethWallets.find(o => o.origin == 'metamask') ? 'bg-green-1' : 'bg-red-1'" @click="conectWallet('metamask')" flat icon="fiber_manual_record" :color="!ethWallets.find(o => o.origin == 'metamask') ? 'red' : 'green'" :label="!ethWallets.find(o => o.origin == 'metamask') ? 'Connect' : 'Connected'">
                     <img style="width: 35px;" class="q-pl-sm" src="https://cdn.freebiesupply.com/logos/large/2x/metamask-logo-png-transparent.png">
                 </q-btn>
             </q-item-section>
@@ -14,7 +14,7 @@
     </q-toolbar>
     <q-card-section class="text-h6" v-if="!transactionStatus && currentToken">
         <div class="text-h6 q-mb-md q-pl-sm flex items-center">
-            <h4 class="lab-title q-pr-md">Available {{currentToken.label}}:</h4> {{ currentToken.amount}}
+            <h4 class="lab-title q-pr-md">Available {{currentToken.symbol}}:</h4> {{ currentToken.amount}}
             <span class="link-to-exchange" @click="goToExchange" v-if="!tokenInWallet && false">Get {{currentToken.label}}</span>
         </div>
         <div class="row">
@@ -194,9 +194,7 @@ export default {
       invalidTransaction: false,
       gasSelected: null,
       gasOptions: null,
-      externalWallets: {
-        metamask: []
-      },
+      ethWallets: [],
       pool: '',
       approvalRequired: false,
       transactionHash: null,
@@ -204,7 +202,7 @@ export default {
       sendAmount: 0,
       poolOptions: [],
       tokenOptions: [],
-      currentExrternalWallet: null,
+      currentEthWallet: null,
       connectLoading: {
         metamask: false
       },
@@ -258,6 +256,12 @@ export default {
     if (this.notWidget !== null) {
       this.setDialogData()
     }
+    this.ethWallets = tableData.filter(w => w.chain === 'eth' && w.type === 'eth').map(o => {
+      o.value = o.type
+      o.label = o.key
+      o.origin = 'verto'
+      return o
+    })
     this.approvalRequired = false
     const Web3 = require('web3')
     this.platformOptions = this.platformOptions.filter(w => this.$store.state.investment.pools.find(o => o.platform.toLowerCase() === w.value.toLowerCase()))
@@ -319,7 +323,7 @@ export default {
                 console.log(err)
               })
               if (index === 0) {
-                this.currentExrternalWallet = item
+                this.currentEthWallet = item
                 this.currentToken.amount = item.balance
                 this.currentToken.symbol = 'ETH'
                 this.currentToken.key = item.value
@@ -327,44 +331,57 @@ export default {
                 this.sendAmount = this.currentToken.amount
                 this.$store.commit('investment/setMetamaskConnectionStatus', true)
               }
-              this.externalWallets.metamask.push(item)
+              this.ethWallets.push({
+                label: item.value.substring(0, 10) + '...' + item.value.substr(item.value.length - 5),
+                value: item.value,
+                privateKey: false,
+                origin: 'metamask'
+              })
             })
           }).catch((e) => {
             this.connectLoading.metamask = false
             console.log(e)
           })
       }
-      console.log(this.externalWallets)
     },
 
     setDialogData () {
-      if (this.$store.state.investment.selectedPool) {
-        let tokens = this.$store.state.investment.zapperTokens
-        let account = this.ethAccount.find(o => o.chain === 'eth' && o.type === 'eth')
-        this.tokenOptions = this.ethAccount.map(o => {
-          o.label = o.type.toUpperCase()
-          o.value = o.contract ? o.contract : o.key
-          o.key = account.key
-          o.data = o.label === 'ETH' ? tokens.find(t => t.address.toLowerCase() === '0x0000000000000000000000000000000000000000') : tokens.find(t => t.address.toLowerCase() === o.value.toLowerCase())
-          o.isERC20 = !!o.contract
-          return o
-        })
-        this.currentToken = this.tokenOptions[0]
-        console.log(this.ethAccount, 'this.ethAccount', this.$store.state.investment.selectedPool, this.tokenOptions)
-
-        this.sendAmount = this.currentToken.isERC20 ? 1 : 0.001 // this.currentToken.amount / 100
-        this.getTokenAvailableAmount()
-        this.pool = this.$store.state.investment.selectedPool
-        this.platform = this.platformOptions.find(o => o.value.toLowerCase() === this.pool.platform.toLowerCase())
-        this.poolOptions = this.poolOptions = this.$store.state.investment.pools.filter(o => o.platform.toLowerCase() === this.platform.value.toLowerCase()).map(o => {
-          o.label = o.poolName
-          o.value = o.id
-          return o
-        })
-
-        this.isTokenInWallet()
-        this.getGas()
+      if (!this.$store.state.investment.selectedPool) {
+        this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0])
       }
+      let tokens = this.$store.state.investment.zapperTokens
+      let account = this.ethAccount.find(o => o.chain === 'eth' && o.type === 'eth')
+      if (account) {
+        this.currentEthWallet = {
+          label: account.key.substring(0, 10) + '...' + account.key.substr(account.key.length - 5),
+          value: account.key,
+          privateKey: account.privateKey,
+          origin: 'verto'
+        }
+      }
+
+      this.tokenOptions = this.ethAccount.map(o => {
+        o.label = o.type.toUpperCase()
+        o.value = o.contract ? o.contract : o.key
+        o.key = account.key
+        o.data = o.label === 'ETH' ? tokens.find(t => t.address.toLowerCase() === '0x0000000000000000000000000000000000000000') : tokens.find(t => t.address.toLowerCase() === o.value.toLowerCase())
+        o.isERC20 = !!o.contract
+        return o
+      })
+      this.currentToken = this.tokenOptions[0]
+
+      this.sendAmount = this.currentToken.isERC20 ? 1 : 0.001 // this.currentToken.amount / 100
+      this.getTokenAvailableAmount()
+      this.pool = this.$store.state.investment.selectedPool
+      this.platform = this.platformOptions.find(o => o.value.toLowerCase() === this.pool.platform.toLowerCase())
+      this.poolOptions = this.poolOptions = this.$store.state.investment.pools.filter(o => o.platform.toLowerCase() === this.platform.value.toLowerCase()).map(o => {
+        o.label = o.poolName
+        o.value = o.id
+        return o
+      })
+
+      this.isTokenInWallet()
+      this.getGas()
     },
 
     async getTransactionObject (setGas = true, send = false) {
@@ -429,7 +446,7 @@ export default {
     },
     async sendTransaction () {
       let transactionObject = await this.getTransactionObject(true, true)
-      console.log(transactionObject)
+
       // /*
       this.transactionStatus = 'Pending'
       if (this.currentToken.metamask) {
