@@ -1,9 +1,9 @@
 <template>
 <q-card :dark="$store.state.lightMode.lightMode === 'true'" class="q-pa-lg modal-dialog-wrapper" style="width: 800px; max-width: 90vw;" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
-    <q-toolbar>
+    <q-toolbar class="my-toolbar">
         <q-toolbar-title><span class="text-weight-bold q-pl-sm">Add Liquidity</span></q-toolbar-title>
-        <q-select :dark="$store.state.lightMode.lightMode === 'true'" borderless v-model="currentEthWallet" :options="ethWallets" label="Account" />
-        <q-item dense>
+        <q-select :dark="$store.state.lightMode.lightMode === 'true'" v-if="externalWallets.metamask.length" borderless v-model="currentExrternalWallet" :options="externalWallets.metamask" label="Account" />
+        <q-item  v-if="screenSize > 1024" dense class="metamask-btn">
             <q-item-section class="text-body1 q-pr-sm">
                 <q-btn v-if="!transactionStatus" :loading="connectLoading.metamask" :class="ethWallets.find(o => o.origin == 'metamask') ? 'bg-green-1' : 'bg-red-1'" @click="conectWallet('metamask')" flat icon="fiber_manual_record" :color="!ethWallets.find(o => o.origin == 'metamask') ? 'red' : 'green'" :label="!ethWallets.find(o => o.origin == 'metamask') ? 'Connect' : 'Connected'">
                     <img style="width: 35px;" class="q-pl-sm" src="https://cdn.freebiesupply.com/logos/large/2x/metamask-logo-png-transparent.png">
@@ -18,7 +18,7 @@
             <span class="link-to-exchange" @click="goToExchange" v-if="!tokenInWallet && false">Get {{currentToken.label}}</span>
         </div>
         <div class="row">
-            <div class="col col-3">
+            <div class="col col-12 col-md-3">
                 <!-- <q-input class="input-input" filled rounded outlined color="purple" value="0.1" suffix="MAX" /> -->
                 <q-input :dark="$store.state.lightMode.lightMode === 'true'" :rules="[ val => !currentToken.isERC20 || currentToken.isERC20 && val % 1 == 0 || 'Whole numbers only']" @input="validateInput() ; error = null ;" v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number">
                     <template v-slot:append>
@@ -28,8 +28,8 @@
                     </template>
                 </q-input>
             </div>
-            <div class="col col-3 q-ml-md">
-                <q-select :dark="$store.state.lightMode.lightMode === 'true'" v-if="currentToken"  class="select-input" @input="getMaxBalance() ; approvalRequired = false; getGas();  error = null; " filled rounded outlined color="purple" v-model="currentToken" :options="tokenOptions">
+            <div class="col col-12 col-md-3 q-ml-md rm-q-ml-md">
+                <q-select :dark="$store.state.lightMode.lightMode === 'true'" v-if="currentToken" class="select-input" @input="getMaxBalance() ; approvalRequired = false; getGas();  error = null; " filled rounded outlined color="purple" v-model="currentToken" :options="tokenOptions">
                     <template v-slot:prepend>
                         <q-avatar>
                             <img :src="'https://zapper.fi/images/'+currentToken.label+'-icon.png'">
@@ -50,8 +50,8 @@
         <hr style="opacity: .1">
         <h4 class="lab-title">Choose your Allocation</h4>
         <div class="row">
-            <div class="col-md-8 row">
-                <div class="col col-6 q-pr-md">
+            <div class="col-12 col-md-8 row">
+                <div class="col col-12 col-md-6 q-pr-md">
                     <strong class="lab-sub q-pl-md">Platform</strong>
                     <q-select :dark="$store.state.lightMode.lightMode === 'true'" class="select-input full-width" filled v-model="platform" color="purple" @input="approvalRequired = false; filterPoolsByPlatform() ; getGas() ; error = null" :options="platformOptions">
                         <template v-slot:prepend>
@@ -61,7 +61,7 @@
                         </template>
                     </q-select>
                 </div>
-                <div class="col col-6 q-pr-md">
+                <div class="col col-12 col-md-6 q-pr-md">
                     <strong class="lab-sub q-pl-md">Pool</strong>
                     <q-select :dark="$store.state.lightMode.lightMode === 'true'" class="select-input full-width" @filter="filterPoolsByUserInput" input-debounce="0" use-input filled @input="$store.commit('investment/setSelectedPool', pool);getGas();error = null " v-model="pool" color="purple" :options="poolOptions">
                         <template v-slot:no-option>
@@ -79,14 +79,13 @@
                 <strong class="lab-sub q-pl-md text-center">Allocation</strong>
                 <div class="lab-value flex flex-center text-center q-pl-lg q-pr-sm">90 % RPL 10% WETH</div>
             </div> -->
-            <div class="col col-4 col-md-4 q-pl-md">
-                <strong class="lab-sub q-pl-lg">Approx. Pool Output</strong>
+            <div class="col col-12 col-md-4 q-pl-md">
+                <strong class="lab-sub lab-sub2 q-pl-lg">Approx. Pool Output</strong>
                 <div class="lab-value output column q-pl-lg q-pr-sm" v-if="pool.tokensData.length">
-                    <span class="flex flex-start q-mb-sm" v-for="(icon, index) in pool.tokensData" :key="index"><img :src="'https://zapper.fi/images/'+pool.icons[index]" class="q-mr-sm" alt=""> {{(sendAmount * (currentToken.data.price / pool.tokensData[index].price)  / 2).toFixed(4).toString().replace('NaN','0')}} {{pool.tokensData[index].symbol}}</span>
-
+                    <span class="flex flex-start q-mb-sm" v-for="(icon, index) in pool.tokensData" :key="index"><img :src="'https://zapper.fi/images/'+pool.icons[index]" class="q-mr-sm" alt=""> {{(sendAmount * (currentToken.data.price / pool.tokensData[index].price)  / 2).toFixed(4)}} {{pool.tokensData[index].symbol}}</span>
                 </div>
             </div>
-            <div class="col-md-18 q-pt-md" v-if="gasOptions">
+            <div class="col-12 col-md-12 col-md-18 q-pt-md" v-if="gasOptions">
                 <h4 class="lab-title">Set gas price</h4>
                 <!-- <q-select  class="select-input full-width" filled v-model="gasSelected" color="purple" :options="gasOptions">
                     <template v-slot:option="scope">
@@ -191,6 +190,7 @@ export default {
   data () {
     return {
       transactionStatus: false,
+      screenSize: 0,
       invalidTransaction: false,
       gasSelected: null,
       gasOptions: null,
@@ -248,6 +248,7 @@ export default {
     clearInterval(this.gasInterval)
   },
   async created () {
+    this.getWindowWidth()
     this.$store.dispatch('investment/getGasPrice')
     let tableData = await this.$store.state.wallets.tokens
     this.ethAccount = tableData.filter(w => w.chain === 'eth')
@@ -295,6 +296,9 @@ export default {
 
   },
   methods: {
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
     yearnTokenTypeToNumber (type) {
       let val = 1
       if (type === 'LP') {
@@ -944,5 +948,37 @@ a {
             }
         }
     }
+}
+.q-card__section{
+  @media screen and (max-width: 768px) {
+    padding: 0px;
+  }
+}
+.rm-q-ml-md{
+  @media screen and (max-width: 768px) {
+    margin-left: 0px;
+  }
+}
+.lab-sub2{
+  @media screen and (max-width: 768px) {
+    padding-left: 0px;
+  }
+}
+.modal-dialog-wrapper .lab-value.output{
+  @media screen and (max-width: 768px) {
+    padding-left: 0px;
+  }
+}
+.my-toolbar{
+  @media screen and (max-width: 768px) {
+    margin-bottom: 60px;
+    padding-left: 0px;
+    padding-right: 0px;
+    /deep/ .metamask-btn{
+      position: absolute;
+      left: -10px;
+      transform: translate(0px, 50px);
+    }
+  }
 }
 </style>
