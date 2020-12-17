@@ -1,7 +1,8 @@
 <template>
- <div class="" v-if="$q.screen.width > 1024 && depositCoin && destinationCoin">
+ <div class="" v-if="depositCoin && destinationCoin">
+   <!-- $q.screen.width > 1024 &&  -->
   <div class="row">
-   <div class="col col-md-8">
+   <div class="col col-12 col-md-8">
     <div class="apps-section">
      <!-- 1inch component -->
      <!-- add your code here -->
@@ -156,7 +157,7 @@
               <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
              </div>
              <div class="you-pay-body row items-center">
-              <div class="col col-2 choose-coin">
+              <div class="col col-3 choose-coin">
                <span class="cursor">
                 <q-select
                  class="select-input"
@@ -221,7 +222,7 @@
                 </q-select>
                </span>
               </div>
-              <div class="col col-8 offset-2">
+              <div class="col col-8 offset-1">
                <p
                 class="no-padding text-body2"
                 v-if="!pairData && tab != 'swap'"
@@ -357,7 +358,7 @@
               </div>
              </div>
              <div class="you-receive-body row items-center">
-              <div class="col col-2 choose-coin">
+              <div class="col col-3 choose-coin">
                <span class="cursor">
                 <q-select
                  class="select-input"
@@ -405,7 +406,7 @@
                 </q-select>
                </span>
               </div>
-              <div class="col col-8 offset-2">
+              <div class="col col-8 offset-1">
                <p
                 class="no-padding text-body2"
                 v-if="!pairData && tab != 'swap'"
@@ -478,15 +479,15 @@
                 v-model="swapData.feesAmount"
                 @blur="
                  swapData.feesAmount =
-                  parseInt(swapData.feesAmount) < 0 ||
-                  parseInt(swapData.feesAmount) > 100
+                  parseFloat(swapData.feesAmount) < 0 ||
+                  parseFloat(swapData.feesAmount) > 1
                    ? 0
-                   : parseInt(swapData.feesAmount)
+                   : parseFloat(swapData.feesAmount)
                 "
                 type="number"
                >
                 <template v-slot:append>
-                 <q-icon name="monetization_on" />
+                 %
                 </template>
                 <template v-slot:hint>
                  <div class="text-body1">
@@ -498,9 +499,9 @@
 
               <div class="normal-line-height">
                <span class="text-body2 q-pl-sm text-bold"
-                >A number from:</span
+                >A decimal number from:</span
                ><br />
-               <span class="text-body2 q-pl-sm"> 1 - 100</span>
+               <span class="text-body2 q-pl-sm"> 0 - 1</span>
               </div>
              </div>
              <div class="text-red text-body1 q-mt-sm" v-if="error">
@@ -566,7 +567,6 @@
              />
             </div>
            </div>
-
            <div v-if="step === 2" class="prototype">
             <div class="head">
              <q-btn
@@ -960,7 +960,7 @@ export default {
         marketData: [],
         fromAmount: 1,
         toAmount: 1,
-        feesAmount: 0,
+        feesAmount: 0.1,
         errorText:
      'Converting [from] to [to] cannot be done at this moment please try another coin',
         error: false,
@@ -1208,7 +1208,7 @@ export default {
           this.pushLiquidityActions()
         }
       }
-      console.log(this.vpoolsTransactions, ' this.vpoolsTransactions')
+
       // this.validateTransaction()
     },
 
@@ -1357,7 +1357,7 @@ export default {
          ' ' +
          this.destinationCoin.value.toUpperCase()
           },
-          initial_fee: this.swapData.feesAmount,
+          initial_fee: this.swapData.feesAmount * 100,
           fee_contract: this.eosAccount.name
         }
       })
@@ -3099,7 +3099,9 @@ export default {
  border-radius: 8px;
  display: flex;
  flex-direction: row;
-
+ @media screen and (max-width: 768px) {
+  max-width: 100%;
+ }
  &__list {
   width: 100%;
  }

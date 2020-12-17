@@ -98,7 +98,7 @@
       </div>
       <div v-else class="standard-content mobile-version">
         <h2 class="standard-content--title flex justify-center">
-          <q-btn flat unelevated class="btn-align-left" :to="goBack" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'" icon="keyboard_backspace" />
+          <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'" icon="keyboard_backspace" />
           Receive
         </h2>
         <div class="standard-content--body">
@@ -145,8 +145,8 @@
                 </q-item>
               </template>
             </q-select>
-            <span class="lab-input">Or Via Verto ID (Cruxpay)</span>
-            <q-input v-model="vertoID" class="input-input" rounded readonly outlined color="purple" type="text"/>
+            <span class="lab-input text-grey">Or Via Verto ID (Soon)</span>
+            <!-- <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="vertoID" class="input-input" rounded readonly outlined color="purple" type="text"/> -->
             <br>
             <div class="qrcode-wrapper">
               <div class="wallet-address flex justify-between">
@@ -479,6 +479,19 @@ export default {
     }
   }
   .dark-theme{
+    .select-input{
+      /deep/ .q-field__control{
+        .q-field__native{
+          .q-item{
+            .q-item__section{
+              .q-item__label + .q-item__label {
+                color: #CCC;
+              }
+            }
+          }
+        }
+      }
+    }
     .mobile-version{
       background: #04111F;
       .standard-content--body__form .qrcode-wrapper .title{

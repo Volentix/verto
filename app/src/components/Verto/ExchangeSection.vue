@@ -132,14 +132,17 @@ export default {
       this.depositCoinUnfilter = this.depositCoinOptions
       this.destinationCoinUnfilter = this.depositCoinUnfilter
       this.destinationCoinOptions = this.depositCoinOptions
+      /*
       if (this.$store.state.settings.dexData.depositCoin) {
         this.depositCoin = this.depositCoinOptions.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
       } else {
         this.depositCoin = this.depositCoinOptions.find(o => o.value.toLowerCase() === 'eos')
       }
+
       if (this.$store.state.settings.dexData.destinationCoin) {
         this.destinationCoin = this.depositCoinOptions.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
       }
+      */
     },
     goToExchange () {
       // console.log('this.depositCoin', this.depositCoin)
@@ -222,6 +225,7 @@ export default {
                 line-height: 16px;
                 font-size: 12px;
                 padding-right: 25px;
+                width: 100%;
             }
 
             .qbtn-start {
