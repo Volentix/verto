@@ -67,14 +67,25 @@
         <profile-header class="marg" version="type2222" />
         <!-- <q-btn color="white" flat text-color="black" class="full-width" label="Public Proposals" to="/verto/card-wps/public-proposals" /> -->
         <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
-        <div class="cards-wrapper--content">
-            <card-make-VTX />
+        <div class="cards-wrapper--content q-pl-md q-pr-md">
+            <!-- <startNodeSection :banner="1" /> -->
+            <!-- <hr style="height:0px;opacity:0" /> -->
+            <ExchangeSection />
+            <hr style="height:0px;opacity:0" />
+            <makeVTXSection />
+            <!-- <card-make-VTX /> -->
+            <hr style="height:0px;opacity:0" />
+            <LiquidityPoolsSection />
+            <hr style="height:0px;opacity:0" />
+            <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+                <liquidityPoolsTable :rowsPerPage="10" />
+            </div>
             <hr style="height:0px;opacity:0" />
             <!-- <card-WPS /> -->
             <!-- <hr style="height:0px;opacity:0" /> -->
-            <card-convert-any-to-VTX />
-            <hr style="height:0px;opacity:0" />
-            <card-import-EOS-account />
+            <!-- <card-convert-any-to-VTX /> -->
+            <!-- <hr style="height:0px;opacity:0" /> -->
+            <!-- <card-import-EOS-account /> -->
             <!-- <hr style="height:0px;opacity:0" /> -->
             <!-- <card-create-wallet /> -->
             <!-- <hr style="height:0px;opacity:0" /> -->
@@ -89,10 +100,10 @@
 <script>
 import store from '../../store'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
-import CardMakeVTX from '../../components/Verto/CardMakeVTX'
+// import CardMakeVTX from '../../components/Verto/CardMakeVTX'
 // import CardWPS from '../../components/Verto/CardWPS'
-import CardConvertAnyToVTX from '../../components/Verto/CardConvertAnyToVTX'
-import CardImportEOSAccount from '../../components/Verto/CardImportEOSAccount'
+// import CardConvertAnyToVTX from '../../components/Verto/CardConvertAnyToVTX'
+// import CardImportEOSAccount from '../../components/Verto/CardImportEOSAccount'
 // import CardCreateWallet from '../../components/Verto/CardCreateWallet'
 import Wallets from '../../components/Verto/Wallets'
 import AppsSection from '../../components/Verto/AppsSection'
@@ -136,9 +147,9 @@ export default {
     ProfileHeader,
     Wallets,
     // CardCreateWallet,
-    CardImportEOSAccount,
-    CardConvertAnyToVTX,
-    CardMakeVTX,
+    // CardImportEOSAccount,
+    // CardConvertAnyToVTX,
+    // CardMakeVTX,
     // CardWPS,
     // desktop components
     AppsSection,
@@ -603,6 +614,49 @@ export default {
         margin-bottom: 20px;
     }
 }
+
+.mobile-version {
+    .explore-opportunities{
+        padding: 0% !important;
+        box-shadow: none;
+        &.desktop-card-style{
+            &:after{
+                display: none !important;
+            }
+        }
+    }
+    /deep/ .desktop-card-style {
+        &:not(.apps-section) {
+            background-color: #FFFFFF;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0px 3px 6px 0px rgba(black, .19);
+            border-radius: 20px;
+            .call-action{
+                background-color: #FFF;
+                border-radius: 40px;
+            }
+            .row.flex{
+                position: relative;
+                z-index: 7;
+            }
+            &:after{
+                content: '';
+                width: 100%;
+                display: block;
+                height: 50px;
+                background-color: #F3F3F3;
+                position: absolute;
+                z-index: 0;
+                bottom: 0px;
+                left: 0px;
+                border-radius: 0px 0px 20px 20px;
+                box-shadow: 0px 3px 6px 0px rgba(black, .19);
+            }
+        }
+    }
+}
 .dark-theme{
     .desktop-version{
         background: #04111F;
@@ -617,8 +671,31 @@ export default {
             background: #04111F;
         }
     }
+    /deep/ .mobile-version{
+        background: #04111F;
+    }
     .mobile-version{
         background: #04111F;
+        .explore-opportunities{
+        padding: 0% !important;
+        box-shadow: none;
+        &.desktop-card-style{
+            &:after{
+                display: none !important;
+            }
+        }
+    }
+    /deep/ .desktop-card-style {
+        &:not(.apps-section) {
+            background-color: #04111F;
+            .call-action{
+                background-color: #04111F;
+            }
+            &:after{
+                background-color: #081d33;
+            }
+        }
+    }
     }
 }
 </style>

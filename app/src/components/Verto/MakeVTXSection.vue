@@ -1,7 +1,7 @@
 <template>
 <div class="desktop-card-style make-vtx q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <span class="preloader flex flex-center" :class="{'show' : activate}"><img src="statics/preloader.svg" alt=""></span>
-    <div class="row flex justify-between q-pb-xl q-pt-lg">
+    <div v-if="screenSize > 1024" class="row flex justify-between q-pb-xl q-pt-lg">
         <div v-if="highestVTXAccount !== null" class="col col-4 flex items-center earn-picto"><img src="statics/earn-picto.svg" class="full-width" alt=""></div>
         <div v-else class="col col-4 flex items-center q-mt-lg"><img src="statics/make_vtx_bg.png" class="full-width" alt=""></div>
         <div class="col col-8 flex items-center justify-end q-pl-md q-pr-lg">
@@ -19,12 +19,35 @@
                     <q-btn unelevated class="qbtn-start qbtn-start2 q-mr-md" color="black" :to="`/verto/stake/2`" text-color="white" label="Stake now" />
                 </div>
                 <div v-else class="q-mt-md">
-                    <q-btn unelevated class="qbtn-start q-mr-sm" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Buy with BTC/ETH" />
+                    <q-btn unelevated class="qbtn-start q-mr-sm" color="black" @click="goToExchange" text-color="white" label="Buy with BTC/ETH" />
                 </div>
                 <!-- <q-btn unelevated class="qbtn-start" color="black" @click="modalBuyWithEOS = true" text-color="white" label="Buy with EOS" /> -->
             </div>
         </div>
     </div>
+    <div v-else class="card-make-VTX--wrapper">
+      <!-- <q-toggle v-model="active" label="Active" /> -->
+      <div class="card-make-VTX--wrapper--header">
+        <div class="card-make-VTX--wrapper--header__holder full-width">
+          <span class="card-make-VTX--wrapper--header__holder_img">
+            <img v-if="highestVTXAccount !== null" src="statics/make_vtx_bg.png" alt="">
+            <img v-else src="statics/make_vtx_bg.png" class="full-width" alt="">
+          </span>
+          <div v-if="highestVTXAccount !== null">
+              <span class="small">Make</span>
+              <div class="flex items-center">
+                  <span class="big">{{nFormatter2(estimatedReward, 3)}}</span>
+                  <span class="thicker flex items-center"><img :src="highestVTXAccount.icon" alt=""> {{highestVTXAccount.type.toUpperCase()}}</span>
+              </div>
+              <span class="small">now!</span>
+          </div>
+          <h3 v-else class="text-black card-make-VTX--wrapper--header__holder_title">Make VTX while you sleep</h3>
+        </div>
+        <q-btn v-if="highestVTXAccount !== null" unelevated class="qbtn-start q-mr-sm" color="black" @click="modalBuyWithBTCETH = true" text-color="white" label="Buy with BTC/ETH" />
+        <q-btn v-else unelevated class="card-make-VTX--wrapper--header_btn" @click="goToExchange" color="black" text-color="white" label="Buy VTX" />
+      </div>
+    </div>
+
     <q-dialog v-model="modalBuyWithBTCETH">
         <q-card class="q-pa-sm" style="width: 90%;max-width: 500px">
             <q-toolbar>
@@ -64,7 +87,18 @@ export default {
   data () {
     return {
       estimatedReward: 0,
+      depositCoin: {
+        label: 'Ethereum',
+        value: 'eth',
+        image: 'https://files.coinswitch.co/public/coins/eth.png'
+      },
+      destinationCoin: {
+        label: 'VTX',
+        value: 'vtx',
+        image: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/volentixgsys/VTX.png'
+      },
       activate: true,
+      screenSize: 0,
       base: 'https://files.coinswitch.co/public/coins/',
       highestVTXAccount: null,
       modalBuyWithBTCETH: false,
@@ -72,6 +106,7 @@ export default {
     }
   },
   async created () {
+    this.getWindowWidth()
     let highestVTXAccount = await this.$store.state.highestVTXAccount.wallet.amount
     // console.log('highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount highestVTXAccount', highestVTXAccount)
     if (highestVTXAccount !== undefined) {
@@ -81,10 +116,27 @@ export default {
       setTimeout(() => {
         this.setHighestVTXAccount()
         this.activate = false
-      }, 7000)
+      }, 2000)
     }
   },
   methods: {
+    goToExchange () {
+      // console.log('this.depositCoin', this.depositCoin)
+      let depositCoin = this.depositCoin
+      let destinationCoin = this.destinationCoin
+      this.$router.push({
+        path: '/verto/exchange/:coinToSend/:coinToReceive',
+        name: 'exchange-v3',
+        params: {
+          depositCoin: depositCoin,
+          destinationCoin: destinationCoin,
+          dex: this.dex
+        }
+      })
+    },
+    getWindowWidth () {
+      this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
     nFormatter2 (num, digits) {
       var si = [{
         value: 1,
@@ -233,15 +285,15 @@ export default {
     .row {
         .col {
             img {
-                max-width: 80px;
-                transform: translateX(10px);
+              max-width: 80px;
+              transform: translateX(10px);
             }
 
             strong {
-                margin-bottom: -10px;
-                line-height: 16px;
-                font-size: 16px;
-                padding-right: 20px;
+              margin-bottom: -10px;
+              line-height: 16px;
+              font-size: 16px;
+              padding-right: 20px;
             }
 
             .qbtn-start {
@@ -372,7 +424,7 @@ export default {
     width: 100%;
     height: 100%;
     background-color: #fff;
-    z-index: 99;
+    z-index: 9;
     transition: opacity ease .5s;
     opacity: 0;
     visibility: hidden;
@@ -381,4 +433,89 @@ export default {
         opacity: 1;
     }
 }
+</style>
+<style scoped lang="scss">
+  @import "~@/assets/styles/variables.scss";
+    .card-make-VTX{
+      &--wrapper{
+        padding: 5% 7%;
+        background-color: #FFFFFF;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        // box-shadow: 0px 3px 6px 0px rgba(black, .19);
+        // border-radius: 20px;
+        &--header{
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          position: relative;
+          z-index: 4;
+          &__holder{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            &_title{
+              margin: 0px;
+              font-size: 20px;
+              font-family: $Titillium;
+              font-weight: $bold;
+              margin-top: 20px;
+              line-height: 26px;
+              margin-bottom: 30px;
+              padding-left: 10px;
+            }
+            &_img{
+              img{
+                max-width: 120px;
+                @media screen and (min-width: 768px) {
+                  max-width: 90px;
+                }
+              }
+            }
+          }
+          &_btn{
+            background: #7272FA !important;
+            font-size: 16px !important;
+            text-transform: initial !important;
+            border-radius: 40px;
+            height: 45px;
+            padding-left: 15px;
+            padding-right: 15px;
+            margin-bottom: 10px;
+            margin-top: 0px;
+            @media screen and (min-width: 768px) {
+              margin-top: 25px !important;
+            }
+          }
+        }
+        position: relative;
+        &:after{
+          content: '';
+          width: 100%;
+          display: block;
+          height: 50px;
+          background-color: #F3F3F3;
+          position: absolute;
+          z-index: 0;
+          bottom: 0px;
+          left: 0px;
+          border-radius: 0px 0px 20px 20px;
+          box-shadow: 0px 3px 6px 0px rgba(black, .19);
+        }
+      }
+    }
+    .dark-theme{
+      .card-make-VTX--wrapper{
+        background-color: #04111F;
+        // border: 1px solid #627797;
+        &:after{
+          background-color: rgba(#627797, .12);
+        }
+        &--header__holder_title{
+          color: #FFF !important;
+        }
+      }
+    }
 </style>
