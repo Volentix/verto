@@ -225,6 +225,7 @@ export default {
                 line-height: 16px;
                 font-size: 12px;
                 padding-right: 25px;
+                width: 100%;
             }
 
             .qbtn-start {

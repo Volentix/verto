@@ -1,7 +1,8 @@
 <template>
-  <div class="" v-if="$q.screen.width > 1024 && depositCoin && destinationCoin">
-    <div class="row">
-      <div class="col col-md-8">
+  <div class="swapeos-component" v-if="depositCoin && destinationCoin">
+    <!-- $q.screen.width > 1024 &&  -->
+    <div class="row swapeos-component--row">
+      <div class="col col-12 col-md-8">
         <div class="apps-section">
           <!-- 1inch component -->
           <!-- add your code here -->
@@ -81,7 +82,7 @@
                             <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
                           </div>
                           <div class="you-pay-body row items-center">
-                            <div class="col col-2 choose-coin">
+                            <div class="col col-3 choose-coin">
                               <span class="cursor">
                                 <q-select
                                   class="select-input"
@@ -122,11 +123,14 @@
                                 </q-select>
                               </span>
                             </div>
-                            <div class="col col-8 offset-2">
+                            <div class="col col-8 offset-1">
                               <q-input
+                                :dark="$store.state.lightMode.lightMode === 'true'"
+                                :light="$store.state.lightMode.lightMode === 'false'"
                                 @blur="swapData.fromAmount = parseFloat(swapData.fromAmount).toFixed(depositCoin.precision)"
                                 outlined
-                                class="bg-white text-h5"
+                                class="text-h5"
+                                :class="{'bg-white': $store.state.lightMode.lightMode === 'false'}"
                                 ref="depositQuantity"
                                 @input="
                                   swapData.error = false;
@@ -151,7 +155,7 @@
                         </div>
                         <div class="you-receive">
                           <br />
-                          <q-btn outline round color="black" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
+                          <q-btn outline round :color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'" :dark="$store.state.lightMode.lightMode === 'true'" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
                           <div class="you-receive-head row items-center">
                             <div class="col col-6">You Receive</div>
                             <div v-if="rateData" class="col col-6 info_rate_holder small text-right flex justify-end items-center" :class="{ _loading: fetchingRate }">
@@ -186,7 +190,7 @@
                             </div>
                           </div>
                           <div class="you-receive-body row items-center">
-                            <div class="col col-2 choose-coin">
+                            <div class="col col-3 choose-coin">
                               <span class="cursor">
                                 <q-select
                                   class="select-input"
@@ -223,8 +227,8 @@
                                 </q-select>
                               </span>
                             </div>
-                            <div class="col col-8 offset-2">
-                              <q-input disable outlined class="bg-white text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" type="number">
+                            <div class="col col-8 offset-1">
+                              <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" disable outlined :class="{'bg-white': $store.state.lightMode.lightMode === 'false'}" class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" type="number">
                                 <div class="flex justify-end items-center" style="width: 60px">
                                   <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
                                 </div>
@@ -332,7 +336,7 @@
           </div>
         </div>
       </div>
-      <div class="col summary-wrapper shadow-1 col-md-4 q-pa-lg column justify-center items-start">
+      <div class="col summary-wrapper shadow-1 col-12 col-md-4 q-pa-lg column justify-center items-start">
         <q-list class="summary-wrapper__list" separator>
           <q-item class="q-my-sm" clickable v-ripple>
             <div class="text-h6">Summary</div>
@@ -374,8 +378,8 @@
             </q-item-section>
           </q-item>
         </q-list>
-        <div class="text-h6 q-pt-md" v-if="path.length && tab != 'liquidity'">Multi Swap Path</div>
-        <q-list separator v-if="path.length && tab != 'liquidity'">
+        <div class="text-h6 q-pt-md" :class="{'text-white': $store.state.lightMode.lightMode === 'true'}" v-if="path.length && tab != 'liquidity'">Multi Swap Path</div>
+        <q-list separator v-if="path.length && tab != 'liquidity'" class="multi-swap-path--list">
           <q-item class="q-my-sm" clickable v-ripple>
             <q-item-section>
               <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
@@ -2135,6 +2139,11 @@ export default {
   margin-top: 5px;
 }
 
+.swapeos-component{
+  &--row{
+    flex-direction: column;
+  }
+}
 .summary-wrapper {
   background-color: rgba(black, 0.06);
   // min-height: 300px;
@@ -2144,7 +2153,12 @@ export default {
   border-radius: 8px;
   display: flex;
   flex-direction: row;
-
+  @media screen and (max-width: 768px) {
+    max-width: calc(100% - 20px);
+    margin-top: -30px;
+    background-color: rgba(black, 0);
+    box-shadow: none;
+  }
   &__list {
     width: 100%;
   }

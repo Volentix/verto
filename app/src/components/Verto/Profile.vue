@@ -13,6 +13,7 @@
           <q-item-section class="item-name">
             <div>{{item.name}}</div>
             <div v-if="screenSize <= 1024 && item.info === 'Linked'" class="flex flex-center q-mr-md text-grey">{{existingCruxID}}</div>
+            <div v-if="screenSize <= 1024 && item.info === 'darkmode'" class="flex flex-center q-mr-md text-grey"></div>
           </q-item-section>
           <q-item-section>
             <div class="flex justify-end">
@@ -20,10 +21,33 @@
               <q-btn v-if="item.info === 'Linked'" flat unelevated text-color="grey" @click="copyToClipboard(existingCruxID , 'Verto ID')" round class="btn-copy" icon="o_file_copy" />
             </div>
           </q-item-section>
-          <q-item-section class="profile-wrapper--list__item-info" :class="{'hide': item.info === '', 'text-orange': item.info !== 'Linked', 'text-green' : item.info === 'Linked'}">{{item.info}}</q-item-section>
+          <q-item-section class="profile-wrapper--list__item-info" :class="{'hide': item.info === '' || item.info === 'darkmode', 'text-orange': item.info !== 'Linked', 'text-green' : item.info === 'Linked'}">{{item.info}}</q-item-section>
+          <q-item-section v-if="screenSize <= 1024 && item.info === 'darkmode'" class="flex justify-end darkmode-option">
+            <q-toggle
+              v-model="lightMode"
+              checked-icon="wb_sunny"
+              @input="toggleLightDarkMode"
+              color="grey"
+              size="lg"
+              class="darkmode-btn"
+              unchecked-icon="brightness_3">
+              <q-tooltip v-if="$store.state.lightMode.lightMode === 'false'" content-class="black" :offset="[10, 10]">
+                Dark mode
+              </q-tooltip>
+              <q-tooltip v-else content-class="black" :offset="[10, 10]">
+                Light mode
+              </q-tooltip>
+            </q-toggle>
+          </q-item-section>
         </q-item>
       </q-list>
     </div>
+    <span v-if="screenSize <= 1024" class="version full-width text-center text-grey column q-pt-md q-pl-xl q-pr-xl q-pb-xl q-mt-md">
+      <span class="q-mb-md q-mt-md"><strong>{{version}}</strong></span>
+      <span class="q-pa-sm">
+        This app is in beta, please send us bug reports if you find any. <b><a target="_blank" :class="{'text-white':$store.state.lightMode.lightMode === 'true'}" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
+      </span>
+    </span>
   </div>
   <q-dialog v-model="showShareWrapper">
     <q-card :dark="$store.state.lightMode.lightMode === 'true'" class="q-pa-lg" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
@@ -167,6 +191,8 @@
 </template>
 
 <script>
+import { version } from '../../../package.json'
+
 import configManager from '@/util/ConfigManager'
 import Vue from 'vue'
 var SocialSharing = require('vue-social-sharing')
@@ -180,8 +206,10 @@ export default {
   name: 'Profile',
   data () {
     return {
+      lightMode: false,
       vertoLink: 'https://volentix.io?verto-app',
       active: true,
+      version: {},
       existingCruxID: null,
       screenSize: 0,
       menu: [],
@@ -190,7 +218,7 @@ export default {
   },
   async mounted () {
     let cruxKey = await HD.Wallet('crux')
-
+    this.version = version
     cruxClient = new CruxPay.CruxClient({
       walletClientName: 'verto',
       privateKey: cruxKey.privateKey
@@ -206,6 +234,10 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   created () {
+    window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false)
+    this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false
+    // console.log('this.$store.state.lightMode.lightMode', this.$store.state.lightMode.lightMode)
+    this.lightMode = window.localStorage.getItem('skin') !== 'false'
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
     this.menu = [
@@ -216,18 +248,22 @@ export default {
       { name: 'Add EOS Account', to: '/verto/import-private-key/eos', icon: 'label', info: '' },
       { name: 'Add ETH Account', to: '/verto/import-private-key/eth', icon: 'label', info: '' },
       { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
-      { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'Linked' },
-      { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' },
-      { name: 'Log Out', to: 'logout', icon: 'exit_to_app', info: '' }
+      { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'soon' },
+      { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' }
     ]
     if (this.screenSize <= 1024) {
-      this.menu.unshift(
-        { name: 'Wallets', to: '/verto/wallets', icon: 'o_account_balance_wallet', info: '' }
-      )
+      this.menu.unshift({ name: 'Wallets', to: '/verto/wallets', icon: 'o_account_balance_wallet', info: '' })
+      this.menu.push({ name: 'Theme', to: '', icon: 'format_paint', info: 'darkmode' })
     }
+    this.menu.push({ name: 'Log Out', to: 'logout', icon: 'exit_to_app', info: '' })
+
     // screenSize > 1024
   },
   methods: {
+    toggleLightDarkMode (val) {
+      window.localStorage.setItem('skin', val)
+      this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin')
+    },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
@@ -279,6 +315,11 @@ export default {
   .profile-wrapper{
     padding: 0px 6%;
     padding-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+    .darkmode-option{
+      margin-right: -60px;
+    }
     &--list{
       /deep/ .q-list--bordered {
           border: none;
@@ -429,5 +470,8 @@ export default {
     // top: -3px;
     margin-right: 0px;
     // padding: 6px 13px;
+  }
+  .version{
+    background-color: rgba(#CCC, .05);
   }
 </style>
