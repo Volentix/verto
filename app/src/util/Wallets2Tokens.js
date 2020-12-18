@@ -12,7 +12,7 @@ class Wallets2Tokens {
     // console.log('wallets in the config', store.state.currentwallet.config.keys)
     // let list = ''
     // axios.get('https://api.coingecko.com/api/v3/coins/list').then(res => list = res.data)
-    store.commit('wallets/setLoadingState', { eos: true, eth: true })
+    store.commit('wallets/setLoadingState', { eos: false, eth: false })
     const self = this
     this.eosUSD = 0
     axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { self.eosUSD = res.data.data.price })
@@ -200,6 +200,8 @@ class Wallets2Tokens {
                 })
               }
             })
+          } else {
+            store.commit('wallets/setLoadingState', { eth: true })
           }
         })
       }

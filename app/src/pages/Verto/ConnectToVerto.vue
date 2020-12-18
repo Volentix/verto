@@ -276,6 +276,7 @@ export default {
     loaded: {
       deep: true,
       handler (val) {
+        console.log('before', val)
         if (val.eos && val.eth) {
           if (this.$route.query.url) {
             const sleep = (ms) => {
@@ -292,7 +293,7 @@ export default {
 
                 return token
               })
-              console.log(accounts)
+              console.log(accounts, 'accounts')
               window.top.postMessage({ accounts: accounts }, '*')
               if (this.$route.query.redirect === 'true') {
                 window.top.location.href = this.$route.query.url + '?accounts=' + encodeURIComponent(JSON.stringify(accounts))
