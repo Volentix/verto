@@ -133,7 +133,7 @@ let cruxClient
 import DexInteraction from '../../mixins/DexInteraction'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
-
+import initWallet from '@/util/Wallets2Tokens'
 let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 
@@ -177,7 +177,7 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   beforeCreate () {
-    // console.log('beforeCreate event')
+    initWallet()
   },
   async created () {
     this.tableData = store.state.wallets.tokens.map(token => {

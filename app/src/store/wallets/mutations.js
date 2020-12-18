@@ -3,6 +3,20 @@ export function someMutation (state) {
 }
 */
 export const updateTokens = (state, updatedtokens) => {
+  updatedtokens = updatedtokens.map(o => {
+    if (o.type === 'eth') {
+      o.total = parseFloat(updatedtokens.filter(f => f.key === o.key).map(v => isNaN(v.usd) ? 0 : v.usd).reduce((a, b) => a + b, 0))
+    }
+    return o
+  })
+  updatedtokens = updatedtokens.map(o => {
+    if (o.type === 'eos') {
+      console.log(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name), o.name, updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(b => b.usd), parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, b) => a + b, 0)), 'total')
+      o.total = parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(v => isNaN(v.usd) ? 0 : v.usd).reduce((a, b) => a + b, 0))
+    }
+    return o
+  })
+  // state.portfolioTotal = updatedtokens.map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, c) => a + c)
   state.tokens = updatedtokens
 }
 export const setLoadingState = (state, value) => {
