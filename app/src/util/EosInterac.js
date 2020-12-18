@@ -12,7 +12,7 @@ import {
 var fetch = require('isomorphic-fetch')
 // var fetch = require('fetch')
 // import fetch from 'fetch'
-
+let volentixContract = 'volentixtsys'// 'volentixgsys'
 // import fetch from 'electron-fetch'
 
 class EosRPC {
@@ -47,7 +47,7 @@ class EosRPC {
     try {
       var balance = 0.0
       var token = 'VTX'
-      let result = await this.rpc.get_currency_balance('volentixgsys', name, 'VTX')
+      let result = await this.rpc.get_currency_balance(volentixContract, name, 'VTX')
       if (result.length) {
         let tok = result[0].split(' ')
         balance = parseFloat(tok[0]).toFixed(8)
@@ -124,7 +124,7 @@ class EosAPI {
 
   async transaction (contractAccount, action, authActor, data, successMessage, errorMessage) {
     try {
-      const result = await this.api.transact(
+      this.api.transact(
         {
           actions: [
             {
@@ -144,11 +144,14 @@ class EosAPI {
           blocksBehind: 3,
           expireSeconds: 30
         }
-      )
-      userResult(successMessage, result)
+      ).then((o) => {
+        userResult(successMessage, '')
+      }).catch((error) => {
+        userResult(error, 'Vote action')
+      })
     } catch (error) {
-      console.log(errorMessage, error)
-      userError(error, errorMessage)
+      userError('Try at a later time when EOSIO network is not as busy or get more CPU.', 'Vote action')
+      userError(error.message.toString(), errorMessage)
       if (error.message.includes('unable to complete by deadline')) {
         userError('Try at a later time when EOSIO network is not as busy or get more CPU.', 'Vote action')
       }

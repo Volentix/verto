@@ -42,7 +42,8 @@ import router from '@/router'
 //     port: 8888
 //   }]
 // }
-
+let votingContract = 'volentixvote' // 'vdexdposvote'
+let distributionContract = 'vistribution' // 'vtxdistribut'
 class VDexNodeConfigManager {
   currentConfig
   currentWallet
@@ -109,7 +110,7 @@ class VDexNodeConfigManager {
       eos_endpoint: {
         type: 'string',
         format: 'url',
-        default: 'https://eos.greymass.com:443'
+        default: 'http://140.82.56.143:8888' // 'https://eos.greymass.com:443'
       },
       nodes_api: {
         type: 'string',
@@ -134,7 +135,7 @@ class VDexNodeConfigManager {
   }
   async accountRegistered (accountName) {
     try {
-      const result = await Vue.prototype.$rpc.getTable('vdexdposvote', 'vdexdposvote', 'producers')
+      const result = await Vue.prototype.$rpc.getTable(votingContract, votingContract, 'producers')
       let nodeStats = result.find(row => row.owner === accountName)
       if (nodeStats) {
         store.commit('vdexnode/setAccountRegistered', true)
@@ -150,7 +151,7 @@ class VDexNodeConfigManager {
 
   async accountRun (accountName) {
     try {
-      const result = await Vue.prototype.$rpc.getTable('vdexdposvote', 'vdexdposvote', 'producers')
+      const result = await Vue.prototype.$rpc.getTable(votingContract, votingContract, 'producers')
       let nodeStats = result.find(row => row.owner === accountName)
       if (nodeStats) {
         store.commit('vdexnode/setAccountRun', true)
@@ -170,10 +171,10 @@ class VDexNodeConfigManager {
 
   async getRewardHistoryData () {
     try {
-      const result = await Vue.prototype.$rpc.getTable('vtxdistribut', 'vtxdistribut', 'rewardhistor')
+      const result = await Vue.prototype.$rpc.getTable(distributionContract, distributionContract, 'rewardhistor')
       let dailyRewardData = result.find(row => row.reward_id === 1)
       let dailyRewardLastCalculation = dailyRewardData.last_timestamp
-      const rewardRules = await Vue.prototype.$rpc.getTable('vtxdistribut', 'vtxdistribut', 'rewards')
+      const rewardRules = await Vue.prototype.$rpc.getTable(distributionContract, distributionContract, 'rewards')
       let dailyRewardRules = rewardRules.find(row => row.reward_id === 1)
       let dailyRewardPeriod = dailyRewardRules.reward_period
       let dailyRewardNextCalculation = dailyRewardLastCalculation && dailyRewardPeriod ? dailyRewardLastCalculation + dailyRewardPeriod : 0
@@ -185,7 +186,7 @@ class VDexNodeConfigManager {
 
   async getAvailbleForRetrieval (accountName) {
     try {
-      const result = await Vue.prototype.$rpc.getTable('vtxdistribut', accountName, 'nodereward')
+      const result = await Vue.prototype.$rpc.getTable(distributionContract, accountName, 'nodereward')
       let amount = result.map(item => parseFloat(item.amount)).reduce((a, b) => a + b, 0).toFixed(4)
       store.commit('vdexnode/setAvailbleForRetrieval', `${amount} VTX`)
     } catch (error) {
@@ -195,7 +196,7 @@ class VDexNodeConfigManager {
 
   async getUserRank (accountName) {
     try {
-      const result = await Vue.prototype.$rpc.getTable('vdexdposvote', 'vdexdposvote', 'producers')
+      const result = await Vue.prototype.$rpc.getTable(votingContract, votingContract, 'producers')
       let voteStats = result.find(row => row.owner === accountName)
       if (voteStats) {
         let ranks = []
@@ -241,7 +242,7 @@ class VDexNodeConfigManager {
 
   async getUserVoted (accountName) {
     try {
-      const result = await Vue.prototype.$rpc.getTable('vdexdposvote', 'vdexdposvote', 'voters')
+      const result = await Vue.prototype.$rpc.getTable(votingContract, votingContract, 'voters')
       let nodeStats = result.find(row => row.owner === accountName)
       if (nodeStats) {
         store.commit('vdexnode/setVotedI', nodeStats.producers)
@@ -261,7 +262,7 @@ class VDexNodeConfigManager {
   }
 
   async getRegisteredNodes () {
-    const result = await Vue.prototype.$rpc.getTable('vdexdposvote', 'vdexdposvote', 'producers')
+    const result = await Vue.prototype.$rpc.getTable(votingContract, votingContract, 'producers')
     var registeredNodes = []
     result.forEach(function (item) {
       registeredNodes.push(item.owner)
@@ -275,7 +276,7 @@ class VDexNodeConfigManager {
 
   async addNode (accountName, eosApi) {
     await eosApi.transaction(
-      'vtxdistribut',
+      distributionContract,
       'addnode',
       accountName,
       {
@@ -297,7 +298,7 @@ class VDexNodeConfigManager {
       }
     })
     await eosApi.transaction(
-      'vdexdposvote',
+      votingContract,
       'regproducer',
       accountName,
       {
@@ -316,7 +317,7 @@ class VDexNodeConfigManager {
 
   async retreiveReward (accountName, eosApi) {
     await eosApi.transaction(
-      'vtxdistribut',
+      distributionContract,
       'getreward',
       accountName,
       {
@@ -335,7 +336,7 @@ class VDexNodeConfigManager {
     }
     if (nodesToVote.length) {
       eosApi.transaction(
-        'vdexdposvote',
+        votingContract,
         'voteproducer',
         accountName,
         {

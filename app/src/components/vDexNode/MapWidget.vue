@@ -127,7 +127,7 @@ export default {
     },
     mapCentering (lat, long) {
       if (!arguments.length) {
-        let account = this.nodes.find(row => row.account === this.$store.state.identity.accountName)
+        let account = this.nodes.find(row => row.account === this.$store.state.vdexnode.identity.accountName)
         if (account) {
           for (let i = 0; i < this.nodeGeoData.length; i++) {
             if (this.nodeGeoData[i].nodes.includes(account.id)) {
