@@ -12,11 +12,12 @@ class Wallets2Tokens {
     // console.log('wallets in the config', store.state.currentwallet.config.keys)
     // let list = ''
     // axios.get('https://api.coingecko.com/api/v3/coins/list').then(res => list = res.data)
-    store.commit('wallets/setLoadingState', { eos: true, eth: true })
+    store.commit('wallets/setLoadingState', { eos: false, eth: false })
     const self = this
     this.eosUSD = 0
     axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { self.eosUSD = res.data.data.price })
     store.state.wallets.portfolioTotal = 0
+    console.log(store.state.currentwallet.config.keys, 'store.state.currentwallet.config.keys ')
     this.tableData = [ ...store.state.currentwallet.config.keys ]
     /* this.tableData.push({
       key: '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1',
@@ -114,11 +115,12 @@ class Wallets2Tokens {
                     icon: 'https://ndi.340wan.com/eos/' + t.code + '-' + t.symbol.toLowerCase() + '.png'
                   })
                   store.state.wallets.portfolioTotal += usdValue * t.amount
+
+                  if (index === balances.data.length - 1) {
+                    this.updateWallet()
+                    store.commit('wallets/setLoadingState', { eos: true })
+                  }
                 })
-              }
-              if (index === balances.data.length - 1) {
-                store.commit('wallets/setLoadingState', { eos: true })
-                this.updateWallet()
               }
             } else {
               eos.getAccount(wallet.name).then(a => {
@@ -138,17 +140,13 @@ class Wallets2Tokens {
               })
               // console.log('else EOS self.tableData', t.symbol, self.tableData)
             }
-            if (index === balances.data.length - 1) {
-              store.commit('wallets/setLoadingState', { eos: true })
-              this.updateWallet()
-            }
           })
         })
       } else if (wallet.type === 'eth') {
       //  wallet.key = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
 
         axios.get(process.env[store.state.settings.network].CACHE + 'https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
-          let ethplorer = res.data
+          let ethplorer = res ? res.data : false
 
           /* self.tableData.filter(w => w.key === wallet.key).map(eth => {
             eth.amount = ethplorer.ETH.balance
@@ -156,52 +154,55 @@ class Wallets2Tokens {
           })
            */
           // console.log('ethplorer', ethplorer)
+          if (ethplorer) {
+            axios.get(process.env[store.state.settings.network].CACHE + 'https://api.tokensets.com/v1/rebalancing_sets', {
+              headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            }).then(res => {
+              let tokenSets = res.data.rebalancing_sets
 
-          axios.get(process.env[store.state.settings.network].CACHE + 'https://api.tokensets.com/v1/rebalancing_sets', {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-          }).then(res => {
-            let tokenSets = res.data.rebalancing_sets
+              if (ethplorer.tokens) {
+                ethplorer.tokens.filter(t => t.balance > 0 && t.tokenInfo.symbol).map(async (t, index) => {
+                  const csa = Web3.utils.toChecksumAddress(t.tokenInfo.address)
+                  let token = tokenSets.find(s => s.address.toLowerCase() === t.tokenInfo.address.toLowerCase())
+                  t.tokenInfo.image = t.tokenInfo.image && t.tokenInfo.image.includes('https') ? t.tokenInfo.image : (token && token.image ? token.image : false)
 
-            if (ethplorer.tokens) {
-              ethplorer.tokens.filter(t => t.balance > 0 && t.tokenInfo.symbol).map(async (t, index) => {
-                const csa = Web3.utils.toChecksumAddress(t.tokenInfo.address)
-                let token = tokenSets.find(s => s.address.toLowerCase() === t.tokenInfo.address.toLowerCase())
-                t.tokenInfo.image = t.tokenInfo.image && t.tokenInfo.image.includes('https') ? t.tokenInfo.image : (token && token.image ? token.image : false)
-
-                if (!t.tokenInfo.image) {
-                  try {
-                    await axios.get(t.tokenInfo.image, { validateStatus: false }).then(result => {
-                      if (result.status !== 200) {
-                        t.tokenInfo.image = 'https://etherscan.io/images/main/empty-token.png'
-                      }
-                    })
-                  } catch (error) {
-                    console.log('eth token not on 1inch', t.tokenInfo.image, csa, error)
+                  if (!t.tokenInfo.image) {
+                    try {
+                      await axios.get(t.tokenInfo.image, { validateStatus: false }).then(result => {
+                        if (result.status !== 200) {
+                          t.tokenInfo.image = 'https://etherscan.io/images/main/empty-token.png'
+                        }
+                      })
+                    } catch (error) {
+                      console.log('eth token not on 1inch', t.tokenInfo.image, csa, error)
+                    }
                   }
-                }
 
-                self.tableData.push({
-                  selected: false,
-                  disabled: false,
-                  type: t.tokenInfo.symbol ? t.tokenInfo.symbol.toLowerCase() : '',
-                  name: t.tokenInfo.name,
-                  key: wallet.key,
-                  privateKey: wallet.privateKey,
-                  amount: t.balance / (10 ** t.tokenInfo.decimals),
-                  usd: (t.balance / (10 ** t.tokenInfo.decimals)) * t.tokenInfo.price.rate,
-                  contract: t.tokenInfo.address,
-                  chain: 'eth',
-                  to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase() + '/' + wallet.key,
-                  icon: t.tokenInfo.image
+                  self.tableData.push({
+                    selected: false,
+                    disabled: false,
+                    type: t.tokenInfo.symbol ? t.tokenInfo.symbol.toLowerCase() : '',
+                    name: t.tokenInfo.name,
+                    key: wallet.key,
+                    privateKey: wallet.privateKey,
+                    amount: t.balance / (10 ** t.tokenInfo.decimals),
+                    usd: (t.balance / (10 ** t.tokenInfo.decimals)) * t.tokenInfo.price.rate,
+                    contract: t.tokenInfo.address,
+                    chain: 'eth',
+                    to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase() + '/' + wallet.key,
+                    icon: t.tokenInfo.image
+                  })
+
+                  if (index === ethplorer.tokens.length - 1) {
+                    this.updateWallet()
+                    store.commit('wallets/setLoadingState', { eth: true })
+                  }
                 })
-
-                if (index === ethplorer.tokens.length - 1) {
-                  store.commit('wallets/setLoadingState', { eth: true })
-                  this.updateWallet()
-                }
-              })
-            }
-          })
+              }
+            })
+          } else {
+            store.commit('wallets/setLoadingState', { eth: true })
+          }
         })
       }
     })
@@ -215,8 +216,8 @@ class Wallets2Tokens {
 
     // this.$store.state.wallets.portfolioTotal = this.$store.state.wallets.portfolioTotal + usdValue * t.amount
     // console.log('this.$store.state.wallets', this.$store.state)
-    store.commit('wallets/updateTokens', this.tableData)
-    store.commit('wallets/updatePortfolioTotal', store.state.wallets.portfolioTotal)
+    // store.commit('wallets/updateTokens', this.tableData)
+    // store.commit('wallets/updatePortfolioTotal', store.state.wallets.portfolioTotal)
   }
   async getAllAssets () {
     await axios.get('https://volentix.info/get_assets')
@@ -226,26 +227,6 @@ class Wallets2Tokens {
       })
   }
   updateWallet () {
-    this.tableData.sort(function (a, b) {
-      if (a.name && b.name && a.name.toLowerCase() < b.name.toLowerCase()) {
-        return -1
-      }
-      return 1
-    })
-    this.tableData = this.tableData.map(o => {
-      if (o.type === 'eth') {
-        o.total = parseFloat(this.tableData.filter(f => f.key === o.key).map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, c) => a + c))
-      }
-      return o
-    })
-
-    this.tableData = this.tableData.map(o => {
-      if (o.type === 'eos') {
-        o.total = parseFloat(this.tableData.filter(f => f.chain === 'eos' && f.name === o.name).map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, c) => a + c))
-      }
-      return o
-    })
-
     store.commit('wallets/updateTokens', this.tableData)
     store.commit('wallets/updatePortfolioTotal', store.state.wallets.portfolioTotal)
   }
