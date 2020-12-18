@@ -133,9 +133,9 @@
                               <q-slider
                                 v-model="stakePeriod"
                                 :label-value="`${stakePeriod * 30}` + ' days'"
-                                :min="2"
+                                :min="1"
                                 :max="10"
-                                :step="4"
+                                :step="1"
                                 color="orange"
                                 :label-color="progColor"
                                 dark
@@ -268,7 +268,7 @@
                     >
                       <q-btn flat @click="step = 2" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
 
-                      <div v-if="!ErrorMessage" class="text-black">
+                      <div v-if="!ErrorMessage && !transactionId" class="text-black">
                         <q-spinner />
                       </div>
                       <div v-if="!transactionError" class="content__success">
@@ -327,7 +327,11 @@
 import { date } from 'quasar'
 import { userError } from '@/util/errorHandler'
 import EosWrapper from '@/util/EosWrapper'
-const eos = new EosWrapper()
+const eos = new EosWrapper('http://140.82.56.143:8888')
+
+const stakingContract = 'vltxstakenow'
+const volentixContract = 'volentixtsys'
+const period_duration = 30
 export default {
   name: 'VTXConverter',
   data () {
@@ -336,7 +340,7 @@ export default {
       step: 0,
       condition: 3,
       currentAccount: {},
-      stakePeriod: 2,
+      stakePeriod: 1,
       estimatedReward: 0,
       options: [],
       tableData: [],
@@ -344,7 +348,7 @@ export default {
       showWallet: false,
       showText: false,
       slider: 0,
-      progColor: 'green',
+      progColor: 'red',
       vtxbalance: 0,
       stakes: [],
       allocatable: 0,
@@ -377,6 +381,7 @@ export default {
   async created () {
     let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     // console.log('---this.wallet---', this.wallet)
+
     if (this.wallet) {
       console.log('this.wallet, this.wallet, this.wallet', this.wallet)
       this.currentAccount = this.wallet
@@ -392,60 +397,71 @@ export default {
         w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
       )
     }
-    // console.log('this.currentAccount ----------------- ', this.currentAccount)
-    let stepParam = this.$route.params.step
-    if (this.stakes.length === 0) {
-      this.tab = 'stake'
-    }
-    if (stepParam !== undefined) {
-      // console.log('step staking = ', stepParam)
-      let highestVTXAccount = this.$store.state.highestVTXAccount.wallet
-      this.$store.state.currentwallet.wallet = highestVTXAccount
-      this.currentAccount = highestVTXAccount
-      this.params = this.$store.state.highestVTXAccount.params
-      this.slider = 100
-      this.changeSlider()
-      this.stakePeriod = 10
-      this.changeSlider()
-      this.step = parseInt(stepParam)
-      this.tab = 'stake'
-    }
-    if (eos.isPrivKeyValid(this.currentAccount.privateKey)) {
-      this.privateKey.key = this.currentAccount.privateKey
-      this.isPrivateKeyEncrypted = false
-    } else {
-      this.isPrivateKeyEncrypted = true
-    }
-    if (this.params.tokenID === 'vtx' && this.currentAccount < 1000) {
-      this.condition = 1
-    } else if (this.params.tokenID === 'eos' && this.currentAccount <= 0) {
-      this.condition = 1
-    }
-    let stakedAmounts = 0
-    if (this.params.tokenID === 'vtx') {
-      let totalBalance = (await eos.getCurrencyBalanceP('vtxstake1111', 'volentixgsys')).toString().split(' ')[0]
-      let globalAmnts = (await eos.getTable('vtxstake1111', 'vtxstake1111', 'globalamnts'))[0]
-      let totalStake = globalAmnts.stake.split(' ')[0]
-      let totalSubsidy = globalAmnts.subsidy.split(' ')[0]
-      this.allocatable = +totalBalance - (+totalStake + +totalSubsidy)
-      // console.log('allocatable', this.allocatable)
-      this.stakes = await eos.getTable('vtxstake1111', this.params.accountName, 'accounts')
-      this.stakes.map(s => {
-        // console.log('s', s)
-        s.stake_date = new Date(s.stake_time * 1000)
-        s.stake_done = new Date((s.stake_time * 1000) + (s.stake_period * 86400000))
-        s.time_left = date.getDateDiff(s.stake_done, Date.now(), 'days')
-        s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
-        s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
-        stakedAmounts += +s.stake_amount
-      })
-      this.currentAccount.staked = stakedAmounts
-    }
+    this.params.accountName = 'berthonytha1'
+    this.currentAccount.key = 'EOS8UrDjUkeVxfUzUS1hZQtmaGkdWbGLExyzKF6569kRMR5TzSnQT'
+    this.currentAccount.privateKey = '5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc'
+    this.currentAccount.name = 'berthonytha1'
+    this.initData()
     // console.log('stakes', this.stakes)
   },
   async mounted () {
   },
   methods: {
+    async initData () {
+      this.currentAccount.amount = (await eos.getCurrencyBalanceP(this.currentAccount.name, volentixContract, 'VTX')).toString().split(' ')[0]
+      this.currentAccount.amount = this.currentAccount.amount ? this.currentAccount.amount : 0
+
+      if (this.stakes.length === 0) {
+        this.tab = 'stake'
+      }
+      let stepParam = this.$route.params.step
+      if (stepParam !== undefined) {
+      // console.log('step staking = ', stepParam)
+        let highestVTXAccount = this.$store.state.highestVTXAccount.wallet
+        this.$store.state.currentwallet.wallet = highestVTXAccount
+        this.currentAccount = highestVTXAccount
+        this.params = this.$store.state.highestVTXAccount.params
+        this.slider = 100
+        this.changeSlider()
+        this.stakePeriod = 10
+        this.changeSlider()
+        this.step = parseInt(stepParam)
+        this.tab = 'stake'
+      }
+      if (eos.isPrivKeyValid(this.currentAccount.privateKey)) {
+        this.privateKey.key = this.currentAccount.privateKey
+        this.isPrivateKeyEncrypted = false
+      } else {
+        this.isPrivateKeyEncrypted = true
+      }
+      if (this.params.tokenID === 'vtx' && this.currentAccount < 10000) {
+        this.condition = 1
+      } else if (this.params.tokenID === 'eos' && this.currentAccount <= 0) {
+        this.condition = 1
+      }
+      let stakedAmounts = 0
+      if (this.params.tokenID === 'vtx') {
+        let totalBalance = (await eos.getCurrencyBalanceP(stakingContract, volentixContract)).toString().split(' ')[0]
+        let globalAmnts = (await eos.getTable(stakingContract, stakingContract, 'globalamount'))[0]
+        console.log(globalAmnts, 'globalAmnts')
+        let totalStake = globalAmnts.currently_staked.split(' ')[0]
+        let totalSubsidy = globalAmnts.cumulative_subsidy.split(' ')[0]
+        this.allocatable = +totalBalance - (+totalStake + +totalSubsidy)
+        // console.log('allocatable', this.allocatable)
+        this.stakes = await eos.getTable(stakingContract, this.params.accountName, 'accountstake')
+        this.stakes.map(s => {
+          s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+          s.stake_amount = Math.round(+s.amount.split(' ')[0] * 10000) / 10000
+          s.stake_period = Math.round((((s.subsidy / s.stake_amount) * 100) - 1) * 10) * period_duration
+          s.stake_date = new Date((s.unlock_timestamp - s.stake_period * 24 * 60 * 60) * 1000)
+          s.stake_done = new Date(s.unlock_timestamp * 1000)
+          s.time_left = date.getDateDiff(s.stake_done, Date.now(), 'days')
+
+          stakedAmounts += +s.stake_amount
+        })
+        this.currentAccount.staked = stakedAmounts
+      }
+    },
     sliderToPercent (percent) {
       this.slider = percent
       this.changeSlider()
@@ -481,14 +497,14 @@ export default {
       this.checkAmount()
     },
     checkAmount () {
-      let stake_per = Math.round((0.01 + (0.001 * this.stakePeriod)) * 1000) / 1000
+      let stake_per = (1 + this.stakePeriod / 10.0) / 100
       if (+this.sendAmount > 0.0 && +this.sendAmount <= +this.currentAccount.amount) {
         this.slider = Math.round(10000 * (this.sendAmount / +this.currentAccount.amount)) / 100
-        if (this.sendAmount >= 1000) {
+        if (this.sendAmount >= 10000) {
           this.progColor = 'green'
           // let sep = ' , '
-          // console.log(this.sendAmount, sep, stake_per, sep, this.stakePeriod)
-          this.estimatedReward = Math.round(this.sendAmount * stake_per * this.stakePeriod * 100) / 100
+          console.log(this.sendAmount, stake_per, this.stakePeriod)
+          this.estimatedReward = Math.round(this.sendAmount * stake_per * 100) / 100
           // console.log('mul', stake_per)
         } else {
           this.estimatedReward = 0
@@ -509,12 +525,12 @@ export default {
     async sendTransaction () {
       try {
         this.step = 4
-        let memo = this.stakePeriod * 30
+        let memo = this.stakePeriod
         this.formatedAmount = this.formatAmountString()
         const transaction = await eos.transferToken(
-          'volentixgsys',
+          volentixContract,
           this.currentAccount.name,
-          'vtxstake1111',
+          stakingContract,
           this.formatedAmount,
           memo.toString(),
           this.privateKey.key
@@ -522,6 +538,7 @@ export default {
         this.transactionError = false
         this.transactionId = transaction.transaction_id
         this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '" target="_blank">block explorer</a>'
+        this.initData()
       } catch (error) {
         // console.log('transaction errors', error)
         this.transactionError = true
@@ -541,7 +558,7 @@ export default {
       try {
         await eos.transact({
           actions: [{
-            account: 'vtxstake1111',
+            account: stakingContract,
             name: 'unstake',
             authorization: [{
               actor: this.currentAccount.name,
