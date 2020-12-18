@@ -6,7 +6,7 @@ export default function () {
       voted_i: [],
       voted_for: [],
       availble_for_retrieval: '0.0000 VTX',
-      accountName: 'berthonythe2'
+      accountName: 'berthonytha1'
     },
     status: {
       accountAdded: false,
