@@ -9,8 +9,8 @@ import store from '@/store'
 const ecc = require('eosjs-ecc')
 
 class EosWrapper {
-  constructor () {
-    this.rpc = new JsonRpc(process.env[store.state.settings.network].EOS_HISTORYAPI)
+  constructor (endpoint = null) {
+    this.rpc = new JsonRpc(endpoint || process.env[store.state.settings.network].EOS_HISTORYAPI)
   }
 
   isPrivKeyValid (privKey) {
@@ -85,7 +85,7 @@ class EosWrapper {
       }
     }]
 
-    // console.log('actions', actions)
+    console.log('actions', actions, { actions }, { keyProvider })
     const tr = await this.transact({ actions }, { keyProvider })
     return tr
   }
@@ -96,7 +96,7 @@ class EosWrapper {
     let api = new Api({
       rpc: this.rpc,
       signatureProvider,
-      chainId: process.env[store.state.settings.network].CHAIN_ID,
+      // chainId: process.env[store.state.settings.network].CHAIN_ID,
       textDecoder: new TextDecoder(),
       textEncoder: new TextEncoder()
     })

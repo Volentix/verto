@@ -124,7 +124,7 @@ export default {
       this.spinnerVisible = true
       const results = await configManager.login(this.password)
       if (results.success) {
-        initWallet()
+        if (this.$route.params.nextUrl && this.$route.params.nextUrl.includes('dashboard')) initWallet()
         setTimeout(() => {
           this.$store.dispatch('investment/getMarketDataVsUSD')
           this.$store.commit('settings/temporary', this.password)
@@ -132,7 +132,7 @@ export default {
             path: this.$route.params.nextUrl ? this.$route.params.nextUrl : '/verto/dashboard'
           })
         },
-        3000)
+        5000)
         // this.$router.push({ path: 'vertomanager' })
       } else {
         if (results.message === 'no_default_key') {
