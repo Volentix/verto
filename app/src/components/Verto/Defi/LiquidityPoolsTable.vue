@@ -147,7 +147,7 @@ export default {
 <style lang="scss" scoped>
 
 .desktop-size{
-  height: 338px;
+  height: 360px;
 }
 .mobile-size{
   height: 818px;
