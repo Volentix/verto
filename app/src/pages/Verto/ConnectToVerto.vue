@@ -276,7 +276,6 @@ export default {
     loaded: {
       deep: true,
       handler (val) {
-        console.log('before', val)
         if (val.eos && val.eth) {
           if (this.$route.query.url) {
             const sleep = (ms) => {
@@ -284,7 +283,6 @@ export default {
             }
             console.log('before')
             sleep(3000).then(() => {
-              console.log()
               let accounts = this.$store.state.wallets.tokens.map((token) => {
                 delete token.privateKey
                 delete token.privateKeyEncrypted
@@ -293,7 +291,7 @@ export default {
 
                 return token
               })
-              console.log(accounts, 'accounts')
+
               window.top.postMessage({ accounts: accounts }, '*')
               if (this.$route.query.redirect === 'true') {
                 window.top.location.href = this.$route.query.url + '?accounts=' + encodeURIComponent(JSON.stringify(accounts))
