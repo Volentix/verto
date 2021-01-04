@@ -3,6 +3,9 @@ import { Dialog } from 'quasar'
 import { userError } from '@/util/errorHandler'
 import { userResult } from '@/util/resultHandler'
 // import * as utils from '@/util/utils'
+import {
+  EosRPC
+} from '@/util/EosInterac'
 import store from '@/store'
 import router from '@/router'
 
@@ -47,6 +50,12 @@ let distributionContract = 'vistribution' // 'vtxdistribut'
 class VDexNodeConfigManager {
   currentConfig
   currentWallet
+
+  constructor (network) {
+    let address = this.getEndpoint('eos_endpoint')
+    this.rpcWrapper = new EosRPC(network || address)
+    // this.rpc = new JsonRpc('https:////api.eosio.cr', { fetch })
+  }
 
   // async function login () {
   // privateKey = '5HtQsXDrUMtH8XEU6omNiUKZfiTM9YjG8Geiv4Qj78mYXD8mpwH'
@@ -219,7 +228,7 @@ class VDexNodeConfigManager {
 
   async getUserBalance (accountName) {
     try {
-      let result = await Vue.prototype.$rpc.getBalance(accountName)
+      let result = await this.rpcWrapper.getBalance(accountName)
       let balance = parseFloat(result.balance).toFixed(4) + ' ' + result.token
       store.commit('vdexnode/setBalance', balance)
     } catch (error) {
@@ -229,7 +238,7 @@ class VDexNodeConfigManager {
 
   async getUserResources (accountName) {
     try {
-      const result = await Vue.prototype.$rpc.getResources(accountName)
+      const result = await this.rpcWrapper.getResources(accountName)
       store.commit('vdexnode/setAccountResources', {
         ram: result.ram ? result.ram : 'unknown',
         cpu: result.cpu ? result.cpu : 'unknown',
@@ -297,31 +306,52 @@ class VDexNodeConfigManager {
         jobs[1] = 2
       }
     })
-    await eosApi.transaction(
-      votingContract,
-      'regproducer',
-      accountName,
-      {
+
+    let actions = [{
+      account: votingContract,
+      name: 'regproducer',
+      authorization: [
+        {
+          actor: accountName,
+          permission: 'active'
+        }
+      ],
+      data: {
         producer: accountName,
-        producer_name: 'test',
-        url: 'test',
-        key: 'test',
-        node_id: 'test_node_1',
-        job_ids: jobs
-      },
+        producer_name: accountName,
+        url: 'test 1',
+        key: 'EOS8UrDjUkeVxfUzUS1hZQtmaGkdWbGLExyzKF6569kRMR5TzSnQT',
+        node_id: Math.random(),
+        job_ids: [1, 2]
+      }
+    }, {
+      account: distributionContract,
+      name: 'initup',
+      authorization: [
+        {
+          actor: accountName,
+          permission: 'active'
+        }
+      ],
+      data: {
+        account: accountName
+      }
+    }]
+    return eosApi.multiActionsTransaction(
+      actions,
       'The account registered successfully!',
-      'Register the account action',
-      eosApi
+      'Register the account action'
     )
   }
 
   async retreiveReward (accountName, eosApi) {
     await eosApi.transaction(
       distributionContract,
-      'getreward',
+      'uptime',
       accountName,
-      {
-        node: accountName
+      { account: accountName,
+        node_id: accountName,
+        memo: ''
       },
       "Transaction 'Retreive reward' executed successfully!",
       'Retreive reward action'
@@ -408,5 +438,5 @@ class VDexNodeConfigManager {
   //   getAvailbleForRetrieval
   // }
 }
-window.VDexNodeConfigManager = new VDexNodeConfigManager()
-export default window.VDexNodeConfigManager
+
+export default VDexNodeConfigManager

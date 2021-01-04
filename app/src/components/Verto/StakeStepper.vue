@@ -16,7 +16,7 @@
               narrow-indicator
             >
               <q-tab name="stake" label="Stake Now" class="full-width" />
-              <q-tab name="staked" label="Staked Amounts" :disable="stakes.length === 0" class="full-width" />
+              <q-tab @click="initData()" name="staked" label="Staked Amounts" :disable="stakes.length === 0" class="full-width" />
             </q-tabs>
 
             <q-separator />
@@ -296,20 +296,23 @@
                           <div class="col">Amount: <br> <strong>{{stake.stake_amount}} VTX <q-icon class="q-mb-xs" :name="'img:' + currentAccount.icon" />
                           </strong></div>
                           <div class="col">Period: <br> <strong>{{stake.stake_period}} Days</strong></div>
-                          <div class="col mobile-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br> <strong>{{stake.time_left}}</strong></div>
-                          <div class="col desktop-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br>
-                            <q-linear-progress rounded stripe size="25px" :value="( (stake.stake_period - stake.time_left) / stake.stake_period )" color="deep-purple-14">
+                          <div class="col mobile-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br> <strong>{{stake.time_left}} {{(( ((stake.stake_period * 24 * 60)   - stake.time_left) / (stake.stake_period * 24 * 60) ))}}</strong></div>
+                          <div v-if="stake.time_left > 0" class="col desktop-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br>
+                            <q-linear-progress rounded stripe size="25px" :value="(( ((stake.stake_period * 24 * 60)   - stake.time_left) / (stake.stake_period * 24 * 60) ))" color="deep-purple-14">
                               <div class="absolute-full flex flex-center">
-                                <q-badge color="white" text-color="black" :label="(stake.time_left) + ' Days'" />
+                                <q-badge color="white" text-color="black" :label="(stake.time_left) + ' minutes'" />
                               </div>
                             </q-linear-progress>
+                          </div>
+                          <div v-else class="col desktop-only">
+                            <q-btn @click="unStakeVTX()" outline  label="Unstake" />
                           </div>
 
                         </div>
                       </div>
                     </div>
                     <div class="col col-3 column justify-end">
-                      <div class="border total column justify-end">Total Earning: <br> <strong>{{stake.subsidy}} VTX</strong></div>
+                      <div  class="border total column justify-end">Total Earning: <br> <strong>{{stake.subsidy}} VTX</strong></div>
                     </div>
                   </div>
                 </div>
@@ -331,7 +334,7 @@ const eos = new EosWrapper('http://140.82.56.143:8888')
 
 const stakingContract = 'vltxstakenow'
 const volentixContract = 'volentixtsys'
-const period_duration = 30
+const period_duration = 0.0416666666
 export default {
   name: 'VTXConverter',
   data () {
@@ -397,10 +400,10 @@ export default {
         w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
       )
     }
-    this.params.accountName = 'berthonytha1'
+    this.params.accountName = 'berthonytha2'
     this.currentAccount.key = 'EOS8UrDjUkeVxfUzUS1hZQtmaGkdWbGLExyzKF6569kRMR5TzSnQT'
     this.currentAccount.privateKey = '5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc'
-    this.currentAccount.name = 'berthonytha1'
+    this.currentAccount.name = 'berthonytha2'
     this.initData()
     // console.log('stakes', this.stakes)
   },
@@ -443,7 +446,6 @@ export default {
       if (this.params.tokenID === 'vtx') {
         let totalBalance = (await eos.getCurrencyBalanceP(stakingContract, volentixContract)).toString().split(' ')[0]
         let globalAmnts = (await eos.getTable(stakingContract, stakingContract, 'globalamount'))[0]
-        console.log(globalAmnts, 'globalAmnts')
         let totalStake = globalAmnts.currently_staked.split(' ')[0]
         let totalSubsidy = globalAmnts.cumulative_subsidy.split(' ')[0]
         this.allocatable = +totalBalance - (+totalStake + +totalSubsidy)
@@ -455,7 +457,7 @@ export default {
           s.stake_period = Math.round((((s.subsidy / s.stake_amount) * 100) - 1) * 10) * period_duration
           s.stake_date = new Date((s.unlock_timestamp - s.stake_period * 24 * 60 * 60) * 1000)
           s.stake_done = new Date(s.unlock_timestamp * 1000)
-          s.time_left = date.getDateDiff(s.stake_done, Date.now(), 'days')
+          s.time_left = date.getDateDiff(s.stake_done, Date.now(), 'minutes')
 
           stakedAmounts += +s.stake_amount
         })
@@ -569,6 +571,7 @@ export default {
             }
           }]
         }, { keyProvider: this.privateKey.key })
+        this.initData()
       } catch (error) {
         userError(error.message)
       }
