@@ -10,7 +10,7 @@ const cleanError = (message) => {
 
 class ErrorHandler extends Error {
   constructor (err) {
-    const message = err instanceof Error ? err.message : err
+    const message = err instanceof Error ? err.message : err.toString()
 
     const cleanMessage = cleanError(message)
     const error = super(cleanMessage)
