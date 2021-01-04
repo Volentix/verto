@@ -13,8 +13,9 @@
         <div class="col col-5 flex justify-end q-pr-md items-center menu">
             <!-- to="/verto/earn/use-referral-account" -->
             <!-- <router-link disabled>Refer & Earn</router-link> -->
-            <router-link to="/verto/vdexnode/">vDexNode</router-link>
-            <router-link to="/verto/exchange">Exchange</router-link>
+            <router-link v-show="false" to="/verto/dashboardNewUI">Dashboard New UI</router-link>
+            <!-- <router-link to="/verto/vdexnode/">vDexNode</router-link> -->
+            <!-- <router-link to="/verto/exchange">Exchange</router-link> -->
             <a href="javascript:void(0)" @click="logout">
                 <q-icon class="reverse" name="exit_to_app" /> Logout
             </a>
