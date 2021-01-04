@@ -82,7 +82,7 @@
                             </q-item-section>
                         </q-item>
                         <q-separator color="vseparator" v-if="!status.accountRegistered" />
-                        <q-item v-if="!status.accountRun">
+                        <q-item v-if="!status.accountRun && false">
                             <q-item-section>
                                 <q-btn outline rounded dense color="vgreen" icon="fas fa-running" class="q-my-xs" @click="retreiveReward()" label="Run">
                                     <q-tooltip content-class="bg-vgreen text-vdark" content-style="font-size: 16px" :offset="[10, 10]">
@@ -190,7 +190,7 @@
                                         {{identity.availble_for_retrieval}}
                                     </div>
                                 </div>
-                                <q-btn label="Retrieve reward" outline rounded color="vgreen" class="q-my-xs" @click="retreiveReward()" />
+                                <q-btn label="Retrieve reward" v-if="false" outline rounded color="vgreen" class="q-my-xs" @click="retreiveReward()" />
                             </q-item-section>
                         </q-item>
                     </q-list>
@@ -903,7 +903,7 @@ export default {
       this.$vDexNodeConfigManager
         .registerNode(this.identity.accountName, this.group, this.eosApi)
         .then(() => {
-          this.initAccount(this.identity.accountName)
+          this.initAccount(this.account)
         })
         .catch(error => {
           throw new Error(error)
@@ -972,7 +972,7 @@ export default {
     async getNodesData (id, key, ranks) {
       try {
         let accounts = await rpc.getAccounts(key)
-        let name = accounts.account_names[0] ? accounts.account_names[1] : ''
+        let name = accounts.account_names[0] ? accounts.account_names[0] : ''
 
         if (name) {
           let balance = await rpc.getBalance(name)
@@ -1016,7 +1016,9 @@ export default {
 @import url('https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Titillium+Web&display=swap');
 @import url('https://unpkg.com/leaflet@1.5.1/dist/leaflet.css');
-
+.vdexNode .q-notifications .block {
+    color:white !important ;
+}
 .vdexNode .bg-vblack {
     background: #000 !important;
 }
