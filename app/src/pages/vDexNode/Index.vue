@@ -554,6 +554,8 @@ let rpc
  * @vue-event {} vote
  * @vue-event {} retreiveReward
  */
+let votingContract = 'volentixvote' // vdexdposvote
+// let distributionContract = 'vistribution' // 'vtxdistribut'
 import {
   mapState
 } from 'vuex'
@@ -696,7 +698,11 @@ export default {
       script: '',
       now: '',
       eosApi: null,
-      account: {},
+      account: {
+        key: 'EOS8UrDjUkeVxfUzUS1hZQtmaGkdWbGLExyzKF6569kRMR5TzSnQT',
+        privateKey: '5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc',
+        name: 'berthonytha1'
+      },
       accounts: [],
       daily_reward_calculation_countdown: {
         hours: '',
@@ -721,7 +727,8 @@ export default {
       return o
     })
 
-    this.account = this.accounts[0]
+    // this.account = this.accounts[0]
+
     this.initAccount(this.account)
   },
   watch: {
@@ -785,7 +792,7 @@ export default {
       clearInterval(this.int3)
     },
     initEosAPI (privateKey) {
-      this.eosApi = new EosAPI(privateKey)
+      this.eosApi = new EosAPI(privateKey, 'http://140.82.56.143:8888')
     },
     updateNow () {
       this.now = Math.round(new Date().getTime() / 1000)
@@ -893,10 +900,11 @@ export default {
         })
     },
     registerNode () {
-      console.log(this.eosApi)
       this.$vDexNodeConfigManager
         .registerNode(this.identity.accountName, this.group, this.eosApi)
-        .then(() => {})
+        .then(() => {
+          this.initAccount(this.identity.accountName)
+        })
         .catch(error => {
           throw new Error(error)
         })
@@ -922,12 +930,12 @@ export default {
           }, 3000)
         })
         .catch(error => {
-          throw new Error(error)
+          this.$userError(error, 'Get nodes action')
         })
     },
     async getListOfNodes () {
       await this.getNodes()
-      const ranks = await rpc.getTable('vdexdposvote', 'vdexdposvote', 'producers')
+      const ranks = await rpc.getTable(votingContract, votingContract, 'producers')
       for (var id in this.nodes) {
         this.getNodesData(id, this.nodes[id].key, ranks)
       }
@@ -964,10 +972,9 @@ export default {
     async getNodesData (id, key, ranks) {
       try {
         let accounts = await rpc.getAccounts(key)
-        let name = accounts.account_names[0] ? accounts.account_names[0] : ''
+        let name = accounts.account_names[0] ? accounts.account_names[1] : ''
 
         if (name) {
-          console.log(name, ' name')
           let balance = await rpc.getBalance(name)
           this.nodes[id].account = name
           this.nodes[id].balance = Math.floor(balance.balance)
