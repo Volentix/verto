@@ -1421,6 +1421,12 @@ export default {
     }
     &.dark-theme{
         background-color: #04111F;
+        .wallets-wrapper--list .q-list--bordered .q-link{
+            .q-item__section{
+                color: #FFF;
+            }
+            .q-card{}
+        }
         .wallets-wrapper--list__hide-wallets.hide{
             background: #04111F;
         }
