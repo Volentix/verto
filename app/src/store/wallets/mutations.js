@@ -19,7 +19,6 @@ export const updateTokens = (state, updatedtokens) => {
       delete token.privateKey
       delete token.privateKeyEncrypted
       delete token.origin
-      delete token.privateKey
 
       return token
     })
