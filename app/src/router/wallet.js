@@ -317,6 +317,14 @@ export default [
         }
       },
       {
+        name: 'dashboardNewUI',
+        path: '/verto/dashboardNewUI',
+        component: () => import('pages/Verto/DashboardNewUI.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'profile',
         path: '/verto/profile',
         component: () => import('pages/Verto/Profile.vue'),

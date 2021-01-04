@@ -1,15 +1,17 @@
 <template>
   <q-layout>
-    <div class="desktop-version" v-if="screenSize > 1024">
-      <TopMenu />
-      <LeftMenu />
-      <div class="menu-left-wrapper"></div>
+    <div class="layout-main-app">
+      <div class="desktop-version" v-if="screenSize > 1024">
+        <TopMenu />
+        <LeftMenu />
+        <div class="menu-left-wrapper"></div>
+      </div>
+      <tabs-menu v-else class="mobile-version tabs-menu-component" />
+      <!-- mobile-only  -->
+      <q-page-container>
+        <router-view />
+      </q-page-container>
     </div>
-    <tabs-menu v-else class="mobile-version tabs-menu-component" />
-    <!-- mobile-only  -->
-    <q-page-container>
-      <router-view />
-    </q-page-container>
   </q-layout>
 </template>
 
@@ -43,7 +45,13 @@ export default {
   }
 }
 </script>
-
+<style lang="scss" scoped>
+  // .layout-main-app{
+  //   max-width: 1400px;
+  //   margin-left: auto;
+  //   margin-right: auto;
+  // }
+</style>
 <style>
   /* @media screen and (min-width: 1024px) {
     .tabs-menu-component{
