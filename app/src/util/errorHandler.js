@@ -22,7 +22,7 @@ class ErrorHandler extends Error {
 export const userError = (message) => {
   // if (!process.env.PROD) return devError(message)
   const error = new ErrorHandler(message)
-  Notify.create({ message: error.customMessage })
+  Notify.create({ message: error.customMessage, timeout: 15000 })
 }
 
 export const devError = (message) => {
