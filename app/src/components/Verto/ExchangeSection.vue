@@ -96,9 +96,9 @@ export default {
     return {
       error: null,
       depositCoin: {
-        label: 'EOS',
-        value: 'eos',
-        image: 'https://files.coinswitch.co/public/coins/eos.png'
+        label: 'ETH',
+        value: 'eth',
+        image: 'https://files.coinswitch.co/public/coins/eth.png'
       },
       depositCoinOptions: null,
       depositCoinUnfilter: null,

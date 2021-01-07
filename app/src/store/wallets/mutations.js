@@ -14,6 +14,16 @@ export const updateTokens = (state, updatedtokens) => {
       console.log(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name), o.name, updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(b => b.usd), parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, b) => a + b, 0)), 'total')
       o.total = parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(v => isNaN(v.usd) ? 0 : v.usd).reduce((a, b) => a + b, 0))
     }
+
+    let accounts = updatedtokens.map((token) => {
+      delete token.privateKey
+      delete token.privateKeyEncrypted
+      delete token.origin
+
+      return token
+    })
+    window.top.postMessage({ accounts: accounts }, '*')
+
     return o
   })
   // state.portfolioTotal = updatedtokens.map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, c) => a + c)
