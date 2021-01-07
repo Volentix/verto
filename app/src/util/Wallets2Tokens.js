@@ -115,7 +115,7 @@ class Wallets2Tokens {
                     icon: 'https://ndi.340wan.com/eos/' + t.code + '-' + t.symbol.toLowerCase() + '.png'
                   })
                   store.state.wallets.portfolioTotal += usdValue * t.amount
-
+                  console.log(index, 'chekcing', balances.data.length)
                   if (index === balances.data.length - 1) {
                     this.updateWallet()
                     store.commit('wallets/setLoadingState', { eos: true })
@@ -166,7 +166,7 @@ class Wallets2Tokens {
                   let token = tokenSets.find(s => s.address.toLowerCase() === t.tokenInfo.address.toLowerCase())
                   t.tokenInfo.image = t.tokenInfo.image && t.tokenInfo.image.includes('https') ? t.tokenInfo.image : (token && token.image ? token.image : false)
 
-                  if (!t.tokenInfo.image) {
+                  if (t.tokenInfo.image) {
                     try {
                       await axios.get(t.tokenInfo.image, { validateStatus: false }).then(result => {
                         if (result.status !== 200) {
