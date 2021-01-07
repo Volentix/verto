@@ -1,11 +1,12 @@
 <template>
     <div class="desktop-card-style make-vtx" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
         <div class="exchange-container">
-            <div class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-md q-pb-md">
+            <div class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md">
                 Exchange
-                <q-icon name="o_style" size="sm" />
+                <!-- <q-icon name="o_style" size="sm" /> -->
+                <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 66 68" style="enable-background:new 0 0 66 68;" xml:space="preserve"> <g> <path class="st0" d="M14.3,26.5c0.4,0.1,0.9-0.1,1.1-0.5c3.9-10.3,15.5-15.5,25.8-11.6c6.6,2.5,11.4,8.4,12.6,15.3v0 c0.1,0.5,0.5,0.8,0.9,0.8h0.1l0,0c0.5-0.1,0.9-0.6,0.8-1.1c-1.3-7.6-6.6-14-13.8-16.8c-5.5-2.1-11.4-1.9-16.7,0.5 c-5.3,2.4-9.4,6.7-11.5,12.2l0,0.1c-0.1,0.2,0,0.5,0.1,0.7S14,26.4,14.3,26.5z"/> <path class="st0" d="M60.8,29.8c-0.4-0.3-0.9-0.3-1.3,0l-4.7,4.9L49.9,30c-0.4-0.4-1-0.4-1.3,0c-0.4,0.4-0.4,1,0,1.4l4.9,4.7 c0.4,0.3,0.8,0.5,1.3,0.5c0,0,0,0,0.1,0c0.5,0,1-0.2,1.3-0.6l4.7-4.9C61.2,30.7,61.2,30.1,60.8,29.8z"/> <path class="st0" d="M54.2,38.9c-0.5-0.2-1,0.1-1.2,0.6c-1.9,5-5.6,9-10.4,11.2s-10.3,2.4-15.3,0.5c-6.6-2.5-11.4-8.4-12.6-15.3 c-0.1-0.5-0.6-0.8-1.1-0.7c-0.2,0-0.5,0.2-0.6,0.4c-0.1,0.2-0.2,0.5-0.2,0.7c1,5.8,4.2,10.8,8.9,14.1c3.7,2.6,8.1,4,12.6,4 c1.2,0,2.5-0.1,3.7-0.3c1.8-0.3,3.7-0.9,5.4-1.6c5.3-2.4,9.4-6.9,11.4-12.3C54.9,39.7,54.7,39.1,54.2,38.9z"/> <path class="st0" d="M18.5,36c0.2,0.2,0.4,0.3,0.7,0.3c0.2,0,0.5-0.1,0.7-0.3c0.2-0.2,0.3-0.4,0.3-0.7c0-0.3-0.1-0.5-0.3-0.7 l-4.8-4.8c-0.4-0.4-0.8-0.6-1.3-0.6c-0.5,0-1,0.2-1.4,0.6l-4.8,4.8c-0.4,0.4-0.3,1,0.1,1.4c0.4,0.3,0.9,0.3,1.3,0l4.8-4.8L18.5,36z "/> <path class="st0" d="M43.9,20.9c-0.1,0-0.2-0.1-0.2-0.1c-0.1,0-0.2,0-0.3,0c-0.1,0-0.2,0.1-0.3,0.1c-0.1,0.1-0.2,0.1-0.2,0.2 c0,0,0,0.1-0.1,0.1l-5.9,15.8h-5.2l-6.2-15.8c0,0,0-0.1-0.1-0.1c-0.1-0.1-0.1-0.2-0.2-0.2c-0.1-0.1-0.2-0.1-0.3-0.1 c-0.1,0-0.2,0-0.3,0c-0.1,0-0.2,0-0.2,0.1c-0.1,0.1-0.2,0.1-0.2,0.2c-0.1,0.1-0.1,0.2-0.1,0.3c0,0,0,0.1,0,0.1v16.3c0,0,0,0,0,0 s0,0,0,0c0,0.2,0.1,0.4,0.2,0.5c0,0,0,0,0,0h0c0,0,0,0,0,0c0,0,0,0,0,0c0,0,0,0,0,0c0,0,0,0,0,0l9.5,8.1c0,0,0,0,0,0h0 c0.1,0.1,0.2,0.1,0.4,0.1c0,0,0,0,0,0c0,0,0.1,0,0.1,0c0,0,0.1,0,0.1,0c0.1,0,0.3-0.1,0.4-0.2c0,0,0,0,0,0l9.2-8.1 c0.2-0.1,0.3-0.3,0.3-0.6V21.6c0,0,0-0.1,0-0.1c0-0.1-0.1-0.2-0.1-0.3C44.1,21.1,44,21,43.9,20.9z M25.6,25.6l4.5,11.6h-4.5V25.6z M26.9,38.6h3.8l1.9,4.9L26.9,38.6z M34.4,43.9l-2.1-5.3h4L34.4,43.9z M36.1,43.5l1.8-4.8h3.7L36.1,43.5z M42.8,37.1h-4.3l4.3-11.4 V37.1z"/> </g> </svg>
             </div>
-            <div class="row items-end q-pl-md q-pr-md scale">
+            <div class="row items-center q-pl-md q-pr-md scale">
                 <div class="col col-8">
                     <i class="step-1-lab flex">Step<b>1</b> Select coin to send</i>
                     <div class="call-action">
@@ -355,6 +356,9 @@ export default {
         }
     }
     &.dark-theme{
+        .svg-icon{
+            fill: #CCC;
+        }
         color: #FFF;
         .row .col .step-1-lab{
             color: #FFF;
@@ -387,6 +391,14 @@ export default {
         border-radius: 40px;
         min-height: 20px;
         margin-bottom: 4px;
+        min-width: 90px;
     }
+}
+.svg-icon{
+    fill: rgba(#333, .6);
+    width: 35px;
+    height: 30px;
+    max-width: unset;
+    transform: scale(1);
 }
 </style>

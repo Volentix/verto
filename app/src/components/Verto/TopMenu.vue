@@ -13,7 +13,7 @@
         <div class="col col-5 flex justify-end q-pr-md items-center menu">
             <!-- to="/verto/earn/use-referral-account" -->
             <!-- <router-link disabled>Refer & Earn</router-link> -->
-            <router-link v-show="false" to="/verto/dashboardNewUI">Dashboard New UI</router-link>
+            <router-link v-show="true" to="/verto/dashboardNewUI">Dashboard New UI</router-link>
             <!-- <router-link to="/verto/vdexnode/">vDexNode</router-link> -->
             <!-- <router-link to="/verto/exchange">Exchange</router-link> -->
             <a href="javascript:void(0)" @click="logout">
@@ -53,7 +53,7 @@ export default {
   },
   data () {
     return {
-      lightMode: false,
+      lightMode: true,
       temp: false,
       animate: true,
       interval: null,
@@ -61,8 +61,8 @@ export default {
     }
   },
   created () {
-    window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false)
-    this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false
+    window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : true)
+    this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : true
     // console.log('this.$store.state.lightMode.lightMode', this.$store.state.lightMode.lightMode)
     this.lightMode = window.localStorage.getItem('skin') !== 'false'
   },
