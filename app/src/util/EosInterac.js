@@ -1,8 +1,9 @@
 import { Api, JsonRpc } from 'eosjs'
 import { userError } from '@/util/errorHandler'
 import { userResult } from '@/util/resultHandler'
-import VDexNodeConfigManager from '@/util/VDexNodeConfigManager'
+
 import ecc from 'eosjs-ecc'
+import store from '@/store'
 import {
   JsSignatureProvider
 } from 'eosjs/dist/eosjs-jssig'
@@ -16,10 +17,8 @@ let volentixContract = 'volentixtsys'// 'volentixgsys'
 // import fetch from 'electron-fetch'
 
 class EosRPC {
-  constructor (network) {
-    let address = VDexNodeConfigManager.getEndpoint('eos_endpoint')
-    this.rpc = new JsonRpc(network || address, { fetch })
-    // this.rpc = new JsonRpc('https:////api.eosio.cr', { fetch })
+  constructor (endpoint = null) {
+    this.rpc = new JsonRpc(endpoint || process.env[store.state.settings.network].EOS_HISTORYAPI, { fetch })
   }
 
   privateToPublic (wif) {
@@ -121,7 +120,26 @@ class EosAPI {
       signatureProvider
     })
   }
-
+  async multiActionsTransaction (actions, successMessage, errorMessage) {
+    try {
+      const result = await this.api.transact(
+        {
+          actions: actions
+        },
+        {
+          blocksBehind: 3,
+          expireSeconds: 30
+        }
+      )
+      userResult(successMessage, result)
+    } catch (error) {
+      console.log(error, errorMessage)
+      userError(error, errorMessage)
+      if (error.message.includes('unable to complete by deadline')) {
+        userError('Try at a later time when EOSIO network is not as busy or get more CPU.', 'Vote action')
+      }
+    }
+  }
   async transaction (contractAccount, action, authActor, data, successMessage, errorMessage) {
     try {
       this.api.transact(
@@ -151,7 +169,7 @@ class EosAPI {
       })
     } catch (error) {
       userError('Try at a later time when EOSIO network is not as busy or get more CPU.', 'Vote action')
-      userError(error.message.toString(), errorMessage)
+      userError(error, errorMessage)
       if (error.message.includes('unable to complete by deadline')) {
         userError('Try at a later time when EOSIO network is not as busy or get more CPU.', 'Vote action')
       }

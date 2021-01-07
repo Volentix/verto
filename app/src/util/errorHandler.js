@@ -10,7 +10,7 @@ const cleanError = (message) => {
 
 class ErrorHandler extends Error {
   constructor (err) {
-    const message = err instanceof Error ? err.message : err
+    const message = err instanceof Error ? err.message : err.toString()
 
     const cleanMessage = cleanError(message)
     const error = super(cleanMessage)
@@ -22,7 +22,7 @@ class ErrorHandler extends Error {
 export const userError = (message) => {
   // if (!process.env.PROD) return devError(message)
   const error = new ErrorHandler(message)
-  Notify.create({ message: error.customMessage })
+  Notify.create({ message: error.customMessage, timeout: 15000 })
 }
 
 export const devError = (message) => {

@@ -4,6 +4,10 @@
       <img v-if="$store.state.lightMode.lightMode === 'false'" src="statics/node-banners/ban1.png" class="full-width scale3d" alt="">
       <img v-else src="statics/node-banners/ban1--dark.png" class="full-width scale3d" alt="">
     </div>
+    <div v-else-if="banner === 2" class="banner-wrapper" @click="goToLink">
+      <img v-if="$store.state.lightMode.lightMode === 'false'" src="statics/node-banners/ban2.png" class="full-width scale3d" alt="">
+      <img v-else src="statics/node-banners/ban2.png" class="full-width scale3d" alt="">
+    </div>
     <div v-else class="row flex justify-between q-pt-sm q-pb-sm">
       <div class="col col-6 flex items-center node-icon"><q-icon name="apps" />VDEX node</div>
       <div class="col col-6 flex items-center justify-end start_node q-pr-sm">

@@ -39,6 +39,17 @@
               </q-tooltip>
             </q-toggle>
           </q-item-section>
+          <q-item-section v-if="item.name === 'Network'" class="flex justify-end darkmode-option">
+            <q-btn-toggle
+            v-model="network"
+            unelevated
+            @input="setNetwork"
+            :options="[
+              {label: 'Main Net', value: 'mainnet'},
+              {label: 'Test Net', value: 'testnet'}
+            ]"
+          />
+          </q-item-section>
         </q-item>
       </q-list>
     </div>
@@ -209,6 +220,7 @@ export default {
       lightMode: false,
       vertoLink: 'https://volentix.io?verto-app',
       active: true,
+      network: this.$store.state.settings.network,
       version: {},
       existingCruxID: null,
       screenSize: 0,
@@ -248,6 +260,7 @@ export default {
       { name: 'Add EOS Account', to: '/verto/import-private-key/eos', icon: 'label', info: '' },
       { name: 'Add ETH Account', to: '/verto/import-private-key/eth', icon: 'label', info: '' },
       { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
+      { name: 'Network', to: '', icon: 'public_off', info: 'darkmode' },
       { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'soon' },
       { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' }
     ]
@@ -260,6 +273,10 @@ export default {
     // screenSize > 1024
   },
   methods: {
+    setNetwork: function () {
+      this.$store.dispatch('settings/toggleNetwork', this.network)
+      this.$q.notify({ message: `Network changed to ${this.network}`, color: 'positive' })
+    },
     toggleLightDarkMode (val) {
       window.localStorage.setItem('skin', val)
       this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin')
