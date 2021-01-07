@@ -26,12 +26,12 @@ export default {
   name: 'Intro',
   data () {
     return {
-      lightMode: false
+      lightMode: true
     }
   },
   created () {
-    window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false)
-    this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false
+    window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : true)
+    this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : true
     this.lightMode = window.localStorage.getItem('skin') !== 'false'
   },
   methods: {
