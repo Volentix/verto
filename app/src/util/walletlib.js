@@ -165,44 +165,46 @@ class Lib {
     const wallet = {
       async btc (token, from, to, value, memo, key) {
         // const bitcore = require('bitcore-lib')
-        const bitcore = require('bitcore-lib')
+        const bitcoin = require('bitcoinjs-lib')
         const explorers = require('bitcore-explorers')
         const insight = new explorers.Insight(process.env[store.state.settings.network].CACHE + 'https://explorer.btc.zelcore.io/') // 'https://insight.bitpay.com')
+        const network = store.state.settings.network === 'testnet' ? bitcoin.networks.testnet : bitcoin.networks.bitcoin
+        const keyPair = bitcoin.ECPair.fromWIF(key)
+        const psbt = new bitcoin.Psbt({ network })
+        const p2sh = bitcoin.payments.p2sh({
+          redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network }),
+          network
+        })
+
+        psbt.addOutput({ address: to, value: value * 100000000 })
+        psbt.addInput({
+          hash: 'xxxx',
+          index: 0,
+          redeemScript: p2sh.redeem.output,
+          witnessUtxo: {
+            script: p2sh.output,
+            value: 10000
+          } }
+        )
+        psbt.signAllInputs(keyPair)
+        psbt.finalizeAllInputs()
+        const tx = psbt.extractTransaction()
 
         let message, success
         try {
-          // eslint-disable-next-line new-cap
-          let privateKey = new bitcore.PrivateKey.fromWIF(key)
-          let address = bitcore.Address.fromString(from)
-          // console.log('privateKey', privateKey)
-
-          insight.getUnspentUtxos(from, function (error, utxos) {
-            if (error) {
-              console.log(error)
-            } else {
-              console.log(utxos)
-              var tx = new bitcore.Transaction()
-                .from(utxos)
-                .to(to, value * 100000000)
-                .change(address)
-                .sign(privateKey)
-                .serialize()
-
-              return new Promise(async (resolve, reject) => {
-                insight.broadcast(tx, function (error, transactionId) {
-                  if (error) {
-                    console.log(error)
-                    return reject()
-                  } else {
-                    console.log(transactionId)
-                    resolve({
-                      message: `https://www.blockchain.com/btc/tx/${transactionId}`,
-                      success: true
-                    })
-                  }
+          Promise(async (resolve, reject) => {
+            insight.broadcast(tx, function (error, transactionId) {
+              if (error) {
+                console.log(error)
+                return reject()
+              } else {
+                console.log(transactionId)
+                resolve({
+                  message: `https://www.blockchain.com/btc/tx/${transactionId}`,
+                  success: true
                 })
-              })
-            }
+              }
+            })
           })
         } catch (err) {
           message = err
