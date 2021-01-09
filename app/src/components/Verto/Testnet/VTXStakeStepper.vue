@@ -402,13 +402,11 @@ export default {
       )
     }
     /*
-
-    Testnet account details
     this.params.accountName = 'berthonytha1'
     this.currentAccount.key = 'EOS8UrDjUkeVxfUzUS1hZQtmaGkdWbGLExyzKF6569kRMR5TzSnQT'
     this.currentAccount.privateKey = '5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc'
     this.currentAccount.name = 'berthonytha1'
-    */
+*/
     this.initData()
     // console.log('stakes', this.stakes)
   },

@@ -1,8 +1,12 @@
 import EosWrapper from '@/util/EosWrapper'
 import axios from 'axios'
 import store from '@/store'
-import { userError } from '@/util/errorHandler'
-import { date } from 'quasar'
+import {
+  userError
+} from '@/util/errorHandler'
+import {
+  date
+} from 'quasar'
 import abiArray from '@/statics/abi/erc20.json'
 
 class Lib {
@@ -11,7 +15,9 @@ class Lib {
       async eos (token, key) {
         // console.log('history eos!', key, token)
         let actions = []
-        await axios.post(process.env[store.state.settings.network].CACHE + process.env[store.state.settings.network].EOS_HISTORYAPI + '/v1/history/get_actions', { 'account_name': key })
+        await axios.post(process.env[store.state.settings.network].CACHE + process.env[store.state.settings.network].EOS_HISTORYAPI + '/v1/history/get_actions', {
+          'account_name': key
+        })
           .then(function (result) {
             if (result.length !== 0) {
               result.data.actions.reverse().map(a => {
@@ -19,8 +25,7 @@ class Lib {
                 if (token === 'eos' || (
                   a.action_trace.act.name === 'transfer' &&
                     a.action_trace.receiver === key &&
-                    a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() === token)
-                ) {
+                    a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() === token)) {
                   // console.log('walletlib history actions', a)
 
                   let amount = ''
@@ -57,7 +62,9 @@ class Lib {
           })
 
         // Promise.all(balProm)
-        return { history: actions }
+        return {
+          history: actions
+        }
       },
       async eth (token, key) {
         // console.log('history eth!', key)
@@ -85,7 +92,9 @@ class Lib {
             return false
           })
 
-        return { history: actions }
+        return {
+          history: actions
+        }
       }
     }[walletType]
 
@@ -116,7 +125,9 @@ class Lib {
           })
 
         // Promise.all(balProm)
-        return { balance: float }
+        return {
+          balance: float
+        }
       },
       async eth (key, token) {
         // const Web3 = require('web3')
@@ -126,14 +137,22 @@ class Lib {
         // return { balance: float }
       },
       async btc (key) {
-        const amount = (await axios.get('https://blockchain.info/q/addressbalance/' + key, { 'cors': 'true' })).data / 100000000
+        const amount = (await axios.get('https://blockchain.info/q/addressbalance/' + key, {
+          'cors': 'true'
+        })).data / 100000000
         const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')).data.bitcoin.usd
-        return { amount, usd }
+        return {
+          amount,
+          usd
+        }
       },
       async ltc (key) {
         const amount = (await axios.get('https://chainz.cryptoid.info/ltc/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
         const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd')).data.litecoin.usd
-        return { amount, usd }
+        return {
+          amount,
+          usd
+        }
       },
       async bnb (key) {
         let amount = 0
@@ -149,12 +168,18 @@ class Lib {
           // //console.log('', err)
         }
         const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')).data.binancecoin.usd
-        return { amount, usd }
+        return {
+          amount,
+          usd
+        }
       },
       async dash (key) {
         const amount = (await axios.get('https://chainz.cryptoid.info/dash/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
         const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=dash&vs_currencies=usd')).data.dash.usd
-        return { amount, usd }
+        return {
+          amount,
+          usd
+        }
       }
     }[walletType]
 
@@ -170,13 +195,21 @@ class Lib {
         const insight = new explorers.Insight(process.env[store.state.settings.network].CACHE + 'https://explorer.btc.zelcore.io/') // 'https://insight.bitpay.com')
         const network = store.state.settings.network === 'testnet' ? bitcoin.networks.testnet : bitcoin.networks.bitcoin
         const keyPair = bitcoin.ECPair.fromWIF(key)
-        const psbt = new bitcoin.Psbt({ network })
+        const psbt = new bitcoin.Psbt({
+          network
+        })
         const p2sh = bitcoin.payments.p2sh({
-          redeem: bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network }),
+          redeem: bitcoin.payments.p2wpkh({
+            pubkey: keyPair.publicKey,
+            network
+          }),
           network
         })
 
-        psbt.addOutput({ address: to, value: value * 100000000 })
+        psbt.addOutput({
+          address: to,
+          value: value * 100000000
+        })
         psbt.addInput({
           hash: 'xxxx',
           index: 0,
@@ -184,8 +217,8 @@ class Lib {
           witnessUtxo: {
             script: p2sh.output,
             value: 10000
-          } }
-        )
+          }
+        })
         psbt.signAllInputs(keyPair)
         psbt.finalizeAllInputs()
         const tx = psbt.extractTransaction()
@@ -211,7 +244,10 @@ class Lib {
           success = false
         }
 
-        return { success, message }
+        return {
+          success,
+          message
+        }
       },
       async eos (token, from, to, value, memo, key, contract) {
         let message, success
@@ -233,7 +269,10 @@ class Lib {
           success = false
         }
 
-        return { success, message }
+        return {
+          success,
+          message
+        }
 
         async function formatAmountString (value, token, from) {
           let numberOfDecimals = 0
@@ -248,7 +287,7 @@ class Lib {
           } else {
             stringAmount += '.'
           }
-          for (;numberOfDecimals < currentAccount.precision; numberOfDecimals++) {
+          for (; numberOfDecimals < currentAccount.precision; numberOfDecimals++) {
             stringAmount += '0'
           }
 
@@ -267,7 +306,7 @@ class Lib {
         let gasPrices = await getCurrentGasPrices()
         let data = '0x00'
         let web3Value = web3.utils.toHex(web3.utils.toWei(value.toString()))
-        let transactionHash = ''
+        // let transactionHash = ''
         let sendTo = to
 
         if (token !== 'eth') {
@@ -293,23 +332,25 @@ class Lib {
         console.log('gas:', gas)
         rawTx.gas = gas
 
-        try {
-          const transaction = new EthereumTx(rawTx)
-          transaction.sign(Buffer.from(key.substring(2), 'hex'))
-          const serializedTransaction = transaction.serialize()
-          console.log('serializedTransaction', serializedTransaction)
+        const transaction = new EthereumTx(rawTx)
+        transaction.sign(Buffer.from(key.substring(2), 'hex'))
+        const serializedTransaction = transaction.serialize()
+        console.log('serializedTransaction', serializedTransaction)
 
-          return new Promise(async (resolve, reject) => {
-            // web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, id) => {
-            //   if (err) {
-            //     console.log(err)
-            //     return reject()
-            //   }
-            //   resolve({
-            //     message: process.env[store.state.settings.network].ETH_TRANSACTION_EXPLORER + id,
-            //     success: true
-            //   })
-            // })
+        return sendSingleTransaction('0x' + serializedTransaction.toString('hex'))
+
+        // web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, id) => {
+        //   if (err) {
+        //     console.log(err)
+        //     return reject()
+        //   }
+        //   resolve({
+        //     message: process.env[store.state.settings.network].ETH_TRANSACTION_EXPLORER + id,
+        //     success: true
+        //   })
+        // })
+
+        /*
             let tx = web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
 
             tx.on('confirmation', (confirmationNumber, receipt) => {
@@ -331,8 +372,12 @@ class Lib {
           let message = err
           let success = false
 
-          return { success, message }
-        }
+          return {
+            success,
+            message
+          }
+
+        */
         async function getCurrentGasPrices () {
           let response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json')
           let prices = {
@@ -343,12 +388,74 @@ class Lib {
           return prices
         }
 
+        function sendSingleTransaction (serializedTransaction) {
+          let infuraEndpoint = 'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'
+
+          let data = createParams('eth_sendRawTransaction', serializedTransaction)
+
+          return new Promise(async (resolve, reject) => {
+            const response = await axios.post(infuraEndpoint, data).catch(error => {
+              reject({
+                message: error,
+                success: false
+              }
+              )
+            })
+
+            if (response.data.error) {
+              reject({
+                message: response.data.message,
+                success: false
+              })
+            } else if (response.data.result) {
+              let hash = response.data.result
+
+              resolve({
+                message: process.env[store.state.settings.network].ETH_TRANSACTION_EXPLORER + hash,
+                success: true,
+                status: 'pending'
+              })
+
+              // Status fetching to be implemented
+              /*
+                  let data = createParams('eth_getTransactionReceipt', serializedTransaction)
+                  let interval = setInterval(() => {
+                    axios.post(infuraEndpoint, data).then((response) => {
+                      let reseipt = response.result
+                      if (reseipt) {
+                        if (reseipt.status == 0) {
+                          resolve({
+                            message: process.env[store.state.settings.network].ETH_TRANSACTION_EXPLORER + id,
+                            success: true
+                          })
+                        } else if (transactionStatus == 1) {
+                          return reject()
+                        }
+                        clearInterval(interval)
+                      }
+                    }).catch(error => {
+                      console.log(error)
+                      return reject()
+                    })
+                  }, 5000)
+                  */
+            }
+          })
+        }
+
+        function createParams (action, data) {
+          return {
+            jsonrpc: '2.0',
+            method: action,
+            params: [data],
+            id: 1
+          }
+        }
+
         // return { send }
       },
-      async ltc (key) {
-      },
-      async dash (key) {
-      }
+      async ltc (key) {},
+      async dash (key) {}
     }[walletType]
 
     return wallet ? wallet(token, from, to, value, memo, key, contract) : {}

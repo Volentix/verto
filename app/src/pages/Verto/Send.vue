@@ -61,19 +61,20 @@
           <div class="--label text-cyan-5 text-h6">{{transStatus}}</div>
         </div>
         <div class="send-modal__content--footer">
-          <div class="text-h4 --email">To SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS{{sendTo}}</div>
+          <div class="text-h4 --email">To {{sendTo}}</div>
         </div>
       </div>
     </div>
     <q-dialog v-model="transSuccessDialog">
       <q-card class="q-pa-lg" style="width: 700px; max-width: 90vw;" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'">
-        <q-toolbar>
+        <q-toolbar v-if="transStatus != 'pending'">
           <q-avatar><q-icon name="done_all" size="md" color="green" /></q-avatar>
           <q-toolbar-title><span class="text-weight-bold">Success</span></q-toolbar-title>
           <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
         <q-card-section class="text-h6">
-          <div class="text-h6 q-mb-md q-pl-sm">Transaction done Successfully.</div>
+          <div class="text-h6 q-mb-md q-pl-sm">{{transStatus  &&  transStatus == 'pending' ? 'Transaction submitted' : 'Transaction done Successfully.'}}</div>
+          <p class="text-body1" v-if=" transStatus == 'pending' "> Follow this link to check its status</p>
           <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" readonly class="input-input" rounded outlined color="purple" v-model="transactionLink">
             <template v-slot:append>
               <div class="flex justify-end">
@@ -81,6 +82,7 @@
               </div>
             </template>
           </q-input>
+          <a :href="transactionLink" target="_blank" class="text-body2 text-black"> More infos</a>
         </q-card-section>
         <q-card-actions align="right" class="q-pr-sm">
           <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/>
@@ -204,8 +206,8 @@
                         </q-input>
                       </div>
                       <div class="col col-12">
-                        <span class="lab-input">Memo</span>
-                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+                        <span v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" class="lab-input">Memo</span>
+                        <q-input v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
                       </div>
                     </div>
                   </div>
@@ -262,8 +264,8 @@
               </template>
             </q-input>
 
-            <span class="lab-input">Memo</span>
-            <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+            <span v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" class="lab-input">Memo</span>
+            <q-input v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
 
           </div>
           <br>
@@ -344,6 +346,7 @@ export default {
       privateKeyPassword: '',
       isPrivateKeyEncrypted: false,
       privateKey: {
+        key: '',
         success: null
       },
       unknownError: false,
@@ -573,7 +576,7 @@ export default {
         this.privateKey.key,
         this.currentAccount.contract
       ).then(result => {
-        // console.log('result', result)
+        console.log(result)
         if (result.success) {
           this.getPassword = false
           this.transErrorDialog = false
@@ -581,7 +584,7 @@ export default {
           this.openModalProgress = false
           this.transSuccessDialog = true
           this.transactionLink = result.message
-          this.transStatus = 'Sent Successfully'
+          this.transStatus = !result.status ? 'Sent Successfully' : result.status
         } else {
           this.unknownError = true
           this.ErrorMessage = result.message
@@ -589,6 +592,13 @@ export default {
           this.openModal = false
           this.openModalProgress = false
         }
+      }).catch((error) => {
+        console.log(error)
+        this.unknownError = true
+        this.ErrorMessage = error.message
+        this.transErrorDialog = true
+        this.openModal = false
+        this.openModalProgress = false
       })
     },
     toSummary () {

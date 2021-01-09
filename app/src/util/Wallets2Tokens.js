@@ -17,32 +17,8 @@ class Wallets2Tokens {
     this.eosUSD = 0
     axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { self.eosUSD = res.data.data.price })
     store.state.wallets.portfolioTotal = 0
-    console.log(store.state.currentwallet.config.keys, 'store.state.currentwallet.config.keys ')
+    // console.log(store.state.currentwallet.config.keys, 'store.state.currentwallet.config.keys ')
     this.tableData = [ ...store.state.currentwallet.config.keys ]
-    this.tableData.push({
-      key: 'EOS8UrDjUkeVxfUzUS1hZQtmaGkdWbGLExyzKF6569kRMR5TzSnQT',
-      privateKey: '5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc',
-      type: 'eos',
-      origin: 'eos_testnet',
-      chain: 'eos',
-      name: 'berthonytha2'
-    })
-    this.tableData.push({
-      key: 'EOS8UrDjUkeVxfUzUS1hZQtmaGkdWbGLExyzKF6569kRMR5TzSnQT',
-      privateKey: '5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc',
-      type: 'eos',
-      origin: 'eos_testnet',
-      chain: 'eos',
-      name: 'berthonytha1'
-    })
-    this.tableData.push({
-      key: 'EOS8UrDjUkeVxfUzUS1hZQtmaGkdWbGLExyzKF6569kRMR5TzSnQT',
-      privateKey: '5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc',
-      type: 'eos',
-      origin: 'eos_testnet',
-      chain: 'eos',
-      name: 'berthonytha3'
-    })
 
     this.tableData = store.state.settings.network === 'testnet' ? this.tableData.filter(o => o.origin === 'eos_testnet') : this.tableData.filter(o => o.origin !== 'eos_testnet')
     this.tableData.map(async wallet => {
@@ -61,13 +37,13 @@ class Wallets2Tokens {
         let vtxbalance = await eosTestnet.getCurrencyBalanceP(wallet.name, 'volentixtsys', 'VTX')
         // let eosbalance = 0 //eosTestnet.getCurrencyBalanceP(wallet.name, 'eosio', 'VTX')
         // console.log('eos balances', balances)
-        // let balances = balancesArray.data.length === 0 ?
-        console.log(vtxbalance, 'vtxbalance')
+        vtxbalance = vtxbalance.length ? vtxbalance[0].split(' ')[0] : 0
+        // console.log(vtxbalance, 'vtxbalance')
         balances.data = [
           { amount: '0.0000', code: 'eosio.token', symbol: 'EOS' },
           { amount: vtxbalance, code: 'volentixgsys', symbol: 'VTX' }
         ]
-        console.log('eos balances', balances)
+        // console.log('eos balances', balances)
         balances.data.map((t, index) => {
           // console.log('eos token', t)
           if (t.symbol.toLowerCase() !== 'eos') {
@@ -104,7 +80,7 @@ class Wallets2Tokens {
                   icon: 'https://ndi.340wan.com/eos/' + t.code + '-' + t.symbol.toLowerCase() + '.png'
                 })
                 store.state.wallets.portfolioTotal += usdValue * t.amount
-                console.log(index, 'chekcing', balances.data.length)
+                // console.log(index, 'chekcing', balances.data.length)
                 if (index === balances.data.length - 1) {
                   this.updateWallet()
                   store.commit('wallets/setLoadingState', { eos: true })
@@ -224,7 +200,7 @@ class Wallets2Tokens {
                     icon: 'https://ndi.340wan.com/eos/' + t.code + '-' + t.symbol.toLowerCase() + '.png'
                   })
                   store.state.wallets.portfolioTotal += usdValue * t.amount
-                  console.log(index, 'chekcing', balances.data.length)
+                  // console.log(index, 'chekcing', balances.data.length)
                   if (index === balances.data.length - 1) {
                     this.updateWallet()
                     store.commit('wallets/setLoadingState', { eos: true })
@@ -256,7 +232,7 @@ class Wallets2Tokens {
       } else if (wallet.type === 'eth') {
       //  wallet.key = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
 
-        axios.get(process.env[store.state.settings.network].CACHE + 'https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=freekey').then(res => {
+        axios.get(process.env[store.state.settings.network].CACHE + 'https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=EK-kJ7LW-wCWTsAy-ALujf').then(res => {
           let ethplorer = res ? res.data : false
 
           self.tableData.filter(w => w.key === wallet.key).map(eth => {
@@ -275,7 +251,7 @@ class Wallets2Tokens {
                 ethplorer.tokens.filter(t => t.balance > 0 && t.tokenInfo.symbol).map(async (t, index) => {
                   const csa = Web3.utils.toChecksumAddress(t.tokenInfo.address)
                   let token = tokenSets.find(s => s.address.toLowerCase() === t.tokenInfo.address.toLowerCase())
-                  t.tokenInfo.image = t.tokenInfo.image && t.tokenInfo.image.includes('https') ? t.tokenInfo.image : (token && token.image ? token.image : false)
+                  t.tokenInfo.image = t.tokenInfo.image && t.tokenInfo.image.includes('https') ? t.tokenInfo.image : (token && token.image ? token.image : 'https://zapper.fi/images/' + t.tokenInfo.symbol.toUpperCase() + '-icon.png')
 
                   if (t.tokenInfo.image) {
                     try {

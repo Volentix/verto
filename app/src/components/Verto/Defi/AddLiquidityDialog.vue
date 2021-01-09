@@ -2,7 +2,7 @@
 <q-card :dark="$store.state.lightMode.lightMode === 'true'" class="q-pa-lg modal-dialog-wrapper" style="width: 800px; max-width: 90vw;" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <q-toolbar class="my-toolbar">
         <q-toolbar-title><span class="text-weight-bold q-pl-sm">Add Liquidity</span></q-toolbar-title>
-        <q-select :dark="$store.state.lightMode.lightMode === 'true'" v-if="externalWallets.metamask.length" borderless v-model="currentExrternalWallet" :options="externalWallets.metamask" label="Account" />
+        <q-select :dark="$store.state.lightMode.lightMode === 'true'" v-if="ethWallets.length" borderless v-model="currentEthWallet" :options="ethWallets" label="Account" />
         <q-item  v-if="screenSize > 1024" dense class="metamask-btn">
             <q-item-section class="text-body1 q-pr-sm">
                 <q-btn v-if="!transactionStatus" :loading="connectLoading.metamask" :class="ethWallets.find(o => o.origin == 'metamask') ? 'bg-green-1' : 'bg-red-1'" @click="conectWallet('metamask')" flat icon="fiber_manual_record" :color="!ethWallets.find(o => o.origin == 'metamask') ? 'red' : 'green'" :label="!ethWallets.find(o => o.origin == 'metamask') ? 'Connect' : 'Connected'">
@@ -36,7 +36,9 @@
                         </q-avatar>
                     </template>
                 </q-select>
-
+                 <div class="text-body2 col-12 q-pt-sm text-red" v-if="!tokenInWallet && false">
+                   Insufficient funds
+                </div>
                 <div class="text-body2 col-12 q-pt-sm text-red" v-if="!tokenInWallet && false">
                     Token not in wallet
                 </div>
@@ -79,10 +81,10 @@
                 <strong class="lab-sub q-pl-md text-center">Allocation</strong>
                 <div class="lab-value flex flex-center text-center q-pl-lg q-pr-sm">90 % RPL 10% WETH</div>
             </div> -->
-            <div class="col col-12 col-md-4 q-pl-md">
+            <div class="col col-12 col-md-4 q-pl-md" v-if="!isNaN(getPoolOutput(0))">
                 <strong class="lab-sub lab-sub2 q-pl-lg">Approx. Pool Output</strong>
-                <div class="lab-value output column q-pl-lg q-pr-sm" v-if="pool.tokensData.length">
-                    <span class="flex flex-start q-mb-sm" v-for="(icon, index) in pool.tokensData" :key="index"><img :src="'https://zapper.fi/images/'+pool.icons[index]" class="q-mr-sm" alt=""> {{(sendAmount * (currentToken.data.price / pool.tokensData[index].price)  / 2).toFixed(4)}} {{pool.tokensData[index].symbol}}</span>
+                <div class="lab-value output column q-pl-lg q-pr-sm" v-if="pool.tokensData &&  pool.tokensData.length">
+                    <span class="flex flex-start q-mb-sm" v-for="(icon, index) in pool.tokensData" :key="index"><img :src="'https://zapper.fi/images/'+pool.icons[index]" class="q-mr-sm" alt=""> {{getPoolOutput(index)}} {{pool.tokensData[index].symbol}}</span>
                 </div>
             </div>
             <div class="col-12 col-md-12 col-md-18 q-pt-md" v-if="gasOptions">
@@ -251,17 +253,22 @@ export default {
     this.getWindowWidth()
     this.$store.dispatch('investment/getGasPrice')
     let tableData = await this.$store.state.wallets.tokens
-    this.ethAccount = tableData.filter(w => w.chain === 'eth')
-      .filter(w => this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() === w.type.toLowerCase()))
-    if (this.notWidget !== null) {
-      this.setDialogData()
-    }
+    this.ethTokens = tableData.filter(w => w.chain === 'eth' && this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() === w.type.toLowerCase()))
+
     this.ethWallets = tableData.filter(w => w.chain === 'eth' && w.type === 'eth').map(o => {
-      o.value = o.type
-      o.label = o.key
+      o.value = o.key
+      o.label = o.key.substring(0, 10) + '...' + o.key.substr(o.key.length - 5)
       o.origin = 'verto'
       return o
     })
+
+    if (this.ethWallets.length) {
+      this.currentEthWallet = this.ethWallets[0]
+    }
+    if (this.notWidget !== null) {
+      this.setDialogData()
+    }
+
     this.approvalRequired = false
     const Web3 = require('web3')
     this.platformOptions = this.platformOptions.filter(w => this.$store.state.investment.pools.find(o => o.platform.toLowerCase() === w.value.toLowerCase()))
@@ -350,24 +357,16 @@ export default {
         this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0])
       }
       let tokens = this.$store.state.investment.zapperTokens
-      let account = this.ethAccount.find(o => o.chain === 'eth' && o.type === 'eth')
-      if (account) {
-        this.currentEthWallet = {
-          label: account.key.substring(0, 10) + '...' + account.key.substr(account.key.length - 5),
-          value: account.key,
-          privateKey: account.privateKey,
-          origin: 'verto'
-        }
-      }
 
-      this.tokenOptions = this.ethAccount.map(o => {
+      this.tokenOptions = this.ethTokens.map(o => {
         o.label = o.type.toUpperCase()
         o.value = o.contract ? o.contract : o.key
-        o.key = account.key
+        o.key = this.currentEthWallet.key
         o.data = o.label === 'ETH' ? tokens.find(t => t.address.toLowerCase() === '0x0000000000000000000000000000000000000000') : tokens.find(t => t.address.toLowerCase() === o.value.toLowerCase())
         o.isERC20 = !!o.contract
         return o
       })
+
       this.currentToken = this.tokenOptions[0]
 
       this.sendAmount = this.currentToken.isERC20 ? 1 : 0.001 // this.currentToken.amount / 100
@@ -444,12 +443,15 @@ export default {
 
       return transactionObject
     },
+    getPoolOutput (index) {
+      return (this.sendAmount * (this.currentToken.data.price / this.pool.tokensData[index].price) / 2).toFixed(4)
+    },
     async sendTransaction () {
       let transactionObject = await this.getTransactionObject(true, true)
 
       // /*
       this.transactionStatus = 'Pending'
-      if (this.currentToken.metamask) {
+      if (this.currentEthWallet.origin === 'metamask') {
         /* global web3 */
         const Web3 = require('web3')
         if (window.web3 && window.web3.currentProvider.isMetaMask) {
@@ -484,7 +486,7 @@ export default {
 
       const EthereumTx = require('ethereumjs-tx').Transaction
       var transaction = new EthereumTx(transactionObject)
-      let account = this.ethAccount.find(o => o.chain === 'eth' && o.type === 'eth')
+      let account = this.currentEthWallet
 
       if (account) {
         transaction.sign(Buffer.from(account.privateKey.substring(2), 'hex'))
@@ -604,7 +606,7 @@ export default {
       if (this.sendAmount <= 0) {
         this.sendAmount = 0
       } else {
-        this.sendAmount = this.tokenInWallet && this.sendAmount > this.tokenInWallet.amount ? this.tokenInWallet.amount : this.sendAmount
+        this.sendAmount = this.currentToken && this.sendAmount > this.currentToken.amount ? this.currentToken.amount : this.sendAmount
       }
     },
     filterPoolsByUserInput (val, update) {
@@ -644,7 +646,7 @@ export default {
       this.isTokenInWallet()
     },
     getTokenAvailableAmount () {
-      let found = this.ethTokens.find(o => o.type.toLowerCase() === this.currentToken.toLowerCase())
+      let found = this.ethTokens.find(o => o.type.toLowerCase() === this.currentToken.type.toLowerCase())
       this.availableAmount = found ? found.amount : 0
     },
     goToExchange () {

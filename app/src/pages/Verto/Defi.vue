@@ -1,8 +1,23 @@
 <template>
-<q-page :key="key" class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+<q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
 
 <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+   <q-dialog v-model="testnetDialog">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Enjoy verto in Test Mode</div>
+        </q-card-section>
 
+        <q-card-section class="q-pt-none">
+             You are currently accesing verto in test mode. Currently we only support the EOS chain and it uses the Volentix Test Network. <br><br>
+             You can create a EOS wallet and start experiencing upcoming features.
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="OK" color="primary" v-close-popup @click="chain = 'eos'; switchChain()" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <q-dialog v-if="$store.state.settings.network == 'mainnet'" v-model="chooseAccount" persistent transition-show="scale" transition-hide="scale">
       <q-card class="bg-grey-11 flex flex-center q-py-lg" style="width: 500px;">
         <q-card-section>
@@ -10,7 +25,7 @@
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-         <q-select style="width: 400px;" light separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation({address:accountOption, chain:accountOption.chain})" v-model="accountOption" :options="accountOptions">
+         <q-select style="width: 400px;" light separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation()" v-model="accountOption" :options="accountOptions">
                     <template v-slot:selected>
                         <q-item v-if="accountOption">
                             <q-item-section v-if="accountOption.image" avatar>
@@ -101,7 +116,7 @@
           </q-list>
         </div>
 
-          <q-btn-dropdown auto-close stretch flat>
+          <div auto-close stretch flat>
 
            <q-list class="text-left" separator>
             <q-item clickable @click="menu = 'swap'" :class="[menu == 'swap' ? 'bg-grey-3' : 'bg-white']">
@@ -204,7 +219,7 @@
         </q-card>
       </q-expansion-item>
 
-        </q-btn-dropdown>
+        </div>
 
         </q-tabs>
       </template>
@@ -217,10 +232,10 @@
              <DebtsTable v-else-if="menu == 'debts'"/>
              <TransactionsTable v-else-if="menu == 'transactions'"/>
              <InvestmentsOpportunitiesTable v-else-if="menu == 'staking'"/>
-             <Oneinch  v-show="menu == 'swap'" />
+             <Oneinch  class="q-my-lg" v-show="menu == 'swap'" />
          </div>
          <div v-show="chain == 'eos'">
-                 <Swapeos v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'swap' || menu == 'add_liquidity' || menu == 'liquidity'" />
+                 <Swapeos  class="q-my-lg"  v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'swap' || menu == 'add_liquidity' || menu == 'liquidity'" />
                  <EosInvestmentsTable v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'investments'"/>
                 <TestnetPools v-if="$store.state.settings.network == 'testnet'"  v-show="menu == 'liquidity'" />
                 <TestnetInvestments v-if="$store.state.settings.network == 'testnet'" v-show="menu == 'investments'"  />
@@ -384,6 +399,7 @@ export default {
       ErrorMessage: '',
       ethWallet: null,
       eosWallet: null,
+      testnetDialog: false,
       invalidEosName: false,
       currentAccount: {
         selected: false,
@@ -411,6 +427,16 @@ export default {
     '$store.state.wallets.tokens': function () {
       this.initData()
     },
+    '$store.state.settings.network': function () {
+      if (this.$store.state.settings.network === 'testnet') {
+        this.testnetDialog = true
+        if (this.chain === 'eth') {
+          this.chain = 'eos'
+          this.switchChain()
+          this.initData()
+        }
+      }
+    },
     tab (val) {
       this.checkChain()
     }
@@ -419,6 +445,10 @@ export default {
     ...mapState('investment', ['selectedEOSPool', 'defaultAccount'])
   },
   async created () {
+    if (this.$store.state.settings.network === 'testnet') {
+      this.chain = 'eos'
+      this.switchChain()
+    }
     this.initData()
   },
   async mounted () {
@@ -465,7 +495,7 @@ export default {
         label: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5)
       }))
       if (ethACcounts.length) {
-        this.getMaxDeFiYield()
+        // this.getMaxDeFiYield()
         this.ethACcount = ethACcounts[0]
       }
       if (eosWallets.length) {
@@ -474,6 +504,8 @@ export default {
       if (this.defaultAccount) {
         this.accountOption = this.defaultAccount
         this.chooseAccount = false
+
+        this.switchChain()
       } else if (this.accountOptions.length) {
         this.accountOption = this.accountOptions[0]
       }
@@ -487,6 +519,9 @@ export default {
     checkChain () {
       if (this.$store.state.settings.network === 'mainnet') {
         this.chain = 'eos'
+      } else {
+        this.chain = 'eos'
+        this.testnetDialog = true
       }
     },
     showConsole (data) {
@@ -523,15 +558,16 @@ export default {
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
-    async getAccountInformation (account) {
-      this.chain = account.chain
-      console.log(account)
+    async getAccountInformation () {
+      this.chain = this.accountOption.chain
+      let account = this.accountOption
+
+      this.$store.commit('investment/resetAccountDetails', account)
+
       if (account.chain !== 'eth') return
 
-      if (!account) account = { value: this.accountOption.key }
-
       this.$store.commit('investment/setTableLoadingStatus', true)
-      this.$store.commit('investment/resetAccountDetails', account)
+
       this.$store.dispatch('investment/getTransactions', account)
       account.platform = 'uniswap-v2'
       this.$store.dispatch('investment/getInvestments', account)
@@ -541,7 +577,7 @@ export default {
       this.$store.dispatch('investment/getInvestments', account)
       account.platform = 'curve'
       this.$store.dispatch('investment/getInvestments', account)
-      account.platform = 'iearn'
+      account.platform = 'yearn'
       this.$store.dispatch('investment/getInvestments', account)
       account.platform = 'maker'
       await this.$store.dispatch('investment/getDebts', account)

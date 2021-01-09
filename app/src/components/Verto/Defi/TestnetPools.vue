@@ -1,6 +1,6 @@
 <template>
   <div>
-     <VolentixLiquidity :showLiquidity="true"  v-show="openDialog"/>
+     <VolentixLiquidity :showLiquidity="true" v-if="openDialog" />
       <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :pagination="initialPagination"  :loading="!$store.state.investment.eosPools.length" :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.eosPools" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
             <template v-slot:body-cell-name="props">
               <q-td :props="props" class="body-table-col">
@@ -19,7 +19,8 @@
           <template v-slot:body-cell-action="props">
               <q-td :props="props" class="body-table-col">
                   <div class="col-2 flex justify-end">
-                      <q-btn unelevated @click=" $store.commit('settings/setDex', {
+
+                      <q-btn  unelevated @click=" $store.commit('settings/setDex', {
                             dex: 'defibox',
                             destinationCoin: {
                               value : props.row.pool2.quantity.symbol.code().to_string()
@@ -57,6 +58,7 @@ export default {
   components: {
     VolentixLiquidity
   },
+  props: ['showAddLiquidity'],
   data () {
     return {
       eosAccount: 'berthonytha1',
@@ -144,6 +146,8 @@ export default {
     }
   },
   async created () {
+    this.openDialog = this.showAddLiquidity
+
     if (!this.$store.state.investment.eosPools.length) {
       this.accounts = await testnetRpc.getTableByScope(
         'vpools',
