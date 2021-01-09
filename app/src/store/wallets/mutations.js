@@ -2,6 +2,8 @@
 export function someMutation (state) {
 }
 */
+import VueRouter from 'vue-router'
+const route = new VueRouter()
 export const updateTokens = (state, updatedtokens) => {
   updatedtokens = updatedtokens.map(o => {
     if (o.type === 'eth') {
@@ -15,15 +17,17 @@ export const updateTokens = (state, updatedtokens) => {
       o.total = parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(v => isNaN(v.usd) ? 0 : v.usd).reduce((a, b) => a + b, 0))
     }
 
-    let accounts = updatedtokens.map((token) => {
-      delete token.privateKey
-      delete token.privateKeyEncrypted
-      delete token.origin
+    if (route.history.current.query.url) {
+      let temp = updatedtokens
+      let accounts = temp.map((token) => {
+        delete token.privateKey
+        delete token.privateKeyEncrypted
+        delete token.origin
 
-      return token
-    })
-    window.top.postMessage({ accounts: accounts }, '*')
-
+        return token
+      })
+      window.top.postMessage({ accounts: accounts }, '*')
+    }
     return o
   })
   // state.portfolioTotal = updatedtokens.map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, c) => a + c)

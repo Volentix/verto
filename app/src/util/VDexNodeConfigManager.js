@@ -124,7 +124,7 @@ class VDexNodeConfigManager {
       nodes_api: {
         type: 'string',
         format: 'url',
-        default: 'http://95.179.176.91:8000/'
+        default: 'http://199.247.30.155:8000'
       },
       jungle_api: {
         default: 'https://jungle2.cryptolions.io:443'
@@ -144,14 +144,17 @@ class VDexNodeConfigManager {
   }
   async accountRegistered (accountName) {
     try {
+      let isRegistered = false
       const result = await Vue.prototype.$rpc.getTable(votingContract, votingContract, 'producers')
       let nodeStats = result.find(row => row.owner === accountName)
       if (nodeStats) {
         store.commit('vdexnode/setAccountRegistered', true)
+        isRegistered = true
       } else {
         userResult('Account: ' + accountName + ' is not registered to the voting contract. Please Register it.')
         store.commit('vdexnode/setAccountRegistered', false)
       }
+      return isRegistered
     } catch (error) {
       userError(error, 'Account register status check')
       throw error
@@ -207,8 +210,8 @@ class VDexNodeConfigManager {
     try {
       const result = await Vue.prototype.$rpc.getTable(votingContract, votingContract, 'producers')
       let voteStats = result.find(row => row.owner === accountName)
+      let ranks = []
       if (voteStats) {
-        let ranks = []
         result.forEach(item => {
           let owner = item.owner
           let votes = item.total_votes
@@ -221,18 +224,25 @@ class VDexNodeConfigManager {
         store.commit('vdexnode/setRank', 0)
         store.commit('vdexnode/setTotalRanks', 0)
       }
+      return ranks.length
     } catch (error) {
       userError(error, 'Get rank action')
     }
   }
 
-  async getUserBalance (accountName) {
+  async getUserBalance (accountName, currentUser = false, precision = 4, includeToken = false) {
     try {
-      let result = await this.rpcWrapper.getBalance(accountName)
-      let balance = parseFloat(result.balance).toFixed(4) + ' ' + result.token
-      store.commit('vdexnode/setBalance', balance)
+      let result = await this.rpcWrapper.getVTXBalance(accountName)
+      let balance = parseFloat(result.balance).toFixed(precision)
+
+      if (includeToken) {
+        balance = balance + ' ' + result.token
+      }
+      if (currentUser) { store.commit('vdexnode/setBalance', balance) }
+
+      return balance
     } catch (error) {
-      userError(error, 'Get balance action')
+      userError(error, 'Get balance action failed for user ' + accountName)
     }
   }
 
@@ -265,6 +275,7 @@ class VDexNodeConfigManager {
         }
       })
       store.commit('vdexnode/setVotedFor', votedFor)
+      return nodeStats.length
     } catch (error) {
       userError(error, 'Get voted lists action')
     }

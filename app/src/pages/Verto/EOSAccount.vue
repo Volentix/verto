@@ -14,7 +14,8 @@
             <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
               <div class="standard-content">
                 <h2 class="standard-content--title flex justify-start">Create EOS Account</h2>
-                <EOS-account-stepper />
+                <EOS-account-stepper  v-if="$store.state.settings.network == 'mainnet'"/>
+                <CreateTesnetEOSAccount v-else />
               </div>
             </div>
           </div>
@@ -33,11 +34,13 @@ import EOSAccountStepper from '../../components/Verto/EOSAccountStepper'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import { osName } from 'mobile-device-detect'
 import Wallets from '../../components/Verto/Wallets'
+import CreateTesnetEOSAccount from '../../components/Verto/Testnet/CreateEOSAccount.vue'
 
 export default {
   components: {
     EOSAccountStepper,
     ProfileHeader,
+    CreateTesnetEOSAccount,
     Wallets
   },
   data () {

@@ -31,7 +31,13 @@
 
                 <div class="col q-py-sm q-px-sm">
                     <div class="row justify-end">
-                      <q-select   class="text-vgreen"  color="vgreen" rounded outline  @input="initAccount(account)" v-model="account" :options="accounts">
+                      <q-select   class="text-vgreen"  color="vgreen" rounded outline  @input="accountName = account.name ; trigger++ ; initAccount(account.name)" v-model="account" :options="$store.state.wallets.tokens.filter(o => o.origin == 'eos_testnet').map(w => {
+
+                          w.value  = w.name,
+                          w.label = w.name
+
+                        return w
+                      })">
                     <template v-slot:selected>
                         <q-item>
                             <q-item-section avatar>
@@ -237,13 +243,16 @@
                         <template v-slot:action>
                             <q-btn outline rounded size="xs" dense :disabled="!voting_list.length && nodes.length && nodes.every(item => item.balance !== '' && item.account) ? false : true " color="vgold" class="q-px-sm q-mx-xs" @click="getVoteBackList('random')" label="Vote back (random)" />
                             <q-btn outline rounded size="xs" dense :disabled="!voting_list.length && nodes.length && nodes.every(item => item.balance !== '' && item.account) ? false : true " color="vgold" class="q-px-sm q-mx-xs" @click="getVoteBackList('top')" label="Vote back (top)" />
-                            <q-btn outline flat round color="vgold" size="sm" icon="fas fa-sync-alt" class="q-mx-xs" :disabled="nodes.length && nodes.every(item => item.balance !== '' && item.account) ? false : true " v-on:click="refresh()" />
+                            <q-btn outline flat round color="vgold" size="sm" icon="fas fa-sync-alt" class="q-mx-xs" :disabled="nodes.length && nodes.every(item => item.balance !== '' && item.account) ? false : false " v-on:click="refresh()" />
                         </template>
                     </q-banner>
                     <q-separator dark />
                     <q-linear-progress dark indeterminate track-color="vgrey" color="vgreen" v-if="nodes.length === 0" />
                     <!-- Table example -->
                     <div class="bg-vdark">
+                    <div  style="background: #e9e9e9;" class="q-pb-md">
+                     <RequirementChecker :key="trigger" :name="account.value"/>
+                     </div>
                         <q-table dense :data="nodes" :columns="nodesColumns" row-key="name" virtual-scroll :pagination.sync="nodesPagination" :rows-per-page-options="[0]" table-style="max-height: 190pt;" hide-bottom class="bg-vdark text-vgrey">
                             <template v-slot:body="props">
                                 <q-tr :props="props">
@@ -523,7 +532,7 @@
 <script>
 import MapWidget from '../../components/vDexNode/MapWidget.vue'
 import ChatWidget from '../../components/vDexNode/ChatWidget.vue'
-
+import RequirementChecker from '../../components/Verto/Testnet/RequirementChecker'
 let rpc
 // import ualTrigger from '../../components/vDexNode/ualTrigger.vue'
 
@@ -566,7 +575,8 @@ export default {
   name: 'index',
   components: {
     MapWidget,
-    ChatWidget
+    ChatWidget,
+    RequirementChecker
   },
   data () {
     return {
@@ -577,6 +587,7 @@ export default {
       installDialog: false,
       rankDialog: false,
       rulesDialog: false,
+      trigger: 1029,
       voting_list: [],
       group: ['vote'],
       options: [{
@@ -701,7 +712,7 @@ export default {
       account: {
         key: 'EOS8UrDjUkeVxfUzUS1hZQtmaGkdWbGLExyzKF6569kRMR5TzSnQT',
         privateKey: '5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc',
-        name: 'berthonytha1'
+        name: 'berthonythak'
       },
       accounts: [],
       daily_reward_calculation_countdown: {
@@ -719,17 +730,27 @@ export default {
   },
 
   mounted () {
-    rpc = new EosRPC()
-    let tableData = this.$store.state.wallets.tokens
-    this.accounts = tableData.filter(w => w.chain === 'eos' && w.type === 'eos').map(o => {
+    rpc = new EosRPC('http://140.82.56.143:8888')
+    // let tableData = this.$store.state.wallets.tokens
+    this.accounts = this.$store.state.wallets.tokens.filter(o => o.origin === 'eos_testnet').map(w => {
+      w.value = w.name
+      w.label = w.name
+      return w
+    })
+    if (this.accounts.length) {
+      this.account = this.accounts[0]
+      this.accountName = this.account.name
+      this.initAccount(this.accountName)
+    }
+
+    /*
+    this.accountName =
+    tableData.filter(w => w.chain === 'eos' && w.type === 'eos').map(o => {
       o.label = o.name
       o.value = o.name
       return o
     })
-
-    // this.account = this.accounts[0]
-
-    this.initAccount(this.account)
+ */
   },
   watch: {
     group: function (val, oldVal) {
@@ -747,11 +768,12 @@ export default {
   },
   methods: {
     initAccount (account) {
+      this.identity.accountName = this.account.name = account
       this.destroyIntervals()
-      this.$store.commit('vdexnode/setAccountName', account.name)
+      this.$store.commit('vdexnode/setAccountName', this.account.name)
       this.$store.commit('vdexnode/setPublicKey', account.key)
       // account.privateKey = this.accounts[0].privateKey
-      this.initEosAPI(account.privateKey)
+      this.initEosAPI(this.account.privateKey)
 
       // to load countdown faster call getRewardHistoryData firstly
       this.$vDexNodeConfigManager.getRewardHistoryData()
@@ -790,6 +812,8 @@ export default {
       clearInterval(this.int1)
       clearInterval(this.int2)
       clearInterval(this.int3)
+
+      this.getRegisteredNodesData()
     },
     initEosAPI (privateKey) {
       this.eosApi = new EosAPI(privateKey, 'http://140.82.56.143:8888')
@@ -847,10 +871,12 @@ export default {
       this.voting_list = []
       this.getInfoRare()
       this.getInfoOften()
-      this.$vDexNodeConfigManager.getRewardHistoryData()
+      this.getRegisteredNodesData()
+      console.log(1)
+      // this.$vDexNodeConfigManager.getRewardHistoryData()
     },
     getInfoRare () {
-      this.getListOfNodes()
+      // this.getListOfNodes()
       this.$vDexNodeConfigManager.getUserRank(this.identity.accountName)
       this.$vDexNodeConfigManager.getRegisteredNodes()
     },
@@ -903,7 +929,7 @@ export default {
       this.$vDexNodeConfigManager
         .registerNode(this.identity.accountName, this.group, this.eosApi)
         .then(() => {
-          this.initAccount(this.account)
+        //  this.initAccount(this.account)
         })
         .catch(error => {
           throw new Error(error)
@@ -969,13 +995,55 @@ export default {
           })
       })
     },
+    async getRegisteredNodesData () {
+      const producers = await rpc.getTable(votingContract, votingContract, 'producers')
+      this.nodes = []
+      producers.map(async (p, index) => {
+        let name = p.producer_name
+        let node = {}
+
+        if (name) {
+          node.id = index
+          let balance = await this.$vDexNodeConfigManager.getUserBalance(name, false, 0)
+          node.account = name
+          node.balance = balance // Math.floor(balance)
+          node.vote = this.registered_nodes.includes(name)
+          node.voted_for = this.identity.voted_for.includes(name)
+          node.voted_i = this.identity.voted_i.includes(name)
+          console.log(4)
+          let voteStats = producers.find(row => row.owner === name)
+          if (voteStats) {
+            let rk = []
+            producers.forEach(item => {
+              let owner = item.owner
+              let votes = item.total_votes
+              rk.push({
+                owner,
+                votes
+              })
+            })
+            rk.sort((a, b) => b.votes - a.votes)
+            node.rank = rk.map(e => e.owner).indexOf(name) + 1
+          } else {
+            node.rank = 'unknown'
+          }
+          console.log(6)
+        } else {
+          node.account = 'No account found'
+          node.balance = 0
+          node.vote = false
+          node.rank = 'unknown'
+        }
+        this.nodes.push(node)
+      })
+    },
     async getNodesData (id, key, ranks) {
       try {
         let accounts = await rpc.getAccounts(key)
         let name = accounts.account_names[0] ? accounts.account_names[0] : ''
 
         if (name) {
-          let balance = await rpc.getBalance(name)
+          let balance = this.$vDexNodeConfigManager.getUserBalance(name)
           this.nodes[id].account = name
           this.nodes[id].balance = Math.floor(balance.balance)
           this.nodes[id].vote = this.registered_nodes.includes(name)
