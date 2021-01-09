@@ -16,7 +16,7 @@
                 <startNodeSection :banner="1" />
                 <chainToolsSection />
                 <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
-                    <liquidityPoolsTable :rowsPerPage="10" />
+                    <liquidityPoolsTable :rowsPerPage="10" v-if="$store.state.settings.network == 'mainnet'" />
                     <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 362px;" v-if="false">
                         <div v-for="(pool, index) in $store.state.investment.pools" :key="index" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
                             <div class="col-1 flex items-center">
@@ -58,7 +58,7 @@
             <div class="col q-pl-sm q-pr-md col-md-3">
                 <ExchangeSection />
                 <makeVTXSection />
-                <LiquidityPoolsSection />
+                <LiquidityPoolsSection v-if="$store.state.settings.network == 'mainnet'"/>
             </div>
         </div>
 
@@ -78,7 +78,7 @@
             <LiquidityPoolsSection />
             <hr style="height:0px;opacity:0" />
             <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
-                <liquidityPoolsTable :rowsPerPage="10" />
+                <liquidityPoolsTable v-if="$store.state.settings.network == 'mainnet'" :rowsPerPage="10" />
             </div>
             <hr style="height:0px;opacity:0" />
             <!-- <card-WPS /> -->

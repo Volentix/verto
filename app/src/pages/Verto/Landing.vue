@@ -124,12 +124,13 @@ export default {
       this.spinnerVisible = true
       const results = await configManager.login(this.password)
       if (results.success) {
+        this.$store.commit('settings/temporary', this.password)
         if (this.$route.params.nextUrl && this.$route.params.nextUrl.includes('dashboard')) initWallet()
         setTimeout(() => {
           this.$store.dispatch('investment/getMarketDataVsUSD')
-          this.$store.commit('settings/temporary', this.password)
+          // always redirect to dashboard for now : pending issue
           this.$router.push({
-            path: this.$route.params.nextUrl ? this.$route.params.nextUrl : '/verto/dashboard'
+            path: /*  this.$route.params.nextUrl ? this.$route.params.nextUrl : */ '/verto/dashboard'
           })
         },
         5000)

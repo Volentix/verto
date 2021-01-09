@@ -273,7 +273,7 @@ export default {
     ...mapState('wallets', ['loaded'])
   },
   watch: {
-    loaded: {
+    /* loaded: {
       deep: true,
       handler (val) {
         if (val.eos && val.eth) {
@@ -317,6 +317,7 @@ export default {
         }
       }
     }
+    */
   },
   methods: {
     checkPassword () {

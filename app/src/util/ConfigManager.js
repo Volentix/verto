@@ -377,6 +377,10 @@ class ConfigManager {
           key: walletInformation.address,
           defaultKey: config.keys.length < 1
         }
+        if (walletInformation.origin && walletInformation.origin === 'eos_testnet') {
+          wallet.origin = walletInformation.origin
+          wallet.privateKey = walletInformation.addressPriv
+        }
         if (walletInformation.storeInWallet) {
           wallet.privateKeyEncrypted = walletInformation.addressPrivateEncrypted
         }
