@@ -124,11 +124,9 @@ import {
 } from 'quasar'
 
 // import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
-import HD from '@/util/hdwallet'
-import {
-  CruxPay
-} from '@cruxpay/js-sdk'
-let cruxClient
+// import HD from '@/util/hdwallet'
+// import {CruxPay}from '@cruxpay/js-sdk'
+// let cruxClient
 
 import DexInteraction from '../../mixins/DexInteraction'
 import EosWrapper from '@/util/EosWrapper'
@@ -208,6 +206,7 @@ export default {
       empty: true
     }
     Promise.all(this.tableData)
+    /*
     let eosAccount = this.tableData.find(w => w !== undefined && w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
     // console.log('this.tableData', this.tableData)
 
@@ -236,6 +235,7 @@ export default {
         }
       }
     }
+    */
     // this.$store.dispatch('investment/getUniSwapHistoricalData')
     // this.$store.dispatch('investment/getBalancerHistoricalData')
   },
@@ -261,7 +261,11 @@ export default {
         }
       })
     }, 5000)
-    // console.log('tokensFilterd', tokensFilterd)
+    setTimeout(() => {
+      this.getCoinswitchCoins()
+      this.get1inchCoins()
+      this.getDefiboxCoins()
+    }, 3000)
   },
   methods: {
     getWindowWidth () {

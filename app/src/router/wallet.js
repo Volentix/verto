@@ -311,7 +311,7 @@ export default [
       {
         name: 'dashboard',
         path: '/verto/dashboard',
-        component: () => import('pages/Verto/Dashboard.vue'),
+        component: () => import('pages/Verto/DashboardNewUI.vue'),
         meta: {
           authRequired: true
         }

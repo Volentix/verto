@@ -13,7 +13,7 @@
         <div class="col col-5 flex justify-end q-pr-md items-center menu">
             <!-- to="/verto/earn/use-referral-account" -->
             <!-- <router-link disabled>Refer & Earn</router-link> -->
-            <router-link v-show="true" to="/verto/dashboardNewUI">Dashboard New UI</router-link>
+
             <!-- <router-link to="/verto/vdexnode/">vDexNode</router-link> -->
              <router-link to="/verto/eos-account" v-if="$store.state.settings.network == 'testnet'" class="q-pr-md">Create Test Account</router-link>
              <q-select dense  :light="$store.state.lightMode.lightMode === 'false'" @input="switchNetwork()" :dark="$store.state.lightMode.lightMode === 'true'" :color="network.value == 'testnet' ? 'white' : ''"   :class="[network.value == 'testnet' ? 'bg-red text-white' : '', 'select-input']" v-model="network"  :options="networks">

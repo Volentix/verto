@@ -240,13 +240,14 @@
                 class="bg-white text-h5"
                 ref="depositQuantity"
                 @input="
+                swapData.fromAmount = isNaN(swapData.fromAmount) ? 0 : swapData.fromAmount
                  amount1Input();
                  swapData.error = false;
                  getPairData();
                  privateKey = false;
                 "
                 v-model="swapData.fromAmount"
-                type="number"
+
                 :disabled="spinnervisible"
                 :loading="spinnervisible"
                 :rules="[
@@ -415,6 +416,7 @@
                 {{ destinationCoin.value.toUpperCase() }} ratio
                </p>
                <q-input
+               @input="swapData.toAmount = isNaN(swapData.toAmount) ? 0 : swapData.toAmount"
                 @blur="
                  swapData.toAmount = parseFloat(
                   swapData.toAmount
@@ -433,7 +435,7 @@
                 ref="destinationQuantity"
                 :loading="spinnervisible"
                 v-model="swapData.toAmount"
-                type="number"
+
                >
                 <div
                  class="flex justify-end items-center"
@@ -477,6 +479,7 @@
                 ref="fees"
                 :loading="spinnervisible"
                 v-model="swapData.feesAmount"
+                @input="swapData.feesAmount = isNaN(swapData.feesAmount) ? 0 : swapData.feesAmount"
                 @blur="
                  swapData.feesAmount =
                   parseFloat(swapData.feesAmount) < 0 ||
@@ -484,7 +487,7 @@
                    ? 0
                    : parseFloat(swapData.feesAmount)
                 "
-                type="number"
+
                >
                 <template v-slot:append>
                  %
@@ -930,6 +933,7 @@ export default {
   components: {
     TestnetPools
   },
+  name: 'TestnetLiquidityPools',
   props: ['disableDestinationCoin', 'showLiquidity'],
   data () {
     return {
@@ -1123,7 +1127,7 @@ export default {
                   payer: this.eosAccount.name,
                   ext_symbol: {
                     contract: this.destinationCoin.value.toUpperCase() === 'VTX'
-                      ? 'volentixgsys'
+                      ? 'volentixtsys'
                       : 'eosio.token',
                     sym:
            this.destinationCoin.precision +
@@ -1145,7 +1149,7 @@ export default {
                   ext_symbol: {
                     contract:
            this.depositCoin.value.toUpperCase() === 'VTX'
-             ? 'volentixgsys'
+             ? 'volentixtsys'
              : 'eosio.token',
                     sym:
            this.depositCoin.precision +
@@ -1156,7 +1160,7 @@ export default {
               },
               {
                 account: this.depositCoin.value.toUpperCase() === 'VTX'
-                  ? 'volentixgsys'
+                  ? 'volentixtsys'
                   : 'eosio.token',
                 name: 'transfer',
                 authorization: [
@@ -1176,7 +1180,7 @@ export default {
               },
               {
                 account: this.destinationCoin.value.toUpperCase() === 'VTX'
-                  ? 'volentixgsys'
+                  ? 'volentixtsys'
                   : 'eosio.token',
                 name: 'transfer',
                 authorization: [
@@ -1337,7 +1341,7 @@ export default {
         '8,' + this.getTokenSymbol(),
           initial_pool1: {
             contract: this.depositCoin.value.toUpperCase() === 'VTX'
-              ? 'volentixgsys'
+              ? 'volentixtsys'
               : 'eosio.token',
             quantity:
          parseFloat(this.swapData.fromAmount).toFixed(
@@ -1348,7 +1352,7 @@ export default {
           },
           initial_pool2: {
             contract: this.destinationCoin.value.toUpperCase() === 'VTX'
-              ? 'volentixgsys'
+              ? 'volentixtsys'
               : 'eosio.token',
             quantity:
          parseFloat(this.swapData.toAmount).toFixed(
@@ -1393,7 +1397,7 @@ export default {
             ext_symbol: {
               contract:
            this.depositCoin.value.toUpperCase() === 'VTX'
-             ? 'volentixgsys'
+             ? 'volentixtsys'
              : 'eosio.token',
               sym:
            this.depositCoin.precision +
@@ -1415,7 +1419,7 @@ export default {
             ext_symbol: {
               contract:
            this.destinationCoin.value.toUpperCase() === 'VTX'
-             ? 'volentixgsys'
+             ? 'volentixtsys'
              : 'eosio.token',
               sym:
            this.destinationCoin.precision +

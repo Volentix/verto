@@ -90,7 +90,6 @@ export default {
 
         coins.unshift(row)
       })
-
       return coins.sort(function (a, b) {
         return a.name ? -1 : 1
       })
@@ -99,6 +98,9 @@ export default {
       this.dex = null
       this.error = false
       let crosschain = ['eth', 'btc']
+
+      if (!this.destinationCoin || !this.depositCoin) return
+
       if (this.destinationCoin && this.destinationCoin && this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
         this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
         this.dex = 'oneinch'

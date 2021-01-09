@@ -19,20 +19,21 @@
                     </div>
                     <div class="col col-md-12">
                         <div class="liquidityPoolsTable q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
-                            <liquidityPoolsTable :rowsPerPage="10" />
+                            <liquidityPoolsTable :rowsPerPage="10"  v-if="$store.state.settings.network == 'mainnet'" />
+                            <TestnetPools :showAddLiquidity="true" class="bg-white" v-else />
                         </div>
                     </div>
                     <div class="col q-pr-sm col-md-4">
                         <ExchangeSection v-if="false" />
-                        <ExchangeSection2 v-if="true" />
+                        <ExchangeSection2 v-if="true && $store.state.settings.network == 'mainnet'"  />
                     </div>
                     <div class="col q-pr-sm col-md-4">
                         <makeVTXSection v-if="false" />
-                        <makeVTXSection2 v-if="true" />
+                        <makeVTXSection2 v-if="true && $store.state.settings.network == 'mainnet'" />
                     </div>
                     <div class="col col-md-4">
                         <LiquidityPoolsSection v-if="false" />
-                        <LiquidityPoolsSection2 v-if="true" />
+                        <LiquidityPoolsSection2 v-if="true  && $store.state.settings.network == 'mainnet'" />
                     </div>
                 </div>
             </div>
@@ -103,19 +104,19 @@ import {
 // } from 'quasar'
 
 // import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
-import HD from '@/util/hdwallet'
-import {
+// import HD from '@/util/hdwallet'
+/* import {
   CruxPay
 } from '@cruxpay/js-sdk'
 let cruxClient
-
+*/
 import DexInteraction from '../../mixins/DexInteraction'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
-
+import initWallet from '@/util/Wallets2Tokens'
 let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
-
+import TestnetPools from '../../components/Verto/Defi/TestnetPools'
 import {
   osName
 } from 'mobile-device-detect'
@@ -127,6 +128,7 @@ export default {
     Wallets,
     // AppsSection,
     StartNodeSection,
+    TestnetPools,
     ChainToolsSection,
     // TransactionsSection,
     LiquidityPoolsSection,
@@ -153,10 +155,12 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   beforeCreate () {
-    // console.log('beforeCreate event')
+    // initWallet()
   },
   async created () {
-    this.tableData = store.state.wallets.tokens.map(token => {
+    if (!this.$store.state.wallets.tokens.length) { initWallet() }
+
+    this.tableData = this.$store.state.wallets.tokens.map(token => {
       token.selected = false
       if (token.hidden === undefined) {
         token.hidden = false
@@ -184,6 +188,7 @@ export default {
       empty: true
     }
     Promise.all(this.tableData)
+    /*
     let eosAccount = this.tableData.find(w => w !== undefined && w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
     // console.log('this.tableData', this.tableData)
 
@@ -214,6 +219,7 @@ export default {
     }
     // this.$store.dispatch('investment/getUniSwapHistoricalData')
     // this.$store.dispatch('investment/getBalancerHistoricalData')
+    */
   },
   async mounted () {
     setTimeout(async () => {
@@ -221,7 +227,7 @@ export default {
       await store.state.wallets.tokens.map(async (f) => {
         let stakedAmounts = 0
         if (f.type === 'vtx') {
-          let stakes = await eos.getTable('vtxstake1111', f.name, 'accounts')
+          let stakes = await eos.getTable('vtxstake1111', f.name, 'accountstake')
           stakes.map(s => {
             s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
             s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
@@ -236,8 +242,12 @@ export default {
           }
         }
       })
-    }, 5000)
-    // console.log('tokensFilterd', tokensFilterd)
+    }, 6000)
+    setTimeout(() => {
+      this.getCoinswitchCoins()
+      this.get1inchCoins()
+      this.getDefiboxCoins()
+    }, 3000)
   },
   methods: {
     getWindowWidth () {
