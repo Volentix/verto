@@ -430,7 +430,7 @@ export default {
   components: {
     vpoolsComponent
   },
-  props: ['disableDestinationCoin'],
+  props: ['disableDestinationCoin', 'crossChain'],
   data () {
     return {
       name: 'Swapeos',
