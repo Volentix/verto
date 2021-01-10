@@ -1,5 +1,5 @@
 <template>
-<div class="row" style="width: 780px;margin:0 auto;">
+<div class="row" style="max-width: 780px;margin:0 auto;">
 <div class="col-md-12 checker text-h4 q-mb-md">Do you qualify to get rewards ?</div>
 
 <div class="col-md-5 checker ">
@@ -14,58 +14,57 @@
 </div>
 <div class="col-md-7">
 <q-list bordered separator class="req">
-  <q-item clickable v-ripple :active="active">
-  <q-item-section avatar>
-   <q-icon :color="passRequirements.staking ? 'green' : 'red'" :name="passRequirements.staking ? 'done' : 'close'" />
-  </q-item-section>
-  <q-item-section>
-   <q-item-label>1 - Stake 10,000 VTX</q-item-label>
-   <q-item-label caption>or more</q-item-label>
-  </q-item-section>
-  <q-item-section v-if="!passRequirements.staking" side ><q-btn flat  label="Stake now"></q-btn></q-item-section>
-  </q-item>
+<q-item clickable v-ripple :active="active">
+<q-item-section avatar>
+ <q-icon :color="passRequirements.staking ? 'green' : 'red'" :name="passRequirements.staking ? 'done' : 'close'" />
+</q-item-section>
+<q-item-section>
+ <q-item-label>1 - Stake 10,000 VTX</q-item-label>
+ <q-item-label caption>or more</q-item-label>
+</q-item-section>
+<q-item-section v-if="!passRequirements.staking" side ><q-btn flat @click="emitEvent('stake')" label="Stake now"></q-btn></q-item-section>
+</q-item>
 
-  <q-item clickable v-ripple :active="active" >
-  <q-item-section avatar>
-   <q-icon :color="passRequirements.registered ? 'green' : 'red'" :name="passRequirements.registered ? 'done' : 'close'" />
-  </q-item-section>
-  <q-item-section>
-   <q-item-label>2 - Register</q-item-label>
-   <q-item-label caption>as a producer</q-item-label>
-   </q-item-section>
- <q-item-section v-if="!passRequirements.registered" side  ><q-btn flat  label="Register"></q-btn></q-item-section>
-  </q-item>
+<q-item clickable v-ripple :active="active" >
+<q-item-section avatar>
+ <q-icon :color="passRequirements.registered ? 'green' : 'red'" :name="passRequirements.registered ? 'done' : 'close'" />
+</q-item-section>
+<q-item-section>
+ <q-item-label>2 - Register</q-item-label>
+ <q-item-label caption>as a producer</q-item-label>
+ </q-item-section>
+ <q-item-section v-if="!passRequirements.registered && account && account.length" side><q-btn flat @click="emitEvent('register')" label="Register"></q-btn></q-item-section>
+</q-item>
 
-  <q-item clickable v-ripple :active="active" >
-  <q-item-section avatar>
-   <q-icon :color="passRequirements.nodeRunning ? 'green' : 'red'" :name="passRequirements.nodeRunning ? 'done' : 'close'"  />
-  </q-item-section>
-  <q-item-section>3 - Run your node</q-item-section>
+<q-item clickable v-ripple :active="active" >
+<q-item-section avatar>
+ <q-icon :color="passRequirements.nodeRunning ? 'green' : 'red'" :name="passRequirements.nodeRunning ? 'done' : 'close'"/>
+</q-item-section>
+<q-item-section>3 - Run your node</q-item-section>
 
-  <q-item-section v-if="!passRequirements.nodeRunning" side ><q-btn @click="showInstructions = true" flat  label="Get instructions"></q-btn></q-item-section>
-  </q-item>
+<q-item-section v-if="!passRequirements.nodeRunning" side ><q-btn @click="showInstructions = true" flat label="Get instructions"></q-btn></q-item-section>
+</q-item>
 
  <q-item clickable v-ripple :active="active" >
-  <q-item-section avatar>
-   <q-icon :color="passRequirements.voted ? 'green' : 'red'" :name="passRequirements.voted ? 'done' : 'close'"  />
-  </q-item-section>
-  <q-item-section>4 - Vote at least for 1 producer</q-item-section>
-  <q-item-section v-if="!passRequirements.voted" side ><q-btn flat  label="Vote"></q-btn></q-item-section>
-  </q-item>
+<q-item-section avatar>
+ <q-icon :color="passRequirements.voted ? 'green' : 'red'" :name="passRequirements.voted ? 'done' : 'close'"/>
+</q-item-section>
+<q-item-section>4 - Vote at least for 1 producer</q-item-section>
+</q-item>
 
-  <q-item clickable v-ripple :active="active" >
-  <q-item-section avatar>
-   <q-icon :color="passRequirements.ranking ? 'green' : 'red'" :name="passRequirements.ranking ? 'done' : 'close'"  />
-  </q-item-section>
-  <q-item-section>
-   <q-item-label>5 - Be in the top 21</q-item-label>
-   <q-item-label v-if="passRequirements.registered" caption>Current rank: {{this.currentRank}}</q-item-label>
-   </q-item-section>
-  </q-item>
+<q-item clickable v-ripple :active="active" >
+<q-item-section avatar>
+ <q-icon :color="passRequirements.ranking ? 'green' : 'red'" :name="passRequirements.ranking ? 'done' : 'close'"/>
+</q-item-section>
+<q-item-section>
+ <q-item-label>5 - Be in the top 21</q-item-label>
+ <q-item-label v-if="passRequirements.registered" caption>Current rank: {{this.currentRank}}</q-item-label>
+ </q-item-section>
+</q-item>
 
  </q-list>
 </div>
-<iframe v-if="showInstructions"  width="100%" height="415" src="https://www.youtube.com/embed/OeZN5ff86jI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe v-if="showInstructions" width="100%" height="415" src="https://www.youtube.com/embed/OeZN5ff86jI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
  </div>
 </template>
 <script>
@@ -83,6 +82,7 @@ export default {
     return {
       account: '',
       active: true,
+      currentRank: null,
       showInstructions: false,
       passRequirements: {
         staking: false,
@@ -100,6 +100,25 @@ export default {
     }
   },
   methods: {
+    emitEvent (action) {
+      if (action === 'stake') {
+        this.$store.commit('currentwallet/updateParams', {
+          chainID: 'eos',
+          tokenID: 'vtx',
+          accountName: this.account
+        })
+        this.$router.push({
+          path: '/verto/stake'
+        })
+      } else if (action === 'register') {
+        console.log(this.$store.state.wallets.tokens.find(o => o.chain === 'eos' && o.name.toLowerCase() === this.account.toLowerCase()), 'this.$store.state.wallets.tokens.find(o => o.chain ===  && o.name.toLowerCaase() === this.account.toLowerCaase())')
+        if (this.$store.state.wallets.tokens.find(o => o.chain === 'eos' && o.name.toLowerCase() === this.account.toLowerCase())) {
+          this.$emit('registerAccount', this.$store.state.wallets.tokens.find(o => o.chain === 'eos' && o.name.toLowerCase() === this.account.toLowerCase()))
+        } else {
+          this.$q.notify('Import this account to your Verto Wallet to regsiter it')
+        }
+      }
+    },
     async isAccounRegistared () {
       const result = await this.$vDexNodeConfigManager.accountRegistered(this.account)
       if (result) {
@@ -159,8 +178,8 @@ export default {
 <style scoped>
 .req
 button {
-        background: #dbe1e1;
-    width: max-content;
+background: #dbe1e1;
+width: max-content;
 
 }
 .checker {
