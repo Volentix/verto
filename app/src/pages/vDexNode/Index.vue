@@ -251,7 +251,7 @@
                     <!-- Table example -->
                     <div class="bg-vdark">
                     <div  style="background: #e9e9e9;" class="q-pb-md">
-                     <RequirementChecker :key="trigger" :name="account.value"/>
+                     <RequirementChecker @registerAccount="registerNode" :key="trigger" :name="account.value"/>
                      </div>
                         <q-table dense :data="nodes" :columns="nodesColumns" row-key="name" virtual-scroll :pagination.sync="nodesPagination" :rows-per-page-options="[0]" table-style="max-height: 190pt;" hide-bottom class="bg-vdark text-vgrey">
                             <template v-slot:body="props">
@@ -767,8 +767,16 @@ export default {
     this.destroyIntervals()
   },
   methods: {
+    resetAccount () {
+      this.identity.accountName = this.account.name
+      this.$store.commit('vdexnode/setAccountName', this.account.name)
+      this.$store.commit('vdexnode/setPublicKey', this.account.key)
+      this.initEosAPI(this.account.privateKey)
+      this.$vDexNodeConfigManager.accountRegistered(this.identity.accountName)
+      this.$vDexNodeConfigManager.accountRun(this.identity.accountName)
+    },
     initAccount (account) {
-      this.identity.accountName = this.account.name = account
+      this.identity.accountName = this.account.name
       this.destroyIntervals()
       this.$store.commit('vdexnode/setAccountName', this.account.name)
       this.$store.commit('vdexnode/setPublicKey', account.key)
@@ -925,7 +933,13 @@ export default {
           throw new Error(error)
         })
     },
-    registerNode () {
+    registerNode (account = false) {
+      console.log(account, '64')
+      if (account && account.name !== this.identity.accountName) {
+        this.account = account
+        this.resetAccount(account.name)
+      }
+
       this.$vDexNodeConfigManager
         .registerNode(this.identity.accountName, this.group, this.eosApi)
         .then(() => {
