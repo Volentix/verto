@@ -1396,7 +1396,7 @@ import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 export default {
   name: 'Coinswitch',
-  props: ['disableDestinationCoin'],
+  props: ['disableDestinationCoin', 'crossChain'],
   data () {
     return {
       openModal: false,
