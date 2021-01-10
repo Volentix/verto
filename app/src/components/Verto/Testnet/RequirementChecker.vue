@@ -142,7 +142,8 @@ export default {
     async isStakingRequerimentMet () {
       let stakingContract = 'vltxstakenow'
 
-      const eos = new EosWrapper('http://140.82.56.143:8888')
+      const eos = new EosWrapper()
+
       let stake = (await eos.getTable(stakingContract, this.account, 'accountstake'))
 
       if (stake.length) {

@@ -251,7 +251,7 @@
                     <!-- Table example -->
                     <div class="bg-vdark">
                     <div  style="background: #e9e9e9;" class="q-pb-md">
-                     <RequirementChecker @registerAccount="registerNode" :key="trigger" :name="account.value"/>
+                     <RequirementChecker @registerAccount="registerNode" :key="trigger" :name="account.name"/>
                      </div>
                         <q-table dense :data="nodes" :columns="nodesColumns" row-key="name" virtual-scroll :pagination.sync="nodesPagination" :rows-per-page-options="[0]" table-style="max-height: 190pt;" hide-bottom class="bg-vdark text-vgrey">
                             <template v-slot:body="props">
@@ -564,7 +564,8 @@ let rpc
  * @vue-event {} retreiveReward
  */
 let votingContract = 'volentixvote' // vdexdposvote
-// let distributionContract = 'vistribution' // 'vtxdistribut'
+
+import VDexNodeConfigManager from '@/util/VDexNodeConfigManager'
 import {
   mapState
 } from 'vuex'
@@ -728,9 +729,9 @@ export default {
       return this.helpDialog || this.rankDialog || this.rulesDialog || this.publicDialog || this.installDialog
     }
   },
-
   mounted () {
-    rpc = new EosRPC('http://140.82.56.143:8888')
+    rpc = new EosRPC(process.env[this.$store.state.settings.network].EOS_HISTORYAPI)
+
     // let tableData = this.$store.state.wallets.tokens
     this.accounts = this.$store.state.wallets.tokens.filter(o => o.origin === 'eos_testnet').map(w => {
       w.value = w.name
@@ -776,6 +777,7 @@ export default {
       this.$vDexNodeConfigManager.accountRun(this.identity.accountName)
     },
     initAccount (account) {
+      this.$vDexNodeConfigManager = new VDexNodeConfigManager(process.env[this.$store.state.settings.network].EOS_HISTORYAPI)
       this.identity.accountName = this.account.name
       this.destroyIntervals()
       this.$store.commit('vdexnode/setAccountName', this.account.name)
@@ -824,7 +826,7 @@ export default {
       this.getRegisteredNodesData()
     },
     initEosAPI (privateKey) {
-      this.eosApi = new EosAPI(privateKey, 'http://140.82.56.143:8888')
+      this.eosApi = new EosAPI(privateKey, process.env[this.$store.state.settings.network].EOS_HISTORYAPI)
     },
     updateNow () {
       this.now = Math.round(new Date().getTime() / 1000)

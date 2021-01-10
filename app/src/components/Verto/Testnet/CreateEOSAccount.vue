@@ -140,7 +140,7 @@
 
 <script>
 import EosWrapper from '@/util/EosWrapper'
-const eos = new EosWrapper('http://140.82.56.143:8888')
+const eos = new EosWrapper()
 import {
   userError
 } from '@/util/errorHandler'

@@ -42,8 +42,8 @@
 import {
   EosRPC //, EosAPI
 } from '@/util/EosInterac'
-// const api = new EosAPI('5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc', 'http://140.82.56.143:8888')
-const testnetRpc = new EosRPC('http://140.82.56.143:8888')
+
+let testnetRpc
 import DexInteraction from '../../../mixins/DexInteraction'
 export default {
   data () {
@@ -131,6 +131,8 @@ export default {
     }
   },
   async created () {
+    testnetRpc = new EosRPC(process.env[this.$store.state.settings.network].EOS_HISTORYAPI)
+
     if (!this.$store.state.investment.testnetEOSInvestments.length) {
       this.coins = this.getAllCoins()
       this.tokensBalance = await testnetRpc.getTable('vpools', this.eosAccount, 'accounts')

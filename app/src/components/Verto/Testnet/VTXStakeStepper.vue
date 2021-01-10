@@ -330,7 +330,7 @@
 import { date } from 'quasar'
 import { userError } from '@/util/errorHandler'
 import EosWrapper from '@/util/EosWrapper'
-const eos = new EosWrapper('http://140.82.56.143:8888')
+const eos = new EosWrapper()
 
 const stakingContract = 'vltxstakenow'
 const volentixContract = 'volentixtsys'
