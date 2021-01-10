@@ -111,7 +111,7 @@ export default {
           path: '/verto/stake'
         })
       } else if (action === 'register') {
-        console.log(this.$store.state.wallets.tokens.find(o => o.chain === 'eos' && o.name.toLowerCase() === this.account.toLowerCase()), 'this.$store.state.wallets.tokens.find(o => o.chain ===  && o.name.toLowerCaase() === this.account.toLowerCaase())')
+        // console.log(this.$store.state.wallets.tokens.find(o => o.chain === 'eos' && o.name.toLowerCase() === this.account.toLowerCase()), 'this.$store.state.wallets.tokens.find(o => o.chain ===  && o.name.toLowerCaase() === this.account.toLowerCaase())')
         if (this.$store.state.wallets.tokens.find(o => o.chain === 'eos' && o.name.toLowerCase() === this.account.toLowerCase())) {
           this.$emit('registerAccount', this.$store.state.wallets.tokens.find(o => o.chain === 'eos' && o.name.toLowerCase() === this.account.toLowerCase()))
         } else {

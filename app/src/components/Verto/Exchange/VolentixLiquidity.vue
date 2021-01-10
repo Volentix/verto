@@ -1470,7 +1470,7 @@ export default {
     sendTransaction () {
       this.spinnervisible = true
       this.getPairData()
-      console.log(this.vpoolsTransactions.actions, JSON.stringify(this.vpoolsTransactions.actions))
+      // console.log(this.vpoolsTransactions.actions, JSON.stringify(this.vpoolsTransactions.actions))
       testnetApiObject.api
         .transact(this.vpoolsTransactions.actions, {
           blocksBehind: 3,

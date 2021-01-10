@@ -26,9 +26,9 @@
                                             <q-select class="default-view col-md-3 col-6 offset-md-9" v-model="defaultView" :options="['Coinswitch', '1Inch', 'Swap EOS']" label="Default view" />
                                         </div> -->
                                         <VolentixLiquidity v-if="vpoolsTestMode" />
-                                        <Oneinch :crosChain="true" v-else-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
-                                        <Swapeos :crosChain="true" v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
-                                        <Coinswitch :crosChain="true" v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
+                                        <Oneinch :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
+                                        <Swapeos :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
+                                        <Coinswitch :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
                                     </div>
                                     <br><br><br>
                                 </div>
