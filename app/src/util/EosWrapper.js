@@ -9,8 +9,9 @@ import store from '@/store'
 const ecc = require('eosjs-ecc')
 
 class EosWrapper {
-  constructor (endpoint = null) {
-    this.rpc = new JsonRpc(endpoint || process.env[store.state.settings.network].EOS_HISTORYAPI)
+  constructor () {
+    console.log(process.env[store.state.settings.network].EOS_HISTORYAPI, 'process.env[store.state.settings.network].EOS_HISTORYAPI')
+    this.rpc = new JsonRpc(process.env[store.state.settings.network].EOS_HISTORYAPI)
   }
 
   isPrivKeyValid (privKey) {

@@ -924,11 +924,8 @@ import { EosRPC, EosAPI } from '@/util/EosInterac'
 import { asset, number_to_asset } from 'eos-common'
 import { preparePool, computeBackward, computeForward } from '@/util/VolentixPools'
 // /*, number_to_asset */ import { computeForward, computeBackward, calcPrice } from '@/util/VolentixPools'
-const testnetApiObject = new EosAPI(
-  '5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc',
-  'http://140.82.56.143:8888'
-)
-const testnetRpc = new EosRPC('http://140.82.56.143:8888')
+let testnetApiObject, testnetRpc
+
 export default {
   components: {
     TestnetPools
@@ -1006,6 +1003,13 @@ export default {
     }
   },
   async created () {
+    testnetRpc = new EosRPC(process.env[this.$store.state.settings.network].EOS_HISTORYAPI)
+
+    testnetApiObject = new EosAPI(
+      '5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc',
+      process.env[this.$store.state.settings.network].EOS_HISTORYAPI
+    )
+
     this.getEOSPools()
     let tableData = await this.$store.state.wallets.tokens
     this.eosAccounts = tableData.filter((w) => w.chain === 'eos')

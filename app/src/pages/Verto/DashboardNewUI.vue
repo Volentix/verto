@@ -154,12 +154,10 @@ export default {
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
   },
-  beforeCreate () {
-    // initWallet()
+  async beforeCreate () {
+    await initWallet()
   },
   async created () {
-    if (!this.$store.state.wallets.tokens.length) { initWallet() }
-
     this.tableData = this.$store.state.wallets.tokens.map(token => {
       token.selected = false
       if (token.hidden === undefined) {
