@@ -71,7 +71,10 @@
 <script>
 // import configManager from '@/util/ConfigManager'
 // import { VTextMarquee } from 'vue-text-marquee'
+import Vue from 'vue'
+import VDexNodeConfigManager from '@/util/VDexNodeConfigManager'
 import initWallet from '@/util/Wallets2Tokens'
+import EosRPC from '@/util/EosWrapper'
 export default {
   name: 'TopMenu',
   components: {
@@ -104,9 +107,11 @@ export default {
     this.lightMode = window.localStorage.getItem('skin') !== 'false'
   },
   methods: {
-    switchNetwork () {
+    async switchNetwork () {
       this.$store.dispatch('settings/toggleNetwork', this.network.value)
-      initWallet()
+      Vue.prototype.$rpc = new EosRPC(process.env[this.$store.state.settings.network].EOS_HISTORYAPI)
+      Vue.prototype.$vDexNodeConfigManager = new VDexNodeConfigManager(process.env[this.$store.state.settings.network].EOS_HISTORYAPI)
+      await initWallet()
     },
     toggleLightDarkMode (val) {
       // console.log('toggleLightDarkMode (val)', val)
