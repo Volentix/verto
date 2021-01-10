@@ -509,7 +509,7 @@ export default {
           this.progColor = 'green'
           // let sep = ' , '
           console.log(this.sendAmount, stake_per, this.stakePeriod)
-          this.estimatedReward = Math.round(this.sendAmount * stake_per * 100) / 100
+          this.estimatedReward = (Math.round(this.sendAmount * stake_per * 100) / 100) * this.stakePeriod
           // console.log('mul', stake_per)
         } else {
           this.estimatedReward = 0
