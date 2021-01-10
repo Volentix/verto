@@ -295,8 +295,8 @@ class Lib {
         }
       },
       async eth (token, from, to, value, memo, key, contract) {
-        console.log('token, from, to, value, memo, key, contract', token, from, to, value, memo, key, contract)
-        console.log('abiArray', abiArray)
+        // console.log('token, from, to, value, memo, key, contract', token, from, to, value, memo, key, contract)
+        // console.log('abiArray', abiArray)
 
         const Web3 = require('web3')
         const EthereumTx = require('ethereumjs-tx').Transaction

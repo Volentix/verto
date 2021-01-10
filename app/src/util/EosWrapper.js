@@ -10,7 +10,7 @@ const ecc = require('eosjs-ecc')
 
 class EosWrapper {
   constructor () {
-    console.log(process.env[store.state.settings.network].EOS_HISTORYAPI, 'process.env[store.state.settings.network].EOS_HISTORYAPI')
+    // console.log(process.env[store.state.settings.network].EOS_HISTORYAPI, 'process.env[store.state.settings.network].EOS_HISTORYAPI')
     this.rpc = new JsonRpc(process.env[store.state.settings.network].EOS_HISTORYAPI)
   }
 
@@ -86,7 +86,7 @@ class EosWrapper {
       }
     }]
 
-    console.log('actions', actions, { actions }, { keyProvider })
+    // console.log('actions', actions, { actions }, { keyProvider })
     const tr = await this.transact({ actions }, { keyProvider })
     return tr
   }
