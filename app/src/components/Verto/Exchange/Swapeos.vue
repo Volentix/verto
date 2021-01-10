@@ -491,13 +491,15 @@ export default {
     let tableData = await this.$store.state.wallets.tokens
     this.eosAccounts = tableData.filter((w) => w.chain === 'eos')
     rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
-    // console.log(this.$store.state.settings.dexData, 'insaide ')
+    // console.log(this.destinationCoin, this.destinationCoin)
     if (this.$store.state.settings.dexData.depositCoin && this.crossChain) {
       this.depositCoin = this.$store.state.settings.coins.defibox.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
     }
+
     if (this.$store.state.settings.dexData.destinationCoin && this.crossChain) {
       this.destinationCoin = this.$store.state.settings.coins.defibox.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
     }
+    // console.log(this.destinationCoin, this.destinationCoin, this.$store.state.settings.dexData)
     await this.getMinePair()
     await this.getPools()
 
