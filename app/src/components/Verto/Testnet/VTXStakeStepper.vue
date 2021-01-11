@@ -330,11 +330,12 @@
 import { date } from 'quasar'
 import { userError } from '@/util/errorHandler'
 import EosWrapper from '@/util/EosWrapper'
-const eos = new EosWrapper('http://140.82.56.143:8888')
+const eos = new EosWrapper()
 
-const stakingContract = 'volentixstak'
+const stakingContract = 'vltxstakenow'
 const volentixContract = 'volentixtsys'
 const period_duration = 0.0416666666
+
 export default {
   name: 'VTXConverter',
   data () {
@@ -400,10 +401,12 @@ export default {
         w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
       )
     }
-    this.params.accountName = 'berthonytha2'
+    /*
+    this.params.accountName = 'berthonytha1'
     this.currentAccount.key = 'EOS8UrDjUkeVxfUzUS1hZQtmaGkdWbGLExyzKF6569kRMR5TzSnQT'
     this.currentAccount.privateKey = '5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc'
-    this.currentAccount.name = 'berthonytha2'
+    this.currentAccount.name = 'berthonytha1'
+*/
     this.initData()
     // console.log('stakes', this.stakes)
   },
@@ -506,7 +509,7 @@ export default {
           this.progColor = 'green'
           // let sep = ' , '
           console.log(this.sendAmount, stake_per, this.stakePeriod)
-          this.estimatedReward = Math.round(this.sendAmount * stake_per * 100) / 100
+          this.estimatedReward = (Math.round(this.sendAmount * stake_per * 100) / 100) * this.stakePeriod
           // console.log('mul', stake_per)
         } else {
           this.estimatedReward = 0

@@ -21,14 +21,14 @@
                             <div class="chain-tools-wrapper--list chain-tools-wrapper--list___2 open">
                                 <div class="list-wrapper">
                                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                                          <q-checkbox v-model="vpoolsTestMode" label="Enable vpools" color="primary" />
+
                                         <!-- <div class="row q-mb-md">
                                             <q-select class="default-view col-md-3 col-6 offset-md-9" v-model="defaultView" :options="['Coinswitch', '1Inch', 'Swap EOS']" label="Default view" />
                                         </div> -->
                                         <VolentixLiquidity v-if="vpoolsTestMode" />
-                                        <Oneinch v-else-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
-                                        <Swapeos v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
-                                        <Coinswitch v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
+                                        <Oneinch :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
+                                        <Swapeos :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
+                                        <Coinswitch :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
                                     </div>
                                     <br><br><br>
                                 </div>

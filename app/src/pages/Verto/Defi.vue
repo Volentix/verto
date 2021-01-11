@@ -2,15 +2,30 @@
 <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
 
 <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+   <q-dialog v-model="testnetDialog">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Enjoy verto in Test Mode</div>
+        </q-card-section>
 
-    <q-dialog v-model="chooseAccount" persistent transition-show="scale" transition-hide="scale">
+        <q-card-section class="q-pt-none">
+             You are currently accesing verto in test mode. Currently we only support the EOS chain and it uses the Volentix Test Network. <br><br>
+             You can create a EOS wallet and start experiencing upcoming features.
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="OK" color="primary" v-close-popup @click="chain = 'eos'; switchChain()" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-if="$store.state.settings.network == 'mainnet'" v-model="chooseAccount" persistent transition-show="scale" transition-hide="scale">
       <q-card class="bg-grey-11 flex flex-center q-py-lg" style="width: 500px;">
         <q-card-section>
           <div class="text-h6">Choose your wallet</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-         <q-select style="width: 400px;" light separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation({address:accountOption, chain:accountOption.chain})" v-model="accountOption" :options="accountOptions">
+         <q-select style="width: 400px;" light separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation()" v-model="accountOption" :options="accountOptions">
                     <template v-slot:selected>
                         <q-item v-if="accountOption">
                             <q-item-section v-if="accountOption.image" avatar>
@@ -86,7 +101,7 @@
         >
          <div >
           <q-list class="text-center flex">
-            <q-item clickable @click="chain = 'eth';  switchChain() " :class="[chain == 'eth' ? 'bg-white' :'']">
+            <q-item v-if="$store.state.settings.network == 'mainnet'" clickable @click="chain = 'eth';  switchChain() " :class="[chain == 'eth' ? 'bg-white' :'']">
 
             <q-img src="https://files.coinswitch.co/public/coins/eth.png" style="width:20px;"/>
 
@@ -101,7 +116,7 @@
           </q-list>
         </div>
 
-          <q-btn-dropdown auto-close stretch flat>
+          <div auto-close stretch flat>
 
            <q-list class="text-left" separator>
             <q-item clickable @click="menu = 'swap'" :class="[menu == 'swap' ? 'bg-grey-3' : 'bg-white']">
@@ -204,26 +219,28 @@
         </q-card>
       </q-expansion-item>
 
-        </q-btn-dropdown>
+        </div>
 
         </q-tabs>
       </template>
 
       <template v-slot:after>
       <div  class="bg-white" >
-         <div v-show="chain == 'eth'">
-            <LiquidityPoolsTable :rowsPerPage="10"  v-if="menu == 'liquidity'"/>
+         <div v-if="$store.state.settings.network == 'mainnet'" v-show="chain == 'eth'">
+             <LiquidityPoolsTable :rowsPerPage="10"  v-if="menu == 'liquidity'"/>
              <InvestmentsTable v-else-if="menu == 'investments'"/>
              <DebtsTable v-else-if="menu == 'debts'"/>
              <TransactionsTable v-else-if="menu == 'transactions'"/>
              <InvestmentsOpportunitiesTable v-else-if="menu == 'staking'"/>
-             <Oneinch  v-show="menu == 'swap'" />
+             <Oneinch  class="q-my-lg" v-show="menu == 'swap'" />
          </div>
          <div v-show="chain == 'eos'">
-                <TestnetPools v-show="menu == 'liquidity'" />
-                <TestnetInvestments v-show="menu == 'investments'"  />
-                <VolentixLiquidity :showLiquidity="false" v-show="menu == 'swap'" />
-                <VolentixLiquidity :showLiquidity="true" v-show="menu == 'add_liquidity'" />
+                 <Swapeos  class="q-my-lg"  v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'swap' || menu == 'add_liquidity' || menu == 'liquidity'" />
+                 <EosInvestmentsTable v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'investments'"/>
+                <TestnetPools v-if="$store.state.settings.network == 'testnet'"  v-show="menu == 'liquidity'" />
+                <TestnetInvestments v-if="$store.state.settings.network == 'testnet'" v-show="menu == 'investments'"  />
+                <VolentixLiquidity v-if="$store.state.settings.network == 'testnet'" :showLiquidity="false" v-show="menu == 'swap'" />
+                <VolentixLiquidity v-if="$store.state.settings.network == 'testnet'" :showLiquidity="true" v-show="menu == 'add_liquidity'" />
         </div>
 
     </div>
@@ -294,27 +311,31 @@ import {
 import LiquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 import TransactionsTable from '../../components/Verto/Defi/TransactionsTable'
 import InvestmentsTable from '../../components/Verto/Defi/InvestmentsTable'
-// import EosInvestmentsTable from '../../components/Verto/Defi/EosInvestmentsTable'
+import Swapeos from '../../components/Verto/Exchange/Swapeos'
+import EosInvestmentsTable from '../../components/Verto/Defi/EosInvestmentsTable'
 import TestnetPools from '../../components/Verto/Defi/TestnetPools'
 import TestnetInvestments from '../../components/Verto/Defi/TestnetInvestments'
 import InvestmentsOpportunitiesTable from '../../components/Verto/Defi/InvestmentsTableOpportunities'
 import DebtsTable from '../../components/Verto/Defi/DebtsTable'
 import Oneinch from '../../components/Verto/Exchange/Oneinch'
+
 import VolentixLiquidity from '../../components/Verto/Exchange/VolentixLiquidity'
 export default {
   components: {
     // TransactionsSection,
     // desktop components
     Oneinch,
+    Swapeos,
     VolentixLiquidity,
     TestnetInvestments,
     LiquidityPoolsTable,
     InvestmentsTable,
+
     TestnetPools,
     TransactionsTable,
     InvestmentsOpportunitiesTable,
-    DebtsTable
-    // EosInvestmentsTable
+    DebtsTable,
+    EosInvestmentsTable
 
   },
   data () {
@@ -378,6 +399,7 @@ export default {
       ErrorMessage: '',
       ethWallet: null,
       eosWallet: null,
+      testnetDialog: false,
       invalidEosName: false,
       currentAccount: {
         selected: false,
@@ -387,6 +409,7 @@ export default {
         contract: '',
         chain: ''
       },
+      key: 10101,
       ethTokens: [],
       maxToken: false
     }
@@ -400,73 +423,107 @@ export default {
   watch: {
     selectedEOSPool (val) {
       this.menu = 'liquidity'
+    },
+    '$store.state.wallets.tokens': function () {
+      this.initData()
+    },
+    '$store.state.settings.network': function () {
+      if (this.$store.state.settings.network === 'testnet') {
+        this.testnetDialog = true
+        if (this.chain === 'eth') {
+          this.chain = 'eos'
+          this.switchChain()
+          this.initData()
+        }
+      }
+    },
+    tab (val) {
+      this.checkChain()
     }
   },
   computed: {
     ...mapState('investment', ['selectedEOSPool', 'defaultAccount'])
   },
   async created () {
-    let exchangeNotif = document.querySelector('.exchange-notif')
-    if (exchangeNotif !== null) {
-      exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click'))
+    if (this.$store.state.settings.network === 'testnet') {
+      this.chain = 'eos'
+      this.switchChain()
     }
-    this.osName = osName
-    this.getWindowWidth()
-    window.addEventListener('resize', this.getWindowWidth)
-    // console.log('this.osName', this.osName)
-    this.params = this.$store.state.currentwallet.params
-    // console.log('this.params', this.params)
-    let tableData = this.$store.state.wallets.tokens
-    this.currentAccount = tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName))
-
-    // console.log(this.ethAccount,'ethAccount', tableData)
-    this.ethTokens = tableData.filter(w => w.chain === 'eth' && !isNaN(w.usd))
-    this.maxToken = this.ethTokens.length ? this.ethTokens.reduce((p, c) => p.usd > c.usd ? p : c) : null
-
-    this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
-
-    let eosWallets = tableData.filter(w => w.chain === 'eos' && w.type === 'eos' && this.accountOptions.push({
-      value: w.name,
-      key: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5),
-      usd: w.usd,
-      chain: 'eos',
-      total: w.total,
-      image: w.icon,
-      label: w.name
-    }))
-    console.log(tableData.filter(w => w.type === 'eth'), 'tableData.filter(w => w.chain === ')
-    let ethACcounts = tableData.filter(w => w.chain === 'eth' && w.type === 'eth' && this.accountOptions.push({
-      value: w.key,
-      key: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5),
-      chain: 'eth',
-      usd: w.usd,
-      total: w.total,
-      image: w.icon,
-      label: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5)
-    }))
-    if (ethACcounts.length) {
-      this.getMaxDeFiYield()
-      this.ethACcount = ethACcounts[0]
-    }
-    if (eosWallets.length) {
-      this.eosACcount = eosWallets[0]
-    }
-    if (this.defaultAccount) {
-      this.accountOption = this.defaultAccount
-      this.chooseAccount = false
-    } else if (this.accountOptions.length) {
-      this.accountOption = this.accountOptions[0]
-    }
-
-    if (this.accountOption.value) {
-      this.getAccountInformation(this.accountOption)
-    }
+    this.initData()
   },
   async mounted () {
-
+    this.checkChain()
   },
   methods: {
+    initData () {
+      let exchangeNotif = document.querySelector('.exchange-notif')
+      if (exchangeNotif !== null) {
+        exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click'))
+      }
+      this.osName = osName
+      this.getWindowWidth()
+      window.addEventListener('resize', this.getWindowWidth)
+      // console.log('this.osName', this.osName)
+      this.params = this.$store.state.currentwallet.params
+      // console.log('this.params', this.params)
+      let tableData = this.$store.state.wallets.tokens
+      this.currentAccount = tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+        w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName))
+
+      // console.log(this.ethAccount,'ethAccount', tableData)
+      this.ethTokens = tableData.filter(w => w.chain === 'eth' && !isNaN(w.usd))
+      this.maxToken = this.ethTokens.length ? this.ethTokens.reduce((p, c) => p.usd > c.usd ? p : c) : null
+
+      this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
+
+      let eosWallets = tableData.filter(w => w.chain === 'eos' && w.type === 'eos' && this.accountOptions.push({
+        value: w.name,
+        key: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5),
+        usd: w.usd,
+        chain: 'eos',
+        total: w.total,
+        image: w.icon,
+        label: w.name
+      }))
+      let ethACcounts = tableData.filter(w => w.chain === 'eth' && w.type === 'eth' && this.accountOptions.push({
+        value: w.key,
+        key: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5),
+        chain: 'eth',
+        usd: w.usd,
+        total: w.total,
+        image: w.icon,
+        label: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5)
+      }))
+      if (ethACcounts.length) {
+        // this.getMaxDeFiYield()
+        this.ethACcount = ethACcounts[0]
+      }
+      if (eosWallets.length) {
+        this.eosACcount = eosWallets[0]
+      }
+      if (this.defaultAccount) {
+        this.accountOption = this.defaultAccount
+        this.chooseAccount = false
+
+        this.switchChain()
+      } else if (this.accountOptions.length) {
+        this.accountOption = this.accountOptions[0]
+      }
+
+      if (this.accountOption.value) {
+        this.getAccountInformation(this.accountOption)
+      }
+
+      this.key++
+    },
+    checkChain () {
+      if (this.$store.state.settings.network === 'mainnet') {
+        this.chain = 'eos'
+      } else {
+        this.chain = 'eos'
+        this.testnetDialog = true
+      }
+    },
     showConsole (data) {
 
     },
@@ -501,15 +558,16 @@ export default {
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
-    async getAccountInformation (account) {
-      this.chain = account.chain
-      console.log(account)
+    async getAccountInformation () {
+      this.chain = this.accountOption.chain
+      let account = this.accountOption
+
+      this.$store.commit('investment/resetAccountDetails', account)
+
       if (account.chain !== 'eth') return
 
-      if (!account) account = { value: this.accountOption.key }
-
       this.$store.commit('investment/setTableLoadingStatus', true)
-      this.$store.commit('investment/resetAccountDetails', account)
+
       this.$store.dispatch('investment/getTransactions', account)
       account.platform = 'uniswap-v2'
       this.$store.dispatch('investment/getInvestments', account)
@@ -519,7 +577,7 @@ export default {
       this.$store.dispatch('investment/getInvestments', account)
       account.platform = 'curve'
       this.$store.dispatch('investment/getInvestments', account)
-      account.platform = 'iearn'
+      account.platform = 'yearn'
       this.$store.dispatch('investment/getInvestments', account)
       account.platform = 'maker'
       await this.$store.dispatch('investment/getDebts', account)

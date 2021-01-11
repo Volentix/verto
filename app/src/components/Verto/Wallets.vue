@@ -245,7 +245,7 @@
 
                         <q-card>
                         <q-card-section>
-                               <q-item :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.name == token.name && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                               <q-item :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.name == token.name && !f.hidden && !f.disabled).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar>
