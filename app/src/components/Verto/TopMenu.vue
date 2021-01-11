@@ -13,9 +13,35 @@
         <div class="col col-5 flex justify-end q-pr-md items-center menu">
             <!-- to="/verto/earn/use-referral-account" -->
             <!-- <router-link disabled>Refer & Earn</router-link> -->
-            <router-link v-show="true" to="/verto/dashboardNewUI">Dashboard New UI</router-link>
+
             <!-- <router-link to="/verto/vdexnode/">vDexNode</router-link> -->
-            <!-- <router-link to="/verto/exchange">Exchange</router-link> -->
+             <router-link to="/verto/eos-account" v-if="$store.state.settings.network == 'testnet'" class="q-pr-md">Create Test Account</router-link>
+             <q-select dense  :light="$store.state.lightMode.lightMode === 'false'" @input="switchNetwork()" :dark="$store.state.lightMode.lightMode === 'true'" :color="network.value == 'testnet' ? 'white' : ''"   :class="[network.value == 'testnet' ? 'bg-red text-white' : '', 'select-input']" v-model="network"  :options="networks">
+                    <template v-slot:option="scope">
+                        <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                            <q-item-section avatar>
+                                <q-icon size="xs"  :name="`img:${scope.opt.image}`" />
+                            </q-item-section>
+                            <q-item-section dark>
+                                <q-item-label class="text-black" v-html="scope.opt.label" />
+                            </q-item-section>
+                        </q-item>
+                    </template>
+                    <template v-slot:selected>
+                        <q-item v-if="network">
+                            <q-item-section avatar>
+                                <q-icon  size="xs"  :name="`img:${network.image}`" />
+                            </q-item-section>
+                            <q-item-section>
+                                <q-item-label class="text-black"  v-html="network.label" />
+
+                            </q-item-section>
+                        </q-item>
+                        <q-item v-else>
+                        </q-item>
+                    </template>
+                </q-select>
+
             <a href="javascript:void(0)" @click="logout">
                 <q-icon class="reverse" name="exit_to_app" /> Logout
             </a>
@@ -45,7 +71,10 @@
 <script>
 // import configManager from '@/util/ConfigManager'
 // import { VTextMarquee } from 'vue-text-marquee'
-
+import Vue from 'vue'
+import VDexNodeConfigManager from '@/util/VDexNodeConfigManager'
+import initWallet from '@/util/Wallets2Tokens'
+import EosRPC from '@/util/EosWrapper'
 export default {
   name: 'TopMenu',
   components: {
@@ -57,16 +86,33 @@ export default {
       temp: false,
       animate: true,
       interval: null,
-      key: 0
+      key: 0,
+      network: null,
+      networks: [{
+        label: 'Mainnet',
+        image: 'https://www.t2techgroup.com/wp-content/uploads/2018/07/network-icon.png',
+        value: 'mainnet'
+      }, {
+        label: 'Testnet',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/4/41/Noun_project_network_icon_1365244_cc.svg',
+        value: 'testnet'
+      }]
     }
   },
   created () {
-    window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : true)
-    this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : true
+    this.network = this.networks.find(o => o.value.toLowerCase() === this.$store.state.settings.network)
+    window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false)
+    this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false
     // console.log('this.$store.state.lightMode.lightMode', this.$store.state.lightMode.lightMode)
     this.lightMode = window.localStorage.getItem('skin') !== 'false'
   },
   methods: {
+    async switchNetwork () {
+      this.$store.dispatch('settings/toggleNetwork', this.network.value)
+      Vue.prototype.$rpc = new EosRPC(process.env[this.$store.state.settings.network].EOS_HISTORYAPI)
+      Vue.prototype.$vDexNodeConfigManager = new VDexNodeConfigManager(process.env[this.$store.state.settings.network].EOS_HISTORYAPI)
+      await initWallet()
+    },
     toggleLightDarkMode (val) {
       // console.log('toggleLightDarkMode (val)', val)
       window.localStorage.setItem('skin', val)

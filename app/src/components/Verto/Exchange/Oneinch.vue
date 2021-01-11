@@ -50,7 +50,7 @@
                                                         </span>
                                                     </div>
                                                     <div class="col col-8 offset-1">
-                                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="swapData.error = false; getSwapQuote()" v-model="swapData.fromAmount" type="number" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val <= depositCoin.amount || 'Insufficient funds']">
+                                                         <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="swapData.fromAmount = isNaN(swapData.fromAmount) ? 0 : swapData.fromAmount ; swapData.error = false; getSwapQuote()" v-model="swapData.fromAmount" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val <= depositCoin.amount || 'Insufficient funds']">
                                                             <div class="flex justify-end items-center" style="width: 60px">
                                                                 <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
                                                             </div>
@@ -116,7 +116,7 @@
                                                             </q-select>
                                                         </span></div>
                                                     <div class="col col-8 offset-1">
-                                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" disable outlined class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" type="number">
+                                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" disable outlined class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" >
                                                             <div class="flex justify-end items-center" style="width: 60px">
                                                                 <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
                                                             </div>
@@ -705,7 +705,7 @@ let web3 = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe
 export default {
   name: 'Oneinch',
   components: {},
-  props: ['disableDestinationCoin'],
+  props: ['disableDestinationCoin', 'crossChain'],
   data () {
     return {
       tableData: null,
@@ -727,7 +727,7 @@ export default {
       error: false,
       swapData: {
         marketData: [],
-        fromAmount: 0.01,
+        fromAmount: 0.001,
         toAmount: 1,
         errorText: 'Converting [from] to [to] cannot be done at this moment please try another coin',
         error: false,
@@ -750,7 +750,9 @@ export default {
       spinnervisible: false,
       lastChangedValue: 'deposit',
       coins: [],
-      depositCoin: null,
+      depositCoin: {
+        value: 'eth'
+      },
       depositQuantity: 0,
       depositCoinOptions: [],
       depositCoinUnfilter: null,
@@ -951,10 +953,10 @@ export default {
       dex: 'oneinch'
     })
 
-    if (this.$store.state.settings.dexData.depositCoin) {
+    if (this.$store.state.settings.dexData.depositCoin && this.crossChain) {
       this.depositCoin = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
     }
-    if (this.$store.state.settings.dexData.destinationCoin) {
+    if (this.$store.state.settings.dexData.destinationCoin && this.crossChain) {
       this.destinationCoin = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
     }
 
@@ -999,7 +1001,8 @@ export default {
       this.getRate()
     },
     getCoins () {
-      this.depositCoinOptions = this.getAllCoins()
+      console.log(this.depositCoin, this.destinationCoin)
+      this.depositCoinOptions = !this.crossChain ? this.$store.state.settings.coins.oneinch : this.getAllCoins()
       this.destinationCoin = !this.destinationCoin || !this.destinationCoin.value.length ? this.$store.state.settings.coins.oneinch[this.$store.state.settings.coins.oneinch.length - 1] : this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
       this.depositCoinUnfilter = this.depositCoinOptions
       this.destinationCoinUnfilter = this.depositCoinOptions

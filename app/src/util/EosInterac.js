@@ -36,13 +36,13 @@ class EosRPC {
       let accounts = await this.rpc.history_get_key_accounts(wif)
       return accounts
     } catch (error) {
-      console.log(error, wif)
+      // console.log(error, wif)
       userError(error, 'Get accounts by public key')
       throw error
     }
   }
 
-  async getBalance (name) {
+  async getVTXBalance (name) {
     try {
       var balance = 0.0
       var token = 'VTX'
@@ -133,8 +133,8 @@ class EosAPI {
       )
       userResult(successMessage, result)
     } catch (error) {
-      console.log(error, errorMessage)
-      userError(error, errorMessage)
+      // console.log(error, errorMessage)
+      userError(error.toString(), errorMessage)
       if (error.message.includes('unable to complete by deadline')) {
         userError('Try at a later time when EOSIO network is not as busy or get more CPU.', 'Vote action')
       }

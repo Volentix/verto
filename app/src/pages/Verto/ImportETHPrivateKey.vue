@@ -462,7 +462,6 @@ export default {
       let account = await web3.eth.accounts.privateKeyToAccount('0x' + this.addWallet.addressPriv)
 
       this.addWallet.address = account.address
-      this.addWallet.addressPriv = this.addWallet.addressPriv
 
       this.$refs.stepper.next()
     },
@@ -490,9 +489,8 @@ export default {
     addEthAddress: async function () {
       if (this.submitKey) {
         this.resetErrors()
-
-        const result = await this.$configManager.createEthWallet(this.addWallet)
-
+        const result = await this.$configManager.saveWalletAndKey(this.addWallet.walletName, this.addWallet.vertoPassword, null, this.addWallet.address, this.addWallet.addressPriv, 'eth', 'import')
+        // const result = await this.$configManager.createEthWallet(this.addWallet)
         if (result.success) {
           initWallet()
           this.$router.push('/verto/dashboard')

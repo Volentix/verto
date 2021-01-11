@@ -1,7 +1,4 @@
-/*
-export function someMutation (state) {
-}
-*/
+
 export const updateTokens = (state, updatedtokens) => {
   updatedtokens = updatedtokens.map(o => {
     if (o.type === 'eth') {
@@ -11,19 +8,26 @@ export const updateTokens = (state, updatedtokens) => {
   })
   updatedtokens = updatedtokens.map(o => {
     if (o.type === 'eos') {
-      console.log(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name), o.name, updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(b => b.usd), parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, b) => a + b, 0)), 'total')
+      // console.log(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name), o.name, updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(b => b.usd), parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, b) => a + b, 0)), 'total')
       o.total = parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(v => isNaN(v.usd) ? 0 : v.usd).reduce((a, b) => a + b, 0))
     }
+    if (typeof window !== 'undefined') {
+      var url = new URL(window.location.href)
+      var connect = url.searchParams.get('url')
 
-    let accounts = updatedtokens.map((token) => {
-      delete token.privateKey
-      delete token.privateKeyEncrypted
-      delete token.origin
+      if (connect) {
+        let temp = updatedtokens
+        let accounts = temp.map((token) => {
+          delete token.privateKey
+          delete token.privateKeyEncrypted
+          delete token.origin
 
-      return token
-    })
-    window.top.postMessage({ accounts: accounts }, '*')
+          return token
+        })
 
+        window.top.postMessage({ accounts: accounts }, '*')
+      }
+    }
     return o
   })
   // state.portfolioTotal = updatedtokens.map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, c) => a + c)

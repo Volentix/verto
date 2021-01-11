@@ -1396,7 +1396,7 @@ import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 export default {
   name: 'Coinswitch',
-  props: ['disableDestinationCoin'],
+  props: ['disableDestinationCoin', 'crossChain'],
   data () {
     return {
       openModal: false,
@@ -1715,7 +1715,7 @@ export default {
   async mounted () {
     const self = this
 
-    self.coins = this.getAllCoins()
+    self.coins = this.crossChain ? this.getAllCoins() : this.$store.state.settings.coins.coinswitch
     self.depositCoinOptions = this.getUniqueTokens(self.coins)
     self.destinationCoinUnfilter = self.depositCoinOptions
     self.depositCoinUnfilter = self.depositCoinOptions

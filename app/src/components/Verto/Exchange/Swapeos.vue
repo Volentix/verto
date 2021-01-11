@@ -1,8 +1,8 @@
 <template>
   <div class="swapeos-component" v-if="depositCoin && destinationCoin">
     <!-- $q.screen.width > 1024 &&  -->
-    <div class="row swapeos-component--row">
-      <div class="col col-12 col-md-8">
+    <div class="row swdapeos-component--row">
+      <div class="col col-12 col-md-7">
         <div class="apps-section">
           <!-- 1inch component -->
           <!-- add your code here -->
@@ -109,8 +109,8 @@
                                         <q-icon :name="`img:${scope.opt.image}`" />
                                       </q-item-section>
                                       <q-item-section>
-                                        <q-item-label v-html="scope.opt.label" />
-                                        <q-item-label caption>{{ scope.opt.contract }}</q-item-label>
+                                        <q-item-label v-html="scope.opt.label.toUpperCase()" />
+
                                         <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
                                         <q-item-label v-if="scope.opt.name" caption>{{ scope.opt.name }}</q-item-label>
                                       </q-item-section>
@@ -124,6 +124,7 @@
                               </span>
                             </div>
                             <div class="col col-8 offset-1">
+
                               <q-input
                                 :dark="$store.state.lightMode.lightMode === 'true'"
                                 :light="$store.state.lightMode.lightMode === 'false'"
@@ -133,12 +134,13 @@
                                 :class="{'bg-white': $store.state.lightMode.lightMode === 'false'}"
                                 ref="depositQuantity"
                                 @input="
+                                swapData.fromAmount = isNaN(swapData.fromAmount) ? 0 : swapData.fromAmount
                                   swapData.error = false;
                                   getPairData();
                                   privateKey = false
                                 "
                                 v-model="swapData.fromAmount"
-                                type="number"
+
                                 :disabled="spinnervisible"
                                 :loading="spinnervisible"
                                 :rules="[(val) => val <= depositCoin.amount || 'Insufficient funds']"
@@ -155,6 +157,7 @@
                         </div>
                         <div class="you-receive">
                           <br />
+
                           <q-btn outline round :color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'" :dark="$store.state.lightMode.lightMode === 'true'" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
                           <div class="you-receive-head row items-center">
                             <div class="col col-6">You Receive</div>
@@ -216,8 +219,8 @@
                                         <q-icon :name="`img:${scope.opt.image}`" />
                                       </q-item-section>
                                       <q-item-section>
-                                        <q-item-label v-html="scope.opt.label" />
-                                        <q-item-label caption>{{ scope.opt.contract }}</q-item-label>
+                                        <q-item-label v-html="scope.opt.label.toUpperCase()" />
+
                                       </q-item-section>
                                     </q-item>
                                   </template>
@@ -228,7 +231,7 @@
                               </span>
                             </div>
                             <div class="col col-8 offset-1">
-                              <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" disable outlined :class="{'bg-white': $store.state.lightMode.lightMode === 'false'}" class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" type="number">
+                              <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" disable outlined :class="{'bg-white': $store.state.lightMode.lightMode === 'false'}" class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" >
                                 <div class="flex justify-end items-center" style="width: 60px">
                                   <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
                                 </div>
@@ -427,7 +430,7 @@ export default {
   components: {
     vpoolsComponent
   },
-  props: ['disableDestinationCoin'],
+  props: ['disableDestinationCoin', 'crossChain'],
   data () {
     return {
       name: 'Swapeos',
@@ -488,13 +491,15 @@ export default {
     let tableData = await this.$store.state.wallets.tokens
     this.eosAccounts = tableData.filter((w) => w.chain === 'eos')
     rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
-    console.log(this.$store.state.settings.dexData, 'insaide ')
-    if (this.$store.state.settings.dexData.depositCoin) {
+    // console.log(this.destinationCoin, this.destinationCoin)
+    if (this.$store.state.settings.dexData.depositCoin && this.crossChain) {
       this.depositCoin = this.$store.state.settings.coins.defibox.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
     }
-    if (this.$store.state.settings.dexData.destinationCoin) {
+
+    if (this.$store.state.settings.dexData.destinationCoin && this.crossChain) {
       this.destinationCoin = this.$store.state.settings.coins.defibox.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
     }
+    // console.log(this.destinationCoin, this.destinationCoin, this.$store.state.settings.dexData)
     await this.getMinePair()
     await this.getPools()
 
@@ -561,6 +566,7 @@ export default {
         url = null
       this.transaction = {}
       this.swapData.fromAmount = parseFloat(this.swapData.fromAmount).toFixed(this.depositCoin.precision)
+
       this.pairData = this.pairs.find(
         (w) =>
           (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) ||
@@ -654,7 +660,7 @@ export default {
           limit: -1
         })
       ).rows
-      this.coins = this.getAllCoins()
+      this.coins = this.crossChain ? this.getAllCoins() : this.$store.state.settings.coins.defibox
       this.depositCoinOptions = this.coins
       this.depositCoinUnfilter = this.coins
       this.depositCoin = this.depositCoin ? this.coins.find((w) => w.value.toLowerCase() === this.depositCoin.value.toLowerCase()) : this.coins.find((w) => w.value.toLowerCase() === 'eos')
@@ -818,7 +824,10 @@ export default {
   },
   watch: {
     depositCoin: function (newVal, oldVal) {
-      this.swapData.fromAmount = parseFloat(newVal.amount).toFixed(this.depositCoin.precision)
+      if (newVal) {
+        this.swapData.fromAmount = parseFloat(newVal.amount).toFixed(this.depositCoin.precision)
+        console.log(this.swapData.fromAmount, '  this.swapData.fromAmount')
+      }
     },
     tab: function (newVal) {
       if (newVal === 'liquidity') {
@@ -827,7 +836,7 @@ export default {
         this.depositCoinUnfilter = this.coins
         this.getDestinationCoinOptions()
       } else {
-        this.coins = this.getAllCoins()
+        this.coins = this.crossChain ? this.getAllCoins() : this.$store.state.settings.coins.defibox
         this.depositCoinOptions = this.coins
         this.depositCoinUnfilter = this.coins
         this.getDestinationCoinOptions()

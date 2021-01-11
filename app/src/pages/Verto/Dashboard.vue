@@ -16,7 +16,7 @@
                 <startNodeSection :banner="1" />
                 <chainToolsSection />
                 <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
-                    <liquidityPoolsTable :rowsPerPage="10" />
+                    <liquidityPoolsTable :rowsPerPage="10" v-if="$store.state.settings.network == 'mainnet'" />
                     <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 362px;" v-if="false">
                         <div v-for="(pool, index) in $store.state.investment.pools" :key="index" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
                             <div class="col-1 flex items-center">
@@ -58,7 +58,7 @@
             <div class="col q-pl-sm q-pr-md col-md-3">
                 <ExchangeSection />
                 <makeVTXSection />
-                <LiquidityPoolsSection />
+                <LiquidityPoolsSection v-if="$store.state.settings.network == 'mainnet'"/>
             </div>
         </div>
 
@@ -78,7 +78,7 @@
             <LiquidityPoolsSection />
             <hr style="height:0px;opacity:0" />
             <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
-                <liquidityPoolsTable :rowsPerPage="10" />
+                <liquidityPoolsTable v-if="$store.state.settings.network == 'mainnet'" :rowsPerPage="10" />
             </div>
             <hr style="height:0px;opacity:0" />
             <!-- <card-WPS /> -->
@@ -124,11 +124,9 @@ import {
 } from 'quasar'
 
 // import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
-import HD from '@/util/hdwallet'
-import {
-  CruxPay
-} from '@cruxpay/js-sdk'
-let cruxClient
+// import HD from '@/util/hdwallet'
+// import {CruxPay}from '@cruxpay/js-sdk'
+// let cruxClient
 
 import DexInteraction from '../../mixins/DexInteraction'
 import EosWrapper from '@/util/EosWrapper'
@@ -208,6 +206,7 @@ export default {
       empty: true
     }
     Promise.all(this.tableData)
+    /*
     let eosAccount = this.tableData.find(w => w !== undefined && w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
     // console.log('this.tableData', this.tableData)
 
@@ -236,6 +235,7 @@ export default {
         }
       }
     }
+    */
     // this.$store.dispatch('investment/getUniSwapHistoricalData')
     // this.$store.dispatch('investment/getBalancerHistoricalData')
   },
@@ -261,7 +261,11 @@ export default {
         }
       })
     }, 5000)
-    // console.log('tokensFilterd', tokensFilterd)
+    setTimeout(() => {
+      this.getCoinswitchCoins()
+      this.get1inchCoins()
+      this.getDefiboxCoins()
+    }, 3000)
   },
   methods: {
     getWindowWidth () {
