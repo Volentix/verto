@@ -217,10 +217,13 @@ export const getZapperTokens = (context /*, payload */) => {
         context.commit('setTokens', result.data[prop])
         break
       }
-      context.dispatch('getYvaultsPools')
-      context.dispatch('getCurvesPools')
+
+      // Current;y only usiswap is working
+
+      // context.dispatch('getYvaultsPools')
+      // context.dispatch('getCurvesPools')
       context.dispatch('getUniswapPools')
-      context.dispatch('getBalancerPools')
+      // context.dispatch('getBalancerPools')
     }
   })
 }

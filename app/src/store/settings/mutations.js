@@ -17,6 +17,9 @@ export const temporary = (state, data) => {
 export const rightOrder = (state, data) => {
   state.rightOrder = data
 }
+export const setMenu = (state, payload) => {
+  state.defiMenu = payload
+}
 export const setCoinData = (state, payload) => {
   state.coins[payload.source] = payload.data
 }

@@ -26,7 +26,7 @@
             <div class="text-tab-name">Exchange</div>
           </div>
         </q-route-tab>
-        <q-route-tab v-if="this.$store.state.settings.network == 'testnet'" class="tabs-menu--wrapper-tab" to="/verto/vdexnode" name="nodes">
+        <q-route-tab v-if="this.$store.state.settings.network == 'testnet' && $store.state.wallets.tokens.length" class="tabs-menu--wrapper-tab" to="/verto/vdexnode" name="nodes">
           <div class="svg-icon-wrapper flex flex-center items-center">
             <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 66 68" style="enable-background:new 0 0 66 68;" xml:space="preserve"> <path class="st0" d="M44,36.9c-2.6,0-4.9,1.5-6.1,3.6L28,35.6c0.2-0.7,0.4-1.4,0.4-2.2c0-0.8-0.2-1.6-0.4-2.4l10.4-5.6 c1.3,1.7,3.3,2.9,5.7,2.9c3.9,0,7-3.2,7-7s-3.2-7-7-7s-7,3.2-7,7c0,0.8,0.2,1.6,0.4,2.4L27,29.2c-1.3-1.7-3.3-2.9-5.7-2.9 c-3.9,0-7,3.2-7,7s3.2,7,7,7c2.4,0,4.5-1.2,5.8-3l10,5c-0.1,0.5-0.2,1-0.2,1.6c0,3.9,3.2,7,7,7s7-3.2,7-7S47.8,36.9,44,36.9z M44,16.3c2.8,0,5,2.3,5,5s-2.3,5-5,5s-5-2.3-5-5S41.2,16.3,44,16.3z M21.3,38.4c-2.8,0-5-2.3-5-5s2.3-5,5-5s5,2.3,5,5 S24.1,38.4,21.3,38.4z M44,49c-2.8,0-5-2.3-5-5s2.3-5,5-5s5,2.3,5,5S46.7,49,44,49z"/> </svg>
             <div class="text-tab-name">Nodes</div>
