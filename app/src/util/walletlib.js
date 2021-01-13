@@ -312,24 +312,25 @@ class Lib {
         if (token !== 'eth') {
           let web3Contract = new web3.eth.Contract(abiArray, contract)
           data = web3Contract.methods.transfer(to, web3Value).encodeABI()
-          console.log('data for', token, data)
+
           sendTo = contract
           web3Value = '0x00'
         }
+
+        // Gas options selection to be implemented
 
         let rawTx = {
           from,
           to: sendTo,
           value: web3Value,
           data,
-          gasPrice: gasPrices.medium * 1000000000,
+          gasPrice: gasPrices.high * 1000000000,
           nonce,
           chainId: 1
         }
-        console.log('rawTx:', rawTx)
 
         let gas = await web3.eth.estimateGas(rawTx)
-        console.log('gas:', gas)
+
         rawTx.gas = gas
 
         const transaction = new EthereumTx(rawTx)
