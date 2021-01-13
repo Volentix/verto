@@ -297,8 +297,12 @@
                                 </div>
                             </div>
                         </q-item>
+
                         </q-card-section>
+                         <q-separator />
+
                         </q-card>
+
                     </q-expansion-item>
                              <q-expansion-item v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
                         <template v-slot:header>
@@ -953,6 +957,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
+
+.q-expansion-item {
+       border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
 
 .header-wallet {
     &.disable-coin {
