@@ -710,11 +710,7 @@ export default {
       script: '',
       now: '',
       eosApi: null,
-      account: {
-        key: 'EOS8UrDjUkeVxfUzUS1hZQtmaGkdWbGLExyzKF6569kRMR5TzSnQT',
-        privateKey: '5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc',
-        name: 'berthonythak'
-      },
+      account: null,
       accounts: [],
       daily_reward_calculation_countdown: {
         hours: '',
