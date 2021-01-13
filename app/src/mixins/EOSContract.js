@@ -49,10 +49,10 @@ export default {
 
       return value
     },
-    async sendFreeCPUTransaction (actions) {
+    async sendFreeCPUTransaction (actions, account = false) {
       let rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
 
-      let signatureProvider = new JsSignatureProvider([this.eosAccount.privateKey])
+      let signatureProvider = new JsSignatureProvider([account ? account.privateKey : this.eosAccount.privateKey])
       let eosApi = new Api({
         rpc,
         signatureProvider
@@ -68,7 +68,7 @@ export default {
 
       let pushTransactionArgs, serverTransactionPushArgs
       try {
-        serverTransactionPushArgs = await this.serverSign(tx, this.eosAccount.name, transactionHeader)
+        serverTransactionPushArgs = await this.serverSign(tx, account ? account.name : this.eosAccount.name, transactionHeader)
       } catch (error) {
         console.error(`Error when requesting server signature: `, error.message)
       }
@@ -107,18 +107,29 @@ export default {
           broadcast: false
         })
       }
-
-      eosApi.pushSignedTransaction(pushTransactionArgs).then((result) => {
-        this.transactionStatus = 'Success'
-        this.step = 2
-        this.spinnervisible = false
-        this.transactionHash = result.transaction_id
-        initWallet()
-      }).catch((error) => {
-        this.step = 1
-        this.error = error
-        this.transactionStatus = null
-        this.spinnervisible = false
+      return new Promise(async (resolve, reject) => {
+        eosApi.pushSignedTransaction(pushTransactionArgs).then((result) => {
+          this.transactionStatus = 'Success'
+          this.step = 2
+          this.spinnervisible = false
+          this.transactionHash = result.transaction_id
+          resolve({
+            message: process.env[this.$store.state.settings.network].EOS_TRANSACTION_EXPLORER + result.transaction_id,
+            success: true,
+            status: 'complete',
+            hash: result.transaction_id
+          })
+          initWallet()
+        }).catch((error) => {
+          this.step = 1
+          this.error = error
+          this.transactionStatus = null
+          this.spinnervisible = false
+          reject({
+            message: error,
+            success: false
+          })
+        })
       })
     },
     async serverSign (transaction, user, txHeaders) {

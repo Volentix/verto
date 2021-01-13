@@ -335,7 +335,6 @@ class Lib {
         const transaction = new EthereumTx(rawTx)
         transaction.sign(Buffer.from(key.substring(2), 'hex'))
         const serializedTransaction = transaction.serialize()
-        console.log('serializedTransaction', serializedTransaction)
 
         return sendSingleTransaction('0x' + serializedTransaction.toString('hex'))
 
@@ -398,8 +397,7 @@ class Lib {
               reject({
                 message: error,
                 success: false
-              }
-              )
+              })
             })
 
             if (response.data.error) {
