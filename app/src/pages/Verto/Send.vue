@@ -291,7 +291,7 @@ import Lib from '@/util/walletlib'
 import { osName } from 'mobile-device-detect'
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
-
+import EOSContract from '../../mixins/EOSContract'
 let cruxClient
 
 export default {
@@ -564,7 +564,6 @@ export default {
       // 'memo', this.sendMemo,
       // 'key', this.privateKey.key,
       // 'contract', this.currentAccount.contract)
-      console.log('this.currentAccount', this.currentAccount)
 
       Lib.send(
         this.currentAccount.chain,
@@ -576,7 +575,63 @@ export default {
         this.privateKey.key,
         this.currentAccount.contract
       ).then(result => {
-        console.log(result)
+        if (result.success) {
+          this.getPassword = false
+          this.transErrorDialog = false
+          this.openModal = false
+          this.openModalProgress = false
+          this.transSuccessDialog = true
+          this.transactionLink = result.message
+          this.transStatus = !result.status ? 'Sent Successfully' : result.status
+        } else {
+          console.log(result, 'error')
+          if (result.message.toString().includes('is greater than the maximum billable CPU time for the transaction') || result.message.toString().includes('the current CPU usage limit imposed on the transaction')) {
+            this.payForUserCPU()
+          } else {
+            this.unknownError = true
+            this.ErrorMessage = result.message
+            this.transErrorDialog = true
+            this.openModal = false
+            this.openModalProgress = false
+          }
+        }
+      }).catch((error) => {
+        console.log(error, 'error')
+        if (error.toString().includes('is greater than the maximum billable CPU time for the transaction') || error.toString().includes('the current CPU usage limit imposed on the transaction')) {
+          this.payForUserCPU()
+        } else {
+          this.unknownError = true
+          this.ErrorMessage = error.message
+
+          this.transErrorDialog = true
+          this.openModal = false
+          this.openModalProgress = false
+        }
+      })
+    },
+    payForUserCPU () {
+      console.log(this.currentAccount, 'ss')
+      const actions = [{
+        account: this.currentAccount.contract,
+        name: 'transfer',
+        authorization: [{
+          actor: this.currentAccount.name,
+          permission: 'active'
+        }
+        ],
+        data: {
+          from: this.currentAccount.name.toLowerCase(),
+          to: this.sendToResolved.toLowerCase(),
+          quantity: parseFloat(this.sendAmount).toFixed(this.currentAccount.precision) + ' ' + this.currentAccount.type.toUpperCase(),
+          memo: this.sendMemo
+        }
+      }]
+
+      let account = {
+        name: this.currentAccount.name,
+        privateKey: this.privateKey.key
+      }
+      this.sendFreeCPUTransaction(actions, account).then(result => {
         if (result.success) {
           this.getPassword = false
           this.transErrorDialog = false
@@ -593,9 +648,9 @@ export default {
           this.openModalProgress = false
         }
       }).catch((error) => {
-        console.log(error)
         this.unknownError = true
         this.ErrorMessage = error.message
+
         this.transErrorDialog = true
         this.openModal = false
         this.openModalProgress = false
@@ -627,7 +682,8 @@ export default {
       this.openModal = false
       this.openModalProgress = false
     }
-  }
+  },
+  mixins: [EOSContract]
 }
 </script>
 <style lang="scss" scoped>

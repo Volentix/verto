@@ -348,7 +348,7 @@ export default {
 
       },
       chain: 'eth',
-      menu: 'liquidity',
+      menu: 'swap',
       splitterModel: 20,
       chooseAccount: true,
       osName: '',
@@ -426,6 +426,9 @@ export default {
     },
     '$store.state.wallets.tokens': function () {
       this.initData()
+    },
+    menu (val) {
+      this.$store.commit('settings/setMenu', val)
     },
     '$store.state.settings.network': function () {
       if (this.$store.state.settings.network === 'testnet') {

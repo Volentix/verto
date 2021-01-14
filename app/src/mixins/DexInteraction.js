@@ -74,7 +74,7 @@ export default {
 
       coins = this.getUniqueTokens(coins).filter(o => !(this.$store.state.wallets.tokens.filter(x => x.chain === 'eos').map(w => w.type.toLowerCase()).includes(o.value.toLowerCase())))
 
-      this.$store.state.wallets.tokens.filter(o => o.chain === 'eos').forEach((coin) => {
+      this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type !== 'verto').forEach((coin) => {
         let row = {
           'label': coin.type,
           'name': coin.name,

@@ -256,7 +256,7 @@
                                         <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
-                                        <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
+                                        <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(4) : new Number(item.amount).toFixed(4).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
                                         <span class="item-info--amountUSD">${{new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-else>
@@ -297,8 +297,12 @@
                                 </div>
                             </div>
                         </q-item>
+
                         </q-card-section>
+                         <q-separator />
+
                         </q-card>
+
                     </q-expansion-item>
                              <q-expansion-item v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
                         <template v-slot:header>
@@ -725,7 +729,7 @@ export default {
     this.$store.state.wallets.tokens.map(async (f) => {
       let stakedAmounts = 0
       if (f.type === 'vtx') {
-        let stakes = await eos.getTable('vtxstake1111', f.name, 'accounts')
+        let stakes = await eos.getTable('vtxstake1111', f.name, 'accountstake')
         stakes.map(s => {
           s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
           s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
@@ -953,6 +957,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
+
+.q-expansion-item {
+       border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
 
 .header-wallet {
     &.disable-coin {
