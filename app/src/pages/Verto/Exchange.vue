@@ -5,7 +5,7 @@
         <div class="desktop-version" v-if="screenSize > 1024">
             <div class="row">
                 <div class="col col-md-3">
-                    <div class="wallets-container">
+                    <div class="wallets-container" style="height: 100%">
                         <profile-header :isMobile="false" class="marg" version="type2222" />
                         <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                         <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
@@ -749,6 +749,15 @@ export default {
 
 /deep/ .wallets-wrapper {
     padding-bottom: 0px !important;
+    height: 100%;
+    .walletsScrollArea{
+      &.short{
+        height: 420px !important;
+      }
+      &.long{
+        height: 450px !important;
+      }
+    }
 }
 
 /deep/ .wallets-wrapper--list {
