@@ -155,7 +155,9 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   async beforeCreate () {
-    await initWallet()
+    if (!this.$store.state.wallets.tokens.length) {
+      initWallet()
+    }
   },
   async created () {
     this.tableData = this.$store.state.wallets.tokens.map(token => {

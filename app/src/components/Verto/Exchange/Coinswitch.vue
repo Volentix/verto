@@ -186,7 +186,7 @@
                                                             </q-input>
                                                         </div>
                                                     </div>
-
+                                                    <div class="text-body1 text-red" v-if="ErrorMessage">{{ ErrorMessage }}</div>
                                                     <q-btn unelevated :disable="depositQuantity == 0 || depositQuantity < rateData.limitMinDepositCoin || destinationQuantity > rateData.limitMaxDestinationCoin" @click="pStep = 2" color="light-grey" text-color="black" label="Choose Accounts" class="text-capitalize chose_accounts full-width" />
                                                 </div>
                                             </div>
@@ -333,11 +333,11 @@
                                                                 <path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path>
                                                             </svg>
                                                             <span class="title">{{ friendlyStatus }}</span>
-                                                            <q-linear-progress indeterminate stripe rounded size="md" :value="progress" class="q-mt-md" />
+                                                            <q-linear-progress v-if="isTransactionPending" indeterminate stripe rounded size="md" :value="progress" class="q-mt-md" />
                                                         </div>
                                                         <hr style="height:15px;opacity:0" />
                                                         <div class="text-black">
-                                                            <div class="text-h4 --subtitle">{{exchangeLabel}}</div>
+                                                            <div class="text-h4 --subtitle" v-if="isTransactionPending">{{exchangeLabel}}</div>
                                                             <q-input v-model="exchangeAddress.address" readonly rounded class="input-input pr80" outlined color="purple" type="text">
                                                                 <template v-slot:append>
                                                                     <div class="flex justify-end">
@@ -630,7 +630,7 @@
                                                     <div class="text-black">
                                                         <div class="text-h4 --subtitle">
                                                             <ul>
-                                                                <li><span>{{exchangeLabel}}</span></li>
+                                                                <li v-if="isTransactionPending"><span>{{exchangeLabel}}</span></li>
                                                             </ul>
                                                         </div>
                                                         <q-input v-model="exchangeAddress.address" readonly rounded class="input-input pr80" outlined color="purple" type="text">
@@ -995,7 +995,7 @@
                                                     </div>
                                                     <hr style="height:15px;opacity:0" />
                                                     <div class="text-black">
-                                                        <div class="text-h4 --subtitle">{{exchangeLabel}}</div>
+                                                        <div class="text-h4 --subtitle" v-if="isTransactionPending">{{exchangeLabel}}</div>
                                                         <q-input v-model="exchangeAddress.address" readonly rounded class="input-input pr80" outlined color="purple" type="text">
                                                             <template v-slot:append>
                                                                 <div class="flex justify-end">
@@ -1286,7 +1286,7 @@
                                                 </div>
                                                 <hr style="height:15px;opacity:0" />
                                                 <div class="text-black">
-                                                    <div class="text-h4 --subtitle">
+                                                    <div v-if="isTransactionPending" class="text-h4 --subtitle">
                                                         <ul>
                                                             <li><span>{{exchangeLabel}}</span></li>
                                                         </ul>
@@ -1578,6 +1578,9 @@ export default {
     this.checkToGetRate()
   },
   computed: {
+    isTransactionPending () {
+      return this.status === 'no_deposit' || this.status === 'confirming' || this.status === 'exchanging' || this.status === 'sending'
+    },
     getStatus () {
       let value = 0
 
@@ -1811,7 +1814,7 @@ export default {
     filterDestinationCoin (val, update, abort) {
       update(() => {
         const needle = val.toLowerCase()
-        this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1 || v.label.toLowerCase().indexOf(needle) > -1)
+        this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => (v.value && v.value.toLowerCase().indexOf(needle) > -1) || (v.value && v.value.toLowerCase().indexOf(needle) > -1))
       })
     },
     copy2clip (value) {
@@ -1920,13 +1923,12 @@ export default {
           setTimeout(() => {
             self.orderStatus()
           }, 30000)
-
-          if (self.status === 'complete' && self.destinationCoin.value === 'vtx') {
-            self.destinationCoinAmount = Math.trunc(result.data.data.destinationCoinAmount * 10000) / 10000
-            self.orderVTX()
-          }
+        } else if (self.status === 'complete' && self.destinationCoin.value === 'vtx') {
+          self.destinationCoinAmount = Math.trunc(result.data.data.destinationCoinAmount * 10000) / 10000
+          self.orderVTX()
         }
-      })
+      }
+      )
     },
     async orderVTX () {
       // check balance then...
@@ -2017,7 +2019,7 @@ export default {
         headers
       })
         .then((response) => {
-          // console.log('response - order', response)
+          console.log(this.toCoin)
           self.orderId = response.data.data.orderId
           self.exchangeAddress = response.data.data.exchangeAddress
           self.expectedDepositCoinAmount = response.data.data.expectedDepositCoinAmount
@@ -2086,6 +2088,7 @@ export default {
       if (self.destinationCoin.value === 'vtx') {
         this.vtxEosPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
       }
+      this.ErrorMessage = null
       this.$axios.post(url + '/v2/rate', {
         depositCoin: self.depositCoin.value,
         destinationCoin: self.destinationCoin.value === 'vtx' ? 'eos' : self.destinationCoin.value
@@ -2093,20 +2096,32 @@ export default {
         headers
       })
         .then((response) => {
-          self.rateData = response.data.data
-          if (self.destinationCoin.value === 'vtx') {
-            self.rateDataVtx = {
-              limitMaxDepositCoin: self.rateData.limitMaxDepositCoin,
-              limitMaxDestinationCoin: self.rateData.limitMaxDestinationCoin / self.vtxEosPrice,
-              limitMinDepositCoin: self.rateData.limitMinDepositCoin,
-              limitMinDestinationCoin: self.rateData.limitMinDestinationCoin / self.vtxEosPrice,
-              minerFee: self.rateData.minerFee,
-              rate: self.rateData.rate / self.vtxEosPrice
+          if (response.data.data) {
+            self.rateData = response.data.data
+            if (self.destinationCoin.value === 'vtx') {
+              self.rateDataVtx = {
+                limitMaxDepositCoin: self.rateData.limitMaxDepositCoin,
+                limitMaxDestinationCoin: self.rateData.limitMaxDestinationCoin / self.vtxEosPrice,
+                limitMinDepositCoin: self.rateData.limitMinDepositCoin,
+                limitMinDestinationCoin: self.rateData.limitMinDestinationCoin / self.vtxEosPrice,
+                minerFee: self.rateData.minerFee,
+                rate: self.rateData.rate / self.vtxEosPrice
+              }
+              self.rateDataEos = self.rateData
+              self.rateData = self.rateDataVtx
             }
-            self.rateDataEos = self.rateData
-            self.rateData = self.rateDataVtx
+            this.quantityFromDeposit()
+          } else {
+            self.rateData = {
+              rate: 1,
+              minerFee: 0,
+              limitMinDepositCoin: 0,
+              limitMaxDepositCoin: 1,
+              limitMinDestinationCoin: 1,
+              limitMaxDestinationCoin: 2
+            }
+            this.ErrorMessage = 'Cannot swap ' + this.depositCoin.value + ' to ' + this.destinationCoin.value
           }
-          this.quantityFromDeposit()
         })
         .catch((err) => {
           if (err) {}

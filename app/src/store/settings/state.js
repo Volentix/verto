@@ -7,6 +7,7 @@ export default {
     oneinch: [],
     defibox: []
   },
+  defiMenu: 'swap',
   selectedDex: 'defibox',
   dexData: {
     depositCoin: null,

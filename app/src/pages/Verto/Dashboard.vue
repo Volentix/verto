@@ -245,7 +245,7 @@ export default {
       await store.state.wallets.tokens.map(async (f) => {
         let stakedAmounts = 0
         if (f.type === 'vtx') {
-          let stakes = await eos.getTable('vtxstake1111', f.name, 'accounts')
+          let stakes = await eos.getTable('vtxstake1111', f.name, 'accountstake')
           stakes.map(s => {
             s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
             s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000

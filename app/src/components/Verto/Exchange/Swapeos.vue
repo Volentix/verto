@@ -79,7 +79,7 @@
                         <div class="you-pay">
                           <div class="you-pay-head row items-center">
                             <div class="col col-6">Payment</div>
-                            <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
+                            <div class="col col-6 red text-right text-body1" v-if="depositCoin.name">Account selected: <b class="text-deep-purple-10">{{depositCoin.name}}</b></div>
                           </div>
                           <div class="you-pay-body row items-center">
                             <div class="col col-3 choose-coin">
@@ -112,13 +112,13 @@
                                         <q-item-label v-html="scope.opt.label.toUpperCase()" />
 
                                         <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
-                                        <q-item-label v-if="scope.opt.name" caption>{{ scope.opt.name }}</q-item-label>
+                                        <q-item-label v-if="scope.opt.name" caption >{{ scope.opt.name }}</q-item-label>
                                       </q-item-section>
                                     </q-item>
                                   </template>
                                   <template v-slot:selected>
                                     <span class="text-h5 text-bold">{{ depositCoin.value.toUpperCase() }}</span>
-                                    <q-item-label v-if="depositCoin.name" caption>{{ depositCoin.name }}</q-item-label>
+                                    <q-item-label v-if="depositCoin.name" caption class="text-deep-purple-10 text-bold">{{ depositCoin.name }}</q-item-label>
                                   </template>
                                 </q-select>
                               </span>
@@ -826,8 +826,10 @@ export default {
     depositCoin: function (newVal, oldVal) {
       if (newVal) {
         this.swapData.fromAmount = parseFloat(newVal.amount).toFixed(this.depositCoin.precision)
-        console.log(this.swapData.fromAmount, '  this.swapData.fromAmount')
       }
+    },
+    '$store.state.settings.defiMenu': function (val) {
+      this.tab = val === 'add_liquidity' ? 'liquidity' : val
     },
     tab: function (newVal) {
       if (newVal === 'liquidity') {
