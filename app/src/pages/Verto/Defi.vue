@@ -93,10 +93,10 @@
 
       <template style="width:25%" v-slot:before>
         <q-tabs
+          class="tabs-chains"
           v-model="chain"
           vertical
-            align="left"
-
+          align="left"
           inline-label
         >
          <div >
@@ -149,11 +149,11 @@
         </q-item>
        </q-list>
 
-             <q-expansion-item
+      <q-expansion-item
         v-if="accountOption.value"
-            default-opened
+        default-opened
         expand-separator
-        class="bg-white q-py-md"
+        class="bg-white q-py-md accountOption"
         :label="'Total Balance - $'+(accountOption.total ? accountOption.total.toFixed(2) : 0 )"
         :caption="accountOption.label"
       >
@@ -226,22 +226,22 @@
 
       <template v-slot:after>
       <div  class="bg-white" >
-         <div v-if="$store.state.settings.network == 'mainnet'" v-show="chain == 'eth'">
-             <LiquidityPoolsTable :rowsPerPage="10"  v-if="menu == 'liquidity'"/>
-             <InvestmentsTable v-else-if="menu == 'investments'"/>
-             <DebtsTable v-else-if="menu == 'debts'"/>
-             <TransactionsTable v-else-if="menu == 'transactions'"/>
-             <InvestmentsOpportunitiesTable v-else-if="menu == 'staking'"/>
-             <Oneinch  class="q-my-lg" v-show="menu == 'swap'" />
-         </div>
-         <div v-show="chain == 'eos'">
-                 <Swapeos  class="q-my-lg"  v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'swap' || menu == 'add_liquidity' || menu == 'liquidity'" />
-                 <EosInvestmentsTable v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'investments'"/>
-                <TestnetPools v-if="$store.state.settings.network == 'testnet'"  v-show="menu == 'liquidity'" />
-                <TestnetInvestments v-if="$store.state.settings.network == 'testnet'" v-show="menu == 'investments'"  />
-                <VolentixLiquidity v-if="$store.state.settings.network == 'testnet'" :showLiquidity="false" v-show="menu == 'swap'" />
-                <VolentixLiquidity v-if="$store.state.settings.network == 'testnet'" :showLiquidity="true" v-show="menu == 'add_liquidity'" />
-        </div>
+          <div v-if="$store.state.settings.network == 'mainnet'" v-show="chain == 'eth'">
+            <LiquidityPoolsTable :rowsPerPage="10" class="minHeight" v-if="menu == 'liquidity'"/>
+            <InvestmentsTable class="minHeight2" v-else-if="menu == 'investments'"/>
+            <DebtsTable class="minHeight2" v-else-if="menu == 'debts'"/>
+            <TransactionsTable class="minHeight2" v-else-if="menu == 'transactions'"/>
+            <InvestmentsOpportunitiesTable class="minHeight2" v-else-if="menu == 'staking'"/>
+            <Oneinch class="q-pl-md q-pb-xl accountOptionOneinch" v-show="menu == 'swap'" />
+          </div>
+          <div v-show="chain == 'eos'">
+            <Swapeos class="q-pl-md q-pb-xl minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'swap' || menu == 'add_liquidity' || menu == 'liquidity'" />
+            <EosInvestmentsTable class="minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'investments'"/>
+            <TestnetPools class="minHeight3" v-if="$store.state.settings.network == 'testnet'"  v-show="menu == 'liquidity'" />
+            <TestnetInvestments class="minHeight3" v-if="$store.state.settings.network == 'testnet'" v-show="menu == 'investments'"  />
+            <VolentixLiquidity class="minHeight3" v-if="$store.state.settings.network == 'testnet'" :showLiquidity="false" v-show="menu == 'swap'" />
+            <VolentixLiquidity class="minHeight3" v-if="$store.state.settings.network == 'testnet'" :showLiquidity="true" v-show="menu == 'add_liquidity'" />
+          </div>
 
     </div>
 
@@ -1322,10 +1322,38 @@ export default {
 }
 
 /deep/ .q-btn__wrapper {
-    min-height: 30px !important;
+    min-height: 40px !important;
 }
 
 .text-h5 {
     font-size: 16px;
+}
+.tabs-chains{
+  .q-list:not(.q-list--separator){
+    .q-item.q-item-type{
+      border: 1px solid rgba(#CCC, .3);
+      &.bg-white{
+        border: 1px solid rgba(purple, .4);
+      }
+    }
+  }
+}
+.accountOption{
+  min-height: 345px;
+}
+.accountOptionOneinch{
+  min-height: 680px !important;
+}
+.minHeight{
+  min-height: 680px !important;
+  /deep/ .desktop-size{
+    min-height: 680px !important;
+  }
+}
+.minHeight2{
+  min-height: 680px !important;
+}
+.minHeight3{
+  min-height: 580px !important;
 }
 </style>
