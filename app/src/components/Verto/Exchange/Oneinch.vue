@@ -956,13 +956,15 @@ export default {
     if (this.$store.state.settings.dexData.depositCoin && this.crossChain) {
       this.depositCoin = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
     }
+
     if (this.$store.state.settings.dexData.destinationCoin && this.crossChain) {
       this.destinationCoin = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
     }
 
-    if (this.$store.state.settings.dexData.depositCoin && this.$store.state.settings.dexData.depositCoin.fromAmount) {
+    if (this.$store.state.settings.dexData.depositCoin && this.$store.state.settings.dexData.fromAmount) {
       this.depositQuantity = this.$store.state.settings.dexData.depositCoin.fromAmount
     }
+    console.log(this.$store.state.settings.dexData)
   },
   async mounted () {
     let tableData = this.$store.state.wallets.tokens
@@ -972,7 +974,7 @@ export default {
     this.$store.dispatch('investment/getGasPrice')
     this.getMarketDataVsUSD()
     this.getCoins()
-    this.getExchanges()
+    // this.getExchanges()
   },
   watch: {
     step (newVal, oldVal) {
@@ -1001,9 +1003,8 @@ export default {
       this.getRate()
     },
     getCoins () {
-      console.log(this.depositCoin, this.destinationCoin)
       this.depositCoinOptions = !this.crossChain ? this.$store.state.settings.coins.oneinch : this.getAllCoins()
-      this.destinationCoin = !this.destinationCoin || !this.destinationCoin.value.length ? this.$store.state.settings.coins.oneinch[this.$store.state.settings.coins.oneinch.length - 1] : this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
+      this.destinationCoin = !this.destinationCoin || !this.destinationCoin.value.length ? this.$store.state.settings.coins.oneinch[this.$store.state.settings.coins.oneinch.length - 1] : this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())
       this.depositCoinUnfilter = this.depositCoinOptions
       this.destinationCoinUnfilter = this.depositCoinOptions
       this.depositCoin = !this.depositCoin ? this.$store.state.settings.coins.oneinch[0] : this.depositCoinUnfilter.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
@@ -1026,53 +1027,61 @@ export default {
           }
           return 1
         })
-        console.log('getExchanges', self.exchangesList)
       })
     },
     getSwapQuote () {
       const self = this
       this.error = false
+
+      console.log(this.depositCoin, this.destinationCoin, 1)
+
       this.getCoinsData()
       if (!self.depositCoin.address || !self.destinationCoin.address) return
       if (self.swapData.fromAmount <= 0) return
       self.spinnervisible = true
+
+      console.log(this.depositCoin, this.destinationCoin, 2)
+
       let data = {
-        fromTokenSymbol: self.depositCoin.value,
-        toTokenSymbol: self.destinationCoin.value,
+        fromTokenAddress: self.depositCoin.address,
+        toTokenAddress: self.destinationCoin.address,
         amount: web3.utils.toWei(self.swapData.fromAmount.toString(), 'ether'),
         slippage: 2,
         fromAddress: self.ethAccount.key,
         toAddress: self.destinationCoin.address,
-        disableEstimate: true
+        disableEstimate: false
       }
-      let swapRequestUrl = _1inch + '/v1.1/swapQuote?' + new URLSearchParams(data).toString()
+      let swapRequestUrl = _1inch + '/v2.0/swap?' + new URLSearchParams(data).toString()
       this.$axios.get(swapRequestUrl)
         .then(async function (result) {
           let nonce = await web3.eth.getTransactionCount(self.ethAccount.key, 'latest').catch(o => console.log(o))
           self.swapData.toAmount = parseFloat(web3.utils.fromWei(result.data.toTokenAmount.toString(), 'ether'))
           self.spinnervisible = false
-          self.swapData.gas = result.data.gas
-          self.swapData.gasPrice = result.data.gasPrice
+          self.swapData.gas = result.data.tx.gas
+          self.swapData.gasPrice = result.data.tx.gasPrice
           self.approvalRequired = false
           let isERC2O = self.depositCoin.value.toLowerCase() !== 'eth',
             approvedRequired = false
+
+          console.log(self.swapData)
           if (isERC2O) {
             approvedRequired = await self.isApprovalRequired(self.depositCoin.address, _1inchApprovalAddress, self.swapData.fromAmount, false, nonce)
           }
           if (!approvedRequired) {
             let transactionObject = {
               from: self.ethAccount.key,
-              to: result.data.to,
+              to: result.data.tx.to,
               value: web3.utils.toWei(self.swapData.fromAmount.toString(), 'ether'),
-              data: result.data.data,
+              data: result.data.tx.data,
               nonce: nonce
             }
-            console.log(transactionObject, 'transactionObject')
-            self.getGasOptions(transactionObject)
+
+            await self.getGasOptions(transactionObject, result.data.tx.gas)
           }
           // Calculate total gas price and convert it to USD
-          self.swapData.gasUsd = self.convertETHToUSD(web3.utils.fromWei((result.data.gasPrice * result.data.gas).toString()))
+          //   self.swapData.gasUsd = self.convertETHToUSD(web3.utils.fromWei((result.data.estimatedGas * self.$store.state.investment.gasPrice.fast * 1000000000).toString()))
         }).catch(error => {
+          console.log(error, 'error')
           self.approvalRequired = false
           self.spinnervisible = false
           self.swapData.toAmount = null
@@ -1126,15 +1135,15 @@ export default {
       const self = this
       this.spinnervisible = true
       let data = {
-        fromTokenSymbol: this.depositCoin.value,
-        toTokenSymbol: this.destinationCoin.value,
+        fromTokenAddress: self.depositCoin.address,
+        toTokenAddress: self.destinationCoin.address,
         amount: web3.utils.toWei(this.swapData.fromAmount.toString(), 'ether'),
         slippage: 1,
         fromAddress: this.depositCoin.address,
         toAddress: this.destinationCoin.address,
         disableEstimate: true
       }
-      let swapRequestUrl = _1inch + '/v1.1/swap?' + new URLSearchParams(data).toString()
+      let swapRequestUrl = _1inch + '/v2.0/swap?' + new URLSearchParams(data).toString()
       // JSON.stringify for easy copy paste
       this.$axios.get(swapRequestUrl)
         .then(async function (result) {
@@ -1142,15 +1151,16 @@ export default {
           let nonce = await web3.eth.getTransactionCount(self.ethAccount.key, 'latest')
           let transactionObject = {
             from: self.ethAccount.key,
-            to: result.data.to,
-            value: parseInt(result.data.value),
-            gas: web3.utils.toHex(self.gasSelected.gas),
+            to: result.data.tx.to,
+            value: parseInt(result.data.tx.value),
+            gas: web3.utils.toHex(self.swapData.gas),
             gasPrice: web3.utils.toHex(self.gasSelected.gasPrice),
-            data: result.data.data,
+            data: result.data.tx.data,
             nonce: nonce
           }
-          self.step = 2
+
           self.sendSignedTransaction(transactionObject)
+          self.step = 2
         }).catch(error => {
           self.spinnervisible = false
           self.error = error
