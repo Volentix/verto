@@ -102,8 +102,17 @@ export default {
     padding-bottom: 50px;
     background: #FFF !important;
   }
-  /deep/ .wallets-wrapper{
+  /deep/ .wallets-wrapper {
     padding-bottom: 0px !important;
+    height: 100%;
+    .walletsScrollArea{
+      &.short{
+        height: 420px !important;
+      }
+      &.long{
+        height: 450px !important;
+      }
+    }
   }
   /deep/ .wallets-wrapper--list{
     box-shadow: none;

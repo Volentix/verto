@@ -1,11 +1,11 @@
 <template>
   <div class="desktop-card-style apps-section q-mb-sm" :class="{'disabled' : wallet.type !== 'vtx', 'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <div class="row flex justify-between q-pt-sm q-pb-sm">
-      <div class="col col-4 flex items-center chain-icon"><q-icon :name="'img:statics/chain-tools_icon-black.svg'" />Chain Tools</div>
-      <div class="col col-4 flex items-center justify-end chain-token q-pr-sm">
+      <div class="col col-3 flex items-center chain-icon"><q-icon :name="'img:statics/chain-tools_icon-black.svg'" />Chain Tools</div>
+      <div class="col col-6 flex items-center justify-center chain-token q-pr-sm">
         <div class="column q-mr-md">
           <span class="label">Account:</span>
-          <strong>{{wallet.name}}</strong>
+          <strong class="ellipsis">{{wallet.name}}</strong>
         </div>
         <div class="column q-mr-md">
           <span class="label">Chain:</span>
@@ -16,7 +16,7 @@
           <strong class="upper">{{wallet.type}}</strong>
         </div>
       </div>
-      <div class="col col-4 flex items-center justify-end dropdown q-pr-sm">
+      <div class="col col-3 flex items-center justify-end dropdown q-pr-sm">
         <q-select
           v-if="$store.state.lightMode.lightMode === 'true'"
           dark
@@ -81,12 +81,15 @@ export default {
           font-weight: $bold;
           font-size: 11px;
           font-family: $Titillium;
+          padding-right: 10px;
           .label{
             color: #494949;
           }
           strong{
             font-size: 12px;
             color: #7272FA;
+            max-width: 100px;
+            overflow: hidden;
             &.upper{
               text-transform: uppercase;
             }
@@ -94,10 +97,10 @@ export default {
         }
 
         &.chain-icon{
-          font-size: 14px;
+          font-size: 12px;
           font-weight: $bold;
           font-family: $Titillium;
-          padding-right: 20px;
+          padding-right: 5px;
           padding-left: 10px;
           // flex-basis: 130px;
           position: relative;
@@ -131,6 +134,9 @@ export default {
           padding-bottom: 0px;
           height: $height;
           min-height: unset;
+          font-size: 10px;
+          width: 80px;
+          margin-right: -15px;
           .q-item{
             padding: 0px;
             padding-left: 18px;
