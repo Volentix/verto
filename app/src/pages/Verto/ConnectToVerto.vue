@@ -4,7 +4,7 @@
       <transition enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
         <h2 class="landing--title">
           <strong>VERTO</strong> <b class="version">{{ version }}</b>
-          <span>Connect to your wallet </span>
+          <span>Connect to your wallet {{$store.state.wallets.tokens.length}} </span>
           <img src="statics/picto_verto.svg" alt="" />
         </h2>
       </transition>
@@ -40,9 +40,9 @@
       </div>
      <div class="standard-content--body full-width q-pb-lg" v-else-if="loggedIn && !$route.query.url">
         <div class="standard-content--body__form">
-         <Oneinch :disableDestinationCoin="true" v-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
-         <Swapeos :disableDestinationCoin="true" v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
-         <Coinswitch :disableDestinationCoin="true" v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
+         <Oneinch :crossChain="true" :disableDestinationCoin="true" v-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
+         <Swapeos :crossChain="true" :disableDestinationCoin="true" v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
+         <Coinswitch :crossChain="true" :disableDestinationCoin="true" v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
          </div>
      </div>
       <div class="standard-content--body full-width q-pb-lg" v-else-if="loggedIn">
@@ -249,7 +249,6 @@ export default {
     this.getCoinswitchCoins()
     this.get1inchCoins()
     this.getDefiboxCoins()
-
     this.hasConfig = !!(await configManager.hasVertoConfig())
     if (!this.hasConfig) {
       this.$router.push({
@@ -270,54 +269,31 @@ export default {
     this.$refs.psswrd.focus()
   },
   computed: {
-    ...mapState('wallets', ['loaded'])
+    ...mapState('wallets', ['loaded', 'tokens'])
   },
   watch: {
-    /* loaded: {
+    tokens: {
       deep: true,
       handler (val) {
-        if (val.eos && val.eth) {
-          if (this.$route.query.url) {
-            const sleep = (ms) => {
-              return new Promise(resolve => setTimeout(resolve, ms))
-            }
-            console.log('before')
-            sleep(3000).then(() => {
-              let accounts = this.$store.state.wallets.tokens.map((token) => {
-                delete token.privateKey
-                delete token.privateKeyEncrypted
-                delete token.origin
-                delete token.privateKey
+        if (this.$route.params.fromCoin) {
+          this.depositCoin.value = this.$route.params.fromCoin
+          this.destinationCoin.value = this.$route.params.toCoin
+          this.depositCoin.fromAmount = this.$route.params.amount
+          this.checkPair()
 
-                return token
-              })
-
-              window.top.postMessage({ accounts: accounts }, '*')
-              if (this.$route.query.redirect === 'true') {
-                window.top.location.href = this.$route.query.url + '?accounts=' + encodeURIComponent(JSON.stringify(accounts))
-              }
+          setTimeout(() => {
+            this.$q.notify({
+              message: 'Wallet connected',
+              color: 'positive'
             })
-          } else {
-            this.depositCoin.value = this.$route.params.fromCoin
-            this.destinationCoin.value = this.$route.params.toCoin
-            this.depositCoin.fromAmount = this.$route.params.amount
-            this.checkPair()
 
-            setTimeout(() => {
-              this.$q.notify({
-                message: 'Wallet connected',
-                color: 'positive'
-              })
-
-              this.loggedIn = true
-              this.spinnerVisible = false
-            }, 5000)
-            this.login = 'Sign'
-          }
+            this.loggedIn = true
+            this.spinnerVisible = false
+          }, 5000)
         }
       }
     }
-    */
+
   },
   methods: {
     checkPassword () {
