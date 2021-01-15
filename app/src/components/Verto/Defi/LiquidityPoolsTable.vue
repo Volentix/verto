@@ -27,7 +27,7 @@
         <template v-slot:body-cell-action="props">
           <q-td :props="props" class="body-table-col">
             <div v-if="screenSize > 1024" class="col-2 flex justify-end">
-              <q-btn unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="grey" label="Add" />
+              <q-btn unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm text-bold" color="black" text-color="white" label="Add" />
             </div>
           </q-td>
         </template>
@@ -186,7 +186,7 @@ export default {
 .desktop-card-style.current-investments .qbtn-custom {
     border-radius: 30px;
     height: 34px;
-    background: #eff5f9 !important;
+    background: #aa90d9 !important;
 }
 
 .desktop-card-style.current-investments .qbtn-custom .q-btn__wrapper {

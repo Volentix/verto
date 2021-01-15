@@ -224,7 +224,7 @@
                     </div>
                 </div>
             </div>
-            <q-scroll-area :visible="true" ref="walletsScrollArea" class="q-mr-sm q-ml-xs" :style="$store.state.currentwallet.wallet.empty ? 'height: 276px;': 'height: 314px;'">
+            <q-scroll-area :visible="true" ref="walletsScrollArea" class="walletsScrollArea q-mr-sm q-ml-xs" :class="{'short' : $store.state.currentwallet.wallet.empty, 'long' : !$store.state.currentwallet.wallet.empty}" :style="$store.state.currentwallet.wallet.empty ? 'height: 276px;': 'height: 314px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty">
                       <q-expansion-item v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'eos' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected full-width' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
