@@ -1077,7 +1077,6 @@ export default {
             }
 
             await self.getGasOptions(transactionObject, result.data.tx.gas)
-            console.log(self.gasSelected, 'gasSelected')
           }
           // Calculate total gas price and convert it to USD
           //   self.swapData.gasUsd = self.convertETHToUSD(web3.utils.fromWei((result.data.estimatedGas * self.$store.state.investment.gasPrice.fast * 1000000000).toString()))
