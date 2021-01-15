@@ -35,6 +35,19 @@
                             <img :src="'https://zapper.fi/images/'+currentToken.label+'-icon.png'">
                         </q-avatar>
                     </template>
+                    <template v-slot:option="scope">
+                      <q-item class="custom-menu"  v-bind="scope.itemProps" v-on="scope.itemEvents">
+                        <q-item-section avatar>
+                          <q-icon :name="`img:${scope.opt.icon}`" />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label v-html="scope.opt.label.toUpperCase()" />
+
+                          <q-item-label v-if="scope.opt.amount" caption>{{ parseFloat(scope.opt.amount).toFixed(8) }}</q-item-label>
+
+                        </q-item-section>
+                      </q-item>
+                    </template>
                 </q-select>
                  <div class="text-body2 col-12 q-pt-sm text-red" v-if="!tokenInWallet && false">
                    Insufficient funds
@@ -72,6 +85,16 @@
                                     No results
                                 </q-item-section>
                             </q-item>
+                        </template>
+                          <template v-slot:option="scope">
+                        <q-item class="custom-menu"  v-bind="scope.itemProps" v-on="scope.itemEvents">
+                        <q-item-section class="pools" v-if="scope.opt.icons.length" avatar>
+                          <q-icon :key="index" v-for="(icon, index) in scope.opt.icons" :name="`img:https://zapper.fi/images/`+icon" />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label v-html="scope.opt.poolName.toUpperCase()" />
+                       </q-item-section>
+                      </q-item>
                         </template>
                     </q-select>
 
@@ -679,7 +702,19 @@ export default {
 a {
     text-decoration: none;
 }
-
+.pools img {
+  -webkit-filter: drop-shadow(5px 5px 1px #7272fa);
+  filter: drop-shadow(1px 1px 4px #7272fa);
+}
+.pools img:nth-child(2) {
+    margin-left:-9px;
+}
+.custom-menu {
+    border-bottom:1px solid #e4e4e4
+}
+.pools {
+        display: table;
+}
 .q-field__messages.col {
     margin-top: 5px;
 }
