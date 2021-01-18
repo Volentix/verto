@@ -584,7 +584,6 @@ export default {
           this.transactionLink = result.message
           this.transStatus = !result.status ? 'Sent Successfully' : result.status
         } else {
-          console.log(result, 'error')
           if (result.message.toString().includes('is greater than the maximum billable CPU time for the transaction') || result.message.toString().includes('the current CPU usage limit imposed on the transaction')) {
             this.payForUserCPU()
           } else {
@@ -596,7 +595,6 @@ export default {
           }
         }
       }).catch((error) => {
-        console.log(error, 'error')
         if (error.toString().includes('is greater than the maximum billable CPU time for the transaction') || error.toString().includes('the current CPU usage limit imposed on the transaction')) {
           this.payForUserCPU()
         } else {
@@ -610,7 +608,6 @@ export default {
       })
     },
     payForUserCPU () {
-      console.log(this.currentAccount, 'ss')
       const actions = [{
         account: this.currentAccount.contract,
         name: 'transfer',
