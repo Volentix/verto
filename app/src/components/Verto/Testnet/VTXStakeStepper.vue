@@ -330,11 +330,12 @@
 import { date } from 'quasar'
 import { userError } from '@/util/errorHandler'
 import EosWrapper from '@/util/EosWrapper'
+import EOSContract from '@/mixins/EOSContract'
+
 const eos = new EosWrapper()
 
-const stakingContract = 'vltxstakenow'
-const volentixContract = 'volentixtsys'
-const period_duration = 0.0416666666
+let stakingContract, volentixContract
+const period_duration = 30
 
 export default {
   name: 'VTXConverter',
@@ -383,6 +384,9 @@ export default {
     }
   },
   async created () {
+    stakingContract = this.$store.state.settings.network === 'mainnet' ? 'vtxstake1111' : 'vltxstakenow'
+    volentixContract = this.$store.state.settings.network === 'mainnet' ? 'volentixgsys' : 'volentixtsys'
+
     let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     // console.log('---this.wallet---', this.wallet)
 
@@ -529,7 +533,6 @@ export default {
     },
     async sendTransaction () {
       try {
-        this.step = 4
         let memo = this.stakePeriod
         this.formatedAmount = this.formatAmountString()
         const transaction = await eos.transferToken(
@@ -543,21 +546,62 @@ export default {
         this.transactionError = false
         this.transactionId = transaction.transaction_id
         this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '" target="_blank">block explorer</a>'
+        this.step = 4
         this.initData()
       } catch (error) {
-        // console.log('transaction errors', error)
-        this.transactionError = true
-        // console.log('error', error)
-        if (error.message.includes('stake amount is too low')) {
-          this.ErrorMessage = 'Your VTX stake amount is too low, you need at least 1000 VTX to stake.'
-        } else if (error.message.includes('maximum billable CPU time')) {
-          this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
-        } else if (error.message.includes('has insufficient ram')) {
-          this.ErrorMessage = 'Your EOS account does not have enough RAM staked to process the transaction.'
-        } else {
-          this.ErrorMessage = 'Unknown Error: ' + error
-        }
+        this.step = 4
+        this.displayError(error, true)
       }
+    },
+    displayError (error, freeCpu = false) {
+      // console.log('transaction errors', error)
+      this.transactionError = true
+      // console.log('error', error)
+      if (error.message.includes('stake amount is too low')) {
+        this.ErrorMessage = 'Your VTX stake amount is too low, you need at least 1000 VTX to stake.'
+      } else if (error.message.includes('maximum billable CPU time')) {
+        if (freeCpu) this.payForUserCPU()
+
+        this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
+      } else if (error.message.includes('has insufficient ram')) {
+        this.ErrorMessage = 'Your EOS account does not have enough RAM staked to process the transaction.'
+      } else {
+        this.ErrorMessage = 'Unknown Error: ' + error
+      }
+    },
+    payForUserCPU () {
+      const actions = [{
+        account: volentixContract,
+        name: 'transfer',
+        authorization: [{
+          actor: this.currentAccount.name,
+          permission: 'active'
+        }
+        ],
+        data: {
+          from: this.currentAccount.name.toLowerCase(),
+          to: stakingContract,
+          quantity: this.formatAmountString(),
+          memo: this.stakePeriod.toString()
+        }
+      }]
+
+      let account = {
+        name: this.currentAccount.name,
+        privateKey: this.privateKey.key
+      }
+      this.sendFreeCPUTransaction(actions, account).then(result => {
+        if (result.success) {
+          this.transactionError = false
+          this.transactionId = result.hash
+          this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '" target="_blank">block explorer</a>'
+          this.initData()
+        } else {
+          this.displayError(result.message)
+        }
+      }).catch((error) => {
+        this.displayError({ message: error })
+      })
     },
     async unStakeVTX () {
       try {
@@ -593,7 +637,8 @@ export default {
       }
       return stringAmount + ' ' + this.params.tokenID.toUpperCase()
     }
-  }
+  },
+  mixins: [EOSContract]
 }
 </script>
 
