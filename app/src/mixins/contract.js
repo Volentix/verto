@@ -60,7 +60,7 @@ export default {
     },
     async getGasOptions (transactionObject, customGas = false) {
       const self = this
-
+      console.log(transactionObject, 'self.gasOptions')
       this.web3.eth.estimateGas(transactionObject).then(function (gasAmount) {
         if (customGas) gasAmount = customGas
         self.gasOptions = [{
