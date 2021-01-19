@@ -186,7 +186,7 @@ export default {
 .desktop-card-style.current-investments .qbtn-custom {
     border-radius: 30px;
     height: 34px;
-    background: #aa90d9 !important;
+    background: #7272FA !important;
 }
 
 .desktop-card-style.current-investments .qbtn-custom .q-btn__wrapper {
