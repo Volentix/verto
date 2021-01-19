@@ -345,6 +345,7 @@
                                                                     </div>
                                                                 </template>
                                                             </q-input>
+                                                            <p v-if="destinationCoin.value === 'vtx'" class="text-body1 q-pt-md q-py-md">This is a multi path transaction. ({{depositCoin.value.toUpperCase()}} -> EOS -> VTX). If you close this page you might need to do the Swap from EOS to VTX manually</p>
                                                             <br v-if="exchangeAddress.tag">
                                                             <q-input v-if="exchangeAddress.tag" v-model="exchangeAddress.tag" readonly rounded class="input-input pr80" outlined color="purple" type="text">
                                                                 <template v-slot:append>
@@ -1393,6 +1394,7 @@ const typeUpper = function (thing) {
 import DexInteraction from '../../../mixins/DexInteraction'
 import Lib from '@/util/walletlib'
 import EosWrapper from '@/util/EosWrapper'
+import EOSContract from '@/mixins/EOSContract'
 const eos = new EosWrapper()
 export default {
   name: 'Coinswitch',
@@ -1956,6 +1958,18 @@ export default {
               message: 'Your VTX have been received',
               color: 'positive'
             })
+          } else if (result.message.toString().includes('is greater than the maximum billable CPU time for the transaction') || result.message.toString().includes('the current CPU usage limit imposed on the transaction')) {
+            this.payForUserCPU()
+          } else {
+            this.$q.notify({
+              message: 'Could not convert EOS to VTX',
+              color: 'negative',
+              type: 'warning'
+            })
+          }
+        }).catch((error) => {
+          if (error.toString().includes('is greater than the maximum billable CPU time for the transaction') || error.toString().includes('the current CPU usage limit imposed on the transaction')) {
+            this.payForUserCPU()
           } else {
             this.$q.notify({
               message: 'Could not convert EOS to VTX',
@@ -1965,6 +1979,48 @@ export default {
           }
         })
       }
+    },
+    payForUserCPU () {
+      const actions = [{
+        account: this.toCoin.value,
+        name: 'transfer',
+        authorization: [{
+          actor: this.toCoin.value,
+          permission: 'active'
+        }
+        ],
+        data: {
+          from: this.toCoin.value.toLowerCase(),
+          to: 'swap.defi',
+          quantity: parseFloat(this.destinationCoinAmount).toFixed(4) + ' EOS',
+          memo: 'swap,0,448'
+        }
+      }]
+
+      let account = {
+        name: this.toCoin.value,
+        privateKey: this.toCoin.privateKey
+      }
+      this.sendFreeCPUTransaction(actions, account).then(result => {
+        if (result.success) {
+          this.$q.notify({
+            message: 'Your VTX have been received',
+            color: 'positive'
+          })
+        } else {
+          this.$q.notify({
+            message: 'Could not convert EOS to VTX',
+            color: 'negative',
+            type: 'warning'
+          })
+        }
+      }).catch((error) => {
+        this.$q.notify({
+          message: error,
+          color: 'negative',
+          type: 'warning'
+        })
+      })
     },
     checkPrivateKeyPassword () {
       const privateKeyEncrypted = JSON.stringify(this.toCoin.privateKeyEncrypted)
@@ -2172,7 +2228,7 @@ export default {
       // pay-coin-select-popup
     }
   },
-  mixins: [DexInteraction]
+  mixins: [DexInteraction, EOSContract]
 }
 </script>
 
