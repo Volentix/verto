@@ -420,7 +420,11 @@ export default {
         }]
       }
       this.eosAccount = this.currentAccount
-      this.sendTransaction(transactionObject, null, null, 4)
+      try {
+        this.sendTransaction(transactionObject, null, null, 4)
+      } catch (error) {
+        userError(error.message)
+      }
     },
     async unStakeVTX () {
       try {

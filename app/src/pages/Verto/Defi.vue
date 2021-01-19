@@ -478,7 +478,7 @@ export default {
       this.maxToken = this.ethTokens.length ? this.ethTokens.reduce((p, c) => p.usd > c.usd ? p : c) : null
 
       this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
-
+      console.log(tableData, 'tableData')
       let eosWallets = tableData.filter(w => w.chain === 'eos' && w.type === 'eos' && this.accountOptions.push({
         value: w.name,
         key: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5),

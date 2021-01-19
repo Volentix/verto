@@ -10,8 +10,8 @@ class Wallets2Tokens {
     this.eos = new EosWrapper()
     store.commit('wallets/setLoadingState', { eos: false, eth: false })
     const self = this
-    this.eosUSD = 0
-    axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { self.eosUSD = res.data.data.price })
+    self.eosUSD = 0
+    this.getEosUSD()
     store.state.wallets.portfolioTotal = 0
     // console.log(store.state.currentwallet.config.keys, 'store.state.currentwallet.config.keys ')
     this.tableData = [ ...store.state.currentwallet.config.keys ]
@@ -84,7 +84,11 @@ class Wallets2Tokens {
                 })
               }
             } else {
-              this.eos.getAccount(wallet.name).then(a => {
+              this.eos.getAccount(wallet.name).then(async a => {
+                if (this.eosUSD === 0) {
+                  await this.getEosUSD()
+                }
+
                 self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(async eos => {
                 // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
                 // eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
@@ -205,7 +209,11 @@ class Wallets2Tokens {
                 })
               }
             } else {
-              this.eos.getAccount(wallet.name).then(a => {
+              this.eos.getAccount(wallet.name).then(async a => {
+                if (this.eosUSD === 0) {
+                  await this.getEosUSD()
+                }
+
                 self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(async eos => {
                   // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
                   // eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
@@ -302,6 +310,9 @@ class Wallets2Tokens {
     // console.log('this.$store.state.wallets', this.$store.state)
     // store.commit('wallets/updateTokens', this.tableData)
     // store.commit('wallets/updatePortfolioTotal', store.state.wallets.portfolioTotal)
+  }
+  async getEosUSD () {
+    await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { this.eosUSD = res.data.data.price })
   }
   async getAllAssets () {
     await axios.get('https://volentix.info/get_assets')
