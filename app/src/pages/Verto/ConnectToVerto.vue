@@ -237,18 +237,11 @@ export default {
     }
   },
   async created () {
-    this.accounts = this.$store.state.wallets.tokens.map((token) => {
-      return {
-        label: token.name.toLowerCase(),
-        value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
-        key: token.key,
-        image: token.icon,
-        type: token.type
-      }
-    })
-    this.getCoinswitchCoins()
-    this.get1inchCoins()
-    this.getDefiboxCoins()
+    if (!this.$route.query.url) {
+      this.getCoinswitchCoins()
+      this.get1inchCoins()
+      this.getDefiboxCoins()
+    }
     this.hasConfig = !!(await configManager.hasVertoConfig())
     if (!this.hasConfig) {
       this.$router.push({
@@ -322,7 +315,7 @@ export default {
       const results = await configManager.login(this.password)
       if (results.success) {
         this.$store.commit('settings/temporary', this.password)
-        await initWallet()
+        initWallet()
       } else {
         if (results.message === 'no_default_key') {
           this.$router.push({

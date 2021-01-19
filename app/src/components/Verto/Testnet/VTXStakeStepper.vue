@@ -554,18 +554,21 @@ export default {
       }
     },
     displayError (error, freeCpu = false) {
-      // console.log('transaction errors', error)
-      this.transactionError = true
-      // console.log('error', error)
       if (error.message.includes('stake amount is too low')) {
+        this.transactionError = true
         this.ErrorMessage = 'Your VTX stake amount is too low, you need at least 1000 VTX to stake.'
       } else if (error.message.includes('maximum billable CPU time')) {
-        if (freeCpu) this.payForUserCPU()
-
-        this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
+        if (freeCpu) {
+          this.payForUserCPU()
+        } else {
+          this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
+          this.transactionError = true
+        }
       } else if (error.message.includes('has insufficient ram')) {
+        this.transactionError = true
         this.ErrorMessage = 'Your EOS account does not have enough RAM staked to process the transaction.'
       } else {
+        this.transactionError = true
         this.ErrorMessage = 'Unknown Error: ' + error
       }
     },
