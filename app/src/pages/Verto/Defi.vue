@@ -1357,3 +1357,8 @@ export default {
   min-height: 580px !important;
 }
 </style>
+<style>
+.bg-white{
+  height: 100%;
+}
+</style>
