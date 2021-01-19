@@ -1,11 +1,8 @@
 <template>
   <div class="desktop-card-style make-vtx" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
     <div class="exchange-container">
-      <div class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md" style="background: url('statics/bg3d3.png');">
-        DeFi
-        <!-- <q-icon name="o_style" size="sm" /> -->
-        <!-- <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 66 68" style="enable-background:new 0 0 66 68;" xml:space="preserve"> <g> <path class="st0" d="M32,20.7l4.9,4.2C37,25,37.2,25,37.3,25c0.1,0,0.2,0,0.3-0.1l4.8-4.3c0,0,0,0,0,0c0.1-0.1,0.1-0.2,0.1-0.3v0 c0,0,0,0,0,0v-8.6c0,0,0-0.1,0-0.1c0-0.1,0-0.1-0.1-0.2c0-0.1-0.1-0.1-0.2-0.1c0,0-0.1,0-0.2-0.1c-0.1,0-0.1,0-0.2,0 c-0.1,0-0.1,0-0.2,0.1c-0.1,0-0.1,0.1-0.1,0.2c0,0,0,0.1,0,0.1l-3.1,8.3H36l-3.2-8.3c0,0,0-0.1,0-0.1c0-0.1-0.1-0.1-0.1-0.2 c-0.1,0-0.1-0.1-0.2-0.1c-0.1,0-0.1,0-0.2,0c-0.1,0-0.1,0-0.2,0.1c-0.1,0-0.1,0.1-0.2,0.1c0,0.1-0.1,0.1-0.1,0.2c0,0,0,0.1,0,0.1 V20c0,0.1,0,0.1,0,0.2C31.7,20.4,31.9,20.6,32,20.7z M41.6,14.4v5.4h-2L41.6,14.4z M39.2,20.7h1.6l-2.3,2.1L39.2,20.7z M38.1,20.7 l-0.9,2.4l-0.9-2.4H38.1z M36.1,22.8l-2.5-2.1h1.6L36.1,22.8z M32.8,14.3l2.1,5.4h-2.1V14.3z"/> <path class="st0" d="M37.2,30.1c6.6,0,12-5.4,12-12s-5.4-12-12-12s-12,5.4-12,12S30.5,30.1,37.2,30.1z M37.2,8c5.5,0,10,4.5,10,10 s-4.5,10-10,10s-10-4.5-10-10S31.6,8,37.2,8z"/> <path class="st0" d="M47.4,44.4c-0.6,0-1,0.4-1,1v6.7c0,0.7-0.5,1.2-1.2,1.2H15.6c0,0,0,0,0,0c-0.7,0-1.2-0.5-1.2-1.2V22.5 c0-0.7,0.5-1.2,1.2-1.2h6.7c0.6,0,1-0.4,1-1s-0.4-1-1-1h-6.7c-1.8,0-3.2,1.4-3.2,3.2v29.6c0,1.8,1.4,3.2,3.2,3.2c0,0,0,0,0,0h29.6 c1.8,0,3.2-1.5,3.2-3.2v-6.7C48.4,44.9,48,44.4,47.4,44.4z"/> <path class="st0" d="M50.6,26.9c-4.6,0-8.4,3.8-8.4,8.4s3.8,8.4,8.4,8.4S59,40,59,35.3S55.2,26.9,50.6,26.9z M50.6,41.8 c-3.5,0-6.4-2.9-6.4-6.4s2.9-6.4,6.4-6.4s6.4,2.9,6.4,6.4S54.1,41.8,50.6,41.8z"/> <path class="st0" d="M27,38.5c0,3.8,3.1,6.9,6.9,6.9s6.9-3.1,6.9-6.9c0-3.8-3.1-6.9-6.9-6.9S27,34.7,27,38.5z M38.8,38.5 c0,2.7-2.2,4.9-4.9,4.9S29,41.2,29,38.5c0-2.7,2.2-4.9,4.9-4.9S38.8,35.8,38.8,38.5z"/> </g> </svg> -->
-      </div>
+      <div v-if="$store.state.lightMode.lightMode === 'false'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md" style="background: url('statics/bg3d3.png');">DeFi</div>
+      <div v-else class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md lightmd" style="background: url('statics/bg3d3light.png');">DeFi</div>
       <div class="row items-end q-pa-md">
         <div class="col-6 p-desc">
           Earn exchange fees and pool rewards.
@@ -280,7 +277,10 @@ export default {
         padding-top: 11px;
         color: #FFF;
         background-size: 100% auto !important;
-        background-position: 0px -30px !important;
+        background-position: 0px -20px !important;
+        &.lightmd{
+          color: #04111F;
+        }
       }
       .row{}
       .qbtn-start{
