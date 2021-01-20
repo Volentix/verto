@@ -259,6 +259,7 @@ export default {
       { name: 'Restore Config', to: 'restore', icon: 'cloud_upload', info: '' },
       { name: 'Add EOS Account', to: '/verto/import-private-key/eos', icon: 'label', info: '' },
       { name: 'Add ETH Account', to: '/verto/import-private-key/eth', icon: 'label', info: '' },
+      { name: 'Add HD Account', to: '/verto/create-hd-account', icon: 'label', info: '' },
       { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
       { name: 'Network', to: '', icon: 'public_off', info: 'darkmode' },
       { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'soon' },

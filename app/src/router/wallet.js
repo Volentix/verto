@@ -108,6 +108,14 @@ export default [
         }
       },
       {
+        name: 'create-hd-account',
+        path: '/verto/create-hd-account',
+        component: () => import('pages/Verto/CreateHdAccount.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'earn',
         path: '/verto/earn',
         component: () => import('pages/Verto/Earn.vue'),
