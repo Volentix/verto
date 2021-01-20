@@ -19,11 +19,11 @@
         </svg>
         <router-link to="/verto/dashboard">VERTO</router-link>
       </div>
-      <div class="col col-5 flex items-center date-scrolling-msg">
+      <div class="col col-3 flex items-center date-scrolling-msg">
         <div class="date">{{ refreshDate() }}</div>
         <!-- <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content='This app is in beta, please send us bug reports if you find any. <b><a target="_blank" href="https://t.me/vertosupport">t.me/vertosupport</a></b>' /> -->
       </div>
-      <div class="col col-5 flex justify-end q-pr-md items-center menu">
+      <div class="col col-7 flex justify-end q-pr-md items-center menu">
         <!-- to="/verto/earn/use-referral-account" -->
         <!-- <router-link disabled>Refer & Earn</router-link> -->
         <q-btn-dropdown
@@ -107,7 +107,7 @@
           :options="networks"
         >
           <template v-slot:option="scope">
-            <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+            <q-item  dense class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
               <q-item-section avatar>
                 <q-icon size="xs" :name="`img:${scope.opt.image}`" />
               </q-item-section>
@@ -117,7 +117,7 @@
             </q-item>
           </template>
           <template v-slot:selected>
-            <q-item v-if="network">
+            <q-item dense v-if="network">
               <q-item-section avatar>
                 <q-icon size="xs" :name="`img:${network.image}`" />
               </q-item-section>
@@ -186,13 +186,13 @@ export default {
         {
           label: 'Mainnet',
           image:
-            'https://www.t2techgroup.com/wp-content/uploads/2018/07/network-icon.png',
+            'https://upload.wikimedia.org/wikipedia/commons/2/2d/Basic_green_dot.png',
           value: 'mainnet'
         },
         {
           label: 'Testnet',
           image:
-            'https://upload.wikimedia.org/wikipedia/commons/4/41/Noun_project_network_icon_1365244_cc.svg',
+            'https://dev.volentix.io/statics/icon.png',
           value: 'testnet'
         }
       ]
