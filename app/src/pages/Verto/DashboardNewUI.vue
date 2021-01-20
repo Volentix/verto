@@ -6,7 +6,7 @@
             <div class="col col-md-3">
                 <div class="wallets-container">
                     <profile-header :isMobile="false" class="marg" version="type2222" />
-                    <wallets  data-intro="Click on an account/token to see all actions you can perform. Click SETP to associate EOS account(s) to account names" :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+                    <wallets data-title="Interact with your account"  data-intro="Click on an account/token to see all actions you can perform. Click SETP to associate EOS account(s) to account names" :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                 </div>
             </div>
             <div class="col col-md-9 q-pr-md">
@@ -19,17 +19,17 @@
                     </div>
                     <div class="col col-md-12">
                         <div class="liquidityPoolsTable q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
-                            <liquidityPoolsTable data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="10"  v-if="$store.state.settings.network == 'mainnet'" />
+                            <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="10"  v-if="$store.state.settings.network == 'mainnet'" />
                             <TestnetPools :showAddLiquidity="true" class="bg-white" v-else />
                         </div>
                     </div>
                     <div class="col q-pr-sm col-md-4">
 
-                        <ExchangeSection2 data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
+                        <ExchangeSection2 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
                     </div>
                     <div class="col q-pr-sm col-md-4">
 
-                        <makeVTXSection2 data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
+                        <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
                     </div>
                     <div class="col col-md-4">
 
@@ -224,10 +224,16 @@ export default {
     */
   },
   async mounted () {
-    const IntroJS = require('intro.js')
-    let Intro = new IntroJS()
-    Intro.start()
-
+    let disableIntro = localStorage.getItem('disableIntros')
+    if (!disableIntro) {
+      const IntroJS = require('intro.js')
+      let Intro = new IntroJS()
+      Intro.setOptions({
+        showProgress: true
+      }).onbeforeexit(function () {
+        return localStorage.setItem('disableIntros', Date.now())
+      }).start()
+    }
     setTimeout(async () => {
       let manualSelectCurrentWallet = false
       await store.state.wallets.tokens.map(async (f) => {
