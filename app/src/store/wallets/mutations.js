@@ -25,7 +25,7 @@ export const updateTokens = (state, updatedtokens) => {
           return token
         })
 
-        window.top.postMessage({ accounts: accounts }, '*')
+        window.parent.postMessage({ accounts: accounts }, '*')
       }
     }
     return o
