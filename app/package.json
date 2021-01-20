@@ -78,6 +78,7 @@
     "file-saver": "^2.0.1",
     "fs-web": "^1.0.1",
     "hdkey": "^1.1.1",
+    "intro.js": "^3.2.1",
     "js-chain-libs": "^0.3.0",
     "leaflet": "^1.7.1",
     "litecore-lib": "^0.13.22",

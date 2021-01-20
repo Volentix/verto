@@ -87,7 +87,8 @@ module.exports = function (ctx) {
         'QEditor',
         'QImg',
         'QSplitter',
-        'Loading'
+        'Loading',
+        'QBtnDropdown'
       ],
 
       directives: [

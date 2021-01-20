@@ -42,9 +42,22 @@ export default {
         this.transactionHash = result.transaction_id
         if (step) this.step = step
       }).catch((error) => {
-        this.error = error
-        this.transactionStatus = null
-        this.spinnervisible = false
+        if (error.toString().includes('is greater than the maximum billable CPU time for the transaction') || error.toString().includes('the current CPU usage limit imposed on the transaction')) {
+          this.sendFreeCPUTransaction(transactionObject.actions, this.eosAccount).then((result) => {
+            this.transactionStatus = 'Success'
+            this.spinnervisible = false
+            this.transactionHash = result.hash
+            if (step) this.step = step
+          }).catch((error) => {
+            this.error = error
+            this.transactionStatus = null
+            this.spinnervisible = false
+          })
+        } else {
+          this.error = error
+          this.transactionStatus = null
+          this.spinnervisible = false
+        }
       })
 
       return value
