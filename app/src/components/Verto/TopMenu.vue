@@ -28,16 +28,16 @@
         <!-- <router-link disabled>Refer & Earn</router-link> -->
         <q-btn-dropdown
           no-caps
-          :icon="'img:https://icons.veryicon.com/png/128/miscellaneous/t3-linear-icon/import-import.png'"
+
           label="Quick access"
           flat
         >
           <q-list>
-            <q-item dense to="/verto/import-private-key/eos" clickable v-close-popup>
+            <q-item dense @click="buyCPU()" clickable v-close-popup>
               <q-item-section avatar>
                 <q-avatar
-                  :icon="'img:https://files.coinswitch.co/public/coins/eos.png'"
-                  text-color="white"
+                  icon="speed"
+
                 />
               </q-item-section>
               <q-item-section>
@@ -45,11 +45,11 @@
               </q-item-section>
             </q-item>
 
-            <q-item dense to="/verto/import-private-key/eth" clickable v-close-popup>
+            <q-item dense @click="backupConfig()" clickable v-close-popup>
               <q-item-section avatar>
                 <q-avatar
-                  :icon="'img:https://files.coinswitch.co/public/coins/eth.png'"
-                  text-color="white"
+                   icon="backup"
+
                 />
               </q-item-section>
               <q-item-section>
@@ -60,7 +60,7 @@
         </q-btn-dropdown>
         <q-btn-dropdown
           no-caps
-          :icon="'img:https://icons.veryicon.com/png/128/miscellaneous/t3-linear-icon/import-import.png'"
+          icon="upgrade"
           label="Import accounts"
           flat
         >
@@ -167,6 +167,8 @@ import Vue from 'vue'
 import VDexNodeConfigManager from '@/util/VDexNodeConfigManager'
 import initWallet from '@/util/Wallets2Tokens'
 import EosRPC from '@/util/EosWrapper'
+import configManager from '@/util/ConfigManager'
+
 export default {
   name: 'TopMenu',
   components: {
@@ -223,6 +225,37 @@ export default {
         process.env[this.$store.state.settings.network].EOS_HISTORYAPI
       )
       await initWallet()
+    },
+    async backupConfig () {
+      try {
+        await configManager.backupConfig()
+        if (this.$q.platform.is.android) {
+          this.$q.notify({ color: 'positive', message: 'Config Saved' })
+        }
+      } catch (e) {
+        // TODO: Exception handling
+      }
+    },
+    buyCPU () {
+      let account = this.$store.state.wallets.tokens.find(o => o.chain === 'eos' && o.type === 'eos')
+      if (account) {
+        this.$store.commit('currentwallet/updateParams', {
+          chainID: 'eos',
+          tokenID: 'eos',
+          accountName: account ? account.name : ''
+        })
+        this.$store.state.currentwallet.wallet = account
+        this.$router.push('/verto/stake')
+      } else {
+        this.$q.notify({
+          message: 'No EOS account found',
+          timeout: 2000,
+          icon: 'check',
+          textColor: 'white',
+          type: 'warning',
+          position: 'top'
+        })
+      }
     },
     toggleLightDarkMode (val) {
       // console.log('toggleLightDarkMode (val)', val)
