@@ -253,13 +253,13 @@ export default {
     }
     // console.log('---this.wallet---', this.wallet)
     if (this.wallet) {
-      console.log('this.wallet, this.wallet, this.wallet', this.wallet)
       this.currentAccount = this.wallet
       this.params = {
         chainID: this.currentAccount.chain,
         tokenID: this.currentAccount.type,
         accountName: this.currentAccount.name
       }
+      this.tableData = this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type === 'eos')
     } else {
       this.params = this.$store.state.currentwallet.params
       this.tableData = await this.$store.state.wallets.tokens
