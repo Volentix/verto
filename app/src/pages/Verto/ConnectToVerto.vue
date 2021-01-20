@@ -4,7 +4,7 @@
       <transition enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
         <h2 class="landing--title">
           <strong>VERTO</strong> <b class="version">{{ version }}</b>
-          <span>Connect to your wallet {{$store.state.wallets.tokens.length}} </span>
+          <span>Connect to your wallet  </span>
           <img src="statics/picto_verto.svg" alt="" />
         </h2>
       </transition>
