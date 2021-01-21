@@ -717,7 +717,7 @@ export default {
       destinationCoinMemo: '',
       fromCoin: {},
       destinationCoin: {
-        value: ''
+        value: 'dai'
       },
       progress: 0.02,
       approvalRequired: false,
@@ -1046,7 +1046,7 @@ export default {
         slippage: 2,
         fromAddress: self.ethAccount.key,
         toAddress: self.destinationCoin.address,
-        disableEstimate: false
+        disableEstimate: true
       }
       let swapRequestUrl = _1inch + '/v2.0/swap?' + new URLSearchParams(data).toString()
       this.$axios.get(swapRequestUrl)

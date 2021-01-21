@@ -131,11 +131,10 @@
                                 :light="$store.state.lightMode.lightMode === 'false'"
                                 @blur="swapData.fromAmount = parseFloat(swapData.fromAmount).toFixed(depositCoin.precision)"
                                 outlined
-                                class="text-h5"
+                                class="text-h5 depositQuantity"
                                 :class="{'bg-white': $store.state.lightMode.lightMode === 'false'}"
                                 ref="depositQuantity"
                                 @input="
-                                swapData.fromAmount = isNaN(swapData.fromAmount) ? 0 : swapData.fromAmount
                                   swapData.error = false;
                                   getPairData();
                                   privateKey = false
@@ -420,6 +419,9 @@
 </template>
 
 <script>
+import {
+  mapState
+} from 'vuex'
 import { Api, JsonRpc } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
 let rpc, api, signatureProvider
@@ -500,14 +502,26 @@ export default {
     if (this.$store.state.settings.dexData.destinationCoin && this.crossChain) {
       this.destinationCoin = this.$store.state.settings.coins.defibox.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
     }
-    // console.log(this.destinationCoin, this.destinationCoin, this.$store.state.settings.dexData)
+    this.pairs = (
+      await rpc.get_table_rows({
+        json: true,
+        code: 'swap.defi',
+        scope: 'swap.defi',
+        table: 'pairs',
+        limit: -1
+      })
+    ).rows
+
     await this.getMinePair()
     await this.getPools()
 
     if (this.$store.state.settings.dexData.fromAmount) {
-      this.swapData.fromAmount = parseFloat(this.$store.state.settings.dexData.fromAmount)
+      this.swapData.fromAmount = isNaN(parseFloat(this.$store.state.settings.dexData.fromAmount)) ? 0 : parseFloat(this.$store.state.settings.dexData.fromAmount)
       this.getPairData()
     }
+  },
+  computed: {
+    ...mapState('investment', ['defaultAccount'])
   },
   methods: {
     urlExists (url) {
@@ -524,6 +538,9 @@ export default {
       await this.$axios.get(endpoint).then((result) => {
         this.miningData = result.data.data
       })
+    },
+    setCursorAtTheStart () {
+      // document.querySelector('.depositQuantity input').setSelectionRange(0, 0)
     },
     async getMiningData (pairId) {
       let endpoint = process.env[this.$store.state.settings.network].CACHE + 'https://defibox.io/api/swap/getMarket'
@@ -566,8 +583,9 @@ export default {
       let next = null,
         url = null
       this.transaction = {}
-      this.swapData.fromAmount = parseFloat(this.swapData.fromAmount).toFixed(this.depositCoin.precision)
 
+      // let amount = parseFloat(this.swapData.fromAmount).toFixed(8)
+      // this.swapData.fromAmount = isNaN(amount) ? 0 : amount
       this.pairData = this.pairs.find(
         (w) =>
           (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) ||
@@ -626,9 +644,11 @@ export default {
         }
       } else {
         multiplier = this.pairData.token0.symbol.split(',')[1].toLowerCase() === this.depositCoin.value.toLowerCase() ? parseFloat(this.pairData.price0_last) : parseFloat(this.pairData.price1_last)
+        let amount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
 
-        this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
+        this.swapData.toAmount = isNaN(amount) ? 0 : amount
       }
+
       this.validateTransaction()
     },
     addCoinToGlobalList (value, key) {
@@ -652,16 +672,7 @@ export default {
       }
     },
     async getPools () {
-      this.pairs = (
-        await rpc.get_table_rows({
-          json: true,
-          code: 'swap.defi',
-          scope: 'swap.defi',
-          table: 'pairs',
-          limit: -1
-        })
-      ).rows
-      this.coins = this.crossChain ? this.getAllCoins() : this.$store.state.settings.coins.defibox
+      this.coins = this.crossChain ? this.getAllCoins() : this.getCoinsByAccount('defibox', this.defaultAccount.label)
       this.depositCoinOptions = this.coins
       this.depositCoinUnfilter = this.coins
       this.depositCoin = this.depositCoin ? this.coins.find((w) => w.value.toLowerCase() === this.depositCoin.value.toLowerCase()) : this.coins.find((w) => w.value.toLowerCase() === 'eos')
@@ -824,9 +835,15 @@ export default {
     }
   },
   watch: {
+    defaultAccount (val) {
+      if (!this.crossChain) {
+        console.log(val, 'val')
+        this.getPools()
+      }
+    },
     depositCoin: function (newVal, oldVal) {
       if (newVal) {
-        this.swapData.fromAmount = parseFloat(newVal.amount).toFixed(this.depositCoin.precision)
+        this.swapData.fromAmount = isNaN(parseFloat(newVal.amount).toFixed(this.depositCoin.precision)) ? 0 : parseFloat(newVal.amount).toFixed(8)
       }
     },
     '$store.state.settings.defiMenu': function (val) {

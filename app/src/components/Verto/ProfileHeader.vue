@@ -1,6 +1,6 @@
 <template>
   <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
-    <div class="send-modal flex flex-center" :class="{'open' : openModal}">
+    <div class="send-modal flex flex-center"  :class="{'open' : openModal}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
           <span class="text-h5 --amount">{{ currentAccount.name.toUpperCase().replace('- HD', '') }}</span>

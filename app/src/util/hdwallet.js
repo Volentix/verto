@@ -21,7 +21,7 @@ class HD {
         const keyring = new Keyring({ type: 'sr25519' })
         const newPair = keyring.addFromUri(mnemonic)
         const publicKey = newPair.publicKey
-        const privateKey = 'not implemented'
+        const privateKey = newPair.secretKey
 
         return { publicKey, privateKey }
       },
