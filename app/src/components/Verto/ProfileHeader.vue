@@ -467,7 +467,8 @@ export default {
           }
         }
         &-btn{
-          background: #7272FA !important;
+          background: #FFF !important;
+          color: #04111F !important;
           margin: 0px 10px;
           width: 100px;
           border-radius: 30px;

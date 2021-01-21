@@ -26,9 +26,9 @@
                                             <q-select class="default-view col-md-3 col-6 offset-md-9" v-model="defaultView" :options="['Coinswitch', '1Inch', 'Swap EOS']" label="Default view" />
                                         </div> -->
                                         <VolentixLiquidity v-if="vpoolsTestMode" />
-                                        <Oneinch :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
+                                        <Oneinch class="oneinch-wrapper" :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
                                         <Swapeos :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
-                                        <Coinswitch :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
+                                        <Coinswitch class="coinswitch-wrapper" :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
                                     </div>
                                     <br><br><br>
                                 </div>
@@ -793,6 +793,66 @@ export default {
     }
 }
 .dark-theme{
+    /deep/ .summary-wrapper{
+      background-color: rgba(white, .06);
+      color: #FFF;
+      .q-item{
+        border-top: 1px solid rgba(white,.12) !important;
+        .q-item__label{
+          color: #FFF;
+        }
+        &:first-child{
+          border-top: none !important;
+        }
+      }
+    }
+    /deep/ .swapeos-component,
+    /deep/ .oneinch-wrapper,
+    /deep/ .coinswitch-wrapper{
+      .trade-component .prototype .head{
+        color: #FFF;
+      }
+      .trade-component .prototype .you-receive .chose_accounts{
+        background-color: #FFF !important;
+        font-size: 16px !important;
+        // font-family: $Franklin !important;
+        color: #04111F !important;
+        border-radius: 40px;
+        margin-top: 40px;
+        height: 54px;
+        width: fit-content !important;
+        float: right;
+      }
+      .trade-component .prototype .you-receive-head,
+      .trade-component .prototype .you-pay-head{
+        color: #FFF;
+      }
+      .trade-component .prototype .you-receive{
+        background-color: rgba(white, .05);
+        .q-btn:not(.swap_vert){
+          background-color: #FFF !important;
+          font-size: 16px !important;
+          // font-family: $Franklin !important;
+          color: #04111F !important;
+          border-radius: 40px;
+          margin-top: 40px;
+          height: 54px;
+          width: fit-content !important;
+          float: right;
+        }
+        .swap_vert{
+          background-color: #04111F !important;
+        }
+      }
+      .q-tab{
+        color: #FFF;
+        opacity: .2;
+        background: transparent;
+        &.q-tab--active{
+          opacity: 1;
+        }
+      }
+    }
     /deep/ .q-checkbox__label{
       color: #FFF;
     }
