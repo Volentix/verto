@@ -126,6 +126,7 @@
                             <div class="col col-8 offset-1">
 
                               <q-input
+                                rounded
                                 :dark="$store.state.lightMode.lightMode === 'true'"
                                 :light="$store.state.lightMode.lightMode === 'false'"
                                 @blur="swapData.fromAmount = parseFloat(swapData.fromAmount).toFixed(depositCoin.precision)"
@@ -231,7 +232,7 @@
                               </span>
                             </div>
                             <div class="col col-8 offset-1">
-                              <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" disable outlined :class="{'bg-white': $store.state.lightMode.lightMode === 'false'}" class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" >
+                              <q-input rounded :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" disable outlined :class="{'bg-white': $store.state.lightMode.lightMode === 'false'}" class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" >
                                 <div class="flex justify-end items-center" style="width: 60px">
                                   <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
                                 </div>

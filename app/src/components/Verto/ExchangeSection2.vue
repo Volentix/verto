@@ -1,7 +1,7 @@
 <template>
     <div class="desktop-card-style make-vtx" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
         <div class="exchange-container">
-            <div v-if="$store.state.lightMode.lightMode === 'false'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md" style="background: url('statics/bg3d1.png');">Exchange</div>
+            <div v-if="$store.state.lightMode.lightMode === 'true'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md" style="background: url('statics/bg3d1.png');">Exchange</div>
             <div v-else class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md lightmd" style="background: url('statics/bg3d1light.png');">Exchange</div>
             <div class="row items-center q-pl-md q-pr-md scale">
                 <div class="col col-8">

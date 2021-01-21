@@ -2,7 +2,7 @@
   <div>
     <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
       <!-- :grid="$q.screen.xs" -->
-      <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :pagination="initialPagination" :loading="!$store.state.investment.pools.length" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+      <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :pagination="initialPagination" :loading="!$store.state.investment.pools.length" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.lightMode.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
@@ -19,7 +19,7 @@
         <template v-slot:body-cell-Liquidity="props">
           <q-td :props="props">
             <div class="column items-start justify-center q-pl-md">
-              <q-btn v-if="screenSize <= 1024" unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom qbtn-custom2 q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="grey" label="Add" />
+              <q-btn v-if="screenSize <= 1024" unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom qbtn-custom2 q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="grey" label="Add liquidity" />
               <span class="value">{{props.value}}</span>
             </div>
           </q-td>
@@ -27,7 +27,7 @@
         <template v-slot:body-cell-action="props">
           <q-td :props="props" class="body-table-col">
             <div v-if="screenSize > 1024" class="col-2 flex justify-end">
-              <q-btn unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm text-bold" color="black" text-color="white" label="Add" />
+              <q-btn unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm text-bold" color="black" text-color="white" label="Add liquidity" />
             </div>
           </q-td>
         </template>
@@ -186,9 +186,18 @@ export default {
 .desktop-card-style.current-investments .qbtn-custom {
     border-radius: 30px;
     height: 34px;
-    background: #7272FA !important;
+    text-transform: initial !important;
+    background: transparent !important;
+    color: #04111F !important;
+    border: 1px solid #04111F;
 }
-
+.desktop-card-style.current-investments{
+  /deep/ .q-table{
+    th{
+      font-size: 15px;
+    }
+  }
+}
 .desktop-card-style.current-investments .qbtn-custom .q-btn__wrapper {
     min-height: unset;
     padding: 0px 5px;
@@ -202,10 +211,11 @@ export default {
   .qbtn-custom {
     border-radius: 30px;
     height: 34px;
-    width: 70px;
+    width: auto;
     font-size: 12px !important;
+    text-transform: initial !important;
     &.qbtn-custom2 {
-      width: 60px;
+      width: auto;
       height: 30px;
       margin-bottom: 5px;
       margin-right: 0px;
@@ -215,16 +225,19 @@ export default {
       }
     }
   }
-  &.dark-theme{
+  &.q-table--dark{
     .qbtn-custom {
       border-radius: 30px;
       height: 34px;
-      width: 70px;
+      width: auto;
       font-size: 12px !important;
-      border: 1px solid #627797 !important;
-      background: #0a2138 !important;
+      color: #FFF !important;
+      border: 1px solid #FFF !important;
+      background: transparent !important;
+      text-transform: initial !important;
+      font-weight: normal;
       &.qbtn-custom2 {
-        width: 60px;
+        width: auto;
         height: 30px;
         margin-bottom: 5px;
         margin-right: 0px;
