@@ -7,13 +7,14 @@
                 <div class="list-wrapper--chain__eos-to-vtx-convertor">
 
                     <q-separator />
-
                     <q-tab-panels v-model="tab" animated>
                         <q-tab-panel name="stake">
                             <div v-if="step >= 0" class="">
                                 <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step" vertical color="primary" animated flat>
-                                    <q-step title="Selected account" :name="0" prefix="0" :done="step > 0">
-                                        <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" v-model="currentAccount" use-input :options="tableData">
+
+                                    <q-step style="max-width:550px" :title="`Set  ${params.tokenID.toUpperCase()} amount `" :name="1" prefix="1" :done="step > 1">
+                                        <p class="text-body1"> Staking means you are locking down your tokens to give you access to resources that you need to perform actions on the blockchain</p>
+                                        <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input q-mb-md q-mt-md" v-model="currentAccount" use-input :options="tableData">
                                             <template v-slot:option="scope">
                                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                     <q-item-section avatar>
@@ -42,14 +43,6 @@
                                                 <q-btn round flat unelevated text-color="grey" @click="copyToClipboard(currentAccount.type !== 'eos' && currentAccount.type !== 'verto'  ? currentAccount.name : currentAccount.key , 'Account name')" @click.stop icon="o_file_copy" />
                                             </template>
                                         </q-select>
-
-                                        <q-stepper-navigation v-if="currentAccount" class="flex justify-end">
-                                            <q-btn @click="step = 1" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
-                                        </q-stepper-navigation>
-
-                                    </q-step>
-                                    <q-step :title="`How many ${params.tokenID.toUpperCase()}`" :name="1" prefix="1" :done="step > 1">
-                                        <q-btn flat @click="step = 0" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
                                         <div class="text-black">
                                             <!-- <p class="text-h6 text-grey">Condition 1</p> -->
                                             <div v-if="condition === 1" class="condition_1">
@@ -101,19 +94,22 @@
                                                         <q-tab-panels v-model="action" animated>
                                                         <q-tab-panel :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" name="staking">
                                                             <div class="full-width">
-                                                                    <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="params.tokenID.toUpperCase()" rounded outlined class="--input" @input="changeAmount()" />
+                                                                    <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="'' "  prefix="EOS" rounded outlined class="--input" @input="changeAmount()" />
+                                                                <q-input v-if="false" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="sendAmountNet" type="number" :suffix="'NET' "  prefix="EOS" rounded outlined class="--input" @input="changeAmount()" />
                                                                 <br>
-                                                                <span class="--title row text-h6"> Amount to stake </span>
-                                                                <span class="--amount row text-h4"> {{ sendAmount }} {{ params.tokenID.toUpperCase() }}</span>
+                                                                 <span class="--amount row text-h4"> {{ sendAmount }} {{ params.tokenID.toUpperCase() }}</span>
+                                                               <span v-if="false" class="--amount row text-h4"> {{ sendAmountNet }} {{ params.tokenID.toUpperCase() }} (NET)</span>
                                                             </div>
                                                         </q-tab-panel>
 
                                                         <q-tab-panel name="unstaking">
                                                             <div class="full-width">
-                                                                <q-input  v-model="sendAmount" type="number" :suffix="params.tokenID.toUpperCase()" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" rounded outlined class="--input" @input="changeAmount()" />
-                                                            <br>
+                                                               <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="'' "  prefix="EOS" rounded outlined class="--input" @input="changeAmount()" />
+                                                                <q-input v-if="false" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="sendAmountNet" type="number" :suffix="'NET' "  prefix="EOS" rounded outlined class="--input" @input="sendAmountNet > currentAccount.amount ? sendAmountNet = currentAccount.amount : '' ; " />
+                                                                <br>
                                                             <span class="--title row text-h6"> Amount to unstake </span>
-                                                            <span class="--amount row text-h4"> {{ sendAmount }} {{ params.tokenID.toUpperCase() }}</span>
+                                                            <span class="--amount row text-h4"> {{ sendAmount }} {{ params.tokenID.toUpperCase() }} (CPU)</span>
+                                                             <span v-if="false" class="--amount row text-h4"> {{ sendAmountNet }} {{ params.tokenID.toUpperCase() }} (NET)</span>
                                                         </div>
                                                         </q-tab-panel>
                                                         </q-tab-panels>
@@ -123,7 +119,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <q-stepper-navigation class="flex " v-show="parseFloat(sendAmount) > 0">
+                                        <q-stepper-navigation class="flex " v-show="parseFloat(sendAmount) > 0 || parseFloat(sendAmountNet) > 0">
                                             <q-btn @click="step = 2" v-if="condition === 1" unelevated color="deep-purple-14" class="--next-btn" rounded :label="`Get ${ params.tokenID.toUpperCase() }`" />
                                             <q-btn @click="step = 2" v-if="condition === 2" unelevated color="deep-purple-14" class="--next-btn" rounded label="Get EOS account" />
                                             <q-btn @click="step = 2" v-if="condition === 3" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
@@ -207,7 +203,7 @@ export default {
       error: null,
       transactionStatus: null,
       transactionHash: null,
-      step: 0,
+      step: 1,
       condition: 3,
       currentAccount: {},
       stakePeriod: 2,
@@ -233,6 +229,7 @@ export default {
       privateKey: {
         success: null
       },
+      sendAmountNet: 0,
       transactionId: null,
       transactionError: '',
       spinnervisible: false,
@@ -256,13 +253,13 @@ export default {
     }
     // console.log('---this.wallet---', this.wallet)
     if (this.wallet) {
-      console.log('this.wallet, this.wallet, this.wallet', this.wallet)
       this.currentAccount = this.wallet
       this.params = {
         chainID: this.currentAccount.chain,
         tokenID: this.currentAccount.type,
         accountName: this.currentAccount.name
       }
+      this.tableData = this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type === 'eos')
     } else {
       this.params = this.$store.state.currentwallet.params
       this.tableData = await this.$store.state.wallets.tokens
@@ -409,36 +406,21 @@ export default {
             from: this.currentAccount.name,
             receiver: this.currentAccount.name,
             stake_cpu_quantity: parseFloat(this.sendAmount).toFixed(4) + ' EOS',
-            stake_net_quantity: parseFloat(this.sendAmount).toFixed(4) + ' EOS',
+            stake_net_quantity: parseFloat(0).toFixed(4) + ' EOS',
             transfer: false
           } : {
             from: this.currentAccount.name,
             receiver: this.currentAccount.name,
             unstake_cpu_quantity: parseFloat(this.sendAmount).toFixed(4) + ' EOS',
-            unstake_net_quantity: parseFloat(this.sendAmount).toFixed(4) + ' EOS'
+            unstake_net_quantity: parseFloat(0).toFixed(4) + ' EOS'
           }
         }]
       }
       this.eosAccount = this.currentAccount
-      this.sendTransaction(transactionObject, null, null, 4)
-    },
-    async unStakeVTX () {
+      console.log(transactionObject, 'transactionObject')
       try {
-        await eos.transact({
-          actions: [{
-            account: 'vtxstake1111',
-            name: 'unstake',
-            authorization: [{
-              actor: this.currentAccount.name,
-              permission: 'active'
-            }],
-            data: {
-              owner: this.currentAccount.name
-            }
-          }]
-        }, {
-          keyProvider: this.privateKey.key
-        })
+        this.step = 4
+        this.sendTransaction(transactionObject, null, null, 4)
       } catch (error) {
         userError(error.message)
       }

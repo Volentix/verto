@@ -76,7 +76,6 @@ export const resetAccountDetails = (state, payload) => {
   state.debts = []
   state.defaultAccount = payload
 }
-
 export const setMarketData = (state, payload) => {
   state.marketData = payload
 }

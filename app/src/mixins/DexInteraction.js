@@ -69,6 +69,33 @@ export default {
         return value
       }).filter(o => o != null)
     },
+    checkContractFormat (contract) {
+      return (typeof contract === 'undefined' || contract === 'undefined' || !contract) ? 'eosio.token' : contract
+    },
+    getCoinsByAccount (dex, accountName) {
+      let coins = this.$store.state.settings.coins[dex]
+
+      coins = this.getUniqueTokens(coins).filter(o => !(this.$store.state.wallets.tokens.filter(x => x.chain === 'eos' && x.name === accountName).map(w => w.type.toLowerCase()).includes(o.value.toLowerCase())))
+
+      this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type !== 'verto' && o.name === accountName).forEach((coin) => {
+        let row = {
+          'label': coin.type,
+          'name': coin.name,
+          'value': coin.type,
+          'contract': coin.contract,
+          'precision': coin.precision,
+          'image': coin.chain === 'eos' ? 'https://ndi.340wan.com/eos/' + this.checkContractFormat(coin.contract) + '-' + coin.type.toLowerCase() + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type.toLowerCase() + '.png',
+          'dex': 'coinswitch',
+          'amount': parseFloat(coin.amount),
+          'amountUSD': coin.usd
+        }
+
+        coins.unshift(row)
+      })
+      return coins.sort(function (a, b) {
+        return a.name ? -1 : 1
+      })
+    },
     getAllCoins () {
       let coins = this.$store.state.settings.coins.coinswitch.concat(this.$store.state.settings.coins.oneinch).concat(this.$store.state.settings.coins.defibox)
 
@@ -81,7 +108,7 @@ export default {
           'value': coin.type,
           'contract': coin.contract,
           'precision': coin.precision,
-          'image': coin.chain === 'eos' ? 'https://ndi.340wan.com/eos/' + coin.contract + '-' + coin.type + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type + '.png',
+          'image': coin.chain === 'eos' ? 'https://ndi.340wan.com/eos/' + this.checkContractFormat(coin.contract) + '-' + coin.type.toLowerCase() + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type.toLowerCase() + '.png',
           // 'image': 'https://ndi.340wan.com/eos/' + coin.contract + '-' + coin.type + '.png',
           'dex': 'coinswitch',
           'amount': parseFloat(coin.amount),
@@ -195,7 +222,7 @@ export default {
         coins = coins.filter(function (el) {
           return el != null
         }).sort(function (a, b) {
-          if (a.label.toLowerCase() < b.label.toLowerCase()) {
+          if (a.label && b.label && a.label.toLowerCase() < b.label.toLowerCase()) {
             return -1
           }
           return 1

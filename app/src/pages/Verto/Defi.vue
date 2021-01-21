@@ -103,6 +103,7 @@
         >
          <div >
           <q-list class="text-center flex">
+
             <q-item v-if="$store.state.settings.network == 'mainnet'" clickable @click="chain = 'eth';  switchChain() " :class="[chain == 'eth' ? 'bg-white' :'']">
 
             <q-img src="https://files.coinswitch.co/public/coins/eth.png" style="width:20px;"/>
@@ -514,9 +515,11 @@ export default {
       if (eosWallets.length) {
         this.eosACcount = eosWallets[0]
       }
+
       if (this.defaultAccount) {
         this.accountOption = this.defaultAccount
         this.chooseAccount = false
+        this.chain = this.accountOption.chain
 
         this.switchChain()
       } else if (this.accountOptions.length) {
@@ -524,6 +527,7 @@ export default {
       }
 
       if (this.accountOption.value) {
+        this.$store.commit('investment/setDefaultAccount', this.accountOption)
         this.getAccountInformation(this.accountOption)
       }
 
@@ -531,7 +535,7 @@ export default {
     },
     checkChain () {
       if (this.$store.state.settings.network === 'mainnet') {
-        this.chain = 'eos'
+        // this.chain = 'eos'
       } else {
         this.chain = 'eos'
         this.testnetDialog = true
@@ -547,6 +551,7 @@ export default {
         if (!tabs.includes(this.menu)) {
           this.menu = 'liquidity'
         }
+        this.$store.commit('investment/setDefaultAccount', this.accountOption)
       } else {
         if (this.menu === 'add_liquidity') this.menu = 'liquidity'
         this.getAccountInformation(this.accountOption)

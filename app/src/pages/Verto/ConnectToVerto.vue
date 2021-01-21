@@ -4,7 +4,7 @@
       <transition enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
         <h2 class="landing--title">
           <strong>VERTO</strong> <b class="version">{{ version }}</b>
-          <span>Connect to your wallet {{$store.state.wallets.tokens.length}} </span>
+          <span>Connect to your wallet  </span>
           <img src="statics/picto_verto.svg" alt="" />
         </h2>
       </transition>
@@ -237,18 +237,11 @@ export default {
     }
   },
   async created () {
-    this.accounts = this.$store.state.wallets.tokens.map((token) => {
-      return {
-        label: token.name.toLowerCase(),
-        value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
-        key: token.key,
-        image: token.icon,
-        type: token.type
-      }
-    })
-    this.getCoinswitchCoins()
-    this.get1inchCoins()
-    this.getDefiboxCoins()
+    if (!this.$route.query.url) {
+      this.getCoinswitchCoins()
+      this.get1inchCoins()
+      this.getDefiboxCoins()
+    }
     this.hasConfig = !!(await configManager.hasVertoConfig())
     if (!this.hasConfig) {
       this.$router.push({
@@ -322,7 +315,7 @@ export default {
       const results = await configManager.login(this.password)
       if (results.success) {
         this.$store.commit('settings/temporary', this.password)
-        await initWallet()
+        initWallet()
       } else {
         if (results.message === 'no_default_key') {
           this.$router.push({
