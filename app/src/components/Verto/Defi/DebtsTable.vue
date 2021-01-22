@@ -151,7 +151,7 @@ export default {
     background: #04111F !important;
     // padding: 20px;
     border-radius: 0px;
-    border: 1px solid rgba(#CCC, .2);
+    // border: 1px solid rgba(#CCC, .2);
   }
 }
 </style>

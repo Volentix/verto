@@ -240,7 +240,7 @@
           <div v-if="$store.state.settings.network == 'mainnet'" v-show="chain == 'eth'">
             <LiquidityPoolsTable :rowsPerPage="10" class="minHeight" v-if="menu == 'liquidity'"/>
             <InvestmentsTable class="minHeight2" v-else-if="menu == 'investments'"/>
-            <DebtsTable class="minHeight2" v-else-if="menu == 'debts'"/>
+            <DebtsTable class="minHeight2 DebtsTable" v-else-if="menu == 'debts'"/>
             <TransactionsTable class="minHeight2" v-else-if="menu == 'transactions'"/>
             <InvestmentsOpportunitiesTable class="minHeight2" v-else-if="menu == 'staking'"/>
             <Oneinch class="q-pl-md q-pb-xl accountOptionOneinch" v-show="menu == 'swap'" />
@@ -801,6 +801,12 @@ export default {
     .col-title h4{
         color: #FFF;
     }
+  }
+  .DebtsTable{
+    border: 1px solid rgba(#CCC, .3);
+    margin: 0px 20px;
+    border-radius: 10px;
+    overflow: hidden;
   }
   .accountOptionOneinch{
     border: 1px solid rgba(#CCC, .3);
