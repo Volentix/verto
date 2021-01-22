@@ -795,7 +795,105 @@ export default {
       padding-bottom: 0px;
     }
 }
-.dark-theme{
+
+.accountOptionOneinch{
+    // border: 1px solid rgba(#CCC, .3);
+    margin: 0px 20px;
+    border-radius: 10px;
+    padding-right: 20px;
+    padding-top: 8px;
+    /deep/ .trade-component {
+      .prototype .head{
+        // color: #FFF;
+        // border-bottom: 1px solid rgba(#CCC, .3);
+        margin-bottom: 40px;
+      }
+      .prototype .you-receive-head,
+      .prototype .you-pay-head{
+        // color: #FFF;
+      }
+      .prototype .you-receive{
+        // background-color: rgba(white, .05);
+        .swap_vert{
+          // background-color: #04111F !important;
+        }
+      }
+      .prototype .you-receive .chose_accounts{
+        // background-color: #FFF !important;
+        font-size: 16px !important;
+        // font-family: $Franklin !important;
+        // color: #04111F !important;
+        border-radius: 40px;
+        margin-top: 40px;
+        height: 54px;
+        width: fit-content !important;
+        float: right;
+      }
+    }
+  }
+  /deep/ .summary-wrapper{
+    // background-color: rgba(white, .06);
+    // color: #FFF;
+    .q-item{
+      // border-top: 1px solid rgba(white,.12) !important;
+      .q-item__label{
+        // color: #FFF;
+      }
+      &:first-child{
+        border-top: none !important;
+      }
+    }
+  }
+  /deep/ .oneinch-wrapper,
+  /deep/ .coinswitch-wrapper,
+  /deep/ .swapeos-component{
+    margin: 0px;
+    border-radius: 10px;
+    .q-field--outlined .q-field__control{
+      // background: #CCC;
+    }
+    .bg-white{
+      background: transparent !important;
+    }
+    .prototype .q-tabs{
+      box-shadow: none !important;
+      margin-bottom: 10px;
+    }
+    .trade-component{
+      border: none;
+    }
+    .trade-component .prototype .you-receive .chose_accounts{
+      // background-color: #FFF !important;
+      font-size: 16px !important;
+      // font-family: $Franklin !important;
+      color: #04111F !important;
+      border-radius: 40px;
+      margin-top: 40px;
+      height: 54px;
+      width: fit-content !important;
+      float: right;
+    }
+    .trade-component .prototype .you-receive-head,
+    .trade-component .prototype .you-pay-head{
+      // color: #FFF;
+    }
+    .trade-component .prototype .you-receive{
+      // background-color: rgba(white, .05);
+      .swap_vert{
+        // background-color: #04111F !important;
+      }
+    }
+    .q-tab{
+      // color: #FFF;
+      opacity: .2;
+      box-shadow: none !important;
+      background: transparent;
+      &.q-tab--active{
+        opacity: 1;
+      }
+    }
+  }
+  .dark-theme{
     /deep/ .summary-wrapper{
       background-color: rgba(white, .06);
       color: #FFF;
