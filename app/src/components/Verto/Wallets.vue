@@ -418,7 +418,7 @@
                         </q-card-section>
                         </q-card>
                     </q-expansion-item>
-                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => (f.chain == 'eos' && f.type == 'verto') || f.chain != 'eos'  && f.chain != 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => (f.chain == 'eos' && f.type == 'verto' && !f.hidden && !f.disabled) || f.chain != 'eos'  && f.chain != 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar class="item-coin">
@@ -775,7 +775,7 @@ export default {
         })
         f.staked = stakedAmounts
       }
-      // console.log('f.staked', f.staked)
+      if (f.type === 'verto') { console.log('token', f) }
     })
     // console.log(JSON.stringify(this.$store.state.wallets.tokens))
   },
