@@ -73,8 +73,8 @@
                           <q-tab name="swap" icon="swap_vert" label="Swap" />
                           <q-tab name="liquidity" icon="add" label="Liquidity" />
                         </q-tabs>
-                        <div class="head" v-if="tab == 'swap'">Get {{ destinationCoin.label }} with {{ depositCoin.label }} with one click</div>
-                        <div class="head" v-else-if="tab == 'liquidity'">Add liquidity to the {{ destinationCoin.label }} + {{ depositCoin.label }} pool</div>
+                        <div class="head" v-if="tab == 'swap'">Get {{ destinationCoin.label.toUpperCase() }} with {{ depositCoin.label.toUpperCase() }} with one click</div>
+                        <div class="head" v-else-if="tab == 'liquidity'">Add liquidity to the {{ destinationCoin.label.toUpperCase() }} + {{ depositCoin.label.toUpperCase() }} pool</div>
 
                         <div class="you-pay">
                           <div class="you-pay-head row items-center">

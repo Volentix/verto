@@ -213,7 +213,7 @@
         </div>
     </div>
 </div>
-<div v-else-if="depositCoin && destinationCoin" class="chain-tools-wrapper">
+<div v-else class="chain-tools-wrapper">
     <div class="standard-content">
         <h2 class="standard-content--title flex justify-center">
             <q-btn flat unelevated class="btn-align-left" to="goBack" text-color="black" icon="keyboard_backspace" />
@@ -717,7 +717,7 @@ export default {
       destinationCoinMemo: '',
       fromCoin: {},
       destinationCoin: {
-        value: 'dai'
+        value: ''
       },
       progress: 0.02,
       approvalRequired: false,
@@ -1046,7 +1046,7 @@ export default {
         slippage: 2,
         fromAddress: self.ethAccount.key,
         toAddress: self.destinationCoin.address,
-        disableEstimate: true
+        disableEstimate: false
       }
       let swapRequestUrl = _1inch + '/v2.0/swap?' + new URLSearchParams(data).toString()
       this.$axios.get(swapRequestUrl)
