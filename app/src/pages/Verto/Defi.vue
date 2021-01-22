@@ -751,6 +751,9 @@ export default {
     // border: 1px solid rgba(#CCC, .3);
     margin: 0px 20px;
     border-radius: 10px;
+    .bg-white{
+      background: transparent !important;
+    }
     .prototype .q-tabs{
       box-shadow: none !important;
       margin-bottom: 10px;
@@ -1622,6 +1625,7 @@ export default {
 }
 </style>
 <style>
+.q-item--dark .q-item__label{ color: #FFF; }
 .bg-white{
   height: 100%;
 }

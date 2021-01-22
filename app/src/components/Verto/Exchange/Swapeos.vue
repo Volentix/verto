@@ -79,7 +79,7 @@
                         <div class="you-pay">
                           <div class="you-pay-head row items-center">
                             <div class="col col-6">Payment</div>
-                            <div class="col col-6 red text-right text-body1" v-if="depositCoin.name">Account selected: <b class="text-deep-purple-10">{{depositCoin.name}}</b></div>
+                            <div class="col col-6 red text-right text-body1" v-if="depositCoin.name">Account selected: <b class="" :class="{'text-deep-purple-10': $store.state.lightMode.lightMode === 'false', 'text-white': $store.state.lightMode.lightMode === 'true'}">{{depositCoin.name}}</b></div>
                           </div>
                           <div class="you-pay-body row items-center">
                             <div class="col col-3 choose-coin">
@@ -118,7 +118,7 @@
                                   </template>
                                   <template v-slot:selected>
                                     <span class="text-h5 text-bold">{{ depositCoin.value.toUpperCase() }}</span>
-                                    <q-item-label v-if="depositCoin.name" caption class="text-deep-purple-10 text-bold">{{ depositCoin.name }}</q-item-label>
+                                    <q-item-label v-if="depositCoin.name" caption class="text-bold" :class="{'text-deep-purple-10': $store.state.lightMode.lightMode === 'false', 'text-white': $store.state.lightMode.lightMode === 'true'}">{{ depositCoin.name }}</q-item-label>
                                   </template>
                                 </q-select>
                               </span>
