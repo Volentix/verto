@@ -79,7 +79,7 @@ export default {
 
       this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type !== 'verto' && o.name === accountName).forEach((coin) => {
         let row = {
-          'label': coin.type,
+          'label': coin.type.toUpperCase(),
           'name': coin.name,
           'value': coin.type,
           'contract': coin.contract,
@@ -96,14 +96,14 @@ export default {
         return a.name ? -1 : 1
       })
     },
-    getAllCoins () {
+    getAllCoins (dex = false) {
       let coins = this.$store.state.settings.coins.coinswitch.concat(this.$store.state.settings.coins.oneinch).concat(this.$store.state.settings.coins.defibox)
 
       coins = this.getUniqueTokens(coins).filter(o => !(this.$store.state.wallets.tokens.filter(x => x.chain === 'eos').map(w => w.type.toLowerCase()).includes(o.value.toLowerCase())))
 
       this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type !== 'verto').forEach((coin) => {
         let row = {
-          'label': coin.type,
+          'label': coin.type.toUpperCase(),
           'name': coin.name,
           'value': coin.type,
           'contract': coin.contract,
@@ -115,7 +115,9 @@ export default {
           'amountUSD': coin.usd
         }
 
-        coins.unshift(row)
+        if (dex !== 'coinswitch' || !coins.find(c => c.value.toLowerCase() === coin.type.toLowerCase())) {
+          coins.unshift(row)
+        }
       })
       return coins.sort(function (a, b) {
         return a.name ? -1 : 1
@@ -172,7 +174,7 @@ export default {
           let item = this.$store.state.wallets.tokens.find(o => o.type.toLowerCase() === coin.symbol.toLowerCase())
           if (coin.isActive === true) {
             let row = {
-              'label': coin.name,
+              'label': coin.name.toUpperCase(),
               'value': coin.symbol,
               'image': coin.logoUrl,
               'dex': 'coinswitch',
@@ -207,7 +209,7 @@ export default {
           let image = coins[key].symbol.toLowerCase() === 'eth' ? 'https://1inch.exchange/assets/images/eth.png' : 'https://tokens.1inch.exchange/' + coins[key].address.toLowerCase() + '.png'
 
           let row = {
-            'label': coins[key].name,
+            'label': coins[key].name.toUpperCase(),
             'value': coins[key].symbol,
             'image': image,
             'address': coins[key].address,
@@ -267,7 +269,7 @@ export default {
         // let account = null // this.eosAccounts.find(o => o.type === infosArray[1].toLowerCase())
         let item = this.$store.state.wallets.tokens.find(o => o.type.toLowerCase() === infosArray[1].toLowerCase())
         let option = {
-          label: infosArray[1],
+          label: infosArray[1]?.toUpperCase(),
           precision: infosArray[0],
           value: infosArray[1],
           contract: value[key].contract,
