@@ -5,7 +5,7 @@
         <div class="desktop-version" v-if="screenSize > 1024">
             <div class="row">
                 <div class="col col-md-3">
-                    <div class="wallets-container">
+                    <div class="wallets-container" style="height: 100%">
                         <profile-header :isMobile="false" class="marg" version="type2222" />
                         <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                         <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
@@ -26,9 +26,9 @@
                                             <q-select class="default-view col-md-3 col-6 offset-md-9" v-model="defaultView" :options="['Coinswitch', '1Inch', 'Swap EOS']" label="Default view" />
                                         </div> -->
                                         <VolentixLiquidity v-if="vpoolsTestMode" />
-                                        <Oneinch :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
+                                        <Oneinch class="oneinch-wrapper" :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
                                         <Swapeos :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
-                                        <Coinswitch :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
+                                        <Coinswitch class="coinswitch-wrapper" :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
                                     </div>
                                     <br><br><br>
                                 </div>
@@ -749,6 +749,15 @@ export default {
 
 /deep/ .wallets-wrapper {
     padding-bottom: 0px !important;
+    height: 100%;
+    .walletsScrollArea{
+      &.short{
+        height: 420px !important;
+      }
+      &.long{
+        height: 450px !important;
+      }
+    }
 }
 
 /deep/ .wallets-wrapper--list {
@@ -760,6 +769,9 @@ export default {
     /deep/ .profile-wrapper {
         &--header {
             margin-bottom: 0px;
+            border: 1px solid #627797;
+            // border-bottom: none;
+            border-radius: 10px 10px 0px 0px !important;
         }
     }
 }
@@ -783,7 +795,165 @@ export default {
       padding-bottom: 0px;
     }
 }
-.dark-theme{
+
+.accountOptionOneinch{
+    // border: 1px solid rgba(#CCC, .3);
+    margin: 0px 20px;
+    border-radius: 10px;
+    padding-right: 20px;
+    padding-top: 8px;
+    /deep/ .trade-component {
+      .prototype .head{
+        // color: #FFF;
+        // border-bottom: 1px solid rgba(#CCC, .3);
+        margin-bottom: 40px;
+      }
+      .prototype .you-receive-head,
+      .prototype .you-pay-head{
+        // color: #FFF;
+      }
+      .prototype .you-receive{
+        // background-color: rgba(white, .05);
+        .swap_vert{
+          // background-color: #04111F !important;
+        }
+      }
+      .prototype .you-receive .chose_accounts{
+        // background-color: #FFF !important;
+        font-size: 16px !important;
+        // font-family: $Franklin !important;
+        // color: #04111F !important;
+        border-radius: 40px;
+        margin-top: 40px;
+        height: 54px;
+        width: fit-content !important;
+        float: right;
+      }
+    }
+  }
+  /deep/ .summary-wrapper{
+    // background-color: rgba(white, .06);
+    // color: #FFF;
+    .q-item{
+      // border-top: 1px solid rgba(white,.12) !important;
+      .q-item__label{
+        // color: #FFF;
+      }
+      &:first-child{
+        border-top: none !important;
+      }
+    }
+  }
+  /deep/ .oneinch-wrapper,
+  /deep/ .coinswitch-wrapper,
+  /deep/ .swapeos-component{
+    margin: 0px;
+    border-radius: 10px;
+    .q-field--outlined .q-field__control{
+      // background: #CCC;
+    }
+    .bg-white{
+      background: transparent !important;
+    }
+    .prototype .q-tabs{
+      box-shadow: none !important;
+      margin-bottom: 10px;
+    }
+    .trade-component{
+      border: none;
+    }
+    .trade-component .prototype .you-receive .chose_accounts{
+      // background-color: #FFF !important;
+      font-size: 16px !important;
+      // font-family: $Franklin !important;
+      color: #04111F !important;
+      border-radius: 40px;
+      margin-top: 40px;
+      height: 54px;
+      width: fit-content !important;
+      float: right;
+    }
+    .trade-component .prototype .you-receive-head,
+    .trade-component .prototype .you-pay-head{
+      // color: #FFF;
+    }
+    .trade-component .prototype .you-receive{
+      // background-color: rgba(white, .05);
+      .swap_vert{
+        // background-color: #04111F !important;
+      }
+    }
+    .q-tab{
+      // color: #FFF;
+      opacity: .2;
+      box-shadow: none !important;
+      background: transparent;
+      &.q-tab--active{
+        opacity: 1;
+      }
+    }
+  }
+  .dark-theme{
+    /deep/ .summary-wrapper{
+      background-color: rgba(white, .06);
+      color: #FFF;
+      .q-item{
+        border-top: 1px solid rgba(white,.12) !important;
+        .q-item__label{
+          color: #FFF;
+        }
+        &:first-child{
+          border-top: none !important;
+        }
+      }
+    }
+    /deep/ .swapeos-component,
+    /deep/ .oneinch-wrapper,
+    /deep/ .coinswitch-wrapper{
+      .trade-component .prototype .head{
+        color: #FFF;
+      }
+      .trade-component .prototype .you-receive .chose_accounts{
+        background-color: #FFF !important;
+        font-size: 16px !important;
+        // font-family: $Franklin !important;
+        color: #04111F !important;
+        border-radius: 40px;
+        margin-top: 40px;
+        height: 54px;
+        width: fit-content !important;
+        float: right;
+      }
+      .trade-component .prototype .you-receive-head,
+      .trade-component .prototype .you-pay-head{
+        color: #FFF;
+      }
+      .trade-component .prototype .you-receive{
+        background-color: rgba(white, .05);
+        .q-btn:not(.swap_vert){
+          background-color: #FFF !important;
+          font-size: 16px !important;
+          // font-family: $Franklin !important;
+          color: #04111F !important;
+          border-radius: 40px;
+          margin-top: 40px;
+          height: 54px;
+          width: fit-content !important;
+          float: right;
+        }
+        .swap_vert{
+          background-color: #04111F !important;
+        }
+      }
+      .q-tab{
+        color: #FFF;
+        opacity: .2;
+        background: transparent;
+        &.q-tab--active{
+          opacity: 1;
+        }
+      }
+    }
     /deep/ .q-checkbox__label{
       color: #FFF;
     }

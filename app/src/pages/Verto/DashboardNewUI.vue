@@ -15,7 +15,7 @@
                         <chainToolsSection />
                     </div>
                     <div class="col q-pl-sm col-md-5">
-                        <startNodeSection :banner="2" />
+                        <startNodeSection :banner="3" />
                     </div>
                     <div class="col col-md-12">
                         <div class="liquidityPoolsTable q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
@@ -24,15 +24,13 @@
                         </div>
                     </div>
                     <div class="col q-pr-sm col-md-4">
-
-                        <ExchangeSection2 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
+                        <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
+                        <!-- <ExchangeSection2 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  /> -->
                     </div>
                     <div class="col q-pr-sm col-md-4">
-
                         <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
                     </div>
                     <div class="col col-md-4">
-
                         <LiquidityPoolsSection2 v-if="true  && $store.state.settings.network == 'mainnet'" />
                     </div>
                 </div>
@@ -92,7 +90,7 @@ import LiquidityPoolsSection2 from '../../components/Verto/Defi/LiquidityPoolsSe
 import MakeVTXSection from '../../components/Verto/MakeVTXSection'
 import MakeVTXSection2 from '../../components/Verto/MakeVTXSection2'
 import ExchangeSection from '../../components/Verto/ExchangeSection'
-import ExchangeSection2 from '../../components/Verto/ExchangeSection2'
+import ExchangeSection3 from '../../components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 
 import {
@@ -117,7 +115,7 @@ import initWallet from '@/util/Wallets2Tokens'
 let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 import TestnetPools from '../../components/Verto/Defi/TestnetPools'
-import 'intro.js/minified/introjs.min.css'
+// import 'intro.js/minified/introjs.min.css'
 
 import {
   osName
@@ -139,7 +137,7 @@ export default {
     MakeVTXSection,
     MakeVTXSection2,
     ExchangeSection,
-    ExchangeSection2
+    ExchangeSection3
     // VespucciRatingSection
 
   },
@@ -354,6 +352,9 @@ export default {
     /deep/ .profile-wrapper {
         &--header {
             margin-bottom: 0px;
+            border: 1px solid #627797;
+            // border-bottom: none;
+            border-radius: 10px 10px 0px 0px !important;
         }
     }
 }
