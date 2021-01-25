@@ -10,6 +10,7 @@
                     <!-- add your code here -->
 
                     <!-- Vdex component -->
+
                     <div class="chain-tools-wrapper" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
                         <div class="chain-tools-wrapper--list open">
                             <div class="list-wrapper">
@@ -326,6 +327,7 @@
                                                     <q-btn flat @click="pStep = 2" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
                                                     Order in progress
                                                 </div>
+                                                <Send class="minisend" :embedded="true" v-if=" $store.state.currentwallet.wallet && showTXComponent"/>
                                                 <div class="standard-content--body">
                                                     <div class="standard-content--body__form q-pa-xl">
                                                         <div class="progress-custom-volentix column flex-center">
@@ -345,7 +347,7 @@
                                                                     </div>
                                                                 </template>
                                                             </q-input>
-                                                            <p v-if="destinationCoin.value === 'vtx'" class="text-body1 q-pt-md q-py-md">This is a multi path transaction. ({{depositCoin.value.toUpperCase()}} -> EOS -> VTX). If you close this page you might need to do the Swap from EOS to VTX manually</p>
+                                                            <p v-if="destinationCoin.value === 'vtx'" class="text-body1 q-pt-md q-py-md text-center">This is a multi path transaction. ({{depositCoin.value.toUpperCase()}} -> EOS -> VTX). <br>If you close this page you might need to do the Swap from EOS to VTX manually</p>
                                                             <br v-if="exchangeAddress.tag">
                                                             <q-input v-if="exchangeAddress.tag" v-model="exchangeAddress.tag" readonly rounded class="input-input pr80" outlined color="purple" type="text">
                                                                 <template v-slot:append>
@@ -358,6 +360,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
                                     <!-- <div class="col col-6">
@@ -985,6 +988,7 @@
                                                 <q-btn flat @click="pStep = 2" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
                                                 Order in progress
                                             </div>
+
                                             <div class="standard-content--body">
                                                 <div class="standard-content--body__form q-pa-xl">
                                                     <div class="progress-custom-volentix column flex-center">
@@ -994,6 +998,7 @@
                                                         <span class="title">{{ friendlyStatus }}</span>
                                                         <q-linear-progress indeterminate stripe rounded size="md" :value="progress" class="q-mt-md" />
                                                     </div>
+
                                                     <hr style="height:15px;opacity:0" />
                                                     <div class="text-black">
                                                         <div class="text-h4 --subtitle" v-if="isTransactionPending">{{exchangeLabel}}</div>
@@ -1395,16 +1400,21 @@ import DexInteraction from '../../../mixins/DexInteraction'
 import Lib from '@/util/walletlib'
 import EosWrapper from '@/util/EosWrapper'
 import EOSContract from '@/mixins/EOSContract'
+import Send from '@/pages/Verto/Send'
 const eos = new EosWrapper()
 export default {
   name: 'Coinswitch',
   props: ['disableDestinationCoin', 'crossChain'],
+  components: {
+    Send
+  },
   data () {
     return {
       openModal: false,
       getPassword: false,
       privateKey: false,
       privateKeyPassword: null,
+      showTXComponent: false,
       invalidPrivateKeyPassword: false,
       ErrorMessage: false,
       isPwd: true,
@@ -1523,7 +1533,9 @@ export default {
     this.$store.commit('settings/setDex', {
       dex: 'coinswitch'
     })
-
+    this.gasInterval = setInterval(() => {
+      this.$store.dispatch('investment/getGasPrice')
+    }, 10000)
     window.addEventListener('resize', this.getWindowWidth)
     this.params = this.$store.state.currentwallet.params
     this.tableData = await this.$store.state.wallets.tokens
@@ -1578,6 +1590,9 @@ export default {
     })
     this.checkGetPairs()
     this.checkToGetRate()
+  },
+  destoryed () {
+    clearInterval(this.gasInterval)
   },
   computed: {
     isTransactionPending () {
@@ -1720,7 +1735,7 @@ export default {
   async mounted () {
     const self = this
 
-    self.coins = this.crossChain ? this.getAllCoins() : this.$store.state.settings.coins.coinswitch
+    self.coins = this.crossChain ? this.getAllCoins('coinswitch') : this.$store.state.settings.coins.coinswitch
     self.depositCoinOptions = this.getUniqueTokens(self.coins)
     self.destinationCoinUnfilter = self.depositCoinOptions
     self.depositCoinUnfilter = self.depositCoinOptions
@@ -2075,12 +2090,23 @@ export default {
         headers
       })
         .then((response) => {
-          console.log(this.toCoin)
           self.orderId = response.data.data.orderId
           self.exchangeAddress = response.data.data.exchangeAddress
           self.expectedDepositCoinAmount = response.data.data.expectedDepositCoinAmount
           self.expectedDestinationCoinAmount = response.data.data.expectedDestinationCoinAmount
+          console.log(self.fromCoin, 'this.fromCoin')
+          if (self.fromCoin.type !== 'new_public_key') {
+            self.$store.commit('currentwallet/updateParams', {
+              chainID: self.fromCoin.chain,
+              tokenID: self.fromCoin.type,
+              accountName: self.fromCoin.name,
+              to: self.exchangeAddress.address,
+              amount: self.expectedDepositCoinAmount
+            })
 
+            self.$store.state.currentwallet.wallet = self.tableData.find(a => a.key === self.fromCoin.key && a.type === self.fromCoin.type)
+            self.showTXComponent = true
+          }
           this.orderStatus()
         })
         .catch((err) => {
@@ -2166,6 +2192,7 @@ export default {
               self.rateDataEos = self.rateData
               self.rateData = self.rateDataVtx
             }
+
             this.quantityFromDeposit()
           } else {
             self.rateData = {
@@ -2233,8 +2260,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "~@/assets/styles/variables.scss";
 
+@import "~@/assets/styles/variables.scss";
+/deep/ .desktop-version {
+
+    padding-top: 0vh !important;
+    padding-left: 0vh !important;
+}
+/deep/ .q-page {
+    min-height: 0 !important;
+}
+.standard-content--body__form {
+    padding-bottom:0px;
+     padding-top:0px;
+
+}
+
+/deep/ .desktop-version[data-v-5c57f246] {
+    background: #ffffff;
+}
 /deep/ .wallets-wrapper {
     padding-bottom: 0px !important;
 }

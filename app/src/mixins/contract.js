@@ -60,7 +60,9 @@ export default {
     },
     async getGasOptions (transactionObject, customGas = false) {
       const self = this
+      const Web3 = require('web3')
 
+      this.web3 = this.web3 ? this.web3 : new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
       this.web3.eth.estimateGas(transactionObject).then(function (gasAmount) {
         if (customGas) gasAmount = customGas
         self.gasOptions = [{
