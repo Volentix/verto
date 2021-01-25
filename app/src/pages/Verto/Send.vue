@@ -105,14 +105,14 @@
     <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
-          <div class="col col-md-3">
+          <div class="col col-md-3" v-if="!embedded">
             <div class="wallets-container">
               <profile-header :isMobile="false" class="marg" version="type2222" />
               <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
               <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
             </div>
           </div>
-          <div class="col col-md-9">
+          <div :class="[ embedded ? 'col-md-10 offset-md-1' : ' col-md-9' , 'col']">
             <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
               <div class="standard-content">
                 <h2 class="standard-content--title flex justify-start items-center">Send <img :src="currentToken.image" class="max40 q-ml-sm" alt=""></h2>
@@ -172,7 +172,7 @@
                       </div>
                       <div class="col col-4">
                         <span class="lab-input">Amount</span>
-                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
+                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" @input="sendAmount = sendAmount > currentAccount.amount ? currentAccount.amount : sendAmount ; checkGas();" :light="$store.state.lightMode.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                           <template v-slot:append>
                             <div class="flex justify-end">
                               <span class="tokenID">{{ currentToken.type }}</span>
@@ -213,8 +213,24 @@
                   </div>
                   <br>
                 </div>
+                <q-list v-if="gasOptions.length && currentAccount.chain == 'eth' " class="gasfield q-mb-md"  separator>
+                    <q-item dense class="gasSelector">
+                        <q-item-section v-for="(gas, index) in gasOptions" :key="index">
+                            <q-item :class="[gasSelected.label == gas.label ? 'selected bg-black text-white' : '' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
+                                <q-item-section>
+                                    <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 text-black']">${{gas.value }}</q-item-label>
+                                    <q-item-label class="text-body1 text-grey"> {{gas.label }}</q-item-label>
+                                </q-item-section>
+                                <q-item-section avatar>
+                                    <q-icon color="primary" name="local_gas_station" />
+                                </q-item-section>
+                            </q-item>
+                        </q-item-section>
+                    </q-item>
+                </q-list>
+
                 <div class="standard-content--footer">
-                  <q-btn flat class="action-link next" color="black" @click="openModalFun()" text-color="white" :disable="!sendToResolved" label="Transfer" />
+                  <q-btn flat class="action-link next" :disable="currentAccount.chain == 'eth' &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="openModalFun()" text-color="white"  label="Transfer" />
                 </div>
               </div>
             </div>
@@ -285,13 +301,17 @@
 <script>
 // import RadialProgressBar from 'vue-radial-progress'
 // import EosWrapper from '@/util/EosWrapper'
-import { CruxPay } from '@cruxpay/js-sdk'
-import HD from '@/util/hdwallet'
+// import { CruxPay } from '@cruxpay/js-sdk'
+// import HD from '@/util/hdwallet'
 import Lib from '@/util/walletlib'
 import { osName } from 'mobile-device-detect'
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EOSContract from '../../mixins/EOSContract'
+import ETHContract from '../../mixins/contract'
+import {
+  mapState
+} from 'vuex'
 let cruxClient
 
 export default {
@@ -300,10 +320,13 @@ export default {
     ProfileHeader,
     Wallets
   },
+  props: ['embedded'],
   data () {
     return {
       osName: '',
       progressValue: 20,
+      gasOptions: [],
+      gasSelected: null,
       openModal: false,
       openModalProgress: false,
       transErrorDialog: false,
@@ -318,7 +341,7 @@ export default {
       fetchCurrentWalletFromState: true,
       from: '',
       isPwd: true,
-      sendAmount: 1,
+      sendAmount: 0.001,
       formatedAmount: '',
       options: [],
       minimizedModal: false,
@@ -338,7 +361,7 @@ export default {
       currentToken: {
         image: ''
       },
-      sendToResolved: {},
+      sendToResolved: null,
       memoError: false,
       toError: false,
       toErrorMessage: '',
@@ -368,9 +391,13 @@ export default {
   computed: {
     selectedCoin () {
       return this.$store.state.currentwallet.wallet || {}
-    }
+    },
+    ...mapState('investment', ['gasPrice'])
   },
   watch: {
+    gasPrice: function (newVal) {
+      this.checkGas()
+    },
     currentToken: function (newVal) {
       if (newVal) {
         /*
@@ -381,22 +408,30 @@ export default {
         */
 
         // this.$store.commit('currentwallet/updateCurrentWallet', this.currentAccount)
-        this.sendAmount = 0
+        this.sendAmount = this.$store.state.currentwallet.params && this.$store.state.currentwallet.params.amount ? this.$store.state.currentwallet.params.amount : 0.001
       }
     }
   },
   async created () {
     this.tableData = await this.$store.state.wallets.tokens
 
-    if (this.$route.params.chainID && this.$route.params.chainID) {
+    if (this.$store.state.currentwallet.params) {
+      this.params = this.$store.state.currentwallet.params
+
+      if (this.params.amount) { this.sendAmount = this.params.amount }
+
+      if (this.params.to) { this.sendTo = this.params.to }
+    } else if (this.$route.params.chainID && this.$route.params.chainID) {
       this.params = {
         chainID: this.$route.params.chainID,
         tokenID: this.$route.params.tokenID,
         accountName: this.$route.params.accountName
       }
+
       this.$store.commit('currentwallet/updateParams', this.params)
       this.$store.state.currentwallet.wallet = this.getCurrentWallet()
     }
+
     let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     this.osName = osName
     this.getWindowWidth()
@@ -450,7 +485,7 @@ export default {
     } else {
       this.isPrivateKeyEncrypted = true
     }
-
+    /*
     this.cruxKey = await HD.Wallet('crux')
 
     cruxClient = new CruxPay.CruxClient({
@@ -458,10 +493,19 @@ export default {
       privateKey: this.cruxKey.privateKey
     })
     await cruxClient.init()
+
+    */
+
+    if (this.params.chainID === 'eth') {
+      this.$store.dispatch('investment/getGasPrice')
+      this.checkTo()
+      this.checkGas()
+    }
   },
   mounted () {
   },
   methods: {
+
     getCurrentWallet () {
       return this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
         w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : true)
@@ -511,7 +555,6 @@ export default {
 
         // console.log('sendToResolved', this.sendToResolved)
       } else {
-        // check for valid eos name
         this.sendToResolved = this.sendTo
         this.invalidEosName = false
         if (this.sendTo.length === 12) {
@@ -521,6 +564,10 @@ export default {
         } else {
           this.memoError = false
         }
+      }
+
+      if (this.currentAccount.chain === 'eth') {
+        this.checkGas()
       }
     },
     validateEmail (email) {
@@ -550,6 +597,24 @@ export default {
         return false
       }
     },
+    checkGas () {
+      try {
+        if (this.sendAmount && this.sendToResolved) {
+          Lib.getRawETHTransaction(
+            this.currentAccount.type,
+            this.currentAccount.key,
+            this.sendToResolved,
+            this.sendAmount,
+            this.privateKey.key,
+            this.currentAccount.contract
+          ).then((tx) => {
+            this.getGasOptions(tx)
+          })
+        }
+      } catch (error) {
+        this.ErrorMessage = error.message
+      }
+    },
     async sendTokens () {
       this.unknownError = false
       this.invalidEosName = false
@@ -564,6 +629,11 @@ export default {
       // 'memo', this.sendMemo,
       // 'key', this.privateKey.key,
       // 'contract', this.currentAccount.contract)
+
+      // Pass gas details in memo
+      if (this.currentAccount.chain === 'eth') {
+        this.sendMemo = this.gasSelected
+      }
 
       Lib.send(
         this.currentAccount.chain,
@@ -680,11 +750,47 @@ export default {
       this.openModalProgress = false
     }
   },
-  mixins: [EOSContract]
+  mixins: [EOSContract, ETHContract]
 }
 </script>
 <style lang="scss" scoped>
   @import "~@/assets/styles/variables.scss";
+
+.gasfield {
+    /deep/ .q-item.gasSelector {
+        padding-left: 0px;
+        padding-right: 0px;
+
+        .q-item__section {
+            .q-item--clickable {
+                border-radius: 40px;
+                margin-right: 20px;
+                padding: 15px 30px;
+            }
+        }
+    }
+}
+
+  .gasSelector .q-item {
+    border: 1px solid #f1e7e7
+}
+
+.Slow i {
+    color: #a0afae !important;
+}
+
+.Fast i {
+    color: #00d0ca !important;
+}
+
+.Instant i {
+    color: #7272fa !important;
+}
+
+.gasfield .selected {
+    background: #dfdff1 !important;
+}
+
   /deep/ .wallets-wrapper{
     padding-bottom: 0px !important;
   }
