@@ -91,6 +91,14 @@ export default [
         meta: {
           authRequired: true
         }
+      },
+      {
+        name: 'create-polkadot-account',
+        path: '/verto/create-polkadot-account',
+        component: () => import('components/Verto/Polkadot/CreateAccount.vue'),
+        meta: {
+          authRequired: false
+        }
       }, {
         name: 'import-eth-private-key',
         path: '/verto/import-private-key/eth',
@@ -106,8 +114,7 @@ export default [
         meta: {
           authRequired: true
         }
-      },
-      {
+      }, /*,      {
         name: 'earn',
         path: '/verto/earn',
         component: () => import('pages/Verto/Earn.vue'),
@@ -130,9 +137,9 @@ export default [
         meta: {
           authRequired: true
         }
-      },
+      } */
       {
-        name: 'refer-friend',
+        name: 'eos-account',
         path: '/verto/eos-account',
         component: () => import('pages/Verto/EOSAccount.vue'),
         meta: {
@@ -386,8 +393,7 @@ export default [
         meta: {
           authRequired: true
         }
-      },
-      {
+      }, /*,      {
         name: 'zixipay-get-vtx',
         path: 'zixipay-get-vtx',
         component: () => import('pages/Zixipay/GetVtx.vue'),
@@ -422,7 +428,7 @@ export default [
           authRequired: true,
           needskeyscreated: true
         }
-      },
+      } */
       {
         name: 'vdexnodes',
         path: '/vdexnodes',
@@ -431,7 +437,7 @@ export default [
           authRequired: true,
           needskeyscreated: true
         }
-      },
+      }/*,
       {
         name: 'cruxpay',
         path: '/cruxpay',
@@ -599,7 +605,7 @@ export default [
           authRequired: true,
           needskeyscreated: true
         }
-      }
+      } */
     ]
   }
 ]
