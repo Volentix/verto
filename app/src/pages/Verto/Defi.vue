@@ -25,54 +25,56 @@
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-         <q-select style="width: 400px;" light separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation()" v-model="accountOption" :options="accountOptions">
-                    <template v-slot:selected>
-                        <q-item v-if="accountOption">
-                            <q-item-section v-if="accountOption.image" avatar>
-                                <q-icon class="option--avatar" :name="'img:'+accountOption.image" />
-                            </q-item-section>
-                            <q-item-section>
-                                <q-item-label v-if="accountOption.usd">{{ accountOption.chain.toUpperCase() }} wallet - ${{ accountOption.usd.toFixed(4) }}</q-item-label>
-                                <q-item-label caption class="ellipsis mw200 q-pt-xs">{{ accountOption.value }}</q-item-label>
-                            </q-item-section>
-                        </q-item>
-                    </template>
+         <q-select style="width: 400px;"
+          :dark="$store.state.lightMode.lightMode === 'true'"
+          :light="$store.state.lightMode.lightMode === 'false'"
+          separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation()" v-model="accountOption" :options="accountOptions">
+            <template v-slot:selected>
+                <q-item v-if="accountOption">
+                    <q-item-section v-if="accountOption.image" avatar>
+                        <q-icon class="option--avatar" :name="'img:'+accountOption.image" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label v-if="accountOption.usd">{{ accountOption.chain.toUpperCase() }} wallet - ${{ accountOption.usd.toFixed(4) }}</q-item-label>
+                        <q-item-label caption class="ellipsis mw200 q-pt-xs">{{ accountOption.value }}</q-item-label>
+                    </q-item-section>
+                </q-item>
+            </template>
+            <template v-slot:option="scope">
+              <q-item
+                class="custom-menu"
 
-                    <template v-slot:option="scope">
-                  <q-item
-                   class="custom-menu"
+                v-bind="scope.itemProps"
+                v-on="scope.itemEvents"
+              >
+                <q-item-section avatar>
+                <q-icon
+                  :name="`img:${scope.opt.image}`"
+                />
+                </q-item-section>
+                <q-item-section>
+                <q-item-label
+                  v-html="scope.opt.label"
+                />
 
-                   v-bind="scope.itemProps"
-                   v-on="scope.itemEvents"
-                  >
-                   <q-item-section avatar>
-                    <q-icon
-                     :name="`img:${scope.opt.image}`"
-                    />
-                   </q-item-section>
-                   <q-item-section>
-                    <q-item-label
-                     v-html="scope.opt.label"
-                    />
+                <q-item-label
+                  v-if="scope.opt.name"
+                  caption
+                  >{{ scope.opt.name }}</q-item-label>
+                  <q-item-label
+                  v-if="scope.opt.total"
+                  caption
+                  >${{ scope.opt.total.toFixed(2) }}</q-item-label>
 
-                    <q-item-label
-                     v-if="scope.opt.name"
-                     caption
-                     >{{ scope.opt.name }}</q-item-label>
-                     <q-item-label
-                     v-if="scope.opt.total"
-                     caption
-                     >${{ scope.opt.total.toFixed(2) }}</q-item-label>
-
-                   </q-item-section>
-                  </q-item>
-                 </template>
-                    <!-- <template v-slot:append>
-                        <q-avatar>
-                            <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
-                        </q-avatar>
-                    </template> -->
-                </q-select>
+                </q-item-section>
+              </q-item>
+            </template>
+            <!-- <template v-slot:append>
+                <q-avatar>
+                    <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
+                </q-avatar>
+            </template> -->
+        </q-select>
         </q-card-section>
          <q-card-section>
           <q-btn label="Select wallet" color="primary" @click="chooseAccount = false"/>
@@ -152,70 +154,78 @@
 
       <q-expansion-item
         v-if="accountOption.value"
+        :dark="$store.state.lightMode.lightMode === 'true'"
         default-opened
-        expand-separator
         class="bg-white q-py-md accountOption"
         :label="'Total Balance - $'+(accountOption.total ? accountOption.total.toFixed(2) : 0 )"
         :caption="accountOption.label"
       >
-        <q-card flat>
-          <q-card-section>
-          <q-select      class="bg-white full-width " @input="$store.commit('investment/setDefaultAccount', accountOption); getAccountInformation(accountOption)" v-model="accountOption" :options="accountOptions">
-                    <template v-slot:selected>
-                        <q-item v-if="accountOption">
-
-                            <q-item-section>
-                                <q-item-label >Change account</q-item-label>
-                                <q-item-label caption class="ellipsis mw200 q-pt-xs">{{ accountOption.label }}</q-item-label>
-                            </q-item-section>
-                        </q-item>
-                    </template>
-
-                    <template v-slot:option="scope">
-                  <q-item
-                   class="custom-menu"
-
-                   v-bind="scope.itemProps"
-                   v-on="scope.itemEvents"
-                  >
-                   <q-item-section avatar>
-                    <q-icon
-                     :name="`img:${scope.opt.image}`"
-                    />
-                   </q-item-section>
-                   <q-item-section>
-                    <q-item-label
-                     v-html="scope.opt.label"
-                    />
-
-                    <q-item-label
-                     v-if="scope.opt.name"
-                     caption
-                     >{{ scope.opt.name }}
-                     </q-item-label>
-                      <q-item-label
-                     v-if="scope.opt.total"
-                     caption
-                     >Balance: ${{ scope.opt.total.toFixed(2)  }}
-                     </q-item-label>
-
-                   </q-item-section>
-                  </q-item>
-                 </template>
-                    <!-- <template v-slot:append>
-                        <q-avatar>
-                            <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
-                        </q-avatar>
-                    </template> -->
-                </q-select>
-
-               <q-item clickable :key="index"  v-for="(token,index) in $store.state.wallets.tokens.filter(o => o.chain ==  chain && (( o.name == accountOption.label && chain == 'eos') || ( o.key.toLowerCase() == accountOption.value.toLowerCase() && chain == 'eth' )))">
-         <q-item-section avatar top>
-          <q-icon  :name="'img:'+token.icon" color="primary" text-color="white" />
-        </q-item-section>
-        <q-item-section>{{token.type.toUpperCase()}}</q-item-section>
-              <q-item-section>${{isNaN(token.usd) ? 0 : token.usd.toFixed(4)}}</q-item-section>
+        <q-card
+          :dark="$store.state.lightMode.lightMode === 'true'"
+          flat
+          class="accountOptionCard"
+          >
+          <q-card-section class="q-pa-zero">
+            <q-select
+            :dark="$store.state.lightMode.lightMode === 'true'"
+            class="full-width"
+            :class="{'bg-white': $store.state.lightMode.lightMode === 'false'}"
+            @input="getAccountInformation(accountOption)"
+            v-model="accountOption"
+            :options="accountOptions">
+              <template v-slot:selected>
+                <q-item
+                  :dark="$store.state.lightMode.lightMode === 'true'"
+                  v-if="accountOption">
+                  <q-item-section>
+                    <q-item-label >Change account</q-item-label>
+                    <q-item-label caption class="ellipsis mw200 q-pt-xs">{{ accountOption.label }}</q-item-label>
+                  </q-item-section>
                 </q-item>
+              </template>
+              <template v-slot:option="scope">
+                <q-item
+                  class="custom-menu"
+                  v-bind="scope.itemProps"
+                  v-on="scope.itemEvents"
+                >
+                  <q-item-section avatar>
+                  <q-icon
+                    :name="`img:${scope.opt.image}`"
+                  />
+                  </q-item-section>
+                  <q-item-section>
+                  <q-item-label
+                    v-html="scope.opt.label"
+                  />
+
+                  <q-item-label
+                    v-if="scope.opt.name"
+                    caption
+                    >{{ scope.opt.name }}
+                    </q-item-label>
+                    <q-item-label
+                    v-if="scope.opt.total"
+                    caption
+                    >Balance: ${{ scope.opt.total.toFixed(2)  }}
+                    </q-item-label>
+
+                  </q-item-section>
+                </q-item>
+              </template>
+              <!-- <template v-slot:append>
+                  <q-avatar>
+                      <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
+                  </q-avatar>
+              </template> -->
+            </q-select>
+            <q-item clickable :key="index"  v-for="(token,index) in $store.state.wallets.tokens.filter(o => o.chain ==  chain && (( o.name == accountOption.label && chain == 'eos') || ( o.key.toLowerCase() == accountOption.value.toLowerCase() && chain == 'eth' )))">
+              <q-item-section avatar top>
+                <q-icon :name="'img:'+token.icon" color="primary" text-color="white" />
+              </q-item-section>
+              <q-item-section>{{token.type.toUpperCase()}}</q-item-section>
+              <q-item-section>${{isNaN(token.usd) ? 0 : token.usd.toFixed(4)}}</q-item-section>
+            </q-item>
           </q-card-section>
         </q-card>
       </q-expansion-item>
@@ -226,11 +236,11 @@
       </template>
 
       <template v-slot:after>
-      <div  class="bg-white" >
+      <div :class="{'bg-white':$store.state.lightMode.lightMode === 'false'}">
           <div v-if="$store.state.settings.network == 'mainnet'" v-show="chain == 'eth'">
             <LiquidityPoolsTable :rowsPerPage="10" class="minHeight" v-if="menu == 'liquidity'"/>
             <InvestmentsTable class="minHeight2" v-else-if="menu == 'investments'"/>
-            <DebtsTable class="minHeight2" v-else-if="menu == 'debts'"/>
+            <DebtsTable class="minHeight2 DebtsTable" v-else-if="menu == 'debts'"/>
             <TransactionsTable class="minHeight2" v-else-if="menu == 'transactions'"/>
             <InvestmentsOpportunitiesTable class="minHeight2" v-else-if="menu == 'staking'"/>
             <Oneinch class="q-pl-md q-pb-xl accountOptionOneinch" v-show="menu == 'swap'" />
@@ -663,32 +673,279 @@ export default {
 }
 
 .mobile-pad {
-    padding-bottom: 50px
+  padding-bottom: 50px
 }
 
 .desktop-version{
-    background: #E7E8E8;
-    padding-top: 13vh;
-    padding-left: 20vh;
-    padding-bottom: 50px;
-    padding-right: 2%;
-    @media screen and (min-width: 768px) {
-      padding-top: 11vh;
-      padding-bottom: 0px;
-    }
+  background: #E7E8E8;
+  padding-top: 13vh;
+  padding-left: 20vh;
+  padding-bottom: 50px;
+  padding-right: 2%;
+  @media screen and (min-width: 768px) {
+    padding-top: 11vh;
+    padding-bottom: 0px;
+  }
 }
-.dark-theme{
-    .desktop-version{
-        background: #04111F;
-        padding-bottom: 8px;
-        min-height: 102vh;
-        overflow: hidden;
-        position: relative;
-        scrollbar-width: 0px;
-        .col-title h4{
-            color: #FFF;
+/deep/ .q-dark{
+  &.current-investments{
+    background: #04111F !important;
+    // padding: 20px;
+    // border-radius: 0px;
+    // border: 1px solid rgba(#CCC, .2);
+    border: 1px solid rgba(#CCC, .3);
+    margin: 0px 20px;
+    border-radius: 10px;
+  }
+}
+
+.accountOptionOneinch{
+    // border: 1px solid rgba(#CCC, .3);
+    margin: 0px 20px;
+    border-radius: 10px;
+    padding-right: 20px;
+    padding-top: 8px;
+    /deep/ .trade-component {
+      .prototype .head{
+        // color: #FFF;
+        // border-bottom: 1px solid rgba(#CCC, .3);
+        margin-bottom: 40px;
+      }
+      .prototype .you-receive-head,
+      .prototype .you-pay-head{
+        // color: #FFF;
+      }
+      .prototype .you-receive{
+        // background-color: rgba(white, .05);
+        .swap_vert{
+          // background-color: #04111F !important;
         }
+      }
+      .prototype .you-receive .chose_accounts{
+        // background-color: #FFF !important;
+        font-size: 16px !important;
+        // font-family: $Franklin !important;
+        // color: #04111F !important;
+        border-radius: 40px;
+        margin-top: 40px;
+        height: 54px;
+        width: fit-content !important;
+        float: right;
+      }
     }
+  }
+  /deep/ .summary-wrapper{
+    // background-color: rgba(white, .06);
+    // color: #FFF;
+    .q-item{
+      // border-top: 1px solid rgba(white,.12) !important;
+      .q-item__label{
+        // color: #FFF;
+      }
+      &:first-child{
+        border-top: none !important;
+      }
+    }
+  }
+  /deep/ .swapeos-component{
+    // border: 1px solid rgba(#CCC, .3);
+    margin: 0px 20px;
+    border-radius: 10px;
+    .bg-white{
+      background: transparent !important;
+    }
+    .prototype .q-tabs{
+      box-shadow: none !important;
+      margin-bottom: 10px;
+    }
+    .trade-component .prototype .head{
+      // color: #FFF;
+    }
+    .trade-component .prototype .you-receive .chose_accounts{
+      // background-color: #FFF !important;
+      font-size: 16px !important;
+      // font-family: $Franklin !important;
+      color: #04111F !important;
+      border-radius: 40px;
+      margin-top: 40px;
+      height: 54px;
+      width: fit-content !important;
+      float: right;
+    }
+    .trade-component .prototype .you-receive-head,
+    .trade-component .prototype .you-pay-head{
+      // color: #FFF;
+    }
+    .trade-component .prototype .you-receive{
+      // background-color: rgba(white, .05);
+      .swap_vert{
+        // background-color: #04111F !important;
+      }
+    }
+    .q-tab{
+      // color: #FFF;
+      opacity: .2;
+      box-shadow: none !important;
+      background: transparent;
+      &.q-tab--active{
+        opacity: 1;
+      }
+    }
+  }
+
+.dark-theme{
+  .desktop-version{
+    background: #04111F;
+    padding-bottom: 8px;
+    min-height: 102vh;
+    overflow: hidden;
+    position: relative;
+    scrollbar-width: 0px;
+    .col-title h4{
+        color: #FFF;
+    }
+  }
+  .DebtsTable{
+    border: 1px solid rgba(#CCC, .3);
+    margin: 0px 20px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .accountOptionOneinch{
+    border: 1px solid rgba(#CCC, .3);
+    margin: 0px 20px;
+    border-radius: 10px;
+    padding-right: 20px;
+    padding-top: 8px;
+    /deep/ .trade-component {
+      .prototype .head{
+        color: #FFF;
+        border-bottom: 1px solid rgba(#CCC, .3);
+        margin-bottom: 40px;
+      }
+      .prototype .you-receive-head,
+      .prototype .you-pay-head{
+        color: #FFF;
+      }
+      .prototype .you-receive{
+        background-color: rgba(white, .05);
+        .swap_vert{
+          background-color: #04111F !important;
+        }
+      }
+      .prototype .you-receive .chose_accounts{
+        background-color: #FFF !important;
+        font-size: 16px !important;
+        // font-family: $Franklin !important;
+        color: #04111F !important;
+        border-radius: 40px;
+        margin-top: 40px;
+        height: 54px;
+        width: fit-content !important;
+        float: right;
+      }
+    }
+  }
+  /deep/ .summary-wrapper{
+    background-color: rgba(white, .06);
+    color: #FFF;
+    .q-item{
+      border-top: 1px solid rgba(white,.12) !important;
+      .q-item__label{
+        color: #FFF;
+      }
+      &:first-child{
+        border-top: none !important;
+      }
+    }
+  }
+  /deep/ .swapeos-component{
+    border: 1px solid rgba(#CCC, .3);
+    margin: 0px 20px;
+    border-radius: 10px;
+    .trade-component .prototype .head{
+      color: #FFF;
+    }
+    .trade-component .prototype .you-receive .chose_accounts{
+      background-color: #FFF !important;
+      font-size: 16px !important;
+      // font-family: $Franklin !important;
+      color: #04111F !important;
+      border-radius: 40px;
+      margin-top: 40px;
+      height: 54px;
+      width: fit-content !important;
+      float: right;
+    }
+    .trade-component .prototype .you-receive-head,
+    .trade-component .prototype .you-pay-head{
+      color: #FFF;
+    }
+    .trade-component .prototype .you-receive{
+      background-color: rgba(white, .05);
+      .swap_vert{
+        background-color: #04111F !important;
+      }
+    }
+    .q-tab{
+      color: #FFF;
+      opacity: .2;
+      background: transparent;
+      &.q-tab--active{
+        opacity: 1;
+      }
+    }
+  }
+  .accountOptionCard{
+    background: transparent !important;
+  }
+  .accountOption{
+    background: transparent !important;
+    /deep/ .q-separator{
+      display: none !important;
+    }
+    &.q-list--separator{
+      .q-item.q-item-type{
+        color: #FFF !important;
+        opacity: 1;
+        border-bottom: 1px solid rgba(#CCC, .3);
+        &.bg-white{
+          background: transparent !important;
+          opacity: .3;
+        }
+      }
+    }
+  }
+  .tabs-chains{
+    .q-list--separator{
+      .q-item.q-item-type{
+        color: #FFF !important;
+        background: transparent !important;
+        opacity: 1;
+        border-bottom: 1px solid rgba(#CCC, .3);
+        &.bg-white{
+          background: transparent !important;
+          opacity: .3;
+        }
+      }
+    }
+    .q-list:not(.q-list--separator){
+      border-radius: 30px;
+      border: 1px solid rgba(#CCC, .3);
+      overflow: hidden;
+      margin-bottom: 18px;
+      .q-item.q-item-type{
+        color: #FFF !important;
+        opacity: .3;
+        &.bg-white{
+          // border: 1px solid rgba(purple, .4);
+          background: transparent !important;
+          opacity: 1;
+          box-shadow: inset 0px 0px 25px 0px rgba(purple, .5);
+        }
+      }
+    }
+  }
 }
 
 .desktop-card-style {
@@ -1327,12 +1584,16 @@ export default {
 }
 
 /deep/ .q-btn__wrapper {
+    min-height: 30px !important;
+}
+/deep/ .swap_vert .q-btn__wrapper {
     min-height: 40px !important;
 }
 
 .text-h5 {
     font-size: 16px;
 }
+.accountOption{}
 .tabs-chains{
   .q-list:not(.q-list--separator){
     .q-item.q-item-type{
@@ -1343,6 +1604,7 @@ export default {
     }
   }
 }
+
 .accountOption{
   min-height: 345px;
 }
@@ -1363,7 +1625,14 @@ export default {
 }
 </style>
 <style>
+.q-item--dark .q-item__label{ color: #FFF; }
 .bg-white{
   height: 100%;
 }
+.q-pa-zero{
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}
+.q-pa-zero .q-field--standard .q-field__control:before{border-color: transparent !important}
+.q-pa-zero .q-field--standard .q-field__control{padding-right: 15px;}
 </style>

@@ -28,11 +28,14 @@
         <!-- <router-link disabled>Refer & Earn</router-link> -->
         <q-btn-dropdown
           no-caps
-
+          :color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'"
           label="Quick access"
           flat
         >
-          <q-list>
+          <q-list
+          :light="$store.state.lightMode.lightMode === 'false'"
+          :dark="$store.state.lightMode.lightMode === 'true'"
+          >
             <q-item dense @click="buyCPU()" clickable v-close-popup>
               <q-item-section avatar>
                 <q-avatar
@@ -63,8 +66,12 @@
           icon="upgrade"
           label="Import accounts"
           flat
+          :color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'"
         >
-          <q-list>
+          <q-list
+          :light="$store.state.lightMode.lightMode === 'false'"
+          :dark="$store.state.lightMode.lightMode === 'true'"
+          >
             <q-item dense to="/verto/import-private-key/eos" clickable v-close-popup>
               <q-item-section avatar>
                 <q-avatar
@@ -98,11 +105,12 @@
         >
         <q-select
           dense
+          borderless
           :light="$store.state.lightMode.lightMode === 'false'"
-          @input="switchNetwork()"
           :dark="$store.state.lightMode.lightMode === 'true'"
+          @input="switchNetwork()"
           :color="network.value == 'testnet' ? 'white' : ''"
-          :class="[network.value == 'testnet' ? 'bg-red text-white' : '', 'select-input']"
+          :class="[network.value == 'testnet' ? 'bg-red text-white select-input' : '', 'select-input']"
           v-model="network"
           :options="networks"
         >
@@ -134,6 +142,7 @@
         </a>
         <q-toggle
           v-model="lightMode"
+
           checked-icon="wb_sunny"
           @input="toggleLightDarkMode"
           color="grey"
@@ -337,6 +346,14 @@ export default {
     }
   }
   &.dark-theme {
+    .select-input{
+      font-size: 16px;
+      font-weight: $light;
+      font-family: $Franklin;
+      .text-black{
+        color: #FFF !important;
+      }
+    }
     background: #04111f;
     .date-scrolling-msg {
       .date {
@@ -373,5 +390,19 @@ export default {
     max-width: 360px;
     margin-left: 20px;
   }
+}
+.select-input{
+  font-size: 16px;
+  font-weight: $light;
+  font-family: $Franklin;
+}
+.q-item--dark{
+  .text-black{
+    color: #FFF !important;
+  }
+}
+.q-list--dark{
+  background: #050a10;
+  border-radius: 0px;
 }
 </style>
