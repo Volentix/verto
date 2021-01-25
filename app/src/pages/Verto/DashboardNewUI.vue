@@ -115,7 +115,7 @@ import initWallet from '@/util/Wallets2Tokens'
 let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 import TestnetPools from '../../components/Verto/Defi/TestnetPools'
-// import 'intro.js/minified/introjs.min.css'
+import 'intro.js/minified/introjs.min.css'
 
 import {
   osName
