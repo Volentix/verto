@@ -156,12 +156,11 @@ export default {
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
   },
-  async beforeCreate () {
+  async created () {
     if (!this.$store.state.wallets.tokens.length) {
       initWallet()
     }
-  },
-  async created () {
+    /*
     this.tableData = this.$store.state.wallets.tokens.map(token => {
       token.selected = false
       if (token.hidden === undefined) {
@@ -169,6 +168,7 @@ export default {
       }
       return token
     })
+    */
     let exchangeNotif = document.querySelector('.exchange-notif')
     if (exchangeNotif !== null) {
       exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click'))
@@ -189,7 +189,8 @@ export default {
     this.$store.state.currentwallet.wallet = {
       empty: true
     }
-    Promise.all(this.tableData)
+
+    // Promise.all(this.tableData)
     /*
     let eosAccount = this.tableData.find(w => w !== undefined && w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
     // console.log('this.tableData', this.tableData)
