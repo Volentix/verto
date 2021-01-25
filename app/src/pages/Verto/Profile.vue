@@ -102,17 +102,29 @@ export default {
     padding-bottom: 50px;
     background: #FFF !important;
   }
-  /deep/ .wallets-wrapper{
+  /deep/ .wallets-wrapper {
     padding-bottom: 0px !important;
+    height: 100%;
+    .walletsScrollArea{
+      &.short{
+        height: 420px !important;
+      }
+      &.long{
+        height: 450px !important;
+      }
+    }
   }
   /deep/ .wallets-wrapper--list{
     box-shadow: none;
     margin-top: 0px;
   }
-  .marg{
-    /deep/ .profile-wrapper{
-      &--header{
+  .marg {
+    /deep/ .profile-wrapper {
+      &--header {
         margin-bottom: 0px;
+        border: 1px solid #627797;
+        // border-bottom: none;
+        border-radius: 10px 10px 0px 0px !important;
       }
     }
   }

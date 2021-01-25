@@ -25,10 +25,8 @@
                                                     <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
                                                 </div>
                                                 <div class="you-pay-body row items-center">
-
                                                     <div class="col col-3 choose-coin">
                                                         <span class="cursor">
-
                                                             <q-select class="select-input" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator use-input borderless rounded v-model="depositCoin" @input="swapData.error = false; getSwapQuote()" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
@@ -46,11 +44,10 @@
 
                                                                 </template>
                                                             </q-select>
-
                                                         </span>
                                                     </div>
                                                     <div class="col col-8 offset-1">
-                                                         <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="swapData.fromAmount = isNaN(swapData.fromAmount) ? 0 : swapData.fromAmount ; swapData.error = false; getSwapQuote()" v-model="swapData.fromAmount" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val <= depositCoin.amount || 'Insufficient funds']">
+                                                         <q-input rounded :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="swapData.fromAmount = isNaN(swapData.fromAmount) ? 0 : swapData.fromAmount ; swapData.error = false; getSwapQuote()" v-model="swapData.fromAmount" :disabled="spinnervisible" :loading="spinnervisible" :rules="[ val => val <= depositCoin.amount || 'Insufficient funds']">
                                                             <div class="flex justify-end items-center" style="width: 60px">
                                                                 <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
                                                             </div>
@@ -63,7 +60,7 @@
                                             </div>
                                             <div class="you-receive">
                                                 <br>
-                                                <q-btn outline round color="black" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
+                                                <q-btn outline round :color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
                                                 <div class="you-receive-head row items-center">
                                                     <div class="col col-6">You Receive</div>
                                                     <div v-if="rateData" class="col col-6 info_rate_holder small text-right flex justify-end items-center" :class="{'_loading': fetchingRate}">
@@ -116,7 +113,7 @@
                                                             </q-select>
                                                         </span></div>
                                                     <div class="col col-8 offset-1">
-                                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" disable outlined class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" >
+                                                        <q-input rounded :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" disable outlined class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" >
                                                             <div class="flex justify-end items-center" style="width: 60px">
                                                                 <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
                                                             </div>
@@ -216,7 +213,7 @@
         </div>
     </div>
 </div>
-<div v-else-if="depositCoin && destinationCoin" class="chain-tools-wrapper">
+<div v-else class="chain-tools-wrapper">
     <div class="standard-content">
         <h2 class="standard-content--title flex justify-center">
             <q-btn flat unelevated class="btn-align-left" to="goBack" text-color="black" icon="keyboard_backspace" />
@@ -720,7 +717,7 @@ export default {
       destinationCoinMemo: '',
       fromCoin: {},
       destinationCoin: {
-        value: 'dai'
+        value: ''
       },
       progress: 0.02,
       approvalRequired: false,
@@ -1049,7 +1046,7 @@ export default {
         slippage: 2,
         fromAddress: self.ethAccount.key,
         toAddress: self.destinationCoin.address,
-        disableEstimate: true
+        disableEstimate: false
       }
       let swapRequestUrl = _1inch + '/v2.0/swap?' + new URLSearchParams(data).toString()
       this.$axios.get(swapRequestUrl)

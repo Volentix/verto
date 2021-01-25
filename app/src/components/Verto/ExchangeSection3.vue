@@ -4,8 +4,8 @@
             <div v-if="$store.state.lightMode.lightMode === 'true'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md" style="background: url('statics/bg3d1.png');">Exchange</div>
             <div v-else class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md lightmd" style="background: url('statics/bg3d1light.png');">Exchange</div>
             <div class="row items-center q-pl-md q-pr-md scale">
-                <div class="col col-8">
-                    <i class="step-1-lab flex">Step<b>1</b> Select coin to send</i>
+                <div class="col q-pr-sm col-6">
+                    <i class="step-1-lab flex">Send</i>
                     <div class="call-action">
                         <q-select :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                             <template v-slot:option="scope">
@@ -36,7 +36,9 @@
                             </template>
                         </q-select>
                     </div>
-                    <i class="step-2-lab step-1-lab flex ">Step<b>2</b> Select coin to receive</i>
+                </div>
+                <div class="col q-pl-sm col-6">
+                    <i class="step-2-lab step-1-lab flex ">Receive</i>
                     <div class="call-action">
                         <q-select :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" separator rounded outlined class="select-input" use-input @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                             <template v-slot:option="scope">
@@ -70,7 +72,7 @@
                         {{error}}
                     </div>
                 </div>
-                <div class="col-4 flex justify-end q-pb-sm">
+                <div class="col-12 flex justify-center q-pt-sm">
                     <q-btn unelevated class="qbtn-start" color="black" @click="goToExchange" :text-color="$store.state.lightMode.lightMode === 'false' ? 'black':'white'" label="Next" />
                 </div>
             </div>
@@ -215,7 +217,7 @@ export default {
                 }
 
                 &.step-2-lab {
-                    margin-top: 5px;
+                    // margin-top: 5px;
                 }
             }
 
@@ -292,7 +294,7 @@ export default {
     .select-input {
         border-radius: 100px !important;
         $height: 35px;
-        width: 140px;
+        width: 100%;
         height: $height;
 
         /deep/ .q-field__marginal {
