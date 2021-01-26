@@ -223,14 +223,14 @@ export default {
     */
   },
   async mounted () {
-    let disableIntro = localStorage.getItem('disableIntrosss')
+    let disableIntro = localStorage.getItem('disableIntros_')
     if (!disableIntro) {
       const IntroJS = require('intro.js')
       let Intro = new IntroJS()
       Intro.setOptions({
         showProgress: true
       }).onbeforeexit(function () {
-        return localStorage.setItem('disableIntrosss', Date.now())
+        return localStorage.setItem('disableIntros_', Date.now())
       }).start()
     }
     setTimeout(async () => {
