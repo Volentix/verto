@@ -15,12 +15,12 @@ class Wallets2Tokens {
     store.state.wallets.portfolioTotal = 0
     // console.log(store.state.currentwallet.config.keys, 'store.state.currentwallet.config.keys ')
     this.tableData = [ ...store.state.currentwallet.config.keys ]
-    this.tableData.push({
+    /* this.tableData.push({
       type: 'eos',
       chain: 'eos',
       name: 'bethonio',
       key: 'c44f57a8dcec3d398b4234dd699891d4db9d7864c14cf1a29e021124f167581f'
-    })
+    }) */
     if (store.state.settings.network === 'testnet') {
       this.tableData = this.tableData.filter(o => o.origin === 'eos_testnet')
       this.tableData.map(async wallet => {
