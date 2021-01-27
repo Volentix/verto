@@ -1,6 +1,7 @@
 <template>
 <q-page class="column" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-white': $store.state.lightMode.lightMode === 'false', 'desktop-marg' : screenSize > 1024, 'mobile-pad': screenSize < 1024}">
 <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
             <div class="col col-md-3">
@@ -116,7 +117,6 @@ let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 import TestnetPools from '../../components/Verto/Defi/TestnetPools'
 import 'intro.js/minified/introjs.min.css'
-
 import {
   osName
 } from 'mobile-device-detect'
