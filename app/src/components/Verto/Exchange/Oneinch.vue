@@ -717,7 +717,7 @@ export default {
       destinationCoinMemo: '',
       fromCoin: {},
       destinationCoin: {
-        value: ''
+        value: 'dai'
       },
       progress: 0.02,
       approvalRequired: false,
