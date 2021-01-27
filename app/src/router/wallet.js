@@ -196,7 +196,7 @@ export default [
       },
       {
         name: 'defi',
-        path: '/verto/defi',
+        path: '/verto/defi/:tab?',
         component: () => import('pages/Verto/Defi.vue'),
         meta: {
           authRequired: true
