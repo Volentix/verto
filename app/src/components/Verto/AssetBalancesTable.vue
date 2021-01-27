@@ -40,14 +40,10 @@
         </template>
       </q-table>
     </q-scroll-area>
-    <q-dialog v-model="openDialog">
-        <AddLiquidityDialog :notWidget="true" v-if="$store.state.investment.selectedPool" />
-    </q-dialog>
   </div>
 </template>
 
 <script>
-import AddLiquidityDialog from './AddLiquidityDialog'
 import {
   QScrollArea
 } from 'quasar'
@@ -56,9 +52,7 @@ import {
 } from 'vuex'
 export default {
   components: {
-    AddLiquidityDialog,
     QScrollArea
-
   },
   props: ['rowsPerPage'],
   data () {

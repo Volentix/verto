@@ -18,7 +18,7 @@
         </div>
       </div>
     </div>
-    <div v-if="version === 'type1'" class="p-relative column flex-center profile-wrapper--header wallets" style="background: url('statics/header_bg2.png');">
+    <div v-if="version === 'type1'" class="p-relative column flex-center profile-wrapper--header wallets" style="background: url('statics/header_bg3.jpg');">
       <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="white" icon="keyboard_backspace" />
       <h3 class="profile-wrapper--header__title text-white">Total Balance</h3>
       <h2 class="profile-wrapper--header__balance text-white">${{ new Number(totalBalance).toFixed(2) }} USD</h2>
@@ -27,7 +27,7 @@
         <q-btn unelevated to="/verto/wallets/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
       </div>
     </div>
-    <div v-else-if="version === 'type2'" class="profile-wrapper--header static_with_image" style="background: url('statics/header_bg2.png');">
+    <div v-else-if="version === 'type2'" class="profile-wrapper--header static_with_image" style="background: url('statics/header_bg3.jpg');">
       <div class="flex justify-between flex-row item-center content-center full-width">
         <q-btn flat unelevated class="btn-align-left" to="/verto/wallets/" text-color="white" icon="keyboard_backspace" />
         <h3 class="flex flex-center text-white static__holder_title">Making VTX while you sleep, will be available soon.</h3>
@@ -38,7 +38,7 @@
         <span class="text-white">Liquidity: {{currentAccount.amount}} {{currentAccount.type.toUpperCase()}}</span>
       </p>
     </div>
-    <div v-else-if="version === 'type3'" class="column flex-center profile-wrapper--header wallet-detail" style="background: url('statics/header_bg2.png');">
+    <div v-else-if="version === 'type3'" class="column flex-center profile-wrapper--header wallet-detail" style="background: url('statics/header_bg3.jpg');">
       <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="white" icon="keyboard_backspace" />
       <h3 class="profile-wrapper--header__title text-white">{{ currentAccount.name.toUpperCase().replace('- HD', '') }}</h3>
       <h2 class="profile-wrapper--header__balance text-white">{{ nFormatter2(currentAccount.amount, 3) }} {{ currentAccount.type.toUpperCase() }}</h2>
@@ -51,7 +51,7 @@
         <!-- <qrcode :value="currentAccount.key" :options="{size: 200}"></qrcode> -->
       </div>
     </div>
-    <div v-else-if="version === 'type4'" class="profile-wrapper--header static_with_image" style="background: url('statics/header_bg2.png');min-height:260px">
+    <div v-else-if="version === 'type4'" class="profile-wrapper--header static_with_image" style="background: url('statics/header_bg3.jpg');min-height:260px">
       <div class="flex justify-between flex-row item-center content-center full-width">
         <q-btn flat unelevated class="btn-align-left" :to="goBack" text-color="white" icon="keyboard_backspace" />
         <h3 class="flex flex-center text-white static__holder_title">Create EOS account</h3>
@@ -66,7 +66,7 @@
       </div>
     </div>
     <div v-else-if="version === 'type6'" class="profile-wrapper--header static" style="background: url(statics/refer_friend_bg.png) center bottom / cover no-repeat rgb(255, 255, 255) !important; min-height: 390px; box-shadow: none !important; border-radius: 0px;" />
-    <div v-else class="column flex-center profile-wrapper--header" :class="{'desktop-ui' : !isMobile, 'selected-wallet':  !isMobile && !$store.state.currentwallet.wallet.empty}" style="background: url('statics/header_bg2.png');">
+    <div v-else class="column flex-center profile-wrapper--header" :class="{'desktop-ui' : !isMobile, 'selected-wallet':  !isMobile && !$store.state.currentwallet.wallet.empty}" style="background: url('statics/header_bg3.jpg');">
       <q-btn v-if="!isMobile && !$store.state.currentwallet.wallet.empty" outline round @click="resetSelectedWallet()" to="/verto/dashboard" color="white" class="reset-btn" text-color="white" icon="close" />
       <h3 class="profile-wrapper--header__title text-white" v-if="!isMobile && !$store.state.currentwallet.wallet.empty">{{$store.state.currentwallet.wallet.name.replace('- HD', '')}}</h3>
       <h3 class="profile-wrapper--header__title text-white" v-else>Main Portfolio</h3>
@@ -467,7 +467,8 @@ export default {
           }
         }
         &-btn{
-          background: #7272FA !important;
+          background: #FFF !important;
+          color: #04111F !important;
           margin: 0px 10px;
           width: 100px;
           border-radius: 30px;

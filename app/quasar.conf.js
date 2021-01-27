@@ -88,7 +88,12 @@ module.exports = function (ctx) {
         'QImg',
         'QSplitter',
         'Loading',
-        'QBtnDropdown'
+        'QBtnDropdown',
+        'QBar',
+        'QSpace',
+        'QFab',
+        'QFabAction',
+        'QPageSticky'
       ],
 
       directives: [
