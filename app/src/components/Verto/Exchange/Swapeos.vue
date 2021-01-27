@@ -73,13 +73,13 @@
                           <q-tab name="swap" icon="swap_vert" label="Swap" />
                           <q-tab name="liquidity" icon="add" label="Liquidity" />
                         </q-tabs>
-                        <div class="head" v-if="tab == 'swap'">Get {{ destinationCoin.label }} with {{ depositCoin.label }} with one click</div>
-                        <div class="head" v-else-if="tab == 'liquidity'">Add liquidity to the {{ destinationCoin.label }} + {{ depositCoin.label }} pool</div>
+                        <div class="head" v-if="tab == 'swap'">Get {{ destinationCoin.label.toUpperCase() }} with {{ depositCoin.label.toUpperCase() }} with one click</div>
+                        <div class="head" v-else-if="tab == 'liquidity'">Add liquidity to the {{ destinationCoin.label.toUpperCase() }} + {{ depositCoin.label.toUpperCase() }} pool</div>
 
                         <div class="you-pay">
                           <div class="you-pay-head row items-center">
                             <div class="col col-6">Payment</div>
-                            <div class="col col-6 red text-right text-body1" v-if="depositCoin.name">Account selected: <b class="text-deep-purple-10">{{depositCoin.name}}</b></div>
+                            <div class="col col-6 red text-right text-body1" v-if="depositCoin.name">Account selected: <b class="" :class="{'text-deep-purple-10': $store.state.lightMode.lightMode === 'false', 'text-white': $store.state.lightMode.lightMode === 'true'}">{{depositCoin.name}}</b></div>
                           </div>
                           <div class="you-pay-body row items-center">
                             <div class="col col-3 choose-coin">
@@ -118,7 +118,7 @@
                                   </template>
                                   <template v-slot:selected>
                                     <span class="text-h5 text-bold">{{ depositCoin.value.toUpperCase() }}</span>
-                                    <q-item-label v-if="depositCoin.name" caption class="text-deep-purple-10 text-bold">{{ depositCoin.name }}</q-item-label>
+                                    <q-item-label v-if="depositCoin.name" caption class="text-bold" :class="{'text-deep-purple-10': $store.state.lightMode.lightMode === 'false', 'text-white': $store.state.lightMode.lightMode === 'true'}">{{ depositCoin.name }}</q-item-label>
                                   </template>
                                 </q-select>
                               </span>
@@ -126,6 +126,7 @@
                             <div class="col col-8 offset-1">
 
                               <q-input
+                                rounded
                                 :dark="$store.state.lightMode.lightMode === 'true'"
                                 :light="$store.state.lightMode.lightMode === 'false'"
                                 @blur="swapData.fromAmount = parseFloat(swapData.fromAmount).toFixed(depositCoin.precision)"
@@ -230,7 +231,7 @@
                               </span>
                             </div>
                             <div class="col col-8 offset-1">
-                              <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" disable outlined :class="{'bg-white': $store.state.lightMode.lightMode === 'false'}" class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" >
+                              <q-input rounded :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" disable outlined :class="{'bg-white': $store.state.lightMode.lightMode === 'false'}" class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" >
                                 <div class="flex justify-end items-center" style="width: 60px">
                                   <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
                                 </div>

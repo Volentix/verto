@@ -1,6 +1,7 @@
 <template>
 <q-page class="column" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-white': $store.state.lightMode.lightMode === 'false', 'desktop-marg' : screenSize > 1024, 'mobile-pad': screenSize < 1024}">
 <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
             <div class="col col-md-3">
@@ -15,24 +16,47 @@
                         <chainToolsSection />
                     </div>
                     <div class="col q-pl-sm col-md-5">
-                        <startNodeSection :banner="2" />
+                        <startNodeSection :banner="3" />
                     </div>
                     <div class="col col-md-12">
-                        <div class="liquidityPoolsTable q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
-                            <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="10"  v-if="$store.state.settings.network == 'mainnet'" />
-                            <TestnetPools :showAddLiquidity="true" class="bg-white" v-else />
+                        <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+                            <q-tabs
+                                v-model="tabPoolAndAssetBalances"
+                                class="tabPoolAndAssetBalances"
+                                align="flex-start"
+                                :class="{'text-black bg-white': $store.state.lightMode.lightMode === 'false', 'text-white bg-myblue': $store.state.lightMode.lightMode === 'true'}"
+                            >
+                                <q-tab name="explore" class="text-capitalize" label="Explore Opportunities" />
+                                <q-tab name="asset" class="text-capitalize" label="Asset Balances" />
+                            </q-tabs>
+                            <q-tab-panels
+                                v-model="tabPoolAndAssetBalances"
+                                animated
+                                swipeable
+                                flat
+                                class="tabPoolAndAssetBalancesPanels"
+                                vertical
+                                transition-prev="jump-up"
+                                transition-next="jump-up"
+                                >
+                                <q-tab-panel name="explore">
+                                    <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="10"  v-if="$store.state.settings.network == 'mainnet'" />
+                                    <TestnetPools :showAddLiquidity="true" class="bg-white" v-else />
+                                </q-tab-panel>
+                                <q-tab-panel name="asset">
+                                    <AssetBalancesTable data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="10"/>
+                                </q-tab-panel>
+                            </q-tab-panels>
                         </div>
                     </div>
                     <div class="col q-pr-sm col-md-4">
-
-                        <ExchangeSection2 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
+                        <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
+                        <!-- <ExchangeSection2 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  /> -->
                     </div>
                     <div class="col q-pr-sm col-md-4">
-
                         <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
                     </div>
                     <div class="col col-md-4">
-
                         <LiquidityPoolsSection2 v-if="true  && $store.state.settings.network == 'mainnet'" />
                     </div>
                 </div>
@@ -92,8 +116,9 @@ import LiquidityPoolsSection2 from '../../components/Verto/Defi/LiquidityPoolsSe
 import MakeVTXSection from '../../components/Verto/MakeVTXSection'
 import MakeVTXSection2 from '../../components/Verto/MakeVTXSection2'
 import ExchangeSection from '../../components/Verto/ExchangeSection'
-import ExchangeSection2 from '../../components/Verto/ExchangeSection2'
+import ExchangeSection3 from '../../components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
+import AssetBalancesTable from '../../components/Verto/AssetBalancesTable'
 
 import {
   mapState
@@ -118,7 +143,6 @@ let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 import TestnetPools from '../../components/Verto/Defi/TestnetPools'
 import 'intro.js/minified/introjs.min.css'
-
 import {
   osName
 } from 'mobile-device-detect'
@@ -136,10 +160,11 @@ export default {
     LiquidityPoolsSection,
     LiquidityPoolsSection2,
     liquidityPoolsTable,
+    AssetBalancesTable,
     MakeVTXSection,
     MakeVTXSection2,
     ExchangeSection,
-    ExchangeSection2
+    ExchangeSection3
     // VespucciRatingSection
 
   },
@@ -148,6 +173,7 @@ export default {
       rawPools: [],
       cruxKey: {},
       osName: '',
+      tabPoolAndAssetBalances: 'explore',
       screenSize: 0,
       openDialog: false,
       walletClientName: 'verto' // should be 'verto' when in prod
@@ -156,12 +182,11 @@ export default {
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
   },
-  async beforeCreate () {
+  async created () {
     if (!this.$store.state.wallets.tokens.length) {
       initWallet()
     }
-  },
-  async created () {
+    /*
     this.tableData = this.$store.state.wallets.tokens.map(token => {
       token.selected = false
       if (token.hidden === undefined) {
@@ -169,6 +194,7 @@ export default {
       }
       return token
     })
+    */
     let exchangeNotif = document.querySelector('.exchange-notif')
     if (exchangeNotif !== null) {
       exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click'))
@@ -189,7 +215,8 @@ export default {
     this.$store.state.currentwallet.wallet = {
       empty: true
     }
-    Promise.all(this.tableData)
+
+    // Promise.all(this.tableData)
     /*
     let eosAccount = this.tableData.find(w => w !== undefined && w.chain === 'eos' && w.type === 'eos' && w.origin === 'mnemonic')
     // console.log('this.tableData', this.tableData)
@@ -224,14 +251,14 @@ export default {
     */
   },
   async mounted () {
-    let disableIntro = localStorage.getItem('disableIntros')
+    let disableIntro = localStorage.getItem('disableIntros_')
     if (!disableIntro) {
       const IntroJS = require('intro.js')
       let Intro = new IntroJS()
       Intro.setOptions({
         showProgress: true
       }).onbeforeexit(function () {
-        return localStorage.setItem('disableIntros', Date.now())
+        return localStorage.setItem('disableIntros_', Date.now())
       }).start()
     }
     setTimeout(async () => {
@@ -353,6 +380,9 @@ export default {
     /deep/ .profile-wrapper {
         &--header {
             margin-bottom: 0px;
+            border: 1px solid #627797;
+            // border-bottom: none;
+            border-radius: 10px 10px 0px 0px !important;
         }
     }
 }
@@ -381,6 +411,24 @@ export default {
 }
 
 .liquidityPoolsTable{
+    position: relative;
+    .tabPoolAndAssetBalances{
+        position: absolute;
+        left: 1px;
+        top: 1px;
+        z-index: 3;
+        border-radius: 10px 0px 0px 0px;
+        &.bg-myblue{
+            background-color: #04111F;
+        }
+    }
+    .tabPoolAndAssetBalancesPanels{
+        background-color: transparent;
+        /deep/ .q-tab-panel{
+            padding: 0px;
+            margin: 0px;
+        }
+    }
     /deep/ .desktop-size{
         padding: 1%;
         background-color: #FFFFFF;
@@ -698,6 +746,9 @@ export default {
     }
 }
 .dark-theme{
+    .tabPoolAndAssetBalances{
+
+    }
     .desktop-card-style{
         &.apps-section{
             background-color: #04111F;

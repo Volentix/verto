@@ -141,7 +141,7 @@ export default {
                 transform: scale(1);
               }
               .text-tab-name{
-                font-size: 10px;
+                font-size: 12px;
                 font-family: $Titillium;
                 text-transform: initial;
                 color: rgba(#333, .6);

@@ -118,10 +118,13 @@ export default {
     box-shadow: none;
     margin-top: 0px;
   }
-  .marg{
-    /deep/ .profile-wrapper{
-      &--header{
+  .marg {
+    /deep/ .profile-wrapper {
+      &--header {
         margin-bottom: 0px;
+        border: 1px solid #627797;
+        // border-bottom: none;
+        border-radius: 10px 10px 0px 0px !important;
       }
     }
   }
