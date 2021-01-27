@@ -32,7 +32,7 @@
                         </div>
                     </div>
                 </div>
-                <q-list bordered separator class="list-wrapper">
+                <q-list v-if="false" bordered separator class="list-wrapper">
                     <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
                         <div class="header-wallet-wrapper culumn full-width">
                             <div :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
