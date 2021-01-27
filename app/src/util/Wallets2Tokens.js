@@ -250,7 +250,8 @@ class Wallets2Tokens {
             eth.amount = ethplorer.ETH.balance
             eth.usd = ethplorer.ETH.balance * ethplorer.ETH.price.rate
           })
-
+          let ethBalance = ethplorer.ETH.balance * ethplorer.ETH.price.rate
+          store.state.wallets.portfolioTotal += isNaN(ethBalance) ? 0 : ethBalance
           // console.log('ethplorer', ethplorer)
           if (ethplorer) {
             axios.get(process.env[store.state.settings.network].CACHE + 'https://api.tokensets.com/v1/rebalancing_sets', {
@@ -275,7 +276,7 @@ class Wallets2Tokens {
                       console.log('eth token not on 1inch', t.tokenInfo.image, csa, error)
                     }
                   }
-
+                  let amount = (t.balance / (10 ** t.tokenInfo.decimals)) * t.tokenInfo.price.rate
                   self.tableData.push({
                     selected: false,
                     disabled: false,
@@ -284,16 +285,14 @@ class Wallets2Tokens {
                     key: wallet.key,
                     privateKey: wallet.privateKey,
                     amount: t.balance / (10 ** t.tokenInfo.decimals),
-                    usd: (t.balance / (10 ** t.tokenInfo.decimals)) * t.tokenInfo.price.rate,
+                    usd: amount,
                     contract: t.tokenInfo.address,
                     chain: 'eth',
                     to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase() + '/' + wallet.key,
                     icon: t.tokenInfo.image
                   })
+                  store.state.wallets.portfolioTotal += isNaN(amount) ? 0 : amount
                   this.updateWallet()
-                  if (index === ethplorer.tokens.length - 1) {
-                    store.commit('wallets/setLoadingState', { eth: true })
-                  }
                 })
               }
             })
