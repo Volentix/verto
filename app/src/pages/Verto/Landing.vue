@@ -76,7 +76,7 @@ export default {
       showSubmit: false
     }
   },
-  async created () {
+  async mounted () {
     this.hasConfig = !!await configManager.hasVertoConfig()
     if (!this.hasConfig) {
       this.$router.push({
@@ -94,8 +94,7 @@ export default {
     this.getCoinswitchCoins()
     this.get1inchCoins()
     this.getDefiboxCoins()
-  },
-  async mounted () {
+
     this.version = version
     this.$refs.psswrd.focus()
   },
@@ -133,7 +132,7 @@ export default {
             path: /*  this.$route.params.nextUrl ? this.$route.params.nextUrl : */ '/verto/dashboard'
           })
         },
-        5000)
+        100)
         // this.$router.push({ path: 'vertomanager' })
       } else {
         if (results.message === 'no_default_key') {

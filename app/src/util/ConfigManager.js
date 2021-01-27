@@ -217,7 +217,7 @@ class ConfigManager {
         return { success: true }
       } catch (e) {
         devError(e)
-        // TODO: Exception handling
+        console.log(e)
       }
     }
 

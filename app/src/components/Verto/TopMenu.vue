@@ -24,8 +24,8 @@
         <!-- <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content='This app is in beta, please send us bug reports if you find any. <b><a target="_blank" href="https://t.me/vertosupport">t.me/vertosupport</a></b>' /> -->
       </div>
       <div class="col col-7 flex justify-end q-pr-md items-center menu">
-        <!-- to="/verto/earn/use-referral-account" -->
-        <!-- <router-link disabled>Refer & Earn</router-link> -->
+        <!-- to="/verto/create-polkadot-account" -->
+       <!-- <router-link to="/verto/create-polkadot-account" >Polkadot</router-link> -->
         <q-btn-dropdown
           no-caps
           :color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'"

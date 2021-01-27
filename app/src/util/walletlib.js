@@ -10,6 +10,40 @@ import {
 import abiArray from '@/statics/abi/erc20.json'
 
 class Lib {
+  async getRawETHTransaction (token, from, to, value, key, contract) {
+    console.log('token, from, to, value, memo, key, contract', token, from, to, value, key, contract)
+    // console.log('abiArray', abiArray)
+
+    const Web3 = require('web3')
+    const web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+
+    let nonce = await web3.eth.getTransactionCount(from)
+    let data = '0x00'
+    let web3Value = web3.utils.toHex(web3.utils.toWei(value.toString()))
+    // let transactionHash = ''
+    let sendTo = to
+
+    if (token !== 'eth') {
+      let web3Contract = new web3.eth.Contract(abiArray, contract)
+      data = web3Contract.methods.transfer(to, web3Value).encodeABI()
+
+      sendTo = contract
+      web3Value = '0x00'
+    }
+
+    // Gas options selection to be implemented
+
+    let rawTx = {
+      from,
+      to: sendTo,
+      value: web3Value,
+      data,
+      nonce,
+      chainId: 1
+    }
+
+    return rawTx
+  }
   history = async (walletType, key, token) => {
     const wallet = {
       async eos (token, key) {
@@ -294,7 +328,7 @@ class Lib {
           return stringAmount + ' ' + token.toUpperCase()
         }
       },
-      async eth (token, from, to, value, memo, key, contract) {
+      async eth (token, from, to, value, gas, key, contract) {
         // console.log('token, from, to, value, memo, key, contract', token, from, to, value, memo, key, contract)
         // console.log('abiArray', abiArray)
 
@@ -303,7 +337,7 @@ class Lib {
         const web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
 
         let nonce = await web3.eth.getTransactionCount(from)
-        let gasPrices = await getCurrentGasPrices()
+
         let data = '0x00'
         let web3Value = web3.utils.toHex(web3.utils.toWei(value.toString()))
         // let transactionHash = ''
@@ -317,21 +351,24 @@ class Lib {
           web3Value = '0x00'
         }
 
-        // Gas options selection to be implemented
-
         let rawTx = {
           from,
           to: sendTo,
           value: web3Value,
           data,
-          gasPrice: gasPrices.high * 1000000000,
           nonce,
           chainId: 1
         }
 
-        let gas = await web3.eth.estimateGas(rawTx)
-
-        rawTx.gas = gas
+        if (gas && (typeof gas === 'object')) {
+          rawTx.gas = gas.gas
+          rawTx.gasPrice = gas.gasPrice
+        } else {
+          let gasPrices = await getCurrentGasPrices()
+          rawTx.gasPrice = gasPrices.high * 1000000000
+          let gas = await web3.eth.estimateGas(rawTx)
+          rawTx.gas = gas
+        }
 
         const transaction = new EthereumTx(rawTx)
         transaction.sign(Buffer.from(key.substring(2), 'hex'))

@@ -467,6 +467,11 @@ export default {
   },
   async mounted () {
     this.checkChain()
+
+    if (this.$route.params.tab) {
+      this.menu = this.$route.params.tab
+      this.$store.commit('settings/setMenu', this.menu)
+    }
   },
   methods: {
     initData () {

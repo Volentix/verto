@@ -106,16 +106,14 @@ export default [
         meta: {
           authRequired: true
         }
-      },
-      {
+      }, {
         name: 'create-hd-account',
         path: '/verto/create-hd-account',
         component: () => import('pages/Verto/CreateHdAccount.vue'),
         meta: {
           authRequired: true
         }
-      },
-      {
+      }, /*,      {
         name: 'earn',
         path: '/verto/earn',
         component: () => import('pages/Verto/Earn.vue'),
@@ -138,9 +136,9 @@ export default [
         meta: {
           authRequired: true
         }
-      },
+      } */
       {
-        name: 'refer-friend',
+        name: 'eos-account',
         path: '/verto/eos-account',
         component: () => import('pages/Verto/EOSAccount.vue'),
         meta: {
@@ -198,7 +196,7 @@ export default [
       },
       {
         name: 'defi',
-        path: '/verto/defi',
+        path: '/verto/defi/:tab?',
         component: () => import('pages/Verto/Defi.vue'),
         meta: {
           authRequired: true
@@ -394,8 +392,7 @@ export default [
         meta: {
           authRequired: true
         }
-      },
-      {
+      }, /*,      {
         name: 'zixipay-get-vtx',
         path: 'zixipay-get-vtx',
         component: () => import('pages/Zixipay/GetVtx.vue'),
@@ -430,7 +427,7 @@ export default [
           authRequired: true,
           needskeyscreated: true
         }
-      },
+      } */
       {
         name: 'vdexnodes',
         path: '/vdexnodes',
@@ -439,7 +436,7 @@ export default [
           authRequired: true,
           needskeyscreated: true
         }
-      },
+      }/*,
       {
         name: 'cruxpay',
         path: '/cruxpay',
@@ -607,7 +604,7 @@ export default [
           authRequired: true,
           needskeyscreated: true
         }
-      }
+      } */
     ]
   }
 ]
