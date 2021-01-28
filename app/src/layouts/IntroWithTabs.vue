@@ -42,7 +42,7 @@ export default {
   data () {
     return {
       screenSize: 0,
-      showWizard: false,
+      showWizard: true,
       osName: '',
       fab: true,
       fabPos: [ 18, 50 ],
