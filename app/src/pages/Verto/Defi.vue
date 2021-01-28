@@ -1,5 +1,5 @@
 <template>
-<q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+<q-page class="text-black bg-white defiPage" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
 
 <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
    <q-dialog v-model="testnetDialog">
@@ -18,10 +18,12 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <q-dialog v-if="$store.state.settings.network == 'mainnet'" v-model="chooseAccount" persistent transition-show="scale" transition-hide="scale">
-      <q-card class="bg-grey-11 flex flex-center q-py-lg" style="width: 500px;">
+    <q-dialog :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-if="$store.state.settings.network == 'mainnet'" v-model="chooseAccount" persistent transition-show="scale" transition-hide="scale">
+      <q-card
+        :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+        class="bg-grey-11 flex flex-center q-py-lg" style="width: 500px;">
         <q-card-section>
-          <div class="text-h6">Choose your wallet</div>
+          <div class="text-h6">Choose your account</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
@@ -35,7 +37,7 @@
                         <q-icon class="option--avatar" :name="'img:'+accountOption.image" />
                     </q-item-section>
                     <q-item-section>
-                        <q-item-label v-if="accountOption.usd">{{ accountOption.chain.toUpperCase() }} wallet - ${{ accountOption.usd.toFixed(4) }}</q-item-label>
+                        <q-item-label v-if="accountOption.usd">{{ accountOption.chain.toUpperCase() }} account - ${{ accountOption.usd.toFixed(4) }}</q-item-label>
                         <q-item-label caption class="ellipsis mw200 q-pt-xs">{{ accountOption.value }}</q-item-label>
                     </q-item-section>
                 </q-item>
@@ -77,7 +79,15 @@
         </q-select>
         </q-card-section>
          <q-card-section>
-          <q-btn label="Select wallet" color="primary" @click="chooseAccount = false"/>
+          <!-- <q-btn label="Select wallet" color="primary" @click="chooseAccount = false"/> -->
+          <q-btn
+              unelevated
+              @click="chooseAccount = false"
+              color="primary"
+              text-color="black"
+              label="Select account"
+              class="text-capitalize chose_accounts full-width"
+            />
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -169,7 +179,7 @@
             <q-select
             :dark="$store.state.lightMode.lightMode === 'true'"
             class="full-width"
-            :class="{'bg-white': $store.state.lightMode.lightMode === 'false'}"
+            :class="{'bg-white2': $store.state.lightMode.lightMode === 'false'}"
             @input="getAccountInformation(accountOption)"
             v-model="accountOption"
             :options="accountOptions">
@@ -236,7 +246,7 @@
       </template>
 
       <template v-slot:after>
-      <div :class="{'bg-white':$store.state.lightMode.lightMode === 'false'}">
+      <div :class="{'bg-white2':$store.state.lightMode.lightMode === 'false'}">
           <div v-if="$store.state.settings.network == 'mainnet'" v-show="chain == 'eth'">
             <LiquidityPoolsTable :rowsPerPage="10" class="minHeight" v-if="menu == 'liquidity'"/>
             <InvestmentsTable class="minHeight2" v-else-if="menu == 'investments'"/>
@@ -704,7 +714,7 @@ export default {
   }
 }
 
-.accountOptionOneinch{
+  .accountOptionOneinch{
     // border: 1px solid rgba(#CCC, .3);
     margin: 0px 20px;
     border-radius: 10px;
@@ -753,9 +763,11 @@ export default {
     }
   }
   /deep/ .swapeos-component{
-    // border: 1px solid rgba(#CCC, .3);
+    background: #FFF;
     margin: 0px 20px;
+    border: 1px solid rgba(#CCC, .3);
     border-radius: 10px;
+    overflow: hidden;
     .bg-white{
       background: transparent !important;
     }
@@ -797,6 +809,64 @@ export default {
       }
     }
   }
+  .tabs-chains{
+    .q-list--separator{
+      .q-item.q-item-type{
+        background: transparent !important;
+        opacity: 1;
+        border-bottom: 1px solid rgba(#CCC, .3);
+        &.bg-white{
+          background: transparent !important;
+          opacity: .3;
+        }
+      }
+    }
+    .q-list:not(.q-list--separator){
+      border-radius: 30px;
+      border: 1px solid rgba(#CCC, .3);
+      overflow: hidden;
+      margin-bottom: 18px;
+      .q-item.q-item-type{
+        opacity: .3;
+        &.bg-white{
+          // border: 1px solid rgba(purple, .4);
+          background: transparent !important;
+          opacity: 1;
+          box-shadow: inset 0px 0px 25px 1px rgba(purple, .2);
+        }
+      }
+    }
+  }
+  /deep/ .explore-opportunities{
+    background: #FFF;
+    margin: 0px 20px;
+    border: 1px solid rgba(#CCC, .3);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  /deep/ .q-splitter__separator{
+    opacity: 0;
+  }
+  .DebtsTable{
+    /deep/ .current-debts{
+      border: 1px solid rgba(#CCC, .3);
+      margin: 0px 20px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #FFF;
+    }
+  }
+  /deep/ .accountOption {
+    background: transparent !important;
+  }
+  .accountOptionOneinch{
+    background: #FFF;
+    border: 1px solid rgba(#CCC, .3);
+    margin: 0px 20px;
+    border-radius: 10px;
+    padding-right: 20px;
+    padding-top: 8px;
+  }
 
 .dark-theme{
   .desktop-version{
@@ -810,14 +880,21 @@ export default {
         color: #FFF;
     }
   }
+  /deep/ .explore-opportunities{
+    background: transparent;
+  }
   .DebtsTable{
-    border: 1px solid rgba(#CCC, .3);
-    margin: 0px 20px;
-    border-radius: 10px;
-    overflow: hidden;
+    /deep/ .current-debts{
+      border: 1px solid rgba(#CCC, .3);
+      margin: 0px 20px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: transparent;
+    }
   }
   .accountOptionOneinch{
     border: 1px solid rgba(#CCC, .3);
+    background: transparent;
     margin: 0px 20px;
     border-radius: 10px;
     padding-right: 20px;
@@ -866,6 +943,7 @@ export default {
   }
   /deep/ .swapeos-component{
     border: 1px solid rgba(#CCC, .3);
+    background: transparent;
     margin: 0px 20px;
     border-radius: 10px;
     .trade-component .prototype .head{
@@ -1603,6 +1681,7 @@ export default {
   .q-list:not(.q-list--separator){
     .q-item.q-item-type{
       border: 1px solid rgba(#CCC, .3);
+      border-radius: 50px;
       &.bg-white{
         border: 1px solid rgba(purple, .4);
       }
@@ -1628,10 +1707,42 @@ export default {
 .minHeight3{
   min-height: 580px !important;
 }
+.q-card{
+  .chose_accounts{
+    background-color: #FFF !important;
+    font-size: 16px !important;
+    font-family: $Franklin !important;
+    color: #04111F !important;
+    border-radius: 40px;
+    margin-top: 0px;
+    height: 54px;
+    width: fit-content !important;
+  }
+}
+/deep/ .q-card{
+  &.accountOptionCard {
+      border: none !important;
+      background: transparent !important;
+  }
+}
+/deep/ .q-card.q-card--dark.q-dark{
+  background: #04111F !important;
+  border: 1px solid #627797 !important;
+  &.accountOptionCard {
+      border: none !important;
+      background: transparent !important;
+  }
+  /deep/ .select-input .q-field__control {
+    background-color: transparent !important;
+    .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{
+      color: #CCC;
+    }
+  }
+}
 </style>
 <style>
 .q-item--dark .q-item__label{ color: #FFF; }
-.bg-white{
+.defiPage .bg-white{
   height: 100%;
 }
 .q-pa-zero{
@@ -1640,4 +1751,8 @@ export default {
 }
 .q-pa-zero .q-field--standard .q-field__control:before{border-color: transparent !important}
 .q-pa-zero .q-field--standard .q-field__control{padding-right: 15px;}
+.q-card.q-card--dark.q-dark{background: #04111F !important;border: 1px solid #627797 !important;}
+.q-card.q-card--dark.q-dark.accountOptionCard{border: none !important;background: transparent !important;}
+.q-card.q-card--dark.q-dark .select-input .q-field__control {background-color: transparent !important;}
+.q-card.q-card--dark.q-dark .select-input .q-field__control .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{color: #CCC;}
 </style>
