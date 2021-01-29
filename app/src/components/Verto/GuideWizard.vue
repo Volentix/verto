@@ -273,7 +273,8 @@ export default {
   },
   methods: {
     closeWizard () {
-      localStorage.setItem('closewizard_', Date.now())
+      localStorage.setItem('closewizard', Date.now())
+      this.$bus.$emit('showHomeIntro')
     },
     showAccountDropdown () {
       this.filterAccount(this.currentActionItem.type ? this.currentActionItem.type : this.currentAction.chain, this.currentAction.chain)

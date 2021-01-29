@@ -23,7 +23,7 @@
       <!-- mobile-only  -->
    <GuideWizard :key="reRender" v-if="showWizard" class="wizard"/>
       <q-page-container>
-        <router-view />
+        <router-view :showWizard="showWizardAction" />
       </q-page-container>
     </div>
   </q-layout>
@@ -52,8 +52,7 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   created () {
-    let closewizard = localStorage.getItem('closewizard_')
-
+    let closewizard = localStorage.getItem('closewizard')
     if (!closewizard) {
       this.showWizardAction()
     }
