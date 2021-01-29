@@ -1,9 +1,9 @@
 <template>
-  <q-page class="column import-private-key" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-grey-12': $store.state.lightMode.lightMode === 'false'}">
+  <q-page class="column import-private-key" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-grey-12': $store.state.settings.lightMode === 'false'}">
         <div class="chain-tools-wrapper">
             <div class="standard-content">
                 <h2 class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'" icon="keyboard_backspace" />
+                    <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="keyboard_backspace" />
                      {{$t('CreateVertoPassword.addwallet')}}
                 </h2>
                 <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
@@ -11,7 +11,7 @@
             <div class="chain-tools-wrapper--list open">
                 <div class="list-wrapper">
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                        <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
+                        <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
                             <q-step title="Wallet Name" :name="1" prefix="1" :done="step > 1">
                                 <div class="text-black">
                                     <div class="text-h4 --subtitle">
@@ -21,7 +21,7 @@
                                     </div>
                                     <q-input
                                         v-model="wallet.name"
-                                        :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                                        :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                                         debounce="500"
                                         rounded outlined color="purple"
                                         @input="checkName"
@@ -49,7 +49,7 @@
                                     <span class="">
                                         <q-input
                                             v-model="wallet.address"
-                                            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                                            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                                             debounce="500"
                                             rounded outlined color="purple"
                                             @input="checkAddress"
@@ -67,7 +67,7 @@
                                 <div class="text-black">
                                     <q-input
                                         v-model="wallet.vertoPassword"
-                                        :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                                        :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                                         debounce="500"
                                         rounded outlined color="purple"
                                         @input="checkVertoPassword"

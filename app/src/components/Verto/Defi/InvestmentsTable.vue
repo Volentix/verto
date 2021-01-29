@@ -1,6 +1,6 @@
 <template>
-<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
-    <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="Investments" :data="$store.state.investment.investments" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+    <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="Investments" :data="$store.state.investment.investments" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
         <template v-slot:body-cell-asset="props">
             <q-td :props="props" class="body-table-col">
                 <div class="col-3 flex items-center">
@@ -28,7 +28,7 @@
         </template>
 
         <template v-slot:top-right>
-            <q-input :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" borderless dense debounce="300" v-model="filter" placeholder="Search">
+            <q-input :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" borderless dense debounce="300" v-model="filter" placeholder="Search">
                 <template v-slot:append>
                     <q-icon name="search" />
                 </template>

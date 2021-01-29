@@ -1,14 +1,14 @@
 
 <template>
-<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
   <div class="profile-wrapper">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="profile-wrapper--list">
-      <q-list :dark="$store.state.lightMode.lightMode === 'true'" bordered separator>
+      <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator>
         <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="(item.to !== 'backup' && item.to !== 'logout' && item.to !== 'restore' && item.to !== 'share') ? item.to : ''" @click="item.to === 'backup' ? backupConfig() : item.to === 'logout' ? logout() : item.to === 'restore' ? startRestoreConfig() : item.to === 'share' ? toggleShare() : empty()">
           <q-item-section avatar>
             <q-icon class="icons" :class="{'reverse' : item.icon === 'exit_to_app'}" v-if="item.icon !== 'vtx'" :name="item.icon" />
-            <img v-else class="vtx_logo" width="15px" :src="$store.state.lightMode.lightMode === 'true' ? 'statics/vtx.png' : 'statics/vtx_black.svg'" alt="">
+            <img v-else class="vtx_logo" width="15px" :src="$store.state.settings.lightMode === 'true' ? 'statics/vtx.png' : 'statics/vtx_black.svg'" alt="">
           </q-item-section>
           <q-item-section class="item-name">
             <div>{{item.name}}</div>
@@ -31,7 +31,7 @@
               size="lg"
               class="darkmode-btn"
               unchecked-icon="brightness_3">
-              <q-tooltip v-if="$store.state.lightMode.lightMode === 'false'" content-class="black" :offset="[10, 10]">
+              <q-tooltip v-if="$store.state.settings.lightMode === 'false'" content-class="black" :offset="[10, 10]">
                 Dark mode
               </q-tooltip>
               <q-tooltip v-else content-class="black" :offset="[10, 10]">
@@ -56,12 +56,12 @@
     <span v-if="screenSize <= 1024" class="version full-width text-center text-grey column q-pt-md q-pl-xl q-pr-xl q-pb-xl q-mt-md">
       <span class="q-mb-md q-mt-md"><strong>{{version}}</strong></span>
       <span class="q-pa-sm">
-        This app is in beta, please send us bug reports if you find any. <b><a target="_blank" :class="{'text-white':$store.state.lightMode.lightMode === 'true'}" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
+        This app is in beta, please send us bug reports if you find any. <b><a target="_blank" :class="{'text-white':$store.state.settings.lightMode === 'true'}" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
       </span>
     </span>
   </div>
   <q-dialog v-model="showShareWrapper">
-    <q-card :dark="$store.state.lightMode.lightMode === 'true'" class="q-pa-lg" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+    <q-card :dark="$store.state.settings.lightMode === 'true'" class="q-pa-lg" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
       <q-toolbar>
         <q-avatar><img src="statics/icon.png"></q-avatar>
         <q-toolbar-title><span class="text-weight-bold">Share</span> VERTO</q-toolbar-title>
@@ -177,7 +177,7 @@
               </social-sharing>
             </span>
             <div id="copy-btn">
-              <q-btn :color="$store.state.lightMode.lightMode === 'true' ? 'black':'white'" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'" @click="copyToClipboard(vertoLink , 'Link')" class="copy-link-button" flat label="Copy link">
+              <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" @click="copyToClipboard(vertoLink , 'Link')" class="copy-link-button" flat label="Copy link">
                 <img src="/statics/social/copy.svg" alt="">
               </q-btn>
             </div>
@@ -247,8 +247,8 @@ export default {
   },
   created () {
     window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false)
-    this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false
-    // console.log('this.$store.state.lightMode.lightMode', this.$store.state.lightMode.lightMode)
+    this.$store.state.settings.lightMode = window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false
+    // console.log('this.$store.state.settings.lightMode', this.$store.state.settings.lightMode)
     this.lightMode = window.localStorage.getItem('skin') !== 'false'
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
@@ -280,7 +280,7 @@ export default {
     },
     toggleLightDarkMode (val) {
       window.localStorage.setItem('skin', val)
-      this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin')
+      this.$store.state.settings.lightMode = window.localStorage.getItem('skin')
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth

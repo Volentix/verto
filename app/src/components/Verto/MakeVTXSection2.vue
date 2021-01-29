@@ -1,14 +1,14 @@
 <template>
-  <div class="desktop-card-style make-vtx" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+  <div class="desktop-card-style make-vtx" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <div class="exchange-container">
-        <div v-if="$store.state.lightMode.lightMode === 'true'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md" style="background: url('statics/bg3d2.png');">Staking</div>
+        <div v-if="$store.state.settings.lightMode === 'true'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md" style="background: url('statics/bg3d2.png');">Staking</div>
         <div v-else class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md lightmd" style="background: url('statics/bg3d2light.png');">Staking</div>
         <div class="row items-center q-pa-md">
             <div class="col-7 p-desc q-pb-sm">
               10000 VTX required
             </div>
             <div class="col-5 flex justify-end">
-                <q-btn unelevated class="qbtn-start" color="black" @click="goToExchange" :text-color="$store.state.lightMode.lightMode === 'false' ? 'black':'white'" label="Get VTX Now" />
+                <q-btn unelevated class="qbtn-start" color="black" @click="goToExchange" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" label="Get VTX Now" />
             </div>
         </div>
     </div>
