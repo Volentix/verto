@@ -7,17 +7,16 @@
         <LeftMenu />
         <div class="menu-left-wrapper"></div>
         <q-page-sticky position="bottom-right"  :offset="fabPos">
-        <q-fab
+        <q-btn
         v-model="fab"
-        @click="onClick()"
+        @click="showWizardAction()"
         label="Help Wizard"
+        class="q-py-sm"
         label-position="right"
         color="purple"
+        rounded
         icon="help_outline"
-        direction="up"
-      >
-
-      </q-fab>
+      />
        </q-page-sticky>
       </div>
       <tabs-menu v-else class="mobile-version tabs-menu-component" />
@@ -42,7 +41,7 @@ export default {
   data () {
     return {
       screenSize: 0,
-      showWizard: true,
+      showWizard: false,
       osName: '',
       fab: true,
       fabPos: [ 18, 50 ],
@@ -53,6 +52,11 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   created () {
+    let closewizard = localStorage.getItem('closewizard_')
+
+    if (!closewizard) {
+      this.showWizardAction()
+    }
     this.osName = osName
     this.reRender = Math.random()
     this.getWindowWidth()
@@ -60,7 +64,7 @@ export default {
     // console.log('this.osName', this.osName)
   },
   methods: {
-    onClick () {
+    showWizardAction () {
       this.reRender = Math.random()
       this.showWizard = true
     },

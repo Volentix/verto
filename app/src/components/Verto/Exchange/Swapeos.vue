@@ -79,15 +79,15 @@
                         <div class="you-pay">
                           <div class="you-pay-head row items-center">
                             <div class="col col-6">Payment</div>
-                            <div class="col col-6 red text-right text-body1" v-if="depositCoin.name">Account selected: <b class="" :class="{'text-deep-purple-10': $store.state.lightMode.lightMode === 'false', 'text-white': $store.state.lightMode.lightMode === 'true'}">{{depositCoin.name}}</b></div>
+                            <div class="col col-6 red text-right text-body1" v-if="depositCoin.name">Account selected: <b class="" :class="{'text-deep-purple-10': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{depositCoin.name}}</b></div>
                           </div>
                           <div class="you-pay-body row items-center">
                             <div class="col col-3 choose-coin">
                               <span class="cursor">
                                 <q-select
                                   class="select-input"
-                                  :dark="$store.state.lightMode.lightMode === 'true'"
-                                  :light="$store.state.lightMode.lightMode === 'false'"
+                                  :dark="$store.state.settings.lightMode === 'true'"
+                                  :light="$store.state.settings.lightMode === 'false'"
                                   separator
                                   use-input
                                   borderless
@@ -118,7 +118,7 @@
                                   </template>
                                   <template v-slot:selected>
                                     <span class="text-h5 text-bold">{{ depositCoin.value.toUpperCase() }}</span>
-                                    <q-item-label v-if="depositCoin.name" caption class="text-bold" :class="{'text-deep-purple-10': $store.state.lightMode.lightMode === 'false', 'text-white': $store.state.lightMode.lightMode === 'true'}">{{ depositCoin.name }}</q-item-label>
+                                    <q-item-label v-if="depositCoin.name" caption class="text-bold" :class="{'text-deep-purple-10': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{ depositCoin.name }}</q-item-label>
                                   </template>
                                 </q-select>
                               </span>
@@ -127,12 +127,12 @@
 
                               <q-input
                                 rounded
-                                :dark="$store.state.lightMode.lightMode === 'true'"
-                                :light="$store.state.lightMode.lightMode === 'false'"
+                                :dark="$store.state.settings.lightMode === 'true'"
+                                :light="$store.state.settings.lightMode === 'false'"
                                 @blur="swapData.fromAmount = parseFloat(swapData.fromAmount).toFixed(depositCoin.precision)"
                                 outlined
                                 class="text-h5 depositQuantity"
-                                :class="{'bg-white': $store.state.lightMode.lightMode === 'false'}"
+                                :class="{'bg-white': $store.state.settings.lightMode === 'false'}"
                                 ref="depositQuantity"
                                 @input="
                                   swapData.error = false;
@@ -158,7 +158,7 @@
                         <div class="you-receive">
                           <br />
 
-                          <q-btn outline round :color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'" :dark="$store.state.lightMode.lightMode === 'true'" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
+                          <q-btn outline round :color="$store.state.settings.lightMode === 'true' ? 'white':'black'" :dark="$store.state.settings.lightMode === 'true'" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
                           <div class="you-receive-head row items-center">
                             <div class="col col-6">You Receive</div>
                             <div v-if="rateData" class="col col-6 info_rate_holder small text-right flex justify-end items-center" :class="{ _loading: fetchingRate }">
@@ -197,8 +197,8 @@
                               <span class="cursor">
                                 <q-select
                                   class="select-input"
-                                  :dark="$store.state.lightMode.lightMode === 'true'"
-                                  :light="$store.state.lightMode.lightMode === 'false'"
+                                  :dark="$store.state.settings.lightMode === 'true'"
+                                  :light="$store.state.settings.lightMode === 'false'"
                                   separator
                                   use-input
                                   rounded
@@ -231,7 +231,7 @@
                               </span>
                             </div>
                             <div class="col col-8 offset-1">
-                              <q-input rounded :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" disable outlined :class="{'bg-white': $store.state.lightMode.lightMode === 'false'}" class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" >
+                              <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" disable outlined :class="{'bg-white': $store.state.settings.lightMode === 'false'}" class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" >
                                 <div class="flex justify-end items-center" style="width: 60px">
                                   <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
                                 </div>
@@ -381,7 +381,7 @@
             </q-item-section>
           </q-item>
         </q-list>
-        <div class="text-h6 q-pt-md" :class="{'text-white': $store.state.lightMode.lightMode === 'true'}" v-if="path.length && tab != 'liquidity'">Multi Swap Path</div>
+        <div class="text-h6 q-pt-md" :class="{'text-white': $store.state.settings.lightMode === 'true'}" v-if="path.length && tab != 'liquidity'">Multi Swap Path</div>
         <q-list separator v-if="path.length && tab != 'liquidity'" class="multi-swap-path--list">
           <q-item class="q-my-sm" clickable v-ripple>
             <q-item-section>

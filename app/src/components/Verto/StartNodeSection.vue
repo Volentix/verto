@@ -1,15 +1,15 @@
 <template>
   <div class="desktop-card-style apps-section q-mb-sm">
     <div v-if="banner === 1" class="banner-wrapper" @click="goToLink">
-      <img v-if="$store.state.lightMode.lightMode === 'false'" src="statics/node-banners/ban1.png" class="full-width scale3d" alt="">
+      <img v-if="$store.state.settings.lightMode === 'false'" src="statics/node-banners/ban1.png" class="full-width scale3d" alt="">
       <img v-else src="statics/node-banners/ban1--dark.png" class="full-width scale3d" alt="">
     </div>
     <div v-else-if="banner === 2" class="banner-wrapper" @click="goToLink">
-      <img v-if="$store.state.lightMode.lightMode === 'false'" src="statics/node-banners/ban2.png" class="full-width scale3d" alt="">
+      <img v-if="$store.state.settings.lightMode === 'false'" src="statics/node-banners/ban2.png" class="full-width scale3d" alt="">
       <img v-else src="statics/node-banners/ban2.png" class="full-width scale3d" alt="">
     </div>
     <div v-else-if="banner === 3" class="banner-wrapper" @click="goToLink">
-      <img v-if="$store.state.lightMode.lightMode === 'false'" src="statics/node-banners/ban3.png" class="full-width scale3d" alt="">
+      <img v-if="$store.state.settings.lightMode === 'false'" src="statics/node-banners/ban3.png" class="full-width scale3d" alt="">
       <img v-else src="statics/node-banners/ban3.png" class="full-width scale3d" alt="">
     </div>
     <div v-else class="row flex justify-between q-pt-sm q-pb-sm">

@@ -1,7 +1,7 @@
 <template>
   <div
     class="menu-top-wrapper"
-    :class="{ 'dark-theme': $store.state.lightMode.lightMode === 'true' }"
+    :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
   >
     <div class="row">
       <div class="col col-2 app-logo flex q-pl-md items-center">
@@ -28,13 +28,13 @@
        <!-- <router-link to="/verto/create-polkadot-account" >Polkadot</router-link> -->
         <q-btn-dropdown
           no-caps
-          :color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'"
+          :color="$store.state.settings.lightMode === 'true' ? 'white':'black'"
           label="Quick access"
           flat
         >
           <q-list
-          :light="$store.state.lightMode.lightMode === 'false'"
-          :dark="$store.state.lightMode.lightMode === 'true'"
+          :light="$store.state.settings.lightMode === 'false'"
+          :dark="$store.state.settings.lightMode === 'true'"
           >
             <q-item dense @click="buyCPU()" clickable v-close-popup>
               <q-item-section avatar>
@@ -66,11 +66,11 @@
           icon="upgrade"
           label="Import accounts"
           flat
-          :color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'"
+          :color="$store.state.settings.lightMode === 'true' ? 'white':'black'"
         >
           <q-list
-          :light="$store.state.lightMode.lightMode === 'false'"
-          :dark="$store.state.lightMode.lightMode === 'true'"
+          :light="$store.state.settings.lightMode === 'false'"
+          :dark="$store.state.settings.lightMode === 'true'"
           >
             <q-item dense to="/verto/import-private-key/eos" clickable v-close-popup>
               <q-item-section avatar>
@@ -106,8 +106,8 @@
         <q-select
           dense
           borderless
-          :light="$store.state.lightMode.lightMode === 'false'"
-          :dark="$store.state.lightMode.lightMode === 'true'"
+          :light="$store.state.settings.lightMode === 'false'"
+          :dark="$store.state.settings.lightMode === 'true'"
           @input="switchNetwork()"
           :color="network.value == 'testnet' ? 'white' : ''"
           :class="[network.value == 'testnet' ? 'bg-red text-white select-input' : '', 'select-input']"
@@ -151,7 +151,7 @@
           unchecked-icon="brightness_3"
         >
           <q-tooltip
-            v-if="$store.state.lightMode.lightMode === 'false'"
+            v-if="$store.state.settings.lightMode === 'false'"
             content-class="black"
             :offset="[10, 10]"
           >
@@ -217,11 +217,11 @@ export default {
         ? window.localStorage.getItem('skin')
         : false
     )
-    this.$store.state.lightMode.lightMode =
+    this.$store.state.settings.lightMode =
       window.localStorage.getItem('skin') !== null
         ? window.localStorage.getItem('skin')
         : false
-    // console.log('this.$store.state.lightMode.lightMode', this.$store.state.lightMode.lightMode)
+    // console.log('this.$store.state.settings.lightMode', this.$store.state.settings.lightMode)
     this.lightMode = window.localStorage.getItem('skin') !== 'false'
   },
   methods: {
@@ -269,8 +269,8 @@ export default {
     toggleLightDarkMode (val) {
       // console.log('toggleLightDarkMode (val)', val)
       window.localStorage.setItem('skin', val)
-      this.$store.state.lightMode.lightMode = window.localStorage.getItem('skin')
-      // console.log('this.$store.state.lightMode.lightMode', this.$store.state.lightMode.lightMode)
+      this.$store.state.settings.lightMode = window.localStorage.getItem('skin')
+      // console.log('this.$store.state.settings.lightMode', this.$store.state.settings.lightMode)
     },
     refreshDate () {
       let date = new Date()

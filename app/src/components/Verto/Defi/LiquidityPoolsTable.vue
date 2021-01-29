@@ -2,7 +2,7 @@
   <div>
     <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
       <!-- :grid="$q.screen.xs" -->
-      <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :pagination="initialPagination" :loading="!$store.state.investment.pools.length" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.lightMode.lightMode === 'false'}">
+      <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="!$store.state.investment.pools.length" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
@@ -32,7 +32,7 @@
           </q-td>
         </template>
         <template v-slot:top-right>
-          <q-input borderless dense :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" filled debounce="300" v-model="filter" placeholder="Search">
+          <q-input borderless dense :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" filled debounce="300" v-model="filter" placeholder="Search">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
