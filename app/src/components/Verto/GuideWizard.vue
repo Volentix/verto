@@ -1,6 +1,7 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
     <q-dialog
+
       v-model="dialog"
       persistent
       position="right"
@@ -9,7 +10,7 @@
       transition-show="slide-up"
       transition-hide="slide-down"
     >
-      <q-card class="" style="min-width:334px;">
+      <q-card :dark=" $store.state.settings.lightMode === 'true'" class="" style="min-width:334px;">
         <q-bar>
           <q-space />
 
@@ -35,12 +36,12 @@
               >Maximize</q-tooltip
             >
           </q-btn>
-          <q-btn dense flat icon="close" v-close-popup>
+          <q-btn @click="closeWizard()" dense flat icon="close" v-close-popup>
             <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
           </q-btn>
         </q-bar>
 
-        <q-card-section class="bg-grey-12">
+        <q-card-section :class="{'bg-grey-12':  $store.state.settings.lightMode === 'false'}">
           <div class="text-h6 flex">
             <svg
               class="svg_logo q-mr-sm"
@@ -59,7 +60,7 @@
 
         <q-card-section class="q-pt-md text-body1">
           What do you want to do ?
-          <q-input @click="getAccount()" clearable clear-icon="close" dense filled label="Type an action" @input="filterActions()" v-model="searchAction" class="q-mt-sm" />
+          <q-input :dark=" $store.state.settings.lightMode === 'true'" @click="getAccount()" clearable clear-icon="close" dense filled label="Type an action" @input="filterActions()" v-model="searchAction" class="q-mt-sm" />
         </q-card-section>
         <q-card-section v-if="currentActionItem" class="q-py-sm text-body2 bg-grey-12">
           <b
@@ -81,8 +82,7 @@
         </q-card-section>
         <q-card-section
           v-show="!accountDropdown && list.items.length"
-          class="bg-grey-12"
-
+          :class="{'bg-grey-12':  $store.state.settings.lightMode === 'false'}"
           v-for="(list, index) in filteredActions"
           :key="index"
         >
@@ -114,8 +114,8 @@
           </p>
           <p v-else>{{ "Select " + currentAction.chain.toUpperCase() + " account" }}</p>
           <q-select
-            :dark="$store.state.lightMode.lightMode === 'true'"
-            :light="$store.state.lightMode.lightMode === 'false'"
+            :dark="$store.state.settings.lightMode === 'true'"
+            :light="$store.state.settings.lightMode === 'false'"
             separator
             rounded
             dense
@@ -170,7 +170,7 @@
             label="Proceed"
           />
         </q-card-section>
-         <q-card-section class="bg-grey-12">
+         <q-card-section :class="{'bg-grey-12':  $store.state.settings.lightMode === 'false'}">
           <div class="text-h6 q-pb-md">Support</div>
 
           <q-btn flat label="Ask the community" icon="groups" />
@@ -248,6 +248,7 @@ const actions = [
   }
 ]
 export default {
+
   data () {
     return {
       dialog: true,
@@ -271,6 +272,10 @@ export default {
     }
   },
   methods: {
+    closeWizard () {
+      localStorage.setItem('closewizard', Date.now())
+      this.$bus.$emit('showHomeIntro')
+    },
     showAccountDropdown () {
       this.filterAccount(this.currentActionItem.type ? this.currentActionItem.type : this.currentAction.chain, this.currentAction.chain)
 

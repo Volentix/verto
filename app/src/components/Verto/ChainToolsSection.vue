@@ -1,5 +1,5 @@
 <template>
-  <div class="desktop-card-style apps-section q-mb-sm" :class="{'disabled' : wallet.type !== 'vtx', 'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+  <div class="desktop-card-style apps-section q-mb-sm" :class="{'disabled' : wallet.type !== 'vtx', 'dark-theme': $store.state.settings.lightMode === 'true'}">
     <div class="row flex justify-between q-pt-sm q-pb-sm">
       <div class="col col-3 flex items-center chain-icon"><q-icon :name="'img:statics/chain-tools_icon-black.svg'" />Chain Tools</div>
       <div class="col col-6 flex items-center justify-center chain-token q-pr-sm">
@@ -18,7 +18,7 @@
       </div>
       <div class="col col-3 flex items-center justify-end dropdown q-pr-sm">
         <q-select
-          v-if="$store.state.lightMode.lightMode === 'true'"
+          v-if="$store.state.settings.lightMode === 'true'"
           dark
           separator
           rounded

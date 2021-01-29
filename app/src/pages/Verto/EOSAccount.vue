@@ -1,6 +1,6 @@
 <template>
   <q-page class="column text-black bg-grey-12" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
-    <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
           <div class="col col-md-3">
@@ -11,7 +11,7 @@
             </div>
           </div>
           <div class="col col-md-9">
-            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
               <div class="standard-content">
                 <h2 class="standard-content--title flex justify-start">Create EOS Account</h2>
                 <EOS-account-stepper  v-if="$store.state.settings.network == 'mainnet'"/>

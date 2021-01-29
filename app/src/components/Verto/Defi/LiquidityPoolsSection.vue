@@ -1,5 +1,5 @@
 <template>
-  <div class="desktop-card-style make-vtx q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+  <div class="desktop-card-style make-vtx q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <div v-if="screenSize > 1024">
       <br>
       <div class="row flex justify-between q-pb-sm q-pt-md">

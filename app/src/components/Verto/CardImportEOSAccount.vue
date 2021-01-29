@@ -1,5 +1,5 @@
 <template>
-<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
   <div class="card-import-EOS-account--wrapper">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="card-import-EOS-account--wrapper--header">

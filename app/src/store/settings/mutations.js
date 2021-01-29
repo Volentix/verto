@@ -9,7 +9,9 @@ export const setAirplaneMode = (state, data) => {
 export const toggleNetwork = (state, data) => {
   state.network = data
 }
-
+export const updatelightMode = (state, lightMode) => {
+  state.lightMode = lightMode
+}
 export const temporary = (state, data) => {
   state.temporary = data
 }
