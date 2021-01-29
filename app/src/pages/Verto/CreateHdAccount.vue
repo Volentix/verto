@@ -20,7 +20,6 @@
                         <div class="list-wrapper">
                             <div class="list-wrapper--chain__eos-to-vtx-convertor">
                                 <div v-show="showMainSteps">
-<<<<<<< HEAD
                                     <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
                                         <q-step title="Missing HD Account" :name="1" prefix="1" order="10" :done="step > 1">
                                             <div class="text-black">
@@ -34,35 +33,6 @@
                                                   :options="notCreated"
                                                 />
 
-=======
-                                    <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
-                                        <!--
-                                                1.Private key
-                                                -->
-                                        <q-step title="Private Key" :name="1" prefix="1" order="10" :done="step > 1">
-                                            <div class="text-black">
-                                                <div class="text-h4 --subtitle">
-                                                    <ul>
-                                                        <li>
-                                                            <span>
-                                                                <span v-if="!ethKeyNext || ethKeyInvalid">
-                                                                    <q-chip dense color="red" class="sm-circle shadow-1">&nbsp;</q-chip>
-                                                                </span>
-                                                                <span v-else>
-                                                                    <q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip>
-                                                                </span>
-                                                                A valid ETH private key
-                                                            </span>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                                <span>
-                                                    <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.addressPriv" :error="addWallet.addressError" @input="showethKeyNext" @keyup.enter="nextFromPriv" :label="$t('EosAccount.enter_private_key')" />
-                                                </span>
-                                                <div v-show="ethKeyInvalid" class="text-h6 text-red">
-                                                    Key invalid
-                                                </div>
->>>>>>> 0866d8777ce136fddae7519a0f0a6a03fa4f4524
                                                 <q-stepper-navigation v-show="ethKeyNext && !ethKeyInvalid" class="flex justify-end">
                                                     <q-btn @click="nextFromPriv()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
                                                 </q-stepper-navigation>
