@@ -35,7 +35,7 @@
               >Maximize</q-tooltip
             >
           </q-btn>
-          <q-btn dense flat icon="close" v-close-popup>
+          <q-btn @click="closeWizard()" dense flat icon="close" v-close-popup>
             <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
           </q-btn>
         </q-bar>
@@ -248,6 +248,7 @@ const actions = [
   }
 ]
 export default {
+
   data () {
     return {
       dialog: true,
@@ -271,6 +272,9 @@ export default {
     }
   },
   methods: {
+    closeWizard () {
+      localStorage.setItem('closewizard_', Date.now())
+    },
     showAccountDropdown () {
       this.filterAccount(this.currentActionItem.type ? this.currentActionItem.type : this.currentAction.chain, this.currentAction.chain)
 
