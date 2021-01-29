@@ -69,7 +69,7 @@ export default {
         align: 'left',
         label: 'USD',
         field: 'usd',
-        format: val => `$${val}`,
+        format: val => `$${parseFloat(val).toFixed(2)}`,
         sortable: true
       },
       {
@@ -77,7 +77,8 @@ export default {
         align: 'left',
         label: 'Amount',
         field: 'amount',
-        sortable: true
+        sortable: true,
+        format: val => `$${parseFloat(val).toFixed(8)}`
       },
       {
         name: 'action',
