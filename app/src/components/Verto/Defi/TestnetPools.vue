@@ -1,7 +1,7 @@
 <template>
   <div>
      <VolentixLiquidity :showLiquidity="true" v-if="openDialog" />
-      <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :pagination="initialPagination"  :loading="!$store.state.investment.eosPools.length" :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.eosPools" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+      <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination"  :loading="!$store.state.investment.eosPools.length" :grid="$q.screen.xs" title="Explore Opportunities" :data="$store.state.investment.eosPools" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
             <template v-slot:body-cell-name="props">
               <q-td :props="props" class="body-table-col">
                   <div class="col-3 flex items-center">
@@ -34,7 +34,7 @@
           </template>
 
           <template v-slot:top-right>
-              <q-input borderless dense :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" filled debounce="300" v-model="filter" placeholder="Search">
+              <q-input borderless dense :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" filled debounce="300" v-model="filter" placeholder="Search">
                   <template v-slot:append>
                       <q-icon name="search" />
                   </template>

@@ -1,8 +1,8 @@
 <template>
-<q-card :dark="$store.state.lightMode.lightMode === 'true'" class="q-pa-lg modal-dialog-wrapper" style="width: 800px; max-width: 90vw;" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+<q-card :dark="$store.state.settings.lightMode === 'true'" class="q-pa-lg modal-dialog-wrapper" style="width: 800px; max-width: 90vw;" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <q-toolbar class="my-toolbar">
         <q-toolbar-title><span class="text-weight-bold q-pl-sm">Add Liquidity</span></q-toolbar-title>
-        <q-select :dark="$store.state.lightMode.lightMode === 'true'" v-if="ethWallets.length" borderless v-model="currentEthWallet" :options="ethWallets" label="Account" />
+        <q-select :dark="$store.state.settings.lightMode === 'true'" v-if="ethWallets.length" borderless v-model="currentEthWallet" :options="ethWallets" label="Account" />
         <q-item  v-if="screenSize > 1024" dense class="metamask-btn">
             <q-item-section class="text-body1 q-pr-sm">
                 <q-btn v-if="!transactionStatus" :loading="connectLoading.metamask" :class="ethWallets.find(o => o.origin == 'metamask') ? 'bg-green-1' : 'bg-red-1'" @click="conectWallet('metamask')" flat icon="fiber_manual_record" :color="!ethWallets.find(o => o.origin == 'metamask') ? 'red' : 'green'" :label="!ethWallets.find(o => o.origin == 'metamask') ? 'Connect' : 'Connected'">
@@ -20,16 +20,16 @@
         <div class="row">
             <div class="col col-12 col-md-3">
                 <!-- <q-input class="input-input" filled rounded outlined color="purple" value="0.1" suffix="MAX" /> -->
-                <q-input :dark="$store.state.lightMode.lightMode === 'true'" :rules="[ val => !currentToken.isERC20 || currentToken.isERC20 && val % 1 == 0 || 'Whole numbers only']" @input="validateInput() ; error = null ;" v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number">
+                <q-input :dark="$store.state.settings.lightMode === 'true'" :rules="[ val => !currentToken.isERC20 || currentToken.isERC20 && val % 1 == 0 || 'Whole numbers only']" @input="validateInput() ; error = null ;" v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number">
                     <template v-slot:append>
                         <div class="flex justify-end items-center q-pb-xs">
-                            <q-btn :dark="$store.state.lightMode.lightMode === 'true'" color="white" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat :text-color="$store.state.lightMode.lightMode === 'true' ? 'white' : 'black'" label="Max" />
+                            <q-btn :dark="$store.state.settings.lightMode === 'true'" color="white" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" label="Max" />
                         </div>
                     </template>
                 </q-input>
             </div>
             <div class="col col-12 col-md-3 q-ml-md rm-q-ml-md">
-                <q-select :dark="$store.state.lightMode.lightMode === 'true'" v-if="currentToken" class="select-input" @input="getMaxBalance() ; approvalRequired = false; getGas();  error = null; " filled rounded outlined color="purple" v-model="currentToken" :options="tokenOptions">
+                <q-select :dark="$store.state.settings.lightMode === 'true'" v-if="currentToken" class="select-input" @input="getMaxBalance() ; approvalRequired = false; getGas();  error = null; " filled rounded outlined color="purple" v-model="currentToken" :options="tokenOptions">
                     <template v-slot:prepend>
                         <q-avatar>
                             <img :src="'https://zapper.fi/images/'+currentToken.label+'-icon.png'">
@@ -68,7 +68,7 @@
             <div class="col-12 col-md-8 row">
                 <div class="col col-12 col-md-6 q-pr-md">
                     <strong class="lab-sub q-pl-md">Platform</strong>
-                    <q-select :dark="$store.state.lightMode.lightMode === 'true'" class="select-input full-width" filled v-model="platform" color="purple" @input="approvalRequired = false; filterPoolsByPlatform() ; getGas() ; error = null" :options="platformOptions">
+                    <q-select :dark="$store.state.settings.lightMode === 'true'" class="select-input full-width" filled v-model="platform" color="purple" @input="approvalRequired = false; filterPoolsByPlatform() ; getGas() ; error = null" :options="platformOptions">
                         <template v-slot:prepend>
                             <q-avatar>
                                 <img :src="'https://zapper.fi/images/'+platform.icon">
@@ -78,7 +78,7 @@
                 </div>
                 <div class="col col-12 col-md-6 q-pr-md">
                     <strong class="lab-sub q-pl-md">Pool</strong>
-                    <q-select :dark="$store.state.lightMode.lightMode === 'true'" class="select-input full-width" @filter="filterPoolsByUserInput" input-debounce="0" use-input filled @input="$store.commit('investment/setSelectedPool', pool);getGas();error = null " v-model="pool" color="purple" :options="poolOptions">
+                    <q-select :dark="$store.state.settings.lightMode === 'true'" class="select-input full-width" @filter="filterPoolsByUserInput" input-debounce="0" use-input filled @input="$store.commit('investment/setSelectedPool', pool);getGas();error = null " v-model="pool" color="purple" :options="poolOptions">
                         <template v-slot:no-option>
                             <q-item>
                                 <q-item-section class="text-grey">

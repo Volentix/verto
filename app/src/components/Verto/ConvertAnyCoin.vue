@@ -1,5 +1,5 @@
 <template>
-<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
   <div class="convert-any-coin--wrapper">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="convert-any-coin--wrapper--header">

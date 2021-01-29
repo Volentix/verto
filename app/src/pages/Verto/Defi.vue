@@ -1,7 +1,7 @@
 <template>
 <q-page class="text-black bg-white defiPage" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
 
-<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
    <q-dialog v-model="testnetDialog">
       <q-card>
         <q-card-section>
@@ -18,9 +18,9 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <q-dialog :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-if="$store.state.settings.network == 'mainnet'" v-model="chooseAccount" persistent transition-show="scale" transition-hide="scale">
+    <q-dialog :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-if="$store.state.settings.network == 'mainnet'" v-model="chooseAccount" persistent transition-show="scale" transition-hide="scale">
       <q-card
-        :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+        :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
         class="bg-grey-11 flex flex-center q-py-lg" style="width: 500px;">
         <q-card-section>
           <div class="text-h6">Choose your account</div>
@@ -28,8 +28,8 @@
 
         <q-card-section class="q-pt-none">
          <q-select style="width: 400px;"
-          :dark="$store.state.lightMode.lightMode === 'true'"
-          :light="$store.state.lightMode.lightMode === 'false'"
+          :dark="$store.state.settings.lightMode === 'true'"
+          :light="$store.state.settings.lightMode === 'false'"
           separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation()" v-model="accountOption" :options="accountOptions">
             <template v-slot:selected>
                 <q-item v-if="accountOption">
@@ -82,7 +82,7 @@
           <!-- <q-btn label="Select wallet" color="primary" @click="chooseAccount = false"/> -->
           <q-btn
               unelevated
-              @click="chooseAccount = false"
+              @click="chooseAccount = false; showGuidedIntro()"
               color="primary"
               text-color="black"
               label="Select account"
@@ -101,6 +101,7 @@
     <q-splitter
       v-model="splitterModel"
       style="width:100%"
+
     >
 
       <template style="width:25%" v-slot:before>
@@ -112,7 +113,7 @@
           inline-label
         >
          <div >
-          <q-list class="text-center flex">
+          <q-list class="text-center flex" data-title="Switch between chains"  data-intro="Each chain have their own related and associated features">
 
             <q-item v-if="$store.state.settings.network == 'mainnet'" clickable @click="chain = 'eth';  switchChain() " :class="[chain == 'eth' ? 'bg-white' :'']">
 
@@ -131,7 +132,7 @@
 
           <div auto-close stretch flat>
 
-           <q-list class="text-left" separator>
+           <q-list class="text-left" data-title="Menu"  data-intro="Click on a menu item to switch the view of the main section" separator>
             <q-item clickable @click="menu = 'swap'" :class="[menu == 'swap' ? 'bg-grey-3' : 'bg-white']">
               <q-item-section>Swap</q-item-section>
                <q-item-section side><q-icon name="navigate_next"/></q-item-section>
@@ -164,28 +165,29 @@
 
       <q-expansion-item
         v-if="accountOption.value"
-        :dark="$store.state.lightMode.lightMode === 'true'"
+        :dark="$store.state.settings.lightMode === 'true'"
         default-opened
         class="bg-white q-py-md accountOption"
         :label="'Total Balance - $'+(accountOption.total ? accountOption.total.toFixed(2) : 0 )"
         :caption="accountOption.label"
       >
         <q-card
-          :dark="$store.state.lightMode.lightMode === 'true'"
+          :dark="$store.state.settings.lightMode === 'true'"
           flat
           class="accountOptionCard"
           >
           <q-card-section class="q-pa-zero">
             <q-select
-            :dark="$store.state.lightMode.lightMode === 'true'"
+            data-title="Changing account..."  data-intro="Click here to switch to another account"
+            :dark="$store.state.settings.lightMode === 'true'"
             class="full-width"
-            :class="{'bg-white2': $store.state.lightMode.lightMode === 'false'}"
+            :class="{'bg-white2': $store.state.settings.lightMode === 'false'}"
             @input="getAccountInformation(accountOption)"
             v-model="accountOption"
             :options="accountOptions">
               <template v-slot:selected>
                 <q-item
-                  :dark="$store.state.lightMode.lightMode === 'true'"
+                  :dark="$store.state.settings.lightMode === 'true'"
                   v-if="accountOption">
                   <q-item-section>
                     <q-item-label >Change account</q-item-label>
@@ -229,7 +231,7 @@
                   </q-avatar>
               </template> -->
             </q-select>
-            <q-item clickable :key="index"  v-for="(token,index) in $store.state.wallets.tokens.filter(o => o.chain ==  chain && (( o.name == accountOption.label && chain == 'eos') || ( o.key.toLowerCase() == accountOption.value.toLowerCase() && chain == 'eth' )))">
+            <q-item clickable :key="index"   data-title="Token list"  data-intro="On this list you will find tokens associated with your selected account" v-for="(token,index) in $store.state.wallets.tokens.filter(o => o.chain ==  chain && (( o.name == accountOption.label && chain == 'eos') || ( o.key.toLowerCase() == accountOption.value.toLowerCase() && chain == 'eth' )))">
               <q-item-section avatar top>
                 <q-icon :name="'img:'+token.icon" color="primary" text-color="white" />
               </q-item-section>
@@ -246,7 +248,7 @@
       </template>
 
       <template v-slot:after>
-      <div :class="{'bg-white2':$store.state.lightMode.lightMode === 'false'}">
+      <div :class="{'bg-white2':$store.state.settings.lightMode === 'false'}">
           <div v-if="$store.state.settings.network == 'mainnet'" v-show="chain == 'eth'">
             <LiquidityPoolsTable :rowsPerPage="10" class="minHeight" v-if="menu == 'liquidity'"/>
             <InvestmentsTable class="minHeight2" v-else-if="menu == 'investments'"/>
@@ -339,7 +341,7 @@ import TestnetInvestments from '../../components/Verto/Defi/TestnetInvestments'
 import InvestmentsOpportunitiesTable from '../../components/Verto/Defi/InvestmentsTableOpportunities'
 import DebtsTable from '../../components/Verto/Defi/DebtsTable'
 import Oneinch from '../../components/Verto/Exchange/Oneinch'
-
+import 'intro.js/minified/introjs.min.css'
 import VolentixLiquidity from '../../components/Verto/Exchange/VolentixLiquidity'
 export default {
   components: {
@@ -477,13 +479,24 @@ export default {
   },
   async mounted () {
     this.checkChain()
-
     if (this.$route.params.tab) {
       this.menu = this.$route.params.tab
       this.$store.commit('settings/setMenu', this.menu)
     }
   },
   methods: {
+    showGuidedIntro () {
+      let disableIntro = localStorage.getItem('disableIntro_defi')
+      if (!disableIntro) {
+        const IntroJS = require('intro.js')
+        let Intro = new IntroJS()
+        Intro.setOptions({
+          showProgress: true
+        }).onbeforeexit(function () {
+          return localStorage.setItem('disableIntro_defi', Date.now())
+        }).start()
+      }
+    },
     initData () {
       let exchangeNotif = document.querySelector('.exchange-notif')
       if (exchangeNotif !== null) {

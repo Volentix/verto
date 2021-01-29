@@ -1,7 +1,7 @@
 <template>
-<q-page class="column" :class="{'desktop-marg':screenSize > 1024, 'mobile-pad': screenSize < 1024 , 'text-black bg-grey-12': $store.state.lightMode.lightMode === 'false'}">
+<q-page class="column" :class="{'desktop-marg':screenSize > 1024, 'mobile-pad': screenSize < 1024 , 'text-black bg-grey-12': $store.state.settings.lightMode === 'false'}">
     <!-- padding-bottom: 100px;background: #f3f3f3 !important -->
-    <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
         <div class="desktop-version" v-if="screenSize > 1024">
             <div class="row">
                 <div class="col col-md-3">
@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="col col-md-9">
-                    <div class="desktop-card-style apps-section q-mb-sm"  :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+                    <div class="desktop-card-style apps-section q-mb-sm"  :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                         <div class="chain-tools-wrapper">
                             <div class="standard-content">
                                 <h2 class="standard-content--title flex justify-start">vDex</h2>
@@ -38,10 +38,10 @@
                 </div>
             </div>
         </div>
-        <div v-else class="mobile-version chain-tools-wrapper" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+        <div v-else class="mobile-version chain-tools-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
             <!-- <div class="standard-content"> -->
                 <!-- <h2 class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" :to="goBack" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white' : 'black'" icon="keyboard_backspace" />
+                    <q-btn flat unelevated class="btn-align-left" :to="goBack" :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" icon="keyboard_backspace" />
                     Exchange
                 </h2> -->
                 <!-- <div class="exchange_picto flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div> -->
@@ -50,7 +50,7 @@
             <div class="chain-tools-wrapper--list chain-tools-wrapper--list___1 open">
                 <div class="list-wrapper">
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                        <q-checkbox :dark="$store.state.lightMode.lightMode === 'true'" v-model="vpoolsTestMode" label="Enable vpools" :color="$store.state.lightMode.lightMode === 'true' ? 'white':'primary'" :text-color="$store.state.lightMode.lightMode === 'true' ? 'blue':'primary'" />
+                        <q-checkbox :dark="$store.state.settings.lightMode === 'true'" v-model="vpoolsTestMode" label="Enable vpools" :color="$store.state.settings.lightMode === 'true' ? 'white':'primary'" :text-color="$store.state.settings.lightMode === 'true' ? 'blue':'primary'" />
                         <VolentixLiquidity v-if="vpoolsTestMode" />
                         <Oneinch v-else-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
                         <Swapeos v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
