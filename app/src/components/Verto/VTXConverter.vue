@@ -1,5 +1,5 @@
 <template>
-<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
   <div class="vtx-converter-wrapper">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="vtx-converter-wrapper--list open">
@@ -16,7 +16,7 @@
               color="primary"
               animated
               flat
-              :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+              :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
             >
               <q-step title="How many EOS"
                 :name="1"
@@ -51,7 +51,7 @@
                       :step="5"
                       color="orange"
                       :label-color="progColor"
-                      :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                      :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                       markers
                       label
                       class="--slider"
@@ -61,7 +61,7 @@
                     <q-input
                       type="number"
                       v-model="sendAmount"
-                      :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                      :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                       rounded
                       outlined
                       class="--input"

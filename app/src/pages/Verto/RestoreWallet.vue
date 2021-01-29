@@ -1,9 +1,9 @@
 <template>
-  <q-page class="column restore-wallet" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-white': $store.state.lightMode.lightMode === 'false'}">
+  <q-page class="column restore-wallet" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-white': $store.state.settings.lightMode === 'false'}">
         <div class="chain-tools-wrapper">
             <div class="standard-content">
                 <h2 class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" :to="returnto === 'profile' ? '/verto/profile' : '/login'" :text-color="$store.state.lightMode.lightMode === 'false' ? 'black' : 'white'" icon="keyboard_backspace" />
+                    <q-btn flat unelevated class="btn-align-left" :to="returnto === 'profile' ? '/verto/profile' : '/login'" :text-color="$store.state.settings.lightMode === 'false' ? 'black' : 'white'" icon="keyboard_backspace" />
                      {{$t('SettingsView.restore_config')}}
                 </h2>
                 <div class="privatekey_bg flex flex-center"><img src="statics/restore_config.svg" alt=""></div>
@@ -11,7 +11,7 @@
             <div class="chain-tools-wrapper--list open">
                 <div class="list-wrapper">
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                      <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
+                      <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
                         <q-step title="Select Config File" :name="1" prefix="1" :done="step > 1">
                             <div class="flex full-width file-select-wrapper flex-center q-pa-sm">
                               <FileSelect @input="checks" @keyup.enter="showThePasswordScreen" v-model="file" />
@@ -26,7 +26,7 @@
                           <q-card-section class="text-white text-center"  >
                             <div>
                                 <q-input
-                                  :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                                  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                                   v-model="addWallet.vertoPassword"
                                   @input="showSubmitKey"
                                   @keyup.enter="restoreConfig"

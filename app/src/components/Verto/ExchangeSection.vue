@@ -1,12 +1,12 @@
 <template>
-<div class="desktop-card-style make-vtx q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+<div class="desktop-card-style make-vtx q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <br>
     <div class="row flex justify-between q-pb-sm q-pt-sm">
         <div class="col col-8 flex items-center q-pl-md" style="min-height: 140px">
             <strong class="earn-exchange">Exchange </strong>
             <i class="step-2-lab step-1-lab  flex ">Step<b>1</b> Select coin to send</i>
             <div class="call-action">
-                <q-select :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                <q-select :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                     <template v-slot:option="scope">
                         <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                             <q-item-section avatar>
@@ -37,7 +37,7 @@
             </div>
             <i class="step-2-lab step-1-lab flex ">Step<b>2</b> Select coin to receive</i>
             <div class="call-action">
-                <q-select :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" separator rounded outlined class="select-input" use-input @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                <q-select :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input" use-input @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                     <template v-slot:option="scope">
                         <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                             <q-item-section avatar>

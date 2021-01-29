@@ -1,10 +1,10 @@
 <template>
-<q-card :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" class="q-pa-lg modal-dialog-wrapper" style="width: 500px; " :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+<q-card :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" class="q-pa-lg modal-dialog-wrapper" style="width: 500px; " :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <q-toolbar>
         <q-toolbar-title><span class="text-weight-bold q-pl-sm">Stake</span></q-toolbar-title>
-        <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="currentExrternalWallet" label="Account" />
+        <q-select :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="currentExrternalWallet" label="Account" />
 
-        <q-btn :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" flat round dense icon="close" v-close-popup />
+        <q-btn :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" flat round dense icon="close" v-close-popup />
     </q-toolbar>
     <q-card-section class="text-h6" v-if="!transactionStatus">
 
@@ -15,7 +15,7 @@
             </div>
             <div class="col col-6">
                 <!-- <q-input class="input-input" filled rounded outlined color="purple" value="0.1" suffix="MAX" /> -->
-                <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" min="0" :max="stakeData.token" @input="validateInput(); error = null" v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number" />
+                <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" min="0" :max="stakeData.token" @input="validateInput(); error = null" v-model="sendAmount" filled rounded outlined class="input-input" color="purple" type="number" />
             </div>
 
         </div>

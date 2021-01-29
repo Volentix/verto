@@ -1,12 +1,12 @@
 <template>
 <div>
-  <div class="tabs-menu--wrapper" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+  <div class="tabs-menu--wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
       <q-tabs
         v-model="tab"
         indicator-color="white"
-        :active-color="$store.state.lightMode.lightMode === 'false' ? 'indigo-12' : 'white'"
+        :active-color="$store.state.settings.lightMode === 'false' ? 'indigo-12' : 'white'"
         class="tabs-menu--wrapper-tabs"
-        :class="{'text-grey-6' : $store.state.lightMode.lightMode === 'false'}"
+        :class="{'text-grey-6' : $store.state.settings.lightMode === 'false'}"
       >
         <!-- <q-tab name="mails" icon="mail" label="Mails" /> -->
         <q-route-tab class="tabs-menu--wrapper-tab" to="/verto/dashboard" name="dashboard">

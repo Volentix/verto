@@ -1,6 +1,6 @@
 <template>
-  <q-page class="column" :class="{'text-black': $store.state.lightMode.lightMode === 'false', 'bg-white': $store.state.lightMode.lightMode === 'false','desktop-marg':screenSize > 1024, 'mobile-pad':screenSize < 1024, 'dark-theme': $store.state.lightMode.lightMode === 'true'}">
-    <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+  <q-page class="column" :class="{'text-black': $store.state.settings.lightMode === 'false', 'bg-white': $store.state.settings.lightMode === 'false','desktop-marg':screenSize > 1024, 'mobile-pad':screenSize < 1024, 'dark-theme': $store.state.settings.lightMode === 'true'}">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
           <div class="col col-md-3">
@@ -11,7 +11,7 @@
             </div>
           </div>
           <div class="col col-md-9">
-            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
               <div class="standard-content">
                 <h2 class="standard-content--title flex justify-start">Profile</h2>
                 <profile />

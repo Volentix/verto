@@ -18,7 +18,7 @@ class Wallets2Tokens {
     /* this.tableData.push({
       type: 'eos',
       chain: 'eos',
-      name: 'bethonio',
+      name: 'berthonythe2',
       key: 'c44f57a8dcec3d398b4234dd699891d4db9d7864c14cf1a29e021124f167581f'
     }) */
     if (store.state.settings.network === 'testnet') {

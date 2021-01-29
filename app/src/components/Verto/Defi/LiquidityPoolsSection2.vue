@@ -1,14 +1,14 @@
 <template>
-  <div class="desktop-card-style make-vtx" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+  <div class="desktop-card-style make-vtx" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <div class="exchange-container">
-      <div v-if="$store.state.lightMode.lightMode === 'true'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md" style="background: url('statics/bg3d3.png');">DeFi</div>
+      <div v-if="$store.state.settings.lightMode === 'true'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md" style="background: url('statics/bg3d3.png');">DeFi</div>
       <div v-else class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md lightmd" style="background: url('statics/bg3d3light.png');">DeFi</div>
       <div class="row items-end q-pa-md">
         <div class="col-6 p-desc">
           Earn exchange fees and pool rewards.
         </div>
         <div class="col-6 flex justify-end q-pb-sm">
-          <q-btn unelevated class="qbtn-start" color="black" @click="openDialog = true" :text-color="$store.state.lightMode.lightMode === 'false' ? 'black':'white'" label="Add liquidity" />
+          <q-btn unelevated class="qbtn-start" color="black" @click="openDialog = true" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" label="Add liquidity" />
         </div>
       </div>
     </div>
