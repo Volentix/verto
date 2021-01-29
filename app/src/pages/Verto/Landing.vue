@@ -1,5 +1,5 @@
 <template>
-<q-page class="column flex-center" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-white': $store.state.lightMode.lightMode === 'false'}">
+<q-page class="column flex-center" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-white': $store.state.settings.lightMode === 'false'}">
     <div class="landing" style="background: url('statics/landing_bg.png');">
         <transition enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
             <h2 class="landing--title">
@@ -10,7 +10,7 @@
         </transition>
         <div class="standard-content--body full-width">
             <div class="standard-content--body__form">
-                <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" ref="psswrd" v-model="password" @keyup.enter="login" @input="checkPassword" :error="passHasError" rounded outlined color="deep-purple-14" :type="isPwd ? 'password' : 'text'" label="Verto Password" hint="*Minimum of 8 characters">
+                <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="psswrd" v-model="password" @keyup.enter="login" @input="checkPassword" :error="passHasError" rounded outlined color="deep-purple-14" :type="isPwd ? 'password' : 'text'" label="Verto Password" hint="*Minimum of 8 characters">
                     <template v-slot:append>
                         <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                     </template>
@@ -36,7 +36,7 @@
         <span class="landing--bottom-bar"></span>
     </div>
     <q-dialog v-model="restoreFromWords">
-        <q-card class="q-pa-lg" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+        <q-card class="q-pa-lg" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
             <q-toolbar>
                 <q-avatar><img src="statics/icon.png"></q-avatar>
                 <q-toolbar-title><span class="text-weight-bold">Restore from</span> 24 Words</q-toolbar-title>

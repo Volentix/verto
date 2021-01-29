@@ -13,5 +13,6 @@ export default {
     depositCoin: null,
     destinationCoin: null,
     fromAmount: null
-  }
+  },
+  lightMode: false
 }

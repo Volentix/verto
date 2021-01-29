@@ -1,15 +1,15 @@
 <template>
   <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
-    <div v-if="getPassword" class="send-modal flex flex-center" :class="{'open' : openModal, 'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+    <div v-if="getPassword" class="send-modal flex flex-center" :class="{'open' : openModal, 'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
           <span class="text-h5 --amount">Private key password</span>
-          <q-btn :color="$store.state.lightMode.lightMode === 'true' ? 'black' : 'white'" rounded flat unelevated @click="hideModalFun()" class="close-btn" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white' : 'black'" label="+" />
+          <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black' : 'white'" rounded flat unelevated @click="hideModalFun()" class="close-btn" :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" label="+" />
         </div>
         <div class="send-modal__content--body column flex-center full-width">
           <q-input
             v-model="privateKeyPassword"
-            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
             rounded
             outlined
             class="full-width"
@@ -42,11 +42,11 @@
         </div>
       </div>
     </div>
-    <div class="send-modal flex flex-center" :class="{'open' : openModalProgress, 'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+    <div class="send-modal flex flex-center" :class="{'open' : openModalProgress, 'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
           <span class="text-h5 --amount">{{sendAmount + ' ' + currentAccount.type.toUpperCase()}}</span>
-          <q-btn :color="$store.state.lightMode.lightMode === 'true' ? 'black' : 'white'" rounded flat unelevated @click="hideModalFun()" class="close-btn" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white' : 'black'" label="+" />
+          <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black' : 'white'" rounded flat unelevated @click="hideModalFun()" class="close-btn" :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" label="+" />
         </div>
         <div class="send-modal__content--body column flex-center">
           <q-circular-progress
@@ -66,7 +66,7 @@
       </div>
     </div>
     <q-dialog v-model="transSuccessDialog">
-      <q-card class="q-pa-lg" style="width: 700px; max-width: 90vw;" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'">
+      <q-card class="q-pa-lg" style="width: 700px; max-width: 90vw;" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'">
         <q-toolbar v-if="transStatus != 'pending'">
           <q-avatar><q-icon name="done_all" size="md" color="green" /></q-avatar>
           <q-toolbar-title><span class="text-weight-bold">Success</span></q-toolbar-title>
@@ -75,7 +75,7 @@
         <q-card-section class="text-h6">
           <div class="text-h6 q-mb-md q-pl-sm">{{transStatus  &&  transStatus == 'pending' ? 'Transaction submitted' : 'Transaction done Successfully.'}}</div>
           <p class="text-body1" v-if=" transStatus == 'pending' "> Follow this link to check its status</p>
-          <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" readonly class="input-input" rounded outlined color="purple" v-model="transactionLink">
+          <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" readonly class="input-input" rounded outlined color="purple" v-model="transactionLink">
             <template v-slot:append>
               <div class="flex justify-end">
                 <q-btn flat unelevated @click="copyToClipboard(transactionLink , 'Transaction link')" text-color="grey" round class="btn-copy" icon="o_file_copy" />
@@ -90,7 +90,7 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="transErrorDialog">
-      <q-card :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" class="q-pa-lg">
+      <q-card :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" class="q-pa-lg">
         <q-toolbar>
           <q-avatar><q-icon name="error_outline" size="md" color="red" /></q-avatar>
           <q-toolbar-title><span class="text-weight-bold">Error</span></q-toolbar-title>
@@ -102,7 +102,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
           <div class="col col-md-3" v-if="!embedded">
@@ -113,7 +113,7 @@
             </div>
           </div>
           <div :class="[ embedded ? 'col-md-10 offset-md-1' : ' col-md-9' , 'col']">
-            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
               <div class="standard-content">
                 <h2 class="standard-content--title flex justify-start items-center">Send <img :src="currentToken.image" class="max40 q-ml-sm" alt=""></h2>
                 <div class="standard-content--body">
@@ -122,7 +122,7 @@
                       <div class="col col-8 q-pr-lg">
                         <span class="lab-input">From</span>
                         <q-select
-                            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                             separator
                             rounded
                             outlined
@@ -172,11 +172,11 @@
                       </div>
                       <div class="col col-4">
                         <span class="lab-input">Amount</span>
-                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" @input="sendAmount = sendAmount > currentAccount.amount ? currentAccount.amount : sendAmount ; checkGas();" :light="$store.state.lightMode.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
+                        <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = sendAmount > currentAccount.amount ? currentAccount.amount : sendAmount ; checkGas();" :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                           <template v-slot:append>
                             <div class="flex justify-end">
                               <span class="tokenID">{{ currentToken.type }}</span>
-                              <q-btn :color="$store.state.lightMode.lightMode === 'true' ? 'black' : 'white'" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat :text-color="$store.state.lightMode.lightMode === 'true' ? 'white' : 'black'" label="Max" />
+                              <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black' : 'white'" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" label="Max" />
                             </div>
                           </template>
                         </q-input>
@@ -186,7 +186,7 @@
                       <div class="col col-12">
                         <span class="lab-input">To</span>
                         <q-input
-                          :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                          :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                           ref="sendTo"
                           v-model="sendTo"
                           @input="checkTo()"
@@ -207,7 +207,7 @@
                       </div>
                       <div class="col col-12">
                         <span v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" class="lab-input">Memo</span>
-                        <q-input v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+                        <q-input v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
                       </div>
                     </div>
                   </div>
@@ -238,11 +238,11 @@
         </div>
       </div>
       <div v-else class="standard-content mobile-version">
-        <h2 class="standard-content--title flex justify-center"><q-btn flat unelevated class="btn-align-left" :to="goBack" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'" icon="keyboard_backspace" /> Send </h2>
+        <h2 class="standard-content--title flex justify-center"><q-btn flat unelevated class="btn-align-left" :to="goBack" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="keyboard_backspace" /> Send </h2>
         <div class="standard-content--body">
           <div class="standard-content--body__form">
             <span class="lab-input">From</span>
-            <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? 'Current ' + currentAccount.type.toUpperCase() + ' Address' : 'Current ' + currentAccount.type.toUpperCase() + ' Account'">
+            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? 'Current ' + currentAccount.type.toUpperCase() + ' Address' : 'Current ' + currentAccount.type.toUpperCase() + ' Account'">
               <template v-slot:append>
                 <div class="flex justify-end">
                   <q-btn flat unelevated text-color="grey" @click="copyToClipboard(from , 'Address')" round class="btn-copy" icon="o_file_copy" />
@@ -250,18 +250,18 @@
               </template>
             </q-input>
             <span class="lab-input">Amount</span>
-            <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
+            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
               <template v-slot:append>
                 <div class="flex justify-end">
                   <span class="tokenID">{{ params.tokenID }}</span>
-                  <q-btn :color="$store.state.lightMode.lightMode === 'true' ? 'black' : 'white'" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat text-color="black" label="Max" />
+                  <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black' : 'white'" rounded class="mt-5" @click="getMaxBalance()" outlined unelevated flat text-color="black" label="Max" />
                 </div>
               </template>
             </q-input>
 
             <span class="lab-input">To</span>
             <q-input
-              :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+              :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
               ref="sendTo"
               v-model="sendTo"
               @input="checkTo()"
@@ -281,7 +281,7 @@
             </q-input>
 
             <span v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" class="lab-input">Memo</span>
-            <q-input v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+            <q-input v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
 
           </div>
           <br>

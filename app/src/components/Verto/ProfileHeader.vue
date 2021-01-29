@@ -1,10 +1,10 @@
 <template>
-  <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+  <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <div class="send-modal flex flex-center"  :class="{'open' : openModal}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
           <span class="text-h5 --amount">{{ currentAccount.name.toUpperCase().replace('- HD', '') }}</span>
-          <q-btn color="white" rounded flat unelevated @click="openModal = false" class="close-btn" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'" label="+" />
+          <q-btn color="white" rounded flat unelevated @click="openModal = false" class="close-btn" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" label="+" />
         </div>
         <div class="send-modal__content--body qrcode-wrapper column flex-center">
           <qrcode :value="currentAccount.key" :options="{size: 200}"></qrcode>

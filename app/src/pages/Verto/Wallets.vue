@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column" :class="{'text-black bg-grey-12':$store.state.lightMode.lightMode === 'false','':$store.state.lightMode.lightMode === 'true','dark-theme': $store.state.lightMode.lightMode === 'true'}">
+  <q-page class="column" :class="{'text-black bg-grey-12':$store.state.settings.lightMode === 'false','':$store.state.settings.lightMode === 'true','dark-theme': $store.state.settings.lightMode === 'true'}">
     <profile-header version="type1" class="marg" :showWallets="true" :isWalletsPage="false" :isWalletDetail="true" />
     <wallets :showWallets="true" :isWalletsPage="false" :isWalletDetail="true" />
   </q-page>

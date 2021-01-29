@@ -10,6 +10,7 @@ module.exports = function (ctx) {
       'configManager',
       'documentationManger',
       'i18n',
+      'eventBus',
       'vuelidate'
     ],
 

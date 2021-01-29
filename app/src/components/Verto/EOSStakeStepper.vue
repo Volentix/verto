@@ -1,5 +1,5 @@
 <template>
-<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <div class="chain-tools-wrapper">
         <!-- <q-toggle v-model="active" label="Active" /> -->
         <div class="chain-tools-wrapper--list open">
@@ -10,11 +10,11 @@
                     <q-tab-panels v-model="tab" animated>
                         <q-tab-panel name="stake">
                             <div v-if="step >= 0" class="">
-                                <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step" vertical color="primary" animated flat>
+                                <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" vertical color="primary" animated flat>
 
                                     <q-step style="max-width:550px" :title="`Set  ${params.tokenID.toUpperCase()} amount `" :name="1" prefix="1" :done="step > 1">
                                         <p class="text-body1"> Staking means you are locking down your tokens to give you access to resources that you need to perform actions on the blockchain</p>
-                                        <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input q-mb-md q-mt-md" v-model="currentAccount" use-input :options="tableData">
+                                        <q-select :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator rounded outlined class="select-input q-mb-md q-mt-md" v-model="currentAccount" use-input :options="tableData">
                                             <template v-slot:option="scope">
                                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                     <q-item-section avatar>
@@ -77,7 +77,7 @@
                                                     <q-tabs
                                                         v-model="action"
                                                         dense
-                                                        :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                                                        :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                                                         class="text-grey q-mt-md"
                                                         active-color="primary"
                                                         indicator-color="primary"
@@ -92,10 +92,10 @@
                                                         <q-separator />
 
                                                         <q-tab-panels v-model="action" animated>
-                                                        <q-tab-panel :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" name="staking">
+                                                        <q-tab-panel :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" name="staking">
                                                             <div class="full-width">
-                                                                    <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="'' "  prefix="EOS" rounded outlined class="--input" @input="changeAmount()" />
-                                                                <q-input v-if="false" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="sendAmountNet" type="number" :suffix="'NET' "  prefix="EOS" rounded outlined class="--input" @input="changeAmount()" />
+                                                                    <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="'' "  prefix="EOS" rounded outlined class="--input" @input="changeAmount()" />
+                                                                <q-input v-if="false" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmountNet" type="number" :suffix="'NET' "  prefix="EOS" rounded outlined class="--input" @input="changeAmount()" />
                                                                 <br>
                                                                  <span class="--amount row text-h4"> {{ sendAmount }} {{ params.tokenID.toUpperCase() }}</span>
                                                                <span v-if="false" class="--amount row text-h4"> {{ sendAmountNet }} {{ params.tokenID.toUpperCase() }} (NET)</span>
@@ -104,8 +104,8 @@
 
                                                         <q-tab-panel name="unstaking">
                                                             <div class="full-width">
-                                                               <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="'' "  prefix="EOS" rounded outlined class="--input" @input="changeAmount()" />
-                                                                <q-input v-if="false" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="sendAmountNet" type="number" :suffix="'NET' "  prefix="EOS" rounded outlined class="--input" @input="sendAmountNet > currentAccount.amount ? sendAmountNet = currentAccount.amount : '' ; " />
+                                                               <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="'' "  prefix="EOS" rounded outlined class="--input" @input="changeAmount()" />
+                                                                <q-input v-if="false" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmountNet" type="number" :suffix="'NET' "  prefix="EOS" rounded outlined class="--input" @input="sendAmountNet > currentAccount.amount ? sendAmountNet = currentAccount.amount : '' ; " />
                                                                 <br>
                                                             <span class="--title row text-h6"> Amount to unstake </span>
                                                             <span class="--amount row text-h4"> {{ sendAmount }} {{ params.tokenID.toUpperCase() }} (CPU)</span>

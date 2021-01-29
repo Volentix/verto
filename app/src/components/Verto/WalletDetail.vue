@@ -1,5 +1,5 @@
 <template>
-<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
   <div class="wallets-wrapper padtop" style="padding-bottom: 50px">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="wallets-wrapper--list open" :class="{'opacity' : currentAccount.hidden}">
@@ -52,7 +52,7 @@
       </q-list>
     </div>
     <q-dialog v-model="alertSecurity">
-      <q-card style="width: 100%; max-width: 400px" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+      <q-card style="width: 100%; max-width: 400px" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
         <q-card-section>
           <div class="icon-alert flex flex-center">
             <img src="statics/alert.svg" alt="">

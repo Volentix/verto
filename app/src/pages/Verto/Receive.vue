@@ -1,6 +1,6 @@
 <template>
   <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
-    <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
           <div class="col col-md-3">
@@ -11,7 +11,7 @@
             </div>
           </div>
           <div class="col col-md-9">
-            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
               <div class="standard-content">
                 <h2 class="standard-content--title flex">Receive</h2>
                 <div class="standard-content--body">
@@ -20,7 +20,7 @@
                       <div class="col col-6 q-pr-md">
                         <span class="lab-input">To <b class="verto-id">{{existingCruxID}}</b></span>
                         <q-select
-                            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                             separator
                             rounded
                             outlined
@@ -74,7 +74,7 @@
                         <div class="qrcode-wrapper">
                           <div class="wallet-address flex justify-between">
                             <span class="title">Wallet address</span>
-                            <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white' : 'grey'" icon="o_file_copy" />
+                            <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy" :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'grey'" icon="o_file_copy" />
                           </div>
                           <span class="qrcode-widget">
                             <qrcode dark :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
@@ -98,14 +98,14 @@
       </div>
       <div v-else class="standard-content mobile-version">
         <h2 class="standard-content--title flex justify-center">
-          <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'" icon="keyboard_backspace" />
+          <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="keyboard_backspace" />
           Receive
         </h2>
         <div class="standard-content--body">
           <div class="standard-content--body__form">
             <span class="lab-input">To</span>
             <q-select
-                :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                 separator
                 rounded
                 outlined
@@ -146,12 +146,12 @@
               </template>
             </q-select>
             <span class="lab-input text-grey">Or Via Verto ID (Soon)</span>
-            <!-- <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="vertoID" class="input-input" rounded readonly outlined color="purple" type="text"/> -->
+            <!-- <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="vertoID" class="input-input" rounded readonly outlined color="purple" type="text"/> -->
             <br>
             <div class="qrcode-wrapper">
               <div class="wallet-address flex justify-between">
                 <span class="title">Wallet address</span>
-                <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy"  :text-color="$store.state.lightMode.lightMode === 'true' ? 'white' : 'grey'" icon="o_file_copy" />
+                <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy"  :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'grey'" icon="o_file_copy" />
               </div>
               <span class="qrcode-widget">
                 <qrcode :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
@@ -166,7 +166,7 @@
       </div>
     </div>
     <q-dialog v-model="showShareWrapper">
-      <q-card class="q-pa-lg" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"  :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+      <q-card class="q-pa-lg" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"  :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
         <q-toolbar>
           <q-avatar><img src="statics/icon.png"></q-avatar>
           <q-toolbar-title><span class="text-weight-bold">Share</span> Public Key</q-toolbar-title>
@@ -282,10 +282,10 @@
                 </social-sharing>
               </span>
               <div id="copy-btn flex">
-                <q-btn :color="$store.state.lightMode.lightMode === 'true' ? 'black':'white'" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'"  @click="copyToClipboard(exchangeAddress , 'Link')" class="copy-link-button" flat label="Copy link">
+                <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'"  @click="copyToClipboard(exchangeAddress , 'Link')" class="copy-link-button" flat label="Copy link">
                   <img src="/statics/social/copy.svg" alt="">
                 </q-btn>
-                <q-btn :color="$store.state.lightMode.lightMode === 'true' ? 'black':'white'" :text-color="$store.state.lightMode.lightMode === 'true' ? 'white':'black'"  @click="copyToClipboard(existingCruxID , 'Link')" class="copy-link-button q-ml-sm" flat label="Copy VERTO ID">
+                <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'"  @click="copyToClipboard(existingCruxID , 'Link')" class="copy-link-button q-ml-sm" flat label="Copy VERTO ID">
                   <img src="/statics/social/copy.svg" alt="">
                 </q-btn>
               </div>
