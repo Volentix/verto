@@ -2,35 +2,20 @@
   <div>
     <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
       <!-- :grid="$q.screen.xs" -->
-      <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :pagination="initialPagination" :loading="!$store.state.investment.pools.length" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.lightMode.lightMode === 'false'}">
+      <q-table :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" :pagination="initialPagination" :loading="!assets.length" title="Explore Opportunities" :data="assets" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.lightMode.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
-              <span class="imgs q-mr-lg" v-if="props.row.icons.length">
-                <img v-for="(icon, index) in props.row.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
+              <span class="imgs q-mr-lg" >
+                <img :src="props.row.icon" alt="">
               </span>
               <span class="column pairs">
-                <span class="pair">{{props.row.poolName}}</span>
-                <span class="value">{{props.row.platform}}</span>
+                <span class="pair">{{props.row.type.toUpperCase()}}</span>
               </span>
             </div>
           </q-td>
         </template>
-        <template v-slot:body-cell-Liquidity="props">
-          <q-td :props="props">
-            <div class="column items-start justify-center q-pl-md">
-              <q-btn v-if="screenSize <= 1024" unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom qbtn-custom2 q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="grey" label="Add liquidity" />
-              <span class="value">{{props.value}}</span>
-            </div>
-          </q-td>
-        </template>
-        <template v-slot:body-cell-action="props">
-          <q-td :props="props" class="body-table-col">
-            <div v-if="screenSize > 1024" class="col-2 flex justify-end">
-              <q-btn unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom q-pl-sm q-pr-sm q-mr-sm text-bold" color="black" text-color="white" label="Add liquidity" />
-            </div>
-          </q-td>
-        </template>
+
         <template v-slot:top-right>
           <q-input borderless dense :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" filled debounce="300" v-model="filter" placeholder="Search">
             <template v-slot:append>
@@ -47,9 +32,6 @@
 import {
   QScrollArea
 } from 'quasar'
-import {
-  mapState
-} from 'vuex'
 export default {
   components: {
     QScrollArea
@@ -60,6 +42,7 @@ export default {
       initialPagination: {
         rowsPerPage: 10
       },
+      assets: [],
       poolsData: [],
       screenSize: 0,
       filter: '',
@@ -75,33 +58,26 @@ export default {
       {
         name: 'name',
         required: true,
-        label: 'Available pools',
+        label: 'Asset',
         align: 'left',
         field: row => row,
         format: val => `${val}`,
         sortable: true
       },
       {
-        name: 'Liquidity',
-        align: 'center',
-        label: 'Liquidity',
-        field: 'liquidity',
-        sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : '$' + parseInt(val).toLocaleString()}`
+        name: 'usd',
+        align: 'left',
+        label: 'USD',
+        field: 'usd',
+        format: val => `$${val}`,
+        sortable: true
       },
       {
-        name: 'volume',
-        label: 'Volume(24h)',
-        field: 'volume',
-        sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : '$' + parseInt(val).toLocaleString()}`
-      },
-      {
-        name: 'fees',
-        label: 'Fees(24h)',
-        field: 'fees',
-        sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : '$' + parseInt(val).toLocaleString()}`
+        name: 'amount',
+        align: 'left',
+        label: 'Amount',
+        field: 'amount',
+        sortable: true
       },
       {
         name: 'action',
@@ -112,17 +88,32 @@ export default {
       openDialog: false
     }
   },
-  computed: {
-    ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools'])
-  },
   created () {
     this.getWindowWidth()
-    if (this.rowsPerPage) { this.initialPagination.rowsPerPage = this.rowsPerPage }
-    if (!this.$store.state.investment.zapperTokens.length) {
-      this.$store.dispatch('investment/getZapperTokens')
+    this.initTable()
+  },
+  watch: {
+    '$store.state.wallets.tokens': function () {
+      this.initTable()
     }
   },
   methods: {
+    initTable () {
+      this.assets = []
+      this.$store.state.wallets.tokens.forEach((token, i) => {
+        if (!isNaN(token.amount) && token.amount !== 0) {
+          if (this.assets.find(o => o.type === token.type)) {
+            let index = this.assets.findIndex(o => o.type === token.type)
+            this.assets[index].amount += this.assets[index].amount ? 0 : token.amount
+            this.assets[index].usd += isNaN(token.usd) ? '-' : token.usd
+          } else {
+            token.index = this.assets.length
+            this.assets.push(token)
+          }
+          this.assets.sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))
+        }
+      })
+    },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
       console.log('this.screenSize', this.screenSize)
