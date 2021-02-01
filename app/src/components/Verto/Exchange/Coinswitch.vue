@@ -25,7 +25,7 @@
                                                         <div class="col  col-4 offset-md-2 q-pr-none"><q-img style="width:25px;" src="https://www.joypixels.com/images/jp-home/fire.gif" /> Get your FREE EOS account !
                                                          <p class="text-body1 q-pl-lg">When getting VTX</p>
                                                               </div>
-                                                        <div class="col col-4 red text-right text-red"> <q-input counter maxlength="12" :disable="pStep != 1 || !destinationCoin || destinationCoin.value != 'vtx'" rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5 bg-white" label="Enter account name" v-model="freeeAccountName" hint="Choose a 12 Letter and/or Number (1-5)" :error="inError" :error-message="errorMessage" @input="checkName" :rules="[ val => val && val.trim().length === 12  || 'Account name should be 12 characters']"/>
+                                                        <div class="col col-4 red text-right text-red"> <q-input counter maxlength="12" :disable="pStep != 1 || !destinationCoin || destinationCoin.value != 'vtx'" rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5 bg-white" label="Enter account name" v-model="freeeAccountName" hint="Choose a 12 Letter and/or Number (1-5)" :error="inError" :error-message="ErrorMessage" @input="checkName" :rules="[ val => val && val.trim().length === 12  || 'Account name should be 12 characters']"/>
                                                    </div>
                                                     <p v-if="AccountToBeCreated" class="text-green col-12 text-center  text-body2">Complete the transaction to get your new EOS account: <span class="text-black">{{freeeAccountName}}</span></p>
 
@@ -1416,7 +1416,6 @@ export default {
       privateKeyPassword: null,
       showTXComponent: false,
       invalidPrivateKeyPassword: false,
-      ErrorMessage: '',
       isPwd: true,
       pStep: 1,
       freeeAccountName: '',
@@ -1501,7 +1500,8 @@ export default {
       vtxEosPrice: null,
       rateDataVtx: null,
       rateDataEos: null,
-      inError: false
+      inError: false,
+      ErrorMessage: ''
     }
   },
   updated () {},
@@ -1964,7 +1964,7 @@ export default {
           try {
             await eos.getAccount(this.freeeAccountName)
             this.inError = true
-            this.errorMessage = 'Account Name Taken'
+            this.ErrorMessage = 'Account Name Taken'
           } catch (error) {
             this.inError = false
             this.AccountToBeCreated = true
@@ -1974,11 +1974,11 @@ export default {
           }
         } else {
           this.inError = true
-          this.errorMessage = 'Invalid Account Name'
+          this.ErrorMessage = 'Invalid Account Name'
         }
       } else {
         this.inError = true
-        this.errorMessage = 'You need exactly 12 characters'
+        this.ErrorMessage = 'You need exactly 12 characters'
       }
     },
     createFreeEOSAccount (accountName, eosKey, fromkey, fromSymbol) {
