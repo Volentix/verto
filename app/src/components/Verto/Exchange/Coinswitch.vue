@@ -1917,6 +1917,7 @@ export default {
       // deal with precision
       this.depositQuantity = isNaN(this.depositQuantity) ? 0 : this.depositQuantity
       this.destinationQuantity = (+this.depositQuantity * +this.rateData.rate) - +this.rateData.minerFee
+      this.destinationQuantity = this.destinationQuantity <= 0 ? 0 : this.destinationQuantity
       this.lastChangedValue = 'deposit'
     },
     quantityFromDestination () {
