@@ -1501,8 +1501,7 @@ export default {
       vtxEosPrice: null,
       rateDataVtx: null,
       rateDataEos: null,
-      inError: false,
-      errorMessage: false
+      inError: false
     }
   },
   updated () {},
@@ -2220,7 +2219,7 @@ export default {
       if (self.destinationCoin.value === 'vtx') {
         this.vtxEosPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
       }
-      this.ErrorMessage = null
+      this.ErrorMessage = ''
       this.$axios.post(url + '/v2/rate', {
         depositCoin: self.depositCoin.value,
         destinationCoin: self.destinationCoin.value === 'vtx' ? 'eos' : self.destinationCoin.value
