@@ -14,28 +14,6 @@
         <q-bar>
           <q-space />
 
-          <q-btn
-            dense
-            flat
-            icon="minimize"
-            @click="maximizedToggle = false"
-            :disable="!maximizedToggle"
-          >
-            <q-tooltip v-if="maximizedToggle" content-class="bg-white text-primary"
-              >Minimize</q-tooltip
-            >
-          </q-btn>
-          <q-btn
-            dense
-            flat
-            icon="crop_square"
-            @click="maximizedToggle = true"
-            :disable="maximizedToggle"
-          >
-            <q-tooltip v-if="!maximizedToggle" content-class="bg-white text-primary"
-              >Maximize</q-tooltip
-            >
-          </q-btn>
           <q-btn @click="closeWizard()" dense flat icon="close" v-close-popup>
             <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
           </q-btn>
@@ -172,8 +150,9 @@
         </q-card-section>
          <q-card-section :class="{'bg-grey-12':  $store.state.settings.lightMode === 'false'}">
           <div class="text-h6 q-pb-md">Support</div>
-
+           <a href="https://t.me/Volentix" target="_blank">
           <q-btn flat label="Ask the community" icon="groups" />
+          </a>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -254,7 +233,7 @@ export default {
       dialog: true,
       accountDropdown: false,
       active: true,
-      maximizedToggle: true,
+      maximizedToggle: false,
       accounts: [],
       searchAction: null,
       currentToken: null,
