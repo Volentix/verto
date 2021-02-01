@@ -21,6 +21,16 @@
                                             <div v-if="pStep === 1" class="prototype">
                                                 <div class="head">Market Order</div>
                                                 <div class="you-pay">
+                                                    <div class=" row shadow-1 rounded-borders q-pb-md q-pt-lg q-mb-md" style="background: #f6f6f9; border: 1px solid #3c40732e;">
+                                                        <div class="col  col-4 offset-md-2 q-pr-none"><q-img style="width:25px;" src="https://www.joypixels.com/images/jp-home/fire.gif" /> Get your FREE EOS account !
+                                                         <p class="text-body1 q-pl-lg">When getting VTX</p>
+                                                              </div>
+                                                        <div class="col col-4 red text-right text-red"> <q-input counter :disable="pStep != 1 || !destinationCoin || destinationCoin.value != 'vtx'" rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5 bg-white" label="Enter account name" v-model="freeeAccountName" hint="Choose a 12 Letter and/or Number (1-5)" :error="inError" :error-message="errorMessage" @input="checkName" :rules="[ val => val && val.trim().length === 12  || 'Account name should be 12 characters']"/>
+                                                   </div>
+                                                    <p v-if="AccountToBeCreated" class="text-green col-12 text-center  text-body2">Complete the transaction to get your new EOS account: <span class="text-black">{{freeeAccountName}}</span></p>
+
+                                                    </div>
+
                                                     <div class="you-pay-head row items-center">
                                                         <div class="col col-6">You Pay</div>
                                                         <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
@@ -106,7 +116,7 @@
                                                         </div>
 
                                                         <div class="col col-8 offset-1">
-                                                            <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="quantityFromDeposit()" v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
+                                                            <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="quantityFromDeposit()" v-model="depositQuantity"  :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
                                                                 <div class="flex justify-end items-center" style="width: 60px">
                                                                     <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
                                                                 </div>
@@ -175,7 +185,7 @@
                                                             </span>
                                                         </div>
                                                         <div class="col col-8 offset-1">
-                                                            <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5" ref="destinationQuantity" v-model="destinationQuantity" @input="quantityFromDestination()" :disabled="!rateData" :loading="!rateData" type="number" :rules="[ val => val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']">
+                                                            <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5" ref="destinationQuantity" v-model="destinationQuantity" @input="quantityFromDestination()" :disabled="!rateData" :loading="!rateData"  :rules="[ val => val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']">
                                                                 <div class="flex justify-end items-center" style="width: 60px">
                                                                     <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
                                                                 </div>
@@ -258,7 +268,7 @@
                                                     </div>
                                                     <div class="you-receive-body row items-center">
                                                         <div class="col col-12">
-                                                            <q-select v-show="toCoin === null || (toCoin.type !== 'new_public_key')"  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator outlined class="select-input" v-model="toCoin" @input="updateCoinName()" use-input :options="optionsTo">
+                                                            <q-select :disable="AccountToBeCreated" v-show="toCoin === null || (toCoin.type !== 'new_public_key')"  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator outlined class="select-input" v-model="toCoin" @input="updateCoinName()" use-input :options="optionsTo">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
@@ -767,7 +777,7 @@
                                                     </div>
 
                                                     <div class="col col-8 offset-1">
-                                                        <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="quantityFromDeposit()" v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
+                                                        <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="quantityFromDeposit()" v-model="depositQuantity"  :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
                                                             <div class="flex justify-end items-center" style="width: 60px">
                                                                 <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
                                                             </div>
@@ -789,7 +799,7 @@
                                                         <!-- 1 ETH = 374.705 USDT -->
                                                         <span>{{ '1 ' + fromCoinType.toUpperCase() + '&nbsp;= &nbsp;' + rateData.rate.toFixed(5) + ' ' + toCoinType.toUpperCase() }}</span>
                                                         <div class="info_rate">
-                                                            <span class="i-btn">i
+                                                            <span class="i-btn">
                                                                 <!-- <img src="statics/theme1/rate-info.png" class="rate-info-prototype" alt=""> -->
                                                                 <div class="info_rate_wrapper text-left">
                                                                     <div class="title">We got you the best price</div>
@@ -835,18 +845,7 @@
                                                             </q-select>
                                                         </span>
                                                     </div>
-                                                    <div class="col col-8 offset-1">
-                                                        <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5" ref="destinationQuantity" v-model="destinationQuantity" @input="quantityFromDestination()" :disabled="!rateData" :loading="!rateData" type="number" :rules="[ val => val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']">
-                                                            <div class="flex justify-end items-center" style="width: 60px">
-                                                                <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
-                                                            </div>
-                                                            <template v-slot:hint>
-                                                            <span v-if="rateData">
-                                                            Max: {{rateData.limitMaxDepositCoin}}
-                                                            </span>
-                                                            </template>
-                                                        </q-input>
-                                                    </div>
+
                                                 </div>
 
                                                 <q-btn unelevated :disable="depositQuantity == 0 || depositQuantity < rateData.limitMinDepositCoin || destinationQuantity > rateData.limitMaxDestinationCoin" @click="pStep = 2" color="light-grey" text-color="black" label="Choose Accounts" class="text-capitalize chose_accounts full-width" />
@@ -1411,14 +1410,16 @@ export default {
   data () {
     return {
       openModal: false,
+      AccountToBeCreated: false,
       getPassword: false,
       privateKey: false,
       privateKeyPassword: null,
       showTXComponent: false,
       invalidPrivateKeyPassword: false,
-      ErrorMessage: false,
+      ErrorMessage: '',
       isPwd: true,
       pStep: 1,
+      freeeAccountName: '',
       fetchingRate: false,
       model: null,
       receiveCoin: 'ETH',
@@ -1427,7 +1428,7 @@ export default {
       disclaimerCheck: false,
       showDisclaimerWrapper: false,
       fromCoin: null,
-      fromCoinAmount: 0,
+      fromCoinAmount: 1,
       toCoinAmount: 0,
       fromCoinType: 'BTC',
       toCoinType: 'ETH',
@@ -1459,7 +1460,7 @@ export default {
         'value': 'btc',
         'image': 'https://files.coinswitch.co/public/coins/btc.png'
       },
-      depositQuantity: 0,
+      depositQuantity: 0.1,
       depositCoinOptions: null,
       depositCoinUnfilter: null,
       destinationCoin: {
@@ -1499,7 +1500,9 @@ export default {
       destinationCoinAmount: null,
       vtxEosPrice: null,
       rateDataVtx: null,
-      rateDataEos: null
+      rateDataEos: null,
+      inError: false,
+      errorMessage: false
     }
   },
   updated () {},
@@ -1726,7 +1729,7 @@ export default {
     },
     destinationAddressLabel () {
       if (this.destinationCoin != null) {
-        return 'Address to receive new ' + typeUpper(this.destinationCoin.value)
+        return 'Address/account to receive new ' + typeUpper(this.destinationCoin.value)
       } else {
         return 'Address to receive new coin'
       }
@@ -1942,14 +1945,59 @@ export default {
           }, 30000)
         } else if (self.status === 'complete' && self.destinationCoin.value === 'vtx') {
           self.destinationCoinAmount = Math.trunc(result.data.data.destinationCoinAmount * 10000) / 10000
-          self.orderVTX()
+          if (self.AccountToBeCreated) {
+            self.createFreeEOSAccount(self.freeeAccountName, self.toCoin.key, self.fromCoin.key)
+          } else {
+            self.orderVTX()
+          }
         }
       }
       )
     },
+    async checkName () {
+      this.inError = false
+      this.AccountToBeCreated = false
+      if (this.freeeAccountName.length === 12) {
+        if (/(^[a-z1-5]{1}([a-z1-5.]{0,10}[a-z1-5])?$)/g.test(this.freeeAccountName)) {
+          this.showNextButtonToPassword = true
+          try {
+            await eos.getAccount(this.freeeAccountName)
+            this.inError = true
+            this.errorMessage = 'Account Name Taken'
+          } catch (error) {
+            this.inError = false
+            this.AccountToBeCreated = true
+            this.toCoin = this.$store.state.wallets.tokens.find(o => o.type === 'verto' && o.chain === 'eos')
+            this.toCoin.name = this.toCoin.label = this.toCoin.value = this.freeeAccountName
+            this.toCoin.image = 'https://files.coinswitch.co/public/coins/eos.png'
+          }
+        } else {
+          this.inError = true
+          this.errorMessage = 'Invalid Account Name'
+        }
+      } else {
+        this.inError = true
+        this.errorMessage = 'You need exactly 12 characters'
+      }
+    },
+    createFreeEOSAccount (accountName, eosKey, fromkey, fromSymbol) {
+      let url = 'https://cpu.volentix.io/api/eos/signup'
+      this.$axios.post(url, {
+        name: accountName,
+        eosKey: eosKey,
+        fromkey: fromkey,
+        fromSymbol: fromSymbol
+      }).then(function (result) {
+        if (result.data.transaction_id) {
+          self.orderVTX()
+        }
+      })
+    },
     async orderVTX () {
       // check balance then...
       // let eosBal = Lib.balance('eos', this.toCoin.value, 'eos')
+
+      // Create free EOS account
       let eosBal = (await eos.getCurrencyBalanceP(this.toCoin.value)).toString().split(' ')[0]
 
       if (+eosBal < +this.destinationCoinAmount) {
