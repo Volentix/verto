@@ -150,8 +150,9 @@
         </q-card-section>
          <q-card-section :class="{'bg-grey-12':  $store.state.settings.lightMode === 'false'}">
           <div class="text-h6 q-pb-md">Support</div>
-
+           <a href="https://t.me/Volentix" target="_blank">
           <q-btn flat label="Ask the community" icon="groups" />
+          </a>
         </q-card-section>
       </q-card>
     </q-dialog>
