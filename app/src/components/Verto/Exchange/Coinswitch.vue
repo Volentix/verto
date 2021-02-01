@@ -198,7 +198,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="text-body1 text-red" v-if="ErrorMessage">{{ ErrorMessage }}</div>
-                                                    <q-btn unelevated :disable="depositQuantity == 0 || depositQuantity < rateData.limitMinDepositCoin || destinationQuantity > rateData.limitMaxDestinationCoin" @click="pStep = 2" color="light-grey" text-color="black" label="Choose Accounts" class="text-capitalize chose_accounts full-width" />
+                                                    <q-btn unelevated :disable="depositQuantity == 0 || rateData && depositQuantity < rateData.limitMinDepositCoin || rateData && destinationQuantity > rateData.limitMaxDestinationCoin" @click="pStep = 2" color="light-grey" text-color="black" label="Choose Accounts" class="text-capitalize chose_accounts full-width" />
                                                 </div>
                                             </div>
                                             <div v-if="pStep === 2" class="prototype">
