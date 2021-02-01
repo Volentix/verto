@@ -7,7 +7,7 @@
             <div class="col col-md-3">
                 <div class="wallets-container">
                     <profile-header :isMobile="false" class="marg" version="type2222" />
-                    <wallets data-title="Interact with your account"  data-intro="Click on an account/token to see all actions you can perform. Click SETP to associate EOS account(s) to account names" :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+                    <wallets data-title="Interact with your account"  data-intro="Click on an account/token to see all actions you can perform. Click SETUP to associate EOS account(s) to account names" :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                 </div>
             </div>
             <div class="col col-md-9 q-pr-md">
