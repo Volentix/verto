@@ -62,7 +62,6 @@
                 </div>
             </div>
         </div>
-
     </div>
     <div class="mobile-version" v-else>
         <profile-header class="marg" version="type2222" />

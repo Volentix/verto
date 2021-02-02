@@ -1682,6 +1682,7 @@ export default {
     .q-item.q-item-type{
       border: 1px solid rgba(#CCC, .3);
       border-radius: 50px;
+      height: 50px;
       &.bg-white{
         border: 1px solid rgba(purple, .4);
       }

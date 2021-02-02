@@ -8,24 +8,27 @@
         <div class="menu-left-wrapper"></div>
         <q-page-sticky position="bottom-right"  :offset="fabPos">
         <q-fab
-        v-model="fab"
-        @click="onClick()"
-        label="Help Wizard"
-        label-position="right"
-        color="purple"
-        icon="help_outline"
-        direction="up"
-      >
-
-      </q-fab>
+          v-model="fab"
+          @click="onClick()"
+          label="Help Wizard"
+          label-position="right"
+          color="purple"
+          icon="help_outline"
+          class="help-wizard-btn"
+          direction="up"
+        />
        </q-page-sticky>
       </div>
       <tabs-menu v-else class="mobile-version tabs-menu-component" />
       <!-- mobile-only  -->
-   <GuideWizard :key="reRender" v-if="showWizard" class="wizard"/>
-      <q-page-container>
-        <router-view />
-      </q-page-container>
+      <GuideWizard :key="reRender" v-if="showWizard" class="wizard"/>
+      <div class="q-pr-xs" style="background: #E7E8E8;">
+        <q-scroll-area :visible="true" style="height: 100vh">
+          <q-page-container>
+            <router-view />
+          </q-page-container>
+        </q-scroll-area>
+      </div>
     </div>
   </q-layout>
 </template>
@@ -36,9 +39,10 @@ import TopMenu from '../components/Verto/TopMenu'
 import LeftMenu from '../components/Verto/LeftMenu'
 import { osName } from 'mobile-device-detect'
 import GuideWizard from '../components/Verto/GuideWizard'
+import { QScrollArea } from 'quasar'
 export default {
   name: 'Intro',
-  components: { TabsMenu, TopMenu, LeftMenu, GuideWizard },
+  components: { TabsMenu, TopMenu, LeftMenu, GuideWizard, QScrollArea },
   data () {
     return {
       screenSize: 0,
@@ -76,6 +80,18 @@ export default {
   //   margin-left: auto;
   //   margin-right: auto;
   // }
+  .help-wizard-btn{
+    height: 35px;
+    margin-bottom: -50px;
+    /deep/ a{
+      height: 40px;
+      font-size: 14px;
+      .q-btn__wrapper{
+        padding: 0px 10px;
+        min-height: 36px;
+      }
+    }
+  }
 </style>
 <style>
   /* @media screen and (min-width: 1024px) {
@@ -85,5 +101,8 @@ export default {
   } */
   .q-page-sticky {
     z-index: 1000;
-}
+  }
+  body{
+    overflow: hidden;
+  }
 </style>
