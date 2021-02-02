@@ -2,7 +2,7 @@
 <div class="column text-black bg-grey-12" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
     <!-- padding-bottom: 100px;background: #f3f3f3 !important -->
     <div v-if="screenSize > 1024">
-        <div class="row" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+        <div class="row" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
             <div class="col col-md-12">
                 <div class="desktop-card-style apps-section q-mb-sm">
 
@@ -11,7 +11,7 @@
 
                     <!-- Vdex component -->
 
-                    <div class="chain-tools-wrapper" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+                    <div class="chain-tools-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                         <div class="chain-tools-wrapper--list open">
                             <div class="list-wrapper">
                                 <div class="row">
@@ -21,6 +21,16 @@
                                             <div v-if="pStep === 1" class="prototype">
                                                 <div class="head">Market Order</div>
                                                 <div class="you-pay">
+                                                    <div v-show="false" class=" row shadow-1 rounded-borders q-pb-md q-pt-lg q-mb-md" style="background: #f6f6f9; border: 1px solid #3c40732e;">
+                                                        <div class="col  col-4 offset-md-2 q-pr-none"><q-img style="width:25px;" src="https://www.joypixels.com/images/jp-home/fire.gif" /> Get your FREE EOS account !
+                                                         <p class="text-body1 q-pl-lg">When getting VTX</p>
+                                                              </div>
+                                                        <div class="col col-4 red text-right text-red"> <q-input counter maxlength="12" :disable="pStep != 1 || !destinationCoin || destinationCoin.value != 'vtx'" rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5 bg-white" label="Enter account name" v-model="freeeAccountName" hint="Choose a 12 Letter and/or Number (1-5)" :error="inError" :error-message="errorMessage" @input="checkName" :rules="[ val => val && val.trim().length === 12  || 'Account name should be 12 characters']"/>
+                                                   </div>
+                                                    <p v-if="AccountToBeCreated" class="text-green col-12 text-center  text-body2">Complete the transaction to get your new EOS account: <span class="text-black">{{freeeAccountName}}</span></p>
+
+                                                    </div>
+
                                                     <div class="you-pay-head row items-center">
                                                         <div class="col col-6">You Pay</div>
                                                         <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
@@ -30,7 +40,7 @@
                                                             <!-- class="select-input" -->
                                                             <span class="paycoin-search hidden">Type BTC</span>
                                                             <span class="receivecoin-search hidden">Type BTC</span>
-                                                            <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" filled options-cover stack-label class="pay-coin-select" popup-content-class="pay-coin-select-popup" v-model="depositCoin" @filter="filterDepositCoin" @input="checkGetPairs()" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                                                            <q-select :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" filled options-cover stack-label class="pay-coin-select" popup-content-class="pay-coin-select-popup" v-model="depositCoin" @filter="filterDepositCoin" @input="checkGetPairs()" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
@@ -56,7 +66,7 @@
                                                                     </q-item>
                                                                 </template>
                                                             </q-select>
-                                                            <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" filled options-cover stack-label class="receive-coin-select" popup-content-class="receive-coin-select-popup" @popup-show="addSearchField" v-model="destinationCoin" @filter="filterDestinationCoin" @input="updateCoinName()" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                                                            <q-select :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" filled options-cover stack-label class="receive-coin-select" popup-content-class="receive-coin-select-popup" @popup-show="addSearchField" v-model="destinationCoin" @filter="filterDestinationCoin" @input="updateCoinName()" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
@@ -85,7 +95,7 @@
                                                         </div>
                                                         <div class="col col-3 choose-coin">
                                                             <span class="cursor">
-                                                                <q-select class="select-input" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator use-input borderless rounded v-model="depositCoin" @input="updateCoinName()" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                                                                <q-select class="select-input" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator use-input borderless rounded v-model="depositCoin" @input="updateCoinName()" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                                                     <template v-slot:option="scope">
                                                                         <q-item class="custom-menu" @click="depositCoin = scope.opt" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                             <q-item-section avatar>
@@ -106,7 +116,7 @@
                                                         </div>
 
                                                         <div class="col col-8 offset-1">
-                                                            <q-input rounded :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="quantityFromDeposit()" v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
+                                                            <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="quantityFromDeposit()" v-model="depositQuantity"  :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
                                                                 <div class="flex justify-end items-center" style="width: 60px">
                                                                     <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
                                                                 </div>
@@ -156,7 +166,7 @@
                                                     </div>
                                                     <div class="you-receive-body row items-center">
                                                         <div class="col col-3 choose-coin"><span class="cursor">
-                                                                <q-select class="select-input" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator use-input borderless rounded v-model="destinationCoin"  @input="updateCoinName()" @filter="filterDestinationCoin" :disable="disableDestinationCoin || !destinationCoinOptions" :loading="!destinationCoinOptions && !disableDestinationCoin" :options="destinationCoinOptions">
+                                                                <q-select class="select-input" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator use-input borderless rounded v-model="destinationCoin"  @input="updateCoinName()" @filter="filterDestinationCoin" :disable="disableDestinationCoin || !destinationCoinOptions" :loading="!destinationCoinOptions && !disableDestinationCoin" :options="destinationCoinOptions">
                                                                     <template v-slot:option="scope">
                                                                         <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                             <q-item-section avatar>
@@ -175,7 +185,7 @@
                                                             </span>
                                                         </div>
                                                         <div class="col col-8 offset-1">
-                                                            <q-input rounded :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" outlined class="text-h5" ref="destinationQuantity" v-model="destinationQuantity" @input="quantityFromDestination()" :disabled="!rateData" :loading="!rateData" type="number" :rules="[ val => val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']">
+                                                            <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5" ref="destinationQuantity" v-model="destinationQuantity" @input="quantityFromDestination()" :disabled="!rateData" :loading="!rateData"  :rules="[ val => val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']">
                                                                 <div class="flex justify-end items-center" style="width: 60px">
                                                                     <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
                                                                 </div>
@@ -204,7 +214,7 @@
                                                     <div class="you-pay-body row items-center">
                                                         <div class="col col-12 pay-coin">
                                                             <!-- class="select-input" -->
-                                                            <q-select v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator outlined class="select-input" @input="checkGetPairs()" v-model="fromCoin" :options="optionsFrom">
+                                                            <q-select v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator outlined class="select-input" @input="checkGetPairs()" v-model="fromCoin" :options="optionsFrom">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
@@ -230,7 +240,7 @@
                                                                     </q-item>
                                                                 </template>
                                                             </q-select>
-                                                            <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-show="fromCoin !== null && (fromCoin.type === 'new_public_key')" v-model="refundAddress.address" @input="verifyAddress()" class="input-input" :label="depositCoin !== null ? 'Your ' + depositCoin.value.toUpperCase() + ' return address' : ' Your return address'" outlined color="purple" type="text">
+                                                            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-show="fromCoin !== null && (fromCoin.type === 'new_public_key')" v-model="refundAddress.address" @input="verifyAddress()" class="input-input" :label="depositCoin !== null ? 'Your ' + depositCoin.value.toUpperCase() + ' return address' : ' Your return address'" outlined color="purple" type="text">
                                                                 <template v-slot:append>
                                                                     <div class="flex justify-end items-center">
                                                                         <q-btn color="purple" rounded class="q-mb-xs" @click="fromCoin = null" outlined unelevated flat text-color="black" label="Hide" />
@@ -241,7 +251,7 @@
                                                         <div class="col col-12">
                                                             <q-btn v-show="!fromCoinMemo" flat class="q-mt-sm q-mb-sm --next-btn align-left full-width" :icon-right="fromCoinMemo ? 'close':'add'" :label="fromCoinMemo ? 'Hide Tag/Memo':'Add Tag/Memo'" @click="fromCoinMemo = !fromCoinMemo" />
                                                             <hr v-show="fromCoinMemo" style="opacity:0; height: 5px;margin: 0px">
-                                                            <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-show="fromCoinMemo" class="input-input" outlined color="purple" type="text" v-model="refundAddress.tag" label="Optional tag or memo" hint="some exchanges require this field">
+                                                            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-show="fromCoinMemo" class="input-input" outlined color="purple" type="text" v-model="refundAddress.tag" label="Optional tag or memo" hint="some exchanges require this field">
                                                                 <template v-slot:append>
                                                                     <div class="flex justify-end items-center">
                                                                         <q-btn color="purple" rounded class="q-mb-xs" @click="fromCoinMemo = false" outlined unelevated flat text-color="black" label="Hide" />
@@ -258,7 +268,7 @@
                                                     </div>
                                                     <div class="you-receive-body row items-center">
                                                         <div class="col col-12">
-                                                            <q-select v-show="toCoin === null || (toCoin.type !== 'new_public_key')"  :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator outlined class="select-input" v-model="toCoin" @input="updateCoinName()" use-input :options="optionsTo">
+                                                            <q-select :disable="AccountToBeCreated" v-show="toCoin === null || (toCoin.type !== 'new_public_key')"  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator outlined class="select-input" v-model="toCoin" @input="updateCoinName()" use-input :options="optionsTo">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
@@ -287,7 +297,7 @@
                                                         </div>
                                                         <div class="col col-12">
                                                             <!-- :rules="[ val => val.length >= 3 || 'Destination Address Cannot less than 3 characters' ]" -->
-                                                            <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-show="toCoin !== null && toCoin.type === 'new_public_key'" ref="destinationAddressAddress" :label="destinationAddressLabel" v-model="destinationAddress.address" @input="verifyAddress()" class="input-input destinationAddressAddress" outlined color="purple" type="text">
+                                                            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-show="toCoin !== null && toCoin.type === 'new_public_key'" ref="destinationAddressAddress" :label="destinationAddressLabel" v-model="destinationAddress.address" @input="verifyAddress()" class="input-input destinationAddressAddress" outlined color="purple" type="text">
                                                                 <template v-slot:append>
                                                                     <div class="flex justify-end">
                                                                         <q-btn color="purple" rounded class="q-mb-sm" @click="toCoin = null" outlined unelevated flat text-color="black" label="Hide" />
@@ -295,7 +305,7 @@
                                                                 </template>
                                                             </q-input>
                                                             <hr v-show="toCoinMemo" style="opacity:0; height: 5px;margin: 0px">
-                                                            <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-show="toCoinMemo" class="input-input" outlined color="purple" type="text" v-model="destinationAddress.tag" label="Optional tag or memo" hint="some exchanges require this field">
+                                                            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-show="toCoinMemo" class="input-input" outlined color="purple" type="text" v-model="destinationAddress.tag" label="Optional tag or memo" hint="some exchanges require this field">
                                                                 <template v-slot:append>
                                                                     <div class="flex justify-end">
                                                                         <q-btn color="purple" rounded class="q-mb-sm" @click="toCoinMemo = false" outlined unelevated flat text-color="black" label="Hide" />
@@ -313,7 +323,7 @@
                                                             </div>
                                                             <div class="row full-width" style="padding-left: 13px; margin-top: 10px;">
                                                                 <div class="q-gutter-sm">
-                                                                    <q-checkbox :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" label="I accept" color="deep-purple-14" v-model="disclaimerCheck" />
+                                                                    <q-checkbox :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" label="I accept" color="deep-purple-14" v-model="disclaimerCheck" />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -373,7 +383,7 @@
                                         <q-step default title="Select Coin to Send" :name="1" prefix="1" :done="step > 1">
                                             <div class="text-black">
                                                 <span class="sublab-input">Step 1</span><span class="tlab-input">Select Coin to Send</span>
-                                                <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" @input="checkGetPairs()" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                                                <q-select :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" @input="checkGetPairs()" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                                     <template v-slot:option="scope">
                                                         <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                             <q-item-section avatar>
@@ -410,7 +420,7 @@
                                             <span class="sublab-input">Step 2</span><span class="tlab-input">Select Coin to Receive</span>
                                             <div class="text-black">
                                                 <!-- <span class="lab-input">Select Coin to receive</span> -->
-                                                <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" v-model="destinationCoin" use-input @filter="filterDestinationCoin" @input="updateCoinName()" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                                                <q-select :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator rounded outlined class="select-input" v-model="destinationCoin" use-input @filter="filterDestinationCoin" @input="updateCoinName()" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                                                     <template v-slot:option="scope">
                                                         <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                             <q-item-section avatar>
@@ -497,7 +507,7 @@
                                                     <div class="row">
                                                         <div class="col col-6 q-pr-md">
                                                             <span v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" class="lab-input">From</span>
-                                                            <q-select v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" @input="checkGetPairs()" v-model="fromCoin" :options="optionsFrom">
+                                                            <q-select v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator rounded outlined class="select-input" @input="checkGetPairs()" v-model="fromCoin" :options="optionsFrom">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
@@ -547,7 +557,7 @@
                                                         <div class="col col-6">
                                                             <!-- <hr> -->
                                                             <span v-show="toCoin === null || (toCoin.type !== 'new_public_key')" class="lab-input">To</span>
-                                                            <q-select v-show="toCoin === null || (toCoin.type !== 'new_public_key')" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" v-model="toCoin" @input="updateCoinName()" use-input :options="optionsTo">
+                                                            <q-select v-show="toCoin === null || (toCoin.type !== 'new_public_key')" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator rounded outlined class="select-input" v-model="toCoin" @input="updateCoinName()" use-input :options="optionsTo">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
@@ -673,7 +683,7 @@
                 <!-- add your code here -->
 
                 <!-- Vdex component -->
-                <div class="chain-tools-wrapper" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+                <div class="chain-tools-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                     <div class="chain-tools-wrapper--list open">
                         <div class="list-wrapper">
                             <div class="row">
@@ -692,7 +702,7 @@
                                                         <!-- class="select-input" -->
                                                         <span class="paycoin-search hidden">Type BTC</span>
                                                         <span class="receivecoin-search hidden">Type BTC</span>
-                                                        <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" filled options-cover stack-label class="pay-coin-select" popup-content-class="pay-coin-select-popup" v-model="depositCoin" @filter="filterDepositCoin" @input="checkGetPairs()" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                                                        <q-select :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" filled options-cover stack-label class="pay-coin-select" popup-content-class="pay-coin-select-popup" v-model="depositCoin" @filter="filterDepositCoin" @input="checkGetPairs()" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                                             <template v-slot:option="scope">
                                                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                     <q-item-section avatar>
@@ -718,7 +728,7 @@
                                                                 </q-item>
                                                             </template>
                                                         </q-select>
-                                                        <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" filled options-cover stack-label class="receive-coin-select" popup-content-class="receive-coin-select-popup" @popup-show="addSearchField" v-model="destinationCoin" @filter="filterDestinationCoin" @input="updateCoinName()" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                                                        <q-select :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" filled options-cover stack-label class="receive-coin-select" popup-content-class="receive-coin-select-popup" @popup-show="addSearchField" v-model="destinationCoin" @filter="filterDestinationCoin" @input="updateCoinName()" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                                                             <template v-slot:option="scope">
                                                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                     <q-item-section avatar>
@@ -747,7 +757,7 @@
                                                     </div>
                                                     <div class="col col-3 choose-coin">
                                                         <span class="cursor">
-                                                            <q-select class="select-input" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator use-input borderless rounded v-model="depositCoin" @input="updateCoinName()" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                                                            <q-select class="select-input" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator use-input borderless rounded v-model="depositCoin" @input="updateCoinName()" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" @click="depositCoin = scope.opt" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
@@ -767,7 +777,7 @@
                                                     </div>
 
                                                     <div class="col col-8 offset-1">
-                                                        <q-input rounded :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="quantityFromDeposit()" v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
+                                                        <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5" ref="depositQuantity" @input="quantityFromDeposit()" v-model="depositQuantity"  :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']">
                                                             <div class="flex justify-end items-center" style="width: 60px">
                                                                 <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
                                                             </div>
@@ -789,7 +799,7 @@
                                                         <!-- 1 ETH = 374.705 USDT -->
                                                         <span>{{ '1 ' + fromCoinType.toUpperCase() + '&nbsp;= &nbsp;' + rateData.rate.toFixed(5) + ' ' + toCoinType.toUpperCase() }}</span>
                                                         <div class="info_rate">
-                                                            <span class="i-btn">i
+                                                            <span class="i-btn">
                                                                 <!-- <img src="statics/theme1/rate-info.png" class="rate-info-prototype" alt=""> -->
                                                                 <div class="info_rate_wrapper text-left">
                                                                     <div class="title">We got you the best price</div>
@@ -817,7 +827,7 @@
                                                 </div>
                                                 <div class="you-receive-body row items-center">
                                                     <div class="col col-3 choose-coin"><span class="cursor">
-                                                            <q-select class="select-input" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator use-input borderless rounded v-model="destinationCoin"  @input="updateCoinName()" @filter="filterDestinationCoin" :disable="disableDestinationCoin || !destinationCoinOptions" :loading="!destinationCoinOptions && !disableDestinationCoin" :options="destinationCoinOptions">
+                                                            <q-select class="select-input" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator use-input borderless rounded v-model="destinationCoin"  @input="updateCoinName()" @filter="filterDestinationCoin" :disable="disableDestinationCoin || !destinationCoinOptions" :loading="!destinationCoinOptions && !disableDestinationCoin" :options="destinationCoinOptions">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
@@ -835,18 +845,7 @@
                                                             </q-select>
                                                         </span>
                                                     </div>
-                                                    <div class="col col-8 offset-1">
-                                                        <q-input rounded :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" outlined class="text-h5" ref="destinationQuantity" v-model="destinationQuantity" @input="quantityFromDestination()" :disabled="!rateData" :loading="!rateData" type="number" :rules="[ val => val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']">
-                                                            <div class="flex justify-end items-center" style="width: 60px">
-                                                                <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
-                                                            </div>
-                                                            <template v-slot:hint>
-                                                            <span v-if="rateData">
-                                                            Max: {{rateData.limitMaxDepositCoin}}
-                                                            </span>
-                                                            </template>
-                                                        </q-input>
-                                                    </div>
+
                                                 </div>
 
                                                 <q-btn unelevated :disable="depositQuantity == 0 || depositQuantity < rateData.limitMinDepositCoin || destinationQuantity > rateData.limitMaxDestinationCoin" @click="pStep = 2" color="light-grey" text-color="black" label="Choose Accounts" class="text-capitalize chose_accounts full-width" />
@@ -865,7 +864,7 @@
                                                 <div class="you-pay-body row items-center">
                                                     <div class="col col-12 pay-coin">
                                                         <!-- class="select-input" -->
-                                                        <q-select v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator outlined class="select-input" @input="checkGetPairs()" v-model="fromCoin" :options="optionsFrom">
+                                                        <q-select v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator outlined class="select-input" @input="checkGetPairs()" v-model="fromCoin" :options="optionsFrom">
                                                             <template v-slot:option="scope">
                                                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                     <q-item-section avatar>
@@ -891,7 +890,7 @@
                                                                 </q-item>
                                                             </template>
                                                         </q-select>
-                                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-show="fromCoin !== null && (fromCoin.type === 'new_public_key')" v-model="refundAddress.address" @input="verifyAddress()" class="input-input" :label="depositCoin !== null ? 'Your ' + depositCoin.value.toUpperCase() + ' return address' : ' Your return address'" outlined color="purple" type="text">
+                                                        <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-show="fromCoin !== null && (fromCoin.type === 'new_public_key')" v-model="refundAddress.address" @input="verifyAddress()" class="input-input" :label="depositCoin !== null ? 'Your ' + depositCoin.value.toUpperCase() + ' return address' : ' Your return address'" outlined color="purple" type="text">
                                                             <template v-slot:append>
                                                                 <div class="flex justify-end items-center">
                                                                     <q-btn color="purple" rounded class="q-mb-xs" @click="fromCoin = null" outlined unelevated flat text-color="black" label="Hide" />
@@ -902,7 +901,7 @@
                                                     <div class="col col-12">
                                                         <q-btn v-show="!fromCoinMemo" flat class="q-mt-sm q-mb-sm --next-btn align-left full-width" :icon-right="fromCoinMemo ? 'close':'add'" :label="fromCoinMemo ? 'Hide Tag/Memo':'Add Tag/Memo'" @click="fromCoinMemo = !fromCoinMemo" />
                                                         <hr v-show="fromCoinMemo" style="opacity:0; height: 5px;margin: 0px">
-                                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-show="fromCoinMemo" class="input-input" outlined color="purple" type="text" v-model="refundAddress.tag" label="Optional tag or memo" hint="some exchanges require this field">
+                                                        <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-show="fromCoinMemo" class="input-input" outlined color="purple" type="text" v-model="refundAddress.tag" label="Optional tag or memo" hint="some exchanges require this field">
                                                             <template v-slot:append>
                                                                 <div class="flex justify-end items-center">
                                                                     <q-btn color="purple" rounded class="q-mb-xs" @click="fromCoinMemo = false" outlined unelevated flat text-color="black" label="Hide" />
@@ -919,7 +918,7 @@
                                                 </div>
                                                 <div class="you-receive-body row items-center">
                                                     <div class="col col-12">
-                                                        <q-select v-show="toCoin === null || (toCoin.type !== 'new_public_key')"  :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator outlined class="select-input" v-model="toCoin" @input="updateCoinName()" use-input :options="optionsTo">
+                                                        <q-select v-show="toCoin === null || (toCoin.type !== 'new_public_key')"  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator outlined class="select-input" v-model="toCoin" @input="updateCoinName()" use-input :options="optionsTo">
                                                             <template v-slot:option="scope">
                                                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                     <q-item-section avatar>
@@ -948,7 +947,7 @@
                                                     </div>
                                                     <div class="col col-12">
                                                         <!-- :rules="[ val => val.length >= 3 || 'Destination Address Cannot less than 3 characters' ]" -->
-                                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-show="toCoin !== null && toCoin.type === 'new_public_key'" ref="destinationAddressAddress" :label="destinationAddressLabel" v-model="destinationAddress.address" @input="verifyAddress()" class="input-input destinationAddressAddress" outlined color="purple" type="text">
+                                                        <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-show="toCoin !== null && toCoin.type === 'new_public_key'" ref="destinationAddressAddress" :label="destinationAddressLabel" v-model="destinationAddress.address" @input="verifyAddress()" class="input-input destinationAddressAddress" outlined color="purple" type="text">
                                                             <template v-slot:append>
                                                                 <div class="flex justify-end">
                                                                     <q-btn color="purple" rounded class="q-mb-sm" @click="toCoin = null" outlined unelevated flat text-color="black" label="Hide" />
@@ -956,7 +955,7 @@
                                                             </template>
                                                         </q-input>
                                                         <hr v-show="toCoinMemo" style="opacity:0; height: 5px;margin: 0px">
-                                                        <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-show="toCoinMemo" class="input-input" outlined color="purple" type="text" v-model="destinationAddress.tag" label="Optional tag or memo" hint="some exchanges require this field">
+                                                        <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-show="toCoinMemo" class="input-input" outlined color="purple" type="text" v-model="destinationAddress.tag" label="Optional tag or memo" hint="some exchanges require this field">
                                                             <template v-slot:append>
                                                                 <div class="flex justify-end">
                                                                     <q-btn color="purple" rounded class="q-mb-sm" @click="toCoinMemo = false" outlined unelevated flat text-color="black" label="Hide" />
@@ -974,7 +973,7 @@
                                                         </div>
                                                         <div class="row full-width" style="padding-left: 13px; margin-top: 10px;">
                                                             <div class="q-gutter-sm">
-                                                                <q-checkbox :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" label="I accept" color="deep-purple-14" v-model="disclaimerCheck" />
+                                                                <q-checkbox :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" label="I accept" color="deep-purple-14" v-model="disclaimerCheck" />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1033,7 +1032,7 @@
                                     <q-step default title="Select Coin to Send" :name="1" prefix="1" :done="step > 1">
                                         <div class="text-black">
                                             <span class="sublab-input">Step 1</span><span class="tlab-input">Select Coin to Send</span>
-                                            <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" @input="checkGetPairs()" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                                            <q-select :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" @input="checkGetPairs()" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                                 <template v-slot:option="scope">
                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                         <q-item-section avatar>
@@ -1070,7 +1069,7 @@
                                         <span class="sublab-input">Step 2</span><span class="tlab-input">Select Coin to Receive</span>
                                         <div class="text-black">
                                             <!-- <span class="lab-input">Select Coin to receive</span> -->
-                                            <q-select :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" v-model="destinationCoin" use-input @filter="filterDestinationCoin" @input="updateCoinName()" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                                            <q-select :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator rounded outlined class="select-input" v-model="destinationCoin" use-input @filter="filterDestinationCoin" @input="updateCoinName()" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                                                 <template v-slot:option="scope">
                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                         <q-item-section avatar>
@@ -1157,7 +1156,7 @@
                                                 <div class="row">
                                                     <div class="col col-6 q-pr-md">
                                                         <span v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" class="lab-input">From</span>
-                                                        <q-select v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" @input="checkGetPairs()" v-model="fromCoin" :options="optionsFrom">
+                                                        <q-select v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator rounded outlined class="select-input" @input="checkGetPairs()" v-model="fromCoin" :options="optionsFrom">
                                                             <template v-slot:option="scope">
                                                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                     <q-item-section avatar>
@@ -1207,7 +1206,7 @@
                                                     <div class="col col-6">
                                                         <!-- <hr> -->
                                                         <span v-show="toCoin === null || (toCoin.type !== 'new_public_key')" class="lab-input">To</span>
-                                                        <q-select v-show="toCoin === null || (toCoin.type !== 'new_public_key')" :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" separator rounded outlined class="select-input" v-model="toCoin" @input="updateCoinName()" use-input :options="optionsTo">
+                                                        <q-select v-show="toCoin === null || (toCoin.type !== 'new_public_key')" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator rounded outlined class="select-input" v-model="toCoin" @input="updateCoinName()" use-input :options="optionsTo">
                                                             <template v-slot:option="scope">
                                                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                     <q-item-section avatar>
@@ -1335,7 +1334,7 @@
         </q-card>
     </q-dialog>
     <q-dialog v-model="getPassword" persistent>
-        <q-card :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'">
+        <q-card :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'">
             <q-card-section>
                 <div class="send-modal flex flex-center" :class="{ open: openModal }">
                 <div class="send-modal__content q-pa-md column flex-center">
@@ -1346,7 +1345,7 @@
                     <div class="send-modal__content--body column flex-center full-width">
                     <q-input
                         v-model="privateKeyPassword"
-                        :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                        :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                         rounded
                         outlined
                         class="full-width"
@@ -1411,14 +1410,16 @@ export default {
   data () {
     return {
       openModal: false,
+      AccountToBeCreated: false,
       getPassword: false,
       privateKey: false,
       privateKeyPassword: null,
       showTXComponent: false,
       invalidPrivateKeyPassword: false,
-      ErrorMessage: false,
+      ErrorMessage: '',
       isPwd: true,
       pStep: 1,
+      freeeAccountName: '',
       fetchingRate: false,
       model: null,
       receiveCoin: 'ETH',
@@ -1427,7 +1428,7 @@ export default {
       disclaimerCheck: false,
       showDisclaimerWrapper: false,
       fromCoin: null,
-      fromCoinAmount: 0,
+      fromCoinAmount: 1,
       toCoinAmount: 0,
       fromCoinType: 'BTC',
       toCoinType: 'ETH',
@@ -1459,7 +1460,7 @@ export default {
         'value': 'btc',
         'image': 'https://files.coinswitch.co/public/coins/btc.png'
       },
-      depositQuantity: 0,
+      depositQuantity: 0.1,
       depositCoinOptions: null,
       depositCoinUnfilter: null,
       destinationCoin: {
@@ -1499,7 +1500,9 @@ export default {
       destinationCoinAmount: null,
       vtxEosPrice: null,
       rateDataVtx: null,
-      rateDataEos: null
+      rateDataEos: null,
+      inError: false,
+      errorMessage: ''
     }
   },
   updated () {},
@@ -1726,7 +1729,7 @@ export default {
     },
     destinationAddressLabel () {
       if (this.destinationCoin != null) {
-        return 'Address to receive new ' + typeUpper(this.destinationCoin.value)
+        return 'Address/account to receive new ' + typeUpper(this.destinationCoin.value)
       } else {
         return 'Address to receive new coin'
       }
@@ -1912,7 +1915,9 @@ export default {
     },
     quantityFromDeposit () {
       // deal with precision
+      this.depositQuantity = isNaN(this.depositQuantity) ? 0 : this.depositQuantity
       this.destinationQuantity = (+this.depositQuantity * +this.rateData.rate) - +this.rateData.minerFee
+      this.destinationQuantity = this.destinationQuantity <= 0 ? 0 : this.destinationQuantity
       this.lastChangedValue = 'deposit'
     },
     quantityFromDestination () {
@@ -1942,14 +1947,59 @@ export default {
           }, 30000)
         } else if (self.status === 'complete' && self.destinationCoin.value === 'vtx') {
           self.destinationCoinAmount = Math.trunc(result.data.data.destinationCoinAmount * 10000) / 10000
-          self.orderVTX()
+          if (self.AccountToBeCreated) {
+            self.createFreeEOSAccount(self.freeeAccountName, self.toCoin.key, self.fromCoin.key)
+          } else {
+            self.orderVTX()
+          }
         }
       }
       )
     },
+    async checkName () {
+      this.inError = false
+      this.AccountToBeCreated = false
+      if (this.freeeAccountName.length === 12) {
+        if (/(^[a-z1-5]{1}([a-z1-5.]{0,10}[a-z1-5])?$)/g.test(this.freeeAccountName)) {
+          this.showNextButtonToPassword = true
+          try {
+            await eos.getAccount(this.freeeAccountName)
+            this.inError = true
+            this.errorMessage = 'Account Name Taken'
+          } catch (error) {
+            this.inError = false
+            this.AccountToBeCreated = true
+            this.toCoin = this.$store.state.wallets.tokens.find(o => o.type === 'verto' && o.chain === 'eos')
+            this.toCoin.name = this.toCoin.label = this.toCoin.value = this.freeeAccountName
+            this.toCoin.image = 'https://files.coinswitch.co/public/coins/eos.png'
+          }
+        } else {
+          this.inError = true
+          this.errorMessage = 'Invalid Account Name'
+        }
+      } else {
+        this.inError = true
+        this.errorMessage = 'You need exactly 12 characters'
+      }
+    },
+    createFreeEOSAccount (accountName, eosKey, fromkey, fromSymbol) {
+      let url = 'https://cpu.volentix.io/api/eos/signup'
+      this.$axios.post(url, {
+        name: accountName,
+        eosKey: eosKey,
+        fromkey: fromkey,
+        fromSymbol: fromSymbol
+      }).then(function (result) {
+        if (result.data.transaction_id) {
+          self.orderVTX()
+        }
+      })
+    },
     async orderVTX () {
       // check balance then...
       // let eosBal = Lib.balance('eos', this.toCoin.value, 'eos')
+
+      // Create free EOS account
       let eosBal = (await eos.getCurrencyBalanceP(this.toCoin.value)).toString().split(' ')[0]
 
       if (+eosBal < +this.destinationCoinAmount) {
@@ -2170,7 +2220,7 @@ export default {
       if (self.destinationCoin.value === 'vtx') {
         this.vtxEosPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
       }
-      this.ErrorMessage = null
+      this.ErrorMessage = ''
       this.$axios.post(url + '/v2/rate', {
         depositCoin: self.depositCoin.value,
         destinationCoin: self.destinationCoin.value === 'vtx' ? 'eos' : self.destinationCoin.value

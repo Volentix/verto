@@ -6,7 +6,7 @@
         <ul>
         <li v-for="(word, index) in arrayOrdered" :key="index">
           <q-input
-            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
             v-show="arrayOrdered[index]"
             @click="chooseMe(word, index, false)"
             :class="{'qfilled': arrayTest3[index] !== undefined }"
@@ -22,7 +22,7 @@
         <ul>
         <li v-for="(word, index) in arrayShuffled" :key="index">
           <q-input
-            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
             v-show="!arrayShuffleShow[index]"
             @click="chooseMe(word, index, true)"
             outlined round readonly

@@ -1,6 +1,6 @@
 <template>
 <div :key="rekey">
-    <div class="wallets-wrapper" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+    <div class="wallets-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
         <!-- <q-toggle v-model="active" label="Active" /> -->
         <div v-if="isMobile" class="is-mobile wallets-wrapper--list" :class="{'open': !walletShowHide}">
             <q-scroll-area :visible="true" class="scrollarea" :class="{'height' : !walletShowHide}">
@@ -52,7 +52,7 @@
                                 </q-item-section>
                             </div>
                             <div class="menu-wallet">
-                                <q-list :dark="$store.state.lightMode.lightMode === 'true'" bordered separator class="sub-list-menu">
+                                <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
                                     <!-- <q-item v-if="false" class="p-relative full-width no-pad">
                                         <div class="vespucci-score--wrapper full-width flex justify-between items-center">
                                             <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
@@ -102,7 +102,7 @@
                                 </q-item-section>
                             </div>
                             <div class="menu-wallet">
-                                <q-list :dark="$store.state.lightMode.lightMode === 'true'" bordered separator class="sub-list-menu">
+                                <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
                                     <!-- <q-item class="p-relative full-width no-pad">
                                         <div class="vespucci-score--wrapper full-width flex justify-between items-center">
                                             <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
@@ -141,7 +141,7 @@
                                     </q-item-section>
                                 </div>
                                 <div class="menu-wallet">
-                                    <q-list :dark="$store.state.lightMode.lightMode === 'true'" bordered separator class="sub-list-menu">
+                                    <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
                                         <!-- <q-item class="p-relative full-width no-pad">
                                             <div class="vespucci-score--wrapper full-width flex justify-between items-center">
                                                 <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
@@ -227,7 +227,12 @@
             <q-scroll-area :visible="true" ref="walletsScrollArea" class="walletsScrollArea q-mr-sm q-ml-xs" :class="{'short' : $store.state.currentwallet.wallet.empty, 'long' : !$store.state.currentwallet.wallet.empty}" :style="$store.state.currentwallet.wallet.empty ? 'height: 285px;': 'height: 323px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty">
-                     <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => f.type == 'verto' && f.chain == 'eos' && !f.hidden && !f.disabled)" :class="[item.selected ? 'selected' : '', 'highlight']" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                     <q-item v-show="!hideEosSetup"  dense>
+                        <q-item-section @click="hideEOSSetup()" class="text-center  cursor-pointer q-pb-sm">
+                        <q-item-label><q-icon flat label="Yes" name="update" size="sm" /> Setup EOS account later  </q-item-label>
+                        </q-item-section>
+                    </q-item>
+                     <q-item v-show="!hideEosSetup" v-for="(item) in $store.state.wallets.tokens.filter(f => f.type == 'verto' && f.chain == 'eos' && !f.hidden && !f.disabled)" :class="[item.selected ? 'selected' : '', 'highlight']" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="showMenu(item, '/verto/eos-account')" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar>
@@ -244,7 +249,7 @@
                                     </q-item-section>
                                 </div>
                                 <div class="menu-wallet">
-                                    <q-list :dark="$store.state.lightMode.lightMode === 'true'" bordered separator class="sub-list-menu">
+                                    <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
                                         <!-- <q-item class="p-relative full-width no-pad">
                                             <div class="vespucci-score--wrapper full-width flex justify-between items-center">
                                                 <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
@@ -284,7 +289,7 @@
                         </q-item-section>
                         </template>
 
-                        <q-card :dark="$store.state.lightMode.lightMode === 'true'">
+                        <q-card :dark="$store.state.settings.lightMode === 'true'">
                         <q-card-section>
                                <q-item :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.name == token.name && !f.hidden && !f.disabled).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
@@ -305,7 +310,7 @@
                                     </q-item-section>
                                 </div>
                                 <div class="menu-wallet">
-                                    <q-list :dark="$store.state.lightMode.lightMode === 'true'" bordered separator class="sub-list-menu">
+                                    <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
                                         <!-- <q-item v-if="false" class="p-relative full-width no-pad">
                                             <div class="vespucci-score--wrapper full-width flex justify-between items-center">
                                                 <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
@@ -361,7 +366,7 @@
                                 </div>
                             </q-item-section>
                         </template>
-                        <q-card :dark="$store.state.lightMode.lightMode === 'true'">
+                        <q-card :dark="$store.state.settings.lightMode === 'true'">
                             <q-card-section>
                                <q-item :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eth'  && f.key == token.key  && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                                 <div class="header-wallet-wrapper culumn full-width">
@@ -382,7 +387,7 @@
                                     </q-item-section>
                                 </div>
                                 <div class="menu-wallet">
-                                    <q-list :dark="$store.state.lightMode.lightMode === 'true'" bordered separator class="sub-list-menu">
+                                    <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
                                         <!-- <q-item v-if="false" class="p-relative full-width no-pad">
                                             <div class="vespucci-score--wrapper full-width flex justify-between items-center">
                                                 <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
@@ -438,7 +443,7 @@
                                     </q-item-section>
                                 </div>
                                 <div class="menu-wallet">
-                                    <q-list :dark="$store.state.lightMode.lightMode === 'true'" bordered separator class="sub-list-menu">
+                                    <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
                                         <!-- <q-item v-if="false" class="p-relative full-width no-pad">
                                             <div class="vespucci-score--wrapper full-width flex justify-between items-center">
                                                 <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
@@ -476,7 +481,7 @@
                         <q-item class="selected selected22222" clickable active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div class="menu-wallet">
-                                    <q-list :dark="$store.state.lightMode.lightMode === 'true'" bordered separator class="sub-list-menu">
+                                    <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
                                         <q-separator style="margin-top: -20px" />
                                         <q-item data-name='Associate with EOS' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
@@ -547,7 +552,7 @@
                                     </q-item-section>
                                 </div>
                                 <div class="menu-wallet">
-                                    <q-list :dark="$store.state.lightMode.lightMode === 'true'" bordered separator class="sub-list-menu">
+                                    <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
                                         <!-- <q-item class="p-relative full-width no-pad">
                                             <div class="vespucci-score--wrapper full-width flex justify-between items-center">
                                                 <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
@@ -588,7 +593,7 @@
                                         </q-item-section>
                                     </div>
                                     <div class="menu-wallet">
-                                        <q-list :dark="$store.state.lightMode.lightMode === 'true'" bordered separator class="sub-list-menu">
+                                        <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
                                             <!-- <q-item class="p-relative full-width no-pad">
                                                 <div class="vespucci-score--wrapper full-width flex justify-between items-center">
                                                     <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
@@ -635,7 +640,7 @@
         </div>
     </div>
     <q-dialog v-model="alertSecurity">
-        <q-card style="width: 100%; max-width: 400px" :dark="$store.state.lightMode.lightMode === 'true'">
+        <q-card style="width: 100%; max-width: 400px" :dark="$store.state.settings.lightMode === 'true'">
             <q-card-section>
                 <div class="icon-alert flex flex-center q-mt-lg">
                     <img src="statics/alert.svg" style="max-width: 100px" alt="">
@@ -647,7 +652,7 @@
             </q-card-section>
 
             <q-card-actions align="right" class="q-pb-lg q-pr-lg">
-                <q-btn :dark="$store.state.lightMode.lightMode === 'true'" flat label="Got it" class="go-to-security" @click="goToSecurity()" color="primary" v-close-popup />
+                <q-btn :dark="$store.state.settings.lightMode === 'true'" flat label="Got it" class="go-to-security" @click="goToSecurity()" color="primary" v-close-popup />
             </q-card-actions>
         </q-card>
     </q-dialog>
@@ -704,6 +709,7 @@ export default {
   data () {
     return {
       searchAccount: '',
+      hideEosSetup: null,
       history: [],
       rekey: 98813538,
       toggled: false,
@@ -745,7 +751,9 @@ export default {
       }
     }
   },
-  async mounted () {},
+  async mounted () {
+    this.hideEosSetup = localStorage.getItem('hideEosSetup')
+  },
   async updated () {
     // //console.log('updated')
   },
@@ -870,6 +878,11 @@ export default {
     },
     togglePrivateKey () {
       this.showPrivate = !this.showPrivate
+    },
+    hideEOSSetup () {
+      localStorage.setItem('hideEosSetup', 'true')
+      this.hideEosSetup = true
+      console.log(this.hideEosSetup)
     },
     hideModalFun: function () {
       this.openModal = false

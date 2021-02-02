@@ -1,5 +1,5 @@
 <template>
-  <div class="menu-left-wrapper" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+  <div class="menu-left-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <q-tabs
         v-model="tab"
         indicator-color="transparent"

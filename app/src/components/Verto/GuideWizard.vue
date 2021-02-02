@@ -1,6 +1,7 @@
 <template>
   <div class="">
     <q-dialog
+
       v-model="dialog"
       persistent
       position="right"
@@ -9,7 +10,7 @@
       transition-show="slide-up"
       transition-hide="slide-down"
     >
-      <q-card class="guideWizardWrapper" style="min-width:334px;">
+      <q-card class="guideWizardWrapper" :dark=" $store.state.settings.lightMode === 'true'"  style="min-width:334px;">
         <q-bar>
           <div class="text-h6 flex items-center welcome-title">
               <svg
@@ -50,7 +51,7 @@
               >Maximize</q-tooltip
             >
           </q-btn>
-          <q-btn dense flat color="white" icon="close" v-close-popup>
+          <q-btn dense flat @click="closeWizard()" color="white" icon="close" v-close-popup>
             <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
           </q-btn>
         </q-bar>
@@ -90,7 +91,6 @@
             <q-card-section
               v-show="!accountDropdown && list.items.length"
               class=""
-
               v-for="(list, index) in filteredActions"
               :key="index"
             >
@@ -121,8 +121,8 @@
               </p>
               <p v-else>{{ "Select " + currentAction.chain.toUpperCase() + " account" }}</p>
               <q-select
-                :dark="$store.state.lightMode.lightMode === 'true'"
-                :light="$store.state.lightMode.lightMode === 'false'"
+                :dark="$store.state.settings.lightMode === 'true'"
+                :light="$store.state.settings.lightMode === 'false'"
                 separator
                 rounded
                 outlined
@@ -268,7 +268,7 @@ export default {
       dialog: true,
       accountDropdown: false,
       active: true,
-      maximizedToggle: true,
+      maximizedToggle: false,
       accounts: [],
       searchAction: null,
       currentToken: null,
@@ -286,6 +286,10 @@ export default {
     }
   },
   methods: {
+    closeWizard () {
+      localStorage.setItem('closewizard', Date.now())
+      this.$bus.$emit('showHomeIntro')
+    },
     showAccountDropdown () {
       this.filterAccount(this.currentActionItem.type ? this.currentActionItem.type : this.currentAction.chain, this.currentAction.chain)
 

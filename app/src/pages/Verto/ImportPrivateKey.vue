@@ -1,5 +1,5 @@
 <template>
-<q-page class="column import-private-key" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-grey-12': $store.state.lightMode.lightMode === 'false', 'desktop-marg': screenSize > 1024,  'mobile-pad': screenSize < 1024}">
+<q-page class="column import-private-key" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-grey-12': $store.state.settings.lightMode === 'false', 'desktop-marg': screenSize > 1024,  'mobile-pad': screenSize < 1024}">
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
           <div class="col col-md-3">
@@ -10,7 +10,7 @@
             </div>
           </div>
           <div class="col col-md-9">
-            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                 <div class="chain-tools-wrapper">
                     <div class="standard-content">
                         <h2 v-show="showMainSteps" class="standard-content--title">Import EOS Account</h2>
@@ -21,7 +21,7 @@
                         <div class="list-wrapper">
                             <div class="list-wrapper--chain__eos-to-vtx-convertor">
                                 <div v-show="showMainSteps">
-                                    <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
+                                    <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
                                         <!--
                                                 1.Private key
                                                 -->
@@ -43,7 +43,7 @@
                                                     </ul>
                                                 </div>
                                                 <span>
-                                                    <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.addressPriv" :error="addWallet.addressError" @input="showEosKeyNext" @keyup.enter="nextFromPriv" :label="$t('EosAccount.enter_private_key')" />
+                                                    <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.addressPriv" :error="addWallet.addressError" @input="showEosKeyNext" @keyup.enter="nextFromPriv" :label="$t('EosAccount.enter_private_key')" />
                                                 </span>
                                                 <div v-show="eosKeyInvalid" class="text-h6 text-red">
                                                     Key invalid
@@ -99,7 +99,7 @@
                                             <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
                                             <div class="text-black">
                                                 <div>
-                                                    <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.vertoPassword" @input="showSubmitKey" @keyup.enter="addEosAddress" v-bind:label="$t('CreateVertoPassword.vertopassword')" :type="isPwd ? 'password' : 'text'">
+                                                    <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.vertoPassword" @input="showSubmitKey" @keyup.enter="addEosAddress" v-bind:label="$t('CreateVertoPassword.vertopassword')" :type="isPwd ? 'password' : 'text'">
                                                         <template v-slot:append>
                                                             <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                                                         </template>
@@ -122,7 +122,7 @@
                                     </q-stepper>
                                 </div>
                                 <div v-show="!showMainSteps">
-                                    <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step2" done-color="green" ref="stepperFilePassword" alternative-labels vertical color="primary" animated flat>
+                                    <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step2" done-color="green" ref="stepperFilePassword" alternative-labels vertical color="primary" animated flat>
                                         <!--
                                             1.Private key
                                             -->
@@ -144,7 +144,7 @@
                                                     </ul>
                                                 </div>
                                                 <span class="q-pa-sm">
-                                                    <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePassword" @input="filePasswordCheck" label="Password For The File" @keyup.enter="gotoFileConfirmPassword()" :type="isPwd ? 'password' : 'text'">
+                                                    <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePassword" @input="filePasswordCheck" label="Password For The File" @keyup.enter="gotoFileConfirmPassword()" :type="isPwd ? 'password' : 'text'">
                                                         <template v-slot:append>
                                                             <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                                                         </template>
@@ -162,7 +162,7 @@
                                             <q-btn flat @click="$refs.stepperFilePassword.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
                                             <div class="text-black">
                                                 <span class="q-pa-sm">
-                                                    <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePasswordConfirm" @input="filePasswordConfirmCheck" label="Confirm Password For The File" @keyup.enter="gotToSaveFileInWallet()" :type="isPwd ? 'password' : 'text'">
+                                                    <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePasswordConfirm" @input="filePasswordConfirmCheck" label="Confirm Password For The File" @keyup.enter="gotToSaveFileInWallet()" :type="isPwd ? 'password' : 'text'">
                                                         <template v-slot:append>
                                                             <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                                                         </template>
@@ -210,11 +210,11 @@
         <div class="chain-tools-wrapper">
             <div class="standard-content">
                 <h2 v-show="showMainSteps" class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.lightMode.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
+                    <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
                     Import EOS Account
                 </h2>
                 <h2 v-show="!showMainSteps" class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.lightMode.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
+                    <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
                     Save Private Key
                 </h2>
                 <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
@@ -223,7 +223,7 @@
                 <div class="list-wrapper">
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
                         <div v-show="showMainSteps">
-                            <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
+                            <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
                                 <!--
                                         1.Private key
                                         -->
@@ -245,7 +245,7 @@
                                             </ul>
                                         </div>
                                         <span>
-                                            <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.addressPriv" :error="addWallet.addressError" @input="showEosKeyNext" @keyup.enter="nextFromPriv" :label="$t('EosAccount.enter_private_key')" />
+                                            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.addressPriv" :error="addWallet.addressError" @input="showEosKeyNext" @keyup.enter="nextFromPriv" :label="$t('EosAccount.enter_private_key')" />
                                         </span>
                                         <div v-show="eosKeyInvalid" class="text-h6 text-red">
                                             Key invalid
@@ -301,7 +301,7 @@
                                     <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
                                     <div class="text-black">
                                         <div>
-                                            <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.vertoPassword" @input="showSubmitKey" @keyup.enter="addEosAddress" v-bind:label="$t('CreateVertoPassword.vertopassword')" :type="isPwd ? 'password' : 'text'">
+                                            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.vertoPassword" @input="showSubmitKey" @keyup.enter="addEosAddress" v-bind:label="$t('CreateVertoPassword.vertopassword')" :type="isPwd ? 'password' : 'text'">
                                                 <template v-slot:append>
                                                     <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                                                 </template>
@@ -324,7 +324,7 @@
                             </q-stepper>
                         </div>
                         <div v-show="!showMainSteps">
-                            <q-stepper :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-model="step2" done-color="green" ref="stepperFilePassword" alternative-labels vertical color="primary" animated flat>
+                            <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step2" done-color="green" ref="stepperFilePassword" alternative-labels vertical color="primary" animated flat>
                                 <!--
                                     1.Private key
                                     -->
@@ -346,7 +346,7 @@
                                             </ul>
                                         </div>
                                         <span class="q-pa-sm">
-                                            <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePassword" @input="filePasswordCheck" label="Password For The File" @keyup.enter="gotoFileConfirmPassword()" :type="isPwd ? 'password' : 'text'">
+                                            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePassword" @input="filePasswordCheck" label="Password For The File" @keyup.enter="gotoFileConfirmPassword()" :type="isPwd ? 'password' : 'text'">
                                                 <template v-slot:append>
                                                     <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                                                 </template>
@@ -364,7 +364,7 @@
                                     <q-btn flat @click="$refs.stepperFilePassword.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
                                     <div class="text-black">
                                         <span class="q-pa-sm">
-                                            <q-input :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePasswordConfirm" @input="filePasswordConfirmCheck" label="Confirm Password For The File" @keyup.enter="gotToSaveFileInWallet()" :type="isPwd ? 'password' : 'text'">
+                                            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePasswordConfirm" @input="filePasswordConfirmCheck" label="Confirm Password For The File" @keyup.enter="gotToSaveFileInWallet()" :type="isPwd ? 'password' : 'text'">
                                                 <template v-slot:append>
                                                     <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                                                 </template>

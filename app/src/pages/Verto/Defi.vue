@@ -1,7 +1,7 @@
 <template>
 <q-page class="text-black bg-white defiPage" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
 
-<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
    <q-dialog v-model="testnetDialog">
       <q-card>
         <q-card-section>
@@ -18,9 +18,9 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <q-dialog :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'" v-if="$store.state.settings.network == 'mainnet'" v-model="chooseAccount" persistent transition-show="scale" transition-hide="scale">
+    <q-dialog :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-if="$store.state.settings.network == 'mainnet'" v-model="chooseAccount" persistent transition-show="scale" transition-hide="scale">
       <q-card
-        :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+        :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
         class="bg-grey-11 flex flex-center q-py-lg" style="width: 500px;">
         <q-card-section>
           <div class="text-h6">Choose your account</div>
@@ -28,8 +28,8 @@
 
         <q-card-section class="q-pt-none">
          <q-select style="width: 400px;"
-          :dark="$store.state.lightMode.lightMode === 'true'"
-          :light="$store.state.lightMode.lightMode === 'false'"
+          :dark="$store.state.settings.lightMode === 'true'"
+          :light="$store.state.settings.lightMode === 'false'"
           separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation()" v-model="accountOption" :options="accountOptions">
             <template v-slot:selected>
                 <q-item v-if="accountOption">
@@ -82,7 +82,7 @@
           <!-- <q-btn label="Select wallet" color="primary" @click="chooseAccount = false"/> -->
           <q-btn
               unelevated
-              @click="chooseAccount = false"
+              @click="chooseAccount = false; showGuidedIntro()"
               color="primary"
               text-color="black"
               label="Select account"
@@ -98,9 +98,39 @@
          NO EOS or ETH wallet available
         </div>
         <div class="row" v-else>
+        <div class="row full-width fixed-bottom z-top">
+        <div  class="col-10 row">
+             <div v-if="accountOption.chain == 'eth'"  class="col-6 desktop-card-style wallet-snapshot q-mb-md" style="background: url(statics/header_bg.png) no-repeat; background-position: 20% 75%; background-size: 100%;">
+                    <div class="flex justify-between items-center q-pt-sm q-pb-sm">
+                        <h3 class="text-white q-pl-md">Max DeFi Yield</h3>
+                        <div class="text-white q-pr-md amount flex items-center">
+                            <span class="interest_rate q-pr-md flex items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""><strong class="q-pr-md q-pb-sm"><span class="thicker">{{maxDeFiYield.token}}</span></strong> {{maxDeFiYield.roi}} % <b class="p-abs">Interest Rate</b></span>
+                            <!-- <span>28.35 USD</span> -->
+                        </div>
+                    </div>
+                </div>
+                <div   class="col-6  desktop-card-style yearn-finance q-mb-md" v-if="maxToken && accountOption.chain == 'eth'">
+                    <q-item>
+                        <q-item-section>
+                            <span class="text-h5 text-bold ">
+                                Convert {{maxToken.amount.toFixed(4)}} {{maxToken.type.toUpperCase()}} to {{maxDeFiYield.token}}
+                            </span>
+                        </q-item-section>
+                        <q-item-section>
+                            <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
+                                <q-icon name="arrow_right_alt" />
+                                <div class="flex justify-between items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""> <strong>{{maxDeFiYield.toTokenAmount}} <b>{{maxDeFiYield.token}}</b></strong></div>
+                                <q-btn unelevated class="qbtn-download" color="black" text-color="white" label="Confirm" @click="goToExchange()" />
+                            </h4>
+                        </q-item-section>
+                    </q-item>
+                </div>
+             </div>
+    </div>
     <q-splitter
       v-model="splitterModel"
       style="width:100%"
+
     >
 
       <template style="width:25%" v-slot:before>
@@ -112,7 +142,7 @@
           inline-label
         >
          <div >
-          <q-list class="text-center flex">
+          <q-list class="text-center flex" data-title="Switch between chains"  data-intro="Each chain have their own related and associated features">
 
             <q-item v-if="$store.state.settings.network == 'mainnet'" clickable @click="chain = 'eth';  switchChain() " :class="[chain == 'eth' ? 'bg-white' :'']">
 
@@ -131,7 +161,7 @@
 
           <div auto-close stretch flat>
 
-           <q-list class="text-left" separator>
+           <q-list class="text-left" data-title="Menu"  data-intro="Click on a menu item to switch the view of the main section" separator>
             <q-item clickable @click="menu = 'swap'" :class="[menu == 'swap' ? 'bg-grey-3' : 'bg-white']">
               <q-item-section>Swap</q-item-section>
                <q-item-section side><q-icon name="navigate_next"/></q-item-section>
@@ -164,28 +194,29 @@
 
       <q-expansion-item
         v-if="accountOption.value"
-        :dark="$store.state.lightMode.lightMode === 'true'"
+        :dark="$store.state.settings.lightMode === 'true'"
         default-opened
         class="bg-white q-py-md accountOption"
         :label="'Total Balance - $'+(accountOption.total ? accountOption.total.toFixed(2) : 0 )"
         :caption="accountOption.label"
       >
         <q-card
-          :dark="$store.state.lightMode.lightMode === 'true'"
+          :dark="$store.state.settings.lightMode === 'true'"
           flat
           class="accountOptionCard"
           >
           <q-card-section class="q-pa-zero">
             <q-select
-            :dark="$store.state.lightMode.lightMode === 'true'"
+            data-title="Changing account..."  data-intro="Click here to switch to another account"
+            :dark="$store.state.settings.lightMode === 'true'"
             class="full-width"
-            :class="{'bg-white2': $store.state.lightMode.lightMode === 'false'}"
+            :class="{'bg-white2': $store.state.settings.lightMode === 'false'}"
             @input="getAccountInformation(accountOption)"
             v-model="accountOption"
             :options="accountOptions">
               <template v-slot:selected>
                 <q-item
-                  :dark="$store.state.lightMode.lightMode === 'true'"
+                  :dark="$store.state.settings.lightMode === 'true'"
                   v-if="accountOption">
                   <q-item-section>
                     <q-item-label >Change account</q-item-label>
@@ -229,6 +260,7 @@
                   </q-avatar>
               </template> -->
             </q-select>
+            <div  data-title="Token list"  data-intro="On this list you will find tokens associated with your selected account" >
             <q-item clickable :key="index"  v-for="(token,index) in $store.state.wallets.tokens.filter(o => o.chain ==  chain && (( o.name == accountOption.label && chain == 'eos') || ( o.key.toLowerCase() == accountOption.value.toLowerCase() && chain == 'eth' )))">
               <q-item-section avatar top>
                 <q-icon :name="'img:'+token.icon" color="primary" text-color="white" />
@@ -236,6 +268,7 @@
               <q-item-section>{{token.type.toUpperCase()}}</q-item-section>
               <q-item-section>${{isNaN(token.usd) ? 0 : token.usd.toFixed(4)}}</q-item-section>
             </q-item>
+            </div>
           </q-card-section>
         </q-card>
       </q-expansion-item>
@@ -246,7 +279,7 @@
       </template>
 
       <template v-slot:after>
-      <div :class="{'bg-white2':$store.state.lightMode.lightMode === 'false'}">
+      <div :class="{'bg-white2':$store.state.settings.lightMode === 'false'}">
           <div v-if="$store.state.settings.network == 'mainnet'" v-show="chain == 'eth'">
             <LiquidityPoolsTable :rowsPerPage="10" class="minHeight" v-if="menu == 'liquidity'"/>
             <InvestmentsTable class="minHeight2" v-else-if="menu == 'investments'"/>
@@ -265,46 +298,6 @@
           </div>
 
     </div>
-
-        <q-tab-panels
-          v-model="chain"
-          animated
-          swipeable
-          vertical
-
-        >
-          <q-tab-panel name="eth" class="bg-white" v-if="false">
-            <div class="row" v-if="false">
-             <div v-if="accountOption.chain == 'eth'"  class="col-6 desktop-card-style wallet-snapshot q-mb-md" style="background: url(statics/header_bg.png) no-repeat; background-position: 20% 75%; background-size: 100%;">
-                    <div class="flex justify-between items-center q-pt-sm q-pb-sm">
-                        <h3 class="text-white q-pl-md">Max DeFi Yield</h3>
-                        <div class="text-white q-pr-md amount flex items-center">
-                            <span class="interest_rate q-pr-md flex items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""><strong class="q-pr-md q-pb-sm"><span class="thicker">{{maxDeFiYield.token}}</span></strong> {{maxDeFiYield.roi}} % <b class="p-abs">Interest Rate</b></span>
-                            <!-- <span>28.35 USD</span> -->
-                        </div>
-                    </div>
-                </div>
-                <div   class="col-6  desktop-card-style yearn-finance q-mb-md" v-if="maxToken && accountOption.chain == 'eth'">
-                    <q-item>
-                        <q-item-section>
-                            <span class="text-h5 text-bold ">
-                                Convert {{maxToken.amount.toFixed(4)}} {{maxToken.type.toUpperCase()}} to {{maxDeFiYield.token}}
-                            </span>
-                        </q-item-section>
-                        <q-item-section>
-                            <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
-                                <q-icon name="arrow_right_alt" />
-                                <div class="flex justify-between items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""> <strong>{{maxDeFiYield.toTokenAmount}} <b>{{maxDeFiYield.token}}</b></strong></div>
-                                <q-btn unelevated class="qbtn-download" color="black" text-color="white" label="Confirm" @click="goToExchange()" />
-                            </h4>
-                        </q-item-section>
-                    </q-item>
-                </div>
-             </div>
-
-             </q-tab-panel>
-
-        </q-tab-panels>
       </template>
 
     </q-splitter>
@@ -339,7 +332,7 @@ import TestnetInvestments from '../../components/Verto/Defi/TestnetInvestments'
 import InvestmentsOpportunitiesTable from '../../components/Verto/Defi/InvestmentsTableOpportunities'
 import DebtsTable from '../../components/Verto/Defi/DebtsTable'
 import Oneinch from '../../components/Verto/Exchange/Oneinch'
-
+import 'intro.js/minified/introjs.min.css'
 import VolentixLiquidity from '../../components/Verto/Exchange/VolentixLiquidity'
 export default {
   components: {
@@ -477,13 +470,24 @@ export default {
   },
   async mounted () {
     this.checkChain()
-
     if (this.$route.params.tab) {
       this.menu = this.$route.params.tab
       this.$store.commit('settings/setMenu', this.menu)
     }
   },
   methods: {
+    showGuidedIntro () {
+      let disableIntro = localStorage.getItem('disableIntro_defi')
+      if (!disableIntro) {
+        const IntroJS = require('intro.js')
+        let Intro = new IntroJS()
+        Intro.setOptions({
+          showProgress: true
+        }).onbeforeexit(function () {
+          return localStorage.setItem('disableIntro_defi', Date.now())
+        }).start()
+      }
+    },
     initData () {
       let exchangeNotif = document.querySelector('.exchange-notif')
       if (exchangeNotif !== null) {
@@ -524,7 +528,7 @@ export default {
         label: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5)
       }))
       if (ethACcounts.length) {
-        // this.getMaxDeFiYield()
+        this.getMaxDeFiYield()
         this.ethACcount = ethACcounts[0]
       }
       if (eosWallets.length) {

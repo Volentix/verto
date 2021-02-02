@@ -1,5 +1,5 @@
 <template>
-  <q-page :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-white': $store.state.lightMode.lightMode === 'false'}">
+  <q-page :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-white': $store.state.settings.lightMode === 'false'}">
     <div v-if="step===1" class="standard-content">
       <h2 class="standard-content--desc"></h2>
       <div class="standard-content--body">
@@ -25,7 +25,7 @@
             <q-btn round flat unelevated text-color="grey" class="btn-copy" @click="copy2clip(mnemonic)" icon="o_file_copy" />
           </h4>
           <q-input
-            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
             ref="mnemonic"
             type="textarea"
             v-model="mnemonic"
@@ -45,7 +45,7 @@
         <div v-if="!vertoPassword">
           <q-input
             v-model="vertoPasswordTemp"
-            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
             color="green"
             label="Verto Password"
             debounce="500"
@@ -88,7 +88,7 @@
             Mnemonic
           </h4>
           <q-input
-            :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
             ref="mnemonic"
             type="textarea"
             @input="validateMnemonic()"

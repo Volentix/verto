@@ -7,6 +7,7 @@ export default function () {
     gasPrice: null,
     poolDataHistory: {},
     marketData: [],
+    lightMode: true,
     investmentOpportunities: [],
     investments: [],
     stakeData: null,

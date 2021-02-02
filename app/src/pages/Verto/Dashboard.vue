@@ -1,6 +1,6 @@
 <template>
-<q-page class="column" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-white': $store.state.lightMode.lightMode === 'false', 'desktop-marg' : screenSize > 1024, 'mobile-pad': screenSize < 1024}">
-<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+<q-page class="column" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-white': $store.state.settings.lightMode === 'false', 'desktop-marg' : screenSize > 1024, 'mobile-pad': screenSize < 1024}">
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
             <div class="col col-md-3">
@@ -15,7 +15,7 @@
                 <appsSection />
                 <startNodeSection :banner="1" />
                 <chainToolsSection />
-                <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+                <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                     <liquidityPoolsTable :rowsPerPage="10" v-if="$store.state.settings.network == 'mainnet'" />
                     <q-scroll-area :visible="true" class="q-pr-lg q-mr-sm" style="height: 362px;" v-if="false">
                         <div v-for="(pool, index) in $store.state.investment.pools" :key="index" class="body-table-col border row items-center q-pl-md q-pb-lg q-pt-lg">
@@ -77,7 +77,7 @@
             <hr style="height:0px;opacity:0" />
             <LiquidityPoolsSection />
             <hr style="height:0px;opacity:0" />
-            <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+            <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                 <liquidityPoolsTable v-if="$store.state.settings.network == 'mainnet'" :rowsPerPage="10" />
             </div>
             <hr style="height:0px;opacity:0" />

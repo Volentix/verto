@@ -1,6 +1,6 @@
 <template>
-  <q-page class="column stake-page" :class="{'desktop-marg':screenSize > 1024, 'mobile-pad': screenSize < 1024,'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-grey-12': $store.state.lightMode.lightMode === 'false'}">
-    <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+  <q-page class="column stake-page" :class="{'desktop-marg':screenSize > 1024, 'mobile-pad': screenSize < 1024,'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-grey-12': $store.state.settings.lightMode === 'false'}">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
           <div class="col col-md-3">
@@ -11,7 +11,7 @@
             </div>
           </div>
           <div class="col col-md-9">
-            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
               <div class="standard-content">
                 <h2 class="standard-content--title flex justify-start">{{$store.state.currentwallet.params.tokenID == 'eos' ? 'Staking / Unstaking' :  'Staking' }}</h2>
                 <div class="standard-content--body">

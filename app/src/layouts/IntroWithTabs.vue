@@ -9,7 +9,7 @@
         <q-page-sticky position="bottom-right"  :offset="fabPos">
         <q-fab
           v-model="fab"
-          @click="onClick()"
+          @click="showWizardAction()"
           label="Help Wizard"
           label-position="right"
           color="purple"
@@ -25,7 +25,7 @@
       <div class="q-pr-xs" style="background: #E7E8E8;">
         <q-scroll-area :visible="true" style="height: 100vh">
           <q-page-container>
-            <router-view />
+            <router-view :showWizard="showWizardAction" />
           </q-page-container>
         </q-scroll-area>
       </div>
@@ -57,6 +57,10 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   created () {
+    let closewizard = localStorage.getItem('closewizard')
+    if (!closewizard) {
+      this.showWizardAction()
+    }
     this.osName = osName
     this.reRender = Math.random()
     this.getWindowWidth()
@@ -64,7 +68,7 @@ export default {
     // console.log('this.osName', this.osName)
   },
   methods: {
-    onClick () {
+    showWizardAction () {
       this.reRender = Math.random()
       this.showWizard = true
     },
