@@ -1,5 +1,5 @@
 <template>
-<q-page :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-white': $store.state.lightMode.lightMode === 'false'}">
+<q-page :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-white': $store.state.settings.lightMode === 'false'}">
     <div v-if="step===2" class="standard-content" style="padding-bottom: 0px">
         <div class="standard-content--body">
             <h2 class="standard-content--title"> Creating </h2>

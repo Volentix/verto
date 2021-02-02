@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+  <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <div class="chain-tools-wrapper">
       <!-- <q-toggle v-model="active" label="Active" /> -->
       <div class="chain-tools-wrapper--list open">
@@ -8,7 +8,7 @@
             <q-tabs
               v-model="tab"
               dense
-              :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+              :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
               class="text-grey"
               active-color="primary"
               indicator-color="primary"
@@ -30,7 +30,7 @@
                     color="primary"
                     animated
                     flat
-                    :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                    :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                   >
                     <q-step title="Choose an account"
                       :name="0"
@@ -38,7 +38,7 @@
                       :done="step > 0"
                     >
                       <q-select
-                          :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                          :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                           separator
                           rounded
                           outlined
@@ -181,7 +181,7 @@
                                 <span class="--title row text-h6"> Amount to stake </span>
                                 <span class="--amount row text-h4"> {{  sendAmount }} {{ params.tokenID.toUpperCase() }}</span>
                                 <q-input
-                                 :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                                 :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                                   v-model="sendAmount"
                                   type="number"
                                   :suffix="params.tokenID.toUpperCase()"
@@ -223,7 +223,7 @@
                         <div class="text-h4 --subtitle">Enter your password to sign the transaction.</div>
                         <q-input
                           v-model="privateKeyPassword"
-                          :dark="$store.state.lightMode.lightMode === 'true'" :light="$store.state.lightMode.lightMode === 'false'"
+                          :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                           rounded
                           outlined
                           class="--input"

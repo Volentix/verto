@@ -1,13 +1,13 @@
 <template>
-<q-page class="column" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true', 'text-black bg-white': $store.state.lightMode.lightMode === 'false', 'desktop-marg' : screenSize > 1024, 'mobile-pad': screenSize < 1024}">
-<div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+<q-page class="column" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-white': $store.state.settings.lightMode === 'false', 'desktop-marg' : screenSize > 1024, 'mobile-pad': screenSize < 1024}">
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
 
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
             <div class="col col-md-3">
                 <div class="wallets-container">
                     <profile-header :isMobile="false" class="marg" version="type2222" />
-                    <wallets data-title="Interact with your account"  data-intro="Click on an account/token to see all actions you can perform. Click SETP to associate EOS account(s) to account names" :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+                    <wallets data-title="Interact with your account"  data-intro="Click on an account/token to see all actions you can perform. Click SETUP to associate EOS account(s) to account names" :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                 </div>
             </div>
             <div class="col col-md-9 q-pr-md">
@@ -19,12 +19,12 @@
                         <startNodeSection :banner="3" />
                     </div>
                     <div class="col col-md-12">
-                        <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+                        <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                             <q-tabs
                                 v-model="tabPoolAndAssetBalances"
                                 class="tabPoolAndAssetBalances"
                                 align="flex-start"
-                                :class="{'text-black bg-white': $store.state.lightMode.lightMode === 'false', 'text-white bg-myblue': $store.state.lightMode.lightMode === 'true'}"
+                                :class="{'text-black bg-white': $store.state.settings.lightMode === 'false', 'text-white bg-myblue': $store.state.settings.lightMode === 'true'}"
                             >
                                 <q-tab name="explore" class="text-capitalize" label="Explore Opportunities" />
                                 <q-tab name="asset" class="text-capitalize" label="Asset Balances" />
@@ -77,7 +77,7 @@
             <hr style="height:0px;opacity:0" />
             <LiquidityPoolsSection />
             <hr style="height:0px;opacity:0" />
-            <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+            <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                 <liquidityPoolsTable :rowsPerPage="10" />
             </div>
             <hr style="height:0px;opacity:0" />
@@ -250,16 +250,10 @@ export default {
     */
   },
   async mounted () {
-    let disableIntro = localStorage.getItem('disableIntros_')
-    if (!disableIntro) {
-      const IntroJS = require('intro.js')
-      let Intro = new IntroJS()
-      Intro.setOptions({
-        showProgress: true
-      }).onbeforeexit(function () {
-        return localStorage.setItem('disableIntros_', Date.now())
-      }).start()
-    }
+    this.$bus.$on('showHomeIntro', () => {
+      this.showIntros()
+    })
+
     setTimeout(async () => {
       let manualSelectCurrentWallet = false
       await store.state.wallets.tokens.map(async (f) => {
@@ -290,6 +284,18 @@ export default {
   methods: {
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
+    showIntros () {
+      let disableIntro = localStorage.getItem('disableIntros_home')
+      if (!disableIntro) {
+        const IntroJS = require('intro.js')
+        let Intro = new IntroJS()
+        Intro.setOptions({
+          showProgress: true
+        }).onbeforeexit(function () {
+          return localStorage.setItem('disableIntros_home', Date.now())
+        }).start()
+      }
     }
 
   },

@@ -1,13 +1,13 @@
 <template>
-    <div class="desktop-card-style make-vtx" :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+    <div class="desktop-card-style make-vtx" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
         <div class="exchange-container">
-            <div v-if="$store.state.lightMode.lightMode === 'true'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md" style="background: url('statics/bg3d1.png');">Exchange</div>
+            <div v-if="$store.state.settings.lightMode === 'true'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md" style="background: url('statics/bg3d1.png');">Exchange</div>
             <div v-else class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md lightmd" style="background: url('statics/bg3d1light.png');">Exchange</div>
             <div class="row items-center q-pl-md q-pr-md scale">
                 <div class="col col-8">
                     <i class="step-1-lab flex">Step<b>1</b> Select coin to send</i>
                     <div class="call-action">
-                        <q-select :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                        <q-select :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                             <template v-slot:option="scope">
                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                     <q-item-section avatar>
@@ -38,7 +38,7 @@
                     </div>
                     <i class="step-2-lab step-1-lab flex ">Step<b>2</b> Select coin to receive</i>
                     <div class="call-action">
-                        <q-select :light="$store.state.lightMode.lightMode === 'false'" :dark="$store.state.lightMode.lightMode === 'true'" separator rounded outlined class="select-input" use-input @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                        <q-select :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input" use-input @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                             <template v-slot:option="scope">
                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                     <q-item-section avatar>
@@ -71,7 +71,7 @@
                     </div>
                 </div>
                 <div class="col-4 flex justify-end q-pb-sm">
-                    <q-btn unelevated class="qbtn-start" color="black" @click="goToExchange" :text-color="$store.state.lightMode.lightMode === 'false' ? 'black':'white'" label="Next" />
+                    <q-btn unelevated class="qbtn-start" color="black" @click="goToExchange" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" label="Next" />
                 </div>
             </div>
         </div>
@@ -95,9 +95,9 @@ export default {
     return {
       error: null,
       depositCoin: {
-        label: 'EOS',
-        value: 'eos',
-        image: 'https://files.coinswitch.co/public/coins/eos.png'
+        label: 'ETH',
+        value: 'eth',
+        image: 'https://files.coinswitch.co/public/coins/eth.png'
       },
       depositCoinOptions: null,
       depositCoinUnfilter: null,

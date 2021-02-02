@@ -1,6 +1,6 @@
 <template>
   <q-page :class="$q.screen.width > 1024 ? 'desktop-marg' : 'mobile-pad'">
-    <div :class="{'dark-theme': $store.state.lightMode.lightMode === 'true'}">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="desktop-version" v-if="$q.screen.width > 1024">
         <div class="row">
           <div class="col col-md-3">
