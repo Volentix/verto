@@ -50,6 +50,7 @@ connect = () => {
       return new Promise(async (resolve, reject) => {
         try {
           window.ethereum.enable().then(async (accounts) => {
+            console.log(accounts, 'accounts')
             store.commit('wallets/updateExternalWalletAccounts', { wallet: self.walletName,
               accounts: accounts.map((o) => {
                 let item = {}
@@ -71,7 +72,7 @@ connect = () => {
                   item.balance = web3.utils.fromWei(balance, 'ether')
                   item.label = o.substring(0, 10) + '...' + o.substr(o.length - 5)
                   item.value = o
-                  item.amount = item.balance
+                  item.amount = isNaN(item.balance) ? 0 : item.balance
                   item.symbol = 'ETH'
                   item.symbol = 'ETH'
                   item.type = 'eth'
@@ -113,6 +114,7 @@ async getEthWalletData (wallet) {
       eth.amount = ethplorer.ETH.balance
       eth.usd = ethplorer.ETH.balance * ethplorer.ETH.price.rate
     })
+    store.commit('wallets/updateExternalWalletTokens', { wallet: this.walletName, tokens: this.tableData })
     if (ethplorer) {
       await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.tokensets.com/v1/rebalancing_sets', {
         headers: {
