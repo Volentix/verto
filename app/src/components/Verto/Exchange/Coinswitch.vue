@@ -74,7 +74,7 @@
                                                         <p  class="text-green col-12 text-center q-pt-none text-h6"  v-else>You are connected with Metamask </p>
                                                         <q-item  dense class="metamask-btn row flex flex-center" >
                                                             <q-item-section class="text-body1 q-pr-sm" style="max-width:200px">
-                                                                <q-btn :loading="connectLoading" :class=" $store.state.wallets.metamask.accounts.length ? 'bg-green-1' : 'bg-red-1'"  @click="connectWallet('metamask')" flat icon="fiber_manual_record" :color="!$store.state.wallets.metamask.accounts.length ? 'red' : 'green'" :label="!$store.state.wallets.metamask.accounts.length ? 'Connect' : 'Get VTX'">
+                                                                <q-btn :loading="connectLoading" :class=" $store.state.wallets.metamask.accounts.length ? 'bg-green-1' : 'bg-red-1'"  @click=" $store.state.wallets.metamask.accounts.length ? offer = false : connectWallet('metamask')" flat icon="fiber_manual_record" :color="!$store.state.wallets.metamask.accounts.length ? 'red' : 'green'" :label="!$store.state.wallets.metamask.accounts.length ? 'Connect' : 'Get VTX'">
                                                                     <img style="width: 35px;" class="q-pl-sm" src="https://cdn.freebiesupply.com/logos/large/2x/metamask-logo-png-transparent.png">
                                                                 </q-btn>
                                                             </q-item-section>
