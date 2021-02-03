@@ -70,15 +70,16 @@
                                                         <div classs="q-pl-md"><q-icon color="grey" name="help" /> Why staking VTX ? </div>
                                                         <div class="text-center"  v-if="accountToBeCreated">
                                                         <p  class=" col-12 text-center q-mb-none   q-pb-none text-h6"><b>{{freeeAccountName}}</b> is available </p>
-                                                        <p  class="text-green col-12 text-center q-pt-none text-h6">Connect with an external Wallet </p>
+                                                        <p  class="text-green col-12 text-center q-pt-none text-h6"  v-if=" $store.state.wallets.metamask.accounts.length == 0">Connect with an external Wallet </p>
+                                                        <p  class="text-green col-12 text-center q-pt-none text-h6"  v-else>You are connected with Metamask </p>
                                                         <q-item  dense class="metamask-btn row flex flex-center" >
                                                             <q-item-section class="text-body1 q-pr-sm" style="max-width:200px">
-                                                                <q-btn :loading="connectLoading" :class=" $store.state.wallets.metamask.accounts.length ? 'bg-green-1' : 'bg-red-1'" @click="connectWallet('metamask')" flat icon="fiber_manual_record" :color="!$store.state.wallets.metamask.accounts.length ? 'red' : 'green'" :label="!$store.state.wallets.metamask.accounts.length ? 'Connect' : 'Connected'">
+                                                                <q-btn :loading="connectLoading" :class=" $store.state.wallets.metamask.accounts.length ? 'bg-green-1' : 'bg-red-1'" v-close-popup @click="connectWallet('metamask')" flat icon="fiber_manual_record" :color="!$store.state.wallets.metamask.accounts.length ? 'red' : 'green'" :label="!$store.state.wallets.metamask.accounts.length ? 'Connect' : 'Get VTX'">
                                                                     <img style="width: 35px;" class="q-pl-sm" src="https://cdn.freebiesupply.com/logos/large/2x/metamask-logo-png-transparent.png">
                                                                 </q-btn>
                                                             </q-item-section>
                                                         </q-item>
-                                                        <q-btn flat label="Use Verto wallet" v-close-popup dense />
+                                                        <q-btn v-if=" $store.state.wallets.metamask.accounts.length == 0" flat label="Use Verto wallet" v-close-popup dense />
                                                         </div>
                                                             </q-card-section>
 
@@ -306,8 +307,10 @@
                                                         </div>
                                                     </div>
                                                     <div class="text-body1 text-red q-py-md" v-if="ErrorMessage">{{ ErrorMessage }}</div>
+
                                                     <q-btn unelevated :disable="ErrorMessage.length != 0 || depositQuantity == 0 || depositQuantity < rateData.limitMinDepositCoin || destinationQuantity > rateData.limitMaxDestinationCoin" @click="accountToBeCreated ? postOrder() : pStep = 2" color="light-grey" text-color="black" :label="accountToBeCreated ? 'Swap & Stake': 'Choose Accounts'" class="text-capitalize chose_accounts full-width" />
                                                 </div>
+                                                <p v-if="accountToBeCreated" class="text-body1 q-pt-sm q-pl-md cursor-pointer" @click="accountToBeCreated = false ; freeeAccountName = null">Reject offer</p>
                                             </div>
                                             <div v-if="pStep === 2" class="prototype">
                                                 <div class="head">
