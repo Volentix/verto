@@ -61,6 +61,13 @@
             </q-item>
           </q-list>
         </q-btn-dropdown>
+        <q-item  v-if="$store.state.wallets.metamask.accounts.length && false" dense class="metamask-btn" style="max-width:300px">
+            <q-item-section class="text-body1 q-pr-sm">
+                <q-btn  :class=" $store.state.wallets.metamask.accounts.length ? 'bg-green-1' : 'bg-red-1'" flat icon="fiber_manual_record" :color="!$store.state.wallets.metamask.accounts.length ? 'red' : 'green'" :label="!$store.state.wallets.metamask.accounts.length ? 'Connect' : 'Connected'">
+                    <img style="width: 35px;" class="q-pl-sm" src="https://cdn.freebiesupply.com/logos/large/2x/metamask-logo-png-transparent.png">
+                </q-btn>
+            </q-item-section>
+        </q-item>
         <q-btn-dropdown
           no-caps
           icon="upgrade"
