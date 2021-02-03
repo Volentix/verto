@@ -10,38 +10,38 @@ import {
 import abiArray from '@/statics/abi/erc20.json'
 
 class Lib {
-  async getRawETHTransaction (token, from, to, value, key, contract) {
-    console.log('token, from, to, value, memo, key, contract', token, from, to, value, key, contract)
-    // console.log('abiArray', abiArray)
-
+  async getRawETHTransaction (token, from, to, value, key, contract, origin = 'mnemonic') {
+    console.log(token, from, to, value, key, contract, origin, 'token, from, to, value, key, contract')
     const Web3 = require('web3')
-    const web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+    let localWeb3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+    if (origin === 'metamask' && window.web3 && window.web3.currentProvider.isMetaMask) {
+      localWeb3 = new Web3(window.web3.currentProvider)
+    }
 
-    let nonce = await web3.eth.getTransactionCount(from)
-    let data = '0x00'
-    let web3Value = web3.utils.toHex(web3.utils.toWei(value.toString()))
-    // let transactionHash = ''
+    let nonce = await localWeb3.eth.getTransactionCount(from)
+
+    let web3Value = localWeb3.utils.toHex(localWeb3.utils.toWei(value.toString()))
+
     let sendTo = to
-
+    let data = null
     if (token !== 'eth') {
-      let web3Contract = new web3.eth.Contract(abiArray, contract)
+      let web3Contract = new localWeb3.eth.Contract(abiArray, contract)
       data = web3Contract.methods.transfer(to, web3Value).encodeABI()
-
       sendTo = contract
       web3Value = '0x00'
     }
 
-    // Gas options selection to be implemented
-
     let rawTx = {
       from,
       to: sendTo,
-      value: web3Value,
-      data,
       nonce,
+      value: web3Value,
       chainId: 1
     }
-
+    if (data) {
+      rawTx.data = data
+    }
+    console.log(rawTx, 'rawTx')
     return rawTx
   }
   history = async (walletType, key, token) => {
