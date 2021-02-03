@@ -8,7 +8,6 @@ import EosWrapper from '@/util/EosWrapper'
 class Wallets2Tokens {
   constructor () {
     this.eos = new EosWrapper()
-    store.commit('wallets/setLoadingState', { eos: false, eth: false })
     const self = this
     self.eosUSD = 0
     this.getEosUSD()
@@ -77,9 +76,6 @@ class Wallets2Tokens {
                   })
                   store.state.wallets.portfolioTotal += usdValue * t.amount
                   this.updateWallet()
-                  if (index === balances.data.length - 1) {
-                    store.commit('wallets/setLoadingState', { eos: true })
-                  }
                 })
               }
             } else {
@@ -202,9 +198,6 @@ class Wallets2Tokens {
                   })
                   store.state.wallets.portfolioTotal += usdValue * t.amount
                   this.updateWallet()
-                  if (index === balances.data.length - 1) {
-                    store.commit('wallets/setLoadingState', { eos: true })
-                  }
                 })
               }
             } else {
@@ -290,8 +283,6 @@ class Wallets2Tokens {
                 })
               }
             })
-          } else {
-            store.commit('wallets/setLoadingState', { eth: true })
           }
         })
       }
