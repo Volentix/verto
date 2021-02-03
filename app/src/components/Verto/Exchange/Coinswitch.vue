@@ -152,8 +152,8 @@
                                                                             <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
                                                                         </q-item-section>
                                                                         <q-item-section dark>
-                                                                            <q-item-label caption>{{ scope.opt.value }}</q-item-label>
-                                                                            <q-item-label v-html="scope.opt.label" />
+                                                                            <q-item-label caption>{{ scope.opt.value.toUpperCase() }}</q-item-label>
+                                                                            <q-item-label v-html="scope.opt.label.toUpperCase()" />
                                                                         </q-item-section>
                                                                     </q-item>
                                                                 </template>
@@ -178,7 +178,7 @@
                                                                             <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
                                                                         </q-item-section>
                                                                         <q-item-section>
-                                                                            <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                                                                            <q-item-label caption>{{ scope.opt.value.toUpperCase() }}</q-item-label>
                                                                             <q-item-label v-html="scope.opt.label" />
                                                                         </q-item-section>
                                                                     </q-item>
@@ -207,7 +207,7 @@
                                                                                 <q-icon :name="`img:${scope.opt.image}`" />
                                                                             </q-item-section>
                                                                             <q-item-section>
-                                                                                <q-item-label v-html="scope.opt.label" />
+                                                                                <q-item-label v-html="scope.opt.label.toUpperCase()" />
                                                                                 <q-item-label caption>{{ scope.opt.contract }}</q-item-label>
                                                                                  <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
                                                                             </q-item-section>
@@ -1638,7 +1638,6 @@ export default {
           }
         }).filter(o => o !== false)
         this.depositCoinOptions = allCoins
-        this.destinationCoinUnfilter = this.depositCoinOptions
         this.depositCoinUnfilter = this.depositCoinOptions
         this.depositCoin = allCoins.find(o => o.value === 'eth')
       }
