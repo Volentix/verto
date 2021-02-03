@@ -82,7 +82,7 @@
                                                         </div>
                                                             </q-card-section>
 
-                                                            <q-card-actions  align="right" class="bg-white text-teal q-pr-lg " v-if="false && !freeeAccountName || !freeeAccountName.length">
+                                                            <q-card-actions  align="right" class="bg-white text-teal q-pr-lg " v-if="false && ( !freeeAccountName || !freeeAccountName.length)">
                                                             <q-btn flat color="primary" label="Reject offer" v-close-popup />
                                                             <q-btn  label="Accept offer" color="primary"  />
                                                             </q-card-actions>
@@ -1340,7 +1340,7 @@ export default {
   updated () {},
   watch: {
     depositCoin (val) {
-      if (val.origin === 'metamask' && val.amount) {
+      if (val.origin === 'metamask') {
         this.fromCoin = this.currentEthWallet
       }
       console.log(this.fromCoin, 'this.fromCoin')
@@ -1359,6 +1359,7 @@ export default {
       }
     },
     '$store.state.wallets.metamask.tokens': function (val) {
+      console.log(val)
       this.initMetamask()
     },
     toCoin (val) {
@@ -1616,14 +1617,15 @@ export default {
     },
     initMetamask () {
       let allCoins = JSON.parse(JSON.stringify(this.coins))
-
+      console.log(this.$store.state.wallets.metamask.tokens, this.currentEthWallet)
       if (this.$store.state.wallets.metamask.accounts.length) {
         if (!this.currentEthWallet) { this.currentEthWallet = this.$store.state.wallets.metamask.accounts[0] }
-        console.log(this.$store.state.wallets.metamask.tokens, this.currentEthWallet)
+
         allCoins = allCoins.map((o) => {
           let token = this.$store.state.wallets.metamask.tokens.find(a => this.currentEthWallet.value === a.key && a.type.toLowerCase() === o.value.toLowerCase())
 
-          if (token && token.amount && !isNaN(token.amount)) {
+          if (token) {
+            token.amount = isNaN(token.amount) ? 0 : token.amount
             token.value = token.type
             token.label = token.type
             token.image = token.icon
@@ -2186,7 +2188,7 @@ export default {
     checkBalance () {
       if (this.currentEthWallet || (this.depositCoin.amount && this.$store.state.wallets.tokens.filter(a => a.type.toLowerCase() === this.depositCoin.value.toLowerCase()).length === 1)) {
         if (this.rateData.limitMinDepositCoin > this.depositCoin.amount) {
-        //  this.ErrorMessage = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance. (Minimum deposit required: ' + this.rateData.limitMinDepositCoin + ' ' + this.depositCoin.value.toUpperCase() + ')'
+          this.ErrorMessage = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance. (Minimum deposit required: ' + this.rateData.limitMinDepositCoin + ' ' + this.depositCoin.value.toUpperCase() + ')'
         }
       }
     },
