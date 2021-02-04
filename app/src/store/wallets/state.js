@@ -2,5 +2,8 @@
 export default {
   tokens: [],
   portfolioTotal: 0,
-  loaded: { eos: false, eth: false }
+  metamask: {
+    tokens: [],
+    accounts: []
+  }
 }

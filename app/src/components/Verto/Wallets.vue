@@ -227,7 +227,12 @@
             <q-scroll-area :visible="true" ref="walletsScrollArea" class="walletsScrollArea q-mr-sm q-ml-xs" :class="{'short' : $store.state.currentwallet.wallet.empty, 'long' : !$store.state.currentwallet.wallet.empty}" :style="$store.state.currentwallet.wallet.empty ? 'height: 285px;': 'height: 323px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty">
-                     <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => f.type == 'verto' && f.chain == 'eos' && !f.hidden && !f.disabled)" :class="[item.selected ? 'selected' : '', 'highlight']" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                     <q-item v-show="!hideEosSetup"  dense>
+                        <q-item-section @click="hideEOSSetup()" class="text-center  cursor-pointer q-pb-sm">
+                        <q-item-label><q-icon flat label="Yes" name="update" size="sm" /> Setup EOS account later  </q-item-label>
+                        </q-item-section>
+                    </q-item>
+                     <q-item v-show="!hideEosSetup" v-for="(item) in $store.state.wallets.tokens.filter(f => f.type == 'verto' && f.chain == 'eos' && !f.hidden && !f.disabled)" :class="[item.selected ? 'selected' : '', 'highlight']" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="showMenu(item, '/verto/eos-account')" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar>
@@ -704,6 +709,7 @@ export default {
   data () {
     return {
       searchAccount: '',
+      hideEosSetup: null,
       history: [],
       rekey: 98813538,
       toggled: false,
@@ -745,7 +751,9 @@ export default {
       }
     }
   },
-  async mounted () {},
+  async mounted () {
+    this.hideEosSetup = localStorage.getItem('hideEosSetup')
+  },
   async updated () {
     // //console.log('updated')
   },
@@ -870,6 +878,11 @@ export default {
     },
     togglePrivateKey () {
       this.showPrivate = !this.showPrivate
+    },
+    hideEOSSetup () {
+      localStorage.setItem('hideEosSetup', 'true')
+      this.hideEosSetup = true
+      console.log(this.hideEosSetup)
     },
     hideModalFun: function () {
       this.openModal = false
