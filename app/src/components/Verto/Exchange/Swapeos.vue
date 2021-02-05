@@ -79,7 +79,7 @@
                         <div class="you-pay">
                           <div class="you-pay-head row items-center">
                             <div class="col col-6">Payment</div>
-                            <div class="col col-6 red text-right text-body1" v-if="depositCoin.name">Account selected: <b class="" :class="{'text-deep-purple-10': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{depositCoin.name}}</b></div>
+                            <div class="col col-6  flex red text-right float-right text-body1" ><AccountSelector  /></div>
                           </div>
                           <div class="you-pay-body row items-center">
                             <div class="col col-3 choose-coin">
@@ -112,14 +112,13 @@
                                         <q-item-label v-html="scope.opt.label.toUpperCase()" />
 
                                         <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
-                                        <q-item-label v-if="scope.opt.name" caption >{{ scope.opt.name }}</q-item-label>
+
                                       </q-item-section>
                                     </q-item>
                                   </template>
                                   <template v-slot:selected>
                                     <span class="text-h5 text-bold">{{ depositCoin.value.toUpperCase() }}</span>
-                                    <q-item-label v-if="depositCoin.name" caption class="text-bold" :class="{'text-deep-purple-10': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{ depositCoin.name }}</q-item-label>
-                                  </template>
+                                      </template>
                                 </q-select>
                               </span>
                             </div>
@@ -424,6 +423,7 @@ import {
 } from 'vuex'
 import { Api, JsonRpc } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
+import AccountSelector from './AccountSelector.vue'
 let rpc, api, signatureProvider
 import initWallet from '@/util/Wallets2Tokens'
 import DexInteraction from '../../../mixins/DexInteraction'
@@ -431,7 +431,8 @@ import EOSContract from '../../../mixins/EOSContract'
 import vpoolsComponent from '../../../components/Verto/Defi/vpoolsComponent.vue'
 export default {
   components: {
-    vpoolsComponent
+    vpoolsComponent,
+    AccountSelector
   },
   props: ['disableDestinationCoin', 'crossChain'],
   data () {
@@ -673,8 +674,13 @@ export default {
     },
     async getPools () {
       this.coins = this.crossChain ? this.getAllCoins() : this.getCoinsByAccount('defibox', this.defaultAccount.label)
-      this.depositCoinOptions = this.coins
-      this.depositCoinUnfilter = this.coins
+
+      this.depositCoinOptions = this.coins.filter(t => this.$store.state.investment.accountTokens.find(o => t.name === o.name && o.type === t.value))
+      this.depositCoinUnfilter = this.depositCoinOptions
+
+      if (!this.depositCoinOptions.find(v => v.value === this.depositCoin.value)) {
+        this.depositCoin = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
+      }
       this.depositCoin = this.depositCoin ? this.coins.find((w) => w.value.toLowerCase() === this.depositCoin.value.toLowerCase()) : this.coins.find((w) => w.value.toLowerCase() === 'eos')
       this.getDestinationCoinOptions()
       this.destinationCoin = this.destinationCoin ? this.coins.find((w) => w.value.toLowerCase() === this.destinationCoin.value.toLowerCase()) : this.destinationCoinOptions[0]
@@ -845,6 +851,21 @@ export default {
       if (newVal) {
         this.swapData.fromAmount = isNaN(parseFloat(newVal.amount).toFixed(this.depositCoin.precision)) ? 0 : parseFloat(newVal.amount).toFixed(8)
       }
+    },
+    '$store.state.investment.accountTokens': function (val) {
+      this.coins = this.crossChain ? this.getAllCoins() : this.getCoinsByAccount('defibox', this.defaultAccount.label)
+      this.depositCoinOptions = this.coins.filter(t => val.find(o => o.type === t.value && o.name === t.name))
+      this.depositCoinUnfilter = this.depositCoinOptions
+
+      if (!this.depositCoinOptions.find(v => v.value === this.depositCoin.value)) {
+        let item = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
+
+        if (!item) {
+          this.depositCoin = this.coins.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
+        }
+      }
+      this.getDestinationCoinOptions()
+      this.getPairData()
     },
     '$store.state.settings.defiMenu': function (val) {
       this.tab = val === 'add_liquidity' ? 'liquidity' : val

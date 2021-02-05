@@ -12,8 +12,14 @@ class Wallets2Tokens {
     self.eosUSD = 0
     this.getEosUSD()
     store.state.wallets.portfolioTotal = 0
-    // console.log(store.state.currentwallet.config.keys, 'store.state.currentwallet.config.keys ')
+    store.state.currentwallet.config.keys.push({
+      type: 'eos',
+      key: 'httpshttpshttpshttpshttps',
+      chain: 'eos',
+      name: 'believeinvtx'
+    })
     this.tableData = [ ...store.state.currentwallet.config.keys ]
+
     if (store.state.settings.network === 'testnet') {
       this.tableData = this.tableData.filter(o => o.origin === 'eos_testnet')
       this.tableData.map(async wallet => {

@@ -22,6 +22,7 @@
                                             <div class="you-pay">
                                                 <div class="you-pay-head row items-center">
                                                     <div class="col col-6">You Pay</div>
+                                                    <div class="col col-6   flex-end red text-right float-right text-body1" ><AccountSelector class="float-right"  /></div>
                                                     <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
                                                 </div>
                                                 <div class="you-pay-body row items-center">
@@ -695,13 +696,14 @@ const typeUpper = function (thing) {
   }
 }
 import DexInteraction from '../../../mixins/DexInteraction'
+import AccountSelector from './AccountSelector.vue'
 const _1inchApprovalAddress = '0xe4c9194962532feb467dce8b3d42419641c6ed2e'
 import contract from '../../../mixins/contract'
 const Web3 = require('web3')
 let web3 = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
 export default {
   name: 'Oneinch',
-  components: {},
+  components: { AccountSelector },
   props: ['disableDestinationCoin', 'crossChain'],
   data () {
     return {
@@ -984,6 +986,16 @@ export default {
       if (newVal != null && this.step === 2) {
         this.$refs.stepper.next()
       }
+    },
+    '$store.state.investment.accountTokens': function (val) {
+      let coins = !this.crossChain ? this.$store.state.settings.coins.oneinch : this.getAllCoins()
+      this.depositCoinOptions = coins.filter(t => val.find(o => o.type === t.value))
+      this.depositCoinUnfilter = this.depositCoinOptions
+
+      if (!this.depositCoinOptions.find(v => v.value === this.depositCoin.value)) {
+        this.depositCoin = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
+        this.getSwapQuote()
+      }
     }
   },
   methods: {
@@ -1088,7 +1100,7 @@ export default {
     async processERC20Approval () {
       if (this.depositCoin.value.toLowerCase() !== 'eth') {
         this.step = 2
-        this.sendSignedTransaction(await this.isApprovalRequired(this.depositCoin.address, _1inchApprovalAddress, this.swapData.fromAmount, true))
+        this.sendSignedTransaction(await this.isApprovalRequired(this.depositCoin.address, _1inchApprovalAddress, this.swapData.fromAmount, true), false, this.$store.state.investment.defaultAccount.key)
       }
     },
     triggerPayCoinSelect () {

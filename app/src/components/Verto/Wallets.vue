@@ -273,7 +273,7 @@
                                 </div>
                             </div>
                         </q-item>
-                      <q-expansion-item v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'eos' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected full-width' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
+                      <q-expansion-item @click=" $store.state.wallets.tokens.filter(f => f.chain == 'eos' &&  f.type == 'eos').length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eos' &&  f.type == 'eos')) : void(0)" v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'eos' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected full-width' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
                         <template v-slot:header>
                         <q-item-section avatar>
                              <img class="coin-icon" width="35px" src="https://files.coinswitch.co/public/coins/eos.png"  />
@@ -284,7 +284,7 @@
 
                         <q-item-section class="item-info col" side>
                            <div class="row items-center text-bold">
-                                ${{token.total ? token.total.toFixed(0) : 0}}
+                                ${{formatNumber(token.total ? token.total.toFixed(0) : 0 , 0)}}
                             </div>
                         </q-item-section>
                         </template>
@@ -302,8 +302,8 @@
                                         <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
-                                        <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(4) : new Number(item.amount).toFixed(4).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
-                                        <span class="item-info--amountUSD">${{new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2)}}</span>
+                                        <span class="item-info--amount">{{formatNumber(item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(4) : new Number(item.amount).toFixed(4).toString()) : 0, 0) }} {{item.type.toUpperCase()}}</span>
+                                        <span class="item-info--amountUSD">${{formatNumber(new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2),0)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-else>
                                         <span class="item-info--amount">in progress</span>
@@ -350,7 +350,7 @@
                         </q-card>
 
                     </q-expansion-item>
-                    <q-expansion-item v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
+                    <q-expansion-item @click="$store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth').length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eth' &&  f.type == 'eth')) : void(0)" v-for="(token, index)  in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" src="https://files.coinswitch.co/public/coins/eth.png"  />
@@ -368,7 +368,7 @@
                         </template>
                         <q-card :dark="$store.state.settings.lightMode === 'true'">
                             <q-card-section>
-                               <q-item :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eth'  && f.key == token.key  && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                               <q-item  :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eth'  && f.key == token.key  && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                                 <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar>
@@ -379,8 +379,8 @@
                                         <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
-                                        <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
-                                        <span class="item-info--amountUSD">${{new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2)}}</span>
+                                        <span class="item-info--amount">{{formatNumber(item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 )}} {{item.type.toUpperCase()}}</span>
+                                        <span class="item-info--amountUSD">${{formatNumber(new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2), 0)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-else>
                                         <span class="item-info--amount">in progress</span>
@@ -423,7 +423,7 @@
                         </q-card-section>
                         </q-card>
                     </q-expansion-item>
-                        <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => (f.chain == 'eos' && f.type == 'verto' && !f.hidden && !f.disabled) || f.chain != 'eos'  && f.chain != 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                        <q-item  v-for="(item) in $store.state.wallets.tokens.filter(f => (f.chain == 'eos' && f.type == 'verto' && !f.hidden && !f.disabled) || f.chain != 'eos'  && f.chain != 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar class="item-coin">
@@ -667,6 +667,7 @@ import {
   openURL
 } from 'quasar'
 import EosWrapper from '@/util/EosWrapper'
+import Formatter from '@/mixins/Formatter'
 const eos = new EosWrapper()
 import {
   mapState
@@ -1004,7 +1005,8 @@ export default {
       await this.$configManager.updateConfig(this.$store.state.settings.temporary, this.$store.state.currentwallet.config)
       // //console.log('hidden', this.currentAccount.hidden)
     }
-  }
+  },
+  mixins: [Formatter]
 }
 </script>
 
