@@ -12,12 +12,7 @@ class Wallets2Tokens {
     self.eosUSD = 0
     this.getEosUSD()
     store.state.wallets.portfolioTotal = 0
-    store.state.currentwallet.config.keys.push({
-      type: 'eos',
-      key: 'httpshttpshttpshttpshttps',
-      chain: 'eos',
-      name: 'believeinvtx'
-    })
+
     this.tableData = [ ...store.state.currentwallet.config.keys ]
 
     if (store.state.settings.network === 'testnet') {
