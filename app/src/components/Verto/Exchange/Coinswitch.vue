@@ -19,23 +19,26 @@
                                                 <div class="you-pay">
                                                      <q-dialog
                                                         v-model="offer"
+                                                        :dark="$store.state.settings.lightMode === 'true'"
                                                         >
 
-                                                       <q-card class="q-pa-md" style="width: 700px; max-width: 80vw;">
+                                                       <q-card :dark="$store.state.settings.lightMode === 'true'" class="q-pa-md" style="width: 700px; max-width: 80vw;">
 
                                                             <q-card-section>
                                                              <q-btn flat round dense v-close-popup icon="close" class="float-right" @click="hidePromo('freeEosAccount')" />
                                                             <div class="text-h5 text-center text-bold ">   <q-img style="width:25px;" src="https://www.joypixels.com/images/jp-home/fire.gif" /> Get a FREE EOS account</div>
-                                                             <div class="text-h6 text-center q-pt-md">when getting and staking at least 10,000 VTX </div>
+                                                             <div class="text-h6 text-center q-pt-md" v-show="false">when getting and staking at least 10,000 VTX </div>
                                                             </q-card-section>
 
                                                             <q-card-section class="q-pt-none">
                                                              <q-stepper
                                                         v-model="freeEOSAccountStepper"
-                                                        color="primary"
+
+                                                        :dark="$store.state.settings.lightMode === 'true'"
                                                         flat
                                                         >
                                                         <q-step
+                                                            :color="$store.state.settings.lightMode === 'true' ? 'white' : ''"
                                                             :name="1"
                                                             title="Choose EOS account"
                                                             :caption="freeeAccountName"
@@ -54,7 +57,7 @@
                                                         </q-step>
 
                                                         </q-stepper>
-                                                        <div  class=" row shadow-1 rounded-borders q-pb-md q-pt-lg q-mb-md" style="background: #f6f6f9; border: 1px solid #3c40732e;">
+                                                        <div  class=" row shadow-1 rounded-borders q-pb-md q-pt-lg q-mb-md" :style="$store.state.settings.lightMode === 'true' ? '' : 'background: #f6f6f9; border: 1px solid #3c40732e;'">
 
                                                         <div class="col  col-6  q-pr-none q-pl-md">
                                                            <b><q-icon color="grey" name="fiber_manual_record" /> Step 1 </b><br>
@@ -90,8 +93,10 @@
 
                                                         </q-card>
                                                         </q-dialog>
-                                                       <div class="row  float-right  text-red q-mb-md">
-                                                        <q-select :dark="$store.state.settings.lightMode === 'true'" @input="initMetamask" v-if="currentEthWallet" borderless v-model="currentEthWallet" :options="$store.state.wallets.metamask.accounts" label="Account" />
+                                                       <div class="row  float-right full-width  text-red q-mb-md">
+                                                       <div class="col-md-6 flex offset-md-6">
+                                                       <AccountSelector  />
+                                                        <q-select v-if="false" :dark="$store.state.settings.lightMode === 'true'" @input="initMetamask"  borderless v-model="currentWallet" :options="$store.state.wallets.metamask.accounts" label="Account" />
                                                         <q-item   dense class="metamask-btn float-right" style="max-width:350px">
                                                             <q-item-section class="text-body1 q-pr-sm">
                                                                 <q-btn :loading="connectLoading" :class=" $store.state.wallets.metamask.accounts.length ? 'bg-green-1' : 'bg-red-1'" @click="connectWallet('metamask')" flat icon="fiber_manual_record" :color="!$store.state.wallets.metamask.accounts.length ? 'red' : 'green'" :label="!$store.state.wallets.metamask.accounts.length ? 'Connect' : 'Connected'">
@@ -99,11 +104,13 @@
                                                                 </q-btn>
                                                             </q-item-section>
                                                         </q-item>
+                                                         </div>
                                                         </div>
 
                                                        <q-stepper
                                                         v-model="freeEOSAccountStepper"
                                                         class="flex flex-center full-width"
+                                                        :dark="$store.state.settings.lightMode === 'true'"
                                                         color="primary"
                                                         flat
                                                         v-if="accountToBeCreated"
@@ -113,6 +120,7 @@
                                                             title="Chosen account"
                                                             :caption="freeeAccountName"
                                                             icon="settings"
+                                                            :color="$store.state.settings.lightMode === 'true' ? 'white' : ''"
                                                             :done="freeEOSAccountStepper > 1"
                                                         >
                                                         </q-step>
@@ -1222,6 +1230,7 @@ const typeUpper = function (thing) {
     return ''
   }
 }
+import AccountSelector from './AccountSelector.vue'
 import DexInteraction from '../../../mixins/DexInteraction'
 import Lib from '@/util/walletlib'
 import EosWrapper from '@/util/EosWrapper'
@@ -1233,7 +1242,8 @@ export default {
   name: 'Coinswitch',
   props: ['disableDestinationCoin', 'crossChain'],
   components: {
-    Send
+    Send,
+    AccountSelector
   },
   data () {
     return {
@@ -1242,7 +1252,7 @@ export default {
       isLoading: true,
       offer: true,
       connectLoading: false,
-      currentEthWallet: null,
+      currentWallet: null,
       ethWallets: [],
       accountToBeCreated: false,
       getPassword: false,
@@ -1344,7 +1354,7 @@ export default {
   watch: {
     depositCoin (val) {
       if (val.origin === 'metamask') {
-        this.fromCoin = this.currentEthWallet
+        this.fromCoin = this.currentWallet
       }
       console.log(this.fromCoin, 'this.fromCoin')
       this.payCoin = val.value.toUpperCase()
@@ -1362,8 +1372,16 @@ export default {
       }
     },
     '$store.state.wallets.metamask.tokens': function (val) {
-      console.log(val)
       this.initMetamask()
+    },
+    '$store.state.investment.accountTokens': function (val) {
+      this.coins = this.crossChain ? this.getAllCoins('coinswitch') : this.$store.state.settings.coins.coinswitch
+      this.depositCoinOptions = this.getUniqueTokens(this.coins).filter(t => val.find(o => o.type === t.value))
+      this.depositCoinUnfilter = this.depositCoinOptions
+
+      if (!this.depositCoinOptions.find(v => v.value === this.depositCoin.value)) {
+        this.depositCoin = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
+      }
     },
     toCoin (val) {
       if (val.type !== 'new_public_key') {
@@ -1375,7 +1393,7 @@ export default {
   },
   async created () {
     this.getWindowWidth()
-
+    this.rateData = this.rateDataTemplate
     this.$store.commit('settings/setDex', {
       dex: 'coinswitch'
     })
@@ -1620,12 +1638,12 @@ export default {
     },
     initMetamask () {
       let allCoins = JSON.parse(JSON.stringify(this.coins))
-      console.log(this.$store.state.wallets.metamask.tokens, this.currentEthWallet)
+      console.log(this.$store.state.wallets.metamask.tokens, this.currentWallet)
       if (this.$store.state.wallets.metamask.accounts.length) {
-        if (!this.currentEthWallet) { this.currentEthWallet = this.$store.state.wallets.metamask.accounts[0] }
+        if (!this.currentWallet) { this.currentWallet = this.$store.state.wallets.metamask.accounts[0] }
 
         allCoins = allCoins.map((o) => {
-          let token = this.$store.state.wallets.metamask.tokens.find(a => this.currentEthWallet.value === a.key && a.type.toLowerCase() === o.value.toLowerCase())
+          let token = this.$store.state.wallets.metamask.tokens.find(a => this.currentWallet.value === a.key && a.type.toLowerCase() === o.value.toLowerCase())
 
           if (token) {
             token.amount = isNaN(token.amount) ? 0 : token.amount
@@ -2063,7 +2081,7 @@ export default {
               to: self.exchangeAddress.address,
               amount: self.expectedDepositCoinAmount
             })
-            if (self.currentEthWallet && self.$store.state.wallets.metamask.accounts.find(o => o.value === self.currentEthWallet.value)) {
+            if (self.currentWallet && self.$store.state.wallets.metamask.accounts.find(o => o.value === self.currentWallet.value)) {
               self.sendExternalTransaction('metamask')
             } else {
               self.$store.state.currentwallet.wallet = self.tableData.find(a => a.key === self.fromCoin.key && a.type === self.fromCoin.type)
@@ -2188,9 +2206,9 @@ export default {
         })
     },
     checkBalance () {
-      if (this.currentEthWallet || (this.depositCoin.amount && this.$store.state.wallets.tokens.filter(a => a.type.toLowerCase() === this.depositCoin.value.toLowerCase()).length === 1)) {
+      if (this.currentWallet || (this.depositCoin.amount && this.$store.state.wallets.tokens.filter(a => a.type.toLowerCase() === this.depositCoin.value.toLowerCase()).length === 1)) {
         if (this.rateData.limitMinDepositCoin > this.depositCoin.amount) {
-          this.ErrorMessage = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance. (Minimum deposit required: ' + this.rateData.limitMinDepositCoin + ' ' + this.depositCoin.value.toUpperCase() + ')'
+          /// this.ErrorMessage = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance. (Minimum deposit required: ' + this.rateData.limitMinDepositCoin + ' ' + this.depositCoin.value.toUpperCase() + ')'
         }
       }
     },
