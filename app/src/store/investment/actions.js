@@ -211,7 +211,7 @@ export const getCurvesPools = ({ rootState, commit, state }, payload) => {
 }
 export const getZapperTokens = (context /*, payload */) => {
   let address = '0x915f86d27e4e4a58e93e59459119faaf610b5be1'
-  axios.get(process.env[context.rootState.settings.network].CACHE + 'https://api-6.zapper.fi/v1/balances/tokens?addresses%5B%5D=' + address + '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88', config).then((result) => {
+  axios.get(process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/balances/tokens?addresses%5B%5D=' + address + '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88', config).then((result) => {
     if (result.data) {
       for (var prop in result.data) {
         context.commit('setTokens', result.data[prop])
