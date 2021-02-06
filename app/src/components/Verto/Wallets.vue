@@ -273,7 +273,7 @@
                                 </div>
                             </div>
                         </q-item>
-                      <q-expansion-item @click=" $store.state.wallets.tokens.filter(f => f.chain == 'eos' &&  f.type == 'eos').length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eos' &&  f.type == 'eos')) : void(0)" v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'eos' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected full-width' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
+                      <q-expansion-item @click=" $store.state.wallets.tokens.filter(f => f.chain == 'eos').length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eos' &&  f.type == 'eos')) : void(0)" v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'eos' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected full-width' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
                         <template v-slot:header>
                         <q-item-section avatar>
                              <img class="coin-icon" width="35px" src="https://files.coinswitch.co/public/coins/eos.png"  />
@@ -350,7 +350,7 @@
                         </q-card>
 
                     </q-expansion-item>
-                    <q-expansion-item @click="$store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth').length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eth' &&  f.type == 'eth')) : void(0)" v-for="(token, index)  in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
+                    <q-expansion-item @click="$store.state.wallets.tokens.filter(f => f.chain == 'eth' ).length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eth' &&  f.type == 'eth')) : void(0)" v-for="(token, index)  in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" src="https://files.coinswitch.co/public/coins/eth.png"  />
