@@ -22,9 +22,9 @@
                 <br>
                 <div v-if="$store.state.currentwallet.wallet.empty" class="header-list-table">
                     <div class="row q-pl-sm q-pr-sm">
-                        <div class="col col-6 q-pl-sm pointer" @click="sortBy('account')" :class="{'active' : directionAccount}">
+                        <div class="col col-6 q-pl-sm " :class="{'active' : directionAccount}">
                             <span class="sort">Account name</span>
-                            <q-icon name="swap_vert" class="text-grey" />
+
                         </div>
                         <div class="col col-6 flex justify-end q-pr-sm items-center pointer" @click="sortBy('balance')" >
                             <span class="sort">Balance</span>
@@ -213,9 +213,9 @@
             <!-- <q-input v-if="$store.state.currentwallet.wallet.empty" v-model="searchAccount" class="input-input search_account" rounded outlined color="purple" label="Ex: account" type="text" /> -->
             <div v-if="$store.state.currentwallet.wallet.empty" class="header-list-table">
                 <div class="row q-pl-sm q-pr-sm">
-                    <div class="col col-6 q-pl-sm pointer" @click="sortBy('account')" :class="{'active' : directionAccount}">
+                    <div class="col col-6 q-pl-sm pointer"  :class="{'active' : directionAccount}">
                         <span class="sort">Account name</span>
-                        <q-icon name="swap_vert" class="text-grey" />
+
                     </div>
                     <div class="col col-6 flex justify-end q-pr-sm items-center pointer" @click="sortBy('balance')" :class="{'active' : direction}">
                         <!-- active -->
