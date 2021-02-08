@@ -22,7 +22,7 @@
       <tabs-menu v-else class="mobile-version tabs-menu-component" />
       <!-- mobile-only  -->
       <GuideWizard :key="reRender" v-if="showWizard" class="wizard"/>
-      <div class="q-pr-xs" style="background: #E7E8E8;">
+      <div class="q-pr-xs" style="background: #E7E8E8;" :class="{'dark-theme-main-layout': $store.state.settings.lightMode === 'true'}">
         <q-scroll-area :visible="true" style="height: 100vh">
           <q-page-container>
             <router-view :showWizard="showWizardAction" />
@@ -108,5 +108,8 @@ export default {
   }
   body{
     overflow: hidden;
+  }
+  .dark-theme-main-layout{
+      background: #04111F !important;
   }
 </style>
