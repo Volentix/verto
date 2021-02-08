@@ -408,7 +408,7 @@ export default {
 .desktop-version {
     background: #E7E8E8;
     padding-top: 13vh;
-    padding-left: 20vh;
+    padding-left: 18vh;
     padding-bottom: 50px;
     @media screen and (min-width: 768px) {
         padding-top: 11vh;
