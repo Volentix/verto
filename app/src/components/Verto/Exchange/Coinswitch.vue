@@ -2190,10 +2190,10 @@ export default {
               self.rateDataEos = self.rateData
               self.rateData = self.rateDataVtx
 
-              // if(self.depositQuantity === 0.1 && !self.customQuantity){
-              self.destinationQuantity = 10000
-              self.quantityFromDestination()
-              // }
+              if (self.accountToBeCreated) {
+                self.destinationQuantity = 10000
+                self.quantityFromDestination()
+              }
             } else {
               self.depositQuantity = self.rateData.limitMinDepositCoin
               self.quantityFromDeposit()
