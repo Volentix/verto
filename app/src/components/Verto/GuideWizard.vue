@@ -24,7 +24,7 @@
                   transform="translate(-183 -18.21)"
                 ></path>
               </svg>
-              Welcome to Verto
+              Welcome to Verto Wizard
             </div>
           <q-space />
           <q-btn
