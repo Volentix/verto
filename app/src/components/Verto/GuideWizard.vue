@@ -24,7 +24,7 @@
                   transform="translate(-183 -18.21)"
                 ></path>
               </svg>
-              Welcome to Verto
+              Welcome to Verto Wizard
             </div>
           <q-space />
           <q-btn
@@ -66,6 +66,23 @@
                 " />
               </div>
             </q-card-section>
+              <q-card-section class=" text-h6 q-py-none help-qst-title">
+              Get started with Volentix.
+            </q-card-section>
+             <q-card-section class="text-body1  help-qst-title">
+              By Staking 10,000 VTX you will get a free EOS account and access the entire EOs ecosystem all in one click.
+              <div class="flex">
+                <q-btn
+                  rounded
+                  @click="getVTX(); dialog = false"
+                  class="q-mt-md"
+                  outline
+                  no-caps
+                  color="purple"
+                  label="Get Started"
+                />
+              </div>
+              </q-card-section>
             <q-card-section class="q-pt-md text-body1 help-qst-title">
               What do you want to do ?
               <q-input @click="getAccount()" clearable clear-icon="close" rounded outlined color="purple" label="Type an action" @input="filterActions()" v-model="searchAction" class="q-mt-sm input-input" />
@@ -289,6 +306,30 @@ export default {
     closeWizard () {
       localStorage.setItem('closewizard', Date.now())
       this.$bus.$emit('showHomeIntro')
+    },
+    getVTX () {
+      let accountOption = this.$store.state.wallets.tokens.find(w => w.chain === 'eth' && w.chain === 'eth')
+      this.$store.commit('investment/setDefaultAccount', {
+        value: accountOption.key,
+        key: accountOption.key,
+        chain: 'eth',
+        usd: accountOption.usd,
+        total: accountOption.total,
+        image: accountOption.icon,
+        label: accountOption.key.substring(0, 6) + '...' + accountOption.key.substr(accountOption.key.length - 5),
+        color: 'cyan'
+      })
+      this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === accountOption.chain && w.key === accountOption.key))
+      this.$store.commit('settings/setDex', {
+        dex: 'coinswitch',
+        depositCoin: {
+          value: 'eth'
+        },
+        destinationCoin: {
+          value: 'vtx'
+        }
+      })
+      this.$router.push('/verto/exchange/free-eos-account')
     },
     showAccountDropdown () {
       this.filterAccount(this.currentActionItem.type ? this.currentActionItem.type : this.currentAction.chain, this.currentAction.chain)
