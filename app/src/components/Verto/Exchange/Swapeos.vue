@@ -843,7 +843,6 @@ export default {
   watch: {
     defaultAccount (val) {
       if (!this.crossChain) {
-        console.log(val, 'val')
         this.getPools()
       }
     },
@@ -854,16 +853,19 @@ export default {
     },
     '$store.state.investment.accountTokens': function (val) {
       this.coins = this.crossChain ? this.getAllCoins() : this.getCoinsByAccount('defibox', this.defaultAccount.label)
-      this.depositCoinOptions = this.coins.filter(t => val.find(o => o.type === t.value && o.name === t.name))
+      this.depositCoinOptions = this.coins.filter(t => val.find(o => o.type === t.value && ((o.name && o.name === t.name) || this.$store.state.investment.defaultAccount.chain === 'eth'))).map(o => {
+        let token = this.$store.state.investment.accountTokens.find(t => t.type === o.value)
+        o.usd = token.usd
+        o.amount = token.amount
+        return o
+      })
       this.depositCoinUnfilter = this.depositCoinOptions
 
-      if (!this.depositCoinOptions.find(v => v.value === this.depositCoin.value)) {
-        let item = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
+      let item = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
+      if (item) { this.depositCoin = item }
 
-        if (!item) {
-          this.depositCoin = this.coins.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
-        }
-      }
+      // console.log(this.depositCoin, item, ' EOS this.depositCoin', this.$store.state.investment.defaultAccount, this.depositCoinOptions)
+
       this.getDestinationCoinOptions()
       this.getPairData()
     },

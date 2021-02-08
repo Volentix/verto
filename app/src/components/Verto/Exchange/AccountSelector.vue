@@ -51,6 +51,7 @@
             </q-select>
 </template>
 <script>
+const palette = ['cyan', 'teal', 'light-blue', 'blue-1', 'pink', 'purple']
 export default {
   props: ['chain'],
   data () {
@@ -60,7 +61,6 @@ export default {
     }
   },
   created () {
-    var palette = ['cyan', 'teal', 'light-blue', 'blue-1', 'pink', 'purple', '#FC9D9A', '#F9CDAD', '#C8C8A9', '#83AF9B']
     let tableData = this.$store.state.wallets.tokens
 
     tableData.filter(w => w.chain === 'eos' && w.type === 'eos' && (this.chain === w.chain || !this.chain) && this.accountOptions.push({
@@ -71,6 +71,7 @@ export default {
       chain: 'eos',
       total: w.total,
       image: w.icon,
+      type: w.type,
       label: w.name,
       color: palette[this.accountOptions.length]
     }))
@@ -78,20 +79,26 @@ export default {
       value: w.key,
       key: w.key,
       chain: 'eth',
+      type: w.type,
       usd: w.usd,
       total: w.total,
       image: w.icon,
       label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
       color: palette[this.accountOptions.length]
     }))
-    console.log('ref', this.accountOptions, this.accountOption, this.chain)
+
+    if (this.$store.state.wallets.metamask.accounts.length) {
+      this.accountOptions.push(this.$store.state.wallets.metamask.accounts.find(o => o.type === 'eth' && o.chain === 'eth'))
+    }
+    /*  console.log(55774, this.$store.state.currentwallet.wallet.type)
     if (this.$store.state.currentwallet.wallet.type) {
       this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain)
-    } else if (this.$store.state.investment.defaultAccount) {
+    } else */ if (this.$store.state.investment.defaultAccount) {
       this.accountOption = this.$store.state.investment.defaultAccount
     } else {
-      this.accountOption = this.accountOptions[0]
+      this.accountOption = this.accountOptions.find(o => o.chain === 'eth')
     }
+
     this.setAccount()
   },
   methods: {
@@ -99,15 +106,44 @@ export default {
       return parseFloat(num).toFixed(decimals).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
     },
     setAccount () {
-      console.log(this.accountOption, 1)
+      // console.log(this.accountOption, this.accountOption.chain, ' this.accountOption', this.$store.state.investment.defaultAccount.chain)
       this.$store.commit('investment/setDefaultAccount', this.accountOption)
-      this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
+
+      if (this.accountOption.origin && this.accountOption.origin === 'metamask') {
+        this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.metamask.tokens)
+      } else {
+        this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
+      }
     }
   },
   watch: {
     '$store.state.currentwallet.wallet': function () {
       this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain)
       this.setAccount()
+    },
+    '$store.state.wallets.metamask': {
+      deep: true,
+      handler (val) {
+        let w = val.tokens.find(a => a.type === 'eth' && a.chain === 'eth')
+
+        if (w) {
+          this.accountOption = {
+            value: w.key,
+            key: w.key,
+            chain: 'eth',
+            usd: w.usd,
+            type: w.type,
+            total: w.total,
+            image: w.icon,
+            origin: 'metamask',
+            label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
+            color: palette[this.accountOptions.length]
+          }
+          let item = this.accountOptions.find(a => a.key === this.accountOption.key)
+          if (!item) { this.accountOptions.push(this.accountOption) }
+          this.setAccount()
+        }
+      }
     }
   }
 }
