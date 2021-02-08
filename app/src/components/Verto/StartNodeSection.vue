@@ -1,5 +1,5 @@
 <template>
-  <div class="desktop-card-style apps-section q-mb-sm">
+  <div class="desktop-card-style apps-section q-mb-sm flex flex-center" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <div v-if="banner === 1" class="banner-wrapper" @click="goToLink">
       <img v-if="$store.state.settings.lightMode === 'false'" src="statics/node-banners/ban1.png" class="full-width scale3d" alt="">
       <img v-else src="statics/node-banners/ban1--dark.png" class="full-width scale3d" alt="">
@@ -42,6 +42,9 @@ export default {
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
   .apps-section{
+    max-height: 76px;
+    min-height: 76px;
+    position: relative;
     .row{
       .col{
         .qbtn-start{
@@ -92,6 +95,7 @@ export default {
     margin-right: -8px;
     margin-top: -8px;
     margin-bottom: -11px;
+    position: absolute;
     cursor: pointer;
   }
 </style>
