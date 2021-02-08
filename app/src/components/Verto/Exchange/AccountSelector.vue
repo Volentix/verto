@@ -121,6 +121,22 @@ export default {
       this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain)
       this.setAccount()
     },
+    '$store.state.investment.defaultAccount': function () {
+      let w = this.$store.state.investment.defaultAccount
+      this.accountOption = {
+        value: w.key,
+        key: w.key,
+        chain: w.chain,
+        usd: w.usd,
+        type: w.type,
+        total: w.total,
+        image: w.icon,
+        origin: 'metamask',
+        label: w.chain === 'eth' ? w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5) : w.name,
+        color: palette[this.accountOptions.length]
+      }
+      this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
+    },
     '$store.state.wallets.metamask': {
       deep: true,
       handler (val) {

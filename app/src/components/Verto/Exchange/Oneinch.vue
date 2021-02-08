@@ -35,13 +35,13 @@
                                                                             <q-icon :name="`img:${scope.opt.image}`" />
                                                                         </q-item-section>
                                                                         <q-item-section>
-                                                                            <q-item-label v-html="scope.opt.label" />
+                                                                            <q-item-label v-html="scope.opt.label.toUppercase()" />
                                                                             <q-item-label caption>{{ scope.opt.value }}</q-item-label>
                                                                         </q-item-section>
                                                                     </q-item>
                                                                 </template>
                                                                 <template v-slot:selected>
-                                                                    <span class="text-h5">{{depositCoin.value}}</span>
+                                                                    <span class="text-h5">{{depositCoin.value.toUppercase()}}</span>
 
                                                                 </template>
                                                             </q-select>
