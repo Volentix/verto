@@ -227,19 +227,19 @@
             <q-scroll-area :visible="true" ref="walletsScrollArea" class="walletsScrollArea q-mr-sm q-ml-xs" :class="{'short' : $store.state.currentwallet.wallet.empty, 'long' : !$store.state.currentwallet.wallet.empty}" :style="$store.state.currentwallet.wallet.empty ? 'height: 285px;': 'height: 323px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty" class="all-wallets">
-                     <q-item v-show="!hideEosSetup"  dense>
-                        <q-item-section @click="hideEOSSetup()" class="text-center  cursor-pointer q-pb-sm">
-                        <q-item-label><q-icon flat label="Yes" name="update" size="sm" /> Setup EOS account later  </q-item-label>
+                     <q-item  v-show="!hideEosSetup"  class="highlight on-top" dense>
+                        <q-item-section @click="hideEOSSetup()" class="text-center  cursor-pointer q-py-sm">
+                        <q-item-label class="text-center">Setup later <q-icon flat label="Yes" name="close" size="sm" /> </q-item-label>
                         </q-item-section>
                     </q-item>
-                     <q-item v-show="!hideEosSetup" v-for="(item) in $store.state.wallets.tokens.filter(f => f.type == 'verto' && f.chain == 'eos' && !f.hidden && !f.disabled)" :class="[item.selected ? 'selected' : '', 'highlight']" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                     <q-item v-show="!hideEosSetup" class="on-top" v-for="(item) in $store.state.wallets.tokens.filter(f => f.type == 'verto' && f.chain == 'eos' && !f.hidden && !f.disabled)" :class="[item.selected ? 'selected' : '', 'highlight']" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="showMenu(item, '/verto/eos-account')" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar>
                                         <img class="coin-icon" width="35px" :src="item.icon" alt="">
                                     </q-item-section>
                                     <q-item-section class="item-name">
-                                        <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
+                                        <span :class="[$store.state.settings.lightMode === 'true' ? 'text-black' : '', 'item-name--name']">{{item.name.replace('- HD', '')}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
                                         <span class="item-info--amount"> <q-btn label="Setup" text-color="white" class="highlight-btn" /></span>
@@ -247,29 +247,6 @@
                                     <q-item-section class="item-info" v-else>
                                         <span class="item-info--amount">in progress</span>
                                     </q-item-section>
-                                </div>
-                                <div class="menu-wallet">
-                                    <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
-                                        <!-- <q-item class="p-relative full-width no-pad">
-                                            <div class="vespucci-score--wrapper full-width flex justify-between items-center">
-                                                <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
-                                                <span class="value">{{ item.vespucciScore }}</span>
-                                                <span class="powered">Powered by Vespucci</span>
-                                            </div>
-                                        </q-item> -->
-                                        <q-separator style="margin-top: 10px" />
-                                        <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                        <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
-                                            <q-item-section>
-                                                <q-item-label>{{item.hidden ? 'Reveal' : 'Hide'}} Currency Chain</q-item-label>
-                                            </q-item-section>
-                                            <q-item-section avatar>
-                                                <q-toggle class="p-abs" color="blue" @input="hideCurrency()" v-model="item.hidden" />
-                                            </q-item-section>
-                                        </q-item>
-                                    </q-list>
                                 </div>
                             </div>
                         </q-item>
@@ -950,8 +927,11 @@ export default {
     },
     setPosition (total) {
       let style = ''
-      // Sort by smallest total with CSS - Smallest index with show first if direction is false
-      let index = (!this.direction ? Number.MAX_SAFE_INTEGER : 0) - (isNaN(parseInt(total)) ? 0 : parseInt(total)) * (!this.direction ? 1 : -1)
+
+      // Get max wallet total / usd value from any wallet
+      let maxUsd = parseInt(Math.max.apply(Math, this.$store.state.wallets.tokens.map(o => isNaN(parseFloat(o.total)) ? (isNaN(parseFloat(o.usd)) ? 0 : parseFloat(o.usd)) : parseFloat(o.total))))
+
+      let index = (!this.direction ? maxUsd : 0) - (isNaN(parseInt(total)) ? 0 : parseInt(total)) * (!this.direction ? 1 : -1)
 
       style = '-webkit-box-ordinal-group: ' + index + '; -moz-box-ordinal-group: ' + index + ';box-ordinal-group: ' + index + ';'
 
@@ -1022,7 +1002,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.on-top {
+-webkit-box-ordinal-group: 1;
+-moz-box-ordinal-group: 1;
 
+}
 .all-wallets {
      display: -webkit-box;
         display: -moz-box;

@@ -94,7 +94,7 @@
                                                         </q-card>
                                                         </q-dialog>
                                                        <div class="row  float-right full-width  text-red q-mb-md">
-                                                       <div class="col-md-6 flex offset-md-6">
+                                                       <div class="col-md-12 flex justify-end ">
                                                        <AccountSelector  />
                                                         <q-select v-if="false" :dark="$store.state.settings.lightMode === 'true'" @input="initMetamask"  borderless v-model="currentWallet" :options="$store.state.wallets.metamask.accounts" label="Account" />
                                                         <q-item   dense class="metamask-btn float-right" style="max-width:350px">
@@ -144,8 +144,8 @@
 
                                                         </q-stepper>
 
-                                                    <div class="you-pay-head row items-center full-width">
-                                                        <div class="col col-6">You Pay</div>
+                                                    <div class="you-pay-head row full-width">
+                                                        <div class="col col-6 text-left">You Pay</div>
 
                                                     </div>
                                                     <div class="you-pay-body row items-center">
@@ -1353,10 +1353,10 @@ export default {
   updated () {},
   watch: {
     depositCoin (val) {
-      if (val.origin === 'metamask') {
+      if (val && val.origin && val.origin === 'metamask') {
         this.fromCoin = this.currentWallet
       }
-      console.log(this.fromCoin, 'this.fromCoin')
+
       this.payCoin = val.value.toUpperCase()
       this.checkBalance()
     },
@@ -1376,12 +1376,19 @@ export default {
     },
     '$store.state.investment.accountTokens': function (val) {
       this.coins = this.crossChain ? this.getAllCoins('coinswitch') : this.$store.state.settings.coins.coinswitch
-      this.depositCoinOptions = this.getUniqueTokens(this.coins).filter(t => val.find(o => o.type === t.value))
+      this.depositCoinOptions = this.getUniqueTokens(this.coins).filter(t => val.find(o => o.type === t.value)).map(o => {
+        let token = this.$store.state.investment.accountTokens.find(t => t.type === o.value)
+        o.usd = token.usd
+        o.amount = token.amount
+        return o
+      })
+
       this.depositCoinUnfilter = this.depositCoinOptions
 
-      if (!this.depositCoinOptions.find(v => v.value === this.depositCoin.value)) {
-        this.depositCoin = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
-      }
+      let item = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
+      if (item) { this.depositCoin = item }
+
+      // console.log(this.depositCoin, item, 'ETH this.depositCoin', this.$store.state.investment.defaultAccount, this.depositCoinOptions)
     },
     toCoin (val) {
       if (val.type !== 'new_public_key') {
@@ -1394,7 +1401,7 @@ export default {
   async created () {
     let disable = localStorage.getItem('disable_freeospopup')
 
-    if (disable) {
+    if (disable && this.$route.params.action !== 'free-eos-account') {
       this.offer = false
     }
 
@@ -1645,7 +1652,7 @@ export default {
     },
     initMetamask () {
       let allCoins = JSON.parse(JSON.stringify(this.coins))
-      console.log(this.$store.state.wallets.metamask.tokens, this.currentWallet)
+
       if (this.$store.state.wallets.metamask.accounts.length) {
         if (!this.currentWallet) { this.currentWallet = this.$store.state.wallets.metamask.accounts[0] }
 

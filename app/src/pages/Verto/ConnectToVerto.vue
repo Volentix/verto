@@ -237,6 +237,12 @@ export default {
     }
   },
   async created () {
+    this.$store.state.currentwallet.wallet = null
+    if (this.$route.params.fromCoin) {
+      this.depositCoin.value = this.$route.params.fromCoin
+      this.destinationCoin.value = this.$route.params.toCoin
+      this.depositCoin.fromAmount = this.$route.params.amount
+    }
     if (!this.$route.query.url) {
       this.getCoinswitchCoins()
       this.get1inchCoins()
@@ -371,7 +377,7 @@ a {
     padding-right: 0%;
 }
 .standard-content--body__form {
-  max-width:400px;
+  max-width:800px;
   margin: 0 auto;
 
 }
