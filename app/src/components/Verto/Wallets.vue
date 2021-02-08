@@ -26,9 +26,9 @@
                             <span class="sort">Account name</span>
                             <q-icon name="swap_vert" class="text-grey" />
                         </div>
-                        <div class="col col-6 flex justify-end q-pr-sm items-center pointer" @click="sortBy('balance')" :class="{'active' : direction}">
+                        <div class="col col-6 flex justify-end q-pr-sm items-center pointer" @click="sortBy('balance')" >
                             <span class="sort">Balance</span>
-                            <q-icon name="swap_vert" class="text-grey" />
+                            <q-icon :name="!direction ? 'north' : 'south'" class="text-grey" />
                         </div>
                     </div>
                 </div>
@@ -220,13 +220,13 @@
                     <div class="col col-6 flex justify-end q-pr-sm items-center pointer" @click="sortBy('balance')" :class="{'active' : direction}">
                         <!-- active -->
                         <span class="sort">Balance</span>
-                        <q-icon name="swap_vert" class="text-grey" />
+                        <q-icon :name="!direction ? 'north' : 'south'" class="text-grey" />
                     </div>
                 </div>
             </div>
             <q-scroll-area :visible="true" ref="walletsScrollArea" class="walletsScrollArea q-mr-sm q-ml-xs" :class="{'short' : $store.state.currentwallet.wallet.empty, 'long' : !$store.state.currentwallet.wallet.empty}" :style="$store.state.currentwallet.wallet.empty ? 'height: 285px;': 'height: 323px;'">
                 <q-list bordered separator class="list-wrapper">
-                    <div v-if="$store.state.currentwallet.wallet.empty">
+                    <div v-if="$store.state.currentwallet.wallet.empty" class="all-wallets">
                      <q-item v-show="!hideEosSetup"  dense>
                         <q-item-section @click="hideEOSSetup()" class="text-center  cursor-pointer q-pb-sm">
                         <q-item-label><q-icon flat label="Yes" name="update" size="sm" /> Setup EOS account later  </q-item-label>
@@ -273,7 +273,7 @@
                                 </div>
                             </div>
                         </q-item>
-                      <q-expansion-item @click=" $store.state.wallets.tokens.filter(f => f.chain == 'eos').length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eos' &&  f.type == 'eos')) : void(0)" v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'eos' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected full-width' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
+                      <q-expansion-item :style="setPosition(token.total)" :data-total="token.total ? token.total : 0" @click=" $store.state.wallets.tokens.filter(f => f.chain == 'eos').length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eos' &&  f.type == 'eos')) : void(0)" v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'eos' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected full-width' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
                         <template v-slot:header>
                         <q-item-section avatar>
                              <img class="coin-icon" width="35px" src="https://files.coinswitch.co/public/coins/eos.png"  />
@@ -350,7 +350,7 @@
                         </q-card>
 
                     </q-expansion-item>
-                    <q-expansion-item @click="$store.state.wallets.tokens.filter(f => f.chain == 'eth' ).length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eth' &&  f.type == 'eth')) : void(0)" v-for="(token, index)  in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
+                    <q-expansion-item :style="setPosition(token.total)" :data-total="token.total" @click="$store.state.wallets.tokens.filter(f => f.chain == 'eth' ).length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eth' &&  f.type == 'eth')) : void(0)" v-for="(token, index)  in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" src="https://files.coinswitch.co/public/coins/eth.png"  />
@@ -423,7 +423,7 @@
                         </q-card-section>
                         </q-card>
                     </q-expansion-item>
-                        <q-item  v-for="(item) in $store.state.wallets.tokens.filter(f => (f.chain == 'eos' && f.type == 'verto' && !f.hidden && !f.disabled) || f.chain != 'eos'  && f.chain != 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                        <q-item :style="setPosition(item.usd)" :data-total="!isNaN(item.usd) ? item.usd : 0 "  v-for="(item) in $store.state.wallets.tokens.filter(f => (f.chain == 'eos' && f.type == 'verto' && !f.hidden && !f.disabled) || f.chain != 'eos'  && f.chain != 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar class="item-coin">
@@ -818,6 +818,7 @@ export default {
     },
     sortBy (type) {
       if (type === 'balance') {
+        /*
         let nonAmountCoins = this.$store.state.wallets.tokens.filter(f => f.usd === undefined)
         for (let n of nonAmountCoins) {
           this.$store.state.wallets.tokens.push(this.$store.state.wallets.tokens.splice(this.$store.state.wallets.tokens.indexOf(n), 1)[0])
@@ -835,6 +836,7 @@ export default {
           })
         }
         // //console.log('tokens of table', tokens)
+        */
         this.direction = !this.direction
         // this.$store.state.wallets.tokens.map((a) => {
         // //console.log('a.amount', a.amount)
@@ -946,6 +948,15 @@ export default {
     kFormatter (num) {
       return Math.abs(num) > 999 ? Math.sign(num) * ((Math.abs(num) / 1000).toFixed(1)) + 'k' : Math.sign(num) * Math.abs(num)
     },
+    setPosition (total) {
+      let style = ''
+      // Sort by smallest total with CSS - Smallest index with show first if direction is false
+      let index = (!this.direction ? Number.MAX_SAFE_INTEGER : 0) - (isNaN(parseInt(total)) ? 0 : parseInt(total)) * (!this.direction ? 1 : -1)
+
+      style = '-webkit-box-ordinal-group: ' + index + '; -moz-box-ordinal-group: ' + index + ';box-ordinal-group: ' + index + ';'
+
+      return style
+    },
     nFormatter2 (num, digits) {
       var si = [{
         value: 1,
@@ -1011,6 +1022,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.all-wallets {
+     display: -webkit-box;
+        display: -moz-box;
+
+        -webkit-box-orient: vertical;
+        -moz-box-orient: vertical;
+        box-orient: vertical;
+}
+
+.all-wallets > div {
+        width:100%
+}
 @import "~@/assets/styles/variables.scss";
 
 .q-expansion-item {
