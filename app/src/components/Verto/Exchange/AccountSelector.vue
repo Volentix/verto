@@ -132,7 +132,7 @@ export default {
         total: w.total,
         image: w.icon,
         origin: 'metamask',
-        label: w.chain === 'eth' ? w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5) : w.name,
+        label: w.label,
         color: palette[this.accountOptions.length]
       }
       this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))

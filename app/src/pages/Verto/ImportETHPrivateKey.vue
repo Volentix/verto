@@ -529,7 +529,7 @@ export default {
 .desktop-version{
     background: #E7E8E8;
     padding-top: 13vh;
-    padding-left: 20vh;
+    padding-left: 18vh;
     padding-bottom: 50px;
     padding-right: 2%;
     @media screen and (min-width: 768px) {
