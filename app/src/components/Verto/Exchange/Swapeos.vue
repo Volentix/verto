@@ -287,10 +287,8 @@
                             <div class="text-black">
                               <div class="text-h4 --subtitle">{{ "" }}</div>
                               <p v-if="transactionHash && freeCPU" class="text-body2 text-center">
-                                <b>Volentix.io paid the CPU cost of this transaction.</b><br />
-                                <a href="">Click here to learn more</a>
+                                <b>You got FREE CPU from Volentix</b><br /><!-- <a href="">Click here to learn more</a> -->
                               </p>
-
                               <q-input v-if="transactionHash" bottom-slots v-model="transactionHash" readonly rounded class="input-input pr80" outlined color="purple" type="text">
                                 <template v-slot:append>
                                   <div class="flex justify-end">
