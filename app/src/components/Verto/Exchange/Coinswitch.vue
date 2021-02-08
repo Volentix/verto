@@ -66,7 +66,7 @@
                                                         </div>
 
                                                         <div class="col col-5 red text-right text-red">
-                                                           <q-input counter maxlength="12" :disable="pStep != 1 || !destinationCoin || destinationCoin.value != 'vtx'" rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5 " :label="accountToBeCreated ? 'Account chosen' : 'Enter account name'" v-model="freeeAccountName"  :error="inError" :error-message="errorMessage" @input="checkName" :rules="[ val => val && val.trim().length === 12  || 'Account name should be 12 characters']"/>
+                                                           <q-input counter maxlength="12" autofocus :disable="pStep != 1 || !destinationCoin || destinationCoin.value != 'vtx'" rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5 " :label="accountToBeCreated ? 'Account chosen' : 'Enter account name'" v-model="freeeAccountName"  :error="inError" :error-message="errorMessage" @input="checkName" :rules="[ val => val && val.trim().length === 12  || 'Account name should be 12 characters']"/>
                                                         </div>
 
                                                              </div>
@@ -316,7 +316,7 @@
                                                     </div>
                                                     <div class="text-body1 text-red q-py-md" v-if="ErrorMessage">{{ ErrorMessage }}</div>
 
-                                                    <q-btn unelevated :disable="ErrorMessage.length != 0 || depositQuantity == 0 || depositQuantity < rateData.limitMinDepositCoin || destinationQuantity > rateData.limitMaxDestinationCoin" @click="accountToBeCreated ? postOrder() : pStep = 2" color="light-grey" text-color="black" :label="accountToBeCreated ? 'Swap & Stake': 'Choose Accounts'" class="text-capitalize chose_accounts full-width" />
+                                                    <q-btn unelevated :disable="ErrorMessage.length != 0 || depositQuantity == 0 || depositQuantity < rateData.limitMinDepositCoin || destinationQuantity > rateData.limitMaxDestinationCoin" @click="accountToBeCreated ? postOrder() : pStep = 2" color="light-grey" text-color="black" :label="accountToBeCreated ? 'Confirm': 'Choose Accounts'" class="text-capitalize chose_accounts full-width" />
                                                 </div>
                                                 <p v-if="accountToBeCreated" class="text-body1 q-pt-sm q-pl-md cursor-pointer" @click="accountToBeCreated = false ; freeeAccountName = null">Reject offer</p>
                                             </div>
@@ -1392,6 +1392,12 @@ export default {
     }
   },
   async created () {
+    let disable = localStorage.getItem('disable_freeospopup')
+
+    if (disable) {
+      this.offer = false
+    }
+
     this.getWindowWidth()
     this.rateData = this.rateDataTemplate
     this.$store.commit('settings/setDex', {
@@ -1635,6 +1641,7 @@ export default {
   methods: {
     hidePromo () {
       this.offer = false
+      localStorage.setItem('disable_freeospopup', 'true')
     },
     initMetamask () {
       let allCoins = JSON.parse(JSON.stringify(this.coins))
