@@ -99,33 +99,33 @@
         </div>
         <div class="row" v-else>
         <div class="row full-width fixed-bottom z-top">
-        <div  class="col-10 row">
-             <div v-if="accountOption.chain == 'eth'"  class="col-6 desktop-card-style wallet-snapshot q-mb-md" style="background: url(statics/header_bg.png) no-repeat; background-position: 20% 75%; background-size: 100%;">
-                    <div class="flex justify-between items-center q-pt-sm q-pb-sm">
-                        <h3 class="text-white q-pl-md">Max DeFi Yield</h3>
-                        <div class="text-white q-pr-md amount flex items-center">
-                            <span class="interest_rate q-pr-md flex items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""><strong class="q-pr-md q-pb-sm"><span class="thicker">{{maxDeFiYield.token}}</span></strong> {{maxDeFiYield.roi}} % <b class="p-abs">Interest Rate</b></span>
-                            <!-- <span>28.35 USD</span> -->
-                        </div>
-                    </div>
-                </div>
-                <div   class="col-6  desktop-card-style yearn-finance q-mb-md" v-if="maxToken && accountOption.chain == 'eth'">
-                    <q-item>
-                        <q-item-section>
-                            <span class="text-h5 text-bold ">
-                                Convert {{maxToken.amount.toFixed(4)}} {{maxToken.type.toUpperCase()}} to {{maxDeFiYield.token}}
-                            </span>
-                        </q-item-section>
-                        <q-item-section>
-                            <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
-                                <q-icon name="arrow_right_alt" />
-                                <div class="flex justify-between items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""> <strong>{{maxDeFiYield.toTokenAmount}} <b>{{maxDeFiYield.token}}</b></strong></div>
-                                <q-btn unelevated class="qbtn-download" color="black" text-color="white" label="Confirm" @click="goToExchange()" />
-                            </h4>
-                        </q-item-section>
-                    </q-item>
-                </div>
-             </div>
+        <div  class="col-10 row" v-if="false">
+          <div v-if="accountOption.chain == 'eth'"  class="col-6 desktop-card-style wallet-snapshot q-mb-md" style="background: url(statics/header_bg.png) no-repeat; background-position: 20% 75%; background-size: 100%;">
+            <div class="flex justify-between items-center q-pt-sm q-pb-sm">
+              <h3 class="text-white q-pl-md">Max DeFi Yield</h3>
+              <div class="text-white q-pr-md amount flex items-center">
+                  <span class="interest_rate q-pr-md flex items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""><strong class="q-pr-md q-pb-sm"><span class="thicker">{{maxDeFiYield.token}}</span></strong> {{maxDeFiYield.roi}} % <b class="p-abs">Interest Rate</b></span>
+                  <!-- <span>28.35 USD</span> -->
+              </div>
+            </div>
+          </div>
+          <div class="col-6  desktop-card-style yearn-finance q-mb-md" v-if="maxToken && accountOption.chain == 'eth'">
+              <q-item>
+                  <q-item-section>
+                      <span class="text-h5 text-bold ">
+                          Convert {{maxToken.amount.toFixed(4)}} {{maxToken.type.toUpperCase()}} to {{maxDeFiYield.token}}
+                      </span>
+                  </q-item-section>
+                  <q-item-section>
+                      <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
+                          <q-icon name="arrow_right_alt" />
+                          <div class="flex justify-between items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""> <strong>{{maxDeFiYield.toTokenAmount}} <b>{{maxDeFiYield.token}}</b></strong></div>
+                          <q-btn unelevated class="qbtn-download" color="black" text-color="white" label="Confirm" @click="goToExchange()" />
+                      </h4>
+                  </q-item-section>
+              </q-item>
+          </div>
+        </div>
     </div>
     <q-splitter
       v-model="splitterModel"

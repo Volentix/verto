@@ -959,8 +959,10 @@ export default {
     }
 
     if (this.$store.state.settings.dexData.depositCoin && this.$store.state.settings.dexData.fromAmount) {
-      this.depositQuantity = this.$store.state.settings.dexData.depositCoin.fromAmount
+      this.depositQuantity = this.$store.state.settings.dexData.fromAmount
+      this.swapData.fromAmount = this.$store.state.settings.dexData.fromAmount
     }
+
     console.log(this.$store.state.settings.dexData)
   },
   async mounted () {
@@ -1046,7 +1048,7 @@ export default {
         slippage: 2,
         fromAddress: self.ethAccount.key,
         toAddress: self.destinationCoin.address,
-        disableEstimate: false
+        disableEstimate: true
       }
       let swapRequestUrl = _1inch + '/v2.0/swap?' + new URLSearchParams(data).toString()
       this.$axios.get(swapRequestUrl)
