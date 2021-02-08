@@ -82,7 +82,7 @@ export default {
     left: 0px;
     top: 0px;
     height: 100%;
-    width: 20vh;
+    width: 18vh;
     background-color: #7900FF;
     background: transparent linear-gradient(180deg, #7900FF 0%, #00D0DF 100%) 0% 0% no-repeat padding-box;
     background-color: #E7E8E8;
@@ -141,13 +141,13 @@ export default {
                 transform: scale(1);
               }
               .text-tab-name{
-                font-size: 12px;
+                font-size: 18px;
                 font-family: $Titillium;
                 text-transform: initial;
                 color: rgba(#333, .6);
                 margin-top: 0px;
                 margin-bottom: 0px;
-                font-weight: 700;
+                font-weight: 300;
               }
               &.q-router-link--active{
                 .svg-icon{

@@ -96,10 +96,13 @@ export default {
           self.invalidTransaction = true
         })
     },
-    async sendSignedTransaction (transactionObject, metamask = false) {
+    async sendSignedTransaction (transactionObject, metamask = false, key = false) {
       this.transactionStatus = 'Pending'
       let account = Array.isArray(this.ethAccount) ? this.ethAccount.find(o => o.type === 'eth') : this.ethAccount
-      console.log(transactionObject)
+      if (key) {
+        account = this.$store.state.wallets.tokens.find(a => a.key === key)
+      }
+
       if (metamask) {
         /* global web3 */
         const Web3 = require('web3')
@@ -108,7 +111,6 @@ export default {
 
           let tx = await localWeb3.eth.sendTransaction(transactionObject)
           tx.on('confirmation', (confirmationNumber, receipt) => {
-            console.log(receipt, 'confirmationNumber', confirmationNumber)
             if (confirmationNumber > 2) {
               this.transactionSTatus = 'Confirmed'
             }
@@ -138,8 +140,10 @@ export default {
       var transaction = new EthereumTx(transactionObject)
 
       if (account) {
+        console.log(account)
         transaction.sign(Buffer.from(account.privateKey.substring(2), 'hex'))
         const serializedTransaction = transaction.serialize()
+        console.log(serializedTransaction, account)
 
         let tx = this.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
 

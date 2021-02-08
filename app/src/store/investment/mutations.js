@@ -104,6 +104,10 @@ export const setDebts = (state, payload) => {
 export const setDefaultAccount = (state, payload) => {
   state.defaultAccount = payload
 }
+export const setAccountTokens = (state, payload) => {
+  state.accountTokens = payload
+}
+
 export const setTableLoadingStatus = (state, payload) => {
   state.tableLoading = payload
 }

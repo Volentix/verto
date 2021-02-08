@@ -14,6 +14,7 @@ export default function () {
     debts: [],
     transactions: [],
     defaultAccount: null,
+    accountTokens: [],
     metamaskConnected: false,
     tableLoading: true,
     eosInvestments: [],
