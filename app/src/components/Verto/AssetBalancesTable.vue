@@ -32,6 +32,7 @@
 import {
   QScrollArea
 } from 'quasar'
+import Formatter from '@/mixins/Formatter'
 export default {
   components: {
     QScrollArea
@@ -46,45 +47,37 @@ export default {
       poolsData: [],
       screenSize: 0,
       filter: '',
-      columns: [{
-        name: 'index',
-        required: true,
-        label: '#',
-        align: 'left',
-        field: 'index',
-        format: val => `${val + 1}`,
-        sortable: true
-      },
-      {
-        name: 'name',
-        required: true,
-        label: 'Asset',
-        align: 'left',
-        field: row => row,
-        format: val => `${val}`,
-        sortable: true
-      },
-      {
-        name: 'usd',
-        align: 'left',
-        label: 'USD',
-        field: 'usd',
-        format: val => `$${parseFloat(val).toFixed(2)}`,
-        sortable: true
-      },
-      {
-        name: 'amount',
-        align: 'left',
-        label: 'Amount',
-        field: 'amount',
-        sortable: true,
-        format: val => `$${parseFloat(val).toFixed(8)}`
-      },
-      {
-        name: 'action',
-        label: '',
-        sortable: false
-      }
+      columns: [
+        {
+          name: 'name',
+          required: true,
+          label: 'Asset',
+          align: 'left',
+          field: row => row,
+          format: val => `${val}`,
+          sortable: true
+        },
+        {
+          name: 'usd',
+          align: 'left',
+          label: 'USD',
+          field: 'usd',
+          format: val => `$${this.formatNumber(val, 0)}`,
+          sortable: true
+        },
+        {
+          name: 'amount',
+          align: 'left',
+          label: 'Amount',
+          field: 'amount',
+          sortable: true,
+          format: val => `${this.formatNumber(val, 8)}`
+        },
+        {
+          name: 'action',
+          label: '',
+          sortable: false
+        }
       ],
       openDialog: false
     }
@@ -101,12 +94,15 @@ export default {
   methods: {
     initTable () {
       this.assets = []
-      this.$store.state.wallets.tokens.forEach((token, i) => {
+      JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).forEach((token, i) => {
+        token.amount = parseFloat(token.amount)
+        token.usd = parseFloat(token.usd)
         if (!isNaN(token.amount) && token.amount !== 0) {
           if (this.assets.find(o => o.type === token.type)) {
             let index = this.assets.findIndex(o => o.type === token.type)
-            this.assets[index].amount += this.assets[index].amount ? 0 : token.amount
-            this.assets[index].usd += isNaN(token.usd) ? '-' : token.usd
+            console.log(index, token.amount, this.assets[index].amount, this.assets[index], this.assets, token.type)
+            this.assets[index].amount += token.amount
+            this.assets[index].usd += isNaN(token.usd) ? 0 : token.usd
           } else {
             token.index = this.assets.length
             this.assets.push(token)
@@ -125,7 +121,8 @@ export default {
         row => row.poolName.toLowerCase().includes(lowerTerms)
       )
     }
-  }
+  },
+  mixins: [Formatter]
 }
 
 </script>

@@ -188,7 +188,7 @@ export default [
       },
       {
         name: 'exchange-v2',
-        path: '/verto/exchange',
+        path: '/verto/exchange/:action?',
         component: () => import('pages/Verto/Exchange.vue'),
         meta: {
           authRequired: true

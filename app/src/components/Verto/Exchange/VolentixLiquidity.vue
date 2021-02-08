@@ -620,11 +620,9 @@
                 v-if="transactionHash && freeCPU"
                 class="text-body2 text-center"
                >
-                <b
-                 >Volentix.io paid the CPU cost of this
-                 transaction.</b
+                <b>You got FREE CPU from Volentix</b
                 ><br />
-                <a href="">Click here to learn more</a>
+                <!-- <a href="">Click here to learn more</a> -->
                </p>
 
                <q-input

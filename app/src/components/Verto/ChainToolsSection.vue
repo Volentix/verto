@@ -1,8 +1,8 @@
 <template>
   <div class="desktop-card-style apps-section q-mb-sm" :class="{'disabled' : wallet.type !== 'vtx', 'dark-theme': $store.state.settings.lightMode === 'true'}">
-    <div class="row flex justify-between q-pt-sm q-pb-sm">
-      <div class="col col-3 flex items-center chain-icon"><q-icon :name="'img:statics/chain-tools_icon-black.svg'" />Chain Tools</div>
-      <div class="col col-6 flex items-center justify-center chain-token q-pr-sm">
+    <div class="row flex justify-between items-center q-pt-md q-pb-sm">
+      <div class="col col-4 flex items-center chain-icon"><q-icon :name="'img:statics/chain-tools_icon-black.svg'" />Chain Tools</div>
+      <div class="col col-6 flex items-center justify-center chain-token">
         <div class="column q-mr-md">
           <span class="label">Account:</span>
           <strong class="ellipsis">{{wallet.name}}</strong>
@@ -16,20 +16,10 @@
           <strong class="upper">{{wallet.type}}</strong>
         </div>
       </div>
-      <div class="col col-3 flex items-center justify-end dropdown q-pr-sm">
+      <div class="col col-2 flex items-center justify-end dropdown q-pr-sm">
         <q-select
-          v-if="$store.state.settings.lightMode === 'true'"
-          dark
-          separator
-          rounded
-          outlined
-          class="select-input"
-          v-model="chainToolModel"
-          @input="goToChainTool"
-          :options="['Staking']" />
-        <q-select
-          v-else
-          light
+          :dark="$store.state.settings.lightMode === 'true'"
+          :light="$store.state.settings.lightMode === 'false'"
           separator
           rounded
           outlined
@@ -75,6 +65,9 @@ export default {
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
   .apps-section{
+    min-height: 77px;
+    height: 100%;
+    max-height: calc(100% - 10px);
     .row{
       .col{
         &.chain-token{
@@ -82,6 +75,7 @@ export default {
           font-size: 11px;
           font-family: $Titillium;
           padding-right: 10px;
+          margin-left: -60px;
           .label{
             color: #494949;
           }
@@ -119,7 +113,7 @@ export default {
     .select-input{
       border-radius: 100px !important;
       $height: 35px;
-      width: 200px;
+      width: 160px;
       height: $height;
       /deep/ .q-field__marginal{
         height: $height;
@@ -135,7 +129,7 @@ export default {
           height: $height;
           min-height: unset;
           font-size: 10px;
-          width: 80px;
+          width: 60px;
           margin-right: -15px;
           .q-item{
             padding: 0px;

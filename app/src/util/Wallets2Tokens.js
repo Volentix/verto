@@ -12,8 +12,14 @@ class Wallets2Tokens {
     self.eosUSD = 0
     this.getEosUSD()
     store.state.wallets.portfolioTotal = 0
-    // console.log(store.state.currentwallet.config.keys, 'store.state.currentwallet.config.keys ')
+    store.state.currentwallet.config.keys.unshift({
+      type: 'verto',
+      chain: 'eos',
+      name: 'believeinvtx'
+
+    })
     this.tableData = [ ...store.state.currentwallet.config.keys ]
+    console.log(store.state.currentwallet, 'store.state.currentwallet.config.keys ')
     if (store.state.settings.network === 'testnet') {
       this.tableData = this.tableData.filter(o => o.origin === 'eos_testnet')
       this.tableData.map(async wallet => {
@@ -39,6 +45,12 @@ class Wallets2Tokens {
             { amount: vtxbalance, code: 'volentixgsys', symbol: 'VTX' }
           ]
           // console.log('eos balances', balances)
+
+          if (wallet.privateKey) {
+            let value = wallet.privateKey.split('_')
+            wallet.privateKey = value[value.length - 1]
+          }
+
           balances.data.map((t, index) => {
           // console.log('eos token', t)
             if (t.symbol.toLowerCase() !== 'eos') {
@@ -54,6 +66,7 @@ class Wallets2Tokens {
                 // }
 
                 let usdValue = 0
+
                 this.getUSD(t.code, type).then(result => {
                   usdValue = result
                   // console.log('this.eosUSD $$$$$ ', usdValue)
@@ -174,7 +187,10 @@ class Wallets2Tokens {
                 //     vespucciScore = result.vespucciScore
                 //   })
                 // }
-
+                if (wallet.privateKey) {
+                  let value = wallet.privateKey.split('_')
+                  wallet.privateKey = value[value.length - 1]
+                }
                 let usdValue = 0
                 this.getUSD(t.code, type).then(result => {
                   usdValue = result

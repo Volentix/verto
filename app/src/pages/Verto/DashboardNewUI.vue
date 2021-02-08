@@ -5,18 +5,19 @@
     <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
             <div class="col col-md-3">
-                <div class="wallets-container">
+                <div class="wallets-container" style="height: 100%">
                     <profile-header :isMobile="false" class="marg" version="type2222" />
                     <wallets data-title="Interact with your account"  data-intro="Click on an account/token to see all actions you can perform. Click SETUP to associate EOS account(s) to account names" :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                 </div>
             </div>
             <div class="col col-md-9 q-pr-md">
                 <div class="row">
-                    <div class="col col-md-7">
+                    <div class="col col-md-6">
                         <chainToolsSection />
                     </div>
-                    <div class="col q-pl-sm col-md-5">
-                        <startNodeSection :banner="3" />
+                    <div class="col q-pl-sm col-md-6 customSlider">
+                        <maxDeFiYield class="slide" :class="{'active': !customSlider}" />
+                        <startNodeSection class="slide" :class="{'active': customSlider}" :banner="3" />
                     </div>
                     <div class="col col-md-12">
                         <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
@@ -108,6 +109,7 @@ import ProfileHeader from '../../components/Verto/ProfileHeader'
 import Wallets from '../../components/Verto/Wallets'
 // import AppsSection from '../../components/Verto/AppsSection'
 import StartNodeSection from '../../components/Verto/StartNodeSection'
+import maxDeFiYield from '../../components/Verto/maxDeFiYield'
 import ChainToolsSection from '../../components/Verto/ChainToolsSection'
 // import TransactionsSection from '../../components/Verto/TransactionsSection'
 import LiquidityPoolsSection from '../../components/Verto/Defi/LiquidityPoolsSection'
@@ -153,6 +155,7 @@ export default {
     Wallets,
     // AppsSection,
     StartNodeSection,
+    maxDeFiYield,
     TestnetPools,
     ChainToolsSection,
     // TransactionsSection,
@@ -169,6 +172,7 @@ export default {
   },
   data () {
     return {
+      customSlider: true,
       rawPools: [],
       cruxKey: {},
       osName: '',
@@ -182,6 +186,9 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   async created () {
+    setInterval(() => {
+      this.customSlider = !this.customSlider
+    }, 12000)
     if (!this.$store.state.wallets.tokens.length) {
       initWallet()
     }
@@ -253,7 +260,6 @@ export default {
     this.$bus.$on('showHomeIntro', () => {
       this.showIntros()
     })
-
     setTimeout(async () => {
       let manualSelectCurrentWallet = false
       await store.state.wallets.tokens.map(async (f) => {
@@ -402,7 +408,7 @@ export default {
 .desktop-version {
     background: #E7E8E8;
     padding-top: 13vh;
-    padding-left: 20vh;
+    padding-left: 18vh;
     padding-bottom: 50px;
     @media screen and (min-width: 768px) {
         padding-top: 11vh;
@@ -811,6 +817,19 @@ export default {
             }
         }
     }
+    }
+}
+.customSlider{
+    .slide{
+        opacity: 0;
+        visibility: hidden;
+        position: absolute;
+        transition: opacity 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        &.active{
+            opacity: 1;
+            visibility: visible;
+            position: relative;
+        }
     }
 }
 </style>

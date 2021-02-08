@@ -123,6 +123,31 @@ export default {
         return a.name ? -1 : 1
       })
     },
+    setDefaultWallet (chain) {
+      if (!this.$store.state.investment.defaultAccount) {
+        let w = this.$store.state.wallets.tokens.find(x => x.chain === chain && x.type === chain)
+        this.$store.commit('investment/setDefaultAccount', chain === 'eth' ? {
+          value: w.key,
+          key: w.key,
+          chain: 'eth',
+          usd: w.usd,
+          total: w.total,
+          image: w.icon,
+          label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
+          color: 'green'
+        } : {
+          value: w.name,
+          name: w.name,
+          key: w.key,
+          usd: w.usd,
+          chain: 'eos',
+          total: w.total,
+          image: w.icon,
+          label: w.name,
+          color: 'green'
+        })
+      }
+    },
     checkPair () {
       this.dex = null
       this.error = false
@@ -133,12 +158,15 @@ export default {
       if (this.destinationCoin && this.destinationCoin && this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
         this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
         this.dex = 'oneinch'
+        this.setDefaultWallet('eth')
       } else if (this.destinationCoin && this.destinationCoin && !crosschain.includes(this.depositCoin.value.toLowerCase()) && !crosschain.includes(this.destinationCoin.value.toLowerCase()) && this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
         this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
         this.dex = 'defibox'
+        this.setDefaultWallet('eos')
       } else if (this.destinationCoin && this.destinationCoin && this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
         this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
         this.dex = 'coinswitch'
+        this.setDefaultWallet('eth')
       } else {
         this.dex = null
       }
