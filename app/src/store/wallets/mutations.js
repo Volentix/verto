@@ -40,3 +40,9 @@ export const setLoadingState = (state, value) => {
 export const updatePortfolioTotal = (state, updatedportfolioTotal) => {
   state.portfolioTotal = updatedportfolioTotal
 }
+export const updateExternalWalletAccounts = (state, data) => {
+  state[data.wallet].accounts = data.accounts
+}
+export const updateExternalWalletTokens = (state, data) => {
+  state[data.wallet].tokens = data.tokens
+}
