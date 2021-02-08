@@ -50,7 +50,6 @@ connect = () => {
       return new Promise(async (resolve, reject) => {
         try {
           window.ethereum.enable().then(async (accounts) => {
-            console.log(accounts, 'accounts')
             store.commit('wallets/updateExternalWalletAccounts', { wallet: self.walletName,
               accounts: accounts.map((o) => {
                 let item = {}
@@ -59,9 +58,10 @@ connect = () => {
                 item.image = 'https://files.coinswitch.co/public/coins/eth.png'
                 return item
               }) })
+
             accounts.map(async (o, index) => {
               let item = {}
-              console.log(index, accounts, 'accounts')
+
               await web3.eth.getBalance(o, async (err, balance) => {
                 if (err) {
                   reject({
@@ -70,17 +70,16 @@ connect = () => {
                   })
                 } else {
                   item.balance = web3.utils.fromWei(balance, 'ether')
-                  item.label = o.substring(0, 10) + '...' + o.substr(o.length - 5)
+                  item.label = o.substring(0, 6) + '...' + o.substr(o.length - 5)
                   item.value = o
                   item.amount = isNaN(item.balance) ? 0 : item.balance
                   item.symbol = 'ETH'
-                  item.symbol = 'ETH'
                   item.type = 'eth'
-                  item.icon = 'https://files.coinswitch.co/public/coins/eth.png'
+                  item.icon = item.image = 'https://files.coinswitch.co/public/coins/eth.png'
                   item.chain = 'eth'
                   item.origin = 'metamask'
                   item.key = item.value
-
+                  item.color = 'amber-5'
                   self.tableData.push(item)
                   await self.getEthWalletData(item)
                   if (index + 1 === accounts.length) {
@@ -112,6 +111,7 @@ async getEthWalletData (wallet) {
     let ethplorer = res ? res.data : false
     this.tableData.filter(w => w.key === wallet.key).map(eth => {
       eth.amount = ethplorer.ETH.balance
+      eth.total = ethplorer.ETH.balance * ethplorer.ETH.price.rate
       eth.usd = ethplorer.ETH.balance * ethplorer.ETH.price.rate
     })
     store.commit('wallets/updateExternalWalletTokens', { wallet: this.walletName, tokens: this.tableData })
@@ -150,9 +150,9 @@ async getEthWalletData (wallet) {
               usd: amount,
               value: t.tokenInfo.symbol ? t.tokenInfo.symbol.toLowerCase() : '',
               chain: 'eth',
-              icon: t.tokenInfo.image
+              icon: t.tokenInfo.image,
+              image: t.tokenInfo.image
             })
-
             store.commit('wallets/updateExternalWalletTokens', { wallet: this.walletName, tokens: this.tableData })
           })
         }

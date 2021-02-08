@@ -261,7 +261,7 @@
               </template> -->
             </q-select>
             <div  data-title="Token list"  data-intro="On this list you will find tokens associated with your selected account" >
-            <q-item clickable :key="index"  v-for="(token,index) in $store.state.wallets.tokens.filter(o => o.chain ==  chain && (( o.name == accountOption.label && chain == 'eos') || ( o.key.toLowerCase() == accountOption.value.toLowerCase() && chain == 'eth' )))">
+            <q-item clickable :key="index"  v-for="(token,index) in $store.state.wallets.tokens.filter(o => o.chain ==  chain && (( o.name == accountOption.label && chain == 'eos') || (o && o.key && o.key.toLowerCase() == accountOption.value.toLowerCase() && chain == 'eth' )))">
               <q-item-section avatar top>
                 <q-icon :name="'img:'+token.icon" color="primary" text-color="white" />
               </q-item-section>
@@ -698,7 +698,7 @@ export default {
 .desktop-version{
   background: #E7E8E8;
   padding-top: 13vh;
-  padding-left: 20vh;
+  padding-left: 18vh;
   padding-bottom: 50px;
   padding-right: 2%;
   @media screen and (min-width: 768px) {
