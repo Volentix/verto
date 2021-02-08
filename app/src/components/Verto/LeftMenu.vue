@@ -14,6 +14,12 @@
             <div class="text-tab-name">Dashboard</div>
           </div>
         </q-route-tab>
+        <q-route-tab class="tabs-menu--wrapper-tab" to="/verto/history" name="history">
+          <div class="svg-icon-wrapper flex flex-center items-center">
+            <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 27 27.2" style="enable-background:new 0 0 27 27.2;" xml:space="preserve"> <path id="circular-graph" class="st0" d="M23.4,12.8H26c-0.1-1.3-0.4-2.6-0.9-3.9l-2.3,1.3C23.1,11,23.3,11.9,23.4,12.8z M18.9,2.3 c-1.3-0.6-2.6-1-4-1.1v2.6c0.9,0.1,1.8,0.4,2.7,0.8L18.9,2.3L18.9,2.3z M21.6,7.9l2.3-1.3c-0.8-1.2-1.7-2.2-2.8-3l-1.3,2.3 C20.5,6.4,21.1,7.1,21.6,7.9L21.6,7.9z M13.5,23.4c-5.5,0-9.9-4.4-9.9-9.8c0-5,3.7-9.2,8.6-9.8V1.1C5.4,1.9,0.4,8,1.1,14.8 S7.9,26.7,14.8,26c5.7-0.6,10.2-5,11.1-10.6h-2.6C22.4,20,18.3,23.4,13.5,23.4z"/> </svg>
+            <div class="text-tab-name">History</div>
+          </div>
+        </q-route-tab>
         <q-route-tab class="tabs-menu--wrapper-tab" to="/verto/defi" name="defi">
           <div class="svg-icon-wrapper flex flex-center items-center">
             <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 66 68" style="enable-background:new 0 0 66 68;" xml:space="preserve"> <g> <path class="st0" d="M32,20.7l4.9,4.2C37,25,37.2,25,37.3,25c0.1,0,0.2,0,0.3-0.1l4.8-4.3c0,0,0,0,0,0c0.1-0.1,0.1-0.2,0.1-0.3v0 c0,0,0,0,0,0v-8.6c0,0,0-0.1,0-0.1c0-0.1,0-0.1-0.1-0.2c0-0.1-0.1-0.1-0.2-0.1c0,0-0.1,0-0.2-0.1c-0.1,0-0.1,0-0.2,0 c-0.1,0-0.1,0-0.2,0.1c-0.1,0-0.1,0.1-0.1,0.2c0,0,0,0.1,0,0.1l-3.1,8.3H36l-3.2-8.3c0,0,0-0.1,0-0.1c0-0.1-0.1-0.1-0.1-0.2 c-0.1,0-0.1-0.1-0.2-0.1c-0.1,0-0.1,0-0.2,0c-0.1,0-0.1,0-0.2,0.1c-0.1,0-0.1,0.1-0.2,0.1c0,0.1-0.1,0.1-0.1,0.2c0,0,0,0.1,0,0.1 V20c0,0.1,0,0.1,0,0.2C31.7,20.4,31.9,20.6,32,20.7z M41.6,14.4v5.4h-2L41.6,14.4z M39.2,20.7h1.6l-2.3,2.1L39.2,20.7z M38.1,20.7 l-0.9,2.4l-0.9-2.4H38.1z M36.1,22.8l-2.5-2.1h1.6L36.1,22.8z M32.8,14.3l2.1,5.4h-2.1V14.3z"/> <path class="st0" d="M37.2,30.1c6.6,0,12-5.4,12-12s-5.4-12-12-12s-12,5.4-12,12S30.5,30.1,37.2,30.1z M37.2,8c5.5,0,10,4.5,10,10 s-4.5,10-10,10s-10-4.5-10-10S31.6,8,37.2,8z"/> <path class="st0" d="M47.4,44.4c-0.6,0-1,0.4-1,1v6.7c0,0.7-0.5,1.2-1.2,1.2H15.6c0,0,0,0,0,0c-0.7,0-1.2-0.5-1.2-1.2V22.5 c0-0.7,0.5-1.2,1.2-1.2h6.7c0.6,0,1-0.4,1-1s-0.4-1-1-1h-6.7c-1.8,0-3.2,1.4-3.2,3.2v29.6c0,1.8,1.4,3.2,3.2,3.2c0,0,0,0,0,0h29.6 c1.8,0,3.2-1.5,3.2-3.2v-6.7C48.4,44.9,48,44.4,47.4,44.4z"/> <path class="st0" d="M50.6,26.9c-4.6,0-8.4,3.8-8.4,8.4s3.8,8.4,8.4,8.4S59,40,59,35.3S55.2,26.9,50.6,26.9z M50.6,41.8 c-3.5,0-6.4-2.9-6.4-6.4s2.9-6.4,6.4-6.4s6.4,2.9,6.4,6.4S54.1,41.8,50.6,41.8z"/> <path class="st0" d="M27,38.5c0,3.8,3.1,6.9,6.9,6.9s6.9-3.1,6.9-6.9c0-3.8-3.1-6.9-6.9-6.9S27,34.7,27,38.5z M38.8,38.5 c0,2.7-2.2,4.9-4.9,4.9S29,41.2,29,38.5c0-2.7,2.2-4.9,4.9-4.9S38.8,35.8,38.8,38.5z"/> </g> </svg>
@@ -124,6 +130,7 @@ export default {
             }
           }
           &-tabs{
+            margin-top: 25px;
             .tabs-menu--wrapper-tab{
               margin-left: -1vh;
               justify-content: flex-start;
@@ -139,23 +146,26 @@ export default {
                 height: 25px;
                 max-width: unset;
                 transform: scale(1);
+                display: none;
               }
               .text-tab-name{
-                font-size: 12px;
+                font-size: 18px;
                 font-family: $Titillium;
                 text-transform: initial;
-                color: rgba(#333, .6);
+                color: rgba(#000, .6);
                 margin-top: 0px;
                 margin-bottom: 0px;
-                font-weight: 700;
+                font-weight: 600;
               }
               &.q-router-link--active{
-                .svg-icon{
-                  fill: #333;
-                }
-                .text-tab-name{
-                  color: #333;
-                  font-weight: 700;
+                &.q-tab--active{
+                  .svg-icon{
+                    fill: #4396df;
+                  }
+                  .text-tab-name{
+                    color: #4396df;
+                    font-weight: 600;
+                  }
                 }
               }
             }
@@ -175,14 +185,14 @@ export default {
       }
       background-color: #04111F;
       background: #04111F;
-      .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab.q-router-link--active .svg-icon{
-        fill: rgba(white, 1);
+      .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab.q-router-link--active.q-tab--active .svg-icon{
+        fill: #57adf8;
       }
       .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab .svg-icon{
         fill: rgba(white, .8);
       }
-      .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab.q-router-link--active .text-tab-name{
-        color: rgba(white, 1);
+      .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab.q-router-link--active.q-tab--active .text-tab-name{
+        color: #57adf8;
       }
       .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab .text-tab-name{
         color: rgba(white, .8);
