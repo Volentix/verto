@@ -79,7 +79,7 @@
                         <div class="you-pay">
                           <div class="you-pay-head row items-center">
                             <div class="col col-6">Payment</div>
-                            <div class="col col-6  flex red text-right float-right text-body1" ><AccountSelector  /></div>
+                            <div class="col col-6  flex red text-right justify-end text-body1" ><AccountSelector  /></div>
                           </div>
                           <div class="you-pay-body row items-center">
                             <div class="col col-3 choose-coin">
