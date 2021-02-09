@@ -15,9 +15,7 @@
                                             <!-- <img src="statics/theme1/Screenshot_208.png" alt="" style="opacity: .1"> -->
                                             <div v-if="pStep === 1" class="prototype">
                                                 <div class="head">Market Order <span class="float-right cursor-pointer " @click="offer=true"><q-img style="width:25px;" src="https://www.joypixels.com/images/jp-home/fire.gif" /> Get a FREE EOS account</span></div>
-
-                                                <div class="you-pay">
-                                                     <q-dialog
+                                                  <q-dialog
                                                         v-model="offer"
                                                         :dark="$store.state.settings.lightMode === 'true'"
                                                         >
@@ -143,6 +141,8 @@
                                                         </q-step>
 
                                                         </q-stepper>
+
+                                                <div class="you-pay">
 
                                                     <div class="you-pay-head row full-width">
                                                         <div class="col col-6 text-left">You Pay</div>
@@ -498,6 +498,46 @@
                                 <!-- <br><br><br> -->
                             </div>
                         </div>
+         <div v-if="accountToBeCreated" class=" summary-wrapper shadow-1 col-md-4 column  items-start">
+        <q-list class="summary-wrapper__list" separator>
+          <q-item class="q-my-sm" clickable v-ripple>
+            <div class="text-h6">Summary</div>
+          </q-item>
+          <q-item class="q-my-sm text-left"  >
+            <q-item-section avatar>
+              <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label >Staking amount:</q-item-label>
+              <q-item-label caption class="text-bold" lines="1">{{ destinationQuantity }} {{ destinationCoin.label.toUpperCase() }}</q-item-label>
+            </q-item-section>
+          </q-item>
+           <q-item class="q-my-sm text-left" clickable v-ripple >
+            <q-item-section avatar>
+             {{period}}
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label >Staking period:</q-item-label>
+             <q-select  @input="calculateReward()" v-model="period" :options="[30, 60, 120,150, 180,210,240,270,300]" label="Change" >
+
+            </q-select>
+            </q-item-section>
+          </q-item>
+          <q-item class="q-my-sm text-left" clickable v-ripple >
+            <q-item-section avatar>
+             <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label >Estimated reward :</q-item-label>
+              <q-item-label caption class="text-bold" lines="1">{{estimatedReward}} {{ destinationCoin.label.toUpperCase() }}</q-item-label>
+            </q-item-section>
+          </q-item>
+
+        </q-list>
+        </div>
                     </div>
                 </div>
             </div>
@@ -1251,6 +1291,8 @@ export default {
       freeEOSAccountStepper: 1,
       isLoading: true,
       offer: true,
+      period: 60,
+      estimatedReward: 0,
       connectLoading: false,
       currentWallet: null,
       ethWallets: [],
@@ -1726,6 +1768,17 @@ export default {
     checkDepositAndDestination () {
       if (this.destinationAddress.address === '' || this.depositCoin.address === '') {}
     },
+    calculateReward () {
+      if (this.accountToBeCreated) {
+        let stake_per = (1 + parseInt(this.period) / 10.0) / 100
+        if (+this.destinationQuantity > 0.0 && +this.destinationQuantity >= 10000) {
+          this.estimatedReward = (Math.round(this.destinationQuantity * stake_per * 100) / 100) * this.period
+        // console.log('mul', stake_per)
+        } else {
+          this.estimatedReward = 0
+        }
+      }
+    },
     updateCoinName () {
       if (this.destinationCoin !== null) {
         this.toCoinType = this.destinationCoin.value
@@ -2192,6 +2245,7 @@ export default {
 
               if (self.accountToBeCreated) {
                 self.destinationQuantity = 10000
+                self.calculateReward()
                 self.quantityFromDestination()
               }
             } else {
