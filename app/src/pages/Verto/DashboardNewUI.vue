@@ -397,7 +397,11 @@ export default {
         }
     }
 }
-</style><style>
+</style>
+<style>
+.dark-theme-main-layout .q-page {
+    background: #04111F !important;
+}
 .q-page {
     background: #E7E8E8 !important;
 }
