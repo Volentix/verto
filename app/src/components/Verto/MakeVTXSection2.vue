@@ -5,7 +5,7 @@
         <div v-else class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md lightmd" style="background: url('statics/bg3d2light.png');">Staking</div>
         <div class="row items-center q-pa-md">
             <div class="col-7 p-desc q-pb-sm">
-              10000 VTX required
+              10,000 VTX required
             </div>
             <div class="col-5 flex justify-end">
                 <q-btn unelevated class="qbtn-start" color="black" @click="goToExchange" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" label="Get VTX Now" />
