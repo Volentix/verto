@@ -285,20 +285,20 @@
                             <hr style="height: 15px; opacity: 0" />
                             <div class="text-black">
                               <div class="text-h4 --subtitle">{{ "" }}</div>
-                              <p v-if="transactionHash && freeCPU" class="text-body2 text-center">
-                                <b>You got FREE CPU from Volentix</b><br /><!-- <a href="">Click here to learn more</a> -->
+                              <p v-if="transactionHash && freeCPU" class="text-body2 text-center" :class="$store.state.settings.lightMode === 'true' ? 'text-white': 'text-black'">
+                                <b >You got FREE CPU from Volentix</b><br /><!-- <a href="">Click here to learn more</a> -->
                               </p>
-                              <q-input v-if="transactionHash" bottom-slots v-model="transactionHash" readonly rounded class="input-input pr80" outlined color="purple" type="text">
+                              <q-input :dark="$store.state.settings.lightMode === 'true'" v-if="transactionHash" bottom-slots v-model="transactionHash" readonly rounded class="input-input pr80" outlined color="purple" type="text">
                                 <template v-slot:append>
                                   <div class="flex justify-end">
                                     <q-btn flat unelevated text-color="grey" @click="copyToClipboard(transactionHash, 'Transaction  hash')" round class="btn-copy" icon="file_copy" />
                                   </div>
                                 </template>
                                 <template v-slot:hint>
-                                  <div class="cursor-pointer q-pl-lg q-pt-sm" @click="step = 1"><q-icon name="keyboard_backspace" /> Go Back</div>
+                                  <!-- <div class="cursor-pointer q-pl-lg q-pt-sm" style="font-size: 16px" @click="step = 1"><q-icon name="keyboard_backspace" /> Go Back</div> -->
                                 </template>
                                 <template v-slot:counter>
-                                  <a :href="'https://bloks.io/transaction/' + transactionHash" class="text-body2 text-black" target="_blank"> Follow <img width="18" src="https://bloks.io/favicon-32x32.png?v=BG7PP2QPNi" /> </a>
+                                  <a :href="'https://bloks.io/transaction/' + transactionHash" class="text-body2 flex items-center q-mt-md" :class="$store.state.settings.lightMode === 'true' ? 'text-white': 'text-black'" target="_blank"> Follow <img width="20" class="q-ml-md" src="https://bloks.io/favicon-32x32.png?v=BG7PP2QPNi" /> </a>
                                 </template>
                               </q-input>
                             </div>
@@ -1620,8 +1620,9 @@ export default {
           }
 
           .--next-btn {
-            width: 100px;
+            width: fit-content;
             text-transform: initial !important;
+            margin-left: -30px;
           }
 
           .--progress {
