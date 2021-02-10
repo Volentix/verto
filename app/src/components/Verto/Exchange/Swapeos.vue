@@ -1,421 +1,425 @@
 <template>
   <div class="swapeos-component" v-if="depositCoin && destinationCoin">
-    <!-- $q.screen.width > 1024 &&  -->
-    <div class="row swdapeos-component--row">
-      <div class="col col-12 col-md-7">
-        <div class="apps-section">
-          <!-- 1inch component -->
-          <!-- add your code here -->
-          <q-dialog v-model="getPassword" persistent>
-            <q-card>
-              <q-card-section>
-                <div class="send-modal flex flex-center" :class="{ open: openModal }">
-                  <div class="send-modal__content q-pa-md column flex-center">
-                    <div class="send-modal__content--head">
-                      <span class="text-h5 --amount">Private key password</span>
-                      <q-btn color="white" rounded flat unelevated @click="hideModalFun()" class="close-btn" text-color="black" label="+" />
-                    </div>
-                    <div class="send-modal__content--body column flex-center full-width">
-                      <q-input
-                        v-model="privateKeyPassword"
-                        light
-                        rounded
-                        outlined
-                        class="full-width"
-                        color="green"
-                        label="Private Key Password"
-                        @input="checkPrivateKeyPassword"
-                        debounce="500"
-                        @keyup.enter="sendTransaction()"
-                        :type="isPwd ? 'password' : 'text'"
-                        :error="invalidPrivateKeyPassword"
-                        error-message="The private key password is invalid"
-                      >
-                        <template v-slot:append>
-                          <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
-                        </template>
-                      </q-input>
+    <q-scroll-area :visible="true" style="height: 85vh;">
+      <!-- $q.screen.width > 1024 &&  -->
+      <div class="row swdapeos-component--row">
+        <div class="col col-12 col-md-7">
+          <div class="apps-section">
+            <!-- 1inch component -->
+            <!-- add your code here -->
+            <q-dialog v-model="getPassword" persistent>
+              <q-card>
+                <q-card-section>
+                  <div class="send-modal flex flex-center" :class="{ open: openModal }">
+                    <div class="send-modal__content q-pa-md column flex-center">
+                      <div class="send-modal__content--head">
+                        <span class="text-h5 --amount">Private key password</span>
+                        <q-btn color="white" rounded flat unelevated @click="hideModalFun()" class="close-btn" text-color="black" label="+" />
+                      </div>
+                      <div class="send-modal__content--body column flex-center full-width">
+                        <q-input
+                          v-model="privateKeyPassword"
+                          light
+                          rounded
+                          outlined
+                          class="full-width"
+                          color="green"
+                          label="Private Key Password"
+                          @input="checkPrivateKeyPassword"
+                          debounce="500"
+                          @keyup.enter="sendTransaction()"
+                          :type="isPwd ? 'password' : 'text'"
+                          :error="invalidPrivateKeyPassword"
+                          error-message="The private key password is invalid"
+                        >
+                          <template v-slot:append>
+                            <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                          </template>
+                        </q-input>
 
-                      <div class="flex justify-start full-width">
-                        <q-btn v-close-popup @click="spinnervisible = false" unelevated color="grey" class="--next-btn mr10" rounded label="Cancel" />
-                        <q-btn @click="checkPrivateKeyPassword(); sendTransaction()" unelevated color="deep-purple-14" class="--next-btn q-ml-md" rounded label="Submit transaction" />
+                        <div class="flex justify-start full-width">
+                          <q-btn v-close-popup @click="spinnervisible = false" unelevated color="grey" class="--next-btn mr10" rounded label="Cancel" />
+                          <q-btn @click="checkPrivateKeyPassword(); sendTransaction()" unelevated color="deep-purple-14" class="--next-btn q-ml-md" rounded label="Submit transaction" />
+                        </div>
+                      </div>
+                      <div class="send-modal__content--footer">
+                        <div class="text-h4 --error" v-if="ErrorMessage">{{ ErrorMessage }}</div>
                       </div>
                     </div>
-                    <div class="send-modal__content--footer">
-                      <div class="text-h4 --error" v-if="ErrorMessage">{{ ErrorMessage }}</div>
-                    </div>
                   </div>
-                </div>
-              </q-card-section>
-            </q-card>
-          </q-dialog>
-          <!-- Vdex component -->
-          <div class="">
-            <div class="chain-tools-wrapper--list open">
-              <div class="list-wrapper">
-                <div class="row">
-                  <div class="col col-12">
-                    <div class="trade-component">
-                      <!-- <img src="statics/theme1/Screenshot_208.png" alt="" style="opacity: .1"> -->
-                      <div v-if="step === 1" class="prototype">
-                        <q-tabs
-                          @click="
-                            getPairData();
-                            checkBalance();
-                          "
-                          flat
-                          v-model="tab"
-                          indicator-color="indigo-5"
-                          no-caps
-                          inline-label
-                          class="shadow-1 text-h6"
-                        >
-                          <q-tab name="swap" icon="swap_vert" label="Swap" />
-                          <q-tab name="liquidity" icon="add" label="Liquidity" />
-                        </q-tabs>
-                        <div class="head" v-if="tab == 'swap'">Get {{ destinationCoin.label.toUpperCase() }} with {{ depositCoin.label.toUpperCase() }} with one click</div>
-                        <div class="head" v-else-if="tab == 'liquidity'">Add liquidity to the {{ destinationCoin.label.toUpperCase() }} + {{ depositCoin.label.toUpperCase() }} pool</div>
+                </q-card-section>
+              </q-card>
+            </q-dialog>
+            <!-- Vdex component -->
+            <div class="">
+              <div class="chain-tools-wrapper--list open">
+                <div class="list-wrapper">
+                  <div class="row">
+                    <div class="col col-12">
+                      <div class="trade-component">
+                        <!-- <img src="statics/theme1/Screenshot_208.png" alt="" style="opacity: .1"> -->
+                        <div v-if="step === 1" class="prototype">
+                          <q-tabs
+                            @click="
+                              getPairData();
+                              checkBalance();
+                            "
+                            flat
+                            v-model="tab"
+                            indicator-color="indigo-5"
+                            no-caps
+                            inline-label
+                            class="shadow-1 text-h6"
+                          >
+                            <q-tab name="swap" icon="swap_vert" label="Swap" />
+                            <q-tab name="liquidity" icon="add" label="Liquidity" />
+                          </q-tabs>
+                          <div class="head" v-if="tab == 'swap'">Get {{ destinationCoin.label.toUpperCase() }} with {{ depositCoin.label.toUpperCase() }} with one click</div>
+                          <div class="head" v-else-if="tab == 'liquidity'">Add liquidity to the {{ destinationCoin.label.toUpperCase() }} + {{ depositCoin.label.toUpperCase() }} pool</div>
 
-                        <div class="you-pay">
-                          <div class="you-pay-head row items-center">
-                            <div class="col col-6">Payment</div>
-                            <div class="col col-6  flex red text-right justify-end text-body1" ><AccountSelector  /></div>
-                          </div>
-                          <div class="you-pay-body row items-center">
-                            <div class="col col-3 choose-coin">
-                              <span class="cursor">
-                                <q-select
-                                  class="select-input"
-                                  :dark="$store.state.settings.lightMode === 'true'"
-                                  :light="$store.state.settings.lightMode === 'false'"
-                                  separator
-                                  use-input
-                                  borderless
-                                  rounded
-                                  v-model="depositCoin"
-                                  @input="
-                                    swapData.error = false;
-                                    getDestinationCoinOptions();
-                                    getPairData();
-                                  "
-                                  @filter="filterDepositCoin"
-                                  :disabled="!depositCoinOptions"
-                                  :loading="!depositCoinOptions"
-                                  :options="depositCoinOptions"
-                                >
-                                  <template v-slot:option="scope">
-                                    <q-item class="custom-menu" @click="depositCoin = scope.opt" v-bind="scope.itemProps" v-on="scope.itemEvents">
-                                      <q-item-section avatar>
-                                        <q-icon :name="`img:${scope.opt.image}`" />
-                                      </q-item-section>
-                                      <q-item-section>
-                                        <q-item-label v-html="scope.opt.label.toUpperCase()" />
-
-                                        <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
-
-                                      </q-item-section>
-                                    </q-item>
-                                  </template>
-                                  <template v-slot:selected>
-                                    <span class="text-h5 text-bold">{{ depositCoin.value.toUpperCase() }}</span>
-                                      </template>
-                                </q-select>
-                              </span>
+                          <div class="you-pay">
+                            <div class="you-pay-head row items-center">
+                              <div class="col col-6">Payment</div>
+                              <div class="col col-6  flex red text-right justify-end text-body1" ><AccountSelector  /></div>
                             </div>
-                            <div class="col col-8 offset-1">
+                            <div class="you-pay-body row items-center">
+                              <div class="col col-3 choose-coin">
+                                <span class="cursor">
+                                  <q-select
+                                    class="select-input"
+                                    :dark="$store.state.settings.lightMode === 'true'"
+                                    :light="$store.state.settings.lightMode === 'false'"
+                                    separator
+                                    use-input
+                                    borderless
+                                    rounded
+                                    v-model="depositCoin"
+                                    @input="
+                                      swapData.error = false;
+                                      getDestinationCoinOptions();
+                                      getPairData();
+                                    "
+                                    @filter="filterDepositCoin"
+                                    :disabled="!depositCoinOptions"
+                                    :loading="!depositCoinOptions"
+                                    :options="depositCoinOptions"
+                                  >
+                                    <template v-slot:option="scope">
+                                      <q-item class="custom-menu" @click="depositCoin = scope.opt" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                        <q-item-section avatar>
+                                          <q-icon :name="`img:${scope.opt.image}`" />
+                                        </q-item-section>
+                                        <q-item-section>
+                                          <q-item-label v-html="scope.opt.label.toUpperCase()" />
 
-                              <q-input
-                                rounded
-                                :dark="$store.state.settings.lightMode === 'true'"
-                                :light="$store.state.settings.lightMode === 'false'"
-                                @blur="swapData.fromAmount = parseFloat(swapData.fromAmount).toFixed(depositCoin.precision)"
-                                outlined
-                                class="text-h5 depositQuantity"
-                                :class="{'bg-white': $store.state.settings.lightMode === 'false'}"
-                                ref="depositQuantity"
-                                @input="
-                                  swapData.error = false;
-                                  getPairData();
-                                  privateKey = false
-                                "
-                                v-model="swapData.fromAmount"
+                                          <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
 
-                                :disabled="spinnervisible"
-                                :loading="spinnervisible"
-                                :rules="[(val) => val <= depositCoin.amount || 'Insufficient funds']"
-                              >
-                                <div class="flex justify-end items-center" style="width: 60px">
-                                  <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
-                                </div>
-                                <template v-slot:hint>
-                                  <div class="text-body1">Balance: {{ depositCoin.amount }}</div>
-                                </template>
-                              </q-input>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="you-receive">
-                          <br />
-
-                          <q-btn outline round :color="$store.state.settings.lightMode === 'true' ? 'white':'black'" :dark="$store.state.settings.lightMode === 'true'" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
-                          <div class="you-receive-head row items-center">
-                            <div class="col col-6">You Receive</div>
-                            <div v-if="rateData" class="col col-6 info_rate_holder small text-right flex justify-end items-center" :class="{ _loading: fetchingRate }">
-                              <!-- 1 ETH = 374.705 USDT -->
-                              <span>{{ "1 " + fromCoinType.toUpperCase() + "&nbsp;= &nbsp;" + rateData.rate.toFixed(5) + " " + destinationCoinType.toUpperCase() }}</span>
-                              <div class="info_rate">
-                                <span class="i-btn"
-                                  >i
-                                  <!-- <img src="statics/theme1/rate-info.png" class="rate-info-prototype" alt=""> -->
-                                  <div class="info_rate_wrapper text-left">
-                                    <div class="title">We got you the best price</div>
-                                    <hr />
-                                    <div class="lineheight flex justify-between items-center">
-                                      <span>Max Deposit</span>
-                                      <span>{{ rateData.limitMaxDepositCoin }} {{ fromCoinType.toUpperCase() }}</span>
-                                    </div>
-                                    <div class="lineheight flex justify-between items-center">
-                                      <span>Max Destination</span>
-                                      <span>{{ rateData.limitMaxDestinationCoin }} {{ destinationCoinType.toUpperCase() }}</span>
-                                    </div>
-                                    <div class="lineheight flex justify-between items-center">
-                                      <span>Min Deposit</span>
-                                      <span>{{ rateData.limitMinDepositCoin }} {{ fromCoinType.toUpperCase() }}</span>
-                                    </div>
-                                    <div class="lineheight flex justify-between items-center">
-                                      <span>Min Destination</span>
-                                      <span>{{ rateData.limitMinDestinationCoin }} {{ destinationCoinType.toUpperCase() }}</span>
-                                    </div>
-                                  </div>
+                                        </q-item-section>
+                                      </q-item>
+                                    </template>
+                                    <template v-slot:selected>
+                                      <span class="text-h5 text-bold">{{ depositCoin.value.toUpperCase() }}</span>
+                                        </template>
+                                  </q-select>
                                 </span>
                               </div>
-                            </div>
-                          </div>
-                          <div class="you-receive-body row items-center">
-                            <div class="col col-3 choose-coin">
-                              <span class="cursor">
-                                <q-select
-                                  class="select-input"
+                              <div class="col col-8 offset-1">
+
+                                <q-input
+                                  rounded
                                   :dark="$store.state.settings.lightMode === 'true'"
                                   :light="$store.state.settings.lightMode === 'false'"
-                                  separator
-                                  use-input
-                                  rounded
-                                  borderless
+                                  @blur="swapData.fromAmount = parseFloat(swapData.fromAmount).toFixed(depositCoin.precision)"
+                                  outlined
+                                  class="text-h5 depositQuantity"
+                                  :class="{'bg-white': $store.state.settings.lightMode === 'false'}"
+                                  ref="depositQuantity"
                                   @input="
                                     swapData.error = false;
                                     getPairData();
+                                    privateKey = false
                                   "
-                                  @filter="filterDestinationCoin"
-                                  v-model="destinationCoin"
-                                  :disabled="!destinationCoinOptions"
-                                  :loading="false"
-                                  :options="destinationCoinOptions"
-                                >
-                                  <template v-slot:option="scope">
-                                    <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
-                                      <q-item-section avatar>
-                                        <q-icon :name="`img:${scope.opt.image}`" />
-                                      </q-item-section>
-                                      <q-item-section>
-                                        <q-item-label v-html="scope.opt.label.toUpperCase()" />
+                                  v-model="swapData.fromAmount"
 
-                                      </q-item-section>
-                                    </q-item>
+                                  :disabled="spinnervisible"
+                                  :loading="spinnervisible"
+                                  :rules="[(val) => val <= depositCoin.amount || 'Insufficient funds']"
+                                >
+                                  <div class="flex justify-end items-center" style="width: 60px">
+                                    <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
+                                  </div>
+                                  <template v-slot:hint>
+                                    <div class="text-body1">Balance: {{ depositCoin.amount }}</div>
                                   </template>
-                                  <template v-slot:selected>
-                                    <span class="text-h5 text-bold">{{ destinationCoin.value.toUpperCase() }}</span>
+                                </q-input>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="you-receive">
+                            <br />
+
+                            <q-btn outline round :color="$store.state.settings.lightMode === 'true' ? 'white':'black'" :dark="$store.state.settings.lightMode === 'true'" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
+                            <div class="you-receive-head row items-center">
+                              <div class="col col-6">You Receive</div>
+                              <div v-if="rateData" class="col col-6 info_rate_holder small text-right flex justify-end items-center" :class="{ _loading: fetchingRate }">
+                                <!-- 1 ETH = 374.705 USDT -->
+                                <span>{{ "1 " + fromCoinType.toUpperCase() + "&nbsp;= &nbsp;" + rateData.rate.toFixed(5) + " " + destinationCoinType.toUpperCase() }}</span>
+                                <div class="info_rate">
+                                  <span class="i-btn"
+                                    >i
+                                    <!-- <img src="statics/theme1/rate-info.png" class="rate-info-prototype" alt=""> -->
+                                    <div class="info_rate_wrapper text-left">
+                                      <div class="title">We got you the best price</div>
+                                      <hr />
+                                      <div class="lineheight flex justify-between items-center">
+                                        <span>Max Deposit</span>
+                                        <span>{{ rateData.limitMaxDepositCoin }} {{ fromCoinType.toUpperCase() }}</span>
+                                      </div>
+                                      <div class="lineheight flex justify-between items-center">
+                                        <span>Max Destination</span>
+                                        <span>{{ rateData.limitMaxDestinationCoin }} {{ destinationCoinType.toUpperCase() }}</span>
+                                      </div>
+                                      <div class="lineheight flex justify-between items-center">
+                                        <span>Min Deposit</span>
+                                        <span>{{ rateData.limitMinDepositCoin }} {{ fromCoinType.toUpperCase() }}</span>
+                                      </div>
+                                      <div class="lineheight flex justify-between items-center">
+                                        <span>Min Destination</span>
+                                        <span>{{ rateData.limitMinDestinationCoin }} {{ destinationCoinType.toUpperCase() }}</span>
+                                      </div>
+                                    </div>
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="you-receive-body row items-center">
+                              <div class="col col-3 choose-coin">
+                                <span class="cursor">
+                                  <q-select
+                                    class="select-input"
+                                    :dark="$store.state.settings.lightMode === 'true'"
+                                    :light="$store.state.settings.lightMode === 'false'"
+                                    separator
+                                    use-input
+                                    rounded
+                                    borderless
+                                    @input="
+                                      swapData.error = false;
+                                      getPairData();
+                                    "
+                                    @filter="filterDestinationCoin"
+                                    v-model="destinationCoin"
+                                    :disabled="!destinationCoinOptions"
+                                    :loading="false"
+                                    :options="destinationCoinOptions"
+                                  >
+                                    <template v-slot:option="scope">
+                                      <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                        <q-item-section avatar>
+                                          <q-icon :name="`img:${scope.opt.image}`" />
+                                        </q-item-section>
+                                        <q-item-section>
+                                          <q-item-label v-html="scope.opt.label.toUpperCase()" />
+
+                                        </q-item-section>
+                                      </q-item>
+                                    </template>
+                                    <template v-slot:selected>
+                                      <span class="text-h5 text-bold">{{ destinationCoin.value.toUpperCase() }}</span>
+                                    </template>
+                                  </q-select>
+                                </span>
+                              </div>
+                              <div class="col col-8 offset-1">
+                                <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" disable outlined :class="{'bg-white': $store.state.settings.lightMode === 'false'}" class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" >
+                                  <div class="flex justify-end items-center" style="width: 60px">
+                                    <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
+                                  </div>
+                                  <template v-slot:hint>
+                                    <div class="text-body1">Balance: {{ depositCoin.amount }}</div>
                                   </template>
-                                </q-select>
+                                </q-input>
+                              </div>
+                            </div>
+                            <div class="text-red text-body1 q-mt-sm" v-if="error">
+                              <span v-if="error == 'gas'">
+                                {{ swapData.errorText.replace("[from]", depositCoin.value).replace("[to]", destinationCoin.value) }}
+                              </span>
+                              <span v-else>
+                                {{ error }}
                               </span>
                             </div>
-                            <div class="col col-8 offset-1">
-                              <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" disable outlined :class="{'bg-white': $store.state.settings.lightMode === 'false'}" class="text-h5" ref="destinationQuantity" :loading="spinnervisible" v-model="swapData.toAmount" >
-                                <div class="flex justify-end items-center" style="width: 60px">
-                                  <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
-                                </div>
-                                <template v-slot:hint>
-                                  <div class="text-body1">Balance: {{ depositCoin.amount }}</div>
-                                </template>
-                              </q-input>
-                            </div>
+
+                            <q-btn v-if="error" unelevated :disable="true" color="grey-4" text-color="black" :label="error" class="text-capitalize invalid_btn full-width" />
+
+                            <q-btn
+                              v-else
+                              unelevated
+                              @click="sendTransaction()"
+                              :loading="spinnervisible"
+                              :disable="parseFloat(swapData.toAmount) === 0 || !depositCoin.name || parseFloat(depositCoin.amount) < parseFloat(swapData.fromAmount) || spinnervisible"
+                              color="primary"
+                              text-color="black"
+                              :label="tab != 'liquidity' ? 'Swap now' : 'Add liquidity'"
+                              class="text-capitalize chose_accounts full-width"
+                            />
                           </div>
-                          <div class="text-red text-body1 q-mt-sm" v-if="error">
-                            <span v-if="error == 'gas'">
-                              {{ swapData.errorText.replace("[from]", depositCoin.value).replace("[to]", destinationCoin.value) }}
-                            </span>
-                            <span v-else>
-                              {{ error }}
-                            </span>
+                        </div>
+
+                        <div v-if="step === 2" class="prototype">
+                          <div class="head">
+                            <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
+                            Order Submitted
                           </div>
-
-                          <q-btn v-if="error" unelevated :disable="true" color="grey-4" text-color="black" :label="error" class="text-capitalize invalid_btn full-width" />
-
-                          <q-btn
-                            v-else
-                            unelevated
-                            @click="sendTransaction()"
-                            :loading="spinnervisible"
-                            :disable="parseFloat(swapData.toAmount) === 0 || !depositCoin.name || parseFloat(depositCoin.amount) < parseFloat(swapData.fromAmount) || spinnervisible"
-                            color="primary"
-                            text-color="black"
-                            :label="tab != 'liquidity' ? 'Swap now' : 'Add liquidity'"
-                            class="text-capitalize chose_accounts full-width"
-                          />
-                        </div>
-                      </div>
-
-                      <div v-if="step === 2" class="prototype">
-                        <div class="head">
-                          <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
-                          Order Submitted
-                        </div>
-                        <div class="standard-content--body">
-                          <div class="standard-content--body__form q-pa-md q-pb-xl">
-                            <div class="progress-custom-volentix column flex-center">
-                              <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58">
-                                <path
-                                  d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z"
-                                  transform="translate(-183 -18.21)"
-                                ></path>
-                              </svg>
-                              <span class="title">{{ transactionStatus }}</span>
-                              <q-linear-progress v-if="transactionStatus == 'Pending'" indeterminate stripe rounded size="md" class="q-mt-md" />
-                            </div>
-                            <hr style="height: 15px; opacity: 0" />
-                            <div class="text-black">
-                              <div class="text-h4 --subtitle">{{ "" }}</div>
-                              <p v-if="transactionHash && freeCPU" class="text-body2 text-center" :class="$store.state.settings.lightMode === 'true' ? 'text-white': 'text-black'">
-                                <b >You got FREE CPU from Volentix</b><br /><!-- <a href="">Click here to learn more</a> -->
-                              </p>
-                              <q-input :dark="$store.state.settings.lightMode === 'true'" v-if="transactionHash" bottom-slots v-model="transactionHash" readonly rounded class="input-input pr80" outlined color="purple" type="text">
-                                <template v-slot:append>
-                                  <div class="flex justify-end">
-                                    <q-btn flat unelevated text-color="grey" @click="copyToClipboard(transactionHash, 'Transaction  hash')" round class="btn-copy" icon="file_copy" />
-                                  </div>
-                                </template>
-                                <template v-slot:hint>
-                                  <!-- <div class="cursor-pointer q-pl-lg q-pt-sm" style="font-size: 16px" @click="step = 1"><q-icon name="keyboard_backspace" /> Go Back</div> -->
-                                </template>
-                                <template v-slot:counter>
-                                  <a :href="'https://bloks.io/transaction/' + transactionHash" class="text-body2 flex items-center q-mt-md" :class="$store.state.settings.lightMode === 'true' ? 'text-white': 'text-black'" target="_blank"> Follow <img width="20" class="q-ml-md" src="https://bloks.io/favicon-32x32.png?v=BG7PP2QPNi" /> </a>
-                                </template>
-                              </q-input>
-                            </div>
-                            <div style="margin-top: 40px" class="prototype text-center q-pa-md q-mt-lg" v-if="tab == 'liquidity' && transactionStatus == 'Success'">
-                              <div v-if="this.transaction.name === 'createpair'">
-                                <p>You successfully created the liquidity pool</p>
-                                <p>{{ depositCoin.label }} + {{ destinationCoin.label }}</p>
-
-                                <p class="cursor-pointer" @click="step = 1">Go back to add liquidity</p>
+                          <div class="standard-content--body">
+                            <div class="standard-content--body__form q-pa-md q-pb-xl">
+                              <div class="progress-custom-volentix column flex-center">
+                                <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58">
+                                  <path
+                                    d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z"
+                                    transform="translate(-183 -18.21)"
+                                  ></path>
+                                </svg>
+                                <span class="title">{{ transactionStatus }}</span>
+                                <q-linear-progress v-if="transactionStatus == 'Pending'" indeterminate stripe rounded size="md" class="q-mt-md" />
                               </div>
-                              <div v-else>
-                                <p>Successfully joined the liquidity pool</p>
-                                <p>LP Tokens {{ pairData && pairData.miningData && pairData.miningData.code ? pairData.miningData.code : "BOX*" }} <br />has been released to your account</p>
-
-                                <p class="text-body2 text-left">Important reminder, please read carefully:</p>
-                                <p class="text-body2 text-left">
-                                  ·LP Tokens represents your liquidity share in the liquidity pool and are is the only proof to withdraw liquidity assets<br /><br />
-                                  ·After the LP Tokens is transferred, the right to withdraw the corresponding liquidity assets and the right to claim subsequent liquidity mining rewards will also be transferred, Please keep your LP Tokens carefully.
-                                  <a target="blank" href="https://defibox.io/liquidity">Know LP Tokens more ></a>
+                              <hr style="height: 15px; opacity: 0" />
+                              <div class="text-black">
+                                <div class="text-h4 --subtitle">{{ "" }}</div>
+                                <p v-if="transactionHash && freeCPU" class="text-body2 text-center" :class="$store.state.settings.lightMode === 'true' ? 'text-white': 'text-black'">
+                                  <b >You got FREE CPU from Volentix</b><br /><!-- <a href="">Click here to learn more</a> -->
                                 </p>
+                                <q-input :dark="$store.state.settings.lightMode === 'true'" v-if="transactionHash" bottom-slots v-model="transactionHash" readonly rounded class="input-input pr80" outlined color="purple" type="text">
+                                  <template v-slot:append>
+                                    <div class="flex justify-end">
+                                      <q-btn flat unelevated text-color="grey" @click="copyToClipboard(transactionHash, 'Transaction  hash')" round class="btn-copy" icon="file_copy" />
+                                    </div>
+                                  </template>
+                                  <template v-slot:hint>
+                                    <!-- <div class="cursor-pointer q-pl-lg q-pt-sm" style="font-size: 16px" @click="step = 1"><q-icon name="keyboard_backspace" /> Go Back</div> -->
+                                  </template>
+                                  <template v-slot:counter>
+                                    <a :href="'https://bloks.io/transaction/' + transactionHash" class="text-body2 flex items-center q-mt-md" :class="$store.state.settings.lightMode === 'true' ? 'text-white': 'text-black'" target="_blank"> Follow <img width="20" class="q-ml-md" src="https://bloks.io/favicon-32x32.png?v=BG7PP2QPNi" /> </a>
+                                  </template>
+                                </q-input>
+                              </div>
+                              <div style="margin-top: 40px" class="prototype text-center q-pa-md q-mt-lg" v-if="tab == 'liquidity' && transactionStatus == 'Success'">
+                                <div v-if="this.transaction.name === 'createpair'">
+                                  <p>You successfully created the liquidity pool</p>
+                                  <p>{{ depositCoin.label }} + {{ destinationCoin.label }}</p>
+
+                                  <p class="cursor-pointer" @click="step = 1">Go back to add liquidity</p>
+                                </div>
+                                <div v-else>
+                                  <p>Successfully joined the liquidity pool</p>
+                                  <p>LP Tokens {{ pairData && pairData.miningData && pairData.miningData.code ? pairData.miningData.code : "BOX*" }} <br />has been released to your account</p>
+
+                                  <p class="text-body2 text-left">Important reminder, please read carefully:</p>
+                                  <p class="text-body2 text-left">
+                                    ·LP Tokens represents your liquidity share in the liquidity pool and are is the only proof to withdraw liquidity assets<br /><br />
+                                    ·After the LP Tokens is transferred, the right to withdraw the corresponding liquidity assets and the right to claim subsequent liquidity mining rewards will also be transferred, Please keep your LP Tokens carefully.
+                                    <a target="blank" href="https://defibox.io/liquidity">Know LP Tokens more ></a>
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
+                    <!-- <div class="col col-6">
+                        <img src="statics/theme1/Screenshot_208.png" alt="">
+                      </div> -->
                   </div>
-                  <!-- <div class="col col-6">
-                      <img src="statics/theme1/Screenshot_208.png" alt="">
-                    </div> -->
+                  <!-- <br><br><br> -->
                 </div>
-                <!-- <br><br><br> -->
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="col summary-wrapper shadow-1 col-12 col-md-4 q-pa-lg column justify-center items-start">
-        <q-list class="summary-wrapper__list" separator>
-          <q-item class="q-my-sm" clickable v-ripple>
-            <div class="text-h6">Summary</div>
-          </q-item>
-          <q-item class="q-my-sm text-left" clickable v-ripple >
-            <q-item-section avatar>
-              <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
-            </q-item-section>
+        <div class="col summary-wrapper shadow-1 col-12 col-md-4 q-pa-lg column justify-center items-start">
+          <q-list class="summary-wrapper__list" separator>
+            <q-item class="q-my-sm" clickable v-ripple>
+              <div class="text-h6">Summary</div>
+            </q-item>
+            <q-item class="q-my-sm text-left" clickable v-ripple >
+              <q-item-section avatar>
+                <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
+              </q-item-section>
 
-            <q-item-section>
-              <q-item-label >You send</q-item-label>
-              <q-item-label caption class="text-bold" lines="1">{{ this.swapData.fromAmount }} {{ depositCoin.label.toUpperCase() }}</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item class="q-my-sm text-left" clickable v-ripple>
-            <q-item-section avatar>
-              <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
-            </q-item-section>
+              <q-item-section>
+                <q-item-label >You send</q-item-label>
+                <q-item-label caption class="text-bold" lines="1">{{ this.swapData.fromAmount }} {{ depositCoin.label.toUpperCase() }}</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item class="q-my-sm text-left" clickable v-ripple>
+              <q-item-section avatar>
+                <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
+              </q-item-section>
 
-            <q-item-section>
-              <q-item-label>{{ tab == "swap" ? "You will receive" : "You send" }}</q-item-label>
-              <q-item-label class="text-bold" caption lines="1">{{ this.swapData.toAmount }} {{ destinationCoin.label.toUpperCase() }}</q-item-label>
-            </q-item-section>
-          </q-item>
+              <q-item-section>
+                <q-item-label>{{ tab == "swap" ? "You will receive" : "You send" }}</q-item-label>
+                <q-item-label class="text-bold" caption lines="1">{{ this.swapData.toAmount }} {{ destinationCoin.label.toUpperCase() }}</q-item-label>
+              </q-item-section>
+            </q-item>
 
-          <q-item class="q-my-sm" v-if="tab == 'liquidity' && depositCoin.liquidityMultiplier && pairData && pairData.miningData" clickable v-ripple>
-            <q-item-section>
-              <q-item-label>You will receive</q-item-label>
-              <q-item-label class="text-bold" caption lines="1">{{ parseInt(this.swapData.fromAmount * this.depositCoin.liquidityMultiplier) }} {{ pairData.miningData.code }}</q-item-label>
-            </q-item-section>
-          </q-item>
+            <q-item class="q-my-sm" v-if="tab == 'liquidity' && depositCoin.liquidityMultiplier && pairData && pairData.miningData" clickable v-ripple>
+              <q-item-section>
+                <q-item-label>You will receive</q-item-label>
+                <q-item-label class="text-bold" caption lines="1">{{ parseInt(this.swapData.fromAmount * this.depositCoin.liquidityMultiplier) }} {{ pairData.miningData.code }}</q-item-label>
+              </q-item-section>
+            </q-item>
 
-          <q-item class="q-my-sm text-left" v-if="pairData">
-            <q-item-section>
-              <q-item-label class="text-bold">Liquidity</q-item-label>
+            <q-item class="q-my-sm text-left" v-if="pairData">
+              <q-item-section>
+                <q-item-label class="text-bold">Liquidity</q-item-label>
 
-              <q-item-label lines="1">{{ pairData.reserve0 }}</q-item-label>
-              <q-item-label lines="1">{{ pairData.reserve1 }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-        <div class="text-h6 q-pt-md" :class="{'text-white': $store.state.settings.lightMode === 'true'}" v-if="path.length && tab != 'liquidity'">Multi Swap Path</div>
-        <q-list separator v-if="path.length && tab != 'liquidity'" class="multi-swap-path--list">
-          <q-item class="q-my-sm" clickable v-ripple>
-            <q-item-section>
-              <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
-              <q-item-label caption class="text-bold text-center q-mt-sm">{{ depositCoin.label }}</q-item-label>
-            </q-item-section>
+                <q-item-label lines="1">{{ pairData.reserve0 }}</q-item-label>
+                <q-item-label lines="1">{{ pairData.reserve1 }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <div class="text-h6 q-pt-md" :class="{'text-white': $store.state.settings.lightMode === 'true'}" v-if="path.length && tab != 'liquidity'">Multi Swap Path</div>
+          <q-list separator v-if="path.length && tab != 'liquidity'" class="multi-swap-path--list">
+            <q-item class="q-my-sm" clickable v-ripple>
+              <q-item-section>
+                <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
+                <q-item-label caption class="text-bold text-center q-mt-sm">{{ depositCoin.label }}</q-item-label>
+              </q-item-section>
 
-            <q-item-section>
-              <q-item-label caption class="text-bold">></q-item-label>
-            </q-item-section>
-            <q-item-section>
-              <q-icon v-if="depositCoin" class="option--avatar" :name="`img:https://ndi.340wan.com/eos/eosio.token-eos.png`" />
-              <q-item-label caption class="text-bold text-center q-mt-sm"> EOS</q-item-label>
-            </q-item-section>
+              <q-item-section>
+                <q-item-label caption class="text-bold">></q-item-label>
+              </q-item-section>
+              <q-item-section>
+                <q-icon v-if="depositCoin" class="option--avatar" :name="`img:https://ndi.340wan.com/eos/eosio.token-eos.png`" />
+                <q-item-label caption class="text-bold text-center q-mt-sm"> EOS</q-item-label>
+              </q-item-section>
 
-            <q-item-section>
-              <q-item-label caption class="text-bold"> ></q-item-label>
-            </q-item-section>
+              <q-item-section>
+                <q-item-label caption class="text-bold"> ></q-item-label>
+              </q-item-section>
 
-            <q-item-section>
-              <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
-              <q-item-label class="text-bold text-center q-mt-sm" caption>{{ destinationCoin.label }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-        <div v-if="tab == 'liquidity' && (!pairData || (pairData && pairData.liquidity_token === 0))">
-          <p class="q-pt-md">Liquidity has not been created yet</p>
-          <p class="q-pt-md">Create liquidity and become the first liquidity provider</p>
-          <p class="q-pt-md">Set the initial swap price freely</p>
+              <q-item-section>
+                <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
+                <q-item-label class="text-bold text-center q-mt-sm" caption>{{ destinationCoin.label }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <div v-if="tab == 'liquidity' && (!pairData || (pairData && pairData.liquidity_token === 0))">
+            <p class="q-pt-md">Liquidity has not been created yet</p>
+            <p class="q-pt-md">Create liquidity and become the first liquidity provider</p>
+            <p class="q-pt-md">Set the initial swap price freely</p>
+          </div>
         </div>
+        <vpoolsComponent v-if="false" />
       </div>
-      <vpoolsComponent v-if="false" />
-    </div>
+    </q-scroll-area>
   </div>
 </template>
 
 <script>
+import { QScrollArea } from 'quasar'
+
 import {
   mapState
 } from 'vuex'
@@ -430,7 +434,8 @@ import vpoolsComponent from '../../../components/Verto/Defi/vpoolsComponent.vue'
 export default {
   components: {
     vpoolsComponent,
-    AccountSelector
+    AccountSelector,
+    QScrollArea
   },
   props: ['disableDestinationCoin', 'crossChain'],
   data () {
