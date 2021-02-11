@@ -1,5 +1,5 @@
 <template>
-  <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+  <q-page class="" :class="{'desktop-marg': screenSize > 1024, 'mobile-pad': screenSize < 1024, 'text-black bg-white': $store.state.settings.lightMode === 'false'}">
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
@@ -11,10 +11,10 @@
             </div>
           </div>
           <div class="col col-md-9">
-            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-              <h2 class="standard-content--title flex justify-start items-center">History</h2>
-              <div class="standard-content--body">
-                <History />
+            <div class="desktop-card-style apps-section history-card" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100%;">
+              <h2 class="standard-content--title flex justify-start items-center q-pl-md q-pt-lg">History</h2>
+              <div class="standard-content--body" style="height: 100%;">
+                <History :isMobile="false" />
               </div>
             </div>
           </div>
@@ -144,6 +144,28 @@ export default {
         position: absolute;
         left: -15px;
         top: 10px;
+      }
+    }
+  }
+  .dark-theme{
+    .desktop-version{
+      background: #04111F;
+    }
+    .history-card{
+
+    }
+    /deep/ .profile-wrapper {
+      &--header {
+        margin-bottom: 0px;
+        border: 1px solid #627797;
+        // border-bottom: none;
+        border-radius: 10px 10px 0px 0px !important;
+      }
+    }
+    /deep/ .transaction-wrapper--list {
+      background-color: #04111F;
+      .q-list--bordered .q-link {
+        border-top: 1px solid rgba(white, 0.06);
       }
     }
   }
