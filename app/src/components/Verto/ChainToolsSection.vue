@@ -1,5 +1,5 @@
 <template>
-  <div class="desktop-card-style apps-section q-mb-sm" :class="{'disabled' : wallet.type !== 'vtx', 'dark-theme': $store.state.settings.lightMode === 'true'}">
+  <div class="desktop-card-style apps-section chainToolsDropdownBtn q-mb-sm" :class="{'disabled' : wallet.type !== 'vtx' && wallet.type !== 'eos', 'dark-theme': $store.state.settings.lightMode === 'true'}">
     <div class="row flex justify-between items-center q-pt-md q-pb-sm">
       <div class="col col-4 flex items-center chain-icon"><q-icon :name="'img:statics/chain-tools_icon-black.svg'" />Chain Tools</div>
       <div class="col col-6 flex items-center justify-center chain-token">
@@ -23,10 +23,10 @@
           separator
           rounded
           outlined
-          class="select-input"
+          class="select-input "
           v-model="chainToolModel"
           @input="goToChainTool"
-          :options="['Staking']" />
+          :options="wallet.type === 'eos' ? ['EOS to VTX Converter', 'Staking / Unstaking CPU', 'Stake Proxy EOS'] : ['Staking']" />
           <!-- , 'Voting', 'Lending' -->
         <!-- <strong>Start Your Node</strong> -->
         <!-- <q-btn unelevated class="qbtn-start" color="black" text-color="white" label="Get started" /> -->
@@ -55,6 +55,14 @@ export default {
     goToChainTool (val) {
       if (val.toLowerCase() === 'staking') {
         this.$router.push({ path: '/verto/stake' })
+      } else if (val.toLowerCase() === 'eos to vtx converter') {
+        this.$router.push({ path: '/verto/converter' })
+      } else if (val.toLowerCase() === 'staking / unstaking cpu') {
+        this.$router.push({ path: '/verto/stake' })
+      } else if (val.toLowerCase() === 'stake proxy eos') {
+        this.$router.push({ path: '/verto/stakeproxy' })
+      } else {
+
       }
       // console.log(val)
     }
@@ -167,5 +175,19 @@ export default {
         }
       }
     }
+  }
+  .chainToolsDropdownBtn{
+    &.active{
+      animation: flash 1s linear infinite;
+    }
+
+    @keyframes flash {
+    0% {
+      box-shadow: 0px 0px 2px 2px transparent;
+    }
+    100% {
+      box-shadow: 0px 0px 2px 2px yellow;
+    }
+  }
   }
 </style>
