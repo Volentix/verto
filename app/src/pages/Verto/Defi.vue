@@ -689,7 +689,7 @@ export default {
   padding-top: 13vh;
   padding-left: 18vh;
   padding-bottom: 50px;
-  padding-right: 2%;
+  padding-right: 18px;
   @media screen and (min-width: 768px) {
     padding-top: 11vh;
     padding-bottom: 0px;
@@ -711,7 +711,7 @@ export default {
     // border: 1px solid rgba(#CCC, .3);
     margin: 0px 20px;
     border-radius: 10px;
-    padding-right: 20px;
+    padding-right: 0px;
     padding-top: 8px;
     /deep/ .trade-component {
       .prototype .head{
@@ -861,8 +861,9 @@ export default {
     border: 1px solid rgba(#CCC, .3);
     margin: 0px 20px;
     border-radius: 10px;
-    padding-right: 20px;
+    padding-right: 0px;
     padding-top: 8px;
+    margin-right: 0px;
   }
 
 .dark-theme{
