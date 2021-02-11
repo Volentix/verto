@@ -4,10 +4,11 @@
         <div v-if="$store.state.settings.lightMode === 'true'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md" style="background: url('statics/bg3d2.png');">Staking</div>
         <div v-else class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md lightmd" style="background: url('statics/bg3d2light.png');">Staking</div>
         <div class="row items-center q-pa-md">
-            <div class="col-7 p-desc q-pb-sm">
-              10,000 VTX required
+            <div class="col-6 column p-desc q-pb-sm">
+              <span class="text-bold stake-amount">10,000 VTX</span>
+              <span class="text-grey stake-amount-required">Minimum required</span>
             </div>
-            <div class="col-5 flex justify-end">
+            <div class="col-6 flex justify-end">
                 <q-btn unelevated class="qbtn-start" color="black" @click="goToExchange" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" label="Get VTX Now" />
             </div>
         </div>
@@ -235,34 +236,16 @@ export default {
               font-size: 16px;
               padding-right: 20px;
             }
-
             .qbtn-start {
                 border-radius: 30px;
                 height: 25px;
                 background: #7272FA !important;
-
-                &.qbtn-start2 {
-                    margin-left: 20px;
-                    margin-bottom: -10px;
-
-                    /deep/ .q-btn__wrapper {
-                        min-height: unset;
-                        padding: 0px 10px;
-
-                        .q-btn__content {
-                            text-transform: initial;
-                            font-size: 12px;
-                        }
-                    }
-                }
-
                 /deep/ .q-btn__wrapper {
                     min-height: unset;
                     padding: 0px 10px;
-
                     .q-btn__content {
                         text-transform: initial;
-                        font-size: 10px;
+                        font-size: 12px;
                     }
                 }
             }
@@ -484,10 +467,12 @@ export default {
         text-transform: initial !important;
         background: transparent !important;
         border: 1px solid rgba(#CCC, .7);
-        font-size: 10px !important;
+        font-size: 12px !important;
         border-radius: 40px;
+        font-weight: $bold;
         min-height: 20px;
-        margin-bottom: 4px;
+        margin-bottom: 0px;
+        min-width: fit-content;
       }
     }
     .svg-icon{
@@ -496,5 +481,16 @@ export default {
       height: 30px;
       max-width: unset;
       transform: scale(1);
+    }
+    .p-desc{
+      position: relative;
+    }
+    .stake-amount{
+      font-size: 16px;
+      &-required{
+        position: absolute;
+        bottom: -8px;
+        font-size: 12px;
+      }
     }
 </style>
