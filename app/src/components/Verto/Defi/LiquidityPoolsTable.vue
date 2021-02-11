@@ -20,7 +20,21 @@
           <q-td :props="props">
             <div class="column items-start justify-center q-pl-md">
               <q-btn v-if="screenSize <= 1024" unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom qbtn-custom2 q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="grey" label="Add liquidity" />
-              <span class="value">{{props.value}}</span>
+              <span class="value">${{formatNumber(parseInt(props.value), 0)}}</span>
+            </div>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-volume="props">
+          <q-td :props="props">
+            <div class="column items-end justify-center q-pl-md">
+              <span class="value">${{formatNumber(parseInt(props.value), 0)}}</span>
+            </div>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-fees="props">
+          <q-td :props="props">
+            <div class="column items-end justify-center q-pl-md">
+              <span class="value">${{formatNumber(parseInt(props.value), 0)}}</span>
             </div>
           </q-td>
         </template>
@@ -93,21 +107,21 @@ export default {
         label: 'Liquidity',
         field: 'liquidity',
         sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : '$' + parseInt(val).toLocaleString()}`
+        format: val => `${typeof val === 'undefined' ? 0 : parseInt(val)}`
       },
       {
         name: 'volume',
         label: 'Volume(24h)',
         field: 'volume',
         sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : '$' + parseInt(val).toLocaleString()}`
+        format: val => `${typeof val === 'undefined' ? 0 : parseInt(val)}`
       },
       {
         name: 'fees',
         label: 'Fees(24h)',
         field: 'fees',
         sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : '$' + parseInt(val).toLocaleString()}`
+        format: val => `${typeof val === 'undefined' ? 0 : parseInt(val)}`
       },
       {
         name: 'action',
@@ -129,6 +143,10 @@ export default {
     }
   },
   methods: {
+    formatNumber (number, tofix) {
+      const val = (number / 1).toFixed(tofix).replace(',', ' ')
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
       console.log('this.screenSize', this.screenSize)
