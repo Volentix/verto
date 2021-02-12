@@ -284,13 +284,15 @@ export default {
       }
       .row{}
       .qbtn-start{
-          text-transform: initial !important;
-          background: transparent !important;
-          border: 1px solid rgba(#CCC, .7);
-          font-size: 10px !important;
-          border-radius: 40px;
-          min-height: 20px;
-          margin-bottom: 4px;
+        text-transform: initial !important;
+        background: transparent !important;
+        border: 1px solid rgba(#CCC, .7);
+        font-size: 12px !important;
+        border-radius: 40px;
+        font-weight: $bold;
+        min-height: 20px;
+        margin-bottom: 0px;
+        min-width: fit-content;
       }
     }
     .svg-icon{
