@@ -146,13 +146,13 @@ class Wallets2Tokens {
         } else {
           wallet.to = '/verto/wallets/' + wallet.type + '/' + wallet.type + '/' + wallet.key
           wallet.chain = wallet.type
-          wallet.disabled = wallet.type !== 'eth'
+          wallet.disabled = wallet.type !== 'eth' && wallet.type !== 'dot'
           wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
         // wallet.vespucciScore = vespucciScore
         }
         wallet.disabled = false
 
-        if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'bnb' || wallet.type === 'dash') {
+        if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'bnb' || wallet.type === 'dash' || wallet.type === 'dot' || wallet.type === 'ksm') {
           Lib.balance(wallet.type, wallet.key).then(result => {
           // console.log('libwallet', result)
           // static value for recording video purpos

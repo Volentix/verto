@@ -19,9 +19,21 @@ class HD {
     const keys = {
       dot () {
         const keyring = new Keyring({ type: 'sr25519' })
-        const newPair = keyring.addFromUri(mnemonic)
-        const publicKey = newPair.publicKey
-        const privateKey = newPair.secretKey
+        const newPair = keyring.createFromUri(mnemonic)
+        keyring.setSS58Format(0)
+
+        const publicKey = newPair.address
+        const privateKey = 'unused'
+
+        return { publicKey, privateKey }
+      },
+      ksm () {
+        const keyring = new Keyring({ type: 'sr25519' })
+        const newPair = keyring.createFromUri(mnemonic)
+        keyring.setSS58Format(2)
+
+        const publicKey = newPair.address
+        const privateKey = 'unused'
 
         return { publicKey, privateKey }
       },
