@@ -15,9 +15,7 @@
                                             <!-- <img src="statics/theme1/Screenshot_208.png" alt="" style="opacity: .1"> -->
                                             <div v-if="pStep === 1" class="prototype">
                                                 <div class="head">Market Order <span class="float-right cursor-pointer " @click="offer=true"><q-img style="width:25px;" src="https://www.joypixels.com/images/jp-home/fire.gif" /> Get a FREE EOS account</span></div>
-
-                                                <div class="you-pay">
-                                                     <q-dialog
+                                                  <q-dialog
                                                         v-model="offer"
                                                         :dark="$store.state.settings.lightMode === 'true'"
                                                         >
@@ -143,6 +141,8 @@
                                                         </q-step>
 
                                                         </q-stepper>
+
+                                                <div class="you-pay">
 
                                                     <div class="you-pay-head row full-width">
                                                         <div class="col col-6 text-left">You Pay</div>
@@ -302,7 +302,7 @@
                                                             </span>
                                                         </div>
                                                         <div class="col col-8 offset-1">
-                                                            <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5" ref="destinationQuantity" v-model="destinationQuantity" @input="customQuantity = true ; quantityFromDestination()" :disabled="!rateData" :loading="isLoading"  :rules="[ val => ErrorMessage.length || val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']">
+                                                            <q-input rounded :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" outlined class="text-h5" ref="destinationQuantity" v-model="destinationQuantity" @input="customQuantity = true ; quantityFromDestination(); calculateReward()" :disabled="!rateData" :loading="isLoading"  :rules="[ val => ErrorMessage.length || val >= rateData.limitMinDestinationCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDestinationCoin || 'This is more than the maximum allowed']">
                                                                 <div class="flex justify-end items-center" style="width: 60px">
                                                                     <q-icon v-if="destinationCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
                                                                 </div>
@@ -498,6 +498,46 @@
                                 <!-- <br><br><br> -->
                             </div>
                         </div>
+         <div v-if="accountToBeCreated" class=" summary-wrapper shadow-1 col-md-4 column  items-start">
+        <q-list class="summary-wrapper__list" separator>
+          <q-item class="q-my-sm" clickable v-ripple>
+            <div class="text-h6">Summary</div>
+          </q-item>
+          <q-item class="q-my-sm text-left"  >
+            <q-item-section avatar>
+              <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label >Staking amount:</q-item-label>
+              <q-item-label caption class="text-bold" lines="1">{{ destinationQuantity }} {{ destinationCoin.label.toUpperCase() }}</q-item-label>
+            </q-item-section>
+          </q-item>
+           <q-item class="q-my-sm text-left" clickable v-ripple >
+            <q-item-section avatar>
+             {{period}}
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label >Staking period:</q-item-label>
+             <q-select  @input="calculateReward()" v-model="period" :options="[30, 60, 120,150, 180,210,240,270,300]" label="Change" >
+
+            </q-select>
+            </q-item-section>
+          </q-item>
+          <q-item class="q-my-sm text-left" clickable v-ripple >
+            <q-item-section avatar>
+             <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${destinationCoin.image}`" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label >Estimated reward :</q-item-label>
+              <q-item-label caption class="text-bold" lines="1">{{estimatedReward}} {{ destinationCoin.label.toUpperCase() }}</q-item-label>
+            </q-item-section>
+          </q-item>
+
+        </q-list>
+        </div>
                     </div>
                 </div>
             </div>
@@ -1251,6 +1291,8 @@ export default {
       freeEOSAccountStepper: 1,
       isLoading: true,
       offer: true,
+      period: 60,
+      estimatedReward: 0,
       connectLoading: false,
       currentWallet: null,
       ethWallets: [],
@@ -1726,6 +1768,17 @@ export default {
     checkDepositAndDestination () {
       if (this.destinationAddress.address === '' || this.depositCoin.address === '') {}
     },
+    calculateReward () {
+      if (this.accountToBeCreated) {
+        let stake_per = (1 + parseInt(this.period) / 10.0) / 100
+        if (+this.destinationQuantity > 0.0 && +this.destinationQuantity >= 10000) {
+          this.estimatedReward = (Math.round(this.destinationQuantity * stake_per * 100) / 100) * this.period
+        // console.log('mul', stake_per)
+        } else {
+          this.estimatedReward = 0
+        }
+      }
+    },
     updateCoinName () {
       if (this.destinationCoin !== null) {
         this.toCoinType = this.destinationCoin.value
@@ -1851,13 +1904,23 @@ export default {
     quantityFromDeposit () {
       // deal with precision
       this.depositQuantity = isNaN(this.depositQuantity) ? 0 : this.depositQuantity
-      this.destinationQuantity = (+this.depositQuantity * +this.rateData.rate) - +this.rateData.minerFee
+      if (this.destinationCoin.value === 'vtx' && this.depositCoin.value === 'eth') {
+        this.destinationQuantity = (+this.depositQuantity / +this.rateData.rate) - +this.rateData.minerFee
+      } else {
+        this.destinationQuantity = (+this.depositQuantity * +this.rateData.rate) - +this.rateData.minerFee
+      }
       this.destinationQuantity = this.destinationQuantity <= 0 ? 0 : this.destinationQuantity
       this.lastChangedValue = 'deposit'
     },
     quantityFromDestination () {
       // deal with precision
-      this.depositQuantity = (+this.destinationQuantity + +this.rateData.minerFee) / +this.rateData.rate
+
+      if (this.destinationCoin.value === 'vtx' && this.depositCoin.value === 'eth') {
+        this.depositQuantity = (+this.destinationQuantity + +this.rateData.minerFee) * +this.rateData.rate
+      } else {
+        this.depositQuantity = (+this.destinationQuantity + +this.rateData.minerFee) / +this.rateData.rate
+      }
+
       this.lastChangedValue = 'destination'
     },
     orderStatus () {
@@ -2052,11 +2115,38 @@ export default {
         this.checkPrivateKeyPassword()
       }
     },
+    swapEthToVTX () {
+      this.ErrorMessage = 'No liquidity available'
+
+      /*
+      const self = this
+       this.isPrivateKeyEncrypted()
+      if (this.openModal) return
+
+         self.$store.commit('currentwallet/updateParams', {
+              chainID: self.fromCoin.chain,
+              tokenID: self.fromCoin.type,
+              accountName: self.fromCoin.name,
+              to: self.exchangeAddress.address,
+              amount: self.expectedDepositCoinAmount
+            })
+            if (self.currentWallet && self.$store.state.wallets.metamask.accounts.find(o => o.value === self.currentWallet.value)) {
+              self.sendExternalTransaction('metamask')
+            } else {
+              self.$store.state.currentwallet.wallet = self.tableData.find(a => a.key === self.fromCoin.key && a.type === self.fromCoin.type)
+              self.showTXComponent = true
+            }
+            */
+    },
     postOrder () {
       const self = this
 
       let depositCoinAmount = null
       let destinationCoinAmount = null
+
+      if (self.destinationCoin.value === 'vtx' && self.depositCoin.value === 'eth') {
+        return this.swapEthToVTX()
+      }
 
       if (self.lastChangedValue === 'deposit') {
         depositCoinAmount = self.depositQuantity
@@ -2160,13 +2250,42 @@ export default {
           // console.error('There was a problem getting the destination coins', err)
         })
     },
+    async eThToVTX (amount) {
+      let vtxAmount = false
+      let eThToVTXPrice = false
+
+      let response = await this.$axios.get('https://api.coingecko.com/api/v3/simple/price?ids=volentix-vtx&vs_currencies=eth')
+      if (response.data && response.data['volentix-vtx'] && response.data['volentix-vtx'].eth) {
+        eThToVTXPrice = parseFloat(response.data['volentix-vtx'].eth)
+
+        this.rateDataVtx = {
+          limitMaxDepositCoin: 10000000, // to be fetched
+          limitMaxDestinationCoin: 10000000, // to be fetched
+          limitMinDepositCoin: 0, // to be fetched
+          limitMinDestinationCoin: 0, // to be fetched
+          minerFee: 0,
+          rate: eThToVTXPrice
+        }
+        this.rateData = this.rateDataVtx
+        this.destinationQuantity = 10000
+        this.isLoading = false
+        this.quantityFromDestination()
+      }
+
+      return vtxAmount
+    },
     async getRate () {
       const self = this
       if (self.destinationCoin.value === 'vtx') {
-        this.vtxEosPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
+        // this.vtxEosPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
       }
       this.isLoading = true
       this.ErrorMessage = ''
+
+      if (self.destinationCoin.value === 'vtx' && self.depositCoin.value === 'eth') {
+        return this.eThToVTX()
+      }
+
       this.$axios.post(url + '/v2/rate', {
         depositCoin: self.depositCoin.value.toLowerCase(),
         destinationCoin: self.destinationCoin.value === 'vtx' ? 'eos' : self.destinationCoin.value.toLowerCase()
@@ -2192,6 +2311,7 @@ export default {
 
               if (self.accountToBeCreated) {
                 self.destinationQuantity = 10000
+                self.calculateReward()
                 self.quantityFromDestination()
               }
             } else {

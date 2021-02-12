@@ -135,10 +135,10 @@ export default {
 
     if (!this.$store.state.investment.testnetEOSInvestments.length) {
       this.coins = this.getAllCoins()
-      this.tokensBalance = await testnetRpc.getTable('vpools', this.eosAccount, 'accounts')
+      this.tokensBalance = await testnetRpc.getTable('vpools2', this.eosAccount, 'accounts')
 
       this.tokensBalance.forEach(async (token, index) => {
-        let data = (await testnetRpc.getTable('vpools', token.balance.split(' ')[1], 'stat'))[0]
+        let data = (await testnetRpc.getTable('vpools2', token.balance.split(' ')[1], 'stat'))[0]
         data.index = index
         this.tokensBalance[index].images = []
         this.tokensBalance[index].images.push(this.coins.find((w) => w.value.toLowerCase() === data.pool1.quantity.split(' ')[1].toLowerCase()).image)
