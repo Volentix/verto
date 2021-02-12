@@ -224,7 +224,7 @@
                     </div>
                 </div>
             </div>
-            <q-scroll-area :visible="true" ref="walletsScrollArea" class="walletsScrollArea q-mr-sm q-ml-xs" :class="{'short' : $store.state.currentwallet.wallet.empty, 'long' : !$store.state.currentwallet.wallet.empty}" :style="$store.state.currentwallet.wallet.empty ? 'height: 297px;': 'height: 323px;'">
+            <q-scroll-area :visible="true" ref="walletsScrollArea" class="walletsScrollArea q-mr-sm q-ml-xs" :class="{'short' : $store.state.currentwallet.wallet.empty, 'long' : !$store.state.currentwallet.wallet.empty}" :style="$store.state.currentwallet.wallet.empty ? 'height: 297px;': 'height: 334px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty" class="all-wallets">
                      <q-item  v-show="!hideEosSetup"  class="highlight on-top" dense>
@@ -463,13 +463,16 @@
                                         <q-item data-name='Associate with EOS' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
-                                        <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
+                                        <!-- <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                        <q-item v-if="$store.state.currentwallet.wallet.type === 'eos' || $store.state.currentwallet.wallet.type === 'vtx'" data-name='Staking / Unstaking CPU' clickable v-ripple class="p-relative" to="/verto/stake">{{$store.state.currentwallet.wallet.type === 'eos' ? 'Staking / Unstaking CPU' : 'Staking'}}
+                                        </q-item> -->
+                                        <!-- <q-item v-if="$store.state.currentwallet.wallet.type === 'eos' || $store.state.currentwallet.wallet.type === 'vtx'" data-name='Staking / Unstaking CPU' clickable v-ripple class="p-relative" to="/verto/stake">{{$store.state.currentwallet.wallet.type === 'eos' ? 'Staking / Unstaking CPU' : 'Staking'}}
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                         <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Stake Proxy EOS
+                                        </q-item> -->
+                                        <!-- <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Stake Proxy EOS
+                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                        </q-item> -->
+                                        <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Chain tools' clickable v-ripple class="p-relative" @click="focusOnChainTools">Chain Tools
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
                                         <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
@@ -496,10 +499,10 @@
                                 <q-icon style="font-size: 20px" :name="'img:'+ $store.state.currentwallet.wallet.icon" class="q-mr-xs q-mb-xs" /> <span class="small">{{$store.state.currentwallet.wallet.type.toUpperCase()}}</span>
                             </span>
                         </h2>
-                        <h2 class="wallets-wrapper--list_title q-pa-md q-pl-xs q-ml-sm flex items-center">
+                        <h2 class="wallets-wrapper--list_title q-pa-md q-pl-xs q-ml-sm flex items-center" v-if="false">
                             <q-icon :name="'img:statics/history_icon-black.svg'" class="q-mr-sm" /> Transaction History
                         </h2>
-                        <q-list bordered separator class="list-wrapper history-list-wrapper">
+                        <q-list bordered separator class="list-wrapper history-list-wrapper" v-if="false">
                             <q-item v-for="(item, index) in history" :key="Math.random()+index" clickable v-ripple @click="launchExplorer(item.transID)">
                                 <q-item-section class="item-date">
                                     <span class="item-date--value column"> {{item.date}} </span>
@@ -779,6 +782,12 @@ export default {
     }
   },
   methods: {
+    focusOnChainTools () {
+      document.querySelector('.chainToolsDropdownBtn').classList.add('active')
+      setTimeout(() => {
+        document.querySelector('.chainToolsDropdownBtn').classList.remove('active')
+      }, 5000)
+    },
     launchExplorer (tx) {
       switch (this.$store.state.currentwallet.wallet.chain) {
         case 'eos':
