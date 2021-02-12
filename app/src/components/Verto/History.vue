@@ -6,14 +6,14 @@
       <q-list bordered separator class="list-wrapper">
         <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="item.to">
           <q-item-section class="item-date">
-            <span class="item-date--value" v-html="item.date" />
+            <span class="item-date--value" v-html="item.time" />
           </q-item-section>
           <q-item-section class="item-trans">
             <span class="item-trans--transID">{{item.transID}}</span>
             <span class="item-trans--desc">{{item.desc}}</span>
           </q-item-section>
           <q-item-section class="item-amount">
-            <span class="item-amount--value">{{item.amount}}</span>
+            <span class="item-amount--value">{{item.amountFriendly}}</span>
           </q-item-section>
         </q-item>
       </q-list>
@@ -21,19 +21,20 @@
     </div>
     <div class="transaction-wrapper--list open" v-else style="height: 100%;">
       <q-scroll-area :visible="true" class="q-pr-md" style="height: 85%;">
-        <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7">February 4, 2021</div>
-        <q-list bordered dark separator class="list-wrapper">
-          <q-item clickable class="column history-item-wrapper send-component" @click="sendComponent = !sendComponent" :class="{'active': sendComponent}">
+       <div v-for="(day,index) in history" :key="index">
+        <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7"> {{day.friendlyDay}}</div>
+        <q-list bordered dark separator class="list-wrapper"  v-for="(transaction, index) in day.data" :key="index">
+          <q-item v-if="transaction.direction == 'outgoing'" clickable class="column history-item-wrapper send-component" @click="transaction.active = !transaction.active" :class="{'active': transaction.active}">
             <q-item-section class="history-item flex justify-between">
               <div class="row items-center">
                 <div class="col col-4">
                   <div class="flex items-center">
                     <div class="q-mr-md flex flex-center">
-                      <img width="32" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPG1hc2sgaWQ9Im1hc2swIiBtYXNrLXR5cGU9ImFscGhhIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiPgo8cGF0aCBkPSJNMjMuNSAxMkMyMy41IDE4LjM1MTMgMTguMzUxMyAyMy41IDEyIDIzLjVDNS42NDg3MyAyMy41IDAuNSAxOC4zNTEzIDAuNSAxMkMwLjUgNS42NDg3MyA1LjY0ODczIDAuNSAxMiAwLjVDMTguMzUxMyAwLjUgMjMuNSA1LjY0ODczIDIzLjUgMTJaIiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L21hc2s+CjxnIG1hc2s9InVybCgjbWFzazApIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyNEMxOC42Mjc0IDI0IDI0IDE4LjYyNzQgMjQgMTJDMjQgNS4zNzI1OCAxOC42Mjc0IDAgMTIgMEM1LjM3MjU4IDAgMCA1LjM3MjU4IDAgMTJDMCAxOC42Mjc0IDUuMzcyNTggMjQgMTIgMjRaIiBmaWxsPSIjRjNGM0Y0Ii8+CjxwYXRoIGQ9Ik0xMi42MjIxIDE2LjI0NDZMMTIuNjIyMSA5LjI2MzMxTDE1LjY3MjEgMTIuMzEzM0MxNS45MTU5IDEyLjU1NzEgMTYuMzE1OSAxMi41NTcxIDE2LjU1OTYgMTIuMzEzM0MxNi44MDM0IDEyLjA2OTYgMTYuODAzNCAxMS42NzU4IDE2LjU1OTYgMTEuNDMyMUwxMi40NDA5IDcuMzEzMzFDMTIuMTk3MSA3LjA2OTU2IDExLjgwMzQgNy4wNjk1NiAxMS41NTk2IDcuMzEzMzFMNy40NDA4NyAxMS40MzIxQzcuMTk3MTIgMTEuNjc1OCA3LjE5NzEyIDEyLjA2OTYgNy40NDA4NyAxMi4zMTMzQzcuNTU3NjQgMTIuNDMwMyA3LjcxNjE3IDEyLjQ5NjEgNy44ODE0OSAxMi40OTYxQzguMDQ2ODIgMTIuNDk2MSA4LjIwNTM1IDEyLjQzMDMgOC4zMjIxMiAxMi4zMTMzTDExLjM3MjEgOS4yNjMzMUwxMS4zNzIxIDE2LjI0NDZDMTEuMzcyMSAxNi41ODgzIDExLjY1MzQgMTYuODY5NiAxMS45OTcxIDE2Ljg2OTZDMTIuMzQwOSAxNi44Njk2IDEyLjYyMjEgMTYuNTg4MyAxMi42MjIxIDE2LjI0NDZaIiBmaWxsPSIjMTUxNTFGIi8+CjwvZz4KPC9zdmc+Cg==" />
+                      <img width="32" :src="getImage(transaction)" />
                     </div>
                     <div class="">
-                      <div class="">Send</div>
-                      <div class="text-grey">03:04 PM</div>
+                      <div class="">{{getAction(transaction)}}</div>
+                      <div class="text-grey">{{transaction.time }}</div>
                     </div>
                   </div>
                 </div>
@@ -42,11 +43,19 @@
                     <div class="col col-6">
                       <div class="flex items-center">
                         <div class="q-mr-md flex flex-center">
-                          <img width="32" src="https://token-icons.s3.amazonaws.com/0xcc4304a31d09258b0029ea7fe63d032f52e44efe.png" class="" />
+                          <img width="32" :src="transaction.image" class="" />
                         </div>
                         <div class="column">
-                          <div class=""><span class="">-1,877.736</span> SWAP </div>
-                          <div class="text-grey">$1,612.62</div>
+                          <div class=""><span class="">-{{transaction.amountFriendly}}</span> {{transaction.symbol}} </div>
+                          <div class="text-grey" v-if="transaction.usdAmount">
+                          ${{transaction.usdAmount}}
+                           <q-tooltip>
+                           Estimated USD equivalent on Day of Txn
+                         </q-tooltip>
+                        </div>
+                        <div class="text-grey" v-else>
+                          N/A
+                        </div>
                         </div>
                       </div>
                     </div>
@@ -57,7 +66,7 @@
                             <img width="32" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADdElEQVR4Xu3doW4VURhF4bmSpAqFIiG4vkIFr4RrSJDga3gVPILHaJpU4TD18BCryc7NfPjNnK6zus8/l7nD5f72zb8j/Pn052tIH8evd99S/trDa34XAmwVIoAGSAbWBtUACX8PawANkCzSAAnfPqwBNECyUAMkfPuwBtAAyUINkPDtwxpAAyQLNUDCtw9rAA2QLNQACd8+rAE0QLJQAyR8+/C8AX6+/Z6eB6gGVgBPjy/TXfzw8SZdf83vQoC0fwcB4hmuAdoTUZWfBmgFoAHWZ5gZoD2TqQE0gLuA4oAh0BBY/MmPxRsCfQ6QBDQDJHyHuwB3AT4JTL9D9QxzG+g2MAlYw+4C3AUkh9ZHqCEwbZ8hcH4fawYYzwDxF2gu0NnXn4+AswNcn+GVPwEiQQKcHCABCJAI1A/C0sWP43AERIIa4OQACUCARMARMP4oOe3e0d9zSAACVAdT3hCY8GmAiO/6ARoCowLXDvDa1+8IOLnABCBA+2JI5Oefg+Pr9iv/y4+/X9L7AZ7vHuoa5AOB978/h/RxECDh24cJsN+D6QoIMMW/vzgB9nswXQEBpvj3FyfAfg+mKyDAFP/+4gTY78F0BQSY4t9fnAD7PZiugABT/PuLE2C/B9MVEGCKf39xAuz3YLoCAkzx7y+eBaivi68Irv2Zumtfv0fCosEEODlAAhAgEfDVMF8NSwLVsBkgEnQEnBwgAQiQCJgBzABJoBo2A0SCjoCTAyQAARIBM4AZIAlUw2aASNARcHKABCBAIjCfAe5v36T3A6Sf/hXCa4C1AV4BQforLgRI/PIbTtrVe5oAkaEGiABr3BHQCGqAxs8REPnluAZoCDVA46cBIr8c1wANoQZo/DRA5JfjGqAh1ACNnwaI/HJcAzSEGqDx0wCRX45rgIZQAzR+GiDyy3EN0BDOHwl7enxJP8GHjzcpX8PXvn4CRAMIcHKABCBAIrA+whwBafuOQwOcHCABCJAIOALcBiaBatgMEAk6Ak4OkAAESATMAGaAJFANmwEiQUfAyQESgACJgBnADJAEquE8A9QKfL57qD/DVefrf/hQG4QAY30IoAGSghog4duHNYAGSBZqgIRvH9YAGiBZqAESvn1YA2iAZKEGSPj2YQ2gAZKFGiDh24c1gAZIFmqAhG8f1gAaIFmoARK+fXjdAP8BXbztTvEVM2oAAAAASUVORK5CYII=" class="radius" />
                             <div class="q-pl-sm column">
                               <div class="">To</div>
-                              <span>0x4a02...c862</span>
+                              <span>{{transaction.friendlyTo}}</span>
                             </div>
                           </div>
                         </div>
@@ -73,48 +82,62 @@
                   <div class="text-bold text-grey">Fee</div>
                   <div class="">
                     <span>
-                      <span class="">0.0092</span>&nbsp;
+                      <span class="">{{transaction.gasTotal}}</span>&nbsp;
                       <span class="">ETH</span>
-                    </span> ($15.14)
+                    </span> (${{transaction.usdFees}})
                   </div>
                 </div>
                 <div class="col col-4 q-pl-xl flex items-center">
                   <div class="column">
                     <span class="text-bold text-grey">Transaction hash</span>
-                    <span>0xc8c2...43a6</span>
+                    <span>{{transaction.friendlyHash}}
+                     <q-tooltip>
+                      {{transaction.hash}}
+                    </q-tooltip>
+                    </span>
                   </div>
                   <div class="flex items-center q-ml-md">
-                      <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
-                      <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
+                      <q-btn color="white" round size="sm" @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
+                      <a :href="'https://etherscan.io/tx/'+transaction.hash" target="_blank">
+                      <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
+                       </a>
                   </div>
                 </div>
               </div>
             </q-item-section>
           </q-item>
-          <q-item clickable class="column history-item-wrapper trade-component" @click="tradeComponent = !tradeComponent" :class="{'active': tradeComponent}">
+          <q-item v-else-if="transaction.direction == 'exchange'" clickable class="column history-item-wrapper trade-component" @click="transaction.active = !transaction.active" :class="{'active': transaction.active}">
             <q-item-section class="history-item flex justify-between">
               <div class="row items-center">
                 <div class="col col-4">
                   <div class="flex items-center">
                     <div class="q-mr-md flex flex-center">
-                      <img width="32" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPG1hc2sgaWQ9Im1hc2swIiBtYXNrLXR5cGU9ImFscGhhIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiPgo8cGF0aCBkPSJNMjMuNSAxMkMyMy41IDE4LjM1MTMgMTguMzUxMyAyMy41IDEyIDIzLjVDNS42NDg3MyAyMy41IDAuNSAxOC4zNTEzIDAuNSAxMkMwLjUgNS42NDg3MyA1LjY0ODczIDAuNSAxMiAwLjVDMTguMzUxMyAwLjUgMjMuNSA1LjY0ODczIDIzLjUgMTJaIiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L21hc2s+CjxnIG1hc2s9InVybCgjbWFzazApIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyNEMxOC42Mjc0IDI0IDI0IDE4LjYyNzQgMjQgMTJDMjQgNS4zNzI1OCAxOC42Mjc0IDAgMTIgMEM1LjM3MjU4IDAgMCA1LjM3MjU4IDAgMTJDMCAxOC42Mjc0IDUuMzcyNTggMjQgMTIgMjRaIiBmaWxsPSIjRjNGM0Y0Ii8+CjxwYXRoIGQ9Ik03LjY0MTc1IDExQzE2LjIxMDIgMTEgMTQuODEgMTAuOTk5OSAxNi44MTIzIDEwLjk5OThDMTcuMDYyNiAxMC43NDc5IDE3LjA2MjYgMTAuMTUzOSAxNi44MTIzIDkuOTAxOTlMMTQuMjQ3MyA3LjE4ODkyQzEzLjk5NyA2LjkzNzAzIDEzLjU5MjcgNi45MzcwMyAxMy4zNDI0IDcuMTg4OTJDMTMuMjIyMyA3LjMwOTYgMTMuMTU0NyA3LjQ3MzQzIDEzLjE1NDcgNy42NDQyN0MxMy4xNTQ3IDcuODE1MTIgMTMuMjIyMyA3Ljk3ODk1IDEzLjM0MjQgOC4wOTk2M0wxNC44MSA5LjcwODIyTDcuNjQxNzUgOS43MDgyMkM3LjI4ODc5IDkuNzA4MjIgNyA5Ljk5ODg3IDcgMTAuMzU0MUM3IDEwLjcwOTMgNy4yODg3OSAxMSA3LjY0MTc1IDExWiIgZmlsbD0iIzE1MTUxRiIvPgo8cGF0aCBkPSJNMTYuMzU4MyAxM0M3Ljc4OTgzIDEzIDkuMTg5OTYgMTMuMDAwMSA3LjE4NzcxIDEzLjAwMDJDNi45Mzc0MyAxMy4yNTIxIDYuOTM3NDMgMTMuODQ2MSA3LjE4NzcxIDE0LjA5OEw5Ljc1MjcgMTYuODExMUMxMC4wMDMgMTcuMDYzIDEwLjQwNzMgMTcuMDYzIDEwLjY1NzYgMTYuODExMUMxMC43Nzc3IDE2LjY5MDQgMTAuODQ1MyAxNi41MjY2IDEwLjg0NTMgMTYuMzU1N0MxMC44NDUzIDE2LjE4NDkgMTAuNzc3NyAxNi4wMjEgMTAuNjU3NiAxNS45MDA0TDkuMTg5OTYgMTQuMjkxOEwxNi4zNTgzIDE0LjI5MThDMTYuNzExMiAxNC4yOTE4IDE3IDE0LjAwMTEgMTcgMTMuNjQ1OUMxNyAxMy4yOTA3IDE2LjcxMTIgMTMgMTYuMzU4MyAxM1oiIGZpbGw9IiMxNTE1MUYiLz4KPC9nPgo8L3N2Zz4K" />
+                      <img width="32" :src="getImage(transaction)" />
                     </div>
                     <div class="">
-                      <div class="">Trade</div>
-                      <div class="text-grey">02:58 PM</div>
+                      <div class="">{{getAction(transaction)}}</div>
+                      <div class="text-grey">{{transaction.time}}</div>
                     </div>
                   </div>
                 </div>
-                <div class="col col-8">
+                <div class="col col-5">
                   <div class="row items-center">
                     <div class="col col-6 flex items-center">
                       <div class="flex items-center">
                         <div class="q-mr-md flex flex-center">
-                          <img width="32" src="https://s3.amazonaws.com/token-icons/eth.png" class="" />
+                          <img width="32" :src="transaction.subTransactions[0].image" class="" />
                         </div>
                         <div class="column">
-                          <div class=""><span class="">-0.964</span> ETH </div>
-                          <div class="text-grey">$1,571.02</div>
+                          <div class=""><span class="">-{{transaction.subTransactions[0].amountFriendly}}</span> {{transaction.subTransactions[0].symbol}} </div>
+                          <div class="text-grey" v-if="transaction.subTransactions[0].usdAmount">
+                          ${{transaction.subTransactions[0].usdAmount}}
+                           <q-tooltip>
+                           Estimated USD equivalent on Day of Txn
+                         </q-tooltip>
+                        </div>
+                        <div class="text-grey" v-else>
+                          N/A
+                        </div>
                         </div>
                       </div>
                     </div>
@@ -124,16 +147,37 @@
                     <div class="col col-5 flex justify-end">
                       <div class="flex items-center">
                         <div class="q-mr-md flex flex-center">
-                          <img width="32" src="https://token-icons.s3.amazonaws.com/0xcc4304a31d09258b0029ea7fe63d032f52e44efe.png" class="" />
+                          <img width="32" :src="transaction.subTransactions[1].image" class="" />
                         </div>
                         <div class="column">
-                          <div class=""><span class="">+1,887.736</span> SWAP </div>
-                          <div class="text-grey">$1,615.77</div>
+                          <div class=""><span class="">+{{transaction.subTransactions[1].amountFriendly}}</span> {{transaction.subTransactions[1].symbol}} </div>
+                         <div class="text-grey" v-if="transaction.subTransactions[1].usdAmount">
+                          ${{transaction.subTransactions[1].usdAmount}}
+                           <q-tooltip>
+                           Estimated USD equivalent on Day of Txn
+                         </q-tooltip>
+                        </div>
+                        <div class="text-grey" v-else>
+                          N/A
+                        </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+                <div class="col col-3 flex justify-end">
+                      <div class="column">
+                        <div class="">
+                          <div class="flex items-center" v-if="transaction.details" style="cursor: pointer;">
+                            <img width="32" :src="'https://zapper.fi/images/'+transaction.details.icon" class="radius" />
+                            <div class="q-pl-sm column" >
+                              <div class="">Application</div>
+                              <span>{{transaction.details.protocol}}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
               </div>
             </q-item-section>
             <q-item-section class="history-item__detail">
@@ -143,9 +187,9 @@
                     <div class="text-bold text-grey">Fee</div>
                     <div class="">
                       <span>
-                        <span class="">0.025</span>&nbsp;
+                        <span class="">{{transaction.gasTotal}}</span>&nbsp;
                         <span class="">ETH</span>
-                      </span> ($41.08)
+                      </span> (${{transaction.usdFees}})
                     </div>
                   </div>
                   <div class="q-pl-xl">
@@ -153,8 +197,8 @@
                     <div class="">
                       <span>
                         <span class="">1</span>&nbsp;
-                        <span class="">ETH</span>
-                      </span> = 1,904.0003 SWAP
+                        <span class="">{{transaction.subTransactions[0].symbol}}</span>
+                      </span> = {{transaction.subTransactions[1].amount /  transaction.subTransactions[0].amount}} {{transaction.subTransactions[1].symbol}}
                     </div>
                   </div>
 
@@ -162,51 +206,69 @@
                 <div class="col col-4 q-pl-xl flex items-center">
                   <div class="column">
                     <span class="text-bold text-grey">Transaction hash</span>
-                    <span>0xc8c2...43a6</span>
+                     <span>{{transaction.friendlyHash}}
+                     <q-tooltip>
+                      {{transaction.hash}}
+                    </q-tooltip>
+                    </span>
                   </div>
                   <div class="flex items-center q-ml-md">
-                      <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
-                      <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
+                      <q-btn color="white" round size="sm"  @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
+                      <a :href="'https://etherscan.io/tx/'+transaction.hash" target="_blank">
+                      <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
+                       </a>
                   </div>
                 </div>
               </div>
             </q-item-section>
           </q-item>
-          <q-item clickable class="column history-item-wrapper receive-component" @click="receiveComponent = !receiveComponent" :class="{'active': receiveComponent}">
+          <q-item v-else-if="transaction.direction == 'incoming'" clickable class="column history-item-wrapper receive-component" @click="transaction.active = !transaction.active" :class="{'active': transaction.active}">
             <q-item-section class="history-item flex justify-between">
               <div class="row items-center">
                 <div class="col col-4">
                   <div class="flex items-center">
                     <div class="q-mr-md flex flex-center">
-                      <img width="32" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPG1hc2sgaWQ9Im1hc2swIiBtYXNrLXR5cGU9ImFscGhhIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiPgo8cGF0aCBkPSJNMjMuNSAxMkMyMy41IDE4LjM1MTMgMTguMzUxMyAyMy41IDEyIDIzLjVDNS42NDg3MyAyMy41IDAuNSAxOC4zNTEzIDAuNSAxMkMwLjUgNS42NDg3MyA1LjY0ODczIDAuNSAxMiAwLjVDMTguMzUxMyAwLjUgMjMuNSA1LjY0ODczIDIzLjUgMTJaIiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L21hc2s+CjxnIG1hc2s9InVybCgjbWFzazApIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyNEMxOC42Mjc0IDI0IDI0IDE4LjYyNzQgMjQgMTJDMjQgNS4zNzI1OCAxOC42Mjc0IDAgMTIgMEM1LjM3MjU4IDAgMCA1LjM3MjU4IDAgMTJDMCAxOC42Mjc0IDUuMzcyNTggMjQgMTIgMjRaIiBmaWxsPSIjRjNGM0Y0Ii8+CjxwYXRoIGQ9Ik0xMS4zNzc5IDcuNzU1NDRWMTQuNzM2N0w4LjMyNzg4IDExLjY4NjdDOC4wODQxMyAxMS40NDI5IDcuNjg0MTMgMTEuNDQyOSA3LjQ0MDM4IDExLjY4NjdDNy4xOTY2MyAxMS45MzA0IDcuMTk2NjMgMTIuMzI0MiA3LjQ0MDM4IDEyLjU2NzlMMTEuNTU5MSAxNi42ODY3QzExLjgwMjkgMTYuOTMwNCAxMi4xOTY2IDE2LjkzMDQgMTIuNDQwNCAxNi42ODY3TDE2LjU1OTEgMTIuNTY3OUMxNi44MDI5IDEyLjMyNDIgMTYuODAyOSAxMS45MzA0IDE2LjU1OTEgMTEuNjg2N0MxNi40NDI0IDExLjU2OTcgMTYuMjgzOCAxMS41MDM5IDE2LjExODUgMTEuNTAzOUMxNS45NTMyIDExLjUwMzkgMTUuNzk0NyAxMS41Njk3IDE1LjY3NzkgMTEuNjg2N0wxMi42Mjc5IDE0LjczNjdWNy43NTU0NEMxMi42Mjc5IDcuNDExNjkgMTIuMzQ2NiA3LjEzMDQ0IDEyLjAwMjkgNy4xMzA0NEMxMS42NTkxIDcuMTMwNDQgMTEuMzc3OSA3LjQxMTY5IDExLjM3NzkgNy43NTU0NFoiIGZpbGw9IiMwMEJFMjIiLz4KPC9nPgo8L3N2Zz4K" />
+                      <img width="32" :src="getImage(transaction)" />
                     </div>
                     <div class="">
-                      <div class="">Receive</div>
-                      <div class="text-grey">03:04 PM</div>
+                      <div class="">{{getAction(transaction)}}</div>
+                      <div class="text-grey">{{transaction.time}}</div>
                     </div>
                   </div>
                 </div>
                 <div class="col col-8">
                   <div class="row items-center">
-                    <div class="col col-6">
+                    <div class="col col-9">
                       <div class="flex items-center">
                         <div class="q-mr-md flex flex-center">
-                          <img width="32" src="https://s3.amazonaws.com/token-icons/eth.png" class="" />
+                          <img width="32" :src="transaction.image" class="" />
                         </div>
                         <div class="column">
-                          <div class=""><span class="">+1</span> ETH </div>
-                          <div class="text-grey">$1,627.68</div>
+                          <div class=""><span class="">+{{transaction.amountFriendly}}</span> {{transaction.symbol}}
+                          <q-tooltip>
+                           The amount of {{transaction.symbol}} to be transferred to the recipient with the transaction
+                         </q-tooltip>
+                         </div>
+                          <div class="text-grey" v-if="transaction.usdAmount">
+                          ${{transaction.usdAmount}}
+                           <q-tooltip>
+                           Estimated USD equivalent on Day of Txn
+                         </q-tooltip>
+                        </div>
+                        <div class="text-grey" v-else>
+                          N/A
+                        </div>
                         </div>
                       </div>
                     </div>
-                    <div class="col col-6 flex justify-end">
+                    <div class="col col-3 flex justify-end">
                       <div class="column">
                         <div class="">
                           <div class="flex items-center" style="cursor: pointer;">
                             <img width="32" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADdElEQVR4Xu3doW4VURhF4bmSpAqFIiG4vkIFr4RrSJDga3gVPILHaJpU4TD18BCryc7NfPjNnK6zus8/l7nD5f72zb8j/Pn052tIH8evd99S/trDa34XAmwVIoAGSAbWBtUACX8PawANkCzSAAnfPqwBNECyUAMkfPuwBtAAyUINkPDtwxpAAyQLNUDCtw9rAA2QLNQACd8+rAE0QLJQAyR8+/C8AX6+/Z6eB6gGVgBPjy/TXfzw8SZdf83vQoC0fwcB4hmuAdoTUZWfBmgFoAHWZ5gZoD2TqQE0gLuA4oAh0BBY/MmPxRsCfQ6QBDQDJHyHuwB3AT4JTL9D9QxzG+g2MAlYw+4C3AUkh9ZHqCEwbZ8hcH4fawYYzwDxF2gu0NnXn4+AswNcn+GVPwEiQQKcHCABCJAI1A/C0sWP43AERIIa4OQACUCARMARMP4oOe3e0d9zSAACVAdT3hCY8GmAiO/6ARoCowLXDvDa1+8IOLnABCBA+2JI5Oefg+Pr9iv/y4+/X9L7AZ7vHuoa5AOB978/h/RxECDh24cJsN+D6QoIMMW/vzgB9nswXQEBpvj3FyfAfg+mKyDAFP/+4gTY78F0BQSY4t9fnAD7PZiugABT/PuLE2C/B9MVEGCKf39xAuz3YLoCAkzx7y+eBaivi68Irv2Zumtfv0fCosEEODlAAhAgEfDVMF8NSwLVsBkgEnQEnBwgAQiQCJgBzABJoBo2A0SCjoCTAyQAARIBM4AZIAlUw2aASNARcHKABCBAIjCfAe5v36T3A6Sf/hXCa4C1AV4BQforLgRI/PIbTtrVe5oAkaEGiABr3BHQCGqAxs8REPnluAZoCDVA46cBIr8c1wANoQZo/DRA5JfjGqAh1ACNnwaI/HJcAzSEGqDx0wCRX45rgIZQAzR+GiDyy3EN0BDOHwl7enxJP8GHjzcpX8PXvn4CRAMIcHKABCBAIrA+whwBafuOQwOcHCABCJAIOALcBiaBatgMEAk6Ak4OkAAESATMAGaAJFANmwEiQUfAyQESgACJgBnADJAEquE8A9QKfL57qD/DVefrf/hQG4QAY30IoAGSghog4duHNYAGSBZqgIRvH9YAGiBZqAESvn1YA2iAZKEGSPj2YQ2gAZKFGiDh24c1gAZIFmqAhG8f1gAaIFmoARK+fXjdAP8BXbztTvEVM2oAAAAASUVORK5CYII=" class="radius" />
                             <div class="q-pl-sm column">
-                              <div class="">To</div>
-                              <span>0x4a02...c862</span>
+                              <div class="">From</div>
+                              <span>{{transaction.friendlyFrom}}</span>
                             </div>
                           </div>
                         </div>
@@ -222,162 +284,31 @@
                   <div class="text-bold text-grey">Fee</div>
                   <div class="">
                     <span>
-                      <span class="">N/A</span>&nbsp;
+                      <span class="">{{transaction.gasTotal}} ETH (${{transaction.usdFees}})</span>&nbsp;
                     </span>
                   </div>
                 </div>
                 <div class="col col-4 q-pl-xl flex items-center">
                   <div class="column">
                     <span class="text-bold text-grey">Transaction hash</span>
-                    <span>0xc8c2...43a6</span>
-                  </div>
-                  <div class="flex items-center q-ml-md">
-                      <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
-                      <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
-                  </div>
-                </div>
-              </div>
-            </q-item-section>
-          </q-item>
-        </q-list>
-        <div class="title-date q-pl-sm q-mt-xl text-grey-7 q-mb-md text-grey-7">February 3, 2021</div>
-        <q-list bordered separator class="list-wrapper">
-          <q-item clickable class="column history-item-wrapper send-component" @click="sendComponent2 = !sendComponent2" :class="{'active': sendComponent}">
-            <q-item-section class="history-item flex justify-between">
-              <div class="row items-center">
-                <div class="col col-4">
-                  <div class="flex items-center">
-                    <div class="q-mr-md flex flex-center">
-                      <img width="32" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPG1hc2sgaWQ9Im1hc2swIiBtYXNrLXR5cGU9ImFscGhhIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiPgo8cGF0aCBkPSJNMjMuNSAxMkMyMy41IDE4LjM1MTMgMTguMzUxMyAyMy41IDEyIDIzLjVDNS42NDg3MyAyMy41IDAuNSAxOC4zNTEzIDAuNSAxMkMwLjUgNS42NDg3MyA1LjY0ODczIDAuNSAxMiAwLjVDMTguMzUxMyAwLjUgMjMuNSA1LjY0ODczIDIzLjUgMTJaIiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L21hc2s+CjxnIG1hc2s9InVybCgjbWFzazApIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyNEMxOC42Mjc0IDI0IDI0IDE4LjYyNzQgMjQgMTJDMjQgNS4zNzI1OCAxOC42Mjc0IDAgMTIgMEM1LjM3MjU4IDAgMCA1LjM3MjU4IDAgMTJDMCAxOC42Mjc0IDUuMzcyNTggMjQgMTIgMjRaIiBmaWxsPSIjRjNGM0Y0Ii8+CjxwYXRoIGQ9Ik0xMi42MjIxIDE2LjI0NDZMMTIuNjIyMSA5LjI2MzMxTDE1LjY3MjEgMTIuMzEzM0MxNS45MTU5IDEyLjU1NzEgMTYuMzE1OSAxMi41NTcxIDE2LjU1OTYgMTIuMzEzM0MxNi44MDM0IDEyLjA2OTYgMTYuODAzNCAxMS42NzU4IDE2LjU1OTYgMTEuNDMyMUwxMi40NDA5IDcuMzEzMzFDMTIuMTk3MSA3LjA2OTU2IDExLjgwMzQgNy4wNjk1NiAxMS41NTk2IDcuMzEzMzFMNy40NDA4NyAxMS40MzIxQzcuMTk3MTIgMTEuNjc1OCA3LjE5NzEyIDEyLjA2OTYgNy40NDA4NyAxMi4zMTMzQzcuNTU3NjQgMTIuNDMwMyA3LjcxNjE3IDEyLjQ5NjEgNy44ODE0OSAxMi40OTYxQzguMDQ2ODIgMTIuNDk2MSA4LjIwNTM1IDEyLjQzMDMgOC4zMjIxMiAxMi4zMTMzTDExLjM3MjEgOS4yNjMzMUwxMS4zNzIxIDE2LjI0NDZDMTEuMzcyMSAxNi41ODgzIDExLjY1MzQgMTYuODY5NiAxMS45OTcxIDE2Ljg2OTZDMTIuMzQwOSAxNi44Njk2IDEyLjYyMjEgMTYuNTg4MyAxMi42MjIxIDE2LjI0NDZaIiBmaWxsPSIjMTUxNTFGIi8+CjwvZz4KPC9zdmc+Cg==" />
-                    </div>
-                    <div class="">
-                      <div class="">Send</div>
-                      <div class="text-grey">03:43 PM</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col col-8">
-                  <div class="row items-center">
-                    <div class="col col-6">
-                      <div class="flex items-center">
-                        <div class="q-mr-md flex flex-center">
-                          <img width="32" src="https://s3.amazonaws.com/token-icons/eth.png" class="" />
-                        </div>
-                        <div class="column">
-                          <div class=""><span class="">-0.002</span> ETH </div>
-                          <div class="text-grey">$3.08</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col col-6 flex justify-end">
-                      <div class="column">
-                        <div class="">
-                          <div class="flex items-center" style="cursor: pointer;">
-                            <img width="32" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADdElEQVR4Xu3doW4VURhF4bmSpAqFIiG4vkIFr4RrSJDga3gVPILHaJpU4TD18BCryc7NfPjNnK6zus8/l7nD5f72zb8j/Pn052tIH8evd99S/trDa34XAmwVIoAGSAbWBtUACX8PawANkCzSAAnfPqwBNECyUAMkfPuwBtAAyUINkPDtwxpAAyQLNUDCtw9rAA2QLNQACd8+rAE0QLJQAyR8+/C8AX6+/Z6eB6gGVgBPjy/TXfzw8SZdf83vQoC0fwcB4hmuAdoTUZWfBmgFoAHWZ5gZoD2TqQE0gLuA4oAh0BBY/MmPxRsCfQ6QBDQDJHyHuwB3AT4JTL9D9QxzG+g2MAlYw+4C3AUkh9ZHqCEwbZ8hcH4fawYYzwDxF2gu0NnXn4+AswNcn+GVPwEiQQKcHCABCJAI1A/C0sWP43AERIIa4OQACUCARMARMP4oOe3e0d9zSAACVAdT3hCY8GmAiO/6ARoCowLXDvDa1+8IOLnABCBA+2JI5Oefg+Pr9iv/y4+/X9L7AZ7vHuoa5AOB978/h/RxECDh24cJsN+D6QoIMMW/vzgB9nswXQEBpvj3FyfAfg+mKyDAFP/+4gTY78F0BQSY4t9fnAD7PZiugABT/PuLE2C/B9MVEGCKf39xAuz3YLoCAkzx7y+eBaivi68Irv2Zumtfv0fCosEEODlAAhAgEfDVMF8NSwLVsBkgEnQEnBwgAQiQCJgBzABJoBo2A0SCjoCTAyQAARIBM4AZIAlUw2aASNARcHKABCBAIjCfAe5v36T3A6Sf/hXCa4C1AV4BQforLgRI/PIbTtrVe5oAkaEGiABr3BHQCGqAxs8REPnluAZoCDVA46cBIr8c1wANoQZo/DRA5JfjGqAh1ACNnwaI/HJcAzSEGqDx0wCRX45rgIZQAzR+GiDyy3EN0BDOHwl7enxJP8GHjzcpX8PXvn4CRAMIcHKABCBAIrA+whwBafuOQwOcHCABCJAIOALcBiaBatgMEAk6Ak4OkAAESATMAGaAJFANmwEiQUfAyQESgACJgBnADJAEquE8A9QKfL57qD/DVefrf/hQG4QAY30IoAGSghog4duHNYAGSBZqgIRvH9YAGiBZqAESvn1YA2iAZKEGSPj2YQ2gAZKFGiDh24c1gAZIFmqAhG8f1gAaIFmoARK+fXjdAP8BXbztTvEVM2oAAAAASUVORK5CYII=" class="radius" />
-                            <div class="q-pl-sm column">
-                              <div class="">To</div>
-                              <span>0x4a02...c862</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </q-item-section>
-            <q-item-section class="history-item__detail">
-              <div class="row items-center border-top">
-                <div class="col col-4 q-pl-xl">
-                  <div class="text-bold text-grey">Fee</div>
-                  <div class="">
-                    <span>
-                      <span class="">0.011</span>&nbsp;
-                      <span class="">ETH</span>
-                    </span> ($17.30)
-                  </div>
-                </div>
-                <div class="col col-4 q-pl-xl flex items-center">
-                  <div class="column">
-                    <span class="text-bold text-grey">Transaction hash</span>
-                    <span>0xc8c2...43a6</span>
-                  </div>
-                  <div class="flex items-center q-ml-md">
-                      <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
-                      <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
-                  </div>
-                </div>
-              </div>
-            </q-item-section>
-          </q-item>
-          <q-item clickable class="column history-item-wrapper receive-component" @click="receiveComponent2 = !receiveComponent2" :class="{'active': receiveComponent}">
-            <q-item-section class="history-item flex justify-between">
-              <div class="row items-center">
-                <div class="col col-4">
-                  <div class="flex items-center">
-                    <div class="q-mr-md flex flex-center">
-                      <img width="32" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPG1hc2sgaWQ9Im1hc2swIiBtYXNrLXR5cGU9ImFscGhhIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiPgo8cGF0aCBkPSJNMjMuNSAxMkMyMy41IDE4LjM1MTMgMTguMzUxMyAyMy41IDEyIDIzLjVDNS42NDg3MyAyMy41IDAuNSAxOC4zNTEzIDAuNSAxMkMwLjUgNS42NDg3MyA1LjY0ODczIDAuNSAxMiAwLjVDMTguMzUxMyAwLjUgMjMuNSA1LjY0ODczIDIzLjUgMTJaIiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L21hc2s+CjxnIG1hc2s9InVybCgjbWFzazApIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyNEMxOC42Mjc0IDI0IDI0IDE4LjYyNzQgMjQgMTJDMjQgNS4zNzI1OCAxOC42Mjc0IDAgMTIgMEM1LjM3MjU4IDAgMCA1LjM3MjU4IDAgMTJDMCAxOC42Mjc0IDUuMzcyNTggMjQgMTIgMjRaIiBmaWxsPSIjRjNGM0Y0Ii8+CjxwYXRoIGQ9Ik0xMS4zNzc5IDcuNzU1NDRWMTQuNzM2N0w4LjMyNzg4IDExLjY4NjdDOC4wODQxMyAxMS40NDI5IDcuNjg0MTMgMTEuNDQyOSA3LjQ0MDM4IDExLjY4NjdDNy4xOTY2MyAxMS45MzA0IDcuMTk2NjMgMTIuMzI0MiA3LjQ0MDM4IDEyLjU2NzlMMTEuNTU5MSAxNi42ODY3QzExLjgwMjkgMTYuOTMwNCAxMi4xOTY2IDE2LjkzMDQgMTIuNDQwNCAxNi42ODY3TDE2LjU1OTEgMTIuNTY3OUMxNi44MDI5IDEyLjMyNDIgMTYuODAyOSAxMS45MzA0IDE2LjU1OTEgMTEuNjg2N0MxNi40NDI0IDExLjU2OTcgMTYuMjgzOCAxMS41MDM5IDE2LjExODUgMTEuNTAzOUMxNS45NTMyIDExLjUwMzkgMTUuNzk0NyAxMS41Njk3IDE1LjY3NzkgMTEuNjg2N0wxMi42Mjc5IDE0LjczNjdWNy43NTU0NEMxMi42Mjc5IDcuNDExNjkgMTIuMzQ2NiA3LjEzMDQ0IDEyLjAwMjkgNy4xMzA0NEMxMS42NTkxIDcuMTMwNDQgMTEuMzc3OSA3LjQxMTY5IDExLjM3NzkgNy43NTU0NFoiIGZpbGw9IiMwMEJFMjIiLz4KPC9nPgo8L3N2Zz4K" />
-                    </div>
-                    <div class="">
-                      <div class="">Receive</div>
-                      <div class="text-grey">03:09 PM</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col col-8">
-                  <div class="row items-center">
-                    <div class="col col-6">
-                      <div class="flex items-center">
-                        <div class="q-mr-md flex flex-center">
-                          <img width="32" src="https://s3.amazonaws.com/token-icons/eth.png" class="" />
-                        </div>
-                        <div class="column">
-                          <div class=""><span class="">+0.119</span> ETH </div>
-                          <div class="text-grey">$186.29</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col col-6 flex justify-end">
-                      <div class="column">
-                        <div class="">
-                          <div class="flex items-center" style="cursor: pointer;">
-                            <img width="32" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADdElEQVR4Xu3doW4VURhF4bmSpAqFIiG4vkIFr4RrSJDga3gVPILHaJpU4TD18BCryc7NfPjNnK6zus8/l7nD5f72zb8j/Pn052tIH8evd99S/trDa34XAmwVIoAGSAbWBtUACX8PawANkCzSAAnfPqwBNECyUAMkfPuwBtAAyUINkPDtwxpAAyQLNUDCtw9rAA2QLNQACd8+rAE0QLJQAyR8+/C8AX6+/Z6eB6gGVgBPjy/TXfzw8SZdf83vQoC0fwcB4hmuAdoTUZWfBmgFoAHWZ5gZoD2TqQE0gLuA4oAh0BBY/MmPxRsCfQ6QBDQDJHyHuwB3AT4JTL9D9QxzG+g2MAlYw+4C3AUkh9ZHqCEwbZ8hcH4fawYYzwDxF2gu0NnXn4+AswNcn+GVPwEiQQKcHCABCJAI1A/C0sWP43AERIIa4OQACUCARMARMP4oOe3e0d9zSAACVAdT3hCY8GmAiO/6ARoCowLXDvDa1+8IOLnABCBA+2JI5Oefg+Pr9iv/y4+/X9L7AZ7vHuoa5AOB978/h/RxECDh24cJsN+D6QoIMMW/vzgB9nswXQEBpvj3FyfAfg+mKyDAFP/+4gTY78F0BQSY4t9fnAD7PZiugABT/PuLE2C/B9MVEGCKf39xAuz3YLoCAkzx7y+eBaivi68Irv2Zumtfv0fCosEEODlAAhAgEfDVMF8NSwLVsBkgEnQEnBwgAQiQCJgBzABJoBo2A0SCjoCTAyQAARIBM4AZIAlUw2aASNARcHKABCBAIjCfAe5v36T3A6Sf/hXCa4C1AV4BQforLgRI/PIbTtrVe5oAkaEGiABr3BHQCGqAxs8REPnluAZoCDVA46cBIr8c1wANoQZo/DRA5JfjGqAh1ACNnwaI/HJcAzSEGqDx0wCRX45rgIZQAzR+GiDyy3EN0BDOHwl7enxJP8GHjzcpX8PXvn4CRAMIcHKABCBAIrA+whwBafuOQwOcHCABCJAIOALcBiaBatgMEAk6Ak4OkAAESATMAGaAJFANmwEiQUfAyQESgACJgBnADJAEquE8A9QKfL57qD/DVefrf/hQG4QAY30IoAGSghog4duHNYAGSBZqgIRvH9YAGiBZqAESvn1YA2iAZKEGSPj2YQ2gAZKFGiDh24c1gAZIFmqAhG8f1gAaIFmoARK+fXjdAP8BXbztTvEVM2oAAAAASUVORK5CYII=" class="radius" />
-                            <div class="q-pl-sm column">
-                              <div class="">To</div>
-                              <span>0x4a02...c862</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </q-item-section>
-            <q-item-section class="history-item__detail">
-              <div class="row items-center border-top">
-                <div class="col col-4 q-pl-xl">
-                  <div class="text-bold text-grey">Fee</div>
-                  <div class="">
-                    <span>
-                      <span class="">N/A</span>&nbsp;
+                    <span>{{transaction.friendlyHash}}
+                     <q-tooltip>
+                      {{transaction.hash}}
+                    </q-tooltip>
                     </span>
                   </div>
-                </div>
-                <div class="col col-4 q-pl-xl flex items-center">
-                  <div class="column">
-                    <span class="text-bold text-grey">Transaction hash</span>
-                    <span>0xc8c2...43a6</span>
-                  </div>
                   <div class="flex items-center q-ml-md">
-                      <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
-                      <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
+                      <q-btn color="white" round size="sm" @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
+                      <a :href="'https://etherscan.io/tx/'+transaction.hash" target="_blank">
+                      <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
+                       </a>
                   </div>
                 </div>
               </div>
             </q-item-section>
           </q-item>
         </q-list>
+        </div>
       </q-scroll-area>
     </div>
   </div>
@@ -386,6 +317,10 @@
 
 <script>
 import { QScrollArea } from 'quasar'
+// import Lib from '@/util/walletlib'
+import DexInteraction from '@/mixins/DexInteraction'
+// const Web3 = require('web3')
+// let web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
 
 export default {
   name: 'History',
@@ -407,6 +342,7 @@ export default {
       receiveComponent2: false,
       tradeComponent: false,
       active: true,
+      history: [],
       tableDataWallets: [],
       showWallet: false,
       showText: false,
@@ -422,13 +358,147 @@ export default {
       return this.$store.state.currentwallet.wallet || {}
     }
   },
-  created () {
-    // this.loadTableDataWallets()
+
+  mounted () {
+    let accounts = this.$store.state.wallets.tokens.filter((o => o.type === 'eth' && o.chain === 'eth') || (o => o.type === 'eos' && o.chain === 'eos'))
+    let allHistoryData = []
+    accounts.forEach(async (element) => {
+      let data = null
+
+      if (element.chain === 'eth') {
+        let cacheData = localStorage.getItem('history')
+
+        if (this.$store.state.wallets.history.length) {
+          data = this.$store.state.wallets.history
+        } else if (cacheData) {
+          data = JSON.parse(cacheData)
+        } else {
+          data = await this.$store.dispatch('investment/getETHTransactions', element.key)
+          // localStorage.setItem('history', JSON.stringify(data))
+          this.$store.commit('wallets/setHistory', data)
+        }
+
+        data.map(o => {
+          o.chain = 'eth'
+          return this.normalize(o)
+        })
+      } else {
+        // data = (await Lib.history(element.chain, element.type, element.name))
+      }
+
+      if (data && Array.isArray(data)) {
+        allHistoryData = allHistoryData.concat(data)
+        this.groupByDay(allHistoryData)
+      }
+    })
   },
   methods: {
-    showMore () {
 
+    getImage (transaction) {
+      return transaction.direction === 'outgoing'
+        ? 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPG1hc2sgaWQ9Im1hc2swIiBtYXNrLXR5cGU9ImFscGhhIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiPgo8cGF0aCBkPSJNMjMuNSAxMkMyMy41IDE4LjM1MTMgMTguMzUxMyAyMy41IDEyIDIzLjVDNS42NDg3MyAyMy41IDAuNSAxOC4zNTEzIDAuNSAxMkMwLjUgNS42NDg3MyA1LjY0ODczIDAuNSAxMiAwLjVDMTguMzUxMyAwLjUgMjMuNSA1LjY0ODczIDIzLjUgMTJaIiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L21hc2s+CjxnIG1hc2s9InVybCgjbWFzazApIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyNEMxOC42Mjc0IDI0IDI0IDE4LjYyNzQgMjQgMTJDMjQgNS4zNzI1OCAxOC42Mjc0IDAgMTIgMEM1LjM3MjU4IDAgMCA1LjM3MjU4IDAgMTJDMCAxOC42Mjc0IDUuMzcyNTggMjQgMTIgMjRaIiBmaWxsPSIjRjNGM0Y0Ii8+CjxwYXRoIGQ9Ik0xMi42MjIxIDE2LjI0NDZMMTIuNjIyMSA5LjI2MzMxTDE1LjY3MjEgMTIuMzEzM0MxNS45MTU5IDEyLjU1NzEgMTYuMzE1OSAxMi41NTcxIDE2LjU1OTYgMTIuMzEzM0MxNi44MDM0IDEyLjA2OTYgMTYuODAzNCAxMS42NzU4IDE2LjU1OTYgMTEuNDMyMUwxMi40NDA5IDcuMzEzMzFDMTIuMTk3MSA3LjA2OTU2IDExLjgwMzQgNy4wNjk1NiAxMS41NTk2IDcuMzEzMzFMNy40NDA4NyAxMS40MzIxQzcuMTk3MTIgMTEuNjc1OCA3LjE5NzEyIDEyLjA2OTYgNy40NDA4NyAxMi4zMTMzQzcuNTU3NjQgMTIuNDMwMyA3LjcxNjE3IDEyLjQ5NjEgNy44ODE0OSAxMi40OTYxQzguMDQ2ODIgMTIuNDk2MSA4LjIwNTM1IDEyLjQzMDMgOC4zMjIxMiAxMi4zMTMzTDExLjM3MjEgOS4yNjMzMUwxMS4zNzIxIDE2LjI0NDZDMTEuMzcyMSAxNi41ODgzIDExLjY1MzQgMTYuODY5NiAxMS45OTcxIDE2Ljg2OTZDMTIuMzQwOSAxNi44Njk2IDEyLjYyMjEgMTYuNTg4MyAxMi42MjIxIDE2LjI0NDZaIiBmaWxsPSIjMTUxNTFGIi8+CjwvZz4KPC9zdmc+Cg=='
+        : transaction.direction === 'incoming'
+          ? 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPG1hc2sgaWQ9Im1hc2swIiBtYXNrLXR5cGU9ImFscGhhIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiPgo8cGF0aCBkPSJNMjMuNSAxMkMyMy41IDE4LjM1MTMgMTguMzUxMyAyMy41IDEyIDIzLjVDNS42NDg3MyAyMy41IDAuNSAxOC4zNTEzIDAuNSAxMkMwLjUgNS42NDg3MyA1LjY0ODczIDAuNSAxMiAwLjVDMTguMzUxMyAwLjUgMjMuNSA1LjY0ODczIDIzLjUgMTJaIiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L21hc2s+CjxnIG1hc2s9InVybCgjbWFzazApIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyNEMxOC42Mjc0IDI0IDI0IDE4LjYyNzQgMjQgMTJDMjQgNS4zNzI1OCAxOC42Mjc0IDAgMTIgMEM1LjM3MjU4IDAgMCA1LjM3MjU4IDAgMTJDMCAxOC42Mjc0IDUuMzcyNTggMjQgMTIgMjRaIiBmaWxsPSIjRjNGM0Y0Ii8+CjxwYXRoIGQ9Ik0xMS4zNzc5IDcuNzU1NDRWMTQuNzM2N0w4LjMyNzg4IDExLjY4NjdDOC4wODQxMyAxMS40NDI5IDcuNjg0MTMgMTEuNDQyOSA3LjQ0MDM4IDExLjY4NjdDNy4xOTY2MyAxMS45MzA0IDcuMTk2NjMgMTIuMzI0MiA3LjQ0MDM4IDEyLjU2NzlMMTEuNTU5MSAxNi42ODY3QzExLjgwMjkgMTYuOTMwNCAxMi4xOTY2IDE2LjkzMDQgMTIuNDQwNCAxNi42ODY3TDE2LjU1OTEgMTIuNTY3OUMxNi44MDI5IDEyLjMyNDIgMTYuODAyOSAxMS45MzA0IDE2LjU1OTEgMTEuNjg2N0MxNi40NDI0IDExLjU2OTcgMTYuMjgzOCAxMS41MDM5IDE2LjExODUgMTEuNTAzOUMxNS45NTMyIDExLjUwMzkgMTUuNzk0NyAxMS41Njk3IDE1LjY3NzkgMTEuNjg2N0wxMi42Mjc5IDE0LjczNjdWNy43NTU0NEMxMi42Mjc5IDcuNDExNjkgMTIuMzQ2NiA3LjEzMDQ0IDEyLjAwMjkgNy4xMzA0NEMxMS42NTkxIDcuMTMwNDQgMTEuMzc3OSA3LjQxMTY5IDExLjM3NzkgNy43NTU0NFoiIGZpbGw9IiMwMEJFMjIiLz4KPC9nPgo8L3N2Zz4K'
+          : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPG1hc2sgaWQ9Im1hc2swIiBtYXNrLXR5cGU9ImFscGhhIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiPgo8cGF0aCBkPSJNMjMuNSAxMkMyMy41IDE4LjM1MTMgMTguMzUxMyAyMy41IDEyIDIzLjVDNS42NDg3MyAyMy41IDAuNSAxOC4zNTEzIDAuNSAxMkMwLjUgNS42NDg3MyA1LjY0ODczIDAuNSAxMiAwLjVDMTguMzUxMyAwLjUgMjMuNSA1LjY0ODczIDIzLjUgMTJaIiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L21hc2s+CjxnIG1hc2s9InVybCgjbWFzazApIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyNEMxOC42Mjc0IDI0IDI0IDE4LjYyNzQgMjQgMTJDMjQgNS4zNzI1OCAxOC42Mjc0IDAgMTIgMEM1LjM3MjU4IDAgMCA1LjM3MjU4IDAgMTJDMCAxOC42Mjc0IDUuMzcyNTggMjQgMTIgMjRaIiBmaWxsPSIjRjNGM0Y0Ii8+CjxwYXRoIGQ9Ik03LjY0MTc1IDExQzE2LjIxMDIgMTEgMTQuODEgMTAuOTk5OSAxNi44MTIzIDEwLjk5OThDMTcuMDYyNiAxMC43NDc5IDE3LjA2MjYgMTAuMTUzOSAxNi44MTIzIDkuOTAxOTlMMTQuMjQ3MyA3LjE4ODkyQzEzLjk5NyA2LjkzNzAzIDEzLjU5MjcgNi45MzcwMyAxMy4zNDI0IDcuMTg4OTJDMTMuMjIyMyA3LjMwOTYgMTMuMTU0NyA3LjQ3MzQzIDEzLjE1NDcgNy42NDQyN0MxMy4xNTQ3IDcuODE1MTIgMTMuMjIyMyA3Ljk3ODk1IDEzLjM0MjQgOC4wOTk2M0wxNC44MSA5LjcwODIyTDcuNjQxNzUgOS43MDgyMkM3LjI4ODc5IDkuNzA4MjIgNyA5Ljk5ODg3IDcgMTAuMzU0MUM3IDEwLjcwOTMgNy4yODg3OSAxMSA3LjY0MTc1IDExWiIgZmlsbD0iIzE1MTUxRiIvPgo8cGF0aCBkPSJNMTYuMzU4MyAxM0M3Ljc4OTgzIDEzIDkuMTg5OTYgMTMuMDAwMSA3LjE4NzcxIDEzLjAwMDJDNi45Mzc0MyAxMy4yNTIxIDYuOTM3NDMgMTMuODQ2MSA3LjE4NzcxIDE0LjA5OEw5Ljc1MjcgMTYuODExMUMxMC4wMDMgMTcuMDYzIDEwLjQwNzMgMTcuMDYzIDEwLjY1NzYgMTYuODExMUMxMC43Nzc3IDE2LjY5MDQgMTAuODQ1MyAxNi41MjY2IDEwLjg0NTMgMTYuMzU1N0MxMC44NDUzIDE2LjE4NDkgMTAuNzc3NyAxNi4wMjEgMTAuNjU3NiAxNS45MDA0TDkuMTg5OTYgMTQuMjkxOEwxNi4zNTgzIDE0LjI5MThDMTYuNzExMiAxNC4yOTE4IDE3IDE0LjAwMTEgMTcgMTMuNjQ1OUMxNyAxMy4yOTA3IDE2LjcxMTIgMTMgMTYuMzU4MyAxM1oiIGZpbGw9IiMxNTE1MUYiLz4KPC9nPgo8L3N2Zz4K'
+    },
+    getAction (transaction) {
+      return transaction.direction === 'outgoing' ? 'Send'
+        : transaction.direction === 'incoming' ? 'Receive' : 'Trade'
+    },
+    getTokenImage (transaction) {
+      let token = this.getAllCoins().find((o) => o.value.toLowerCase() === transaction.symbol.toLowerCase())
+      return token ? (transaction.symbol === 'ETH' ? 'https://s3.amazonaws.com/token-icons/eth.png' : token.image) : 'https://etherscan.io/images/main/empty-token.png'
+    },
+    normalize (transaction) {
+      let tx = transaction
+      if (transaction.chain === 'eth') {
+        let date = (new Date(parseInt(transaction.timeStamp) * 1000))
+        tx.friendlyHash = transaction.hash.substring(0, 6) + '...' + transaction.hash.substr(transaction.hash.length - 5)
+        tx.friendlyTo = transaction.destination.length ? transaction.destination.substring(0, 6) + '...' + transaction.destination.substr(transaction.destination.length - 5) : ''
+        tx.friendlyFrom = transaction.from.substring(0, 6) + '...' + transaction.from.substr(transaction.from.length - 5)
+        tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+        tx.image = this.getTokenImage(transaction)
+        tx.active = false
+        tx.gasTotal = tx.gas
+        tx.dateFormatted = date.toISOString().split('T')[0]
+        this.getHistoricalData(transaction)
+        tx.amountFriendly = parseFloat(tx.amount).toFixed(6)
+        tx.subTransactions.map(o => {
+          o.image = this.getTokenImage(o)
+          o.amountFriendly = parseFloat(o.amount).toFixed(6)
+        })
+      }
+    },
+    groupByDay (allHistoryData) {
+      allHistoryData.forEach((element) => {
+        let dateObj = new Date(parseInt(element.timeStamp) * 1000)
+        let month = dateObj.getUTCMonth() + 1
+        let day = dateObj.getUTCDate()
+        let year = dateObj.getUTCFullYear()
+        let index = this.history.findIndex(o => o.month === month && o.day === day && o.year === year)
+
+        if (index > -1) {
+          this.history[index].data.push(element)
+        } else {
+          let item = {
+            month: month,
+            day: day,
+            year: year,
+            friendlyDay: dateObj.toLocaleString('default', { month: 'long' }) + ' ' + day + ', ' + year,
+            data: [element]
+          }
+          this.history.push(item)
+          // this.$store.commit('wallets/updateHistory', item)
+        }
+      })
+    },
+    async getUsdPrice (transaction, synchronus = true) {
+      let value = false
+
+      let datePrice = localStorage.getItem(transaction.symbol + '-' + transaction.dateFormatted)
+
+      if (!datePrice) {
+        let response = await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.tiingo.com/tiingo/crypto/prices?tickers=' + transaction.symbol.toLowerCase() + 'usd&startDate=' + transaction.dateFormatted + '&endDate=' + transaction.dateFormatted + '&resampleFreq=5min&token=3d454099d564dc5ce4683da918d0b2e416a56dcc')
+          .catch(o => console.log(o))
+
+        if (response && response.data[0] && response.data[0].priceData[0]) {
+          let price = ((response.data[0].priceData[0].high + response.data[0].priceData[0].low) / 2)
+          localStorage.setItem(transaction.symbol + '-' + transaction.dateFormatted, price)
+          value = price
+        }
+      } else {
+        value = parseFloat(datePrice)
+      }
+      return value
+    },
+    async getHistoricalData (transaction) {
+      let datePrice = localStorage.getItem(transaction.symbol + '-' + transaction.dateFormatted)
+      console.log(datePrice, 'datePrice', transaction.symbol + '-' + transaction.dateFormatted)
+      if (datePrice) {
+        datePrice = parseFloat(datePrice) * parseFloat(transaction.amount)
+        transaction.usdAmount = isNaN(datePrice) ? '-' : datePrice.toFixed(2)
+
+        transaction.subTransactions.map(async o => {
+          o.dateFormatted = transaction.dateFormatted
+          let value = await this.getUsdPrice(o, true)
+          o.usdAmount = value ? (value * o.amount).toFixed(2) : false
+        })
+        let param = {
+          dateFormatted: transaction.dateFormatted,
+          symbol: 'ETH'
+        }
+        let EthPrice = await this.getUsdPrice(param, true)
+        let gas = transaction.gas
+        console.log(transaction.gas, 'gas', EthPrice, transaction.symbol + '-' + transaction.dateFormatted)
+        transaction.usdFees = gas * EthPrice
+        transaction.usdFees = isNaN(transaction.usdFees) ? false : transaction.usdFees.toFixed(2)
+      } else {
+        let value = await this.getUsdPrice(transaction)
+        transaction.usdAmount = value ? (parseFloat(value) * parseFloat(transaction.amount)).toFixed(2) : false
+        console.log(transaction.gas, 'gas', value, transaction.symbol + '-' + transaction.dateFormatted)
+      }
     }
+
     // async loadDataTableHistory () {
     //   if (this.$store.state.currentwallet.wallet.type === 'eos') {
     //     // get them from the eos token side of things
@@ -486,11 +556,15 @@ export default {
     //   })
     //   return result
     // }
-  }
+  },
+  mixins: [DexInteraction]
 }
 </script>
 
 <style scoped lang="scss">
+  .title-date {
+    text-transform: capitalize;
+}
   @import "~@/assets/styles/variables.scss";
   .transaction-wrapper{
     padding: 0px 6%;
