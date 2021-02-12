@@ -1904,13 +1904,23 @@ export default {
     quantityFromDeposit () {
       // deal with precision
       this.depositQuantity = isNaN(this.depositQuantity) ? 0 : this.depositQuantity
-      this.destinationQuantity = (+this.depositQuantity * +this.rateData.rate) - +this.rateData.minerFee
+      if (this.destinationCoin.value === 'vtx' && this.depositCoin.value === 'eth') {
+        this.destinationQuantity = (+this.depositQuantity / +this.rateData.rate) - +this.rateData.minerFee
+      } else {
+        this.destinationQuantity = (+this.depositQuantity * +this.rateData.rate) - +this.rateData.minerFee
+      }
       this.destinationQuantity = this.destinationQuantity <= 0 ? 0 : this.destinationQuantity
       this.lastChangedValue = 'deposit'
     },
     quantityFromDestination () {
       // deal with precision
-      this.depositQuantity = (+this.destinationQuantity + +this.rateData.minerFee) / +this.rateData.rate
+
+      if (this.destinationCoin.value === 'vtx' && this.depositCoin.value === 'eth') {
+        this.depositQuantity = (+this.destinationQuantity + +this.rateData.minerFee) * +this.rateData.rate
+      } else {
+        this.depositQuantity = (+this.destinationQuantity + +this.rateData.minerFee) / +this.rateData.rate
+      }
+
       this.lastChangedValue = 'destination'
     },
     orderStatus () {
@@ -2105,11 +2115,38 @@ export default {
         this.checkPrivateKeyPassword()
       }
     },
+    swapEthToVTX () {
+      this.ErrorMessage = 'No liquidity available'
+
+      /*
+      const self = this
+       this.isPrivateKeyEncrypted()
+      if (this.openModal) return
+
+         self.$store.commit('currentwallet/updateParams', {
+              chainID: self.fromCoin.chain,
+              tokenID: self.fromCoin.type,
+              accountName: self.fromCoin.name,
+              to: self.exchangeAddress.address,
+              amount: self.expectedDepositCoinAmount
+            })
+            if (self.currentWallet && self.$store.state.wallets.metamask.accounts.find(o => o.value === self.currentWallet.value)) {
+              self.sendExternalTransaction('metamask')
+            } else {
+              self.$store.state.currentwallet.wallet = self.tableData.find(a => a.key === self.fromCoin.key && a.type === self.fromCoin.type)
+              self.showTXComponent = true
+            }
+            */
+    },
     postOrder () {
       const self = this
 
       let depositCoinAmount = null
       let destinationCoinAmount = null
+
+      if (self.destinationCoin.value === 'vtx' && self.depositCoin.value === 'eth') {
+        return this.swapEthToVTX()
+      }
 
       if (self.lastChangedValue === 'deposit') {
         depositCoinAmount = self.depositQuantity
@@ -2213,13 +2250,42 @@ export default {
           // console.error('There was a problem getting the destination coins', err)
         })
     },
+    async eThToVTX (amount) {
+      let vtxAmount = false
+      let eThToVTXPrice = false
+
+      let response = await this.$axios.get('https://api.coingecko.com/api/v3/simple/price?ids=volentix-vtx&vs_currencies=eth')
+      if (response.data && response.data['volentix-vtx'] && response.data['volentix-vtx'].eth) {
+        eThToVTXPrice = parseFloat(response.data['volentix-vtx'].eth)
+
+        this.rateDataVtx = {
+          limitMaxDepositCoin: 10000000, // to be fetched
+          limitMaxDestinationCoin: 10000000, // to be fetched
+          limitMinDepositCoin: 0, // to be fetched
+          limitMinDestinationCoin: 0, // to be fetched
+          minerFee: 0,
+          rate: eThToVTXPrice
+        }
+        this.rateData = this.rateDataVtx
+        this.destinationQuantity = 10000
+        this.isLoading = false
+        this.quantityFromDestination()
+      }
+
+      return vtxAmount
+    },
     async getRate () {
       const self = this
       if (self.destinationCoin.value === 'vtx') {
-        this.vtxEosPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
+        // this.vtxEosPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
       }
       this.isLoading = true
       this.ErrorMessage = ''
+
+      if (self.destinationCoin.value === 'vtx' && self.depositCoin.value === 'eth') {
+        return this.eThToVTX()
+      }
+
       this.$axios.post(url + '/v2/rate', {
         depositCoin: self.depositCoin.value.toLowerCase(),
         destinationCoin: self.destinationCoin.value === 'vtx' ? 'eos' : self.destinationCoin.value.toLowerCase()

@@ -138,7 +138,7 @@ let cruxClient
 */
 import DexInteraction from '../../mixins/DexInteraction'
 import EosWrapper from '@/util/EosWrapper'
-import Bridge from '@/util/Bridge'
+// import Bridge from '@/util/Bridge'
 
 const eos = new EosWrapper()
 import initWallet from '@/util/Wallets2Tokens'
@@ -190,11 +190,6 @@ export default {
     clearInterval(this.interval)
   },
   async created () {
-    await Bridge.getLatestTransactions('0xba5d0ebbcb85b77f6cbfbe2426ea0f63fef07424dbdb3f0ebb1f91e438528965')
-
-    await Bridge.sendVtxToAll(Bridge.transactions)
-    console.log(Bridge)
-
     this.interval = setInterval(() => {
       this.customSlider = this.$store.state.investment.zapperTokens.length ? !this.customSlider : this.customSlider
     }, 12000)
