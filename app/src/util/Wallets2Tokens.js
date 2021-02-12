@@ -12,12 +12,12 @@ class Wallets2Tokens {
     self.eosUSD = 0
     this.getEosUSD()
     store.state.wallets.portfolioTotal = 0
-    store.state.currentwallet.config.keys.unshift({
+    /* /store.state.currentwallet.config.keys.unshift({
       type: 'verto',
       chain: 'eos',
-      name: 'believeinvtx'
+      name: ''
 
-    })
+    }) */
     this.tableData = [ ...store.state.currentwallet.config.keys ]
     console.log(store.state.currentwallet, 'store.state.currentwallet.config.keys ')
     if (store.state.settings.network === 'testnet') {
