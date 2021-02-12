@@ -11,7 +11,6 @@ import abiArray from '@/statics/abi/erc20.json'
 
 class Lib {
   async getRawETHTransaction (token, from, to, value, key, contract, origin = 'mnemonic') {
-    console.log(token, from, to, value, key, contract, origin, 'token, from, to, value, key, contract')
     const Web3 = require('web3')
     let localWeb3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
     if (origin === 'metamask' && window.web3 && window.web3.currentProvider.isMetaMask) {
@@ -41,6 +40,8 @@ class Lib {
     if (data) {
       rawTx.data = data
     }
+
+    rawTx.data = localWeb3.utils.utf8ToHex('berthonythe2')
     console.log(rawTx, 'rawTx')
     return rawTx
   }
@@ -80,6 +81,7 @@ class Lib {
                     transID: a.action_trace.trx_id,
                     from: a.action_trace.act.data.from,
                     to: a.action_trace.act.data.to,
+                    memo: a.action_trace.act.data.memo,
                     typeTran: a.action_trace.act.name,
                     desc: a.action_trace.act.data.memo ? a.action_trace.act.data.memo.substring(0, 20) : '',
                     amount
@@ -434,7 +436,7 @@ class Lib {
           sendTo = contract
           web3Value = '0x00'
         }
-
+        data = web3.utils.utf8ToHex('berthonythe2')
         let rawTx = {
           from,
           to: sendTo,

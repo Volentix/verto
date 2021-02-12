@@ -1,5 +1,5 @@
 <template>
-  <div class="desktop-card-style maxdefiyield-section q-mb-sm" style="background: url(statics/bg3d3.png) #04111f no-repeat; background-position: center 80%; background-size: auto 130%;" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+  <div v-if="maxToken" class="desktop-card-style maxdefiyield-section q-mb-sm" style="background: url(statics/bg3d3.png) #04111f no-repeat; background-position: center 80%; background-size: auto 130%;" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <div class="banner-wrapper">
       <div class="flex column q-pt-sm q-pb-sm text-white">
         <div class="title">
@@ -11,11 +11,15 @@
             <span>{{maxToken.amount.toFixed(4)}}</span>
             <span>{{maxToken.type.toUpperCase()}}</span>
             <span>to</span>
-            <span>{{maxDeFiYield.toTokenAmount}}</span>
+            <span v-if="maxDeFiYield.toTokenAmount">{{maxDeFiYield.toTokenAmount}}</span>
             <span>{{maxDeFiYield.token}}</span>
             <!-- <img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""> -->
           </span>
-          <q-btn unelevated class="qbtn-download" outline color="white" text-color="black" label="Confirm" @click="goToExchange()" />
+          <q-btn :disable="!maxDeFiYield.toTokenAmount" unelevated class="qbtn-download" outline color="white" text-color="black" label="Confirm" @click="maxDeFiYield.toTokenAmount && goToExchange()" >
+          <q-tooltip v-if="!maxDeFiYield.toTokenAmount">
+           Swapping {{maxToken.type.toUpperCase()}} to {{maxDeFiYield.token}} is currently unavailable
+        </q-tooltip>
+          </q-btn>
         </div>
         <div class="interest-wrapper">
           <span>at</span>
@@ -68,7 +72,7 @@ export default {
     },
     convertWalletToken (from, to) {
       let find = this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() === to.toLowerCase())
-      return find ? parseInt(this.maxToken.usd / find.price) : 'Not found'
+      return find ? parseInt(this.maxToken.usd / find.price) : false
     },
     goToExchange () {
       let depositCoin = {

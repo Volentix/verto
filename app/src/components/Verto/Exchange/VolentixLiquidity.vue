@@ -1073,7 +1073,7 @@ export default {
   methods: {
     async updatePool () {
       let pool = (await testnetRpc.getTable(
-        'vpools',
+        'vpools2',
         this.pairData ? this.pairData.supply.symbol.code().to_string() : this.getTokenSymbol(),
         'stat'
       ))[0]
@@ -1119,7 +1119,7 @@ export default {
           this.vpoolsTransactions.actions = {
             actions: [
               {
-                account: 'vpools',
+                account: 'vpools2',
                 name: 'openext',
                 authorization: [
                   { actor: this.eosAccount.name, permission: 'active' }
@@ -1131,7 +1131,7 @@ export default {
                     contract: this.destinationCoin.value.toUpperCase() === 'VTX'
                       ? 'volentixtsys'
                       : 'eosio.token',
-                    sym:
+                    symbol:
            this.destinationCoin.precision +
            ',' +
            this.destinationCoin.value.toUpperCase()
@@ -1140,7 +1140,7 @@ export default {
               },
 
               {
-                account: 'vpools',
+                account: 'vpools2',
                 name: 'openext',
                 authorization: [
                   { actor: this.eosAccount.name, permission: 'active' }
@@ -1153,7 +1153,7 @@ export default {
            this.depositCoin.value.toUpperCase() === 'VTX'
              ? 'volentixtsys'
              : 'eosio.token',
-                    sym:
+                    symbol:
            this.depositCoin.precision +
            ',' +
            this.depositCoin.value.toUpperCase()
@@ -1170,10 +1170,10 @@ export default {
                 ],
                 data: {
                   from: this.eosAccount.name,
-                  to: 'vpools',
+                  to: 'vpools2',
                   quantity:
           parseFloat(this.swapData.fromAmount).toFixed(
-            this.depositCoin.precision
+            4
           ) +
           ' ' +
           this.depositCoin.value.toUpperCase(),
@@ -1190,10 +1190,10 @@ export default {
                 ],
                 data: {
                   from: this.eosAccount.name,
-                  to: 'vpools',
+                  to: 'vpools2',
                   quantity:
           parseFloat(this.swapData.toAmount).toFixed(
-            this.destinationCoin.precision
+            4
           ) +
           ' ' +
           this.destinationCoin.value.toUpperCase(),
@@ -1302,21 +1302,21 @@ export default {
     },
     async getEOSPools () {
       this.accounts = await testnetRpc.getTableByScope(
-        'vpools',
+        'vpools2',
         'stat',
         'accounts'
       )
       this.pools = []
       this.accounts.forEach(async o => {
         let balances = await testnetRpc.getTable(
-          'vpools',
+          'vpools2',
           o.payer,
           'accounts'
         )
         balances.forEach(async o => {
           let token = asset(o.balance)
           let pool = await testnetRpc.getTable(
-            'vpools',
+            'vpools2',
             token.symbol.code().to_string(),
             'stat'
           )
@@ -1332,15 +1332,13 @@ export default {
     pushCreateTokenAction () {
       this.transaction.name = 'createpair'
       this.vpoolsTransactions.actions.actions.push({
-        account: 'vpools',
+        account: 'vpools2',
         name: 'inittoken',
         authorization: [
           { actor: this.eosAccount.name, permission: 'active' }
         ],
         data: {
           user: this.eosAccount.name,
-          new_symbol:
-        '8,' + this.getTokenSymbol(),
           initial_pool1: {
             contract: this.depositCoin.value.toUpperCase() === 'VTX'
               ? 'volentixtsys'
@@ -1367,6 +1365,8 @@ export default {
           fee_contract: this.eosAccount.name
         }
       })
+
+      console.log(this.vpoolsTransactions.actions, JSON.stringify(this.vpoolsTransactions.actions))
     },
     pushLiquidityActions () {
       const amount1 = asset(`${this.swapData.fromAmount} ${this.depositCoin.value.toUpperCase()}`).to_string()
@@ -1375,7 +1375,7 @@ export default {
       const to_buy = asset(this.tokenReceive, this.pairData.supply.symbol).to_string()
       this.vpoolsTransactions.actions.actions = this.vpoolsTransactions.actions.actions.concat([
         {
-          account: 'vpools',
+          account: 'vpools2',
           name: 'addliquidity',
           authorization: [
             { actor: this.eosAccount.name, permission: 'active' }
@@ -1388,7 +1388,7 @@ export default {
           }
         }/*,
         {
-          account: 'vpools',
+          account: 'vpools2',
           name: 'closeext',
           authorization: [
             { actor: this.eosAccount.name, permission: 'active' }
@@ -1410,7 +1410,7 @@ export default {
           }
         },
         {
-          account: 'vpools',
+          account: 'vpools2',
           name: 'closeext',
           authorization: [
             { actor: this.eosAccount.name, permission: 'active' }
@@ -1431,6 +1431,8 @@ export default {
             memo: ''
           }
         } */])
+
+      console.log(this.vpoolsTransactions, 'this.vpoolsTransactions')
     },
     async pushSwapAction () {
       if (!this.pairData) {
@@ -1458,7 +1460,7 @@ export default {
           ],
           data: {
             from: this.eosAccount.name,
-            to: 'vpools',
+            to: 'vpools2',
             quantity: amount1,
             memo: `exchange: ${this.pairData.supply.symbol.code().to_string()},${amount2}, Exchanged from Verto`
           }
@@ -1468,7 +1470,7 @@ export default {
     sendTransaction () {
       this.spinnervisible = true
       this.getPairData()
-      // console.log(this.vpoolsTransactions.actions, JSON.stringify(this.vpoolsTransactions.actions))
+      console.log(this.vpoolsTransactions.actions, JSON.stringify(this.vpoolsTransactions.actions))
       testnetApiObject.api
         .transact(this.vpoolsTransactions.actions, {
           blocksBehind: 3,

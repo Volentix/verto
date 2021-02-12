@@ -64,7 +64,6 @@
 
 <script>
 import { version } from '../../../package.json'
-
 export default {
   name: 'LeftMenu',
   data () {
@@ -176,7 +175,6 @@ export default {
       .col{
         cursor: pointer;
         position: relative;
-
       }
     }
     &.dark-theme{
