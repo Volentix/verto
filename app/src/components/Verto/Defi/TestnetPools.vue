@@ -150,7 +150,7 @@ export default {
 
     if (!this.$store.state.investment.eosPools.length) {
       this.accounts = await testnetRpc.getTableByScope(
-        'vpools',
+        'vpools2',
         'stat',
         'accounts'
       )
@@ -158,7 +158,7 @@ export default {
 
       this.accounts.forEach(async o => {
         let balances = await testnetRpc.getTable(
-          'vpools',
+          'vpools2',
           o.payer,
           'accounts'
         )
@@ -166,7 +166,7 @@ export default {
         balances.forEach(async (o, i) => {
           let token = asset(o.balance)
           let pool = await testnetRpc.getTable(
-            'vpools',
+            'vpools2',
             token.symbol.code().to_string(),
             'stat'
           )

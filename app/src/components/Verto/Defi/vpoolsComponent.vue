@@ -119,14 +119,14 @@ export default {
     }
   },
   async mounted () {
-    this.tokensBalance = await testnetRpc.getTable('vpools', this.eosAccount, 'accounts')
-    this.openChannels = await testnetRpc.getTable('vpools', this.eosAccount, 'vpoolsacnts')
+    this.tokensBalance = await testnetRpc.getTable('vpools2', this.eosAccount, 'accounts')
+    this.openChannels = await testnetRpc.getTable('vpools2', this.eosAccount, 'vpoolsacnts')
 
     this.openChannels.forEach((token) => {
       this.getBalance(token.balance.quantity.split(' ')[1], token.balance.contract)
     })
     this.tokensBalance.forEach(async (token, index) => {
-      let data = (await testnetRpc.getTable('vpools', token.balance.split(' ')[1], 'stat'))[0]
+      let data = (await testnetRpc.getTable('vpools2', token.balance.split(' ')[1], 'stat'))[0]
       this.tokensBalance[index].images = []
       this.tokensBalance[index].images.push(this.coins.find((w) => w.value.toLowerCase() === data.pool1.quantity.split(' ')[1].toLowerCase()).image)
       this.tokensBalance[index].images.push(this.coins.find((w) => w.value.toLowerCase() === data.pool2.quantity.split(' ')[1].toLowerCase()).image)
