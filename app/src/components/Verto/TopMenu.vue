@@ -31,6 +31,7 @@
           :color="$store.state.settings.lightMode === 'true' ? 'white':'black'"
           label="Quick access"
           flat
+          v-if="false"
         >
           <q-list
           :light="$store.state.settings.lightMode === 'false'"
@@ -73,6 +74,7 @@
           icon="upgrade"
           label="Import accounts"
           flat
+          v-if="false"
           :color="$store.state.settings.lightMode === 'true' ? 'white':'black'"
         >
           <q-list
@@ -149,7 +151,6 @@
         </a>
         <q-toggle
           v-model="lightMode"
-
           checked-icon="wb_sunny"
           @input="toggleLightDarkMode"
           color="grey"
@@ -168,6 +169,7 @@
             Light mode
           </q-tooltip>
         </q-toggle>
+        <span style="width: 140px"></span>
       </div>
     </div>
     <q-dialog v-model="temp">

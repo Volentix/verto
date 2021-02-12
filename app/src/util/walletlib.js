@@ -165,6 +165,34 @@ class Lib {
           balance: float
         }
       },
+      async dot (key, token) {
+        const { ApiPromise, WsProvider } = require('@polkadot/api')
+        const provider = new WsProvider('wss://rpc.polkadot.io/')
+        const api = await ApiPromise.create({ provider })
+
+        // let balance = await substrate.query.balances.freeBalance("EGVQCe73TpFyAZx5uKfE1222XfkT3BSKozjgcqzLBnc5eYo")
+        // balance.toNumber()
+        let { data: { free: amount } } = await api.query.system.account(key)
+        amount = amount / 10000000000
+        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=polkadot&vs_currencies=usd')).data.polkadot.usd
+        return {
+          amount,
+          usd
+        }
+      },
+      async ksm (key, token) {
+        const { ApiPromise, WsProvider } = require('@polkadot/api')
+        const provider = new WsProvider('wss://kusama-rpc.polkadot.io/')
+        const api = await ApiPromise.create({ provider })
+
+        let { data: { free: amount } } = await api.query.system.account(key)
+        amount = amount / 1000000000000
+        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=kusama&vs_currencies=usd')).data.kusama.usd
+        return {
+          amount,
+          usd
+        }
+      },
       async eth (key, token) {
         // const Web3 = require('web3')
         // const web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/54b0a9c16bc94aeb908616525203c9da"))
