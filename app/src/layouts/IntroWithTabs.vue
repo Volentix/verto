@@ -3,7 +3,6 @@
     <div class="layout-main-app">
       <div class="desktop-version" v-if="screenSize > 1024">
         <TopMenu />
-
         <LeftMenu />
         <div class="menu-left-wrapper"></div>
         <q-page-sticky position="bottom-right"  :offset="fabPos">
@@ -11,6 +10,7 @@
           v-model="fab"
           @click="showWizardAction()"
           label="Help Wizard"
+          outline
           label-position="right"
           color="purple"
           icon="help_outline"
@@ -105,6 +105,11 @@ export default {
   } */
   .q-page-sticky {
     z-index: 1000;
+    top: -10px;
+    right: 0px;
+    height: fit-content;
+    margin: 0px !important;
+    margin-right: 18px !important;
   }
   body{
     overflow: hidden;

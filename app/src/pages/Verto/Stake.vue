@@ -11,17 +11,18 @@
             </div>
           </div>
           <div class="col col-md-9">
-            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-              <div class="standard-content">
-                <h2 class="standard-content--title flex justify-start">{{$store.state.currentwallet.params.tokenID == 'eos' ? 'Staking / Unstaking' :  'Staking' }}</h2>
-                <div class="standard-content--body">
-                  <div class="standard-content--body__form">
-
-                     <VTXStakeStepper v-if="$store.state.currentwallet.params.tokenID == 'vtx'" />
-                     <EosStakeStepper v-else-if="$store.state.currentwallet.params.tokenID == 'eos'"/>
+            <div class="desktop-card-style apps-section" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+              <q-scroll-area :visible="true" class="q-pr-md" style="height: 98%;">
+                <div class="standard-content">
+                  <h2 class="standard-content--title flex justify-start">{{$store.state.currentwallet.params.tokenID == 'eos' ? 'Staking / Unstaking' :  'Staking' }}</h2>
+                  <div class="standard-content--body">
+                    <div class="standard-content--body__form">
+                      <VTXStakeStepper v-if="$store.state.currentwallet.params.tokenID == 'vtx'" />
+                      <EosStakeStepper v-else-if="$store.state.currentwallet.params.tokenID == 'eos'"/>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </q-scroll-area>
             </div>
           </div>
         </div>
@@ -41,6 +42,7 @@ import VTXStakeStepper from '../../components/Verto/Testnet/VTXStakeStepper'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import { osName } from 'mobile-device-detect'
 import Wallets from '../../components/Verto/Wallets'
+import { QScrollArea } from 'quasar'
 
 export default {
   components: {
@@ -48,7 +50,8 @@ export default {
     ProfileHeader,
     Wallets,
     EosStakeStepper,
-    VTXStakeStepper
+    VTXStakeStepper,
+    QScrollArea
   },
   data () {
     return {
@@ -96,8 +99,10 @@ export default {
     background: #E7E8E8;
     padding-top: 13vh;
     padding-left: 18vh;
-    padding-bottom: 50px;
-    padding-right: 2%;
+    padding-bottom: 0px;
+    padding-right: 18px;
+    position: relative;
+    overflow: hidden;
     @media screen and (min-width: 768px) {
       padding-top: 11vh;
       padding-bottom: 0px;
