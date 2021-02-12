@@ -193,4 +193,15 @@ class Bridge {
 }
 
 window.Bridge = new Bridge()
+
+/*
+
+    //From one transaction
+    await Bridge.getLatestTransactions('0xba5d0ebbcb85b77f6cbfbe2426ea0f63fef07424dbdb3f0ebb1f91e438528965')
+    await Bridge.sendVtxToAll(Bridge.transactions)
+
+    //From one transaction
+
+ */
+
 export default window.Bridge
