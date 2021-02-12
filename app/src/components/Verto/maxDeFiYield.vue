@@ -23,7 +23,7 @@
         </div>
         <div class="interest-wrapper">
           <span>at</span>
-          <span class="interest"><span class="text_pink">{{maxDeFiYield.roi}} %</span> <span class="text-grey">(Interest Rate)</span> <span class="text_pink">Width 1 Click</span></span>
+          <span class="interest"><span class="text_pink">{{maxDeFiYield.roi}} %</span> <span class="text-grey">(Interest Rate)</span> <span class="text_pink">With 1 Click</span></span>
            <!-- class="p-abs" -->
         </div>
       </div>

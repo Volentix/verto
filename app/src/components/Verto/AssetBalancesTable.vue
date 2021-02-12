@@ -6,16 +6,39 @@
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
-              <span class="imgs q-mr-lg" >
+              <span class="imgs">
                 <img :src="props.row.icon" alt="">
               </span>
-              <span class="column pairs">
-                <span class="pair">{{props.row.type.toUpperCase()}}</span>
+              <span class="flex items-center pairs">
+                <span class="pair q-pr-xs">{{props.row.type.toUpperCase()}}</span> <span class="text-grey"></span> <span class="q-pl-xs qmtxs current_price text-grey-8">($1.56<q-tooltip>Current price</q-tooltip>)</span>
               </span>
             </div>
           </q-td>
         </template>
-
+        <template v-slot:body-cell-amount="props">
+          <q-td :props="props" class="body-table-col">
+            <div class="col-3 flex items-center">
+              <span class="column items-start">
+                <span class="pair q-pr-xs allocation text-grey-8">35.12% <q-tooltip>% of Portfolio</q-tooltip></span>
+                <span class="pair q-pr-xs balance text-bold">
+                  {{formatNumber(props.row.amount, 2).split('.')[0]}}.<span class="text-grey-8">{{formatNumber(props.row.amount, 2).split('.')[1]}}</span>
+                  {{" "+props.row.type.toUpperCase()}}</span>
+              </span>
+            </div>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-usd="props">
+          <q-td :props="props" class="body-table-col">
+            <div class="col-3 flex items-center">
+              <span class="column items-start">
+                <span class="pair q-pr-xs allocation text-green">+1.29% ($4.48) <q-tooltip>Daily change</q-tooltip></span>
+                <span class="pair q-pr-xs balance text-bold">
+                  ${{formatNumber(props.row.usd, 2).split('.')[0]}}.<span class="text-grey-8">{{formatNumber(props.row.usd, 2).split('.')[1]}}</span>
+                </span>
+              </span>
+            </div>
+          </q-td>
+        </template>
         <template v-slot:top-right>
           <q-input borderless dense :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" filled debounce="300" v-model="filter" placeholder="Search">
             <template v-slot:append>
@@ -58,20 +81,20 @@ export default {
           sortable: true
         },
         {
-          name: 'usd',
-          align: 'left',
-          label: 'USD',
-          field: 'usd',
-          format: val => `$${this.formatNumber(val, 0)}`,
-          sortable: true
-        },
-        {
           name: 'amount',
           align: 'left',
-          label: 'Amount',
+          label: 'Balance',
           field: 'amount',
           sortable: true,
-          format: val => `${this.formatNumber(val, 8)}`
+          format: val => `${this.formatNumber(val, 2)}`
+        },
+        {
+          name: 'usd',
+          align: 'left',
+          label: 'USD Equivalent',
+          field: 'usd',
+          format: val => `${this.formatNumber(val, 2)}`,
+          sortable: true
         },
         {
           name: 'action',
@@ -92,6 +115,10 @@ export default {
     }
   },
   methods: {
+    formatNumber (number, tofix) {
+      const val = (number / 1).toFixed(tofix).replace(',', ' ')
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    },
     initTable () {
       this.assets = []
       JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).forEach((token, i) => {
@@ -138,23 +165,39 @@ export default {
 
 .desktop-card-style{
   box-shadow: none !important;
+  cursor: default;
   &:after{
     display: none !important;
   }
 }
+.desktop-card-style.current-investments .body-table-col .pairs{
+  margin-bottom: -2px;
+}
 .desktop-card-style.current-investments .body-table-col .pairs .pair {
     font-weight: 700;
     color: inherit;
-    margin-bottom: -2px;
+    font-size: 14px;
 }
-
+.current_price{
+  font-size: 12px;
+  &.qmtxs{
+    margin-top: 1px;
+  }
+}
+.allocation{
+  font-size: 12px;
+}
+.balance{
+    font-size: 14px;
+}
 .desktop-card-style.current-investments .body-table-col .pairs .value {
     color: #627797;
 }
 
 .desktop-card-style.current-investments .body-table-col .imgs {
     margin-top: 5px;
-    min-width: 30px;
+    min-width: 20px;
+    margin-right: -25px;
 }
 
 .desktop-card-style.current-investments .body-table-col .imgs img {

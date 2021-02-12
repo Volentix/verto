@@ -33,8 +33,9 @@
                       <img width="32" :src="getImage(transaction)" />
                     </div>
                     <div class="">
-                      <div class="">{{getAction(transaction)}}</div>
+                      <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{getAction(transaction)}}</div>
                       <div class="text-grey">{{transaction.time }}</div>
+
                     </div>
                   </div>
                 </div>
@@ -46,7 +47,8 @@
                           <img width="32" :src="transaction.image" class="" />
                         </div>
                         <div class="column">
-                          <div class=""><span class="">-{{transaction.amountFriendly}}</span> {{transaction.symbol}} </div>
+
+                          <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">-{{transaction.amountFriendly}}</span> {{transaction.symbol}} </div>
                           <div class="text-grey" v-if="transaction.usdAmount">
                           ${{transaction.usdAmount}}
                            <q-tooltip>
@@ -56,12 +58,13 @@
                         <div class="text-grey" v-else>
                           N/A
                         </div>
+
                         </div>
                       </div>
                     </div>
                     <div class="col col-6 flex justify-end">
                       <div class="column">
-                        <div class="">
+                        <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                           <div class="flex items-center" style="cursor: pointer;">
                             <img width="32" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADdElEQVR4Xu3doW4VURhF4bmSpAqFIiG4vkIFr4RrSJDga3gVPILHaJpU4TD18BCryc7NfPjNnK6zus8/l7nD5f72zb8j/Pn052tIH8evd99S/trDa34XAmwVIoAGSAbWBtUACX8PawANkCzSAAnfPqwBNECyUAMkfPuwBtAAyUINkPDtwxpAAyQLNUDCtw9rAA2QLNQACd8+rAE0QLJQAyR8+/C8AX6+/Z6eB6gGVgBPjy/TXfzw8SZdf83vQoC0fwcB4hmuAdoTUZWfBmgFoAHWZ5gZoD2TqQE0gLuA4oAh0BBY/MmPxRsCfQ6QBDQDJHyHuwB3AT4JTL9D9QxzG+g2MAlYw+4C3AUkh9ZHqCEwbZ8hcH4fawYYzwDxF2gu0NnXn4+AswNcn+GVPwEiQQKcHCABCJAI1A/C0sWP43AERIIa4OQACUCARMARMP4oOe3e0d9zSAACVAdT3hCY8GmAiO/6ARoCowLXDvDa1+8IOLnABCBA+2JI5Oefg+Pr9iv/y4+/X9L7AZ7vHuoa5AOB978/h/RxECDh24cJsN+D6QoIMMW/vzgB9nswXQEBpvj3FyfAfg+mKyDAFP/+4gTY78F0BQSY4t9fnAD7PZiugABT/PuLE2C/B9MVEGCKf39xAuz3YLoCAkzx7y+eBaivi68Irv2Zumtfv0fCosEEODlAAhAgEfDVMF8NSwLVsBkgEnQEnBwgAQiQCJgBzABJoBo2A0SCjoCTAyQAARIBM4AZIAlUw2aASNARcHKABCBAIjCfAe5v36T3A6Sf/hXCa4C1AV4BQforLgRI/PIbTtrVe5oAkaEGiABr3BHQCGqAxs8REPnluAZoCDVA46cBIr8c1wANoQZo/DRA5JfjGqAh1ACNnwaI/HJcAzSEGqDx0wCRX45rgIZQAzR+GiDyy3EN0BDOHwl7enxJP8GHjzcpX8PXvn4CRAMIcHKABCBAIrA+whwBafuOQwOcHCABCJAIOALcBiaBatgMEAk6Ak4OkAAESATMAGaAJFANmwEiQUfAyQESgACJgBnADJAEquE8A9QKfL57qD/DVefrf/hQG4QAY30IoAGSghog4duHNYAGSBZqgIRvH9YAGiBZqAESvn1YA2iAZKEGSPj2YQ2gAZKFGiDh24c1gAZIFmqAhG8f1gAaIFmoARK+fXjdAP8BXbztTvEVM2oAAAAASUVORK5CYII=" class="radius" />
                             <div class="q-pl-sm column">
@@ -80,7 +83,7 @@
               <div class="row items-center border-top">
                 <div class="col col-4 q-pl-xl">
                   <div class="text-bold text-grey">Fee</div>
-                  <div class="">
+                  <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
                       <span class="">{{transaction.gasTotal}}</span>&nbsp;
                       <span class="">ETH</span>
@@ -89,12 +92,12 @@
                 </div>
                 <div class="col col-4 q-pl-xl flex items-center">
                   <div class="column">
-                    <span class="text-bold text-grey">Transaction hash</span>
-                    <span>{{transaction.friendlyHash}}
+                    <span class="text-bold text-grey">Transaction hash</span>  <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
                      <q-tooltip>
                       {{transaction.hash}}
                     </q-tooltip>
                     </span>
+
                   </div>
                   <div class="flex items-center q-ml-md">
                       <q-btn color="white" round size="sm" @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
@@ -115,8 +118,9 @@
                       <img width="32" :src="getImage(transaction)" />
                     </div>
                     <div class="">
-                      <div class="">{{getAction(transaction)}}</div>
+                      <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{getAction(transaction)}}</div>
                       <div class="text-grey">{{transaction.time}}</div>
+
                     </div>
                   </div>
                 </div>
@@ -128,7 +132,8 @@
                           <img width="32" :src="transaction.subTransactions[0].image" class="" />
                         </div>
                         <div class="column">
-                          <div class=""><span class="">-{{transaction.subTransactions[0].amountFriendly}}</span> {{transaction.subTransactions[0].symbol}} </div>
+
+                          <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">-{{transaction.subTransactions[0].amountFriendly}}</span> {{transaction.subTransactions[0].symbol}} </div>
                           <div class="text-grey" v-if="transaction.subTransactions[0].usdAmount">
                           ${{transaction.subTransactions[0].usdAmount}}
                            <q-tooltip>
@@ -150,7 +155,7 @@
                           <img width="32" :src="transaction.subTransactions[1].image" class="" />
                         </div>
                         <div class="column">
-                          <div class=""><span class="">+{{transaction.subTransactions[1].amountFriendly}}</span> {{transaction.subTransactions[1].symbol}} </div>
+                          <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">+{{transaction.subTransactions[1].amountFriendly}}</span> {{transaction.subTransactions[1].symbol}} </div>
                          <div class="text-grey" v-if="transaction.subTransactions[1].usdAmount">
                           ${{transaction.subTransactions[1].usdAmount}}
                            <q-tooltip>
@@ -160,6 +165,7 @@
                         <div class="text-grey" v-else>
                           N/A
                         </div>
+
                         </div>
                       </div>
                     </div>
@@ -185,7 +191,7 @@
                 <div class="col col-8 q-pl-xl flex items-center">
                   <div class="">
                     <div class="text-bold text-grey">Fee</div>
-                    <div class="">
+                    <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                       <span>
                         <span class="">{{transaction.gasTotal}}</span>&nbsp;
                         <span class="">ETH</span>
@@ -194,7 +200,7 @@
                   </div>
                   <div class="q-pl-xl">
                     <div class="text-bold text-grey">Rate</div>
-                    <div class="">
+                    <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                       <span>
                         <span class="">1</span>&nbsp;
                         <span class="">{{transaction.subTransactions[0].symbol}}</span>
@@ -206,17 +212,16 @@
                 <div class="col col-4 q-pl-xl flex items-center">
                   <div class="column">
                     <span class="text-bold text-grey">Transaction hash</span>
-                     <span>{{transaction.friendlyHash}}
+                    <span :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
                      <q-tooltip>
                       {{transaction.hash}}
-                    </q-tooltip>
-                    </span>
+                    </q-tooltip></span>
                   </div>
                   <div class="flex items-center q-ml-md">
-                      <q-btn color="white" round size="sm"  @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
+                      <q-btn color="white" round size="sm"  @click="$clipboardWrite(transaction.hash)"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
                       <a :href="'https://etherscan.io/tx/'+transaction.hash" target="_blank">
-                      <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
-                       </a>
+                      <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
+                      </a>
                   </div>
                 </div>
               </div>
@@ -231,7 +236,7 @@
                       <img width="32" :src="getImage(transaction)" />
                     </div>
                     <div class="">
-                      <div class="">{{getAction(transaction)}}</div>
+                      <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{getAction(transaction)}}</div>
                       <div class="text-grey">{{transaction.time}}</div>
                     </div>
                   </div>
@@ -244,12 +249,12 @@
                           <img width="32" :src="transaction.image" class="" />
                         </div>
                         <div class="column">
-                          <div class=""><span class="">+{{transaction.amountFriendly}}</span> {{transaction.symbol}}
+                          <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">+{{transaction.amountFriendly}}</span> {{transaction.symbol}}
                           <q-tooltip>
                            The amount of {{transaction.symbol}} to be transferred to the recipient with the transaction
                          </q-tooltip>
                          </div>
-                          <div class="text-grey" v-if="transaction.usdAmount">
+                          <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}" v-if="transaction.usdAmount">
                           ${{transaction.usdAmount}}
                            <q-tooltip>
                            Estimated USD equivalent on Day of Txn
@@ -263,11 +268,11 @@
                     </div>
                     <div class="col col-3 flex justify-end">
                       <div class="column">
-                        <div class="">
+                        <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                           <div class="flex items-center" style="cursor: pointer;">
                             <img width="32" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADdElEQVR4Xu3doW4VURhF4bmSpAqFIiG4vkIFr4RrSJDga3gVPILHaJpU4TD18BCryc7NfPjNnK6zus8/l7nD5f72zb8j/Pn052tIH8evd99S/trDa34XAmwVIoAGSAbWBtUACX8PawANkCzSAAnfPqwBNECyUAMkfPuwBtAAyUINkPDtwxpAAyQLNUDCtw9rAA2QLNQACd8+rAE0QLJQAyR8+/C8AX6+/Z6eB6gGVgBPjy/TXfzw8SZdf83vQoC0fwcB4hmuAdoTUZWfBmgFoAHWZ5gZoD2TqQE0gLuA4oAh0BBY/MmPxRsCfQ6QBDQDJHyHuwB3AT4JTL9D9QxzG+g2MAlYw+4C3AUkh9ZHqCEwbZ8hcH4fawYYzwDxF2gu0NnXn4+AswNcn+GVPwEiQQKcHCABCJAI1A/C0sWP43AERIIa4OQACUCARMARMP4oOe3e0d9zSAACVAdT3hCY8GmAiO/6ARoCowLXDvDa1+8IOLnABCBA+2JI5Oefg+Pr9iv/y4+/X9L7AZ7vHuoa5AOB978/h/RxECDh24cJsN+D6QoIMMW/vzgB9nswXQEBpvj3FyfAfg+mKyDAFP/+4gTY78F0BQSY4t9fnAD7PZiugABT/PuLE2C/B9MVEGCKf39xAuz3YLoCAkzx7y+eBaivi68Irv2Zumtfv0fCosEEODlAAhAgEfDVMF8NSwLVsBkgEnQEnBwgAQiQCJgBzABJoBo2A0SCjoCTAyQAARIBM4AZIAlUw2aASNARcHKABCBAIjCfAe5v36T3A6Sf/hXCa4C1AV4BQforLgRI/PIbTtrVe5oAkaEGiABr3BHQCGqAxs8REPnluAZoCDVA46cBIr8c1wANoQZo/DRA5JfjGqAh1ACNnwaI/HJcAzSEGqDx0wCRX45rgIZQAzR+GiDyy3EN0BDOHwl7enxJP8GHjzcpX8PXvn4CRAMIcHKABCBAIrA+whwBafuOQwOcHCABCJAIOALcBiaBatgMEAk6Ak4OkAAESATMAGaAJFANmwEiQUfAyQESgACJgBnADJAEquE8A9QKfL57qD/DVefrf/hQG4QAY30IoAGSghog4duHNYAGSBZqgIRvH9YAGiBZqAESvn1YA2iAZKEGSPj2YQ2gAZKFGiDh24c1gAZIFmqAhG8f1gAaIFmoARK+fXjdAP8BXbztTvEVM2oAAAAASUVORK5CYII=" class="radius" />
                             <div class="q-pl-sm column">
-                              <div class="">From</div>
+                              <div  >From</div>
                               <span>{{transaction.friendlyFrom}}</span>
                             </div>
                           </div>
@@ -282,7 +287,7 @@
               <div class="row items-center border-top">
                 <div class="col col-4 q-pl-xl">
                   <div class="text-bold text-grey">Fee</div>
-                  <div class="">
+                  <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
                       <span class="">{{transaction.gasTotal}} ETH (${{transaction.usdFees}})</span>&nbsp;
                     </span>
@@ -291,7 +296,7 @@
                 <div class="col col-4 q-pl-xl flex items-center">
                   <div class="column">
                     <span class="text-bold text-grey">Transaction hash</span>
-                    <span>{{transaction.friendlyHash}}
+                    <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
                      <q-tooltip>
                       {{transaction.hash}}
                     </q-tooltip>
