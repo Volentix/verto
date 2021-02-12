@@ -311,6 +311,62 @@ class Lib {
           message
         }
       },
+      async dot (token, from, to, value, memo, key, contract) {
+        const { ApiPromise, WsProvider, Keyring } = require('@polkadot/api')
+        const provider = new WsProvider('wss://rpc.polkadot.io/')
+        const api = await ApiPromise.create({ provider })
+
+        const keyring = new Keyring({ type: 'sr25519' })
+        keyring.setSS58Format(0)
+        const mnemonic = store.state.currentwallet.config.mnemonic
+        const pair = keyring.createFromUri(mnemonic)
+
+        let message, success
+        try {
+          value = value * 10000000000
+          const transfer = api.tx.balances.transfer(to, value)
+          const hash = await transfer.signAndSend(pair)
+
+          message = 'https://polkadot.subscan.io/extrinsic/' + hash
+          success = true
+        } catch (err) {
+          message = err
+          success = false
+        }
+
+        return {
+          success,
+          message
+        }
+      },
+      async ksm (token, from, to, value, memo, key, contract) {
+        const { ApiPromise, WsProvider, Keyring } = require('@polkadot/api')
+        const provider = new WsProvider('wss://rpc.polkadot.io/')
+        const api = await ApiPromise.create({ provider })
+
+        const keyring = new Keyring({ type: 'sr25519' })
+        keyring.setSS58Format(2)
+        const mnemonic = store.state.currentwallet.config.mnemonic
+        const pair = keyring.createFromUri(mnemonic)
+
+        let message, success
+        try {
+          value = value * 1000000000000
+          const transfer = api.tx.balances.transfer(to, value)
+          const hash = await transfer.signAndSend(pair)
+
+          message = 'https://kusama.subscan.io/extrinsic/' + hash
+          success = true
+        } catch (err) {
+          message = err
+          success = false
+        }
+
+        return {
+          success,
+          message
+        }
+      },
       async eos (token, from, to, value, memo, key, contract) {
         let message, success
         try {
