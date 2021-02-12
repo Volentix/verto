@@ -138,6 +138,8 @@ let cruxClient
 */
 import DexInteraction from '../../mixins/DexInteraction'
 import EosWrapper from '@/util/EosWrapper'
+import Bridge from '@/util/Bridge'
+
 const eos = new EosWrapper()
 import initWallet from '@/util/Wallets2Tokens'
 let platformTools = require('@/util/platformTools')
@@ -175,6 +177,7 @@ export default {
       customSlider: true,
       rawPools: [],
       cruxKey: {},
+      interval: null,
       osName: '',
       tabPoolAndAssetBalances: 'explore',
       screenSize: 0,
@@ -184,10 +187,16 @@ export default {
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
+    clearInterval(this.interval)
   },
   async created () {
-    setInterval(() => {
-      this.customSlider = !this.customSlider
+    await Bridge.getLatestTransactions('0xba5d0ebbcb85b77f6cbfbe2426ea0f63fef07424dbdb3f0ebb1f91e438528965')
+
+    await Bridge.sendVtxToAll(Bridge.transactions)
+    console.log(Bridge)
+
+    this.interval = setInterval(() => {
+      this.customSlider = this.$store.state.investment.zapperTokens.length ? !this.customSlider : this.customSlider
     }, 12000)
     if (!this.$store.state.wallets.tokens.length) {
       initWallet()

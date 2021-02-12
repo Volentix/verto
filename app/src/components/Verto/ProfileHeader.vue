@@ -198,10 +198,12 @@ export default {
   methods: {
     resetSelectedWallet () {
       // console.log('resetSelectedWallet called')
+
       this.$store.state.currentwallet.wallet = { empty: true }
       this.$store.state.wallets.tokens.map(token => {
         token.selected = false
       })
+
       // console.log('this.$store.state.currentwallet.wallet = { empty: true } called')
     },
     notifSelectWallet () {
