@@ -5,5 +5,6 @@ export default {
   metamask: {
     tokens: [],
     accounts: []
-  }
+  },
+  history: []
 }
