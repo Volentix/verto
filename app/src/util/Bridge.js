@@ -4,8 +4,8 @@ let api = {}
 let web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
 class Bridge {
   constructor () {
-    this.payer = `berthonythe2`
-    this.eThReceivingAccount = `0x2C13f9722540a3b0a75Cc641005F4954CC7E8771`
+    this.payer = `vertofreecpu`
+    // this.eThReceivingAccount = `0x2C13f9722540a3b0a75Cc641005F4954CC7E8771`
     this.eThToVTXPrice = false
     this.transactions = []
     this.sendErrors = []
