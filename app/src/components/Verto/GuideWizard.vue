@@ -70,7 +70,7 @@
               Get started with Volentix.
             </q-card-section>
              <q-card-section class="text-body1  help-qst-title">
-              By Staking 10,000 VTX you will get a free EOS account and access the entire EOs ecosystem all in one click.
+              By Staking 10,000 VTX you will get a free EOS account and access the entire EOS ecosystem all in one click.
               <div class="flex">
                 <q-btn
                   rounded
