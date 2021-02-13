@@ -75,10 +75,10 @@
       <!-- {{$store.state.wallets.portfolioTotal}} -->
       <div class="profile-wrapper--header__action">
 
-        <q-btn unelevated v-if="screenSize <= 1024" :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth'].includes($store.state.currentwallet.wallet.chain))" to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
-        <q-btn unelevated v-if="screenSize > 1024" :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','btc'].includes($store.state.currentwallet.wallet.chain))" @click="!$store.state.currentwallet.wallet.empty ? goToSendPage() : notifSelectWallet()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
-        <q-btn unelevated v-if="screenSize <= 1024" to="/verto/wallets/receive" :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth'].includes($store.state.currentwallet.wallet.chain))" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
-        <q-btn unelevated v-if="screenSize > 1024" :disable="$store.state.currentwallet.wallet.type === 'verto'|| !(['eos','eth'].includes($store.state.currentwallet.wallet.chain)) " @click="!$store.state.currentwallet.wallet.empty ? goToReceivePage() : notifSelectWallet()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
+        <q-btn unelevated v-if="screenSize <= 1024" :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot'].includes($store.state.currentwallet.wallet.chain))" to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
+        <q-btn unelevated v-if="screenSize > 1024" :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','btc','dot'].includes($store.state.currentwallet.wallet.chain))" @click="!$store.state.currentwallet.wallet.empty ? goToSendPage() : notifSelectWallet()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
+        <q-btn unelevated v-if="screenSize <= 1024" to="/verto/wallets/receive" :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot'].includes($store.state.currentwallet.wallet.chain))" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
+        <q-btn unelevated v-if="screenSize > 1024" :disable="$store.state.currentwallet.wallet.type === 'verto'|| !(['eos','eth','dot'].includes($store.state.currentwallet.wallet.chain)) " @click="!$store.state.currentwallet.wallet.empty ? goToReceivePage() : notifSelectWallet()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
 
       </div>
     </div>
@@ -149,6 +149,7 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   async mounted () {
+    console.log(this.$store.state.currentwallet.wallet, '    console.log( this.$store.state.currentwallet.wallet )')
   },
   updated () {
     // this.selectedCoin = this.$store.state.currentwallet.wallet
@@ -160,8 +161,6 @@ export default {
   //   }
   // },
   async created () {
-    console.log('$store.state.wallets.portfolioTotal', this.$store.state.wallets.portfolioTotal)
-    // console.log('****_*_*_selectedCoin Profileheader****_*_*_', this.$store.state.currentwallet.wallet)
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
     this.tableData = await this.$store.state.wallets.tokens
