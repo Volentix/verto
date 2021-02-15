@@ -503,6 +503,7 @@ export default {
         key: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5),
         usd: w.usd,
         chain: 'eos',
+        privateKey: w.privateKey,
         total: w.total,
         image: w.icon,
         label: w.name
@@ -512,6 +513,7 @@ export default {
         key: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5),
         chain: 'eth',
         usd: w.usd,
+        privateKey: w.privateKey,
         total: w.total,
         image: w.icon,
         label: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5)
