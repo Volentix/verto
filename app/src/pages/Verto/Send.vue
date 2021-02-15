@@ -632,7 +632,10 @@ export default {
 
       // Pass gas details in memo
       if (this.currentAccount.chain === 'eth') {
-        this.sendMemo = this.gasSelected
+        this.sendMemo = {
+          gasData: this.gasSelected,
+          txData: null
+        }
       }
 
       Lib.send(

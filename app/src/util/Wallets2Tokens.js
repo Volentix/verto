@@ -19,7 +19,7 @@ class Wallets2Tokens {
 
     }) */
     this.tableData = [ ...store.state.currentwallet.config.keys ]
-    console.log(store.state.currentwallet, 'store.state.currentwallet.config.keys ')
+
     if (store.state.settings.network === 'testnet') {
       this.tableData = this.tableData.filter(o => o.origin === 'eos_testnet')
       this.tableData.map(async wallet => {
