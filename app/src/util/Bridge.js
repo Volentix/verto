@@ -2,14 +2,31 @@ import axios from 'axios'
 import Web3 from 'web3'
 let api = {}
 let web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+/*
+1 - Get latest outgoing transactions from the EOS account that is sending VTX (EOS)
+
+2 - Get the most recent transaction (EOS)
+      Get the memo from it and extract the ETH TX hash
+
+3 - Get the TX from the blockchain (ETH)
+
+   Check the status
+      Get the list of all transactions made after it (block number) where the data pass correspond to the format of someone wanting to get VTX
+      Get EOS account name from the transaction
+    Get ETH amount sent & convert it to VTX at market price
+        Create EOS account if doesn't exist
+  Send the VTX equivalent to that account
+
+ */
 class Bridge {
   constructor () {
-    this.payer = `vertofreecpu`
-    // this.eThReceivingAccount = `0x2C13f9722540a3b0a75Cc641005F4954CC7E8771`
+    this.payer = `vtxisforhodl`
+    this.eThReceivingAccount = `0xCD41C348DC78869A93bc9571F3c175e1997048B4`
     this.eThToVTXPrice = false
     this.transactions = []
     this.sendErrors = []
     this.successfullTransactions = []
+    this.firstTx = '0x1ea590c732563b6d83547ea8d01b1ea7b774d4c0975b5f4b2a2c6570581a1114'
   }
   sendVtxToAll (transactions) {
     this.sendErrors = []
@@ -56,7 +73,7 @@ class Bridge {
       return error
     }
   }
-  removeDuplicateTransactions () {
+  removeDuplicateTransactions (history) {
     let duplicates = []
 
     return history.map((el) => {
@@ -103,7 +120,7 @@ class Bridge {
           if (tx.from !== this.eThReceivingAccount && tx.input !== '0x' && !parseInt(tx.isError) && parseInt(tx.txreceipt_status)) {
             try {
               let data = web3.utils.hexToUtf8(tx.input)
-              if (!data) {
+              if (data) {
                 transaction.to = data
                 transaction.from = this.payer
                 transaction.memo = 'ethtovtx,' + tx.hash
@@ -125,17 +142,20 @@ class Bridge {
       }
     }
   }
-
-  getUnpaidTransactions (history) {
+  async getUnpaidTransactions (history) {
     let recentOutgoingTransaction = history.find(o => o.from === this.payer && o.typeTran === 'transfer' && o.memo.includes('tovtx'))
+
+    let lastETHTXHash = this.firstTx
+
     if (recentOutgoingTransaction) {
-      let lastETHTXHash = recentOutgoingTransaction.memo.split(',')[0]
-      this.getLatestTransactions(lastETHTXHash)
+      lastETHTXHash = recentOutgoingTransaction.memo.split(',')[0]
     }
+    await this.getLatestTransactions(lastETHTXHash)
   }
+  as
   async getHistory (key) {
     let actions = []
-    await axios.post('https://eos.greymass.com/v1/history/get_actions', {
+    await axios.post('https://cache.volentix.io/https://eos.greymass.com/v1/history/get_actions', {
       'account_name': key
     })
       .then(function (result) {
@@ -144,8 +164,8 @@ class Bridge {
             // console.log('split', a.action_trace.act.name === 'transfer' ? a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() : 'not transfer')
             if (
               a.action_trace.act.name === 'transfer' &&
-                a.action_trace.receiver === key &&
-                a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() === 'vtx') {
+        a.action_trace.receiver === key &&
+        a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() === 'vtx') {
               // console.log('walletlib history actions', a)
 
               let amount = ''
@@ -186,8 +206,9 @@ class Bridge {
     let data = (await this.getHistory(this.payer))
     if (data && data.hasOwnProperty('history')) {
       let history = data.history
+
       history = this.removeDuplicateTransactions(history)
-      this.getUnpaidTransactions(history)
+      await this.getUnpaidTransactions(history)
     }
   }
 }
@@ -196,11 +217,11 @@ window.Bridge = new Bridge()
 
 /*
 
-    //From one transaction
-    await Bridge.getLatestTransactions('0xba5d0ebbcb85b77f6cbfbe2426ea0f63fef07424dbdb3f0ebb1f91e438528965')
-    await Bridge.sendVtxToAll(Bridge.transactions)
+  //From one transaction
+  await Bridge.getLatestTransactions('0xba5d0ebbcb85b77f6cbfbe2426ea0f63fef07424dbdb3f0ebb1f91e438528965')
+  await Bridge.sendVtxToAll(Bridge.transactions)
 
-    //From one transaction
+  //From one transaction
 
  */
 

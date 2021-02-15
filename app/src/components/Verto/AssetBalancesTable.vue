@@ -10,7 +10,7 @@
                 <img :src="props.row.icon" alt="">
               </span>
               <span class="flex items-center pairs">
-                <span class="pair q-pr-xs">{{props.row.type.toUpperCase()}}</span> <span class="text-grey"></span> <span class="q-pl-xs qmtxs current_price text-grey-8">($1.56<q-tooltip>Current price</q-tooltip>)</span>
+                <span class="pair q-pr-xs">{{props.row.type.toUpperCase()}}</span> <span class="text-grey"></span> <span class="q-pl-xs qmtxs current_price text-grey-8">(${{formatNumber(props.row.rateUsd,2)}}<q-tooltip>Current price</q-tooltip>)</span>
               </span>
             </div>
           </q-td>
@@ -19,7 +19,7 @@
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
               <span class="column items-start">
-                <span class="pair q-pr-xs allocation text-grey-8">35.12% <q-tooltip>% of Portfolio</q-tooltip></span>
+                <span class="pair q-pr-xs allocation text-grey-8">{{ formatNumber(props.row.percentage, 2)}}% <q-tooltip>% of Portfolio</q-tooltip></span>
                 <span class="pair q-pr-xs balance text-bold">
                   {{formatNumber(props.row.amount, 2).split('.')[0]}}.<span class="text-grey-8">{{formatNumber(props.row.amount, 2).split('.')[1]}}</span>
                   {{" "+props.row.type.toUpperCase()}}</span>
@@ -116,7 +116,8 @@ export default {
   },
   methods: {
     formatNumber (number, tofix) {
-      const val = (number / 1).toFixed(tofix).replace(',', ' ')
+      let val = (number / 1).toFixed(tofix).replace(',', ' ')
+      val = isNaN(val) ? 'N/A' : val
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     },
     initTable () {
@@ -130,8 +131,12 @@ export default {
             console.log(index, token.amount, this.assets[index].amount, this.assets[index], this.assets, token.type)
             this.assets[index].amount += token.amount
             this.assets[index].usd += isNaN(token.usd) ? 0 : token.usd
+            this.assets[index].rateUsd = isNaN(token.usd) ? 0 : (token.usd / token.amount)
+            this.assets[index].percentage = this.assets[index].usd / parseFloat(this.$store.state.wallets.portfolioTotal) * 100
           } else {
+            token.percentage = token.usd / parseFloat(this.$store.state.wallets.portfolioTotal) * 100
             token.index = this.assets.length
+            token.rateUsd = isNaN(token.usd) ? 0 : (token.usd / token.amount)
             this.assets.push(token)
           }
           this.assets.sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))

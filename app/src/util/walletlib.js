@@ -40,8 +40,6 @@ class Lib {
     if (data) {
       rawTx.data = data
     }
-
-    rawTx.data = localWeb3.utils.utf8ToHex('berthonythe2')
     console.log(rawTx, 'rawTx')
     return rawTx
   }
@@ -250,7 +248,7 @@ class Lib {
     return wallet ? wallet(key, token) : {}
   }
 
-  send = async (walletType, token, from, to, value, memo, key, contract) => {
+  send = async (walletType, token, from, to, value, memo, key, contract, data) => {
     const wallet = {
       async btc (token, from, to, value, memo, key) {
         // const bitcore = require('bitcore-lib')
@@ -358,9 +356,8 @@ class Lib {
           return stringAmount + ' ' + token.toUpperCase()
         }
       },
-      async eth (token, from, to, value, gas, key, contract) {
-        // console.log('token, from, to, value, memo, key, contract', token, from, to, value, memo, key, contract)
-        // console.log('abiArray', abiArray)
+      async eth (token, from, to, value, info, key, contract) {
+        console.log('(token, from, to, value, gas, key, contract, info)', token, from, to, value, info, key, contract)
 
         const Web3 = require('web3')
         const EthereumTx = require('ethereumjs-tx').Transaction
@@ -379,8 +376,10 @@ class Lib {
 
           sendTo = contract
           web3Value = '0x00'
+        } else if (info && info.txData) {
+          data = web3.utils.utf8ToHex(info.txData)
         }
-        data = web3.utils.utf8ToHex('berthonythe2')
+
         let rawTx = {
           from,
           to: sendTo,
@@ -390,9 +389,9 @@ class Lib {
           chainId: 1
         }
 
-        if (gas && (typeof gas === 'object')) {
-          rawTx.gas = gas.gas
-          rawTx.gasPrice = gas.gasPrice
+        if (info && (typeof info === 'object') && info.gasData) {
+          rawTx.gas = info.gasData.gas
+          rawTx.gasPrice = info.gasData.gasPrice
         } else {
           let gasPrices = await getCurrentGasPrices()
           rawTx.gasPrice = gasPrices.high * 1000000000
@@ -445,6 +444,7 @@ class Lib {
           }
 
         */
+
         async function getCurrentGasPrices () {
           let response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json')
           let prices = {
@@ -479,6 +479,7 @@ class Lib {
               resolve({
                 message: process.env[store.state.settings.network].ETH_TRANSACTION_EXPLORER + hash,
                 success: true,
+                transaction_id: hash,
                 status: 'pending'
               })
 
