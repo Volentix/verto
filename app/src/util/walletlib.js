@@ -129,6 +129,68 @@ class Lib {
         return {
           history: actions
         }
+      },
+      async dot (token, key) {
+        let actions = []
+        await axios.post('https://polkadot.api.subscan.io/api/scan/transfers', {
+          'X-API-Key': key
+        })
+          .then(function (result) {
+            if (result.length !== 0) {
+              result.data.transfers.map(a => {
+                actions.push({
+                  date: date.formatDate(a.block_timestamp * 1000, 'YYYY-MM-DD HH:mm'),
+                  transID: a.hash,
+                  from: a.from,
+                  to: a.to,
+                  typeTran: a.module,
+                  desc: '',
+                  amount: (a.amount / 10000000000) + ' DOT'
+                })
+              })
+              return actions
+            }
+          }).catch(function (error) {
+            // TODO: Exception handling
+            // console.log('history error', error)
+            userError(error)
+            return false
+          })
+
+        return {
+          history: actions
+        }
+      },
+      async ksm (token, key) {
+        let actions = []
+        await axios.post('https://kusama.api.subscan.io/api/scan/transfers', {
+          'X-API-Key': key
+        })
+          .then(function (result) {
+            if (result.length !== 0) {
+              result.data.transfers.map(a => {
+                actions.push({
+                  date: date.formatDate(a.block_timestamp * 1000, 'YYYY-MM-DD HH:mm'),
+                  transID: a.hash,
+                  from: a.from,
+                  to: a.to,
+                  typeTran: a.module,
+                  desc: '',
+                  amount: (a.amount / 1000000000000) + ' KSM'
+                })
+              })
+              return actions
+            }
+          }).catch(function (error) {
+            // TODO: Exception handling
+            // console.log('history error', error)
+            userError(error)
+            return false
+          })
+
+        return {
+          history: actions
+        }
       }
     }[walletType]
 
