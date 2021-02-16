@@ -54,7 +54,7 @@
       <span class="version full-width text-center column">
         <span class="q-mb-md">{{version}}</span>
         <span class="q-pa-sm text-grey">
-          This app is in beta, please send us bug reports if you find any. <b><a target="_blank" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
+          This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-deep-purple-12" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
         </span>
 
       </span>
@@ -159,10 +159,10 @@ export default {
               &.q-router-link--active{
                 &.q-tab--active{
                   .svg-icon{
-                    fill: #4396df;
+                    fill: #7272FA;
                   }
                   .text-tab-name{
-                    color: #4396df;
+                    color: #7272FA;
                     font-weight: 600;
                   }
                 }
@@ -184,13 +184,13 @@ export default {
       background-color: #04111F;
       background: #04111F;
       .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab.q-router-link--active.q-tab--active .svg-icon{
-        fill: #57adf8;
+        fill: #7272FA;
       }
       .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab .svg-icon{
         fill: rgba(white, .8);
       }
       .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab.q-router-link--active.q-tab--active .text-tab-name{
-        color: #57adf8;
+        color: #7272FA;
       }
       .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab .text-tab-name{
         color: rgba(white, .8);
