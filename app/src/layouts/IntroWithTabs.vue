@@ -90,6 +90,7 @@ export default {
     /deep/ a{
       height: 40px;
       font-size: 14px;
+      color: #7272FA !important;
       .q-btn__wrapper{
         padding: 0px 10px;
         min-height: 36px;
