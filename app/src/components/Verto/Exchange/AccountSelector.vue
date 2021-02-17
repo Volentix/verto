@@ -1,56 +1,52 @@
 <template>
- <q-select
+  <q-select
+    :dark="$store.state.settings.lightMode === 'true'"
+    filled
+    dense
+    color="white"
+    :class="{'bg-indigo-1 text-black': $store.state.settings.lightMode === 'false'}"
+    @input="setAccount()"
+    v-model="accountOption"
+    :options="accountOptions">
+    <template v-slot:selected>
+      <q-item
+        :dark="$store.state.settings.lightMode === 'true'"
+        v-if="accountOption"
+        dense>
+        <q-item-section class="q-pr-sm">
+          <q-item-label caption class="ellipsis mw200 q-pt-xs text-black flex items-center">
+            <q-icon :color="accountOption.color" name="fiber_manual_record" class="q-mr-sm" />
+            <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':''">{{ accountOption.label }}</span>
+            <q-icon size="16px" class="q-ml-sm" :name="`img:${accountOption.image}`" />
+          </q-item-label>
+          </q-item-section>
+      </q-item>
 
-            :dark="$store.state.settings.lightMode === 'true'"
+    </template>
+    <template v-slot:option="scope">
+      <q-item
+        class="custom-menu"
+        v-bind="scope.itemProps"
+        v-on="scope.itemEvents"
 
-            filled
-            dense
-            color="white"
-             style="max-width:200px"
-            :class="{'bg-indigo-1 text-black': $store.state.settings.lightMode === 'false'}"
-            @input="setAccount()"
-            v-model="accountOption"
-            :options="accountOptions">
-              <template v-slot:selected>
-                <q-item
-                  :dark="$store.state.settings.lightMode === 'true'"
-                  v-if="accountOption"
-                  dense >
+      >
 
-                  <q-item-section class="q-pr-sm">
-                    <q-item-label caption class="ellipsis mw200 q-pt-xs text-black"><q-icon :color="accountOption.color" name="fiber_manual_record"  class="q-mr-sm" /> {{ accountOption.label }} <q-icon
-                     size="16px"
-                    :name="`img:${accountOption.image}`"
-                  />
-                    </q-item-label>
-                   </q-item-section>
-                </q-item>
+        <q-item-section>
+          <q-item-label caption class="ellipsis mw200 q-pt-xs flex"> <q-icon
+            size="16px"
+          :name="`img:${scope.opt.image}`"
+        />  <div style="width:110px" class="q-pl-sm">{{ scope.opt.label }}</div> <q-icon :color="scope.opt.color" name="fiber_manual_record"  :class="'q-mr-sm ellipsis mw200 q-pt-xs text-'+scope.opt.color" /> ${{ scope.opt.total ? scope.opt.total.toFixed(2) : 0 }}
+          </q-item-label>
 
-              </template>
-              <template v-slot:option="scope">
-                <q-item
-                  class="custom-menu"
-                  v-bind="scope.itemProps"
-                  v-on="scope.itemEvents"
-
-                >
-
-                  <q-item-section>
-                   <q-item-label caption class="ellipsis mw200 q-pt-xs flex"> <q-icon
-                     size="16px"
-                    :name="`img:${scope.opt.image}`"
-                  />  <div style="width:110px" class="q-pl-sm">{{ scope.opt.label }}</div> <q-icon :color="scope.opt.color" name="fiber_manual_record"  :class="'q-mr-sm ellipsis mw200 q-pt-xs text-'+scope.opt.color" /> ${{ scope.opt.total ? scope.opt.total.toFixed(2) : 0 }}
-                    </q-item-label>
-
-                  </q-item-section>
-                </q-item>
-              </template>
-              <!-- <template v-slot:append>
-                  <q-avatar>
-                      <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
-                  </q-avatar>
-              </template> -->
-            </q-select>
+        </q-item-section>
+      </q-item>
+    </template>
+    <!-- <template v-slot:append>
+        <q-avatar>
+            <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
+        </q-avatar>
+    </template> -->
+  </q-select>
 </template>
 <script>
 const palette = ['cyan', 'teal', 'light-blue', 'blue-1', 'pink', 'purple']
