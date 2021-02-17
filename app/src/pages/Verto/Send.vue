@@ -598,6 +598,8 @@ export default {
       }
     },
     checkGas () {
+      if (this.currentAccount.chain !== 'eth') return
+
       try {
         if (this.sendAmount && this.sendToResolved) {
           Lib.getRawETHTransaction(
