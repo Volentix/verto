@@ -576,7 +576,6 @@ export default {
     },
     getMaxBalance () {
       this.sendAmount = this.currentToken.amount
-      // console.log('getMaxBalance', this.sendAmount)
     },
     openModalFun: function (item) {
       if (this.currentAccount.privateKey) {
@@ -610,7 +609,7 @@ export default {
             this.privateKey.key,
             this.currentAccount.contract
           ).then((tx) => {
-            this.getGasOptions(tx)
+            this.getGasOptions(tx, 30000)
           })
         }
       } catch (error) {
