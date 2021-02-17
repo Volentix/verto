@@ -8,6 +8,8 @@ import settings from './settings'
 import wallets from './wallets'
 import investment from './investment'
 import vdexnode from './vdexnode'
+import tokens from './tokens'
+
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
@@ -17,7 +19,8 @@ const store = new Vuex.Store({
     settings,
     wallets,
     highestVTXAccount,
-    investment
+    investment,
+    tokens
   }
 })
 
@@ -32,8 +35,9 @@ if (process.env.DEV && module.hot) {
     const newSettings = require('./settings').default
     const newWallets = require('./wallets').default
     const investment = require('./investment').default
+    const tokens = require('./tokens').default
 
-    store.hotUpdate({ modules: { vdexnode: vdexnode, investment: investment, currentwallet: newCurrentwallet, highestVTXAccount: newHighestVTXAccount, settings: newSettings, wallets: newWallets } })
+    store.hotUpdate({ modules: { tokens: tokens, vdexnode: vdexnode, investment: investment, currentwallet: newCurrentwallet, highestVTXAccount: newHighestVTXAccount, settings: newSettings, wallets: newWallets } })
   })
 }
 
