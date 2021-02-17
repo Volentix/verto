@@ -276,7 +276,7 @@
                   <DebtsTable class="minHeight2 DebtsTable" v-else-if="menu == 'debts'"/>
                   <TransactionsTable class="minHeight2" v-else-if="menu == 'transactions'"/>
                   <InvestmentsOpportunitiesTable class="minHeight2" v-else-if="menu == 'staking'"/>
-                  <Oneinch class="q-pl-md q-pb-sm accountOptionOneinch" v-show="menu == 'swap'" />
+                  <Oneinch v-if="chain == 'eth'" class="q-pl-md q-pb-sm accountOptionOneinch" v-show="menu == 'swap'" />
                 </div>
                 <div v-show="chain == 'eos'">
                   <Swapeos class="q-pl-md q-pb-sm minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'swap' || menu == 'add_liquidity' || menu == 'liquidity'" />
@@ -500,23 +500,27 @@ export default {
 
       let eosWallets = tableData.filter(w => w.chain === 'eos' && w.type === 'eos' && this.accountOptions.push({
         value: w.name,
-        key: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5),
+        key: w.key,
+        label: w.name,
         usd: w.usd,
         chain: 'eos',
         privateKey: w.privateKey,
         total: w.total,
         image: w.icon,
-        label: w.name
+        name: w.name,
+        color: 'red'
       }))
       let ethACcounts = tableData.filter(w => w.chain === 'eth' && w.type === 'eth' && this.accountOptions.push({
         value: w.key,
-        key: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5),
         chain: 'eth',
+        key: w.key,
         usd: w.usd,
         privateKey: w.privateKey,
         total: w.total,
         image: w.icon,
-        label: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5)
+        label: w.key.substring(0, 10) + '...' + w.key.substr(w.key.length - 5),
+        color: 'green'
+
       }))
       if (ethACcounts.length) {
         this.getMaxDeFiYield()
@@ -551,9 +555,6 @@ export default {
         this.testnetDialog = true
       }
     },
-    showConsole (data) {
-
-    },
     switchChain () {
       let tabs = ['swap', 'investments', 'liquidity']
       this.accountOption = this.accountOptions.find(w => w.chain === this.chain)
@@ -561,7 +562,9 @@ export default {
         if (!tabs.includes(this.menu)) {
           this.menu = 'liquidity'
         }
+
         this.$store.commit('investment/setDefaultAccount', this.accountOption)
+        this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
       } else {
         if (this.menu === 'add_liquidity') this.menu = 'liquidity'
         this.getAccountInformation(this.accountOption)
@@ -591,6 +594,8 @@ export default {
       let account = this.accountOption
 
       this.$store.commit('investment/resetAccountDetails', account)
+      console.log(this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key), 'this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key)')
+      this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
 
       if (account.chain !== 'eth') return
 
