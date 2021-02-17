@@ -50,6 +50,104 @@
                 </q-card-section>
               </q-card>
             </q-dialog>
+            <q-dialog v-model="slippageDialog">
+              <q-card :dark="$store.state.settings.lightMode === 'true'" class="q-pa-md">
+                <q-card-section>
+                  <div class="text-h6 text-bold">Price slippage</div>
+                </q-card-section>
+                <q-card-section class="text-16">
+                  The actual swap price rose by: <span class="text-red">6.87%</span><br><br>
+                  Slippage description:
+                  Affected by the size of the liquidity pool,
+                  the actual swap price will rise to a certain extent,
+                  and the received tokens by swapping will decrease accordingly.
+                  The rising ratio is called slippage.
+                  <span class="text-red">The higher the slippage, the less token amount you can swap.</span><br><br>
+                  <div class="text-grey text-bold pointer" @click="slippageDialog = false, slippageTransactionSettingsDialog = true">Transaction settings ></div>
+                </q-card-section>
+                <q-card-actions align="right" class="q-pr-md q-pb-md">
+                  <q-btn unelevated label="Close" outline rounded no-caps color="grey" v-close-popup />
+                </q-card-actions>
+              </q-card>
+            </q-dialog>
+            <q-dialog v-model="slippageTransactionSettingsDialog">
+              <q-card :dark="$store.state.settings.lightMode === 'true'" class="q-pa-md">
+                <q-card-section>
+                  <div class="text-h6 text-bold">Transaction settings</div>
+                </q-card-section>
+                <q-card-section class="text-16">
+                  <q-list :dark="$store.state.settings.lightMode === 'true'" separator>
+                    <q-item tag="label">
+                      <q-item-section>
+                        <q-item-label class="q-mb-sm">Multi-path swap</q-item-label>
+                        <q-item-label caption>The system will match you with the best-priced swap path, ensuring that you can still get more tokens after deducting the fees.</q-item-label>
+                      </q-item-section>
+                      <q-item-section side top>
+                        <q-toggle color="green" v-model="notif1" val="friend" />
+                      </q-item-section>
+                    </q-item>
+                    <q-item tag="label">
+                      <q-item-section>
+                        <q-item-label class="q-mb-sm">Slippage protection: 3%</q-item-label>
+                        <q-item-label caption>Before the swap request is submitted, if the swap price slippage exceeds the slippage protection range, the transaction will require your second confirmation.</q-item-label>
+                      </q-item-section>
+                      <q-item-section side top>
+                        <q-btn flat color="white" @click="slippageTransactionSettingsDialog = false, slippageProtectionDialog = true" text-color="grey" class="text-bold" no-caps label="Set" />
+                      </q-item-section>
+                    </q-item>
+                    <q-item tag="label">
+                      <q-item-section>
+                        <q-item-label class="q-mb-sm">Transaction price protection: 3%</q-item-label>
+                        <q-item-label caption>After the swap request is submitted, if the proportion of actual price that rose again exceeds the protection range of dealt price, the transaction will be automatically cancelled.</q-item-label>
+                      </q-item-section>
+                      <q-item-section side top>
+                        <q-btn flat color="white" text-color="grey" class="text-bold" no-caps label="Set" />
+                      </q-item-section>
+                    </q-item>
+                    <q-item tag="label">
+                      <q-item-section>
+                        <q-item-label class="q-mb-sm">CPU free: 0 times remaining today</q-item-label>
+                        <q-item-label caption>Turn on CPU-free operation, you can operate CPU-free daily 5 times, UpgradeVIP get more times. Supports CPU free operation in the following wallets: LeafWallet、Scatter</q-item-label>
+                      </q-item-section>
+                      <q-item-section side top>
+                        <q-toggle color="green" v-model="notif2" val="friend" />
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-card-section>
+                <q-card-actions align="right" class="q-pr-md q-pb-md">
+                  <q-btn unelevated label="Close" outline rounded no-caps color="grey" v-close-popup />
+                </q-card-actions>
+              </q-card>
+            </q-dialog>
+            <q-dialog v-model="slippageProtectionDialog">
+              <q-card :dark="$store.state.settings.lightMode === 'true'" class="q-pa-md">
+                <q-card-section>
+                  <div class="text-h6 text-bold">Slippage protection</div>
+                </q-card-section>
+                <q-card-section class="text-16">
+                  Before the swap request is submitted, if the swap price slippage exceeds the slippage protection range, the transaction will require your second confirmation.
+                  <br><br>
+                  Slippage protection value
+                  <div class="row q-mt-md q-mb-lg full-width">
+                    <div class="col col-4 flex flex-center q-pr-md">
+                      <q-btn outline unelevated :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" class="full-width" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" label="3%" />
+                    </div>
+                    <div class="col col-4 flex flex-center q-pl-md q-pr-md">
+                      <q-btn outline unelevated :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" class="full-width" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" label="5%" />
+                    </div>
+                    <div class="col col-4 flex flex-center q-pl-md">
+                      <q-btn outline unelevated :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" class="full-width" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" label="custom %" />
+                    </div>
+                  </div>
+                </q-card-section>
+                <q-card-actions align="right" class="q-pr-md q-pb-md">
+                  <q-btn unelevated outline rounded color="white" no-caps class="confirm-purple q-pl-md q-pr-md" text-color="black" label="Confirm" />
+                  <q-btn unelevated label="Cancel" @click="slippageProtectionDialog = false, slippageTransactionSettingsDialog = true" class="q-pl-sm q-pr-sm" outline rounded no-caps color="grey" v-close-popup />
+                </q-card-actions>
+              </q-card>
+            </q-dialog>
+
             <!-- Vdex component -->
             <div class="">
               <div class="chain-tools-wrapper--list open">
@@ -249,7 +347,9 @@
                                 {{ error }}
                               </span>
                             </div>
-
+                            <div class="slippage-wrapper text-red">
+                                <span @click="slippageDialog = true" class="flex items-center pointer">Slippage: 6.87% <q-icon name="o_info" class="q-ml-sm" size="xs" /></span>
+                            </div>
                             <q-btn v-if="error" unelevated :disable="true" color="grey-4" text-color="black" :label="error" class="text-capitalize invalid_btn full-width" />
 
                             <q-btn
@@ -440,6 +540,11 @@ export default {
   props: ['disableDestinationCoin', 'crossChain'],
   data () {
     return {
+      slippageDialog: false,
+      notif1: true,
+      notif2: true,
+      slippageTransactionSettingsDialog: false,
+      slippageProtectionDialog: false,
       name: 'Swapeos',
       openModal: false,
       getPassword: false,
@@ -2224,5 +2329,22 @@ export default {
   /deep/ .q-tabs {
     border-radius: 8px;
   }
+}
+.slippage-wrapper{
+  float: left;
+  margin-top: 20px;
+  font-size: 14px;
+  font-weight: $regular;
+  padding-left: 15px;
+  position: relative;
+}
+.pointer{
+  cursor: pointer;
+}
+.text-16{
+  font-size: 16px;
+}
+/deep/ .confirm-purple{
+  color: #7272FA !important;
 }
 </style>

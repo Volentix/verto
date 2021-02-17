@@ -306,7 +306,7 @@
                                     <div class="pay-wrapper column">
                                         <span class="label">you pay</span>
                                         <span class="value">
-                                            <q-input ref="depositQuantity" @input="quantityFromDeposit()" :suffix="depositCoin.value.toUpperCase()" rounded class="full-width pl0" flat v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']" />
+                                            <q-input :dark="$store.state.settings.lightMode === 'true'" ref="depositQuantity" @input="quantityFromDeposit()" :suffix="depositCoin.value.toUpperCase()" rounded class="full-width pl0" flat v-model="depositQuantity" type="number" :disabled="!rateData" :loading="!rateData" :rules="[ val => val >= rateData.limitMinDepositCoin || 'This is less than the minimum allowed', val => val < rateData.limitMaxDepositCoin || 'This is more than the maximum allowed']" />
                                         </span>
                                     </div>
                                     <q-btn flat unelevated class="exchange-btn" @click="switchAmounts()" text-color="black">
@@ -339,7 +339,7 @@
                                 <span v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" class="lab-input">From</span>
                                 <q-select v-show="fromCoin === null || (fromCoin.type !== 'new_public_key')" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator rounded outlined class="select-input" @input="checkGetPairs()" v-model="fromCoin" :options="depositCoinOptions">
                                     <template v-slot:option="scope">
-                                        <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                        <q-item :dark="$store.state.settings.lightMode === 'true'" class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                             <q-item-section avatar>
                                                 <q-icon class="option--avatar option--avatar" :class="scope.opt.value" :name="`img:${scope.opt.image}`" />
                                             </q-item-section>
@@ -350,7 +350,7 @@
                                         </q-item>
                                     </template>
                                     <template v-slot:selected>
-                                        <q-item v-if="fromCoin">
+                                        <q-item :dark="$store.state.settings.lightMode === 'true'" v-if="fromCoin">
                                             <q-item-section avatar>
                                                 <q-icon class="option--avatar option--avatar__custom" :name="`img:${fromCoin.image}`" />
                                             </q-item-section>
@@ -2446,12 +2446,33 @@ export default {
     }
 }
 .dark-theme{
-    .trade-component{
-        .prototype{
-            .you-receive {
-                background-color: #04111F;
-                border: 1px solid #627797;
+    .trade-component {
+        .prototype .head{
+            color: #FFF;
+            border-bottom: 1px solid rgba(#CCC, .3);
+            margin-bottom: 40px;
+        }
+        .prototype .you-receive-head,
+        .prototype .you-pay-head{
+            color: #FFF;
+        }
+        .prototype .you-receive{
+            background-color: rgba(white, .05);
+            .swap_vert{
+            background-color: #04111F !important;
             }
+        }
+        .prototype .you-receive .chose_accounts{
+            background-color: #FFF !important;
+            font-size: 14px !important;
+            color: #04111F !important;
+            border-radius: 40px;
+            margin-top: 40px;
+            height: 36px;
+            font-weight: 400;
+            width: 150px !important;
+            letter-spacing: .3px;
+            float: right;
         }
     }
 }

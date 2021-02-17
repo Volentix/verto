@@ -1,54 +1,51 @@
 <template>
- <q-select
+  <q-select
+    :dark="$store.state.settings.lightMode === 'true'"
+    filled
+    dense
+    color="white"
+    style="max-width:200px"
+    :class="{'bg-indigo-1 text-black': $store.state.settings.lightMode === 'false'}"
+    @input="setAccount()"
+    v-model="accountOption"
+    :options="accountOptions">
+    <template v-slot:selected>
+      <q-item
+        :dark="$store.state.settings.lightMode === 'true'"
+        v-if="accountOption"
+        dense >
+        <q-item-section
+          class="q-pr-sm">
+          <q-item-label caption class="ellipsis mw200 q-pt-xs text-black"><q-icon :color="accountOption.color" name="fiber_manual_record"  class="q-mr-sm" />
+          <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':''">{{ accountOption.label }}</span>
+          </q-item-label>
+          </q-item-section>
+      </q-item>
+    </template>
+    <template v-slot:option="scope">
+      <q-item
+        :dark="$store.state.settings.lightMode === 'true'"
+        class="custom-menu"
+        v-bind="scope.itemProps"
+        v-on="scope.itemEvents"
+      >
+        <q-item-section>
+          <q-item-label caption class="ellipsis mw200 q-pt-xs "> <q-icon
 
-            :dark="$store.state.settings.lightMode === 'true'"
-
-            filled
-            dense
-            color="white"
-             style="max-width:200px"
-            :class="{'bg-indigo-1 text-black': $store.state.settings.lightMode === 'false'}"
-            @input="setAccount()"
-            v-model="accountOption"
-            :options="accountOptions">
-              <template v-slot:selected>
-                <q-item
-                  :dark="$store.state.settings.lightMode === 'true'"
-                  v-if="accountOption"
-                  dense >
-
-                  <q-item-section class="q-pr-sm">
-                    <q-item-label caption class="ellipsis mw200 q-pt-xs text-black"><q-icon :color="accountOption.color" name="fiber_manual_record"  class="q-mr-sm" /> {{ accountOption.label }}
-                    </q-item-label>
-                   </q-item-section>
-                </q-item>
-
-              </template>
-              <template v-slot:option="scope">
-                <q-item
-                  class="custom-menu"
-                  v-bind="scope.itemProps"
-                  v-on="scope.itemEvents"
-
-                >
-
-                  <q-item-section>
-                   <q-item-label caption class="ellipsis mw200 q-pt-xs "> <q-icon
-
-                    :name="`img:${scope.opt.image}`"
-                  />  {{ scope.opt.label }}
-                    </q-item-label>
-                   <q-item-label caption :class="'ellipsis mw200 q-pt-xs text-'+scope.opt.color"><q-icon :color="scope.opt.color" name="fiber_manual_record"  class="q-mr-sm" />- ${{ scope.opt.total.toFixed(2)  }}
-                    </q-item-label>
-                  </q-item-section>
-                </q-item>
-              </template>
-              <!-- <template v-slot:append>
-                  <q-avatar>
-                      <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
-                  </q-avatar>
-              </template> -->
-            </q-select>
+          :name="`img:${scope.opt.image}`"
+        />  {{ scope.opt.label }}
+          </q-item-label>
+          <q-item-label caption :class="'ellipsis mw200 q-pt-xs text-'+scope.opt.color"><q-icon :color="scope.opt.color" name="fiber_manual_record"  class="q-mr-sm" />- ${{ scope.opt.total.toFixed(2)  }}
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+    </template>
+    <!-- <template v-slot:append>
+        <q-avatar>
+            <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
+        </q-avatar>
+    </template> -->
+  </q-select>
 </template>
 <script>
 const palette = ['cyan', 'teal', 'light-blue', 'blue-1', 'pink', 'purple']
