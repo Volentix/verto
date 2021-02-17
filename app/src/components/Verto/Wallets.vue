@@ -227,9 +227,10 @@
             <q-scroll-area :visible="true" ref="walletsScrollArea" class="walletsScrollArea q-mr-sm q-ml-xs" :class="{'short' : $store.state.currentwallet.wallet.empty, 'long' : !$store.state.currentwallet.wallet.empty}" :style="$store.state.currentwallet.wallet.empty ? 'height: 297px;': 'height: 334px;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty" class="all-wallets">
+
                      <q-item  v-show="!hideEosSetup"  class="highlight on-top" dense>
                         <q-item-section @click="hideEOSSetup()" class="text-center  cursor-pointer q-py-sm">
-                        <q-item-label class="text-center">Setup later <q-icon flat label="Yes" name="close" size="sm" /> </q-item-label>
+                        <q-item-label class="text-center">Setup later<q-icon flat label="Yes" name="close" size="sm" /> </q-item-label>
                         </q-item-section>
                     </q-item>
                      <q-item v-show="!hideEosSetup" class="on-top" v-for="(item) in $store.state.wallets.tokens.filter(f => f.type == 'verto' && f.chain == 'eos' && !f.hidden && !f.disabled)" :class="[item.selected ? 'selected' : '', 'highlight']" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
@@ -737,6 +738,10 @@ export default {
   },
   async mounted () {
     this.hideEosSetup = localStorage.getItem('hideEosSetup')
+
+    if (!this.hideEosSetup) {
+      this.hideEosSetup = !this.$store.state.wallets.tokens.find(f => f.type === 'verto' && f.chain === 'eos' && !f.hidden && !f.disabled)
+    }
   },
   async updated () {
     // //console.log('updated')
