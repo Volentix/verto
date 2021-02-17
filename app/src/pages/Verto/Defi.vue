@@ -732,14 +732,15 @@ export default {
         }
       }
       .prototype .you-receive .chose_accounts{
-        // background-color: #FFF !important;
-        font-size: 16px !important;
+        font-size: 14px !important;
+        font-weight: 400;
         // font-family: $Franklin !important;
         // color: #04111F !important;
         border-radius: 40px;
         margin-top: 40px;
-        height: 54px;
-        width: fit-content !important;
+        width: 150px !important;
+        height: 36px;
+        letter-spacing: .3px;
         float: right;
       }
     }
@@ -776,13 +777,15 @@ export default {
     }
     .trade-component .prototype .you-receive .chose_accounts{
       // background-color: #FFF !important;
-      font-size: 16px !important;
+      font-size: 14px !important;
+      font-weight: 400;
       // font-family: $Franklin !important;
-      color: #04111F !important;
+      // color: #04111F !important;
       border-radius: 40px;
       margin-top: 40px;
-      height: 54px;
-      width: fit-content !important;
+      width: 150px !important;
+      height: 36px;
+      letter-spacing: .3px;
       float: right;
     }
     .trade-component .prototype .you-receive-head,
@@ -923,13 +926,14 @@ export default {
       }
       .prototype .you-receive .chose_accounts{
         background-color: #FFF !important;
-        font-size: 16px !important;
-        // font-family: $Franklin !important;
+        font-size: 14px !important;
         color: #04111F !important;
         border-radius: 40px;
         margin-top: 40px;
-        height: 54px;
-        width: fit-content !important;
+        height: 36px;
+        font-weight: 400;
+        width: 150px !important;
+        letter-spacing: .3px;
         float: right;
       }
     }
@@ -957,14 +961,15 @@ export default {
     }
     .trade-component .prototype .you-receive .chose_accounts{
       background-color: #FFF !important;
-      font-size: 16px !important;
-      // font-family: $Franklin !important;
-      color: #04111F !important;
-      border-radius: 40px;
-      margin-top: 40px;
-      height: 54px;
-      width: fit-content !important;
-      float: right;
+        font-size: 14px !important;
+        color: #04111F !important;
+        border-radius: 40px;
+        margin-top: 40px;
+        height: 36px;
+        font-weight: 400;
+        width: 150px !important;
+        letter-spacing: .3px;
+        float: right;
     }
     .trade-component .prototype .you-receive-head,
     .trade-component .prototype .you-pay-head{
@@ -1717,13 +1722,15 @@ export default {
 .q-card{
   .chose_accounts{
     background-color: #FFF !important;
-    font-size: 16px !important;
-    font-family: $Franklin !important;
+    font-size: 14px !important;
     color: #04111F !important;
     border-radius: 40px;
-    margin-top: 0px;
-    height: 54px;
-    width: fit-content !important;
+    margin-top: 40px;
+    height: 36px;
+    font-weight: 400;
+    width: 150px !important;
+    letter-spacing: .3px;
+    float: right;
   }
 }
 /deep/ .q-card{

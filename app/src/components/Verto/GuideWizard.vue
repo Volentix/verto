@@ -110,12 +110,12 @@
             >
               <span class="text-body2 subtitle flex items-center q-mb-sm" v-if="list.items.length && index === 1">
                 Choose chain :
-                <q-btn :flat="chainToggle === 'eth'" color="white" text-color="black" class="q-ml-sm q-mr-sm" :outline="chainToggle === 'eos'" @click="chainToggle = 'eos'">
+                <q-btn :flat="chainToggle === 'eth'" color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" class="q-ml-sm q-mr-sm" :outline="chainToggle === 'eos' || chainToggle === ''" @click="chainToggle = 'eos'">
                   <div class="flex items-center">
                     <q-icon class="q-mrsm" :name="`img:https://files.coinswitch.co/public/coins/eos.png`" /> EOS
                   </div>
                 </q-btn>
-                <q-btn :flat="chainToggle === 'eos'" color="white" text-color="black" :outline="chainToggle === 'eth'" @click="chainToggle = 'eth'">
+                <q-btn :flat="chainToggle === 'eos'" color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" :outline="chainToggle === 'eth' || chainToggle === ''" @click="chainToggle = 'eth'">
                   <div class="flex items-center">
                     <q-icon class="q-mrsm" :name="`img:https://files.coinswitch.co/public/coins/eth.png`" /> ETH
                   </div>
@@ -314,7 +314,7 @@ export default {
   },
   data () {
     return {
-      chainToggle: 'eos',
+      chainToggle: '',
       dialog: true,
       accountDropdown: false,
       active: true,
