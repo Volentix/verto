@@ -4,7 +4,6 @@
     filled
     dense
     color="white"
-    style="max-width:200px"
     :class="{'bg-indigo-1 text-black': $store.state.settings.lightMode === 'false'}"
     @input="setAccount()"
     v-model="accountOption"
@@ -13,30 +12,32 @@
       <q-item
         :dark="$store.state.settings.lightMode === 'true'"
         v-if="accountOption"
-        dense >
-        <q-item-section
-          class="q-pr-sm">
-          <q-item-label caption class="ellipsis mw200 q-pt-xs text-black"><q-icon :color="accountOption.color" name="fiber_manual_record"  class="q-mr-sm" />
-          <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':''">{{ accountOption.label }}</span>
+        dense>
+        <q-item-section class="q-pr-sm">
+          <q-item-label caption class="ellipsis mw200 q-pt-xs text-black flex items-center">
+            <q-icon :color="accountOption.color" name="fiber_manual_record" class="q-mr-sm" />
+            <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':''">{{ accountOption.label }}</span>
+            <q-icon size="16px" class="q-ml-sm" :name="`img:${accountOption.image}`" />
           </q-item-label>
           </q-item-section>
       </q-item>
+
     </template>
     <template v-slot:option="scope">
       <q-item
-        :dark="$store.state.settings.lightMode === 'true'"
         class="custom-menu"
         v-bind="scope.itemProps"
         v-on="scope.itemEvents"
-      >
-        <q-item-section>
-          <q-item-label caption class="ellipsis mw200 q-pt-xs "> <q-icon
 
+      >
+
+        <q-item-section>
+          <q-item-label caption class="ellipsis mw200 q-pt-xs flex"> <q-icon
+            size="16px"
           :name="`img:${scope.opt.image}`"
-        />  {{ scope.opt.label }}
+        />  <div style="width:110px" class="q-pl-sm">{{ scope.opt.label }}</div> <q-icon :color="scope.opt.color" name="fiber_manual_record"  :class="'q-mr-sm ellipsis mw200 q-pt-xs text-'+scope.opt.color" /> ${{ scope.opt.total ? scope.opt.total.toFixed(2) : 0 }}
           </q-item-label>
-          <q-item-label caption :class="'ellipsis mw200 q-pt-xs text-'+scope.opt.color"><q-icon :color="scope.opt.color" name="fiber_manual_record"  class="q-mr-sm" />- ${{ scope.opt.total.toFixed(2)  }}
-          </q-item-label>
+
         </q-item-section>
       </q-item>
     </template>
@@ -50,7 +51,7 @@
 <script>
 const palette = ['cyan', 'teal', 'light-blue', 'blue-1', 'pink', 'purple']
 export default {
-  props: ['chain'],
+  props: ['chain', 'showAllWallets'],
   data () {
     return {
       accountOptions: [],
@@ -83,6 +84,20 @@ export default {
       label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
       color: palette[this.accountOptions.length]
     }))
+
+    if (this.showAllWallets) {
+      tableData.filter(w => w.chain !== 'eth' && w.chain !== 'eos' && this.accountOptions.push({
+        value: w.key,
+        key: w.key,
+        chain: w.chain,
+        type: w.type,
+        usd: w.usd,
+        total: w.total,
+        image: w.icon,
+        label: w.key.substring(0, 6).toLowerCase() + '...' + w.key.substr(w.key.length - 5).toLowerCase(),
+        color: palette[this.accountOptions.length]
+      }))
+    }
 
     if (this.$store.state.wallets.metamask.accounts.length) {
       this.accountOptions.push(this.$store.state.wallets.metamask.accounts.find(o => o.type === 'eth' && o.chain === 'eth'))
