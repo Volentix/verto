@@ -1,5 +1,5 @@
 <template>
-<div class="" v-if="depositCoin && destinationCoin" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+<div class="" v-if="depositCoin && depositCoin.value && destinationCoin" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <!-- $q.screen.width > 1024 && -->
     <div class="row">
         <div class="col col-md-12">
@@ -35,13 +35,14 @@
                                                                             <q-icon :name="`img:${scope.opt.image}`" />
                                                                         </q-item-section>
                                                                         <q-item-section>
-                                                                            <q-item-label v-html="scope.opt.label.toUppercase()" />
+                                                                            <q-item-label v-html="scope.opt.label.toUpperCase()" />
                                                                             <q-item-label caption>{{ scope.opt.value }}</q-item-label>
+                                                                            <q-item-label caption>{{ scope.opt.amount }}</q-item-label>
                                                                         </q-item-section>
                                                                     </q-item>
                                                                 </template>
                                                                 <template v-slot:selected>
-                                                                    <span class="text-h5">{{depositCoin.value.toUppercase()}}</span>
+                                                                    <span class="text-h5">{{depositCoin.value.toUpperCase()}}</span>
 
                                                                 </template>
                                                             </q-select>
@@ -991,11 +992,10 @@ export default {
     },
     '$store.state.investment.accountTokens': function (val) {
       let coins = !this.crossChain ? this.$store.state.settings.coins.oneinch : this.getAllCoins()
-      this.depositCoinOptions = coins.filter(t => val.find(o => o.type === t.value))
+      this.depositCoinOptions = coins.filter(t => val.find(o => o.type.toLowerCase() === t.value.toLowerCase()))
       this.depositCoinUnfilter = this.depositCoinOptions
-
-      if (!this.depositCoinOptions.find(v => v.value === this.depositCoin.value)) {
-        this.depositCoin = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
+      if (!this.depositCoin || !this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())) {
+        this.depositCoin = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.$store.state.investment.defaultAccount.chain)
         this.getSwapQuote()
       }
     }
@@ -1014,11 +1014,13 @@ export default {
       this.getRate()
     },
     getCoins () {
+      console.log(this.depositCoin, 'this.depositCoin 5')
       this.depositCoinOptions = !this.crossChain ? this.$store.state.settings.coins.oneinch : this.getAllCoins()
       this.destinationCoin = !this.destinationCoin || !this.destinationCoin.value.length ? this.$store.state.settings.coins.oneinch[this.$store.state.settings.coins.oneinch.length - 1] : this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())
       this.depositCoinUnfilter = this.depositCoinOptions
       this.destinationCoinUnfilter = this.depositCoinOptions
       this.depositCoin = !this.depositCoin ? this.$store.state.settings.coins.oneinch[0] : this.depositCoinUnfilter.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
+      console.log(this.depositCoin, 'this.depositCoin 5')
       this.getSwapQuote()
     },
     getExchanges () {
