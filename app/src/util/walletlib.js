@@ -40,13 +40,13 @@ class Lib {
     if (data) {
       rawTx.data = data
     }
-    console.log(rawTx, 'rawTx')
+    // console.log(rawTx, 'rawTx')
     return rawTx
   }
   history = async (walletType, key, token) => {
     const wallet = {
       async eos (token, key) {
-        // console.log('history eos!', key, token)
+        // //console.log('history eos!', key, token)
         let actions = []
         await axios.post(process.env[store.state.settings.network].CACHE + process.env[store.state.settings.network].EOS_HISTORYAPI + '/v1/history/get_actions', {
           'account_name': key
@@ -54,12 +54,12 @@ class Lib {
           .then(function (result) {
             if (result.length !== 0) {
               result.data.actions.reverse().map(a => {
-                // console.log('split', a.action_trace.act.name === 'transfer' ? a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() : 'not transfer')
+                // //console.log('split', a.action_trace.act.name === 'transfer' ? a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() : 'not transfer')
                 if (token === 'eos' || (
                   a.action_trace.act.name === 'transfer' &&
                     a.action_trace.receiver === key &&
                     a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() === token)) {
-                  // console.log('walletlib history actions', a)
+                  // //console.log('walletlib history actions', a)
 
                   let amount = ''
                   switch (a.action_trace.act.name) {
@@ -90,7 +90,7 @@ class Lib {
             }
           }).catch(function (error) {
             // TODO: Exception handling
-            // console.log('history error', error)
+            // //console.log('history error', error)
             userError(error)
             return false
           })
@@ -101,7 +101,7 @@ class Lib {
         }
       },
       async eth (token, key) {
-        // console.log('history eth!', key)
+        // //console.log('history eth!', key)
         let actions = []
         await axios.get('http://api.etherscan.io/api?module=account&action=txlist&startblock=0&endblock=99999999&sort=desc&address=' + key)
           .then(function (result) {
@@ -121,7 +121,7 @@ class Lib {
             }
           }).catch(function (error) {
             // TODO: Exception handling
-            // console.log('history error', error)
+            // //console.log('history error', error)
             userError(error)
             return false
           })
@@ -147,7 +147,7 @@ class Lib {
         // const balProm =
         await eos.getCurrencyBalanceP(key, tokenContract[token])
           .then(function (result) {
-            // //console.log('walletlib', key, tokenContract[token], bal)
+            // ////console.log('walletlib', key, tokenContract[token], bal)
             if (result.length) {
               float = result[0].split(' ')[0]
               return float
@@ -225,9 +225,9 @@ class Lib {
               amount = +b.free + +b.frozen + +b.locked
             })
           }
-          // //console.log('bnb', balances, amount)
+          // ////console.log('bnb', balances, amount)
         } catch (err) {
-          // //console.log('', err)
+          // ////console.log('', err)
         }
         const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')).data.binancecoin.usd
         return {
@@ -290,10 +290,10 @@ class Lib {
           Promise(async (resolve, reject) => {
             insight.broadcast(tx, function (error, transactionId) {
               if (error) {
-                console.log(error)
+                // console.log(error)
                 return reject()
               } else {
-                console.log(transactionId)
+                // console.log(transactionId)
                 resolve({
                   message: `https://www.blockchain.com/btc/tx/${transactionId}`,
                   success: true
@@ -357,7 +357,7 @@ class Lib {
         }
       },
       async eth (token, from, to, value, info, key, contract) {
-        console.log('(token, from, to, value, gas, key, contract, info)', token, from, to, value, info, key, contract)
+        // console.log('(token, from, to, value, gas, key, contract, info)', token, from, to, value, info, key, contract)
 
         const Web3 = require('web3')
         const EthereumTx = require('ethereumjs-tx').Transaction
@@ -388,10 +388,13 @@ class Lib {
           nonce,
           chainId: 1
         }
-
+        // console.log(rawTx, info, 'before')
         if (info && (typeof info === 'object') && info.gasData) {
           rawTx.gas = info.gasData.gas
           rawTx.gasPrice = info.gasData.gasPrice
+          if (info.gasData.gasLimit) {
+            rawTx.gasLimit = info.gasData.gasLimit
+          }
         } else {
           let gasPrices = await getCurrentGasPrices()
           rawTx.gasPrice = gasPrices.high * 1000000000
@@ -407,7 +410,7 @@ class Lib {
 
         // web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, id) => {
         //   if (err) {
-        //     console.log(err)
+        //     //console.log(err)
         //     return reject()
         //   }
         //   resolve({
@@ -426,12 +429,12 @@ class Lib {
                   success: true
                 })
               }
-              console.log('receipt:', confirmationNumber, receipt)
+              //console.log('receipt:', confirmationNumber, receipt)
             })
 
             tx.on('transactionHash', hash => {
               transactionHash = hash
-              console.log('hash:', hash)
+              //console.log('hash:', hash)
             })
           })
         } catch (err) {
@@ -467,10 +470,10 @@ class Lib {
                 success: false
               })
             })
-
+            // console.log(response, 'response')
             if (response.data.error) {
               reject({
-                message: response.data.message,
+                message: response.data.error.message,
                 success: false
               })
             } else if (response.data.result) {
@@ -501,7 +504,7 @@ class Lib {
                         clearInterval(interval)
                       }
                     }).catch(error => {
-                      console.log(error)
+                      //console.log(error)
                       return reject()
                     })
                   }, 5000)
