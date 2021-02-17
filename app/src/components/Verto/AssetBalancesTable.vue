@@ -39,6 +39,18 @@
             </div>
           </q-td>
         </template>
+        <template v-slot:body-cell-dailyChange="props">
+          <q-td :props="props" class="body-table-col">
+            <div class="col-3 flex items-center">
+              <span class="column items-start">
+                <span class="pair q-pr-xs allocation text-green-6">+1.29%</span>
+                <span class="pair q-pr-xs balance text-bold text-green-6">$4.48</span>
+                <!-- text-pink-12 for red color (- sign) -->
+                <!-- text-green-6 for green color (+ sign) -->
+              </span>
+            </div>
+          </q-td>
+        </template>
         <template v-slot:top-right>
           <q-input borderless dense :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" filled debounce="300" v-model="filter" placeholder="Search">
             <template v-slot:append>
@@ -94,6 +106,14 @@ export default {
           label: 'USD Equivalent',
           field: 'usd',
           format: val => `${this.formatNumber(val, 2)}`,
+          sortable: true
+        },
+        {
+          name: 'dailyChange',
+          align: 'left',
+          label: 'Daily Change',
+          field: 'dailyChange',
+          format: val => `${val}`,
           sortable: true
         },
         {
