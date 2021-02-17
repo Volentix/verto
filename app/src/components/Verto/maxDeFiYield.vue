@@ -23,7 +23,13 @@
         </div>
         <div class="interest-wrapper">
           <span>at</span>
-          <span class="interest"><span class="text_pink">{{maxDeFiYield.roi}} %</span> <span class="text-grey">(Interest Rate) <q-icon @click.native="openURL('https://t.me/vertosupport')" size="xs" name="help_outline" /></span> <span class="text_pink">With 1 Click</span></span>
+          <span class="interest"><span class="text_pink">{{maxDeFiYield.roi}} %</span> <span class="text-grey">(Interest Rate)
+            <q-icon @click.native="openURL('https://stats.finance/yearn')" size="xs" name="help_outline">
+              <q-tooltip>
+                For more information about the interset rate, please visite www.stats.finance/yearn
+              </q-tooltip>
+            </q-icon>
+            </span> <span class="text_pink">With 1 Click</span></span>
            <!-- class="p-abs" -->
         </div>
       </div>
