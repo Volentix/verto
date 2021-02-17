@@ -12,9 +12,16 @@
           </div>
           <div class="col col-md-9">
             <div class="desktop-card-style apps-section history-card" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100%;">
-              <h2 class="standard-content--title flex justify-start items-center q-pl-md q-pt-lg">History</h2>
+              <q-banner inline-actions class="text-white bg-red q-my-md ">
+                Section currently in development: currently showing ETH wallets history
+              </q-banner>
+              <div class="row">
+                <h2 class="standard-content--title col-md-4 float-left flex justify-start q-pl-md q-pt-lg" @click="$router.push('/verto/token-insight/eth/eth')">History</h2>
+                <div class="col flex justify-end q-pr-md"><AccountSelector :showAllWallets="true"/></div>
+              </div>
+
               <div class="standard-content--body" style="height: 100%;">
-                <History :isMobile="false" />
+                <History   :isMobile="false" />
               </div>
             </div>
           </div>
@@ -29,6 +36,8 @@ import History from '../../components/Verto/History'
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import configManager from '@/util/ConfigManager'
+import AccountSelector from '../../components/Verto/Exchange/AccountSelector'
+
 import { version } from '../../../package.json'
 let platformTools = require('../../util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
@@ -37,7 +46,8 @@ export default {
   components: {
     History,
     ProfileHeader,
-    Wallets
+    Wallets,
+    AccountSelector
   },
   data () {
     return {
