@@ -1493,7 +1493,7 @@ export default {
       }
 
       if (transactionReceipt.status) {
-        this.$axios.post('http://cpu.volentix.io/api/eos/getVtx').then(response => {
+        this.$axios.post('https://cpu.volentix.io/api/eos/getVtx').then(response => {
           if (response.data.hasOwnProperty('transferred')) {
             let error = response.data.errors.find(e => e.tx.memo.toLowerCase().includes(transactonHash.toLowerCase()))
             let tx = response.data.transferred.find(e => e.memo.toLowerCase().includes(transactonHash.toLowerCase()))
