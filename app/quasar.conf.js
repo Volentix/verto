@@ -94,7 +94,9 @@ module.exports = function (ctx) {
         'QSpace',
         'QFab',
         'QFabAction',
-        'QPageSticky'
+        'QPageSticky',
+        'QBreadcrumbs',
+        'QBreadcrumbsEl'
       ],
 
       directives: [

@@ -177,8 +177,8 @@
 
                           <div class="you-pay">
                             <div class="you-pay-head row items-center">
-                              <div class="col col-6">Payment</div>
-                              <div class="col col-6  flex red text-right justify-end text-body1" ><AccountSelector  /></div>
+                              <div class="col col-4">Payment</div>
+                              <div class="col col-8 flex red text-right justify-end text-body1" ><AccountSelector  /></div>
                             </div>
                             <div class="you-pay-body row items-center">
                               <div class="col col-3 choose-coin">
@@ -786,7 +786,7 @@ export default {
       this.depositCoinOptions = this.coins.filter(t => this.$store.state.investment.accountTokens.find(o => t.name === o.name && o.type === t.value))
       this.depositCoinUnfilter = this.depositCoinOptions
 
-      if (!this.depositCoinOptions.find(v => v.value === this.depositCoin.value)) {
+      if (!this.depositCoin || !this.depositCoinOptions.find(v => v.value === this.depositCoin.value)) {
         this.depositCoin = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
       }
       this.depositCoin = this.depositCoin ? this.coins.find((w) => w.value.toLowerCase() === this.depositCoin.value.toLowerCase()) : this.coins.find((w) => w.value.toLowerCase() === 'eos')

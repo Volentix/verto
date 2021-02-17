@@ -2,7 +2,7 @@
   <div>
     <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
       <!-- :grid="$q.screen.xs" -->
-      <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="!assets.length" title="Explore Opportunities" :data="assets" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
+      <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="!assets.length" :data="assets" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
@@ -31,6 +31,7 @@
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
               <span class="column items-start">
+                <span class="pair q-pr-xs allocation text-green" v-if="props.row.change24h">{{props.row.change24hPercentage}} ({{props.row.change24h}}) <q-tooltip>Daily change</q-tooltip></span>
                 <span class="pair q-pr-xs balance text-bold">
                   ${{formatNumber(props.row.usd, 2).split('.')[0]}}.<span class="text-grey-8">{{formatNumber(props.row.usd, 2).split('.')[1]}}</span>
                 </span>
@@ -144,23 +145,39 @@ export default {
       JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).forEach((token, i) => {
         token.amount = parseFloat(token.amount)
         token.usd = parseFloat(token.usd)
+
         if (!isNaN(token.amount) && token.amount !== 0) {
           if (this.assets.find(o => o.type === token.type)) {
             let index = this.assets.findIndex(o => o.type === token.type)
-            console.log(index, token.amount, this.assets[index].amount, this.assets[index], this.assets, token.type)
+
             this.assets[index].amount += token.amount
             this.assets[index].usd += isNaN(token.usd) ? 0 : token.usd
             this.assets[index].rateUsd = isNaN(token.usd) ? 0 : (token.usd / token.amount)
             this.assets[index].percentage = this.assets[index].usd / parseFloat(this.$store.state.wallets.portfolioTotal) * 100
+            this.assets[index] = this.getHistoricalValue(this.assets[index])
           } else {
             token.percentage = token.usd / parseFloat(this.$store.state.wallets.portfolioTotal) * 100
             token.index = this.assets.length
             token.rateUsd = isNaN(token.usd) ? 0 : (token.usd / token.amount)
+
+            token = this.getHistoricalValue(token)
+
             this.assets.push(token)
           }
           this.assets.sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))
         }
       })
+    },
+    getHistoricalValue (token) {
+      let tokenData = this.$store.state.tokens.walletTokensData.find(a => a.symbol === token.type)
+
+      if (tokenData) {
+        let change = tokenData.price_change_24h * token.amount
+        console.log(change, Math.abs(change), token.type, tokenData, tokenData.price_change_24h, tokenData.price_change_percentage_24h, token.amount)
+        token.change24h = (change > 0 ? '+' : '-') + '$' + this.formatNumber(Math.abs(change), 2)
+        token.change24hPercentage = (change > 0 ? '+' : '-') + this.formatNumber(Math.abs(tokenData.price_change_percentage_24h), 2) + '%'
+      }
+      return token
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
