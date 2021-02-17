@@ -16,8 +16,8 @@
                         <chainToolsSection />
                     </div>
                     <div class="col q-pl-sm col-md-6 customSlider">
-                        <maxDeFiYield class="slide" :class="{'active': !customSlider}" />
-                        <startNodeSection class="slide" :class="{'active': customSlider}" :banner="3" />
+                        <maxDeFiYield class="slide" :class="{'active': customSlider}" />
+                        <startNodeSection class="slide" :class="{'active': !customSlider}" :banner="3" />
                     </div>
                     <div class="col col-md-12">
                         <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
@@ -27,8 +27,8 @@
                                 align="flex-start"
                                 :class="{'text-black bg-white': $store.state.settings.lightMode === 'false', 'text-white bg-myblue': $store.state.settings.lightMode === 'true'}"
                             >
-                                <q-tab name="explore" class="text-capitalize" label="Explore Opportunities" />
                                 <q-tab name="asset" class="text-capitalize" label="Asset Balances" />
+                                <q-tab name="explore" class="text-capitalize" label="Explore Opportunities" />
                             </q-tabs>
                             <q-tab-panels
                                 v-model="tabPoolAndAssetBalances"
@@ -179,7 +179,7 @@ export default {
       cruxKey: {},
       interval: null,
       osName: '',
-      tabPoolAndAssetBalances: 'explore',
+      tabPoolAndAssetBalances: 'asset',
       screenSize: 0,
       openDialog: false,
       walletClientName: 'verto' // should be 'verto' when in prod
@@ -436,6 +436,8 @@ export default {
         left: 1px;
         top: 1px;
         z-index: 3;
+        width: 400px;
+        padding-right: 90px;
         border-radius: 10px 0px 0px 0px;
         &.bg-myblue{
             background-color: #04111F;

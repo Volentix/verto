@@ -129,6 +129,68 @@ class Lib {
         return {
           history: actions
         }
+      },
+      async dot (token, key) {
+        let actions = []
+        await axios.post('https://polkadot.api.subscan.io/api/scan/transfers', {
+          'X-API-Key': key
+        })
+          .then(function (result) {
+            if (result.length !== 0) {
+              result.data.transfers.map(a => {
+                actions.push({
+                  date: date.formatDate(a.block_timestamp * 1000, 'YYYY-MM-DD HH:mm'),
+                  transID: a.hash,
+                  from: a.from,
+                  to: a.to,
+                  typeTran: a.module,
+                  desc: '',
+                  amount: (a.amount / 10000000000) + ' DOT'
+                })
+              })
+              return actions
+            }
+          }).catch(function (error) {
+            // TODO: Exception handling
+            // console.log('history error', error)
+            userError(error)
+            return false
+          })
+
+        return {
+          history: actions
+        }
+      },
+      async ksm (token, key) {
+        let actions = []
+        await axios.post('https://kusama.api.subscan.io/api/scan/transfers', {
+          'X-API-Key': key
+        })
+          .then(function (result) {
+            if (result.length !== 0) {
+              result.data.transfers.map(a => {
+                actions.push({
+                  date: date.formatDate(a.block_timestamp * 1000, 'YYYY-MM-DD HH:mm'),
+                  transID: a.hash,
+                  from: a.from,
+                  to: a.to,
+                  typeTran: a.module,
+                  desc: '',
+                  amount: (a.amount / 1000000000000) + ' KSM'
+                })
+              })
+              return actions
+            }
+          }).catch(function (error) {
+            // TODO: Exception handling
+            // console.log('history error', error)
+            userError(error)
+            return false
+          })
+
+        return {
+          history: actions
+        }
       }
     }[walletType]
 
@@ -301,6 +363,67 @@ class Lib {
               }
             })
           })
+        } catch (err) {
+          message = err
+          success = false
+        }
+
+        return {
+          success,
+          message
+        }
+      },
+      async dot (token, from, to, value, memo, key, contract) {
+        const { ApiPromise, WsProvider, Keyring } = require('@polkadot/api')
+        const provider = new WsProvider('wss://rpc.polkadot.io/')
+        const api = await ApiPromise.create({ provider })
+
+        const keyring = new Keyring({ type: 'sr25519' })
+        keyring.setSS58Format(0)
+        const mnemonic = store.state.currentwallet.config.mnemonic
+        const pair = keyring.createFromUri(mnemonic)
+
+        // On the Polkadot network, an address is only active when it holds a
+        // minimum amount (currently set at 1 DOT). This minimum amount is called
+        // an existential deposit (ED).
+        // https://support.polkadot.network/support/solutions/articles/65000168651-what-is-the-existential-deposit-#
+
+        let message, success
+        try {
+          value = value * 10000000000
+          const transfer = api.tx.balances.transfer(to, value)
+          const hash = await transfer.signAndSend(pair)
+
+          message = 'https://polkadot.subscan.io/extrinsic/' + hash
+          success = true
+        } catch (err) {
+          message = err
+          success = false
+        }
+
+        return {
+          success,
+          message
+        }
+      },
+      async ksm (token, from, to, value, memo, key, contract) {
+        const { ApiPromise, WsProvider, Keyring } = require('@polkadot/api')
+        const provider = new WsProvider('wss://kusama-rpc.polkadot.io/')
+        const api = await ApiPromise.create({ provider })
+
+        const keyring = new Keyring({ type: 'sr25519' })
+        keyring.setSS58Format(2)
+        const mnemonic = store.state.currentwallet.config.mnemonic
+        const pair = keyring.createFromUri(mnemonic)
+
+        let message, success
+        try {
+          value = value * 1000000000000
+          const transfer = api.tx.balances.transfer(to, value)
+          const hash = await transfer.signAndSend(pair)
+
+          message = 'https://kusama.subscan.io/extrinsic/' + hash
+          success = true
         } catch (err) {
           message = err
           success = false

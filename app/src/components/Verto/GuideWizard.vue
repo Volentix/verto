@@ -1,7 +1,6 @@
 <template>
   <div class="">
     <q-dialog
-
       v-model="dialog"
       persistent
       position="right"
@@ -10,7 +9,7 @@
       transition-show="slide-up"
       transition-hide="slide-down"
     >
-      <q-card class="guideWizardWrapper" :dark=" $store.state.settings.lightMode === 'true'"  style="min-width:334px;">
+      <q-card class="guideWizardWrapper" :dark="$store.state.settings.lightMode === 'true'"  style="min-width:334px;">
         <q-bar>
           <div class="text-h6 flex items-center welcome-title">
               <svg
@@ -66,26 +65,26 @@
                 " />
               </div>
             </q-card-section>
-              <q-card-section class=" text-h6 q-py-none help-qst-title">
+            <q-card-section class=" text-h6 q-py-none help-qst-title">
               Get started with Volentix.
             </q-card-section>
-             <q-card-section class="text-body1  help-qst-title">
+            <q-card-section class="text-body1  help-qst-title">
               By Staking 10,000 VTX you will get a free EOS account and access the entire EOS ecosystem all in one click.
               <div class="flex">
                 <q-btn
                   rounded
                   @click="getVTX(); dialog = false"
-                  class="q-mt-md"
+                  class="q-mt-md get-started"
                   outline
                   no-caps
-                  color="purple"
+                  color="indigo-12"
                   label="Get Started"
                 />
               </div>
-              </q-card-section>
+            </q-card-section>
             <q-card-section class="q-pt-md text-body1 help-qst-title">
               What do you want to do ?
-              <q-input @click="getAccount()" clearable clear-icon="close" rounded outlined color="purple" label="Type an action" @input="filterActions()" v-model="searchAction" class="q-mt-sm input-input" />
+              <q-input :dark="$store.state.settings.lightMode === 'true'" @click="getAccount()" clearable clear-icon="close" rounded outlined color="indigo-12" label="Type an action" @input="filterActions()" v-model="searchAction" class="q-mt-sm input-input" />
             </q-card-section>
             <q-card-section v-if="currentActionItem" class="q-py-sm text-body2 ">
               <b
@@ -98,12 +97,10 @@
                 Actions </b
               >> {{ currentActionItem.label }}
             </q-card-section>
-            <q-card-section
-            v-show="!filteredActions.reduce((a, b) => +a + +b.items.length, 0)"
-              class="">
-            <p >
-            No actions found
-            </p>
+            <q-card-section v-show="!filteredActions.reduce((a, b) => +a + +b.items.length, 0)" class="">
+              <p>
+              No actions found
+              </p>
             </q-card-section>
             <q-card-section
               v-show="!accountDropdown && list.items.length"
@@ -111,8 +108,43 @@
               v-for="(list, index) in filteredActions"
               :key="index"
             >
-              <span class="text-body2 subtitle" v-if="list.items.length">{{ index + 1 + "- " + list.listLabel }}</span>
-              <q-list class="q-mt-md" bordered separator>
+              <span class="text-body2 subtitle flex items-center q-mb-sm" v-if="list.items.length && index === 1">
+                Choose chain :
+                <q-btn :flat="chainToggle === 'eth'" color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" class="q-ml-sm q-mr-sm" :outline="chainToggle === 'eos' || chainToggle === ''" @click="chainToggle = 'eos'">
+                  <div class="flex items-center">
+                    <q-icon class="q-mrsm" :name="`img:https://files.coinswitch.co/public/coins/eos.png`" /> EOS
+                  </div>
+                </q-btn>
+                <q-btn :flat="chainToggle === 'eos'" color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" :outline="chainToggle === 'eth' || chainToggle === ''" @click="chainToggle = 'eth'">
+                  <div class="flex items-center">
+                    <q-icon class="q-mrsm" :name="`img:https://files.coinswitch.co/public/coins/eth.png`" /> ETH
+                  </div>
+                </q-btn>
+
+              </span>
+
+              <span v-if="list.items.length && index === 0" class="text-body2 subtitle">{{ index + 1 + "- " + list.listLabel }}</span>
+              <q-list v-if="index === 0" class="q-mt-md" bordered separator>
+                <q-item
+                  v-show="list.items.length"
+                  clickable
+                  v-ripple
+                  @click="
+                    currentActionItem = item;
+                    currentAction = list;
+                    triggerMethods(item.methods);
+                  "
+                  v-for="(item, i) in list.items"
+                  :key="i"
+                >
+                  <q-item-section avatar>
+                    <q-icon :name="item.icon" />
+                  </q-item-section>
+                  <q-item-section>{{ item.label }}</q-item-section>
+                </q-item>
+              </q-list>
+              <span v-if="list.items.length && ((chainToggle === 'eos' && index === 1) || (chainToggle === 'eth' && index === 2))" class="text-body2 subtitle">{{ index + 1 + "- " + list.listLabel }}</span>
+              <q-list v-if="(chainToggle === 'eos' && index === 1) || (chainToggle === 'eth' && index === 2)" class="q-mt-md" bordered separator>
                 <q-item
                   v-show="list.items.length"
                   clickable
@@ -191,7 +223,7 @@
                   class="q-mt-md"
                   outline
                   no-caps
-                  color="purple"
+                  color="indigo-12"
                   label="Proceed"
                 />
               </div>
@@ -210,6 +242,19 @@
 import { openURL, QScrollArea } from 'quasar'
 
 const actions = [
+  {
+    chain: 'eos',
+    listLabel: 'VTX',
+    items: [
+      {
+        label: 'Stake VTX now',
+        icon: 'img:https://ndi.340wan.com/eos/volentixgsys-vtx.png',
+        methods: ['showAccountDropdown'],
+        to: '/verto/stake',
+        type: 'vtx'
+      }
+    ]
+  },
   {
     chain: 'eos',
     listLabel: 'EOS chain',
@@ -261,19 +306,6 @@ const actions = [
         to: '/verto/defi/swap'
       }
     ]
-  },
-  {
-    chain: 'eos',
-    listLabel: 'VTX',
-    items: [
-      {
-        label: 'Stake VTX now',
-        icon: 'img:https://ndi.340wan.com/eos/volentixgsys-vtx.png',
-        methods: ['showAccountDropdown'],
-        to: '/verto/stake',
-        type: 'vtx'
-      }
-    ]
   }
 ]
 export default {
@@ -282,6 +314,7 @@ export default {
   },
   data () {
     return {
+      chainToggle: '',
       dialog: true,
       accountDropdown: false,
       active: true,
@@ -414,7 +447,7 @@ export default {
   @import "~@/assets/styles/variables.scss";
   .guideWizardWrapper{
     .q-bar{
-      background: #9c27b0 !important;
+      background: #7272FA !important;
     }
     .btn-back{
       /deep/ button{
@@ -492,6 +525,12 @@ export default {
         }
       }
     }
+  }
+  /deep/ .get-started{
+    color: #7272FA !important;
+  }
+  .q-mrsm{
+    margin-left: -8px;
   }
 </style>
 <style>
