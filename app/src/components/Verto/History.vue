@@ -21,10 +21,11 @@
     </div>
     <div class="transaction-wrapper--list open" v-else style="height: 100%;">
       <q-scroll-area :visible="true" class="q-pr-md" style="height: 85%;">
-       <div v-for="(day,index) in history" :key="index">
-        <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7"> {{day.friendlyDay}}</div>
-        <q-list bordered dark separator class="list-wrapper"  v-for="(transaction, index) in day.data" :key="index">
-          <q-item v-if="transaction.direction == 'outgoing'" clickable class="column history-item-wrapper send-component" @click="transaction.active = !transaction.active" :class="{'active': transaction.active}">
+       <div v-for="(day,indexDay) in history" :key="indexDay">
+        <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7"> {{day.friendlyDay}} </div>
+        <q-list bordered dark separator class="list-wrapper"  v-for="(transaction, indexTx) in day.data" :key="indexTx">
+
+          <q-item v-if="transaction.direction == 'outgoing'" clickable class="column history-item-wrapper send-component" >
             <q-item-section class="history-item flex justify-between">
               <div class="row items-center">
                 <div class="col col-4">
@@ -342,6 +343,7 @@ export default {
   data () {
     return {
       sendComponent: false,
+      showInfos: [],
       receiveComponent: false,
       sendComponent2: false,
       receiveComponent2: false,
@@ -478,27 +480,27 @@ export default {
     },
     async getHistoricalData (transaction) {
       let datePrice = localStorage.getItem(transaction.symbol + '-' + transaction.dateFormatted)
-      console.log(datePrice, 'datePrice', transaction.symbol + '-' + transaction.dateFormatted)
+
       if (datePrice) {
         datePrice = parseFloat(datePrice) * parseFloat(transaction.amount)
         transaction.usdAmount = isNaN(datePrice) ? '-' : datePrice.toFixed(2)
 
         transaction.subTransactions.map(async o => {
           o.dateFormatted = transaction.dateFormatted
-          let value = await this.getUsdPrice(o, true)
+          let value = this.getUsdPrice(o, true)
           o.usdAmount = value ? (value * o.amount).toFixed(2) : false
         })
         let param = {
           dateFormatted: transaction.dateFormatted,
           symbol: 'ETH'
         }
-        let EthPrice = await this.getUsdPrice(param, true)
+        let EthPrice = this.getUsdPrice(param, true)
         let gas = transaction.gas
         console.log(transaction.gas, 'gas', EthPrice, transaction.symbol + '-' + transaction.dateFormatted)
         transaction.usdFees = gas * EthPrice
         transaction.usdFees = isNaN(transaction.usdFees) ? false : transaction.usdFees.toFixed(2)
       } else {
-        let value = await this.getUsdPrice(transaction)
+        let value = this.getUsdPrice(transaction)
         transaction.usdAmount = value ? (parseFloat(value) * parseFloat(transaction.amount)).toFixed(2) : false
         console.log(transaction.gas, 'gas', value, transaction.symbol + '-' + transaction.dateFormatted)
       }
@@ -613,6 +615,22 @@ export default {
               opacity: 0;
               transform: translateY(0px);
               transition: opacity cubic-bezier(0.175, 0.885, 0.32, 1.275) 1s;
+            }
+          }
+          &:hover{
+            height: auto;
+            border: 1px solid #CCC !important;
+            background: rgba(#57adf8, .05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            .history-item{
+              &__detail{
+                margin-left: 0px;
+                visibility: visible;
+                opacity: 1;
+                transform: translateY(0px);
+                transition: opacity cubic-bezier(0.175, 0.885, 0.32, 1.275) 1s;
+              }
             }
           }
           &.active{
