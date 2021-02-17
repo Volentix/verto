@@ -174,6 +174,14 @@ class Wallets2Tokens {
               { amount: '0.0000', code: 'eosio.token', symbol: 'EOS' }
             ]
           }
+
+          let privateKeysAttrs = this.extractEOSPrivateKey(wallet.privateKey, wallet.key)
+
+          if (privateKeysAttrs) {
+            wallet.privateKey = privateKeysAttrs.privateKey
+            wallet.privateKeyEncrypted = privateKeysAttrs.privateKeyEncrypted
+          }
+
           balances.data.map((t, index) => {
             // console.log('eos token', t)
             if (t.symbol.toLowerCase() !== 'eos') {
@@ -318,6 +326,32 @@ class Wallets2Tokens {
   }
   async getEosUSD () {
     await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { this.eosUSD = res.data.data.price })
+  }
+  extractEOSPrivateKey (privateKey, key) {
+    // Looking for existing Private key format {"keys":[{},{}]}
+    let data = null
+
+    if ((typeof privateKey === 'string' || privateKey instanceof String) && privateKey.includes(key)) {
+      data = JSON.parse(privateKey)
+    } else if (typeof privateKey === 'object') {
+      data = privateKey
+    }
+
+    try {
+      let value = false
+      if (data && data.hasOwnProperty('keys')) {
+        let wallet = data.keys.find(w => w.key === key)
+        if (wallet) {
+          value = {
+            privateKey: wallet.privateKey,
+            privateKeyEncrypted: wallet.privateKeyEncrypted
+          }
+        }
+      }
+      return value
+    } catch (e) {
+      return false
+    }
   }
   async getAllAssets () {
     await axios.get('https://volentix.info/get_assets')
