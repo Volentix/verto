@@ -1,4 +1,6 @@
 
+import store from '@/store'
+
 export const updateTokens = (state, updatedtokens) => {
   updatedtokens = updatedtokens.map(o => {
     if (o.type === 'eth') {
@@ -28,10 +30,13 @@ export const updateTokens = (state, updatedtokens) => {
         window.parent.postMessage({ accounts: accounts }, '*')
       }
     }
+
     return o
   })
   // state.portfolioTotal = updatedtokens.map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, c) => a + c)
   state.tokens = updatedtokens
+
+  store.dispatch('tokens/getTokensMarketsData', state.tokens)
 }
 export const setLoadingState = (state, value) => {
   state.loaded.eos = value.hasOwnProperty('eos') ? value.eos : state.loaded.eos

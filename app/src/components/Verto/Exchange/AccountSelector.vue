@@ -18,7 +18,10 @@
                   dense >
 
                   <q-item-section class="q-pr-sm">
-                    <q-item-label caption class="ellipsis mw200 q-pt-xs text-black"><q-icon :color="accountOption.color" name="fiber_manual_record"  class="q-mr-sm" /> {{ accountOption.label }}
+                    <q-item-label caption class="ellipsis mw200 q-pt-xs text-black"><q-icon :color="accountOption.color" name="fiber_manual_record"  class="q-mr-sm" /> {{ accountOption.label }} <q-icon
+                     size="16px"
+                    :name="`img:${accountOption.image}`"
+                  />
                     </q-item-label>
                    </q-item-section>
                 </q-item>
@@ -33,13 +36,12 @@
                 >
 
                   <q-item-section>
-                   <q-item-label caption class="ellipsis mw200 q-pt-xs "> <q-icon
-
+                   <q-item-label caption class="ellipsis mw200 q-pt-xs flex"> <q-icon
+                     size="16px"
                     :name="`img:${scope.opt.image}`"
-                  />  {{ scope.opt.label }}
+                  />  <div style="width:110px" class="q-pl-sm">{{ scope.opt.label }}</div> <q-icon :color="scope.opt.color" name="fiber_manual_record"  :class="'q-mr-sm ellipsis mw200 q-pt-xs text-'+scope.opt.color" /> ${{ scope.opt.total ? scope.opt.total.toFixed(2) : 0 }}
                     </q-item-label>
-                   <q-item-label caption :class="'ellipsis mw200 q-pt-xs text-'+scope.opt.color"><q-icon :color="scope.opt.color" name="fiber_manual_record"  class="q-mr-sm" />- ${{ scope.opt.total.toFixed(2)  }}
-                    </q-item-label>
+
                   </q-item-section>
                 </q-item>
               </template>
@@ -53,7 +55,7 @@
 <script>
 const palette = ['cyan', 'teal', 'light-blue', 'blue-1', 'pink', 'purple']
 export default {
-  props: ['chain'],
+  props: ['chain', 'showAllWallets'],
   data () {
     return {
       accountOptions: [],
@@ -86,6 +88,20 @@ export default {
       label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
       color: palette[this.accountOptions.length]
     }))
+
+    if (this.showAllWallets) {
+      tableData.filter(w => w.chain !== 'eth' && w.chain !== 'eos' && this.accountOptions.push({
+        value: w.key,
+        key: w.key,
+        chain: w.chain,
+        type: w.type,
+        usd: w.usd,
+        total: w.total,
+        image: w.icon,
+        label: w.key.substring(0, 6).toLowerCase() + '...' + w.key.substr(w.key.length - 5).toLowerCase(),
+        color: palette[this.accountOptions.length]
+      }))
+    }
 
     if (this.$store.state.wallets.metamask.accounts.length) {
       this.accountOptions.push(this.$store.state.wallets.metamask.accounts.find(o => o.type === 'eth' && o.chain === 'eth'))
