@@ -448,7 +448,7 @@ export default {
       min-height: 138px;
       margin: -3px;
       &--head-title{
-        // border-bottom: 1px solid #CCC;
+        border-bottom: 1px solid rgba(#CCC, .4);
         // background-color: rgba(#CCC, .1);
         font-size: 16px;
         font-weight: 700;
@@ -457,7 +457,7 @@ export default {
         padding-top: 11px;
         color: #FFF;
         background-size: 100% auto !important;
-        background-position: 25px -15px !important;
+        background-position: 40px bottom !important;
         &.lightmd{
           color: #04111F;
         }

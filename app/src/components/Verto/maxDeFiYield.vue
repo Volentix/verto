@@ -23,7 +23,7 @@
         </div>
         <div class="interest-wrapper">
           <span>at</span>
-          <span class="interest"><span class="text_pink">{{maxDeFiYield.roi}} %</span> <span class="text-grey">(Interest Rate)</span> <span class="text_pink">With 1 Click</span></span>
+          <span class="interest"><span class="text_pink">{{maxDeFiYield.roi}} %</span> <span class="text-grey">(Interest Rate) <q-icon @click.native="openURL('https://t.me/vertosupport')" size="xs" name="help_outline" /></span> <span class="text_pink">With 1 Click</span></span>
            <!-- class="p-abs" -->
         </div>
       </div>
@@ -32,6 +32,8 @@
 </template>
 
 <script>
+import { openURL } from 'quasar'
+
 export default {
   name: 'maxDeFiYield',
   data () {
@@ -52,6 +54,13 @@ export default {
     this.getMaxDeFiYield()
   },
   methods: {
+    openURL (url) {
+      if (this.$q.platform.is.cordova) {
+        window.open(url, '_system')
+      } else {
+        openURL(url)
+      }
+    },
     getMaxDeFiYield () {
       this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://stats.finance/yearn')
         .then((result) => {
@@ -107,6 +116,7 @@ export default {
     .qbtn-download{
       border-radius: 30px;
       height: 30px;
+      color: #fe68b5 !important;
       background: #FFF !important;
       /deep/ .q-btn__wrapper{
         min-height: unset;

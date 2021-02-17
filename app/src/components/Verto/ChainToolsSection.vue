@@ -177,6 +177,13 @@ export default {
     }
   }
   .chainToolsDropdownBtn{
+    // transition: transform cubic-bezier(0.39, 0.575, 0.565, 1) .2s;
+    // transform: scale(1);
+    // position: relative;
+    &:hover{
+      // transform: scale(1.07);
+      // z-index: 999;
+    }
     &.active{
       animation: flash 1s linear infinite;
     }
