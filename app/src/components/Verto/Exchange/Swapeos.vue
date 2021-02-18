@@ -808,6 +808,7 @@ export default {
     },
     validateTransaction () {
       this.error = null
+      console.log(this.depositCoin.amount, 'this.depositCoin.amount < this.swapData.fromAmount', this.swapData.fromAmount)
       if (this.depositCoin.amount < this.swapData.fromAmount) {
         this.error = 'Insufficient ' + this.depositCoin.label + ' balance'
       } else if (this.tab === 'liquidity' && this.destinationCoin.amount < parseFloat(this.swapData.toAmount)) {
@@ -957,6 +958,7 @@ export default {
     depositCoin: function (newVal, oldVal) {
       if (newVal) {
         this.swapData.fromAmount = isNaN(parseFloat(newVal.amount).toFixed(this.depositCoin.precision)) ? 0 : parseFloat(newVal.amount).toFixed(8)
+        this.validateTransaction()
       }
     },
     '$store.state.investment.accountTokens': function (val) {
