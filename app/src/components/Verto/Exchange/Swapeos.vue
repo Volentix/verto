@@ -717,7 +717,7 @@ export default {
             url: url
           })
 
-          this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
+          this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.destinationCoin.precision)
         }
         pair = this.pairs.find(
           (w) => (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && w.token0.symbol.split(',')[1].toLowerCase() === 'eos') || (w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && w.token1.symbol.split(',')[1].toLowerCase() === 'eos')
@@ -725,7 +725,7 @@ export default {
         if (pair) {
           next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
           multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price0_last) : parseFloat(pair.price1_last)
-          this.swapData.toAmount = parseFloat(parseFloat(this.swapData.toAmount) * multiplier).toFixed(this.depositCoin.precision)
+          this.swapData.toAmount = parseFloat(parseFloat(this.swapData.toAmount) * multiplier).toFixed(this.destinationCoin.precision)
           url = this.getEOSTokenImageUrl(next.symbol.split(',')[1], next.contract)
           this.path.push({
             id: pair.id,
@@ -753,7 +753,7 @@ export default {
         }
       } else {
         multiplier = this.pairData.token0.symbol.split(',')[1].toLowerCase() === this.depositCoin.value.toLowerCase() ? parseFloat(this.pairData.price0_last) : parseFloat(this.pairData.price1_last)
-        let amount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
+        let amount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.destinationCoin.precision)
 
         this.swapData.toAmount = isNaN(amount) ? 0 : amount
       }
@@ -899,7 +899,7 @@ export default {
           }
         })
       }
-
+      console.log(transactionObject, 'transactionObject')
       api
         .transact(transactionObject, {
           blocksBehind: 3,
