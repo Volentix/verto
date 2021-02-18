@@ -487,20 +487,20 @@ export default {
 
         transaction.subTransactions.map(async o => {
           o.dateFormatted = transaction.dateFormatted
-          let value = this.getUsdPrice(o, true)
+          let value = await this.getUsdPrice(o, true)
           o.usdAmount = value ? (value * o.amount).toFixed(2) : false
         })
         let param = {
           dateFormatted: transaction.dateFormatted,
           symbol: 'ETH'
         }
-        let EthPrice = this.getUsdPrice(param, true)
+        let EthPrice = await this.getUsdPrice(param, true)
         let gas = transaction.gas
         console.log(transaction.gas, 'gas', EthPrice, transaction.symbol + '-' + transaction.dateFormatted)
         transaction.usdFees = gas * EthPrice
         transaction.usdFees = isNaN(transaction.usdFees) ? false : transaction.usdFees.toFixed(2)
       } else {
-        let value = this.getUsdPrice(transaction)
+        let value = await this.getUsdPrice(transaction)
         transaction.usdAmount = value ? (parseFloat(value) * parseFloat(transaction.amount)).toFixed(2) : false
         console.log(transaction.gas, 'gas', value, transaction.symbol + '-' + transaction.dateFormatted)
       }
