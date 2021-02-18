@@ -842,6 +842,11 @@ export default {
         }
     }
 }
+.tabPoolAndAssetBalancesPanels{
+    /deep/ .q-panel.scroll{
+        overflow: hidden;
+    }
+}
 </style>
 <style>
 .q-scrollarea__bar--v,
