@@ -16,8 +16,8 @@
                         <chainToolsSection />
                     </div>
                     <div class="col q-pl-sm col-md-6 customSlider">
-                        <maxDeFiYield class="slide" :class="{'active': customSlider}" />
-                        <startNodeSection class="slide" :class="{'active': !customSlider}" :banner="3" />
+                        <maxDeFiYield class="slide" :class="{'active': !customSlider}" />
+                        <startNodeSection class="slide" :class="{'active': customSlider}" :banner="5" />
                     </div>
                     <div class="col col-md-12">
                         <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
@@ -190,9 +190,14 @@ export default {
     clearInterval(this.interval)
   },
   async created () {
-    this.interval = setInterval(() => {
-      this.customSlider = this.$store.state.investment.zapperTokens.length ? !this.customSlider : this.customSlider
-    }, 12000)
+    let found_eth = this.$store.state.wallets.tokens.filter(w => w.type === 'eth')
+    console.log('found_eth', found_eth)
+    if (found_eth.length > 0 && found_eth[0].usd !== null && found_eth[0].usd > 0) {
+      console.log('setInterval luanched')
+      this.interval = setInterval(() => {
+        this.customSlider = this.$store.state.investment.zapperTokens.length ? !this.customSlider : this.customSlider
+      }, 12000)
+    }
     if (!this.$store.state.wallets.tokens.length) {
       initWallet()
     }

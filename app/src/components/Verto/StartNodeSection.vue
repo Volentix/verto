@@ -12,6 +12,10 @@
       <img v-if="$store.state.settings.lightMode === 'false'" src="statics/node-banners/ban3.png" class="full-width scale3d" alt="">
       <img v-else src="statics/node-banners/ban3.png" class="full-width scale3d" alt="">
     </div>
+    <div v-else-if="banner === 5" class="banner-wrapper" @click="goToLink">
+      <img v-if="$store.state.settings.lightMode === 'false'" src="statics/node-banners/ban5light.png" class="full-width scale3d" alt="">
+      <img v-else src="statics/node-banners/ban5dark.png" class="full-width scale3d" alt="">
+    </div>
     <div v-else class="row flex justify-between q-pt-sm q-pb-sm">
       <div class="col col-6 flex items-center node-icon"><q-icon name="apps" />VDEX node</div>
       <div class="col col-6 flex items-center justify-end start_node q-pr-sm">
@@ -41,6 +45,9 @@ export default {
 
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
+  .desktop-card-style{
+    padding: 0px !important;
+  }
   .apps-section{
     max-height: 76px;
     min-height: 76px;
@@ -88,7 +95,7 @@ export default {
     }
   }
   .scale3d{
-    transform: scale3d(1,1,1);
+    transform: scale3d(1.1,1.1,1.1);
   }
   .banner-wrapper{
     margin-left: -8px;
