@@ -253,7 +253,7 @@
                               </div>
                             </div>
                           </div>
-                          <div class="you-receive">
+                          <div class="you-receive shadow-1">
                             <br />
 
                             <q-btn outline round :color="$store.state.settings.lightMode === 'true' ? 'white':'black'" :dark="$store.state.settings.lightMode === 'true'" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
@@ -358,8 +358,8 @@
                               @click="sendTransaction()"
                               :loading="spinnervisible"
                               :disable="parseFloat(swapData.toAmount) === 0 || !depositCoin.name || parseFloat(depositCoin.amount) < parseFloat(swapData.fromAmount) || spinnervisible"
-                              color="primary"
-                              text-color="black"
+                              outline
+                              color="purple"
                               :label="tab != 'liquidity' ? 'Swap now' : 'Add liquidity'"
                               class="text-capitalize chose_accounts full-width"
                             />
@@ -717,7 +717,7 @@ export default {
             url: url
           })
 
-          this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
+          this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.destinationCoin.precision)
         }
         pair = this.pairs.find(
           (w) => (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && w.token0.symbol.split(',')[1].toLowerCase() === 'eos') || (w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && w.token1.symbol.split(',')[1].toLowerCase() === 'eos')
@@ -725,7 +725,7 @@ export default {
         if (pair) {
           next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
           multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price0_last) : parseFloat(pair.price1_last)
-          this.swapData.toAmount = parseFloat(parseFloat(this.swapData.toAmount) * multiplier).toFixed(this.depositCoin.precision)
+          this.swapData.toAmount = parseFloat(parseFloat(this.swapData.toAmount) * multiplier).toFixed(this.destinationCoin.precision)
           url = this.getEOSTokenImageUrl(next.symbol.split(',')[1], next.contract)
           this.path.push({
             id: pair.id,
@@ -753,7 +753,7 @@ export default {
         }
       } else {
         multiplier = this.pairData.token0.symbol.split(',')[1].toLowerCase() === this.depositCoin.value.toLowerCase() ? parseFloat(this.pairData.price0_last) : parseFloat(this.pairData.price1_last)
-        let amount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.depositCoin.precision)
+        let amount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.destinationCoin.precision)
 
         this.swapData.toAmount = isNaN(amount) ? 0 : amount
       }
@@ -808,6 +808,7 @@ export default {
     },
     validateTransaction () {
       this.error = null
+      console.log(this.depositCoin.amount, 'this.depositCoin.amount < this.swapData.fromAmount', this.swapData.fromAmount)
       if (this.depositCoin.amount < this.swapData.fromAmount) {
         this.error = 'Insufficient ' + this.depositCoin.label + ' balance'
       } else if (this.tab === 'liquidity' && this.destinationCoin.amount < parseFloat(this.swapData.toAmount)) {
@@ -899,7 +900,7 @@ export default {
           }
         })
       }
-
+      console.log(transactionObject, 'transactionObject')
       api
         .transact(transactionObject, {
           blocksBehind: 3,
@@ -957,6 +958,7 @@ export default {
     depositCoin: function (newVal, oldVal) {
       if (newVal) {
         this.swapData.fromAmount = isNaN(parseFloat(newVal.amount).toFixed(this.depositCoin.precision)) ? 0 : parseFloat(newVal.amount).toFixed(8)
+        this.validateTransaction()
       }
     },
     '$store.state.investment.accountTokens': function (val) {
@@ -1897,7 +1899,7 @@ export default {
       margin-bottom: 0px;
       padding-left: 0%;
       padding-right: 0%;
-      margin-top: 30px;
+      margin-top: 18px;
 
       .list-wrapper {
         visibility: visible;
@@ -2121,7 +2123,7 @@ export default {
     }
 
     .you-receive {
-      background-color: #f6f6f9;
+      background-color: rgba(0, 0, 0, 0.06);
       margin: 0px 10px;
       margin-top: 20px;
       padding: 15px 10px;
@@ -2129,14 +2131,13 @@ export default {
       position: relative;
 
       /deep/ .chose_accounts {
-        background-color: #dfdff1 !important;
-        font-weight: $bold;
+        background-color: transparent !important;
         font-size: 14px !important;
-        // font-family: $Franklin !important;
-        color: #5e5e88 !important;
+        height: 35px;
+        color: #7272FA !important;
         border-radius: 10px;
         margin-top: 20px;
-        height: 54px;
+        height: 40px !important;
       }
 
       /deep/.swap_vert {

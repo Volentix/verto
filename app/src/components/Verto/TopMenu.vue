@@ -20,7 +20,10 @@
         <router-link to="/verto/dashboard">VERTO</router-link>
       </div>
       <div class="col col-3 flex items-center date-scrolling-msg">
-        <div class="date">{{ refreshDate() }}</div>
+        <div class="flex items-center main_portfolio" :class="{'text-white': $store.state.settings.lightMode === 'true'}" v-if="currentPage === '/verto/defi'">
+          <h3 class="">Main Portfolio</h3> <span class="q-ml-sm q-mr-sm q-mb-xs">|</span> <h2 class="">${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }} USD</h2>
+        </div>
+        <!-- <div class="date">{{ refreshDate() }}</div> -->
         <!-- <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content='This app is in beta, please send us bug reports if you find any. <b><a target="_blank" href="https://t.me/vertosupport">t.me/vertosupport</a></b>' /> -->
       </div>
       <div class="col col-7 flex justify-end q-pr-md items-center menu">
@@ -189,6 +192,7 @@ import configManager from '@/util/ConfigManager'
 
 export default {
   name: 'TopMenu',
+  props: ['currentPage'],
   components: {
     // VTextMarquee: VTextMarquee
   },
@@ -234,6 +238,25 @@ export default {
     this.lightMode = window.localStorage.getItem('skin') !== 'false'
   },
   methods: {
+    nFormatter2 (num, digits) {
+      var si = [
+        { value: 1, symbol: '' },
+        { value: 1E3, symbol: 'k' },
+        { value: 1E6, symbol: 'M' },
+        { value: 1E9, symbol: 'G' },
+        { value: 1E12, symbol: 'T' },
+        { value: 1E15, symbol: 'P' },
+        { value: 1E18, symbol: 'E' }
+      ]
+      var rx = /\.0+$|(\.[0-9]*[1-9])0+$/
+      var i
+      for (i = si.length - 1; i > 0; i--) {
+        if (num >= si[i].value) {
+          break
+        }
+      }
+      return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol
+    },
     async switchNetwork () {
       this.$store.dispatch('settings/toggleNetwork', this.network.value)
       Vue.prototype.$rpc = new EosRPC(
@@ -413,5 +436,17 @@ export default {
 .q-list--dark{
   background: #050a10;
   border-radius: 0px;
+}
+.main_portfolio{
+  margin-top: -12px;
+  margin-left: -65px;
+  h3{
+    font-size: 14px;
+    font-weight: $regular;
+  }
+  h2{
+    font-size: 16px;
+    font-weight: $bold;
+  }
 }
 </style>
