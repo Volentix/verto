@@ -10,7 +10,7 @@ class ExternalWallets {
   }
 
 pushTransaction = (transactionObject) => {
-  console.log(transactionObject, 'transactionObject')
+  console.log(transactionObject, 'transactionObject 2')
   const wallet = {
     async metamask () {
       return new Promise(async (resolve, reject) => {
