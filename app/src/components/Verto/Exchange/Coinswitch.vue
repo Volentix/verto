@@ -46,10 +46,19 @@
                                                         </q-step>
 
                                                         <q-step
+                                                            v-if="stakingRequirements"
                                                             :name="2"
-                                                            title="Get VTX & Stake"
+                                                            title="Get VTX"
                                                             caption="Next step"
                                                             icon="create_new_folder"
+                                                            :done="freeEOSAccountStepper > 2"
+                                                        />
+                                                        <q-step
+                                                            v-else
+                                                            :name="2"
+                                                            title="Get VTX with ETH"
+
+                                                            icon="compare_arrows"
                                                             :done="freeEOSAccountStepper > 2"
                                                         >
                                                         </q-step>
@@ -68,7 +77,7 @@
                                                         </div>
 
                                                              </div>
-                                                        <div classs="q-pl-md"><q-icon color="grey" name="help" /> Why staking VTX ? </div>
+                                                        <div classs="q-pl-md" v-if="stakingRequirements"><q-icon color="grey" name="help" /> Why staking VTX ? </div>
                                                         <div class="text-center"  v-if="accountToBeCreated">
                                                         <p  class=" col-12 text-center q-mb-none   q-pb-none text-h6"><b>{{freeeAccountName}}</b> is available </p>
                                                         <p  class="text-green col-12 text-center q-pt-none text-h6"  v-if=" $store.state.wallets.metamask.accounts.length == 0">Connect with an external Wallet </p>
@@ -124,8 +133,18 @@
                                                         </q-step>
 
                                                         <q-step
+                                                            v-if="stakingRequirements"
                                                             :name="2"
                                                             title="Get VTX & Stake"
+                                                            icon="create_new_folder"
+                                                            :done="freeEOSAccountStepper > 2"
+                                                        >
+                                                        </q-step>
+                                                        <q-step
+                                                            v-else
+                                                            :name="2"
+                                                            title="Get VTX"
+                                                            caption="10 000 Minimum"
                                                             icon="create_new_folder"
                                                             :done="freeEOSAccountStepper > 2"
                                                         >
@@ -250,7 +269,11 @@
                                                     <br>
                                                     <q-btn :disable="accountToBeCreated" outline round color="black" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
                                                     <div class="you-receive-head row items-center">
-                                                        <div class="col col-6">You Receive</div>
+                                                        <div class="col col-4">You Receive</div>
+                                                        <div v-if="!ErrorMessage || !ErrorMessage.length" class="col col-8 info_rate_holder  text-right  justify-end items-center" :class="{'_loading': fetchingRate}">
+                                                        <p :class="{'text-green' :freeEOS.qualified, 'text-red' : !freeEOS.qualified , 'text-body2' : true }">{{freeEOS.message}}</p>
+                                                        <span v-if="freeEOS.qualified && !accountToBeCreated" class="float-right cursor-pointer " @click="offer=true"><q-btn flat icon="img:https://www.joypixels.com/images/jp-home/fire.gif" label="Choose account name" /></span>
+                                                        </div>
                                                         <div v-if="rateData && ErrorMessage.length == 0 && fromCoinType && !isLoading" class="col col-6 info_rate_holder small text-right flex justify-end items-center" :class="{'_loading': fetchingRate}">
                                                             <!-- 1 ETH = 374.705 USDT -->
                                                             <span >{{ '1 ' + fromCoinType.toUpperCase() + '&nbsp;= &nbsp;' + rateData.rate.toFixed(5) + ' ' + toCoinType.toUpperCase() }}</span>
@@ -316,7 +339,7 @@
                                                     </div>
                                                     <div class="text-body1 text-red q-py-md" v-if="ErrorMessage">{{ ErrorMessage }}</div>
 
-                                                    <q-btn unelevated :disable="ErrorMessage.length != 0 || depositQuantity == 0 || depositQuantity < rateData.limitMinDepositCoin || destinationQuantity > rateData.limitMaxDestinationCoin" @click="checkToGetRate() ; accountToBeCreated ? postOrder() : pStep = 2" color="light-grey" text-color="black" :label="accountToBeCreated ? 'Confirm': 'Choose Accounts'" class="text-capitalize chose_accounts full-width" />
+                                                    <q-btn :disable="ErrorMessage.length != 0 || depositQuantity == 0 || depositQuantity < rateData.limitMinDepositCoin || destinationQuantity > rateData.limitMaxDestinationCoin" unelevated  @click="checkToGetRate() ; pStep = 2" color="light-grey" text-color="black" :label="accountToBeCreated ? 'Continue': 'Choose Accounts'" class="text-capitalize chose_accounts full-width" />
                                                 </div>
                                                 <p v-if="accountToBeCreated" class="text-body1 q-pt-sm q-pl-md cursor-pointer" @click="accountToBeCreated = false ; freeeAccountName = null">Reject offer</p>
                                             </div>
@@ -387,7 +410,7 @@
                                                     </div>
                                                     <div class="you-receive-body row items-center">
                                                         <div class="col col-12">
-                                                            <q-select :disable="accountToBeCreated" v-show="toCoin === null || (toCoin.type !== 'new_public_key')"  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator outlined class="select-input" v-model="toCoin" @input="updateCoinName()" use-input :options="optionsTo">
+                                                            <q-select :disable="eThToVTX && accountToBeCreated && freeEOS.qualified" v-show="!toCoin || (toCoin.type !== 'new_public_key')"  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator outlined class="select-input" v-model="toCoin" @input="updateCoinName()" use-input :options="optionsTo">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
@@ -416,7 +439,7 @@
                                                         </div>
                                                         <div class="col col-12">
                                                             <!-- :rules="[ val => val.length >= 3 || 'Destination Address Cannot less than 3 characters' ]" -->
-                                                            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-show="toCoin !== null && toCoin.type === 'new_public_key'" ref="destinationAddressAddress" :label="destinationAddressLabel" v-model="destinationAddress.address" @input="verifyAddress()" class="input-input destinationAddressAddress" outlined color="purple" type="text">
+                                                            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-show="toCoin && toCoin.type === 'new_public_key'" ref="destinationAddressAddress" :label="destinationAddressLabel" v-model="destinationAddress.address" @input="verifyAddress()" class="input-input destinationAddressAddress" outlined color="purple" type="text">
                                                                 <template v-slot:append>
                                                                     <div class="flex justify-end">
                                                                         <q-btn color="purple" rounded class="q-mb-sm" @click="toCoin = null" outlined unelevated flat text-color="black" label="Hide" />
@@ -467,7 +490,8 @@
                                                     </q-list>
                                                     </div>
                                                     <br>
-                                                    <q-btn unelevated @click="checkAddressMatchCoins()" :disable="!disclaimerCheck && !isEthToVtx" color="light-grey" text-color="black" label="Place Order" class="text-capitalize chose_accounts full-width" />
+
+                                                    <q-btn unelevated @click="checkAddressMatchCoins()" :disable="(!disclaimerCheck && !isEthToVtx) || (!toCoin) && (destinationAddress.address && destinationAddress.address.length == 0)" color="light-grey" text-color="black" label="Place Order" class="text-capitalize chose_accounts full-width" />
                                                 </div>
                                             </div>
                                             <div v-if="pStep === 3 && !isEthToVtx" class="prototype">
@@ -547,7 +571,7 @@
                                 <!-- <br><br><br> -->
                             </div>
                         </div>
-         <div v-if="accountToBeCreated" class=" summary-wrapper shadow-1 col-md-4 column  items-start">
+         <div v-if="accountToBeCreated && stakingRequirements" class=" summary-wrapper shadow-1 col-md-4 column  items-start">
         <q-list class="summary-wrapper__list" separator>
           <q-item class="q-my-sm" clickable v-ripple>
             <div class="text-h6">Summary</div>
@@ -842,7 +866,7 @@
                                                 </div>
                                                 <div class="you-receive-body row items-center">
                                                     <div class="col col-12">
-                                                        <q-select v-show="toCoin === null || (toCoin.type !== 'new_public_key')"  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator outlined class="select-input" v-model="toCoin" @input="updateCoinName()" use-input :options="optionsTo">
+                                                        <q-select v-show="!toCoin || (toCoin.type !== 'new_public_key')"  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator outlined class="select-input" v-model="toCoin" @input="updateCoinName()" use-input :options="optionsTo">
                                                             <template v-slot:option="scope">
                                                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                     <q-item-section avatar>
@@ -871,7 +895,7 @@
                                                     </div>
                                                     <div class="col col-12">
                                                         <!-- :rules="[ val => val.length >= 3 || 'Destination Address Cannot less than 3 characters' ]" -->
-                                                        <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-show="toCoin !== null && toCoin.type === 'new_public_key'" ref="destinationAddressAddress" :label="destinationAddressLabel" v-model="destinationAddress.address" @input="verifyAddress()" class="input-input destinationAddressAddress" outlined color="purple" type="text">
+                                                        <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-show="toCoin && toCoin.type === 'new_public_key'" ref="destinationAddressAddress" :label="destinationAddressLabel" v-model="destinationAddress.address" @input="verifyAddress()" class="input-input destinationAddressAddress" outlined color="purple" type="text">
                                                             <template v-slot:append>
                                                                 <div class="flex justify-end">
                                                                     <q-btn color="purple" rounded class="q-mb-sm" @click="toCoin = null" outlined unelevated flat text-color="black" label="Hide" />
@@ -1060,6 +1084,7 @@ export default {
   data () {
     return {
       openModal: false,
+      stakingRequirements: false,
       freeEOSAccountStepper: 1,
       isLoading: true,
       offer: true,
@@ -1090,6 +1115,7 @@ export default {
       fromCoin: null,
       fromCoinAmount: 1,
       toCoinAmount: 0,
+      toCoinTemp: {},
       fromCoinType: 'BTC',
       toCoinType: 'ETH',
       toCoin: null,
@@ -1099,7 +1125,7 @@ export default {
       memo: '',
       optionsFrom: [],
       globalTx: {
-        hash: '0x1ea590c732563b6d83547ea8d01b1ea7b774d4c0975b5f4b2a2c6570581a1114',
+        hash: '',
         status: 'Pending',
         label: 'Waiting for confirmation...'
       },
@@ -1120,6 +1146,10 @@ export default {
       spinnervisible: false,
       lastChangedValue: 'deposit',
       coins: [],
+      freeEOS: {
+        message: '',
+        qualified: false
+      },
       depositCoin: {
         'label': 'Bitcoin',
         'value': 'btc',
@@ -1138,6 +1168,7 @@ export default {
       destinationQuantity: 0,
       destinationCoinOptions: null,
       destinationCoinUnfilter: null,
+      trial: 0,
       rateData: null,
       rateDataTemplate: {
         rate: 1,
@@ -1175,6 +1206,15 @@ export default {
   },
   updated () {},
   watch: {
+    pStep () {
+      if (this.pStep === 2) {
+        if (this.eThToVTX && this.accountToBeCreated && this.freeEOS.qualified) {
+          this.toCoin = this.toCoinTemp
+        } else {
+          if (this.toCoinTemp && this.toCoinTemp.freeeos) { this.toCoin = null }
+        }
+      }
+    },
     depositCoin (val) {
       if (val && val.origin && val.origin === 'metamask') {
         this.fromCoin = this.currentWallet
@@ -1211,10 +1251,12 @@ export default {
       let item = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
       if (item) { this.depositCoin = item }
 
-      // console.log(this.depositCoin, item, 'ETH this.depositCoin', this.$store.state.investment.defaultAccount, this.depositCoinOptions)
+      // //console.log(this.depositCoin, item, 'ETH this.depositCoin', this.$store.state.investment.defaultAccount, this.depositCoinOptions)
     },
     toCoin (val) {
-      if (val.type !== 'new_public_key') {
+      // console.log(val, 'toCoin')
+
+      if (val && val.type !== 'new_public_key') {
         this.toCoinType = this.toCoin.type
       } else {
         return 'VTX'
@@ -1274,7 +1316,7 @@ export default {
     */
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName))
-    // console.log('this.currentAccount', this.currentAccount)
+    // //console.log('this.currentAccount', this.currentAccount)
     if (this.currentAccount !== null && this.currentAccount !== undefined) {
       // this.fromCoin = {
       //   label: this.currentAccount.name,
@@ -1473,9 +1515,34 @@ export default {
     }
 
     this.initMetamask()
+    this.$store.dispatch('investment/getMarketDataVsUSD')
+    // this.pStep = 3
+    // this.checkTxStatus('0x0a91245859e7fc6169e2bc900cecf21624f1520602d4fcc8aa4966aa12648193')
   },
   methods: {
+    checkFreeEOsAccountRequirements () {
+      if (this.isEthToVtx) {
+        if (this.destinationQuantity >= 10000) {
+          if (this.accountToBeCreated) {
+            this.freeEOS.message = 'Your free account EOS account "' + this.freeeAccountName + '" will be created'
+          } else {
+            this.freeEOS.message = 'Your qualify to get a free EOS account'
+          }
+          this.freeEOS.qualified = true
+        } else {
+          this.freeEOS.message = 'You need to get at least 10 000 VTX to get a free EOS account.'
+          this.freeEOS.qualified = false
+        }
+      } else {
+        this.freeEOS.message = 'You can only get an EOS account right now when Swapping ETH to VTX'
+        this.freeEOS.qualified = false
+      }
+    },
     async checkTxStatus (transactonHash) {
+      this.trial++
+
+      if (this.trial > 3) return
+
       this.pStep = 3
 
       const sleep = (milliseconds) => {
@@ -1487,29 +1554,31 @@ export default {
       let transactionReceipt = null
       while (transactionReceipt == null) {
         transactionReceipt = await web3.eth.getTransactionReceipt(transactonHash)
-        if (!transactionReceipt) {
-          await sleep(expectedBlockTime)
-        }
+
+        await sleep(expectedBlockTime)
       }
 
       if (transactionReceipt.status) {
         this.$axios.post('https://cpu.volentix.io/api/eos/getVtx').then(response => {
           if (response.data.hasOwnProperty('transferred')) {
             let error = response.data.errors.find(e => e.tx.memo.toLowerCase().includes(transactonHash.toLowerCase()))
-            let tx = response.data.transferred.find(e => e.memo.toLowerCase().includes(transactonHash.toLowerCase()))
-            if (error) {
+            let tx = response.data.transferred.find(e => e.tx.memo.toLowerCase().includes(transactonHash.toLowerCase()))
+            if (tx) {
+              this.globalTx.label = tx.tx.quantity + ' has been sent to your account ' + tx.tx.to + ''
+              this.globalTx.status = 'Completed'
+            } else if (error) {
               this.globalTx.label = 'Your transaction is taking longer than expected. Coffee ?'
               this.globalTx.status = 'Confirming'
-            } else if (tx) {
-              this.globalTx.label = tx.quantity + ' has been sent to your account ' + tx.to
-              this.globalTx.status = 'Completed'
+              this.checkTxStatus(transactonHash)
             } else {
               this.globalTx.label = 'Your transaction is taking longer than expected. Coffee ?'
               this.globalTx.status = 'Confirming'
+              this.checkTxStatus(transactonHash)
             }
           } else {
             this.globalTx.label = 'Your transaction is taking longer than expected. Coffee ?'
             this.globalTx.status = 'Confirming'
+            this.checkTxStatus(transactonHash)
           }
         })
       } else {
@@ -1529,9 +1598,10 @@ export default {
             this.fromCoin.address,
             ''
           ).then((tx) => {
+            // console.log(this.toCoin.value, 'this.toCoin.value ')
             // Set dummy 12 letter account name if account is not yet chosen by user
-            tx.data = Web3.utils.utf8ToHex(this.toCoin && this.toCoin.value ? this.toCoin.value : 'loremipsum12' + (this.accountToBeCreated ? ',EOS6SqpdkwBc9zPPuaJYcGqRQN1VtXAXmPXN26jqWHW5T1rCm6rui' : ''))
-            this.getGasOptions(tx)
+            tx.data = Web3.utils.utf8ToHex(this.toCoin && this.toCoin.value ? this.toCoin.value : 'loremipsum12' + (this.accountToBeCreated ? 'EOS6SqpdkwBc9zPPuaJYcGqRQN1VtXAXmPXN26jqWHW5T1rCm6rui' : ''))
+            this.getGasOptions(tx, 30000)
           })
         }
       } catch (error) {
@@ -1584,7 +1654,7 @@ export default {
 
             result.transaction.on('error', error => {
               this.$q.notify({
-                message: error,
+                message: error || 'Transaction failed',
                 color: 'negative',
                 type: 'warning'
               })
@@ -1626,10 +1696,23 @@ export default {
       if (!this.isEthToVtx) {
         this.postOrder()
       } else {
+        if (this.accountToBeCreated && !this.freeEOS.qualified) {
+          // this.pStep = 2
+        //  return
+        }
+        if (!this.toCoin) {
+          this.$q.notify({
+            message: 'account name error',
+            color: 'negative',
+            type: 'warning'
+          })
+          return
+        }
         let account = this.$store.state.wallets.tokens.find(o => o.key === this.fromCoin.key)
         let data = {
           gasData: this.gasSelected,
-          txData: this.toCoin.value + (this.accountToBeCreated ? ',' + this.toCoin.key : '')
+          txData: this.toCoin.value + (this.accountToBeCreated ? '' + this.toCoin.key : ''),
+          gasLimit: 30000
         }
         if (this.$store.state.investment.defaultAccount.origin === 'metamask') {
           Lib.getRawETHTransaction(
@@ -1637,7 +1720,7 @@ export default {
             this.fromCoin.value,
             ethVTxAddress,
             this.depositQuantity,
-            '',
+            data,
             this.fromCoin.address,
             ''
           ).then((tx) => {
@@ -1646,16 +1729,16 @@ export default {
             tx.gas = data.gasData.gas
             tx.gasPrice = data.gasData.gasPrice
             metamask.pushTransaction(tx).then(result => {
-              console.log(result, 'metamask result')
+              // console.log(result, 'metamask result')
               result.transaction.on('transactionHash', hash => {
                 this.pStep = 3
                 this.globalTx.hash = hash
                 this.checkTxStatus(hash)
               })
 
-              result.transaction.on('error', error => {
+              result.transaction.catch(error => {
                 this.$q.notify({
-                  message: error,
+                  message: error.message,
                   color: 'negative',
                   type: 'warning'
                 })
@@ -1663,8 +1746,6 @@ export default {
             })
           })
         } else {
-          this.pStep = 3
-
           Lib.send(
             'eth',
             'eth',
@@ -1675,8 +1756,9 @@ export default {
             account.privateKey,
             ''
           ).then(result => {
+            this.pStep = 3
+
             if (result.success) {
-              this.pStep = 3
               this.globalTx.hash = result.transaction_id
               this.checkTxStatus(result.transaction_id)
             } else {
@@ -1688,7 +1770,7 @@ export default {
             }
           }).catch((error) => {
             this.$q.notify({
-              message: error,
+              message: error.message,
               color: 'negative',
               type: 'warning'
             })
@@ -1704,7 +1786,7 @@ export default {
         let stake_per = (1 + parseInt(this.period) / 10.0) / 100
         if (+this.destinationQuantity > 0.0 && +this.destinationQuantity >= 10000) {
           this.estimatedReward = (Math.round(this.destinationQuantity * stake_per * 100) / 100) * this.period
-        // console.log('mul', stake_per)
+        // //console.log('mul', stake_per)
         } else {
           this.estimatedReward = 0
         }
@@ -1772,7 +1854,7 @@ export default {
     checkToPostOrder () {
       if (this.$refs.depositQuantity.hasError || this.$refs.destinationQuantity.hasError) {
         // userError()
-        // console.error('There is a problem with the quantities')
+        // //console.error('There is a problem with the quantities')
       } else {
         this.postOrder()
         // this.$refs.stepper.next()
@@ -1781,7 +1863,7 @@ export default {
     checkToGetPairs () {
       if (this.depositCoin === null) {
         // userError('There is a problem with the coin selection')
-        // console.error('There is a problem with the coin selection')
+        // //console.error('There is a problem with the coin selection')
       } else {
         this.getPairs()
         // this.$refs.stepper.next()
@@ -1826,7 +1908,7 @@ export default {
       })
       if (this.destinationCoin === null) {
         // userError()
-        // console.error('There is a problem with the destination address or the coin is not selected')
+        // //console.error('There is a problem with the destination address or the coin is not selected')
       } else {
         this.getRate()
         // this.$refs.stepper.next()
@@ -1838,7 +1920,7 @@ export default {
 
         if (!this.toCoin) {
           let eosAccounts = this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type === 'vtx')
-          if (eosAccounts.length === 1) { this.toCoin = eosAccounts[0] }
+          if (eosAccounts.length === 1) { this.toCoin = JSON.parse(JSON.stringify(eosAccounts[0])) }
         }
       }
     },
@@ -1856,13 +1938,15 @@ export default {
       this.destinationQuantity = this.destinationQuantity <= 0 ? 0 : this.destinationQuantity
       this.lastChangedValue = 'deposit'
       this.checkBalance()
+
+      this.checkFreeEOsAccountRequirements()
     },
     quantityFromDestination () {
       // deal with precision
 
       if (this.destinationCoin.value === 'vtx' && this.depositCoin.value === 'eth') {
         if (this.accountToBeCreated && this.destinationQuantity < 10000) {
-          this.destinationQuantity = 10000
+          // this.destinationQuantity = 10000
         }
 
         this.depositQuantity = (+this.destinationQuantity + +this.rateData.minerFee) * +this.rateData.rate
@@ -1872,6 +1956,7 @@ export default {
 
       this.lastChangedValue = 'destination'
       this.checkBalance()
+      this.checkFreeEOsAccountRequirements()
     },
     orderStatus () {
       const self = this
@@ -1917,14 +2002,18 @@ export default {
           } catch (error) {
             this.inError = false
             this.accountToBeCreated = true
-            this.toCoin = this.$store.state.wallets.tokens.find(o => o.type === 'verto' && o.chain === 'eos')
+            let account = this.$store.state.wallets.tokens.find(o => o.type === 'verto' && o.chain === 'eos')
 
-            if (!this.toCoin) {
-              this.toCoin = this.$store.state.wallets.tokens.find(o => o.chain === 'eos')
+            if (account) {
+              this.toCoinTemp = JSON.parse(JSON.stringify(account))
+            } else {
+              account = this.$store.state.wallets.tokens.find(o => o.chain === 'eos')
+              this.toCoinTemp = JSON.parse(JSON.stringify(account))
             }
-
-            this.toCoin.name = this.destinationAddress.address = this.toCoin.label = this.toCoin.value = this.freeeAccountName
-            this.toCoin.image = 'https://files.coinswitch.co/public/coins/eos.png'
+            this.toCoinTemp.value =
+            this.toCoinTemp.name = this.destinationAddress.address = this.toCoinTemp.value = this.freeeAccountName
+            this.toCoinTemp.image = 'https://files.coinswitch.co/public/coins/eos.png'
+            this.toCoinTemp.freeeos = true
             this.freeEOSAccountStepper = 2
           }
         } else {
@@ -1957,7 +2046,7 @@ export default {
       let eosBal = (await eos.getCurrencyBalanceP(this.toCoin.value)).toString().split(' ')[0]
 
       if (+eosBal < +this.destinationCoinAmount) {
-        console.log('eos balance is yet to low to proceed: ', eosBal)
+        // console.log('eos balance is yet to low to proceed: ', eosBal)
         setTimeout(() => {
           self.orderVTX()
         }, 1000)
@@ -2105,7 +2194,7 @@ export default {
       }
 
       this.refundAddress.address = this.refundAddress.address === '' ? this.fromCoin.value : this.refundAddress.address
-      // console.log('this.refundAddress', this.refundAddress)
+      // //console.log('this.refundAddress', this.refundAddress)
       this.destinationAddress.address = this.destinationAddress.address === '' ? this.toCoin.value : this.destinationAddress.address
       this.isPrivateKeyEncrypted()
       if (this.openModal) return
@@ -2147,7 +2236,7 @@ export default {
         .catch((err) => {
           if (err) {}
           // userError()
-          // console.error('There was a problem posting the order', err)
+          // //console.error('There was a problem posting the order', err)
         })
     },
     getPairs () {
@@ -2158,7 +2247,7 @@ export default {
         headers
       })
         .then((response) => {
-          // console.log('------------Response------------', response)
+          // //console.log('------------Response------------', response)
           let inject = {}
           self.destinationCoinOptions = response.data.data.map(function (coin) {
             if (coin.isActive === true) {
@@ -2197,7 +2286,7 @@ export default {
         .catch((err) => {
           if (err) {}
           // userError()
-          // console.error('There was a problem getting the destination coins', err)
+          // //console.error('There was a problem getting the destination coins', err)
         })
     },
     async eThToVTX (amount) {
@@ -2270,7 +2359,7 @@ export default {
               self.rateData = self.rateDataVtx
 
               if (self.accountToBeCreated) {
-                self.destinationQuantity = 10000
+                // self.destinationQuantity = 10000
                 self.calculateReward()
                 self.quantityFromDestination()
               }
@@ -2323,18 +2412,18 @@ export default {
       })
     },
     addSearchField () {
-      console.log('addSearchField triggered')
+      // console.log('addSearchField triggered')
     },
     changeText () {
-      console.log('changeText triggered')
+      // console.log('changeText triggered')
     },
     triggerPayCoinSelect () {
-      // console.log('triggerPayCoinSelect triggered')
+      // //console.log('triggerPayCoinSelect triggered')
       document.querySelector('.pay-coin-select .q-field__control').dispatchEvent(new Event('click'))
       setTimeout(() => {
         let payCoinSelectPopup = document.querySelector('.pay-coin-select-popup')
         let paycoinSearch = document.querySelector('.paycoin-search').cloneNode(true)
-        // console.log('paycoinSearch', paycoinSearch)
+        // //console.log('paycoinSearch', paycoinSearch)
         payCoinSelectPopup.prepend(paycoinSearch)
         payCoinSelectPopup.querySelector('.paycoin-search').classList.remove('hidden')
       }, 100)
@@ -2342,12 +2431,12 @@ export default {
       // pay-coin-select-popup
     },
     triggerReceiveCoinSelect () {
-      // console.log('triggerReceiveCoinSelect triggered')
+      // //console.log('triggerReceiveCoinSelect triggered')
       document.querySelector('.receive-coin-select .q-field__control').dispatchEvent(new Event('click'))
       setTimeout(() => {
         let receiveCoinSelectPopup = document.querySelector('.receive-coin-select-popup')
         let receivecoinSearch = document.querySelector('.receivecoin-search').cloneNode(true)
-        // console.log('receivecoinSearch', receivecoinSearch)
+        // //console.log('receivecoinSearch', receivecoinSearch)
         receiveCoinSelectPopup.prepend(receivecoinSearch)
         receiveCoinSelectPopup.querySelector('.receivecoin-search').classList.remove('hidden')
       }, 100)
