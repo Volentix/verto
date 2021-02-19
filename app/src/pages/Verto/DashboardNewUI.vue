@@ -17,7 +17,7 @@
                     </div>
                     <div class="col q-pl-sm col-md-6 customSlider">
                         <maxDeFiYield class="slide" :class="{'active': !customSlider}" />
-                        <startNodeSection class="slide" :class="{'active': customSlider}" :banner="5" />
+                        <startNodeSection class="slide" :class="{'active': customSlider}" :banner="6" />
                     </div>
                     <div class="col col-md-12">
                         <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
