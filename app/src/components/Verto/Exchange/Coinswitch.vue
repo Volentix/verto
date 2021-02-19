@@ -1343,6 +1343,9 @@ export default {
     isTransactionPending () {
       return this.status === 'no_deposit' || this.status === 'confirming' || this.status === 'exchanging' || this.status === 'sending'
     },
+    sendingFrom () {
+      return this.isEthToVtx ? this.$store.state.wallets.tokens.find(o => o.chain === 'eth' && o.key === this.fromCoin.key) : this.toCoin
+    },
     isEthToVtx () {
       return this.depositCoin.value === 'eth' && this.destinationCoin.value === 'vtx'
     },
@@ -1882,6 +1885,8 @@ export default {
             label: token.name.toLowerCase(),
             value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
             key: token.key,
+            privateKey: token.privateKey,
+            privateKeyEncrypted: token.privateKeyEncrypted,
             image: token.icon,
             type: token.type
           })
@@ -2134,7 +2139,7 @@ export default {
       })
     },
     checkPrivateKeyPassword () {
-      const privateKeyEncrypted = JSON.stringify(this.toCoin.privateKeyEncrypted)
+      const privateKeyEncrypted = JSON.stringify(this.sendingFrom.privateKeyEncrypted)
       let privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
 
       if (privateKey.success) {
@@ -2151,7 +2156,9 @@ export default {
       this.openModalProgress = false
     },
     isPrivateKeyEncrypted () {
-      if (this.destinationCoin.value === 'vtx' && !this.toCoin.privateKey && this.toCoin.privateKeyEncrypted) {
+      console.log(this.sendingFrom, 'this.sendingFrom')
+
+      if (this.destinationCoin.value === 'vtx' && !this.sendingFrom.privateKey && this.sendingFrom.privateKeyEncrypted) {
         this.getPassword = true
         this.openModal = true
         this.checkPrivateKeyPassword()
@@ -2187,7 +2194,7 @@ export default {
       let destinationCoinAmount = null
 
       if (self.destinationCoin.value === 'vtx' && self.depositCoin.value === 'eth') {
-        return this.swapEthToVTX()
+        return this.checkAddressMatchCoins()
       }
 
       if (self.lastChangedValue === 'deposit') {

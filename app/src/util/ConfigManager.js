@@ -440,7 +440,7 @@ class ConfigManager {
         const privateKey = sjcl.decrypt(password, encryptedText).replace(/^"(.+)"$/, '$1')
         return { success: true, key: privateKey }
       } catch (e) {
-        devError(e)
+        // devError(e)
         return { success: false }
       }
     }
