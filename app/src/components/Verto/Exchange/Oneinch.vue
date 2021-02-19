@@ -156,10 +156,27 @@
                                                         </q-item-section>
                                                     </q-item>
                                                 </q-list>
-                                                <q-btn v-if="approvalRequired" unelevated @click="processERC20Approval()" :loading="spinnervisible" :disable="error !== false || spinnervisible || gasOptions.length == 0" color="primary" text-color="black" label="Approve token" class="text-capitalize chose_accounts full-width" />
+                                                <q-btn
+                                                v-if="approvalRequired"
+                                                unelevated @click="processERC20Approval()"
+                                                :loading="spinnervisible"
+                                                :disable="error !== false || spinnervisible || gasOptions.length == 0"
+                                                outline
+                                                rounded
+                                                color="purple"
+                                                label="Approve token"
+                                                class="text-capitalize chose_accounts full-width" />
 
-                                                <q-btn v-else unelevated @click="doSwap()" :loading="spinnervisible" :disable="error && error.lenght || gasOptions.length == 0 || spinnervisible || depositCoin.amount < swapData.fromAmount " color="primary" text-color="black" label="Swap now" class="text-capitalize chose_accounts full-width" />
-
+                                                <q-btn
+                                                v-else
+                                                unelevated
+                                                @click="doSwap()"
+                                                :loading="spinnervisible"
+                                                :disable="error && error.lenght || gasOptions.length == 0 || spinnervisible || depositCoin.amount < swapData.fromAmount "
+                                                outline
+                                                rounded
+                                                color="purple"
+                                                label="Swap now" class="text-capitalize chose_accounts full-width" />
                                             </div>
                                         </div>
 
@@ -2263,14 +2280,13 @@ export default {
             position: relative;
 
             /deep/ .chose_accounts {
-                background-color: #dfdff1 !important;
-                font-weight: $bold;
+                background-color: transparent !important;
                 font-size: 14px !important;
-                // font-family: $Franklin !important;
-                color: #5e5e88 !important;
+                height: 35px;
+                color: #7272FA !important;
                 border-radius: 10px;
                 margin-top: 20px;
-                height: 54px;
+                height: 40px !important;
             }
 
             /deep/.swap_vert {
