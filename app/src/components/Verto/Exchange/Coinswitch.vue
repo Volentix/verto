@@ -2156,8 +2156,7 @@ export default {
       this.openModalProgress = false
     },
     isPrivateKeyEncrypted () {
-      console.log(this.sendingFrom, 'this.sendingFrom')
-
+  
       if (this.destinationCoin.value === 'vtx' && !this.sendingFrom.privateKey && this.sendingFrom.privateKeyEncrypted) {
         this.getPassword = true
         this.openModal = true
