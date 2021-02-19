@@ -424,6 +424,13 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   watch: {
+    defaultAccount (val) {
+      this.accountOption = val
+      this.getAccountInformation(this.accountOption)
+      if (this.accountOption.chain !== val.chain) {
+        this.switchChain()
+      }
+    },
     selectedEOSPool (val) {
       this.menu = 'liquidity'
     },

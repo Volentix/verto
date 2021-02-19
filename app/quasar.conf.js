@@ -96,7 +96,9 @@ module.exports = function (ctx) {
         'QFabAction',
         'QPageSticky',
         'QBreadcrumbs',
-        'QBreadcrumbsEl'
+        'QBreadcrumbsEl',
+        'QSkeleton',
+        'QMarkupTable'
       ],
 
       directives: [

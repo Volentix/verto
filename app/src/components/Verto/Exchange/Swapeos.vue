@@ -217,6 +217,8 @@
                                     </template>
                                     <template v-slot:selected>
                                       <span class="text-h5 text-bold">{{ depositCoin.value.toUpperCase() }}</span>
+                                      <q-item-label v-if="depositCoin.amount" caption>{{ depositCoin.amount }}</q-item-label>
+
                                         </template>
                                   </q-select>
                                 </span>
@@ -585,8 +587,14 @@ export default {
       eosAccounts: [],
       eos: null,
       tokens: [],
-      depositCoin: null,
-      destinationCoin: null,
+      depositCoin: {
+        label: 'EOS',
+        value: 'eos'
+      },
+      destinationCoin: {
+        label: 'VTX',
+        value: 'vtx'
+      },
       pairs: [],
       coins: [],
       depositCoinOptions: [],
@@ -808,7 +816,8 @@ export default {
     },
     validateTransaction () {
       this.error = null
-      console.log(this.depositCoin.amount, 'this.depositCoin.amount < this.swapData.fromAmount', this.swapData.fromAmount)
+      this.swapData.error = false
+      this.swapData.fromAmount = isNaN(this.swapData.fromAmount) ? 0 : this.swapData.fromAmount
       if (this.depositCoin.amount < this.swapData.fromAmount) {
         this.error = 'Insufficient ' + this.depositCoin.label + ' balance'
       } else if (this.tab === 'liquidity' && this.destinationCoin.amount < parseFloat(this.swapData.toAmount)) {
@@ -957,7 +966,7 @@ export default {
     },
     depositCoin: function (newVal, oldVal) {
       if (newVal) {
-        this.swapData.fromAmount = isNaN(parseFloat(newVal.amount).toFixed(this.depositCoin.precision)) ? 0 : parseFloat(newVal.amount).toFixed(8)
+        this.swapData.fromAmount = isNaN(parseFloat(newVal.amount).toFixed(this.depositCoin.precision)) ? 0 : parseFloat(newVal.amount).toFixed(this.depositCoin.precision)
         this.validateTransaction()
       }
     },
