@@ -1746,6 +1746,9 @@ export default {
             })
           })
         } else {
+          this.isPrivateKeyEncrypted()
+          if (this.openModal) return
+
           Lib.send(
             'eth',
             'eth',
