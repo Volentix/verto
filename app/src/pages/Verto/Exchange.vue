@@ -13,6 +13,7 @@
                 </div>
                 <div class="col col-md-9">
                     <div class="desktop-card-style apps-section q-mb-sm"  :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+                        <!-- <q-scroll-area :visible="true" style="height: 80vh;"> -->
                         <div class="chain-tools-wrapper">
                             <div class="standard-content">
                                 <h2 class="standard-content--title flex justify-start">vDex</h2>
@@ -21,7 +22,6 @@
                             <div class="chain-tools-wrapper--list chain-tools-wrapper--list___2 open">
                                 <div class="list-wrapper">
                                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-
                                         <!-- <div class="row q-mb-md">
                                             <q-select class="default-view col-md-3 col-6 offset-md-9" v-model="defaultView" :options="['Coinswitch', '1Inch', 'Swap EOS']" label="Default view" />
                                         </div> -->
@@ -34,6 +34,7 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- </q-scroll-area> -->
                     </div>
                 </div>
             </div>
@@ -83,6 +84,8 @@
 </template>
 
 <script>
+// import { QScrollArea } from 'quasar'
+
 import store from '@/store'
 // import { userError } from '@/util/errorHandler'
 
@@ -114,6 +117,7 @@ const eos = new EosWrapper()
 export default {
   components: {
     // desktop components
+    // QScrollArea,
     ProfileHeader,
     Wallets,
     VolentixLiquidity,
@@ -872,6 +876,10 @@ export default {
       height: 54px;
       width: fit-content !important;
       float: right;
+      font-size: 14px !important;
+      height: 35px;
+      color: #7272FA !important;
+      height: 40px !important;
     }
     .trade-component .prototype .you-receive-head,
     .trade-component .prototype .you-pay-head{
@@ -923,6 +931,10 @@ export default {
         height: 54px;
         width: fit-content !important;
         float: right;
+        font-size: 14px !important;
+        height: 35px;
+        color: #7272FA !important;
+        height: 40px !important;
       }
       .trade-component .prototype .you-receive-head,
       .trade-component .prototype .you-pay-head{
