@@ -556,7 +556,7 @@ export default {
       ErrorMessage: false,
       isPwd: true,
       step: 1,
-      tab: 'swap',
+      tab: 'liquidity',
       transactionStatus: 'Pending',
       freeCPU: false,
       spinnervisible: false,
