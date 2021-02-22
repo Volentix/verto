@@ -1,10 +1,16 @@
 <template>
   <q-select
-    :dark="$store.state.settings.lightMode === 'true'"
-    filled
-    dense
-    color="white"
-    :class="{'bg-indigo-1 text-black': $store.state.settings.lightMode === 'false'}"
+    :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
+    separator
+    rounded
+    outlined
+    :color="$store.state.settings.lightMode === 'true' ? 'white':'black'"
+    class="select-input"
+    label="Account name"
+    :class="{
+      'text-black': $store.state.settings.lightMode === 'false',
+      'dark-input': $store.state.settings.lightMode === 'true'
+      }"
     @input="setAccount()"
     v-model="accountOption"
     :options="accountOptions">
@@ -12,10 +18,10 @@
       <q-item
         :dark="$store.state.settings.lightMode === 'true'"
         v-if="accountOption"
-        dense>
+        >
         <q-item-section class="q-pr-sm">
-          <q-item-label caption class="ellipsis mw200 q-pt-xs text-black flex items-center">
-            <q-icon :color="accountOption.color" name="fiber_manual_record" class="q-mr-sm" />
+          <q-item-label caption class="ellipsis mw200 text-black flex items-center">
+            <q-icon :color="accountOption.color" name="fiber_manual_record" class="q-mr-xs" />
             <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':''">{{ accountOption.label }}</span>
             <q-icon size="16px" class="q-ml-sm" :name="`img:${accountOption.image}`" />
           </q-item-label>
@@ -185,3 +191,59 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+  .select-input{
+    border-radius: 100px !important;
+    $height: 50px;
+    height: $height;
+    /deep/ .q-field__marginal{
+      height: $height;
+      min-height: unset;
+    }
+    /deep/ .q-field__control{
+      height: $height;
+      min-height: unset;
+      .q-field__label.no-pointer-events{
+        left: 20px;
+      }
+      .q-field__native{
+        padding-left: 0px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        height: $height;
+        min-height: unset;
+        .q-item{
+          padding: 0px;
+          padding-left: 0px;
+          min-height: $height;
+          padding-bottom: 0px;
+          .q-item__label--caption{
+            margin-top: -35px;
+          }
+          .q-item__section{
+            padding-right: 0px;
+            min-width: 36px;
+            .q-item__label + .q-item__label {
+              margin-top: 0px;
+            }
+          }
+        }
+      }
+    }
+  }
+  .dark-input{
+    &.select-input{
+      /deep/ .q-field__control{
+        .q-field__native{
+          .q-item{
+            .q-item__section{
+              .q-item__label + .q-item__label {
+                color: #CCC;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+</style>

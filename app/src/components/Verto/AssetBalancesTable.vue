@@ -5,12 +5,21 @@
       <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="!assets.length" :data="assets" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="body-table-col">
-            <div class="col-3 flex items-center">
+            <div class="col-1 flex items-center">
               <span class="imgs">
                 <img :src="props.row.icon" alt="">
               </span>
               <span class="flex items-center pairs">
-                <span class="pair q-pr-xs">{{props.row.type.toUpperCase()}}</span> <span class="text-grey"></span> <span class="q-pl-xs qmtxs current_price text-grey-8">(${{formatNumber(props.row.rateUsd,2)}}<q-tooltip>Current price</q-tooltip>)</span>
+                <span class="pair q-pr-xs">{{props.row.type.toUpperCase()}}</span> <span class="text-grey"></span>
+              </span>
+            </div>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-currentPrice="props">
+          <q-td :props="props" class="body-table-col">
+            <div class="col-3 flex items-center">
+              <span class="flex items-center pairs">
+                <span class="q-pl-xs qmtxs current_price text-grey-8">${{formatNumber(props.row.rateUsd,2)}}<q-tooltip>Current price</q-tooltip></span>
               </span>
             </div>
           </q-td>
@@ -31,7 +40,6 @@
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
               <span class="column items-start">
-                <span class="pair q-pr-xs allocation text-green" v-if="props.row.change24h">{{props.row.change24hPercentage}} ({{props.row.change24h}}) <q-tooltip>Daily change</q-tooltip></span>
                 <span class="pair q-pr-xs balance text-bold">
                   ${{formatNumber(props.row.usd, 2).split('.')[0]}}.<span class="text-grey-8">{{formatNumber(props.row.usd, 2).split('.')[1]}}</span>
                 </span>
@@ -42,9 +50,9 @@
         <template v-slot:body-cell-dailyChange="props">
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
-              <span class="column items-start">
-                <span class="pair q-pr-xs allocation text-green-6">+1.29%</span>
-                <span class="pair q-pr-xs balance text-bold text-green-6">$4.48</span>
+              <span v-if="props.row.change24h" class="column items-start">
+                <span class="pair q-pr-xs allocation text-green-6">({{props.row.change24hPercentage}})</span>
+                <span class="pair q-pr-xs balance text-bold text-green-6">{{props.row.change24h}}</span>
                 <!-- text-pink-12 for red color (- sign) -->
                 <!-- text-green-6 for green color (+ sign) -->
               </span>
@@ -89,6 +97,14 @@ export default {
           label: 'Asset',
           align: 'left',
           field: row => row,
+          format: val => `${val}`,
+          sortable: true
+        },
+        {
+          name: 'currentPrice',
+          align: 'left',
+          label: '',
+          field: 'currentPrice',
           format: val => `${val}`,
           sortable: true
         },

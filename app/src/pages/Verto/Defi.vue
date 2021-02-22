@@ -754,6 +754,11 @@ export default {
         height: 36px;
         letter-spacing: .3px;
         float: right;
+        // background-color: #FFF !important;
+        font-size: 14px !important;
+        height: 35px;
+        color: #7272FA !important;
+        height: 40px !important;
       }
     }
   }
@@ -817,6 +822,9 @@ export default {
       background: transparent;
       &.q-tab--active{
         opacity: 1;
+        .q-tab__indicator{
+          color:  rgba(128, 0, 128, 0.4) !important;
+        }
       }
     }
   }
@@ -947,6 +955,11 @@ export default {
         width: 150px !important;
         letter-spacing: .3px;
         float: right;
+        background-color: transparent !important;
+        font-size: 14px !important;
+        height: 35px;
+        color: #7272FA !important;
+        height: 40px !important;
       }
     }
   }
@@ -972,7 +985,7 @@ export default {
       color: #FFF;
     }
     .trade-component .prototype .you-receive .chose_accounts{
-      background-color: #FFF !important;
+        background-color: #FFF !important;
         font-size: 14px !important;
         color: #04111F !important;
         border-radius: 40px;
@@ -982,6 +995,11 @@ export default {
         width: 150px !important;
         letter-spacing: .3px;
         float: right;
+        background-color: transparent !important;
+        font-size: 14px !important;
+        height: 35px;
+        color: #7272FA !important;
+        height: 40px !important;
     }
     .trade-component .prototype .you-receive-head,
     .trade-component .prototype .you-pay-head{
@@ -999,6 +1017,9 @@ export default {
       background: transparent;
       &.q-tab--active{
         opacity: 1;
+        .q-tab__indicator{
+          color:  rgba(128, 0, 128, 0.4) !important;
+        }
       }
     }
   }
@@ -1743,6 +1764,11 @@ export default {
     width: 150px !important;
     letter-spacing: .3px;
     float: right;
+    background-color: transparent !important;
+    font-size: 14px !important;
+    height: 35px;
+    color: #7272FA !important;
+    height: 40px !important;
   }
 }
 /deep/ .q-card{
