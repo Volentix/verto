@@ -192,7 +192,6 @@ export default {
 
       if (tokenData) {
         let change = tokenData.price_change_24h * token.amount
-        console.log(change, Math.abs(change), token.type, tokenData, tokenData.price_change_24h, tokenData.price_change_percentage_24h, token.amount)
         token.change24h = (change > 0 ? '+' : '-') + '$' + this.formatNumber(Math.abs(change), 2)
         token.change24hPercentage = (change > 0 ? '+' : '-') + this.formatNumber(Math.abs(tokenData.price_change_percentage_24h), 2) + '%'
       }

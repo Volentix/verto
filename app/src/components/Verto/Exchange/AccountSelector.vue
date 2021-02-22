@@ -129,13 +129,14 @@ export default {
       return parseFloat(num).toFixed(decimals).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
     },
     setAccount () {
-      // console.log(this.accountOption, this.accountOption.chain, ' this.accountOption', this.$store.state.investment.defaultAccount.chain)
-      this.$store.commit('investment/setDefaultAccount', this.accountOption)
+      if (this.accountOption) {
+        this.$store.commit('investment/setDefaultAccount', this.accountOption)
 
-      if (this.accountOption.origin && this.accountOption.origin === 'metamask') {
-        this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.metamask.tokens)
-      } else {
-        this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
+        if (this.accountOption && this.accountOption.origin === 'metamask') {
+          this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.metamask.tokens)
+        } else {
+          this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
+        }
       }
     }
   },
