@@ -16,9 +16,9 @@
             <!-- <img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""> -->
           </span>
           <q-btn :disable="!maxDeFiYield.toTokenAmount" unelevated class="qbtn-download" outline color="white" text-color="black" label="Confirm" @click="maxDeFiYield.toTokenAmount && goToExchange()" >
-          <q-tooltip v-if="!maxDeFiYield.toTokenAmount">
-           Swapping {{maxToken.type.toUpperCase()}} to {{maxDeFiYield.token}} is currently unavailable
-        </q-tooltip>
+            <q-tooltip v-if="!maxDeFiYield.toTokenAmount">
+            Swapping {{maxToken.type.toUpperCase()}} to {{maxDeFiYield.token}} is currently unavailable
+            </q-tooltip>
           </q-btn>
         </div>
         <div class="interest-wrapper">

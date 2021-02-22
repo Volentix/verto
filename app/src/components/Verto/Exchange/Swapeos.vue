@@ -255,7 +255,7 @@
                               </div>
                             </div>
                           </div>
-                          <div class="you-receive">
+                          <div class="you-receive shadow-1">
                             <br />
 
                             <q-btn outline round :color="$store.state.settings.lightMode === 'true' ? 'white':'black'" :dark="$store.state.settings.lightMode === 'true'" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
@@ -360,8 +360,8 @@
                               @click="sendTransaction()"
                               :loading="spinnervisible"
                               :disable="parseFloat(swapData.toAmount) === 0 || !depositCoin.name || parseFloat(depositCoin.amount) < parseFloat(swapData.fromAmount) || spinnervisible"
-                              color="primary"
-                              text-color="black"
+                              outline
+                              color="purple"
                               :label="tab != 'liquidity' ? 'Swap now' : 'Add liquidity'"
                               class="text-capitalize chose_accounts full-width"
                             />
@@ -1908,7 +1908,7 @@ export default {
       margin-bottom: 0px;
       padding-left: 0%;
       padding-right: 0%;
-      margin-top: 30px;
+      margin-top: 18px;
 
       .list-wrapper {
         visibility: visible;
@@ -2132,7 +2132,7 @@ export default {
     }
 
     .you-receive {
-      background-color: #f6f6f9;
+      background-color: rgba(0, 0, 0, 0.06);
       margin: 0px 10px;
       margin-top: 20px;
       padding: 15px 10px;
@@ -2140,14 +2140,13 @@ export default {
       position: relative;
 
       /deep/ .chose_accounts {
-        background-color: #dfdff1 !important;
-        font-weight: $bold;
+        background-color: transparent !important;
         font-size: 14px !important;
-        // font-family: $Franklin !important;
-        color: #5e5e88 !important;
+        height: 35px;
+        color: #7272FA !important;
         border-radius: 10px;
         margin-top: 20px;
-        height: 54px;
+        height: 40px !important;
       }
 
       /deep/.swap_vert {
