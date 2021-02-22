@@ -351,7 +351,7 @@ export default {
 
       },
       chain: 'eth',
-      menu: 'swap',
+      menu: 'liquidity',
       splitterModel: 25,
       chooseAccount: true,
       osName: '',
