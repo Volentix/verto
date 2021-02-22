@@ -7,10 +7,13 @@ export const getTokenList = ({ commit, state }, payload) => {
 }
 
 export const getTokensMarketsData = ({ commit, state }, tokens) => {
-  let list = state.list.filter(t => tokens.find(o => t.symbol === o.type && ((!t.platforms.hasOwnProperty('eos') && !t.platforms.hasOwnProperty('ethereum')) || o.chain === (t.platforms.hasOwnProperty('eos') ? 'eos' : (t.platforms.hasOwnProperty('ethereum') ? 'eth' : ''))) && !isNaN(o.amount) && o.amount !== 0) && !state.walletTokensData.find(a => a.id === t.id))
+  let list = state.list.filter(t => !state.pending.find(o => o === t.id) && tokens.find(o => t.symbol === o.type && ((!t.platforms.hasOwnProperty('eos') && !t.platforms.hasOwnProperty('ethereum')) || o.chain === (t.platforms.hasOwnProperty('eos') ? 'eos' : (t.platforms.hasOwnProperty('ethereum') ? 'eth' : o.chain))) && !isNaN(o.amount) && o.amount !== 0) && !state.walletTokensData.find(a => a.id === t.id))
 
   if (list.length) {
-    list = list.map(l => l.id).join(',')
+    list = list.map(l => l.id)
+
+    state.pending = state.pending.concat(list)
+    list = list.join(',')
 
     axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=' + list + '&price_change_percentage=24h').then((result) => {
       commit('setWalletTokensData', result.data)

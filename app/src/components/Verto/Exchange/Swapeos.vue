@@ -644,6 +644,11 @@ export default {
     urlExists (url) {
       return true
     },
+    calculateSlippage () {
+
+      //  this.slippagePercent = this.swapData.toAmount /
+
+    },
     switchAmounts () {
       let depositCoinVar = this.depositCoin
       this.depositCoin = this.destinationCoin
