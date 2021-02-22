@@ -132,6 +132,9 @@ export default {
   watch: {
     '$store.state.wallets.tokens': function () {
       this.initTable()
+    },
+    '$store.state.tokens.walletTokensData': function () {
+      this.initTable()
     }
   },
   methods: {
