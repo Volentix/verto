@@ -19,7 +19,8 @@
     <div v-else-if="banner === 6" class="banner-wrapper" @click="goToLink">
       <img v-if="$store.state.settings.lightMode === 'false'" src="statics/node-banners/ban6light.png" class="full-width scale3d" alt="">
       <img v-else src="statics/node-banners/ban6dark.png" class="full-width scale3d" alt="">
-      <div class="qbtn-launch-wrapper flex felx-center items-center q-pr-lg">
+      <div class="qbtn-launch-wrapper flex justify-between items-center q-pr-lg full-width">
+        <span class="tagline">Earn Passive income</span>
         <q-btn unelevated class="qbtn-download" outline color="white" text-color="black" label="Launch Node" />
       </div>
     </div>
@@ -60,6 +61,13 @@ export default {
     right: 0px;
     top: 0px;
     height: 100%;
+    .tagline{
+      font-family: $Franklin;
+      font-size: 20px;
+      font-weight: $bold;
+      margin-left: 80px;
+      margin-bottom: 5px;
+    }
   }
   .qbtn-download{
     border-radius: 30px;
