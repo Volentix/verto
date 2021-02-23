@@ -924,13 +924,20 @@ export default {
         // }
         // this.$store.state.currentwallet.wallet = this.currentAccount
         this.$store.state.currentwallet.wallet = this.selectedCoin
+        this.$store.commit('investment/setDefaultAccount', this.selectedCoin)
+        this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.selectedCoin.chain && w.key === this.selectedCoin.key))
+
         // //console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
 
         if (this.selectedCoin.chain !== 'eos' && this.selectedCoin.chain !== 'eth') {
           this.history = []
         } else {
           let nameOrKey = this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.name
-          this.history = (await Lib.history(this.selectedCoin.chain, this.selectedCoin.type, nameOrKey)).history
+          let pagination = {
+            position: -1,
+            offset: 100
+          }
+          this.history = (await Lib.history(this.selectedCoin.chain, this.selectedCoin.type, nameOrKey, pagination)).history
         }
       } else {
         menu.selected = false

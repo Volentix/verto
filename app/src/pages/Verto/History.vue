@@ -12,11 +12,11 @@
           </div>
           <div class="col col-md-9">
             <div class="desktop-card-style apps-section history-card" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100%;">
-              <q-banner inline-actions class="text-white bg-red q-my-md ">
+              <q-banner inline-actions class="text-white bg-red q-my-md " v-if="false">
                 Section currently in development: currently showing ETH wallets history
               </q-banner>
               <div class="row">
-                <h2 class="standard-content--title col-md-4 float-left flex justify-start q-pl-md q-pt-lg" @click="$router.push('/verto/token-insight/eth/eth')">History</h2>
+                <h2 class="standard-content--title col-md-4 float-left flex justify-start q-pl-md q-pt-lg" >History</h2>
                 <div class="col flex justify-end q-pr-md"><AccountSelector :showAllWallets="true"/></div>
               </div>
 
