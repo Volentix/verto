@@ -94,9 +94,12 @@ export default {
     this.getCoinswitchCoins()
     this.get1inchCoins()
     this.getDefiboxCoins()
-    this.$store.dispatch('tokens/getTokenList')
+
     this.version = version
     this.$refs.psswrd.focus()
+  },
+  created () {
+    this.$store.dispatch('tokens/getTokenList')
   },
   methods: {
     checkPassword () {

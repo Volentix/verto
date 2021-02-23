@@ -43,23 +43,30 @@ class Lib {
     // console.log(rawTx, 'rawTx')
     return rawTx
   }
-  history = async (walletType, key, token) => {
+  removeDuplicateTransactions (history) {
+    let duplicates = []
+
+    return history.filter((el) => !duplicates.find(e => e === el.transID) && duplicates.push(el.transID))
+  }
+
+  history = async (walletType, key, token, data = null) => {
     const wallet = {
-      async eos (token, key) {
-        // //console.log('history eos!', key, token)
+      async eos (token, key, data) {
         let actions = []
         await axios.post(process.env[store.state.settings.network].CACHE + process.env[store.state.settings.network].EOS_HISTORYAPI + '/v1/history/get_actions', {
-          'account_name': key
+          'account_name': key,
+          pos: data.position,
+          offset: data.offset
         })
           .then(function (result) {
             if (result.length !== 0) {
               result.data.actions.reverse().map(a => {
-                // //console.log('split', a.action_trace.act.name === 'transfer' ? a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() : 'not transfer')
-                if (token === 'eos' || (
+                // console.log('split', a.action_trace.act.name === 'transfer' ? a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() : 'not transfer')
+                if (token === 'eos' && (
                   a.action_trace.act.name === 'transfer' &&
-                    a.action_trace.receiver === key &&
+                    a.action_trace.receiver === key && typeof a.action_trace.act.data.from !== 'undefined' && typeof a.action_trace.act.data.to !== 'undefined' &&
                     a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() === token)) {
-                  // //console.log('walletlib history actions', a)
+                  // console.log('walletlib history actions', a)
 
                   let amount = ''
                   switch (a.action_trace.act.name) {
@@ -86,11 +93,12 @@ class Lib {
                   })
                 }
               })
-              return actions
+
+              return self.removeDuplicateTransactions(actions)
             }
           }).catch(function (error) {
             // TODO: Exception handling
-            // //console.log('history error', error)
+            // console.log('history error', error)
             userError(error)
             return false
           })
@@ -101,7 +109,7 @@ class Lib {
         }
       },
       async eth (token, key) {
-        // //console.log('history eth!', key)
+        // console.log('history eth!', key)
         let actions = []
         await axios.get('http://api.etherscan.io/api?module=account&action=txlist&startblock=0&endblock=99999999&sort=desc&address=' + key)
           .then(function (result) {
@@ -121,7 +129,7 @@ class Lib {
             }
           }).catch(function (error) {
             // TODO: Exception handling
-            // //console.log('history error', error)
+            // console.log('history error', error)
             userError(error)
             return false
           })
@@ -194,7 +202,7 @@ class Lib {
       }
     }[walletType]
 
-    return wallet ? wallet(key, token) : {}
+    return wallet ? wallet(key, token, data) : {}
   }
 
   balance = async (walletType, key, token) => {
@@ -209,7 +217,7 @@ class Lib {
         // const balProm =
         await eos.getCurrencyBalanceP(key, tokenContract[token])
           .then(function (result) {
-            // ////console.log('walletlib', key, tokenContract[token], bal)
+            /// /console.log('walletlib', key, tokenContract[token], bal)
             if (result.length) {
               float = result[0].split(' ')[0]
               return float
@@ -287,9 +295,9 @@ class Lib {
               amount = +b.free + +b.frozen + +b.locked
             })
           }
-          // ////console.log('bnb', balances, amount)
+          /// /console.log('bnb', balances, amount)
         } catch (err) {
-          // ////console.log('', err)
+          /// /console.log('', err)
         }
         const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')).data.binancecoin.usd
         return {

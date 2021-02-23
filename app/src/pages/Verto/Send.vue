@@ -398,6 +398,15 @@ export default {
     gasPrice: function (newVal) {
       this.checkGas()
     },
+    gasSelected (val) {
+      this.isBalanceEnough()
+    },
+    sendAmount () {
+      if (this.currentToken.chainID === 'eth') {
+        this.sendAmount = parseFloat(this.sendAmount).toFixed(8)
+      }
+      this.isBalanceEnough()
+    },
     currentToken: function (newVal) {
       if (newVal) {
         /*
@@ -502,8 +511,6 @@ export default {
       this.checkGas()
     }
   },
-  mounted () {
-  },
   methods: {
 
     getCurrentWallet () {
@@ -513,6 +520,20 @@ export default {
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
+    isBalanceEnough () {
+      if (!this.gasSelected || this.currentToken.chainID !== 'eth') return
+      const Web3 = require('web3')
+      let ethValue = Web3.utils.fromWei(Math.round((this.gasSelected.gas * this.gasSelected.gasPrice)).toString(), 'ether')
+      this.sendAmount = parseFloat(this.sendAmount) === 0 && parseFloat(this.currentToken.amount) !== 0 ? this.currentToken.amount : this.sendAmount
+      if ((parseFloat(this.sendAmount) + parseFloat(ethValue)) > parseFloat(this.currentToken.amount)) {
+        this.sendAmount = parseFloat(this.currentToken.amount) - parseFloat(ethValue).toFixed(8)
+
+        if (this.sendAmount <= 0) {
+          this.ErrorMessage = 'Insufficient balance'
+          this.sendAmount = 0
+        }
+      }
     },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
