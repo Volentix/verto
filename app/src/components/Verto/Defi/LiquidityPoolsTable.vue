@@ -60,7 +60,7 @@
     <q-dialog v-model="openDialog">
         <AddLiquidityDialog :notWidget="true" v-if="$store.state.investment.selectedPool && $store.state.investment.selectedPool.chain == 'eth'" />
        <q-card class="eos-popup" v-else-if="$store.state.investment.selectedPool && $store.state.investment.selectedPool.chain == 'eos'" >
-        <Swapeos :notWidget="true" />
+        <Swapeos :pool="$store.state.investment.selectedPool" :notWidget="true" />
         </q-card>
     </q-dialog>
   </div>
