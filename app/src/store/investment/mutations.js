@@ -24,12 +24,26 @@ export const updateTestnetEOSInvestments = (state, data) => {
 }
 
 export const updatePools = (state, pool) => {
+  let item = state.pools.find(o => o.poolName === pool.poolName)
+  if (item) return
+
   let volume = parseInt(pool.volume)
-  if (pool.liquidity !== 0 && volume !== 0 && !isNaN(volume)) {
+  if (pool.chain === 'eth' && pool.liquidity !== 0 && volume !== 0 && !isNaN(volume)) {
     state.pools.push(pool)
-    state.pools = state.pools.sort((a, b) => parseInt(b.liquidity) - parseInt(a.liquidity)).map((o, index) => {
+    /*
+    state.pools = state.pools.sort((a, b) => a.poolName.includes('VTX') ? -1 : parseInt(b.liquidity) - parseInt(a.liquidity)).map((o, index) => {
       o.index = index
       return o
+    }) */
+  } else if (pool.chain === 'eos') {
+    state.pools[pool.poolName.includes('VTX') ? 'unshift' : 'push'](pool)
+    state.pools.sort((a, b) => {
+      let prop = a.reserve0.includes('VTX') ? 'reserve0' : (a.reserve1.includes('VTX') ? 'reserve1' : false)
+      let value = 0
+      if (prop) {
+        value = parseInt(a[prop].split(' ')[0]) * -1
+      }
+      return value
     })
   }
 }

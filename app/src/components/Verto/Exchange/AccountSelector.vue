@@ -80,6 +80,7 @@ export default {
       label: w.name,
       color: palette[this.accountOptions.length]
     }))
+
     tableData.filter(w => w.chain === 'eth' && (this.chain === w.chain || !this.chain) && w.type === 'eth' && this.accountOptions.push({
       value: w.key,
       name: w.name,
@@ -116,12 +117,13 @@ export default {
 
     if (this.$store.state.currentwallet.wallet.type) {
       this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain)
-    } else if (this.$store.state.investment.defaultAccount) {
+    } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount !== undefined) {
       this.accountOption = this.accountOptions.find(f => f.type === this.$store.state.investment.defaultAccount.type && f.chain === this.$store.state.investment.defaultAccount.chain)
     } else {
-      this.accountOption = this.accountOptions.find(o => o.chain === 'eth')
+      this.accountOption = this.accountOptions.find(o => (this.chain && o.chain === this.chain) || o.chain === 'eth')
     }
 
+    this.accountOptions.sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))
     this.setAccount()
   },
   methods: {
@@ -136,6 +138,12 @@ export default {
           this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.metamask.tokens)
         } else {
           this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
+        }
+
+        if (this.accountOption.chain === 'eos') {
+          this.$store.dispatch('investment/getEOSInvestments', {
+            owner: this.accountOption.name
+          })
         }
       }
     }

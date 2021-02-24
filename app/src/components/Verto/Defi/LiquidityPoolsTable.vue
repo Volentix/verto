@@ -7,7 +7,7 @@
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
               <span class="imgs q-mr-lg" v-if="props.row.icons.length">
-                <img v-for="(icon, index) in props.row.icons" :key="index" :src="'https://zapper.fi/images/'+icon" alt="">
+                <img v-for="(icon, index) in props.row.icons" :key="index" :src="icon" alt="">
               </span>
               <span class="column pairs">
                 <span class="pair">{{props.row.poolName}}</span>
@@ -20,21 +20,24 @@
           <q-td :props="props">
             <div class="column items-start justify-center q-pl-md">
               <q-btn v-if="screenSize <= 1024" unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom qbtn-custom2 q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="grey" label="Add liquidity" />
-              <span class="value">${{formatNumber(parseInt(props.value), 0)}}</span>
+              <span class="value" v-if="props.row.chain != 'eos'">${{formatNumber(parseInt(props.value), 0)}}</span>
+              <span class="value" v-else>{{props.value}}</span>
             </div>
           </q-td>
         </template>
         <template v-slot:body-cell-volume="props">
           <q-td :props="props">
             <div class="column items-end justify-center q-pl-md">
-              <span class="value">${{formatNumber(parseInt(props.value), 0)}}</span>
+              <span class="value" v-if="props.row.chain != 'eos'">${{formatNumber(parseInt(props.value), 0)}}</span>
+              <span class="value" v-else>{{props.value}}</span>
             </div>
           </q-td>
         </template>
         <template v-slot:body-cell-fees="props">
           <q-td :props="props">
             <div class="column items-end justify-center q-pl-md">
-              <span class="value">${{formatNumber(parseInt(props.value), 0)}}</span>
+              <span class="value" v-if="props.row.chain != 'eos'">${{formatNumber(parseInt(props.value), 0)}}</span>
+              <span class="value" v-else>{{props.value}}</span>
             </div>
           </q-td>
         </template>
@@ -55,13 +58,17 @@
       </q-table>
     </q-scroll-area>
     <q-dialog v-model="openDialog">
-        <AddLiquidityDialog :notWidget="true" v-if="$store.state.investment.selectedPool" />
+        <AddLiquidityDialog :notWidget="true" v-if="$store.state.investment.selectedPool && $store.state.investment.selectedPool.chain == 'eth'" />
+       <q-card class="eos-popup" v-else-if="$store.state.investment.selectedPool && $store.state.investment.selectedPool.chain == 'eos'" >
+        <Swapeos :pool="$store.state.investment.selectedPool" :notWidget="true" />
+        </q-card>
     </q-dialog>
   </div>
 </template>
 
 <script>
 import AddLiquidityDialog from './AddLiquidityDialog'
+import Swapeos from '@/components/Verto/Exchange/Swapeos'
 import {
   QScrollArea
 } from 'quasar'
@@ -71,8 +78,8 @@ import {
 export default {
   components: {
     AddLiquidityDialog,
-    QScrollArea
-
+    QScrollArea,
+    Swapeos
   },
   props: ['rowsPerPage'],
   data () {
@@ -83,51 +90,43 @@ export default {
       poolsData: [],
       screenSize: 0,
       filter: '',
-      columns: [{
-        name: 'index',
-        required: true,
-        label: '#',
-        align: 'left',
-        field: 'index',
-        format: val => `${val + 1}`,
-        sortable: true
-      },
-      {
-        name: 'name',
-        required: true,
-        label: 'Available pools',
-        align: 'left',
-        field: row => row,
-        format: val => `${val}`,
-        sortable: true
-      },
-      {
-        name: 'Liquidity',
-        align: 'center',
-        label: 'Liquidity',
-        field: 'liquidity',
-        sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : parseInt(val)}`
-      },
-      {
-        name: 'volume',
-        label: 'Volume(24h)',
-        field: 'volume',
-        sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : parseInt(val)}`
-      },
-      {
-        name: 'fees',
-        label: 'Fees(24h)',
-        field: 'fees',
-        sortable: true,
-        format: val => `${typeof val === 'undefined' ? 0 : parseInt(val)}`
-      },
-      {
-        name: 'action',
-        label: '',
-        sortable: false
-      }
+      columns: [
+        {
+          name: 'name',
+          required: true,
+          label: 'Available pools',
+          align: 'left',
+          field: row => row,
+          format: val => `${val}`,
+          sortable: true
+        },
+        {
+          name: 'Liquidity',
+          align: 'center',
+          label: 'Liquidity',
+          field: 'liquidity',
+          sortable: true,
+          format: val => `${typeof val === 'undefined' ? 0 : val}`
+        },
+        {
+          name: 'volume',
+          label: 'Volume(24h)',
+          field: 'volume',
+          sortable: true,
+          format: val => `${typeof val === 'undefined' ? 0 : val}`
+        },
+        {
+          name: 'fees',
+          label: 'Fees(24h)',
+          field: 'fees',
+          sortable: true,
+          format: val => `${typeof val === 'undefined' ? 0 : val}`
+        },
+        {
+          name: 'action',
+          label: '',
+          sortable: false
+        }
       ],
       openDialog: false
     }
@@ -149,7 +148,6 @@ export default {
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
-      console.log('this.screenSize', this.screenSize)
     },
     filterTable (rows, terms, cols, cellValue) {
       const lowerTerms = terms ? terms.toLowerCase() : ''
@@ -163,7 +161,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.eos-popup {
+  max-width: 760px;
+  width: 100%;
+}
+/deep/ .row.swdapeos-component--row{
+    display: flex;
+    justify-content: center;
+}
 .desktop-size{
   height: 360px;
 }
