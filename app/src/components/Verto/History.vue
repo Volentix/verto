@@ -454,17 +454,19 @@ export default {
     getHistory () {
       this.history = []
       if (this.$store.state.investment.defaultAccount.chain === 'eos') {
-        this.getEosWalletHistory()
+        this.getEosWalletHistory(this.$store.state.investment.defaultAccount)
       } else if (this.$store.state.investment.defaultAccount.chain === 'eth') {
-        this.getEthWalletHistory()
+        this.getEthWalletHistory(this.$store.state.investment.defaultAccount)
+      } else {
+        this.getEosWalletHistory(this.$store.state.wallets.tokens.find(w => w.chain === 'eos' && w.type === 'eos'))
       }
     },
-    async getEosWalletHistory () {
+    async getEosWalletHistory (account) {
       let data = null
       let allHistoryData = []
 
-      if (this.$store.state.currentwallet.wallet.chain) {
-        data = (await Lib.history(this.$store.state.currentwallet.wallet.chain, this.$store.state.currentwallet.wallet.type, this.$store.state.currentwallet.wallet.name, this.pagination))
+      if (account) {
+        data = (await Lib.history(account.chain, account.type, account.name, this.pagination))
 
         data = data.history
 
