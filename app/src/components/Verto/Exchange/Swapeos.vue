@@ -551,7 +551,7 @@ export default {
     AccountSelector,
     QScrollArea
   },
-  props: ['disableDestinationCoin', 'crossChain'],
+  props: ['disableDestinationCoin', 'crossChain', 'pool'],
   data () {
     return {
       slippageDialog: false,
@@ -622,6 +622,7 @@ export default {
     }
   },
   async created () {
+    this.setTokensFromPool()
     let tableData = await this.$store.state.wallets.tokens
     this.eosAccounts = tableData.filter((w) => w.chain === 'eos')
     rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
@@ -661,6 +662,14 @@ export default {
   methods: {
     urlExists (url) {
       return true
+    },
+    setTokensFromPool () {
+      if (this.pool) {
+        this.depositCoin.value = this.pool.reserve0.split(' ')[1].toLowerCase()
+        this.depositCoin.label = this.depositCoin.value.toUpperCase()
+        this.destinationCoin.label = this.destinationCoin.value.toUpperCase()
+        this.destinationCoin.value = this.pool.reserve1.split(' ')[1].toLowerCase()
+      }
     },
     calculateSlippage () {
 
@@ -731,7 +740,6 @@ export default {
       }
 
       r.set_amount(Math.abs(computeForward(a.multiply(-1), p2, p1.plus(a), 0)))
-      console.log(r.to_string(), 'r.to_string()', this.pairData)
       this.swapData.toAmount = r.to_string().split(' ')[0]
     },
     calculateDestinationQuantity () {
@@ -753,7 +761,6 @@ export default {
 
       this.pairData.price = (this.poolTwo.amount / this.poolOne.amount) / mul
 
-      console.log(this.pairData.price, 'this.pairData.price')
       this.pairData.fee = 0
 
       let a = (parseFloat(this.swapData.fromAmount) || 0).toFixed(this.poolOne.symbol.precision())
@@ -1089,8 +1096,6 @@ export default {
 
       }
 
-      console.log(this.swapData.toAmount, this.swapData.fromAmount, this.pairData.price)
-
       this.slippage = (Math.abs(((parseFloat(val) / parseFloat(this.swapData.fromAmount)) - this.pairData.price) / this.pairData.price) * 100).toFixed(2)
       this.slippage = isNaN(this.slippage) ? 0 : this.slippage
     },
@@ -1109,11 +1114,12 @@ export default {
         return o
       })
       this.depositCoinUnfilter = this.depositCoinOptions
+      if (!this.pool) {
+        let item = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.$store.state.investment.defaultAccount.chain.toLowerCase())
+        if (item) { this.depositCoin = item }
+      }
 
-      let item = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
-      if (item) { this.depositCoin = item }
-
-      // console.log(this.depositCoin, item, ' EOS this.depositCoin', this.$store.state.investment.defaultAccount, this.depositCoinOptions)
+      this.setTokensFromPool()
 
       this.getDestinationCoinOptions()
       this.getPairData()
