@@ -96,35 +96,7 @@
         NO EOS or ETH wallet available
       </div>
       <div class="row" v-else>
-        <div class="row full-width fixed-bottom z-top">
-          <div  class="col-10 row" v-if="false">
-            <div v-if="accountOption.chain == 'eth'"  class="col-6 desktop-card-style wallet-snapshot q-mb-md" style="background: url(statics/header_bg.png) no-repeat; background-position: 20% 75%; background-size: 100%;">
-              <div class="flex justify-between items-center q-pt-sm q-pb-sm">
-                <h3 class="text-white q-pl-md">Max DeFi Yield</h3>
-                <div class="text-white q-pr-md amount flex items-center">
-                    <span class="interest_rate q-pr-md flex items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""><strong class="q-pr-md q-pb-sm"><span class="thicker">{{maxDeFiYield.token}}</span></strong> {{maxDeFiYield.roi}} % <b class="p-abs">Interest Rate</b></span>
-                    <!-- <span>28.35 USD</span> -->
-                </div>
-              </div>
-            </div>
-            <div class="col-6  desktop-card-style yearn-finance q-mb-md" v-if="maxToken && accountOption.chain == 'eth'">
-                <q-item>
-                    <q-item-section>
-                        <span class="text-h5 text-bold ">
-                            Convert {{maxToken.amount.toFixed(4)}} {{maxToken.type.toUpperCase()}} to {{maxDeFiYield.token}}
-                        </span>
-                    </q-item-section>
-                    <q-item-section>
-                        <h4 class="q-pl-md q-pt-sm q-pb-sm flex justify-between items-center">
-                            <q-icon name="arrow_right_alt" />
-                            <div class="flex justify-between items-center"><img :src="'https://zapper.fi/images/'+maxDeFiYield.token+'-icon.png'" alt=""> <strong>{{maxDeFiYield.toTokenAmount}} <b>{{maxDeFiYield.token}}</b></strong></div>
-                            <q-btn unelevated class="qbtn-download" color="black" text-color="white" label="Confirm" @click="goToExchange()" />
-                        </h4>
-                    </q-item-section>
-                </q-item>
-            </div>
-          </div>
-        </div>
+
         <q-splitter
           v-model="splitterModel"
           style="width: 100%"
@@ -343,7 +315,6 @@ export default {
   },
   data () {
     return {
-      maxDeFiYield: {},
       openDialog: false,
       tab: 'mails',
       tab2: 'mails',
@@ -351,7 +322,7 @@ export default {
 
       },
       chain: 'eth',
-      menu: 'swap',
+      menu: 'liquidity',
       splitterModel: 25,
       chooseAccount: true,
       osName: '',
@@ -424,6 +395,13 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   watch: {
+    defaultAccount (val) {
+      this.accountOption = val
+      this.getAccountInformation(this.accountOption)
+      if (this.accountOption.chain !== val.chain) {
+        this.switchChain()
+      }
+    },
     selectedEOSPool (val) {
       this.menu = 'liquidity'
     },
@@ -502,6 +480,7 @@ export default {
         value: w.name,
         key: w.key,
         label: w.name,
+        type: w.type,
         usd: w.usd,
         chain: 'eos',
         privateKey: w.privateKey,
@@ -515,6 +494,7 @@ export default {
         chain: 'eth',
         key: w.key,
         usd: w.usd,
+        type: w.type,
         privateKey: w.privateKey,
         total: w.total,
         image: w.icon,
@@ -523,7 +503,6 @@ export default {
 
       }))
       if (ethACcounts.length) {
-        this.getMaxDeFiYield()
         this.ethACcount = ethACcounts[0]
       }
       if (eosWallets.length) {
@@ -570,22 +549,6 @@ export default {
         this.getAccountInformation(this.accountOption)
       }
     },
-    goToExchange () {
-      // console.log('this.depositCoin', this.depositCoin)
-      let depositCoin = {
-        label: this.maxToken.type,
-        value: this.maxToken.type.toLowerCase(),
-        image: 'https://files.coinswitch.co/public/coins/' + this.maxDeFiYield.token.toLowerCase() + '.png'
-      }
-      let destinationCoin = {
-        label: this.maxDeFiYield.token,
-        value: this.maxDeFiYield.token.toLowerCase(),
-        image: 'https://zapper.fi/images/' + this.maxDeFiYield.token + '-icon.png'
-      }
-      this.$store.commit('settings/setDex', { dex: 'oneinch', destinationCoin: destinationCoin, depositCoin: depositCoin })
-
-      this.$router.push('/verto/exchange/')
-    },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
@@ -617,28 +580,6 @@ export default {
       setTimeout(() => {
         this.$store.commit('investment/setTableLoadingStatus', false)
       }, 4000)
-    },
-    getMaxDeFiYield () {
-      this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://stats.finance/yearn')
-        .then((result) => {
-          var html = new DOMParser().parseFromString(result.data, 'text/html')
-          var prev = 0
-          for (let i = 6; i <= 14; i++) {
-            let value = parseFloat(html.querySelectorAll('table tr')[i].innerText.match(/[\d.]+/)[0])
-            if (value > prev) {
-              this.maxDeFiYield = {
-                roi: value,
-                token: html.querySelectorAll('table tr')[i].innerText.match(/\(([^)]+)\)/)[1]
-              }
-              prev = value
-            }
-          }
-          this.maxDeFiYield.toTokenAmount = this.convertWalletToken(this.maxToken.type, this.maxDeFiYield.token)
-        })
-    },
-    convertWalletToken (from, to) {
-      let find = this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() === to.toLowerCase())
-      return find ? parseInt(this.maxToken.usd / find.price) : 'Not found'
     },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)

@@ -75,17 +75,21 @@ export default {
       chain: 'eos',
       total: w.total,
       image: w.icon,
+      icon: w.icon,
       type: w.type,
       label: w.name,
       color: palette[this.accountOptions.length]
     }))
+
     tableData.filter(w => w.chain === 'eth' && (this.chain === w.chain || !this.chain) && w.type === 'eth' && this.accountOptions.push({
       value: w.key,
+      name: w.name,
       key: w.key,
       chain: 'eth',
       type: w.type,
       usd: w.usd,
       total: w.total,
+      icon: w.icon,
       image: w.icon,
       label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
       color: palette[this.accountOptions.length]
@@ -99,7 +103,9 @@ export default {
         type: w.type,
         usd: w.usd,
         total: w.total,
+        icon: w.icon,
         image: w.icon,
+        name: w.name,
         label: w.key.substring(0, 6).toLowerCase() + '...' + w.key.substr(w.key.length - 5).toLowerCase(),
         color: palette[this.accountOptions.length]
       }))
@@ -108,15 +114,16 @@ export default {
     if (this.$store.state.wallets.metamask.accounts.length) {
       this.accountOptions.push(this.$store.state.wallets.metamask.accounts.find(o => o.type === 'eth' && o.chain === 'eth'))
     }
-    /*  console.log(55774, this.$store.state.currentwallet.wallet.type)
+
     if (this.$store.state.currentwallet.wallet.type) {
       this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain)
-    } else */ if (this.$store.state.investment.defaultAccount) {
-      this.accountOption = this.$store.state.investment.defaultAccount
+    } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount !== undefined) {
+      this.accountOption = this.accountOptions.find(f => f.type === this.$store.state.investment.defaultAccount.type && f.chain === this.$store.state.investment.defaultAccount.chain)
     } else {
-      this.accountOption = this.accountOptions.find(o => o.chain === 'eth')
+      this.accountOption = this.accountOptions.find(o => (this.chain && o.chain === this.chain) || o.chain === 'eth')
     }
 
+    this.accountOptions.sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))
     this.setAccount()
   },
   methods: {
@@ -124,13 +131,20 @@ export default {
       return parseFloat(num).toFixed(decimals).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
     },
     setAccount () {
-      // console.log(this.accountOption, this.accountOption.chain, ' this.accountOption', this.$store.state.investment.defaultAccount.chain)
-      this.$store.commit('investment/setDefaultAccount', this.accountOption)
+      if (this.accountOption) {
+        this.$store.commit('investment/setDefaultAccount', this.accountOption)
 
-      if (this.accountOption.origin && this.accountOption.origin === 'metamask') {
-        this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.metamask.tokens)
-      } else {
-        this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
+        if (this.accountOption && this.accountOption.origin === 'metamask') {
+          this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.metamask.tokens)
+        } else {
+          this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
+        }
+
+        if (this.accountOption.chain === 'eos') {
+          this.$store.dispatch('investment/getEOSInvestments', {
+            owner: this.accountOption.name
+          })
+        }
       }
     }
   },
@@ -146,8 +160,10 @@ export default {
         key: w.key,
         chain: w.chain,
         usd: w.usd,
+        name: w.name,
         type: w.type,
         total: w.total,
+        icon: w.icon,
         image: w.icon,
         origin: 'metamask',
         label: w.label,
@@ -169,6 +185,8 @@ export default {
             type: w.type,
             total: w.total,
             image: w.icon,
+            name: w.name,
+            icon: w.icon,
             origin: 'metamask',
             label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
             color: palette[this.accountOptions.length]
@@ -195,7 +213,7 @@ export default {
       height: $height;
       min-height: unset;
       .q-field__label.no-pointer-events{
-        left: 20px;
+        left: 35px;
       }
       .q-field__native{
         padding-left: 0px;

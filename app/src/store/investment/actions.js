@@ -123,11 +123,9 @@ export const getUniswapPools = ({ rootState, context, commit, state }, payload) 
       }).filter(function (actualPool) {
         return !actualPool.hideFromExplore
       }).forEach((value, index) => {
-        let poolTokens = value.tokens.map(o => state.zapperTokens.find(t => t.address.toLowerCase() === o.address.toLowerCase())).filter((val) => val)
-        if (!poolTokens.length) return
         let pool = value
-        pool.poolName = poolTokens.map(o => o?.label).filter((val) => val).join(' / ')
-        pool.icons = poolTokens.map(o => o?.img).filter((val) => val)
+        pool.poolName = value.label
+        pool.icons = value.tokens.map(o => 'https://zapper.fi/images/' + o.symbol + '-icon.png')
         // To be calculated using historical data of the token
         // pool.netROI = value.netROI.toFixed(2) + '%'
         // pool.ROI = value.grossROI.toFixed(2) + '%'
@@ -136,12 +134,13 @@ export const getUniswapPools = ({ rootState, context, commit, state }, payload) 
         pool.id = value.address
         pool.value = value.address
         pool.tokensData = value.tokens
-        pool.tokens = poolTokens.map(o => o?.label).filter((val) => val)
+        // pool.tokens = poolTokens.map(o => o?.label).filter((val) => val)
         pool.platform = 'Uniswap V2'
+        pool.chain = 'eth'
         pool.liquidity = parseInt(pool.liquidity)
-        if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
-          commit('updatePools', pool)
-        }
+        // if (!(poolTokens.length > 1 && !pool.poolName.includes('/'))) {
+        commit('updatePools', pool)
+        // }
       })
   })
 }

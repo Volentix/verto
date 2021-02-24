@@ -5,7 +5,9 @@ export function someMutation (state) {
 export const setAirplaneMode = (state, data) => {
   state.airplaneMode = data
 }
-
+export const setEosSwapSlippage = (state, data) => {
+  state.eos.swapSlippage = data
+}
 export const toggleNetwork = (state, data) => {
   state.network = data
 }

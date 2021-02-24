@@ -51,8 +51,8 @@
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
               <span v-if="props.row.change24h" class="column items-start">
-                <span class="pair q-pr-xs allocation text-green-6">({{props.row.change24hPercentage}})</span>
-                <span class="pair q-pr-xs balance text-bold text-green-6">{{props.row.change24h}}</span>
+                <span class="pair q-pr-xs allocation" :class="props.row.change24hValue > 0 ? 'text-green-6':'text-red-6'">({{props.row.change24hPercentage}})</span>
+                <span class="pair q-pr-xs balance text-bold" :class="props.row.change24hValue > 0 ? 'text-green-6':'text-red-6'">{{props.row.change24h}}</span>
                 <!-- text-pink-12 for red color (- sign) -->
                 <!-- text-green-6 for green color (+ sign) -->
               </span>
@@ -148,6 +148,9 @@ export default {
   watch: {
     '$store.state.wallets.tokens': function () {
       this.initTable()
+    },
+    '$store.state.tokens.walletTokensData': function () {
+      this.initTable()
     }
   },
   methods: {
@@ -189,8 +192,8 @@ export default {
 
       if (tokenData) {
         let change = tokenData.price_change_24h * token.amount
-        console.log(change, Math.abs(change), token.type, tokenData, tokenData.price_change_24h, tokenData.price_change_percentage_24h, token.amount)
         token.change24h = (change > 0 ? '+' : '-') + '$' + this.formatNumber(Math.abs(change), 2)
+        token.change24hValue = (change > 0 ? '' : '-') + this.formatNumber(Math.abs(change), 2)
         token.change24hPercentage = (change > 0 ? '+' : '-') + this.formatNumber(Math.abs(tokenData.price_change_percentage_24h), 2) + '%'
       }
       return token

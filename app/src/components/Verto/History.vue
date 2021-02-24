@@ -20,6 +20,58 @@
        <q-btn @click="showMore()" unelevated flat class="full-width transaction-wrapper--list__hide-transaction" color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" label="See More..." />
     </div>
     <div class="transaction-wrapper--list open" v-else style="height: 100%;">
+    <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="this.$store.state.investment.defaultAccount && !['eos','eth'].includes(this.$store.state.investment.defaultAccount.chain)">
+                History for the {{this.$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
+    </q-banner>
+   <div  class="q-pa-md" v-else-if="!history.length">
+    <q-markup-table flat>
+      <thead>
+        <tr>
+          <th class="text-left" style="width: 150px">
+            <q-skeleton animation="blink" type="text" />
+          </th>
+          <th class="text-right">
+            <q-skeleton animation="blink" type="text" />
+          </th>
+          <th class="text-right">
+            <q-skeleton animation="blink" type="text" />
+          </th>
+          <th class="text-right">
+            <q-skeleton animation="blink" type="text" />
+          </th>
+          <th class="text-right">
+            <q-skeleton animation="blink" type="text" />
+          </th>
+          <th class="text-right">
+            <q-skeleton animation="blink" type="text" />
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr v-for="n in 5" :key="n">
+          <td class="text-left">
+            <q-skeleton animation="blink" type="text" width="85px" />
+          </td>
+          <td class="text-right">
+            <q-skeleton animation="blink" type="text" width="50px" />
+          </td>
+          <td class="text-right">
+            <q-skeleton animation="blink" type="text" width="35px" />
+          </td>
+          <td class="text-right">
+            <q-skeleton animation="blink" type="text" width="65px" />
+          </td>
+          <td class="text-right">
+            <q-skeleton animation="blink" type="text" width="25px" />
+          </td>
+          <td class="text-right">
+            <q-skeleton animation="blink" type="text" width="85px" />
+          </td>
+        </tr>
+      </tbody>
+    </q-markup-table>
+  </div>
       <q-scroll-area :visible="true" class="q-pr-md" style="height: 85%;">
        <div v-for="(day,indexDay) in history" :key="indexDay">
         <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7"> {{day.friendlyDay}} </div>
@@ -68,7 +120,7 @@
                         <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                           <div class="flex items-center" style="cursor: pointer;">
                             <img width="32" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADdElEQVR4Xu3doW4VURhF4bmSpAqFIiG4vkIFr4RrSJDga3gVPILHaJpU4TD18BCryc7NfPjNnK6zus8/l7nD5f72zb8j/Pn052tIH8evd99S/trDa34XAmwVIoAGSAbWBtUACX8PawANkCzSAAnfPqwBNECyUAMkfPuwBtAAyUINkPDtwxpAAyQLNUDCtw9rAA2QLNQACd8+rAE0QLJQAyR8+/C8AX6+/Z6eB6gGVgBPjy/TXfzw8SZdf83vQoC0fwcB4hmuAdoTUZWfBmgFoAHWZ5gZoD2TqQE0gLuA4oAh0BBY/MmPxRsCfQ6QBDQDJHyHuwB3AT4JTL9D9QxzG+g2MAlYw+4C3AUkh9ZHqCEwbZ8hcH4fawYYzwDxF2gu0NnXn4+AswNcn+GVPwEiQQKcHCABCJAI1A/C0sWP43AERIIa4OQACUCARMARMP4oOe3e0d9zSAACVAdT3hCY8GmAiO/6ARoCowLXDvDa1+8IOLnABCBA+2JI5Oefg+Pr9iv/y4+/X9L7AZ7vHuoa5AOB978/h/RxECDh24cJsN+D6QoIMMW/vzgB9nswXQEBpvj3FyfAfg+mKyDAFP/+4gTY78F0BQSY4t9fnAD7PZiugABT/PuLE2C/B9MVEGCKf39xAuz3YLoCAkzx7y+eBaivi68Irv2Zumtfv0fCosEEODlAAhAgEfDVMF8NSwLVsBkgEnQEnBwgAQiQCJgBzABJoBo2A0SCjoCTAyQAARIBM4AZIAlUw2aASNARcHKABCBAIjCfAe5v36T3A6Sf/hXCa4C1AV4BQforLgRI/PIbTtrVe5oAkaEGiABr3BHQCGqAxs8REPnluAZoCDVA46cBIr8c1wANoQZo/DRA5JfjGqAh1ACNnwaI/HJcAzSEGqDx0wCRX45rgIZQAzR+GiDyy3EN0BDOHwl7enxJP8GHjzcpX8PXvn4CRAMIcHKABCBAIrA+whwBafuOQwOcHCABCJAIOALcBiaBatgMEAk6Ak4OkAAESATMAGaAJFANmwEiQUfAyQESgACJgBnADJAEquE8A9QKfL57qD/DVefrf/hQG4QAY30IoAGSghog4duHNYAGSBZqgIRvH9YAGiBZqAESvn1YA2iAZKEGSPj2YQ2gAZKFGiDh24c1gAZIFmqAhG8f1gAaIFmoARK+fXjdAP8BXbztTvEVM2oAAAAASUVORK5CYII=" class="radius" />
-                            <div class="q-pl-sm column">
+                            <div class="q-pl-sm actors column">
                               <div class="">To</div>
                               <span>{{transaction.friendlyTo}}</span>
                             </div>
@@ -82,7 +134,7 @@
             </q-item-section>
             <q-item-section class="history-item__detail">
               <div class="row items-center border-top">
-                <div class="col col-4 q-pl-xl">
+                <div class="col col-4 q-pl-xl" v-if="transaction.chain == 'eth'">
                   <div class="text-bold text-grey">Fee</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
@@ -91,6 +143,15 @@
                     </span> (${{transaction.usdFees}})
                   </div>
                 </div>
+                 <div class="col col-4 q-pl-xl" v-else-if="transaction.chain == 'eos'">
+                  <div class="text-bold text-grey">Memo</div>
+                  <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
+                    <span>
+                      <span class="ellipsis">{{transaction.memo}}</span>
+                    </span>
+                  </div>
+                </div>
+
                 <div class="col col-4 q-pl-xl flex items-center">
                   <div class="column">
                     <span class="text-bold text-grey">Transaction hash</span>  <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
@@ -102,7 +163,7 @@
                   </div>
                   <div class="flex items-center q-ml-md">
                       <q-btn color="white" round size="sm" @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
-                      <a :href="'https://etherscan.io/tx/'+transaction.hash" target="_blank">
+                      <a :href="transaction.explorerLink" target="_blank">
                       <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
                        </a>
                   </div>
@@ -220,7 +281,7 @@
                   </div>
                   <div class="flex items-center q-ml-md">
                       <q-btn color="white" round size="sm"  @click="$clipboardWrite(transaction.hash)"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
-                      <a :href="'https://etherscan.io/tx/'+transaction.hash" target="_blank">
+                      <a :href="transaction.explorerLink" target="_blank">
                       <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
                       </a>
                   </div>
@@ -272,7 +333,7 @@
                         <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                           <div class="flex items-center" style="cursor: pointer;">
                             <img width="32" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADdElEQVR4Xu3doW4VURhF4bmSpAqFIiG4vkIFr4RrSJDga3gVPILHaJpU4TD18BCryc7NfPjNnK6zus8/l7nD5f72zb8j/Pn052tIH8evd99S/trDa34XAmwVIoAGSAbWBtUACX8PawANkCzSAAnfPqwBNECyUAMkfPuwBtAAyUINkPDtwxpAAyQLNUDCtw9rAA2QLNQACd8+rAE0QLJQAyR8+/C8AX6+/Z6eB6gGVgBPjy/TXfzw8SZdf83vQoC0fwcB4hmuAdoTUZWfBmgFoAHWZ5gZoD2TqQE0gLuA4oAh0BBY/MmPxRsCfQ6QBDQDJHyHuwB3AT4JTL9D9QxzG+g2MAlYw+4C3AUkh9ZHqCEwbZ8hcH4fawYYzwDxF2gu0NnXn4+AswNcn+GVPwEiQQKcHCABCJAI1A/C0sWP43AERIIa4OQACUCARMARMP4oOe3e0d9zSAACVAdT3hCY8GmAiO/6ARoCowLXDvDa1+8IOLnABCBA+2JI5Oefg+Pr9iv/y4+/X9L7AZ7vHuoa5AOB978/h/RxECDh24cJsN+D6QoIMMW/vzgB9nswXQEBpvj3FyfAfg+mKyDAFP/+4gTY78F0BQSY4t9fnAD7PZiugABT/PuLE2C/B9MVEGCKf39xAuz3YLoCAkzx7y+eBaivi68Irv2Zumtfv0fCosEEODlAAhAgEfDVMF8NSwLVsBkgEnQEnBwgAQiQCJgBzABJoBo2A0SCjoCTAyQAARIBM4AZIAlUw2aASNARcHKABCBAIjCfAe5v36T3A6Sf/hXCa4C1AV4BQforLgRI/PIbTtrVe5oAkaEGiABr3BHQCGqAxs8REPnluAZoCDVA46cBIr8c1wANoQZo/DRA5JfjGqAh1ACNnwaI/HJcAzSEGqDx0wCRX45rgIZQAzR+GiDyy3EN0BDOHwl7enxJP8GHjzcpX8PXvn4CRAMIcHKABCBAIrA+whwBafuOQwOcHCABCJAIOALcBiaBatgMEAk6Ak4OkAAESATMAGaAJFANmwEiQUfAyQESgACJgBnADJAEquE8A9QKfL57qD/DVefrf/hQG4QAY30IoAGSghog4duHNYAGSBZqgIRvH9YAGiBZqAESvn1YA2iAZKEGSPj2YQ2gAZKFGiDh24c1gAZIFmqAhG8f1gAaIFmoARK+fXjdAP8BXbztTvEVM2oAAAAASUVORK5CYII=" class="radius" />
-                            <div class="q-pl-sm column">
+                            <div class="q-pl-sm actors column">
                               <div  >From</div>
                               <span>{{transaction.friendlyFrom}}</span>
                             </div>
@@ -286,12 +347,21 @@
             </q-item-section>
             <q-item-section class="history-item__detail">
               <div class="row items-center border-top">
-                <div class="col col-4 q-pl-xl">
+                <div class="col col-4 q-pl-xl" v-if="transaction.chain == 'eth'">
                   <div class="text-bold text-grey">Fee</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
-                      <span class="">{{transaction.gasTotal}} ETH (${{transaction.usdFees}})</span>&nbsp;
-                    </span>
+                      <span class="">{{transaction.gasTotal}}</span>&nbsp;
+                      <span class="">ETH</span>
+                    </span> (${{transaction.usdFees}})
+                  </div>
+                </div>
+                 <div class="col q-mr-xl q-pl-xl" v-else-if="transaction.chain == 'eos'">
+                  <div class="text-bold text-grey">Memo</div>
+                  <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
+
+                      <div class="ellipsis">{{transaction.memo}}</div>
+
                   </div>
                 </div>
                 <div class="col col-4 q-pl-xl flex items-center">
@@ -305,7 +375,7 @@
                   </div>
                   <div class="flex items-center q-ml-md">
                       <q-btn color="white" round size="sm" @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
-                      <a :href="'https://etherscan.io/tx/'+transaction.hash" target="_blank">
+                      <a :href="transaction.explorerLink" target="_blank">
                       <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
                        </a>
                   </div>
@@ -318,12 +388,13 @@
       </q-scroll-area>
     </div>
   </div>
+
 </div>
 </template>
 
 <script>
 import { QScrollArea } from 'quasar'
-// import Lib from '@/util/walletlib'
+import Lib from '@/util/walletlib'
 import DexInteraction from '@/mixins/DexInteraction'
 // const Web3 = require('web3')
 // let web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
@@ -350,6 +421,10 @@ export default {
       tradeComponent: false,
       active: true,
       history: [],
+      pagination: {
+        position: -1,
+        offset: -100
+      },
       tableDataWallets: [],
       showWallet: false,
       showText: false,
@@ -365,14 +440,53 @@ export default {
       return this.$store.state.currentwallet.wallet || {}
     }
   },
+  watch: {
+    '$store.state.investment.defaultAccount': function (val) {
+      this.$store.state.currentwallet.wallet = val
 
-  mounted () {
-    let accounts = this.$store.state.wallets.tokens.filter((o => o.type === 'eth' && o.chain === 'eth') || (o => o.type === 'eos' && o.chain === 'eos'))
-    let allHistoryData = []
-    accounts.forEach(async (element) => {
+      this.getHistory()
+    }
+  },
+  async mounted () {
+    this.getHistory()
+  },
+  methods: {
+    getHistory () {
+      this.history = []
+      if (this.$store.state.investment.defaultAccount.chain === 'eos') {
+        this.getEosWalletHistory(this.$store.state.investment.defaultAccount)
+      } else if (this.$store.state.investment.defaultAccount.chain === 'eth') {
+        this.getEthWalletHistory(this.$store.state.investment.defaultAccount)
+      } else {
+        this.getEosWalletHistory(this.$store.state.wallets.tokens.find(w => w.chain === 'eos' && w.type === 'eos'))
+      }
+    },
+    async getEosWalletHistory (account) {
       let data = null
+      let allHistoryData = []
 
-      if (element.chain === 'eth') {
+      if (account) {
+        data = (await Lib.history(account.chain, account.type, account.name, this.pagination))
+
+        data = data.history
+
+        data = data.map(o => {
+          o.chain = 'eos'
+          return this.normalize(o)
+        })
+
+        if (data && Array.isArray(data)) {
+          allHistoryData = allHistoryData.concat(data)
+          this.groupByDay(allHistoryData)
+        }
+      }
+    },
+    async getEthWalletHistory () {
+      let accounts = this.$store.state.wallets.tokens.filter((o => o.type === 'eth' && o.chain === 'eth') || (o => o.type === 'eos' && o.chain === 'eos'))
+      let allHistoryData = []
+      accounts.forEach(async (element) => {
+        let data = null
+
         let cacheData = localStorage.getItem('history')
 
         if (this.$store.state.wallets.history.length) {
@@ -385,22 +499,17 @@ export default {
           this.$store.commit('wallets/setHistory', data)
         }
 
-        data.map(o => {
+        data = data.map(o => {
           o.chain = 'eth'
           return this.normalize(o)
         })
-      } else {
-        // data = (await Lib.history(element.chain, element.type, element.name))
-      }
 
-      if (data && Array.isArray(data)) {
-        allHistoryData = allHistoryData.concat(data)
-        this.groupByDay(allHistoryData)
-      }
-    })
-  },
-  methods: {
-
+        if (data && Array.isArray(data)) {
+          allHistoryData = allHistoryData.concat(data)
+          this.groupByDay(allHistoryData)
+        }
+      })
+    },
     getImage (transaction) {
       return transaction.direction === 'outgoing'
         ? 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPG1hc2sgaWQ9Im1hc2swIiBtYXNrLXR5cGU9ImFscGhhIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiPgo8cGF0aCBkPSJNMjMuNSAxMkMyMy41IDE4LjM1MTMgMTguMzUxMyAyMy41IDEyIDIzLjVDNS42NDg3MyAyMy41IDAuNSAxOC4zNTEzIDAuNSAxMkMwLjUgNS42NDg3MyA1LjY0ODczIDAuNSAxMiAwLjVDMTguMzUxMyAwLjUgMjMuNSA1LjY0ODczIDIzLjUgMTJaIiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L21hc2s+CjxnIG1hc2s9InVybCgjbWFzazApIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyNEMxOC42Mjc0IDI0IDI0IDE4LjYyNzQgMjQgMTJDMjQgNS4zNzI1OCAxOC42Mjc0IDAgMTIgMEM1LjM3MjU4IDAgMCA1LjM3MjU4IDAgMTJDMCAxOC42Mjc0IDUuMzcyNTggMjQgMTIgMjRaIiBmaWxsPSIjRjNGM0Y0Ii8+CjxwYXRoIGQ9Ik0xMi42MjIxIDE2LjI0NDZMMTIuNjIyMSA5LjI2MzMxTDE1LjY3MjEgMTIuMzEzM0MxNS45MTU5IDEyLjU1NzEgMTYuMzE1OSAxMi41NTcxIDE2LjU1OTYgMTIuMzEzM0MxNi44MDM0IDEyLjA2OTYgMTYuODAzNCAxMS42NzU4IDE2LjU1OTYgMTEuNDMyMUwxMi40NDA5IDcuMzEzMzFDMTIuMTk3MSA3LjA2OTU2IDExLjgwMzQgNy4wNjk1NiAxMS41NTk2IDcuMzEzMzFMNy40NDA4NyAxMS40MzIxQzcuMTk3MTIgMTEuNjc1OCA3LjE5NzEyIDEyLjA2OTYgNy40NDA4NyAxMi4zMTMzQzcuNTU3NjQgMTIuNDMwMyA3LjcxNjE3IDEyLjQ5NjEgNy44ODE0OSAxMi40OTYxQzguMDQ2ODIgMTIuNDk2MSA4LjIwNTM1IDEyLjQzMDMgOC4zMjIxMiAxMi4zMTMzTDExLjM3MjEgOS4yNjMzMUwxMS4zNzIxIDE2LjI0NDZDMTEuMzcyMSAxNi41ODgzIDExLjY1MzQgMTYuODY5NiAxMS45OTcxIDE2Ljg2OTZDMTIuMzQwOSAxNi44Njk2IDEyLjYyMjEgMTYuNTg4MyAxMi42MjIxIDE2LjI0NDZaIiBmaWxsPSIjMTUxNTFGIi8+CjwvZz4KPC9zdmc+Cg=='
@@ -412,29 +521,85 @@ export default {
       return transaction.direction === 'outgoing' ? 'Send'
         : transaction.direction === 'incoming' ? 'Receive' : 'Trade'
     },
-    getTokenImage (transaction) {
-      let token = this.getAllCoins().find((o) => o.value.toLowerCase() === transaction.symbol.toLowerCase())
-      return token ? (transaction.symbol === 'ETH' ? 'https://s3.amazonaws.com/token-icons/eth.png' : token.image) : 'https://etherscan.io/images/main/empty-token.png'
+    getTokenImage (type) {
+      let token = this.getAllCoins().find((o) => o.value.toLowerCase() === type.toLowerCase())
+      return token ? (type.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : token.image) : 'https://etherscan.io/images/main/empty-token.png'
     },
     normalize (transaction) {
-      let tx = transaction
-      if (transaction.chain === 'eth') {
-        let date = (new Date(parseInt(transaction.timeStamp) * 1000))
-        tx.friendlyHash = transaction.hash.substring(0, 6) + '...' + transaction.hash.substr(transaction.hash.length - 5)
-        tx.friendlyTo = transaction.destination.length ? transaction.destination.substring(0, 6) + '...' + transaction.destination.substr(transaction.destination.length - 5) : ''
-        tx.friendlyFrom = transaction.from.substring(0, 6) + '...' + transaction.from.substr(transaction.from.length - 5)
-        tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
-        tx.image = this.getTokenImage(transaction)
-        tx.active = false
-        tx.gasTotal = tx.gas
-        tx.dateFormatted = date.toISOString().split('T')[0]
-        this.getHistoricalData(transaction)
-        tx.amountFriendly = parseFloat(tx.amount).toFixed(6)
-        tx.subTransactions.map(o => {
-          o.image = this.getTokenImage(o)
-          o.amountFriendly = parseFloat(o.amount).toFixed(6)
-        })
+      const self = this
+      let normalizer = {
+
+        eth (transaction) {
+          let tx = JSON.parse(JSON.stringify(transaction))
+
+          let date = (new Date(parseInt(transaction.timeStamp) * 1000))
+          tx.explorerLink = 'https://etherscan.io/tx/' + transaction.hash
+          tx.friendlyHash = transaction.hash.substring(0, 6) + '...' + transaction.hash.substr(transaction.hash.length - 5)
+          tx.friendlyTo = transaction.destination.length ? transaction.destination.substring(0, 6) + '...' + transaction.destination.substr(transaction.destination.length - 5) : ''
+          tx.friendlyFrom = transaction.from.substring(0, 6) + '...' + transaction.from.substr(transaction.from.length - 5)
+          tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+          tx.image = self.getTokenImage(transaction.symbol)
+          tx.active = false
+          tx.gasTotal = tx.gas
+          tx.dateFormatted = date.toISOString().split('T')[0]
+          self.getHistoricalData(transaction)
+          tx.amountFriendly = parseFloat(tx.amount).toFixed(6)
+          tx.subTransactions.map(o => {
+            o.image = self.getTokenImage(o.symbol)
+            o.amountFriendly = parseFloat(o.amount).toFixed(6)
+          })
+
+          return tx
+        },
+        eos (transaction) {
+          let tx = JSON.parse(JSON.stringify(transaction))
+
+          let date = new Date(transaction.date)
+          tx.timeStamp = date.getTime() / 1000
+
+          tx.friendlyHash = transaction.transID.substring(0, 6) + '...' + transaction.transID.substr(transaction.transID.length - 5)
+          tx.friendlyTo = transaction.to
+          tx.hash = transaction.transID
+          tx.explorerLink = 'https://bloks.io/transaction/' + transaction.transID
+          tx.friendlyFrom = transaction.from
+          tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+          tx.image = self.getTokenImage(transaction.amount.split(' ')[1])
+          tx.amount = transaction.amount.split(' ')[0]
+          tx.memo = transaction.memo
+          tx.symbol = transaction.amount.split(' ')[1]
+          tx.active = false
+          tx.gasTotal = false
+          tx.direction = self.getTransactionDirection(transaction.from)
+          tx.dateFormatted = date.toISOString().split('T')[0]
+          tx.amountFriendly = parseFloat(Math.abs(tx.amount)).toFixed(6)
+          /*
+          this.getHistoricalData(transaction)
+          tx.amountFriendly = parseFloat(transaction.amount.split(' ')[0]).toFixed(6)
+          tx.subTransactions.map(o => {
+            o.image = this.getTokenImage(o)
+            o.amountFriendly = parseFloat(o.amount).toFixed(6)
+          })
+          */
+          return tx
+        }
       }
+      return normalizer[transaction.chain](transaction)
+    },
+    getTransactionDirection (from) {
+      let names = []
+      let direction = 'incoming'
+
+      if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain === 'eos') {
+        names = [this.$store.state.investment.defaultAccount.name]
+      } else if (this.$store.state.currentwallet.wallet.chain && this.$store.state.currentwallet.wallet.chain === 'eos') {
+        names = [this.$store.state.currentwallet.wallet.name]
+      }
+
+      if (names.includes(from)) {
+        direction = 'outgoing'
+      }
+
+      return direction
     },
     groupByDay (allHistoryData) {
       allHistoryData.forEach((element) => {
@@ -496,13 +661,13 @@ export default {
         }
         let EthPrice = await this.getUsdPrice(param, true)
         let gas = transaction.gas
-        console.log(transaction.gas, 'gas', EthPrice, transaction.symbol + '-' + transaction.dateFormatted)
+        // console.log(transaction.gas, 'gas', EthPrice, transaction.symbol + '-' + transaction.dateFormatted)
         transaction.usdFees = gas * EthPrice
         transaction.usdFees = isNaN(transaction.usdFees) ? false : transaction.usdFees.toFixed(2)
       } else {
         let value = await this.getUsdPrice(transaction)
         transaction.usdAmount = value ? (parseFloat(value) * parseFloat(transaction.amount)).toFixed(2) : false
-        console.log(transaction.gas, 'gas', value, transaction.symbol + '-' + transaction.dateFormatted)
+        // console.log(transaction.gas, 'gas', value, transaction.symbol + '-' + transaction.dateFormatted)
       }
     }
 
@@ -569,6 +734,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
+.actors.q-pl-sm.column {
+    width: 110px;
+}
   .title-date {
     text-transform: capitalize;
 }
