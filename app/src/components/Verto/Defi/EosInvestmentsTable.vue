@@ -12,8 +12,8 @@
                         <span class="pair">{{props.row.symbol0 + ' + ' + props.row.symbol1}}</span>
 
                     </span>
-                    <q-chip color="cyan-7" text-color="white" class="cursor-pointer" @click.native="stakeData = props.row ; openDialog = true">
-                        Unstake
+                    <q-chip color="black" outline text-color="black" class="cursor-pointer" @click.native="stakeData = props.row ; openDialog = true">
+                        Add Liquidity
                     </q-chip>
 
                 </div>
@@ -28,7 +28,10 @@
         </template>
     </q-table>
     <q-dialog v-model="openDialog">
-        <EOSStakingDialog :notWidget="true" :stakeData="stakeData" />
+        <EOSStakingDialog :notWidget="true" :stakeData="stakeData"  v-if="false"/>
+         <q-card class="eos-popup"  >
+        <Swapeos v-if="stakeData" :pool="{reserve0 : stakeData.count0 +' '+ stakeData.symbol0 , reserve1 : stakeData.count +' '+ stakeData.symbol1 }" :notWidget="true" />
+        </q-card>
     </q-dialog>
 </div>
 </template>
@@ -38,9 +41,11 @@ import {
   mapState
 } from 'vuex'
 import EOSStakingDialog from './EOSStakingDialog'
+import Swapeos from '@/components/Verto/Exchange/Swapeos'
 export default {
   components: {
-    EOSStakingDialog
+    EOSStakingDialog,
+    Swapeos
   },
   data () {
     return {
@@ -125,6 +130,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.eos-popup {
+  max-width: 760px;
+  width: 100%;
+}
+/deep/ .row.swdapeos-component--row{
+    display: flex;
+    justify-content: center;
+}
 .desktop-card-style.current-investments .body-table-col .pairs .pair {
     font-weight: 700;
     color: inherit;
