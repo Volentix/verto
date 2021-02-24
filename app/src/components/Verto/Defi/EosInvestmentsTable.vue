@@ -104,12 +104,17 @@ export default {
       )
     }
   },
+  watch: {
+    '$store.state.investment.eosInvestments': function () {
+      this.$store.commit('investment/setTableLoadingStatus', false)
+    }
+  },
   computed: {
     ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools'])
   },
   async created () {
     let tableData = await this.$store.state.wallets.tokens
-    console.log(tableData, 'tableData')
+
     let eosAccount = tableData.find(w => w.chain === 'eos' && w.type === 'eos')
 
     this.$store.dispatch('investment/getEOSInvestments', {

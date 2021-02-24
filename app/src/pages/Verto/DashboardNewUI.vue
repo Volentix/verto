@@ -24,7 +24,7 @@
                             <q-tabs
                                 v-model="tabPoolAndAssetBalances"
                                 class="tabPoolAndAssetBalances"
-                                align="flex-start"
+
                                 :class="{'text-black bg-white': $store.state.settings.lightMode === 'false', 'text-white bg-myblue': $store.state.settings.lightMode === 'true'}"
                             >
                                 <q-tab name="asset" class="text-capitalize" label="Asset Balances" />
