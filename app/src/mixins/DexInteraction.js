@@ -2,6 +2,7 @@ import {
   JsonRpc
 } from 'eosjs'
 import EOSContract from './EOSContract'
+import Formatter from './Formatter'
 export default {
   data () {
     return {
@@ -275,7 +276,7 @@ export default {
       let coins = []
 
       pairs.forEach((value, index, array) => {
-        let eosPool = { ...value, ...{ chain: 'eos', protocol: 'Defibox', liquidity: value.reserve0 + ' / ' + value.reserve1, volume: '-', yearlyROI: '-', poolName: [value.token0, value.token1].map(o => o.symbol.split(',')[1]).join(' / '), icons: [this.getEOSTokenImageUrl(value.token0.symbol.split(',')[1], value.token0.contract), this.getEOSTokenImageUrl(value.token1.symbol.split(',')[1], value.token1.contract)], fees: '-', platform: 'Defibox' } }
+        let eosPool = { ...value, ...{ chain: 'eos', protocol: 'Defibox', liquidity: this.formatDefiboxPool(value.reserve0) + ' / ' + this.formatDefiboxPool(value.reserve1), volume: '-', yearlyROI: '-', poolName: [value.token0, value.token1].map(o => o.symbol.split(',')[1]).join(' / '), icons: [this.getEOSTokenImageUrl(value.token0.symbol.split(',')[1], value.token0.contract), this.getEOSTokenImageUrl(value.token1.symbol.split(',')[1], value.token1.contract)], fees: '-', platform: 'Defibox' } }
         if (eosPool.poolName.includes('VTX')) { this.$store.commit('investment/updatePools', eosPool) }
 
         let val = this.addCoinToGlobalList(value, 'token0', coins)
@@ -316,5 +317,5 @@ export default {
       }
     }
   },
-  mixins: [EOSContract]
+  mixins: [EOSContract, Formatter]
 }

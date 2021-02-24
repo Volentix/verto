@@ -468,7 +468,7 @@
             <q-item class="q-my-sm" v-if="tab == 'liquidity' && depositCoin.liquidityMultiplier && pairData && pairData.miningData" clickable v-ripple>
               <q-item-section>
                 <q-item-label>You will receive</q-item-label>
-                <q-item-label class="text-bold" caption lines="1">{{ parseInt(this.swapData.fromAmount * this.depositCoin.liquidityMultiplier) }} {{ pairData.miningData.code }}</q-item-label>
+                <q-item-label class="text-bold" caption lines="1">{{ formatNumber(parseInt(this.swapData.fromAmount * this.depositCoin.liquidityMultiplier),0) }} {{ pairData.miningData.code }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -476,8 +476,8 @@
               <q-item-section>
                 <q-item-label class="text-bold">Liquidity</q-item-label>
 
-                <q-item-label lines="1">{{ pairData.reserve0 }}</q-item-label>
-                <q-item-label lines="1">{{ pairData.reserve1 }}</q-item-label>
+                <q-item-label lines="1">{{ formatDefiboxPool(pairData.reserve0) }}</q-item-label>
+                <q-item-label lines="1">{{ formatDefiboxPool(pairData.reserve1) }}</q-item-label>
               </q-item-section>
             </q-item>
 
