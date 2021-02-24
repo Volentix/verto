@@ -56,7 +56,7 @@
                   <div class="text-h6 text-bold">Price slippage</div>
                 </q-card-section>
                 <q-card-section class="text-16">
-                  The actual swap price rose by: <span class="text-red">6.87%</span><br><br>
+                  The actual swap price rose by: <span class="text-red">{{slippage}}%</span><br><br>
                   Slippage description:
                   Affected by the size of the liquidity pool,
                   the actual swap price will rise to a certain extent,
@@ -83,19 +83,19 @@
                         <q-item-label caption>The system will match you with the best-priced swap path, ensuring that you can still get more tokens after deducting the fees.</q-item-label>
                       </q-item-section>
                       <q-item-section side top>
-                        <q-toggle color="green" v-model="notif1" val="friend" />
+                        <q-toggle color="green" disable v-model="notif1" val="friend" />
                       </q-item-section>
                     </q-item>
                     <q-item tag="label">
                       <q-item-section>
-                        <q-item-label class="q-mb-sm">Slippage protection: 3%</q-item-label>
+                        <q-item-label class="q-mb-sm">Slippage protection: {{$store.state.settings.eos.swapSlippage}} %</q-item-label>
                         <q-item-label caption>Before the swap request is submitted, if the swap price slippage exceeds the slippage protection range, the transaction will require your second confirmation.</q-item-label>
                       </q-item-section>
                       <q-item-section side top>
                         <q-btn flat color="white" @click="slippageTransactionSettingsDialog = false, slippageProtectionDialog = true" text-color="grey" class="text-bold" no-caps label="Set" />
                       </q-item-section>
                     </q-item>
-                    <q-item tag="label">
+                    <q-item tag="label" v-if="false">
                       <q-item-section>
                         <q-item-label class="q-mb-sm">Transaction price protection: 3%</q-item-label>
                         <q-item-label caption>After the swap request is submitted, if the proportion of actual price that rose again exceeds the protection range of dealt price, the transaction will be automatically cancelled.</q-item-label>
@@ -104,7 +104,7 @@
                         <q-btn flat color="white" text-color="grey" class="text-bold" no-caps label="Set" />
                       </q-item-section>
                     </q-item>
-                    <q-item tag="label">
+                    <q-item tag="label" v-if="false">
                       <q-item-section>
                         <q-item-label class="q-mb-sm">CPU free: 0 times remaining today</q-item-label>
                         <q-item-label caption>Turn on CPU-free operation, you can operate CPU-free daily 5 times, UpgradeVIP get more times. Supports CPU free operation in the following wallets: LeafWallet、Scatter</q-item-label>
@@ -131,18 +131,18 @@
                   Slippage protection value
                   <div class="row q-mt-md q-mb-lg full-width">
                     <div class="col col-4 flex flex-center q-pr-md">
-                      <q-btn outline unelevated :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" class="full-width" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" label="3%" />
+                      <q-btn @click="$store.commit('settings/setEosSwapSlippage', 3)" :class="{'text-red': $store.state.settings.eos.swapSlippage == 3}" outline unelevated :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" class="full-width" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" label="3%" />
                     </div>
                     <div class="col col-4 flex flex-center q-pl-md q-pr-md">
-                      <q-btn outline unelevated :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" class="full-width" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" label="5%" />
+                      <q-btn @click="$store.commit('settings/setEosSwapSlippage', 5)" :class="{'text-red': $store.state.settings.eos.swapSlippage == 5}" outline unelevated :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" class="full-width" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" label="5%" />
                     </div>
                     <div class="col col-4 flex flex-center q-pl-md">
-                      <q-btn outline unelevated :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" class="full-width" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" label="custom %" />
+                      <q-input v-model="swapData.customPriceSlipage" @input="$store.commit('settings/setEosSwapSlippage', parseFloat(swapData.customPriceSlipage))" min="0" max="100" :class="{'text-red': ![3,5].includes($store.state.settings.eos.swapSlippage)}" filled type="number" :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" class="full-width" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" label="Custom %" />
                     </div>
                   </div>
                 </q-card-section>
                 <q-card-actions align="right" class="q-pr-md q-pb-md">
-                  <q-btn unelevated outline rounded color="white" no-caps class="confirm-purple q-pl-md q-pr-md" text-color="black" label="Confirm" />
+                  <q-btn v-close-popup  unelevated outline rounded color="white" no-caps class="confirm-purple q-pl-md q-pr-md" text-color="black" label="Confirm" />
                   <q-btn unelevated label="Cancel" @click="slippageProtectionDialog = false, slippageTransactionSettingsDialog = true" class="q-pl-sm q-pr-sm" outline rounded no-caps color="grey" v-close-popup />
                 </q-card-actions>
               </q-card>
@@ -178,7 +178,7 @@
                           <div class="you-pay">
                             <div class="you-pay-head row items-center">
                               <div class="col col-4">Payment</div>
-                              <div class="col col-8 flex red text-right justify-end text-body1" ><AccountSelector  /></div>
+                              <div class="col col-8 flex red text-right justify-end text-body1" ><AccountSelector :chain="crossChain ? false : 'eos'"  /></div>
                             </div>
                             <div class="you-pay-body row items-center">
                               <div class="col col-3 choose-coin">
@@ -260,7 +260,7 @@
 
                             <q-btn outline round :color="$store.state.settings.lightMode === 'true' ? 'white':'black'" :dark="$store.state.settings.lightMode === 'true'" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
                             <div class="you-receive-head row items-center">
-                              <div class="col col-6">You Receive</div>
+                              <div class="col col-6">{{ tab == 'swap' ? 'You Receive' : 'You send'}}</div>
                               <div v-if="rateData" class="col col-6 info_rate_holder small text-right flex justify-end items-center" :class="{ _loading: fetchingRate }">
                                 <!-- 1 ETH = 374.705 USDT -->
                                 <span>{{ "1 " + fromCoinType.toUpperCase() + "&nbsp;= &nbsp;" + rateData.rate.toFixed(5) + " " + destinationCoinType.toUpperCase() }}</span>
@@ -349,9 +349,9 @@
                                 {{ error }}
                               </span>
                             </div>
-                            <div class="slippage-wrapper text-red">
-                                <span @click="slippageDialog = true" class="flex items-center pointer">Slippage: 6.87% <q-icon name="o_info" class="q-ml-sm" size="xs" /></span>
-                            </div>
+                            <div :class="{ 'text-red' :  slippage >= 5 , 'text-orange' : slippage >= 2 && slippage < 5, 'text-green' : slippage < 2, 'slippage-wrapper': true }" v-if="tab == 'swap'">
+                                <span @click="slippageDialog = true" class="flex items-center pointer">Slippage: {{slippage}}: % <q-icon name="o_info" class="q-ml-sm" size="xs" /></span> <span v-if="pairData && pairData.price && false">{{this.pairData.price}}</span>
+                              <p v-if="($store.state.settings.eos.swapSlippage < slippage && tab == 'swap')" class="text-black q-mt-sm"><span @click="slippageProtectionDialog = true" class="text-deep-purple-12 cursor-pointer"><q-icon name="settings" /> Edit</span> slippage settings to proceed</p></div>
                             <q-btn v-if="error" unelevated :disable="true" color="grey-4" text-color="black" :label="error" class="text-capitalize invalid_btn full-width" />
 
                             <q-btn
@@ -359,7 +359,7 @@
                               unelevated
                               @click="sendTransaction()"
                               :loading="spinnervisible"
-                              :disable="parseFloat(swapData.toAmount) === 0 || !depositCoin.name || parseFloat(depositCoin.amount) < parseFloat(swapData.fromAmount) || spinnervisible"
+                              :disable="($store.state.settings.eos.swapSlippage < slippage && tab == 'swap') || parseFloat(swapData.toAmount) === 0 || !depositCoin.name || parseFloat(depositCoin.amount) < parseFloat(swapData.fromAmount) || spinnervisible"
                               outline
                               color="purple"
                               :label="tab != 'liquidity' ? 'Swap now' : 'Add liquidity'"
@@ -374,7 +374,7 @@
                             Order Submitted
                           </div>
                           <div class="standard-content--body">
-                            <div class="standard-content--body__form q-pa-md q-pb-xl">
+                            <div class="standard-content--body__form q-px-md q-pb-xl">
                               <div class="progress-custom-volentix column flex-center">
                                 <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58">
                                   <path
@@ -480,6 +480,16 @@
                 <q-item-label lines="1">{{ pairData.reserve1 }}</q-item-label>
               </q-item-section>
             </q-item>
+
+            <q-item class="q-my-sm text-left" v-if="currentLiquidity">
+              <q-item-section>
+                <q-item-label class="text-bold">Your liquidity</q-item-label>
+
+                <q-item-label lines="1">{{ currentLiquidity.count0 }} {{ currentLiquidity.symbol0 }}</q-item-label>
+                <q-item-label lines="1">{{ currentLiquidity.count1}} {{ currentLiquidity.symbol1 }}</q-item-label>
+              </q-item-section>
+            </q-item>
+
           </q-list>
           <div class="text-h6 q-pt-md" :class="{'text-white': $store.state.settings.lightMode === 'true'}" v-if="path.length && tab != 'liquidity'">Multi Swap Path</div>
           <q-list separator v-if="path.length && tab != 'liquidity'" class="multi-swap-path--list">
@@ -533,6 +543,8 @@ import initWallet from '@/util/Wallets2Tokens'
 import DexInteraction from '../../../mixins/DexInteraction'
 import EOSContract from '../../../mixins/EOSContract'
 import vpoolsComponent from '../../../components/Verto/Defi/vpoolsComponent.vue'
+import { computeForward } from '@/util/VolentixPools'
+import { number_to_asset, asset } from 'eos-common'
 export default {
   components: {
     vpoolsComponent,
@@ -545,6 +557,7 @@ export default {
       slippageDialog: false,
       notif1: true,
       notif2: true,
+      currentLiquidity: null,
       slippageTransactionSettingsDialog: false,
       slippageProtectionDialog: false,
       name: 'Swapeos',
@@ -604,7 +617,8 @@ export default {
       pairData: null,
       path: [],
       miningData: [],
-      transaction: {}
+      transaction: {},
+      slippage: 3
     }
   },
   async created () {
@@ -635,6 +649,10 @@ export default {
     if (this.$store.state.settings.dexData.fromAmount) {
       this.swapData.fromAmount = isNaN(parseFloat(this.$store.state.settings.dexData.fromAmount)) ? 0 : parseFloat(this.$store.state.settings.dexData.fromAmount)
       this.getPairData()
+    }
+
+    if (![3, 5].includes(this.$store.state.settings.eos.swapSlippage)) {
+      this.swapData.customPriceSlipage = this.$store.state.settings.eos.swapSlippage
     }
   },
   computed: {
@@ -699,6 +717,97 @@ export default {
         }
       }
     },
+    calculateDestinationQuantity2 () {
+      let a = asset(this.swapData.fromAmount + ' ' + this.depositCoin.value.toUpperCase()).amount
+
+      const r = number_to_asset(0, asset(this.pairData.reserve1).symbol)
+      let p1 = asset(this.pairData.reserve0).amount
+      let p2 = asset(this.pairData.reserve1).amount
+
+      if (
+        !this.pairData.reserve0.includes(this.depositCoin.value.toUpperCase())) {
+        p1 = asset(this.pairData.reserve1).amount
+        p2 = asset(this.pairData.reserve0).amount
+      }
+
+      r.set_amount(Math.abs(computeForward(a.multiply(-1), p2, p1.plus(a), 0)))
+      console.log(r.to_string(), 'r.to_string()', this.pairData)
+      this.swapData.toAmount = r.to_string().split(' ')[0]
+    },
+    calculateDestinationQuantity () {
+      if (isNaN(this.swapData.fromAmount)) return
+
+      let input = 'pool1'
+
+      this.pairData.pool1 = asset(this.pairData.reserve0)
+      this.pairData.pool2 = asset(this.pairData.reserve1)
+      let mul = 0.0001
+      if (this.pairData.pool1.symbol.code().to_string() === this.depositCoin.value.toUpperCase()) {
+        this.poolOne = this.pairData.pool1
+        this.poolTwo = this.pairData.pool2
+        mul = 10000
+      } else {
+        this.poolOne = this.pairData.pool2
+        this.poolTwo = this.pairData.pool1
+      }
+
+      this.pairData.price = (this.poolTwo.amount / this.poolOne.amount) / mul
+
+      console.log(this.pairData.price, 'this.pairData.price')
+      this.pairData.fee = 0
+
+      let a = (parseFloat(this.swapData.fromAmount) || 0).toFixed(this.poolOne.symbol.precision())
+
+      a = asset(a + ' ' + this.poolOne.symbol.code().to_string()).amount
+
+      const p1 = this.poolOne.amount
+      const p2 = this.poolTwo.amount
+
+      if (input === 'pool1') {
+        const r = number_to_asset(0, this.poolTwo.symbol)
+        r.set_amount(Math.abs(computeForward(a.multiply(-1), p2, p1.plus(a), this.pairData.fee)))
+
+        this.amount2 = r.to_string().split(' ')[0]
+      } else {
+        const result = computeForward(
+          a.multiply(-1),
+          this.pairData.pool1.amount,
+          this.pairData.pool2.amount + a,
+          this.pairData.fee
+        ).abs()
+
+        const r = number_to_asset(0, this.pairData.pool1.symbol)
+        r.set_amount(result)
+
+        this.amount2 = r.to_string().split(' ')[0]
+      }
+
+      this.swapData.toAmount = this.amount2
+    },
+    getCurrentInvestments () {
+      console.log(this.$store.state.investment.eosInvestments, this.pairData)
+      if (this.pairData && this.pairData.miningData && this.pairData.miningData.code) {
+        this.currentLiquidity = this.$store.state.investment.eosInvestments.find(o => o.code.toLowerCase() === this.pairData.miningData.code.toLowerCase())
+      } else {
+        this.currentLiquidity = false
+      }
+
+      console.log(this.currentLiquidity, this.$store.state.investment.eosInvestments, this.pairData)
+    },
+    computeForward (x, y, z, fee) {
+      const prod = x.multiply(y)
+      let tmp, tmp_fee
+
+      if (x > 0) {
+        tmp = prod.minus(1).divide(z).plus(1)
+        tmp_fee = tmp.multiply(fee).plus(9999).divide(10000)
+      } else {
+        tmp = prod.divide(z)
+        tmp_fee = tmp.multiply(-1).multiply(fee).plus(9999).divide(10000)
+      }
+
+      return tmp.plus(tmp_fee)
+    },
     getPairData () {
       let multiplier = 0
       this.path = []
@@ -729,8 +838,8 @@ export default {
             multiplier: multiplier,
             url: url
           })
-
-          this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.destinationCoin.precision)
+          this.calculateDestinationQuantity()
+          // this.swapData.toAmount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.destinationCoin.precision)
         }
         pair = this.pairs.find(
           (w) => (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && w.token0.symbol.split(',')[1].toLowerCase() === 'eos') || (w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && w.token1.symbol.split(',')[1].toLowerCase() === 'eos')
@@ -738,7 +847,8 @@ export default {
         if (pair) {
           next = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? pair.token1 : pair.token0
           multiplier = pair.token0.symbol.split(',')[1].toLowerCase() === 'eos' ? parseFloat(pair.price0_last) : parseFloat(pair.price1_last)
-          this.swapData.toAmount = parseFloat(parseFloat(this.swapData.toAmount) * multiplier).toFixed(this.destinationCoin.precision)
+          this.calculateDestinationQuantity()
+          // this.swapData.toAmount = parseFloat(parseFloat(this.swapData.toAmount) * multiplier).toFixed(this.destinationCoin.precision)
           url = this.getEOSTokenImageUrl(next.symbol.split(',')[1], next.contract)
           this.path.push({
             id: pair.id,
@@ -766,12 +876,14 @@ export default {
         }
       } else {
         multiplier = this.pairData.token0.symbol.split(',')[1].toLowerCase() === this.depositCoin.value.toLowerCase() ? parseFloat(this.pairData.price0_last) : parseFloat(this.pairData.price1_last)
-        let amount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.destinationCoin.precision)
+        // let amount = parseFloat(this.swapData.fromAmount * multiplier).toFixed(this.destinationCoin.precision)
 
-        this.swapData.toAmount = isNaN(amount) ? 0 : amount
+        this.calculateDestinationQuantity()
+        // this.swapData.toAmount = isNaN(amount) ? 0 : amount
       }
 
       this.validateTransaction()
+      this.getCurrentInvestments()
     },
     addCoinToGlobalList (value, key) {
       let infosArray = value[key].symbol.split(',')
@@ -866,7 +978,7 @@ export default {
         data: {
           from: this.eosAccount.name,
           to: 'swap.defi',
-          quantity: this.swapData.fromAmount + ' ' + this.depositCoin.value.toUpperCase(),
+          quantity: parseFloat(this.swapData.fromAmount).toFixed(this.depositCoin.precision) + ' ' + this.depositCoin.value.toUpperCase(),
           memo: this.getMemo()
         }
       }
@@ -909,7 +1021,7 @@ export default {
           data: {
             from: this.eosAccount.name,
             to: 'swap.defi',
-            quantity: this.swapData.toAmount + ' ' + this.destinationCoin.value.toUpperCase(),
+            quantity: parseFloat(this.swapData.toAmount).toFixed(this.destinationCoin.precision) + ' ' + this.destinationCoin.value.toUpperCase(),
             memo: this.getMemo()
           }
         })
@@ -964,10 +1076,23 @@ export default {
     }
   },
   watch: {
+    '$store.state.investment.eosInvestments': function () {
+      this.getCurrentInvestments()
+    },
     defaultAccount (val) {
       if (!this.crossChain) {
         this.getPools()
       }
+    },
+    'swapData.toAmount' (val) {
+      if (this.pairData.reserve0.includes(this.depositCoin.value)) {
+
+      }
+
+      console.log(this.swapData.toAmount, this.swapData.fromAmount, this.pairData.price)
+
+      this.slippage = (Math.abs(((parseFloat(val) / parseFloat(this.swapData.fromAmount)) - this.pairData.price) / this.pairData.price) * 100).toFixed(2)
+      this.slippage = isNaN(this.slippage) ? 0 : this.slippage
     },
     depositCoin: function (newVal, oldVal) {
       if (newVal) {
