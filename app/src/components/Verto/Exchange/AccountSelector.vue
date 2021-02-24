@@ -122,6 +122,7 @@ export default {
     } else {
       this.accountOption = this.accountOptions.find(o => (this.chain && o.chain === this.chain) || o.chain === 'eth')
     }
+
     this.accountOptions.sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))
     this.setAccount()
   },
