@@ -14,5 +14,8 @@ export default {
     destinationCoin: null,
     fromAmount: null
   },
+  eos: {
+    swapSlippage: 3
+  },
   lightMode: false
 }
