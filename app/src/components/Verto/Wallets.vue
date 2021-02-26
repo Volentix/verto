@@ -482,6 +482,9 @@
                                         <q-item data-name='History' clickable to="/verto/history" v-ripple class="p-relative">History
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
+                                        <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Transaction builder' clickable v-ripple class="p-relative" to="/verto/custom-transactions">Transaction builder
+                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                        </q-item>
                                         <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
                                             <q-item-section>
                                                 <q-item-label>{{$store.state.currentwallet.wallet.hidden ? 'Reveal' : 'Hide'}} Currency Chain</q-item-label>
