@@ -163,6 +163,15 @@ export default [
         }
       },
       {
+        name: 'customTransaction',
+        path: '/verto/custom-transactions',
+        component: () => import('pages/Verto/CustomTransaction.vue'),
+        meta: {
+          authRequired: true,
+          needskeyscreated: true
+        }
+      },
+      {
         name: 'stake',
         path: '/verto/stake',
         component: () => import('pages/Verto/Stake.vue'),
