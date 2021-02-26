@@ -17,8 +17,8 @@ class Wallets2Tokens {
       type: 'eos',
       chain: 'eos',
       name: ''
-    })
-    */
+    }) */
+
     this.tableData = [ ...store.state.currentwallet.config.keys ]
 
     if (store.state.settings.network === 'testnet') {
