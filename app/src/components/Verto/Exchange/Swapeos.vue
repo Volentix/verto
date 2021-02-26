@@ -1052,7 +1052,7 @@ export default {
           )
         }
       }
-      console.log(transactionObject, 'transactionObject')
+      
       api
         .transact(transactionObject, {
           blocksBehind: 3,
@@ -1066,6 +1066,10 @@ export default {
           initWallet()
           if (this.tab !== 'swap') {
             this.getPools()
+             this.$store.dispatch('investment/getEOSInvestments', {
+              owner: this.eosAccount.name
+            })
+            this.getPairData()
           }
         })
         .catch((error) => {
