@@ -642,16 +642,6 @@ export default {
       this.invalidEosName = false
       this.transStatus = 'Transaction in progress'
 
-      console.log(
-        'chain', this.currentAccount.chain,
-        'type', this.currentAccount.type,
-        'name/key', this.currentAccount.key,
-        'to', this.sendToResolved,
-        'value', this.sendAmount,
-        'memo', this.sendMemo,
-        'key', this.privateKey.key,
-        'contract', this.currentAccount.contract)
-
       // Pass gas details in memo
       if (this.currentAccount.chain === 'eth') {
         this.sendMemo = {
