@@ -274,7 +274,6 @@ export default {
       }
     },
     async process () {
-      console.log(this.privateKey, 'this.privateKey')
       this.ErrorMessage = null
       this.transStatus = null
 
@@ -290,8 +289,6 @@ export default {
         this.spinnervisible = true
 
         let result = await eos.transact(transactionObject, { keyProvider: this.privateKey.key })
-
-        console.log(result)
 
         this.transactionLink = process.env[this.$store.state.settings.network].EOS_TRANSACTION_EXPLORER + result.transaction_id
         this.spinnervisible = false

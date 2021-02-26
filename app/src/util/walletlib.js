@@ -146,7 +146,6 @@ class Lib {
                   let date = new Date(a.block_time)
                   tx.timeStamp = date.getTime() / 1000
                   tx.chain = token
-                  tx.transID = a.action_trace.trx_id
                   tx.friendlyHash = a.action_trace.trx_id.substring(0, 6) + '...' + a.action_trace.trx_id.substr(a.action_trace.trx_id.length - 5)
                   tx.to = tx.friendlyTo = a.action_trace.act.data.to
                   tx.hash = a.action_trace.trx_id

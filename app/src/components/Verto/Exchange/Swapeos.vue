@@ -747,7 +747,6 @@ export default {
 
       let input = 'pool1'
 
-
       this.pairData.pool1 = asset(this.pairData.reserve0)
       this.pairData.pool2 = asset(this.pairData.reserve1)
       let mul = 0.0001
