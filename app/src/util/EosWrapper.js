@@ -110,7 +110,6 @@ class EosWrapper {
       }
     )
 
-    // console.log('transact', result)
     return result
   }
   async transaction (contractAccount, action, authActor, data, successMessage, errorMessage, api) {
