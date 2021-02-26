@@ -747,6 +747,7 @@ export default {
 
       let input = 'pool1'
 
+
       this.pairData.pool1 = asset(this.pairData.reserve0)
       this.pairData.pool2 = asset(this.pairData.reserve1)
       let mul = 0.0001
@@ -1032,6 +1033,25 @@ export default {
             memo: this.getMemo()
           }
         })
+
+        if (this.transaction.name !== 'createpair') {
+          transactionObject.actions.unshift(
+            {
+              account: 'swap.defi',
+              name: 'deposit',
+              authorization: [
+                {
+                  actor: this.eosAccount.name,
+                  permission: 'active'
+                }
+              ],
+              data: {
+                owner: this.eosAccount.name,
+                pair_id: this.pairData.id
+              }
+            }
+          )
+        }
       }
       console.log(transactionObject, 'transactionObject')
       api
