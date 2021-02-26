@@ -2,9 +2,9 @@
 <div style="height: 100%;">
   <div class="transaction-wrapper" style="height: 100%;">
     <!-- <q-toggle v-model="active" label="Active" /> -->
-    <div class="transaction-wrapper--list open" v-if="isMobile">
+    <div class="transaction-wrapper--list open" v-if="legacyHistory.length">
       <q-list bordered separator class="list-wrapper">
-        <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="item.to">
+        <q-item v-for="(item, index) in legacyHistory" :key="index" clickable v-ripple :active="active" :to="item.to">
           <q-item-section class="item-date">
             <span class="item-date--value" v-html="item.time" />
           </q-item-section>
@@ -17,7 +17,7 @@
           </q-item-section>
         </q-item>
       </q-list>
-       <q-btn @click="showMore()" unelevated flat class="full-width transaction-wrapper--list__hide-transaction" color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" label="See More..." />
+       <q-btn @click="showMore()"  v-if="false" unelevated flat class="full-width transaction-wrapper--list__hide-transaction" color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" label="See More..." />
     </div>
     <div class="transaction-wrapper--list open" v-else style="height: 100%;">
     <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="this.$store.state.investment.defaultAccount && !['eos','eth'].includes(this.$store.state.investment.defaultAccount.chain)">
@@ -415,6 +415,7 @@ export default {
     return {
       sendComponent: false,
       showInfos: [],
+      legacyHistory: [],
       receiveComponent: false,
       sendComponent2: false,
       receiveComponent2: false,
@@ -451,29 +452,28 @@ export default {
     this.getHistory()
   },
   methods: {
-    getHistory () {
+    async getHistory () {
       this.history = []
-      if (this.$store.state.investment.defaultAccount.chain === 'eos') {
-        this.getEosWalletHistory(this.$store.state.investment.defaultAccount)
-      } else if (this.$store.state.investment.defaultAccount.chain === 'eth') {
+
+      let account = this.$store.state.investment.defaultAccount
+
+      if (account.chain === 'eth') {
         this.getEthWalletHistory(this.$store.state.investment.defaultAccount)
       } else {
-        this.getEosWalletHistory(this.$store.state.wallets.tokens.find(w => w.chain === 'eos' && w.type === 'eos'))
-      }
-    },
-    async getEosWalletHistory (account) {
-      let data = null
-      let allHistoryData = []
+        let data = null
+        let allHistoryData = []
 
-      if (account) {
+        if (!account.chain) {
+          account = this.$store.state.wallets.tokens.find(w => w.chain === 'eos' && w.type === 'eos')
+        }
+
         data = (await Lib.history(account.chain, account.type, account.name, this.pagination))
-
         data = data.history
 
-        data = data.map(o => {
-          o.chain = 'eos'
-          return this.normalize(o)
-        })
+        if (data[0].transID) {
+          this.legacyHistory = data
+          return
+        }
 
         if (data && Array.isArray(data)) {
           allHistoryData = allHistoryData.concat(data)
@@ -572,14 +572,7 @@ export default {
           tx.direction = self.getTransactionDirection(transaction.from)
           tx.dateFormatted = date.toISOString().split('T')[0]
           tx.amountFriendly = parseFloat(Math.abs(tx.amount)).toFixed(6)
-          /*
-          this.getHistoricalData(transaction)
-          tx.amountFriendly = parseFloat(transaction.amount.split(' ')[0]).toFixed(6)
-          tx.subTransactions.map(o => {
-            o.image = this.getTokenImage(o)
-            o.amountFriendly = parseFloat(o.amount).toFixed(6)
-          })
-          */
+
           return tx
         }
       }
@@ -594,7 +587,6 @@ export default {
       } else if (this.$store.state.currentwallet.wallet.chain && this.$store.state.currentwallet.wallet.chain === 'eos') {
         names = [this.$store.state.currentwallet.wallet.name]
       }
-
       if (names.includes(from)) {
         direction = 'outgoing'
       }

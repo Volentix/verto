@@ -1032,8 +1032,27 @@ export default {
             memo: this.getMemo()
           }
         })
+
+        if (this.transaction.name !== 'createpair') {
+          transactionObject.actions.unshift(
+            {
+              account: 'swap.defi',
+              name: 'deposit',
+              authorization: [
+                {
+                  actor: this.eosAccount.name,
+                  permission: 'active'
+                }
+              ],
+              data: {
+                owner: this.eosAccount.name,
+                pair_id: this.pairData.id
+              }
+            }
+          )
+        }
       }
-      console.log(transactionObject, 'transactionObject')
+
       api
         .transact(transactionObject, {
           blocksBehind: 3,
@@ -1047,6 +1066,10 @@ export default {
           initWallet()
           if (this.tab !== 'swap') {
             this.getPools()
+            this.$store.dispatch('investment/getEOSInvestments', {
+              owner: this.eosAccount.name
+            })
+            this.getPairData()
           }
         })
         .catch((error) => {
