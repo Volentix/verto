@@ -17,7 +17,7 @@
               </q-banner>
               <div class="row">
                 <h2 class="standard-content--title col-md-4 float-left flex justify-start q-pl-md q-pt-lg" >History</h2>
-                <div class="col flex justify-end q-pr-md"><AccountSelector :showAllWallets="true"/></div>
+                <div class="col flex justify-end q-pr-md"><AccountSelector class="q-mr-md" :showAllWallets="true"/></div>
               </div>
 
               <div class="standard-content--body" style="height: 100%;">
