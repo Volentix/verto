@@ -148,9 +148,6 @@ export default {
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
   },
-  async mounted () {
-    console.log(this.$store.state.currentwallet.wallet, '    console.log( this.$store.state.currentwallet.wallet )')
-  },
   updated () {
     // this.selectedCoin = this.$store.state.currentwallet.wallet
     // console.log('this.selectedCoin updated()', this.selectedCoin)
