@@ -43,13 +43,74 @@ class Lib {
     // console.log(rawTx, 'rawTx')
     return rawTx
   }
-  removeDuplicateTransactions (history) {
+  getUniqueTokens (coins) {
     let duplicates = []
 
-    return history.filter((el) => !duplicates.find(e => e === el.transID) && duplicates.push(el.transID))
+    return coins.map((el) => {
+      let search = coins.filter(o => el.value.toLowerCase() === o.value.toLowerCase())
+      let value = search[0]
+
+      if (search.length !== 1 && !duplicates.includes(el.value.toLowerCase())) {
+        duplicates.push(el.value.toLowerCase())
+      } else if (search.length !== 1) {
+        value = null
+      }
+      return value
+    }).filter(o => o != null)
   }
 
+  getAllCoins (dex) {
+    let coins = store.state.settings.coins.coinswitch.concat(store.state.settings.coins.oneinch).concat(store.state.settings.coins.defibox)
+
+    coins = this.getUniqueTokens(coins).filter(o => !(store.state.wallets.tokens.filter(x => x.chain === 'eos').map(w => w.type.toLowerCase()).includes(o.value.toLowerCase())))
+
+    store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type !== 'verto').forEach((coin) => {
+      coin.contract = (typeof coin.contract === 'undefined' || coin.contract === 'undefined' || !coin.contract) ? 'eosio.token' : coin.contract
+
+      let row = {
+        'label': coin.type.toUpperCase(),
+        'name': coin.name,
+        'value': coin.type,
+        'contract': coin.contract,
+        'precision': coin.precision,
+        'image': coin.chain === 'eos' ? 'https://ndi.340wan.com/eos/' + coin.contract + '-' + coin.type.toLowerCase() + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type.toLowerCase() + '.png',
+        'dex': 'coinswitch',
+        'amount': parseFloat(coin.amount),
+        'amountUSD': coin.usd
+      }
+
+      if (dex !== 'coinswitch' || !coins.find(c => c.value.toLowerCase() === coin.type.toLowerCase())) {
+        coins.unshift(row)
+      }
+    })
+    return coins.sort(function (a, b) {
+      return a.name ? -1 : 1
+    })
+  }
+  getTransactionDirection (from, to, nameOrKey) {
+    let direction = 'incoming'
+
+    if (nameOrKey === from) {
+      direction = 'outgoing'
+    }
+
+    return direction
+  }
+
+  getTokenImage (type) {
+    let token = this.getAllCoins().find((o) => o.value.toLowerCase() === type.toLowerCase())
+    return token ? (type.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : token.image) : 'https://etherscan.io/images/main/empty-token.png'
+  }
+
+  /*
+  removeDuplicateTransactions (history) {
+    // let duplicates = []
+    //
+    return history // .filter((el) => !duplicates.find(e => e === el.transID) && duplicates.push(el.transID))
+  } */
+
   history = async (walletType, key, token, data = null) => {
+    const self = this
     const wallet = {
       async eos (token, key, data) {
         let actions = []
@@ -64,8 +125,7 @@ class Lib {
                 // console.log('split', a.action_trace.act.name === 'transfer' ? a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() : 'not transfer')
                 if (token === 'eos' && (
                   a.action_trace.act.name === 'transfer' &&
-                    a.action_trace.receiver === key && typeof a.action_trace.act.data.from !== 'undefined' && typeof a.action_trace.act.data.to !== 'undefined' &&
-                    a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() === token)) {
+                    a.action_trace.receiver === key && typeof a.action_trace.act.data.from !== 'undefined' && typeof a.action_trace.act.data.to !== 'undefined')) {
                   // console.log('walletlib history actions', a)
 
                   let amount = ''
@@ -81,25 +141,36 @@ class Lib {
                       break
                   }
 
-                  actions.push({
-                    date: date.formatDate(a.block_time, 'YYYY-MM-DD HH:mm'),
-                    transID: a.action_trace.trx_id,
-                    from: a.action_trace.act.data.from,
-                    to: a.action_trace.act.data.to,
-                    memo: a.action_trace.act.data.memo,
-                    typeTran: a.action_trace.act.name,
-                    desc: a.action_trace.act.data.memo ? a.action_trace.act.data.memo.substring(0, 20) : '',
-                    amount
-                  })
+                  let tx = {}
+
+                  let date = new Date(a.block_time)
+                  tx.timeStamp = date.getTime() / 1000
+                  tx.chain = token
+                  tx.transID = a.action_trace.trx_id
+                  tx.friendlyHash = a.action_trace.trx_id.substring(0, 6) + '...' + a.action_trace.trx_id.substr(a.action_trace.trx_id.length - 5)
+                  tx.to = tx.friendlyTo = a.action_trace.act.data.to
+                  tx.hash = a.action_trace.trx_id
+                  tx.explorerLink = 'https://bloks.io/transaction/' + tx.hash
+                  tx.from = tx.friendlyFrom = a.action_trace.act.data.from
+                  tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+                  tx.image = self.getTokenImage(amount.split(' ')[1])
+                  tx.amount = amount.split(' ')[0]
+                  tx.memo = a.action_trace.act.data.memo
+                  tx.symbol = amount.split(' ')[1]
+                  tx.direction = self.getTransactionDirection(tx.from, tx.to, key)
+                  tx.dateFormatted = date.toISOString().split('T')[0]
+                  tx.amountFriendly = parseFloat(Math.abs(tx.amount)).toFixed(6)
+
+                  actions.push(tx)
                 }
               })
 
-              return self.removeDuplicateTransactions(actions)
+              return actions // self.removeDuplicateTransactions(actions)
             }
           }).catch(function (error) {
             // TODO: Exception handling
-            // console.log('history error', error)
-            userError(error)
+            console.log('history error', error)
+            // userError(error)
             return false
           })
 
@@ -140,7 +211,7 @@ class Lib {
       },
       async dot (token, key) {
         let actions = []
-        await axios.post('https://polkadot.api.subscan.io/api/scan/transfers', {
+        await axios.post('https://cache.volentix.io/https://polkadot.api.subscan.io/api/scan/transfers', {
           'X-API-Key': key
         })
           .then(function (result) {
