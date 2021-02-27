@@ -12,7 +12,7 @@ import abiArray from '@/statics/abi/erc20.json'
 class Lib {
   async getRawETHTransaction (token, from, to, value, key, contract, origin = 'mnemonic') {
     const Web3 = require('web3')
-    let localWeb3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+    let localWeb3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
     if (origin === 'metamask' && window.web3 && window.web3.currentProvider.isMetaMask) {
       localWeb3 = new Web3(window.web3.currentProvider)
     }
@@ -562,7 +562,7 @@ class Lib {
 
         const Web3 = require('web3')
         const EthereumTx = require('ethereumjs-tx').Transaction
-        const web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+        const web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
 
         let nonce = await web3.eth.getTransactionCount(from)
 
