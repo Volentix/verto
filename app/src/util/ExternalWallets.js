@@ -1,5 +1,5 @@
 import Web3 from 'web3'
-const web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+const web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
 import axios from 'axios'
 import store from '@/store'
 
