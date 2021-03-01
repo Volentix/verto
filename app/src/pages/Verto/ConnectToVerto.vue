@@ -30,6 +30,14 @@
       </div>
       <div class="standard-content--body full-width" v-else-if="!$store.state.wallets.tokens.length || !loggedIn">
         <div class="standard-content--body__form">
+          <div v-if="pending">
+          <div class="flex-center flex text-left q-pb-sm">
+          Loading wallet balances
+          </div>
+          <div class="flex-center flex">
+          <q-linear-progress indeterminate style="max-width:400px"  color="grey" class="q-pb-md q-mb-md"/>
+          </div>
+          </div>
           <q-input ref="psswrd" v-model="password" @keyup.enter="login" @input="checkPassword" :error="passHasError" rounded outlined color="deep-purple-14" :type="isPwd ? 'password' : 'text'" label="Verto Password" hint="*Minimum of 8 characters">
             <template v-slot:append>
               <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
@@ -39,10 +47,10 @@
 
       </div>
      <div class="standard-content--body full-width q-pb-lg" v-else-if="loggedIn && !$route.query.url">
-        <div class="standard-content--body__form">
-         <Oneinch :crossChain="true" :disableDestinationCoin="true" v-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
-         <Swapeos :crossChain="true" :disableDestinationCoin="true" v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
-         <Coinswitch :crossChain="true" :disableDestinationCoin="true" v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
+        <div class="standard-content--body__form" v-if="$store.state.investment.defaultAccount">
+         <Oneinch :crossChain="true" :disableDestinationCoin="false" v-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
+         <Swapeos :crossChain="true" :disableDestinationCoin="false" v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
+         <Coinswitch :crossChain="true" :disableDestinationCoin="false" v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
          </div>
      </div>
       <div class="standard-content--body full-width q-pb-lg" v-else-if="loggedIn">
@@ -211,6 +219,7 @@ export default {
       version: {},
       restoreFromWords: false,
       disableDestinationCoin: true,
+      pending: false,
       showSubmit: false,
       accounts: [],
       depositCoin: {
@@ -238,16 +247,20 @@ export default {
   },
   async created () {
     this.$store.state.currentwallet.wallet = null
-    if (this.$route.params.fromCoin) {
-      this.depositCoin.value = this.$route.params.fromCoin
-      this.destinationCoin.value = this.$route.params.toCoin
-      this.depositCoin.fromAmount = this.$route.params.amount
-    }
+    console.log(this.$store.state.currentwallet.wallet, 'this.$store.state.currentwallet.wallet', 11)
+
     if (!this.$route.query.url) {
       this.getCoinswitchCoins()
       this.get1inchCoins()
       this.getDefiboxCoins()
     }
+    this.$store.dispatch('investment/getMarketDataVsUSD')
+    if (this.$route.params.fromCoin) {
+      this.depositCoin.value = this.$route.params.fromCoin
+      this.destinationCoin.value = this.$route.params.toCoin
+      this.depositCoin.fromAmount = this.$route.params.amount
+    }
+
     this.hasConfig = !!(await configManager.hasVertoConfig())
     if (!this.hasConfig) {
       this.$router.push({
@@ -274,21 +287,19 @@ export default {
     tokens: {
       deep: true,
       handler (val) {
-        if (this.$route.params.fromCoin) {
-          this.depositCoin.value = this.$route.params.fromCoin
-          this.destinationCoin.value = this.$route.params.toCoin
-          this.depositCoin.fromAmount = this.$route.params.amount
-          this.checkPair()
+        if (this.$route.params.fromCoin && !this.pending) {
+          this.pending = true
 
           setTimeout(() => {
             this.$q.notify({
               message: 'Wallet connected',
               color: 'positive'
             })
-
+            this.pending = false
+            this.checkPair()
             this.loggedIn = true
             this.spinnerVisible = false
-          }, 5000)
+          }, 10000)
         }
       }
     }
@@ -318,10 +329,11 @@ export default {
         this.spinnerVisible = false
         return
       }
-      const results = await configManager.login(this.password)
+      const results = await configManager.login(this.password, false)
+
       if (results.success) {
         this.$store.commit('settings/temporary', this.password)
-        initWallet()
+        await initWallet()
       } else {
         if (results.message === 'no_default_key') {
           this.$router.push({

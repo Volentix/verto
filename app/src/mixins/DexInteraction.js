@@ -125,29 +125,33 @@ export default {
       })
     },
     setDefaultWallet (chain) {
-      if (!this.$store.state.investment.defaultAccount) {
-        let w = this.$store.state.wallets.tokens.find(x => x.chain === chain && x.type === chain)
-        this.$store.commit('investment/setDefaultAccount', chain === 'eth' ? {
-          value: w.key,
-          key: w.key,
-          chain: 'eth',
-          usd: w.usd,
-          total: w.total,
-          image: w.icon,
-          label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
-          color: 'green'
-        } : {
-          value: w.name,
-          name: w.name,
-          key: w.key,
-          usd: w.usd,
-          chain: 'eos',
-          total: w.total,
-          image: w.icon,
-          label: w.name,
-          color: 'green'
-        })
+      if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain) {
+        if (chain === this.$store.state.investment.defaultAccount.chain) return
       }
+
+      let w = this.$store.state.wallets.tokens.find(x => x.chain === chain && x.type === chain)
+      this.$store.commit('investment/setDefaultAccount', chain === 'eth' ? {
+        value: w.key,
+        key: w.key,
+        chain: 'eth',
+        type: 'eth',
+        usd: w.usd,
+        total: w.total,
+        image: w.icon,
+        label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
+        color: 'green'
+      } : {
+        value: w.name,
+        name: w.name,
+        key: w.key,
+        usd: w.usd,
+        chain: 'eos',
+        type: 'eos',
+        total: w.total,
+        image: w.icon,
+        label: w.name,
+        color: 'green'
+      })
     },
     checkPair () {
       this.dex = null
