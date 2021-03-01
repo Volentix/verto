@@ -242,14 +242,11 @@ class ConfigManager {
         store.commit('currentwallet/updateConfig', config)
         store.commit('currentwallet/setLoggedIn', true)
 
-        
-
         let i
 
         for (i = 0; i < config.keys.length; i++) {
           const key = config.keys[i]
           if (key.defaultKey) {
-            
             // Should be false when using ConnectToVerto
             if (setDefaultWallet) { store.commit('currentwallet/updateCurrentWallet', key) }
 
