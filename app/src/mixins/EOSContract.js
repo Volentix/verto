@@ -159,7 +159,7 @@ export default {
           user,
           txHeaders
         }), config)
-        console.log()
+
         const content = rawResponse.data
         if (content.error) {
         // show error to User

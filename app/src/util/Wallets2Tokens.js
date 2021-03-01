@@ -12,13 +12,7 @@ class Wallets2Tokens {
     self.eosUSD = 0
     this.getEosUSD()
     store.state.wallets.portfolioTotal = 0
-    /*
-    store.state.currentwallet.config.keys.unshift({
-      type: 'eos',
-      chain: 'eos',
-      name: ''
-    })
-    */
+
     this.tableData = [ ...store.state.currentwallet.config.keys ]
 
     if (store.state.settings.network === 'testnet') {
@@ -208,7 +202,7 @@ class Wallets2Tokens {
                 let usdValue = 0
                 this.getUSD(t.code, type).then(result => {
                   usdValue = result
-                  // console.log('this.eosUSD $$$$$ ', usdValue)
+
                   self.tableData.push({
                     selected: false,
                     disabled: false,
@@ -221,7 +215,7 @@ class Wallets2Tokens {
                     amount: t.amount,
                     usd: usdValue * t.amount,
                     contract: t.code,
-                    precision: t.amount.split('.')[1].length,
+                    precision: t.amount.split('.')[1] ? t.amount.split('.')[1].length : 0,
                     chain: 'eos',
                     to: '/verto/wallets/eos/' + type + '/' + name,
                     icon: 'https://ndi.340wan.com/eos/' + t.code + '-' + t.symbol.toLowerCase() + '.png'
@@ -239,12 +233,13 @@ class Wallets2Tokens {
                 self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(async eos => {
                   // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
                   // eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
+
                   eos.amount = t.amount ? t.amount : 0
                   eos.usd = this.eosUSD * t.amount
                   eos.contract = 'eosio.token'
                   eos.privateKey = wallet.privateKey
                   eos.privateKeyEncrypted = wallet.privateKeyEncrypted
-                  eos.precision = t.amount.split('.')[1].length
+                  eos.precision = t.amount.split('.')[1] ? t.amount.split('.')[1].length : 0
                   // console.log('a ---------------------', a)
                   eos.proxy = a.voter_info ? a.voter_info.proxy : ''
                   eos.staked = a.voter_info ? a.voter_info.staked / 10000 : 0
@@ -376,7 +371,10 @@ class Wallets2Tokens {
     }
 
     // 'https://api.coingecko.com/api/v3/simple/price?ids=' + +'&vs_currencies=usd'
-    let coinEOS = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos')).data.data.price
+    let coinEOS = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=' + contract + '-' + coin + '-eos'))
+
+    coinEOS = (coinEOS && coinEOS.data) ? coinEOS.data.data.price : 0
+
     let coinUSD = coinEOS * this.eosUSD
     // console.log(coin, ' --> USD', coinUSD)
 

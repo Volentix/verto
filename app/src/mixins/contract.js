@@ -40,9 +40,12 @@ export default {
           nonce: nonce
         }
         this.approvalRequired = true
+
+        let value = this.web3.utils.toWei(amountToSend, 'ether')
+
         tx = tokenContract.methods.approve(
           toAddress,
-          this.web3.utils.toHex(amountToSend * 10 ** 18 * 100)
+          this.web3.utils.toHex(value)
         )
         transactionObject.to = fromTokenAddress
         transactionObject.data = tx.encodeABI()
@@ -62,7 +65,7 @@ export default {
       const self = this
       const Web3 = require('web3')
       console.log(transactionObject, 'transactionObject')
-      this.web3 = this.web3 ? this.web3 : new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+      this.web3 = this.web3 ? this.web3 : new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
       this.web3.eth.estimateGas(transactionObject).then(function (gasAmount) {
         if (customGas) gasAmount = customGas
         self.gasOptions = [{

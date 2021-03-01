@@ -5,7 +5,6 @@
         <div class="row" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
             <div class="col col-md-12">
                 <div class="desktop-card-style apps-section q-mb-sm">
-
                     <div class="chain-tools-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                         <div class="chain-tools-wrapper--list open">
                             <div class="list-wrapper">
@@ -269,7 +268,7 @@
                                                     <br>
                                                     <q-btn :disable="accountToBeCreated" outline round color="black" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
                                                     <div class="you-receive-head row items-center">
-                                                        <div class="col col-4">You Receive</div>
+                                                        <div class="col col-4 text-left">You Receive</div>
                                                         <div v-if="!ErrorMessage || !ErrorMessage.length" class="col col-8 info_rate_holder  text-right  justify-end items-center" :class="{'_loading': fetchingRate}">
                                                         <p :class="{'text-green' :freeEOS.qualified, 'text-red' : !freeEOS.qualified , 'text-body2' : true }">{{freeEOS.message}}</p>
                                                         <span v-if="freeEOS.qualified && !accountToBeCreated" class="float-right cursor-pointer " @click="offer=true"><q-btn flat icon="img:https://www.joypixels.com/images/jp-home/fire.gif" label="Choose account name" /></span>
@@ -1073,7 +1072,7 @@ let metamask = new ExternalWallets('metamask')
 const eos = new EosWrapper()
 
 const Web3 = require('web3')
-let web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+let web3
 export default {
   name: 'Coinswitch',
   props: ['disableDestinationCoin', 'crossChain'],
@@ -1155,7 +1154,7 @@ export default {
         'value': 'btc',
         'image': 'https://files.coinswitch.co/public/coins/btc.png'
       },
-      depositQuantity: 0.1,
+      depositQuantity: null,
       depositCoinOptions: null,
       maxVtxAvailable: null,
       depositCoinUnfilter: null,
@@ -1248,10 +1247,12 @@ export default {
 
       this.depositCoinUnfilter = this.depositCoinOptions
 
-      let item = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
-      if (item) { this.depositCoin = item }
-
-      // //console.log(this.depositCoin, item, 'ETH this.depositCoin', this.$store.state.investment.defaultAccount, this.depositCoinOptions)
+      if (!this.depositCoin || !this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())) {
+        let item = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
+        if (item) { this.depositCoin = item }
+      } else if (this.depositCoin && this.depositCoin.value) {
+        this.depositCoin = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())
+      }
     },
     toCoin (val) {
       // console.log(val, 'toCoin')
@@ -1264,6 +1265,7 @@ export default {
     }
   },
   async created () {
+    web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
     let disable = localStorage.getItem('disable_freeospopup')
 
     if (disable && this.$route.params.action !== 'free-eos-account') {
@@ -1505,13 +1507,6 @@ export default {
         this.checkToGetRate()
         this.step = 3
       }
-
-      if (this.$route.params.amount) {
-        this.depositQuantity = this.$route.params.amount
-        setTimeout(() => {
-          this.quantityFromDeposit()
-        }, 2000)
-      }
     } else {
       this.depositCoin = this.depositCoinOptions[0]
       this.destinationCoin = this.depositCoinOptions[1]
@@ -1519,6 +1514,7 @@ export default {
 
     this.initMetamask()
     this.$store.dispatch('investment/getMarketDataVsUSD')
+
     // this.pStep = 3
     // this.checkTxStatus('0x0a91245859e7fc6169e2bc900cecf21624f1520602d4fcc8aa4966aa12648193')
   },
@@ -1637,6 +1633,13 @@ export default {
         this.depositCoinOptions = allCoins
         this.depositCoinUnfilter = this.depositCoinOptions
         this.depositCoin = allCoins.find(o => o.value === 'eth')
+
+        if (!this.depositCoin || !allCoins.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())) {
+          let item = allCoins.find(o => o.value === 'eth')
+          if (item) { this.depositCoin = item }
+        } else if (this.depositCoin && this.depositCoin.value) {
+          this.depositCoin = allCoins.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())
+        }
       }
     },
     sendExternalTransaction (externalWallet) {
@@ -2315,6 +2318,12 @@ export default {
           }
         }
 
+        if (this.$route.params.amount && !this.depositQuantity) {
+          this.depositQuantity = this.$route.params.amount
+        } else if (!this.depositQuantity) {
+          this.depositQuantity = 1
+        }
+
         this.rateDataVtx = {
           limitMaxDepositCoin: this.maxVtxAvailable * this.eThToVTXPrice,
           limitMaxDestinationCoin: this.maxVtxAvailable,
@@ -2326,7 +2335,7 @@ export default {
         this.rateData = this.rateDataVtx
 
         this.isLoading = false
-        this.quantityFromDestination()
+        this.quantityFromDeposit()
       }
 
       return vtxAmount
@@ -2334,7 +2343,7 @@ export default {
     async getRate () {
       const self = this
       if (self.destinationCoin.value === 'vtx') {
-        // this.vtxEosPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
+        this.vtxEosPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=volentixgsys-vtx-eos')).data.data.price
       }
       this.isLoading = true
       this.ErrorMessage = ''
@@ -2365,14 +2374,17 @@ export default {
               }
               self.rateDataEos = self.rateData
               self.rateData = self.rateDataVtx
-
-              if (self.accountToBeCreated) {
-                // self.destinationQuantity = 10000
-                self.calculateReward()
-                self.quantityFromDestination()
-              }
             } else {
               self.depositQuantity = self.rateData.limitMinDepositCoin
+              self.quantityFromDeposit()
+            }
+
+            if (!self.depositQuantity) {
+              if (self.$route.params.amount) {
+                self.depositQuantity = self.$route.params.amount
+              } else {
+                self.depositQuantity = 1
+              }
               self.quantityFromDeposit()
             }
 

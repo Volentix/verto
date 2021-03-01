@@ -980,6 +980,9 @@ export default {
         return
       }
 
+      this.getPassword = false
+      this.openModal = false
+
       let transaction = {
         name: 'transfer',
         data: {
