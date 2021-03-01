@@ -40,9 +40,12 @@ export default {
           nonce: nonce
         }
         this.approvalRequired = true
+
+        let value = this.web3.utils.toWei(amountToSend, 'ether')
+
         tx = tokenContract.methods.approve(
           toAddress,
-          this.web3.utils.toHex(amountToSend * 10 ** 18 * 100)
+          this.web3.utils.toHex(value)
         )
         transactionObject.to = fromTokenAddress
         transactionObject.data = tx.encodeABI()
