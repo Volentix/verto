@@ -10,7 +10,7 @@
                 <img :src="props.row.icon" alt="">
               </span>
               <span class="flex items-center pairs">
-                <span class="pair q-pr-xs">{{props.row.type.toUpperCase()}}</span> <span class="text-grey"></span>
+                <span class="pair q-pr-xs">{{props.row.friendlyType.toUpperCase()}}<q-tooltip>{{props.row.type.toUpperCase()}}</q-tooltip></span> <span class="text-grey"></span>
               </span>
             </div>
           </q-td>
@@ -31,7 +31,7 @@
                 <span class="pair q-pr-xs allocation text-grey-8">{{ formatNumber(props.row.percentage, 2)}}% <q-tooltip>% of Portfolio</q-tooltip></span>
                 <span class="pair q-pr-xs balance text-bold">
                   {{formatNumber(props.row.amount, 2).split('.')[0]}}.<span class="text-grey-8">{{formatNumber(props.row.amount, 2).split('.')[1]}}</span>
-                  {{" "+props.row.type.toUpperCase()}}</span>
+                  {{" "+props.row.friendlyType.toUpperCase()}}<q-tooltip>{{props.row.type.toUpperCase()}}</q-tooltip></span>
               </span>
             </div>
           </q-td>
@@ -51,8 +51,8 @@
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
               <span v-if="props.row.change24h" class="column items-start">
-                <span class="pair q-pr-xs allocation" :class="props.row.change24hValue > 0 ? 'text-green-6':'text-red-6'">({{props.row.change24hPercentage}})</span>
-                <span class="pair q-pr-xs balance text-bold" :class="props.row.change24hValue > 0 ? 'text-green-6':'text-red-6'">{{props.row.change24h}}</span>
+                <span :class="'pair q-pr-xs allocation '+props.row.color">({{props.row.change24hPercentage}})</span>
+                <span :class="'pair q-pr-xs balance text-bold '+props.row.color">{{props.row.change24h}}</span>
                 <!-- text-pink-12 for red color (- sign) -->
                 <!-- text-green-6 for green color (+ sign) -->
               </span>
@@ -84,7 +84,7 @@ export default {
   data () {
     return {
       initialPagination: {
-        rowsPerPage: 10
+        rowsPerPage: 4
       },
       assets: [],
       poolsData: [],
@@ -166,7 +166,7 @@ export default {
         token.usd = parseFloat(token.usd)
 
         if (!isNaN(token.amount) && token.amount !== 0) {
-          if (this.assets.find(o => o.type === token.type)) {
+          if (this.assets.find(o => o.type === token.type && (token.chain !== 'eos' || o.contract === token.contract))) {
             let index = this.assets.findIndex(o => o.type === token.type)
 
             this.assets[index].amount += token.amount
@@ -178,12 +178,12 @@ export default {
             token.percentage = token.usd / parseFloat(this.$store.state.wallets.portfolioTotal) * 100
             token.index = this.assets.length
             token.rateUsd = isNaN(token.usd) ? 0 : (token.usd / token.amount)
-
+            token.friendlyType = token.type.length > 6 ? token.type.substring(0, 6) + '...' : token.type
             token = this.getHistoricalValue(token)
 
             this.assets.push(token)
           }
-          this.assets.sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))
+          this.assets.sort((a, b) => (isNaN(parseFloat(b.usd)) ? 0 : parseFloat(b.usd)) - (isNaN(parseFloat(a.usd)) ? 0 : parseFloat(a.usd)))
         }
       })
     },
@@ -195,6 +195,7 @@ export default {
         token.change24h = (change > 0 ? '+' : '-') + '$' + this.formatNumber(Math.abs(change), 2)
         token.change24hValue = (change > 0 ? '' : '-') + this.formatNumber(Math.abs(change), 2)
         token.change24hPercentage = (change > 0 ? '+' : '-') + this.formatNumber(Math.abs(tokenData.price_change_percentage_24h), 2) + '%'
+        token.color = change > 0 ? 'text-green-6' : 'text-pink-12'
       }
       return token
     },
