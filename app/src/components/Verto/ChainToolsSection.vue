@@ -26,7 +26,7 @@
           class="select-input "
           v-model="chainToolModel"
           @input="goToChainTool"
-          :options="wallet.type === 'eos' ? ['EOS to VTX Converter', 'Staking / Unstaking CPU', 'Stake Proxy EOS'] : ['Staking']" />
+          :options="wallet.type === 'eos' ? [/*'EOS to VTX Converter', */ 'Staking / Unstaking CPU', 'Stake Proxy EOS'] : ['Staking']" />
           <!-- , 'Voting', 'Lending' -->
         <!-- <strong>Start Your Node</strong> -->
         <!-- <q-btn unelevated class="qbtn-start" color="black" text-color="white" label="Get started" /> -->

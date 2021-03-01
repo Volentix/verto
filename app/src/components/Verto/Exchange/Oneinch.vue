@@ -16,6 +16,7 @@
                             <div class="row">
                                 <div class="col col-12">
                                     <div class="trade-component">
+
                                         <!-- <img src="statics/theme1/Screenshot_208.png" alt="" style="opacity: .1"> -->
                                         <div v-if="step === 1" class="prototype">
                                             <div class="head">Token swap</div>
@@ -36,13 +37,13 @@
                                                                         </q-item-section>
                                                                         <q-item-section>
                                                                             <q-item-label v-html="scope.opt.label.toUpperCase()" />
-                                                                            <q-item-label caption>{{ scope.opt.value }}</q-item-label>
-                                                                            <q-item-label caption>{{ scope.opt.amount }}</q-item-label>
+                                                                            <q-item-label  v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
                                                                         </q-item-section>
                                                                     </q-item>
                                                                 </template>
                                                                 <template v-slot:selected>
                                                                     <span class="text-h5">{{depositCoin.value.toUpperCase()}}</span>
+                                                                    <q-item-label  v-if="depositCoin.amount" caption>{{ depositCoin.amount }}</q-item-label>
 
                                                                 </template>
                                                             </q-select>
@@ -982,8 +983,6 @@ export default {
       this.depositQuantity = this.$store.state.settings.dexData.fromAmount
       this.swapData.fromAmount = this.$store.state.settings.dexData.fromAmount
     }
-
-    console.log(this.$store.state.settings.dexData)
   },
   async mounted () {
     let tableData = this.$store.state.wallets.tokens
@@ -1009,11 +1008,22 @@ export default {
     },
     '$store.state.investment.accountTokens': function (val) {
       let coins = !this.crossChain ? this.$store.state.settings.coins.oneinch : this.getAllCoins()
-      this.depositCoinOptions = coins.filter(t => val.find(o => o.type.toLowerCase() === t.value.toLowerCase()))
+
+      this.depositCoinOptions = coins.filter(t => val.find(o => o.type.toLowerCase() === t.value.toLowerCase())).map(o => {
+        o.amount = val.find(t => t.type.toLowerCase() === o.value.toLowerCase()).amount
+
+        if (this.crossChain) { o.address = this.$store.state.settings.coins.oneinch.find(t => t.value.toLowerCase() === o.value.toLowerCase()).address }
+
+        return o
+      })
+
       this.depositCoinUnfilter = this.depositCoinOptions
+
       if (!this.depositCoin || !this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())) {
         this.depositCoin = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.$store.state.investment.defaultAccount.chain)
         this.getSwapQuote()
+      } else if (this.depositCoin && this.depositCoin.value) {
+        this.depositCoin = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())
       }
     }
   },
@@ -1031,13 +1041,12 @@ export default {
       this.getRate()
     },
     getCoins () {
-      console.log(this.depositCoin, 'this.depositCoin 5')
       this.depositCoinOptions = !this.crossChain ? this.$store.state.settings.coins.oneinch : this.getAllCoins()
       this.destinationCoin = !this.destinationCoin || !this.destinationCoin.value.length ? this.$store.state.settings.coins.oneinch[this.$store.state.settings.coins.oneinch.length - 1] : this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())
       this.depositCoinUnfilter = this.depositCoinOptions
       this.destinationCoinUnfilter = this.depositCoinOptions
       this.depositCoin = !this.depositCoin ? this.$store.state.settings.coins.oneinch[0] : this.depositCoinUnfilter.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
-      console.log(this.depositCoin, 'this.depositCoin 5')
+
       this.getSwapQuote()
     },
     getExchanges () {
@@ -1063,14 +1072,10 @@ export default {
       const self = this
       this.error = false
 
-      console.log(this.depositCoin, this.destinationCoin, 1)
-
       this.getCoinsData()
       if (!self.depositCoin.address || !self.destinationCoin.address) return
       if (self.swapData.fromAmount <= 0) return
       self.spinnervisible = true
-
-      console.log(this.depositCoin, this.destinationCoin, 2)
 
       let data = {
         fromTokenAddress: self.depositCoin.address,
@@ -1093,7 +1098,6 @@ export default {
           let isERC2O = self.depositCoin.value.toLowerCase() !== 'eth',
             approvedRequired = false
 
-          console.log(self.swapData)
           if (isERC2O) {
             approvedRequired = await self.isApprovalRequired(self.depositCoin.address, _1inchApprovalAddress, self.swapData.fromAmount, false, nonce)
           }
@@ -1174,6 +1178,7 @@ export default {
         disableEstimate: true
       }
       let swapRequestUrl = _1inch + '/v2.0/swap?' + new URLSearchParams(data).toString()
+
       // JSON.stringify for easy copy paste
       this.$axios.get(swapRequestUrl)
         .then(async function (result) {
@@ -1194,7 +1199,6 @@ export default {
         }).catch(error => {
           self.spinnervisible = false
           self.error = error
-          console.log('doSwap', error)
         })
     },
     convertETHToUSD (ethAmount) {
@@ -1205,11 +1209,9 @@ export default {
     async sendTransaction (rawTransaction) {
       let receipt = await web3.eth.sendSignedTransaction(rawTransaction, (error, txHash) => {
         if (error) {
-          return console.error(error, 'sendSignedTransaction error')
+          return console.error(error, 'sendSignedTransaction error', receipt)
         }
-        console.log(txHash, 'txHash')
       })
-      console.log(receipt, 'receipt')
     },
     getMarketDataVsUSD () {
       const self = this
@@ -1227,7 +1229,7 @@ export default {
       const self = this
       const ethAmount = parseFloat(web3.utils.fromWei(weiAmount.toString(), 'ether'))
       let ethToUsd = self.swapData.marketData.find(o => o.symbol.toLowerCase() === 'eth').current_price
-      console.log('convertEtherToUSD', 'WEI ' + weiAmount, 'ETH' + ethAmount, ethToUsd)
+
       return '~ USD ' + (ethToUsd * ethAmount)
     },
     filterDepositCoin (val, update, abort) {

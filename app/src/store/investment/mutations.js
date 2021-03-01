@@ -17,7 +17,6 @@ export const updateEOSPools = (state, pool) => {
 }
 export const setSelectedEOSPool = (state, pool) => {
   state.selectedEOSPool = pool
-  console.log(pool, 'pool-')
 }
 export const updateTestnetEOSInvestments = (state, data) => {
   state.testnetEOSInvestments.push(data)
@@ -74,7 +73,6 @@ export const getRois = (state, updated) => {
           m = state.pools[index] ? (historical.reserve0 * updated.price0 + historical.reserve1 * updated.price1) / historical.supply : 0
         grossROI = state.pools[index] ? 100 * (l / d - 1) : 0
         netROI = state.pools[index] ? 100 * (l / m - 1) : 0
-        console.log(l, m, d, m / d, updated.poolName, updated)
       }
     }
     state.pools[index].ROI = grossROI
