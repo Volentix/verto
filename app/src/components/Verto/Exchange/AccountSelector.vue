@@ -218,7 +218,7 @@ export default {
       height: $height;
       min-height: unset;
       .q-field__label.no-pointer-events{
-        left: 20px;
+        left: 35px;
       }
       .q-field__native{
         padding-left: 0px;

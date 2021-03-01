@@ -193,6 +193,7 @@ export default {
       if (tokenData) {
         let change = tokenData.price_change_24h * token.amount
         token.change24h = (change > 0 ? '+' : '-') + '$' + this.formatNumber(Math.abs(change), 2)
+        token.change24hValue = (change > 0 ? '' : '-') + this.formatNumber(Math.abs(change), 2)
         token.change24hPercentage = (change > 0 ? '+' : '-') + this.formatNumber(Math.abs(tokenData.price_change_percentage_24h), 2) + '%'
         token.color = change > 0 ? 'text-green-6' : 'text-pink-12'
       }

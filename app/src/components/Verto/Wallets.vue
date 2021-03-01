@@ -473,16 +473,29 @@
                                         <!-- <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Stake Proxy EOS
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item> -->
-                                        <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Chain tools' clickable v-ripple class="p-relative" @click="focusOnChainTools">Chain Tools
+                                        <q-expansion-item
+                                            v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Chain tools'
+                                            expand-separator
+                                            icon="select_all"
+                                            label="Chain tools"
+                                            @click="focusOnChainTools"
+                                            caption="Staking, CPU & more"
+                                            default-opened
+                                        >
+                                        <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake / Unstake CPU' clickable v-ripple class="p-relative" to="/verto/stake">Stake / Unstake CPU
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
+                                        <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Stake Proxy EOS
+                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                        </q-item>
+                                        <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Custom Transaction' clickable v-ripple class="p-relative" to="/verto/custom-transactions">Custom Transaction
+                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                        </q-item>
+                                        </q-expansion-item>
                                         <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
                                         <q-item data-name='History' clickable to="/verto/history" v-ripple class="p-relative">History
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                        <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Transaction builder' clickable v-ripple class="p-relative" to="/verto/custom-transactions">Transaction builder
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
                                         <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
