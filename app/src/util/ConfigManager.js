@@ -232,7 +232,7 @@ class ConfigManager {
       return this.saveConfig(newPassword, store.state.currentwallet.wallet, result.config)
     }
 
-    async login (password) {
+    async login (password, setDefaultWallet = true) {
       try {
         const result = await this.getConfig(password)
         if (!result.success) {
@@ -241,14 +241,22 @@ class ConfigManager {
         let config = result.config
         store.commit('currentwallet/updateConfig', config)
         store.commit('currentwallet/setLoggedIn', true)
+
+        
+
         let i
+
         for (i = 0; i < config.keys.length; i++) {
           const key = config.keys[i]
           if (key.defaultKey) {
-            store.commit('currentwallet/updateCurrentWallet', key)
+            
+            // Should be false when using ConnectToVerto
+            if (setDefaultWallet) { store.commit('currentwallet/updateCurrentWallet', key) }
+
             return { success: true, message: 'success' }
           }
         }
+
         return { success: false, message: 'no_default_key' }
       } catch (e) {
         // TODO: Exception handling

@@ -115,7 +115,7 @@ export default {
       this.accountOptions.push(this.$store.state.wallets.metamask.accounts.find(o => o.type === 'eth' && o.chain === 'eth'))
     }
 
-    if (this.$store.state.currentwallet.wallet.type) {
+    if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.type) {
       this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain)
     } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount !== undefined) {
       this.accountOption = this.accountOptions.find(f => f.type === this.$store.state.investment.defaultAccount.type && f.chain === this.$store.state.investment.defaultAccount.chain)
@@ -125,9 +125,9 @@ export default {
       if (!item) {
         item = this.accountOptions.find(o => (this.chain && o.chain === this.chain) || o.chain === 'eos')
       }
+
       this.accountOption = item
     }
-
     this.accountOptions.sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))
     this.setAccount()
   },
