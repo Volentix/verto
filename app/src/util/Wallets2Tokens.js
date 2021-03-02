@@ -248,8 +248,6 @@ class Wallets2Tokens {
         })
         this.updateWallet()
       } else if (wallet.type === 'eth') {
-      //  wallet.key = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
-
         axios.get(process.env[store.state.settings.network].CACHE + 'https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=EK-kJ7LW-wCWTsAy-ALujf').then(res => {
           let ethplorer = res ? res.data : false
 
