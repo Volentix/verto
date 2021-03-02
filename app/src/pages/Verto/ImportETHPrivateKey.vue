@@ -489,7 +489,7 @@ export default {
     addEthAddress: async function () {
       if (this.submitKey) {
         this.resetErrors()
-        const result = await this.$configManager.saveWalletAndKey(this.addWallet.walletName, this.addWallet.vertoPassword, null, this.addWallet.address, this.addWallet.addressPriv, 'eth', 'import')
+        const result = await this.$configManager.saveWalletAndKey(this.addWallet.walletName, this.addWallet.vertoPassword, null, this.addWallet.address, '0x' + this.addWallet.addressPriv, 'eth', 'import')
         // const result = await this.$configManager.createEthWallet(this.addWallet)
         if (result.success) {
           initWallet()
