@@ -459,7 +459,7 @@ export default {
         return
       }
 
-      let account = await web3.eth.accounts.privateKeyToAccount('0x' + this.addWallet.addressPriv)
+      let account = await web3.eth.accounts.privateKeyToAccount(this.addWallet.addressPriv)
 
       this.addWallet.address = account.address
 
