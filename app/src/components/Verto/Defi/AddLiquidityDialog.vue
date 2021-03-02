@@ -512,7 +512,7 @@ export default {
       let account = this.currentEthWallet
 
       if (account) {
-        transaction.sign(Buffer.from(account.privateKey.substring(2), 'hex'))
+        transaction.sign(Buffer.from(account.privateKey.substring(0, 2) === '0x' ? account.privateKey.substring(2) : account.privateKey, 'hex'))
         const serializedTransaction = transaction.serialize()
         console.log(transactionObject, 'sending')
 
