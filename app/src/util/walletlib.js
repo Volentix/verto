@@ -604,7 +604,7 @@ class Lib {
         }
 
         const transaction = new EthereumTx(rawTx)
-        transaction.sign(Buffer.from(key.substring(2), 'hex'))
+        transaction.sign(Buffer.from(key.substring(0, 2) === '0x' ? key.substring(2) : key, 'hex'))
         const serializedTransaction = transaction.serialize()
 
         return sendSingleTransaction('0x' + serializedTransaction.toString('hex'))
