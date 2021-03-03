@@ -86,6 +86,7 @@
                                                                 <q-btn :loading="connectLoading" :class=" $store.state.wallets.metamask.accounts.length ? 'bg-green-1' : 'bg-red-1'"  @click=" $store.state.wallets.metamask.accounts.length ? offer = false : connectWallet('metamask')" flat icon="fiber_manual_record" :color="!$store.state.wallets.metamask.accounts.length ? 'red' : 'green'" :label="!$store.state.wallets.metamask.accounts.length ? 'Connect' : 'Get VTX'">
                                                                     <img style="width: 35px;" class="q-pl-sm" src="https://cdn.freebiesupply.com/logos/large/2x/metamask-logo-png-transparent.png">
                                                                 </q-btn>
+
                                                             </q-item-section>
                                                         </q-item>
                                                         <q-btn v-if=" $store.state.wallets.metamask.accounts.length == 0" flat label="Use Verto wallet" v-close-popup dense />
@@ -102,14 +103,15 @@
                                                        <div class="row  float-right full-width  text-red q-mb-md">
                                                        <div class="col-md-12 flex justify-end ">
                                                        <AccountSelector  />
-                                                        <q-select v-if="false" :dark="$store.state.settings.lightMode === 'true'" @input="initMetamask"  borderless v-model="currentWallet" :options="$store.state.wallets.metamask.accounts" label="Account" />
                                                         <q-item   dense class="metamask-btn float-right" style="max-width:350px">
                                                             <q-item-section class="text-body1 q-pr-sm">
                                                                 <q-btn :loading="connectLoading" :class=" $store.state.wallets.metamask.accounts.length ? 'bg-green-1' : 'bg-red-1'" @click="connectWallet('metamask')" flat icon="fiber_manual_record" :color="!$store.state.wallets.metamask.accounts.length ? 'red' : 'green'" :label="!$store.state.wallets.metamask.accounts.length ? 'Connect' : 'Connected'">
                                                                     <img style="width: 35px;" class="q-pl-sm" src="https://cdn.freebiesupply.com/logos/large/2x/metamask-logo-png-transparent.png">
                                                                 </q-btn>
+                                                                 <span class="text-black  text-body2 text-center cursor-pointer">Disconnect</span>
                                                             </q-item-section>
                                                         </q-item>
+
                                                          </div>
                                                         </div>
 
@@ -277,7 +279,7 @@
                                                             <!-- 1 ETH = 374.705 USDT -->
                                                             <span >{{ '1 ' + fromCoinType.toUpperCase() + '&nbsp;= &nbsp;' + rateData.rate.toFixed(5) + ' ' + toCoinType.toUpperCase() }}</span>
                                                             <div class="info_rate">
-                                                                <span class="i-btn">i
+                                                                <span class="i-btn">
                                                                     <!-- <img src="statics/theme1/rate-info.png" class="rate-info-prototype" alt=""> -->
                                                                     <div class="info_rate_wrapper text-left">
                                                                         <div class="title">We got you the best price</div>
@@ -347,7 +349,43 @@
                                                     <q-btn flat @click="pStep = 1" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
                                                     Choose Accounts
                                                 </div>
-                                                <div class="you-pay" v-if="!isEthToVtx">
+                                                <div class="you-pay" v-if="isEthToVtx && accountToBeCreated">
+                                                    <div class="you-pay-head row items-center" >
+                                                        <div class="col col-6">Key to be used</div>
+                                                        <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
+                                                    </div>
+                                                    <div class="you-pay-body row items-center" >
+                                                        <div class="col col-12 pay-coin">
+                                                          <q-select v-show="fromKey === null || (fromKey.type !== 'new_public_key')" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator outlined class="select-input"  v-model="fromKey" :options="optionsFromKey">
+                                                                <template v-slot:option="scope">
+                                                                    <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                                                        <q-item-section avatar>
+                                                                            <q-icon class="option--avatar option--avatar" :class="scope.opt.value" :name="`img:${scope.opt.image}`" />
+                                                                        </q-item-section>
+                                                                        <q-item-section dark>
+                                                                            <q-item-label v-html="scope.opt.label" />
+                                                                            <q-item-label caption class="ellipsis mw160">{{ scope.opt.value }}</q-item-label>
+                                                                        </q-item-section>
+                                                                    </q-item>
+                                                                </template>
+                                                                <template v-slot:selected>
+                                                                    <q-item v-if="fromKey">
+                                                                        <q-item-section avatar>
+                                                                            <q-icon class="option--avatar option--avatar__custom" :name="`img:${fromKey.image}`" />
+                                                                        </q-item-section>
+                                                                        <q-item-section>
+                                                                            <q-item-label v-html="fromKey.label" />
+                                                                            <q-item-label caption class="ellipsis mw160">{{ fromKey.value }}</q-item-label>
+                                                                        </q-item-section>
+                                                                    </q-item>
+                                                                    <q-item v-else>
+                                                                    </q-item>
+                                                                </template>
+                                                            </q-select>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                  <div class="you-pay"  v-if="!isEthToVtx">
                                                     <div class="you-pay-head row items-center">
                                                         <div class="col col-6">From</div>
                                                         <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
@@ -1085,6 +1123,8 @@ export default {
       openModal: false,
       stakingRequirements: false,
       freeEOSAccountStepper: 1,
+      optionsFromKey: [],
+      fromKey: null,
       isLoading: true,
       offer: true,
       period: 60,
@@ -1094,7 +1134,7 @@ export default {
       connectLoading: false,
       currentWallet: null,
       ethWallets: [],
-      accountToBeCreated: false,
+      accountToBeCreated: true,
       getPassword: false,
       privateKey: false,
       privateKeyPassword: null,
@@ -1257,7 +1297,7 @@ export default {
     toCoin (val) {
       // console.log(val, 'toCoin')
 
-      if (val && val.type !== 'new_public_key') {
+      if (val && val.type !== 'new_public_key' && !this.eThToVTX) {
         this.toCoinType = this.toCoin.type
       } else {
         return 'VTX'
@@ -1540,7 +1580,11 @@ export default {
     async checkTxStatus (transactonHash) {
       this.trial++
 
-      if (this.trial > 3) return
+      if (this.trial > 8) {
+        this.globalTx.label = 'Transaction submitted. Your tokens are on the way. Check your balance in a few hours.'
+        this.globalTx.status = 'Submitted'
+        return
+      }
 
       this.pStep = 3
 
@@ -1559,23 +1603,26 @@ export default {
 
       if (transactionReceipt.status) {
         this.$axios.post('https://cpu.volentix.io/api/eos/getVtx').then(response => {
+          let label = this.accountToBeCreated ? 'Confirmation & Account creation will take a few minutes' : 'Confirming transaction status...'
+
           if (response.data.hasOwnProperty('transferred')) {
             let error = response.data.errors.find(e => e.tx.memo.toLowerCase().includes(transactonHash.toLowerCase()))
             let tx = response.data.transferred.find(e => e.tx.memo.toLowerCase().includes(transactonHash.toLowerCase()))
+
             if (tx) {
               this.globalTx.label = tx.tx.quantity + ' has been sent to your account ' + tx.tx.to + ''
               this.globalTx.status = 'Completed'
             } else if (error) {
-              this.globalTx.label = 'Your transaction is taking longer than expected. Coffee ?'
+              this.globalTx.label = label
               this.globalTx.status = 'Confirming'
               this.checkTxStatus(transactonHash)
             } else {
-              this.globalTx.label = 'Your transaction is taking longer than expected. Coffee ?'
+              this.globalTx.label = label
               this.globalTx.status = 'Confirming'
               this.checkTxStatus(transactonHash)
             }
           } else {
-            this.globalTx.label = 'Your transaction is taking longer than expected. Coffee ?'
+            this.globalTx.label = label
             this.globalTx.status = 'Confirming'
             this.checkTxStatus(transactonHash)
           }
@@ -1714,13 +1761,13 @@ export default {
           })
           return
         }
-        let account = this.$store.state.wallets.tokens.find(o => o.key === this.fromCoin.key)
+        let account = this.fromKey
         let data = {
           gasData: this.gasSelected,
-          txData: this.toCoin.value + (this.accountToBeCreated ? '' + this.toCoin.key : ''),
+          txData: this.toCoin.value + (this.accountToBeCreated ? '' + this.account.key : ''),
           gasLimit: 30000
         }
-        if (this.$store.state.investment.defaultAccount.origin === 'metamask') {
+        if (this.$store.state.investment.defaultAccount.origin === 'metamask' || this.$store.state.wallets.metamask.accounts.length) {
           Lib.getRawETHTransaction(
             this.depositCoin.value,
             this.fromCoin.value,
@@ -1883,6 +1930,18 @@ export default {
       this.optionsFrom = []
       this.optionsTo = []
       this.tableData.forEach(token => {
+        if (token.type === 'eos') {
+          self.optionsFromKey.push({
+            label: token.name.toLowerCase(),
+            value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
+            key: token.key,
+            privateKey: token.privateKey,
+            privateKeyEncrypted: token.privateKeyEncrypted,
+            image: token.icon,
+            type: token.type
+          })
+        }
+
         if (this.depositCoin.value.toLowerCase() === token.type) {
           self.optionsFrom.push({
             label: token.name.toLowerCase(),
@@ -2211,6 +2270,8 @@ export default {
       if (this.openModal) return
       this.pStep = 3
 
+      self.exchangeAddress = ''
+
       this.$axios.post(url + '/v2/order', {
         depositCoin: self.depositCoin.value,
         destinationCoin: self.destinationCoin.value === 'vtx' ? 'eos' : self.destinationCoin.value,
@@ -2417,7 +2478,7 @@ export default {
       if (this.isEthToVtx) {
         this.ErrorMessage = ''
         if (this.depositCoin.amount < parseFloat(this.depositQuantity)) {
-          this.ErrorMessage = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance'
+          // this.ErrorMessage = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance'
         }
       }
     },
