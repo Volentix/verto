@@ -268,7 +268,7 @@ export const getETHTransactions = async (context, address) => {
 }
 
 export const getInvestments = (context, payload) => {
-  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api-0.zapper.fi/v1/balances/' + payload.platform + '?addresses%5B%5D=' + payload.value + '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/balances/' + payload.platform + '?addresses%5B%5D=' + payload.value + '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
 
   axios.get(transactionEndpoint, config)
     .then(function (result) {
@@ -278,7 +278,7 @@ export const getInvestments = (context, payload) => {
     })
 }
 export const getDebts = (context, payload) => {
-  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api-7.zapper.fi/v1/balances/' + payload.platform + '?addresses%5B%5D=' + payload.value + '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/balances/' + payload.platform + '?addresses%5B%5D=' + payload.value + '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
   axios.get(transactionEndpoint, config)
     .then(function (result) {
       context.commit('setDebts', result.data[payload.value])

@@ -1,6 +1,16 @@
 
 import store from '@/store'
 
+const removePrivateData = (data) => {
+  return JSON.parse(JSON.stringify(data)).map(o => {
+    o.privateKeyEncrypted = null
+    delete o.privateKeyEncrypted
+    o.privateKey = null
+    delete o.privateKey
+    return o
+  })
+}
+
 export const updateTokens = (state, updatedtokens) => {
   updatedtokens = updatedtokens.map(o => {
     if (o.type === 'eth') {
@@ -33,14 +43,20 @@ export const updateTokens = (state, updatedtokens) => {
 
     return o
   })
-  // state.portfolioTotal = updatedtokens.map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, c) => a + c)
+  state.portfolioTotal = updatedtokens.map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, c) => a + c)
   state.tokens = updatedtokens
+
+  localStorage.setItem('walletPublicData', JSON.stringify(removePrivateData(updatedtokens)))
 
   store.dispatch('tokens/getTokensMarketsData', state.tokens)
 }
 export const setLoadingState = (state, value) => {
   state.loaded.eos = value.hasOwnProperty('eos') ? value.eos : state.loaded.eos
   state.loaded.eth = value.hasOwnProperty('eth') ? value.eth : state.loaded.eth
+}
+export const disconnectMetamask = (state) => {
+  state.metamask.accounts = []
+  state.metamask.tokens = []
 }
 export const updateHistory = (state, value) => {
   // let index = state.history.findIndex(o => o.month === value.month && o.day === value.day && o.year === value.year)

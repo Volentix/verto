@@ -792,14 +792,11 @@ export default {
       this.swapData.toAmount = this.amount2
     },
     getCurrentInvestments () {
-      console.log(this.$store.state.investment.eosInvestments, this.pairData)
       if (this.pairData && this.pairData.miningData && this.pairData.miningData.code) {
         this.currentLiquidity = this.$store.state.investment.eosInvestments.find(o => o.code.toLowerCase() === this.pairData.miningData.code.toLowerCase())
       } else {
         this.currentLiquidity = false
       }
-
-      console.log(this.currentLiquidity, this.$store.state.investment.eosInvestments, this.pairData)
     },
     computeForward (x, y, z, fee) {
       const prod = x.multiply(y)
