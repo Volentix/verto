@@ -228,7 +228,7 @@
                           <q-icon :name="'img:'+token.icon" color="primary" text-color="white" />
                         </q-item-section>
                         <q-item-section>{{token.type.toUpperCase()}}</q-item-section>
-                        <q-item-section>${{isNaN(token.usd) ? 0 : token.usd.toFixed(4)}}</q-item-section>
+                        <q-item-section v-if="token.usd">${{isNaN(token.usd) ? 0 : token.usd.toFixed(4)}}</q-item-section>
                       </q-item>
                       </div>
                     </q-card-section>
@@ -242,7 +242,7 @@
           <template v-slot:after>
             <div :class="{'bg-white2':$store.state.settings.lightMode === 'false'}">
               <!-- <q-scroll-area :visible="true" style="height: 87vh;"> -->
-                <div v-if="$store.state.settings.network == 'mainnet'" v-show="chain == 'eth'">
+                <div v-if="$store.state.settings.network == 'mainnet' && chain == 'eth' && accountOption.chain == 'eth'">
                   <LiquidityPoolsTable :rowsPerPage="10" class="minHeight" v-if="menu == 'liquidity'"/>
                   <InvestmentsTable class="minHeight2" v-else-if="menu == 'investments'"/>
                   <DebtsTable class="minHeight2 DebtsTable" v-else-if="menu == 'debts'"/>
@@ -250,7 +250,7 @@
                   <InvestmentsOpportunitiesTable class="minHeight2" v-else-if="menu == 'staking'"/>
                   <Oneinch v-if="chain == 'eth'" class="q-pl-md q-pb-sm accountOptionOneinch" v-show="menu == 'swap'" />
                 </div>
-                <div v-show="chain == 'eos'">
+                <div v-if="chain == 'eos' && accountOption.chain == 'eos'">
                   <Swapeos class="q-pl-md q-pb-sm minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'swap' || menu == 'add_liquidity' || menu == 'liquidity'" />
                   <EosInvestmentsTable class="minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'investments'"/>
                   <TestnetPools class="minHeight3" v-if="$store.state.settings.network == 'testnet'"  v-show="menu == 'liquidity'" />
@@ -396,11 +396,12 @@ export default {
   },
   watch: {
     defaultAccount (val) {
-      this.accountOption = val
-      this.getAccountInformation(this.accountOption)
-      if (this.accountOption.chain !== val.chain) {
-        this.switchChain()
+      if (this.chain !== val.chain) {
+        this.chain = val.chain
+        this.switchChain(val)
       }
+
+      // this.getAccountInformation(this.accountOption)
     },
     selectedEOSPool (val) {
       this.menu = 'liquidity'
@@ -520,7 +521,6 @@ export default {
       }
 
       if (this.accountOption.value) {
-        this.$store.commit('investment/setDefaultAccount', this.accountOption)
         this.getAccountInformation(this.accountOption)
       }
 
@@ -534,20 +534,17 @@ export default {
         this.testnetDialog = true
       }
     },
-    switchChain () {
+    switchChain (account = false) {
       let tabs = ['swap', 'investments', 'liquidity']
-      this.accountOption = this.accountOptions.find(w => w.chain === this.chain)
+      this.accountOption = account || this.accountOptions.find(w => w.chain === this.chain)
       if (this.chain === 'eos') {
         if (!tabs.includes(this.menu)) {
           this.menu = 'liquidity'
         }
-
-        this.$store.commit('investment/setDefaultAccount', this.accountOption)
-        this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
       } else {
         if (this.menu === 'add_liquidity') this.menu = 'liquidity'
-        this.getAccountInformation(this.accountOption)
       }
+      this.getAccountInformation(this.accountOption)
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
@@ -557,7 +554,6 @@ export default {
       let account = this.accountOption
 
       this.$store.commit('investment/resetAccountDetails', account)
-      console.log(this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key), 'this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key)')
       this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
 
       if (account.chain !== 'eth') return
