@@ -7,6 +7,14 @@ import EosWrapper from '@/util/EosWrapper'
 
 class Wallets2Tokens {
   constructor () {
+    let data = this.getWalletFromCache()
+
+    if (data) {
+      this.tableData = data
+      this.updateWallet()
+      return
+    }
+
     this.eos = new EosWrapper()
     const self = this
     self.eosUSD = 0
@@ -317,6 +325,35 @@ class Wallets2Tokens {
     // console.log('this.$store.state.wallets', this.$store.state)
     // store.commit('wallets/updateTokens', this.tableData)
     // store.commit('wallets/updatePortfolioTotal', store.state.wallets.portfolioTotal)
+  }
+  getWalletFromCache () {
+    let data = localStorage.getItem('walletPublicData')
+
+    if (data) {
+      data = JSON.parse(data)
+
+      // add private key to cached infos
+      data.map(o => {
+        let wallet = store.state.currentwallet.config.keys.find(a => a.key === o.key)
+
+        if (wallet.chain === 'eos' && wallet.privateKey) {
+          let privateKeysAttrs = this.extractEOSPrivateKey(wallet.privateKey, wallet.key)
+
+          if (privateKeysAttrs) {
+            wallet.privateKey = privateKeysAttrs.privateKey
+            wallet.privateKeyEncrypted = privateKeysAttrs.privateKeyEncrypted
+          }
+
+          let value = wallet.privateKey.split('_')
+          wallet.privateKey = value[value.length - 1]
+        }
+
+        o.privateKey = wallet.privateKey
+        o.privateKeyEncrypted = wallet.privateKeyEncrypted
+      })
+    }
+
+    return data
   }
   async getEosUSD () {
     await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { this.eosUSD = res.data.data.price })
