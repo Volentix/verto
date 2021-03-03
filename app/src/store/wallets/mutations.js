@@ -1,6 +1,16 @@
 
 import store from '@/store'
 
+const removePrivateData = (data) => {
+  return JSON.parse(JSON.stringify(data)).map(o => {
+    o.privateKeyEncrypted = null
+    delete o.privateKeyEncrypted
+    o.privateKey = null
+    delete o.privateKey
+    return o
+  })
+}
+
 export const updateTokens = (state, updatedtokens) => {
   updatedtokens = updatedtokens.map(o => {
     if (o.type === 'eth') {
@@ -33,8 +43,10 @@ export const updateTokens = (state, updatedtokens) => {
 
     return o
   })
-  // state.portfolioTotal = updatedtokens.map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, c) => a + c)
+  state.portfolioTotal = updatedtokens.map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, c) => a + c)
   state.tokens = updatedtokens
+
+  localStorage.setItem('walletPublicData', JSON.stringify(removePrivateData(updatedtokens)))
 
   store.dispatch('tokens/getTokensMarketsData', state.tokens)
 }
