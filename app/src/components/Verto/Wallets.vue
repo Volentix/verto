@@ -878,6 +878,7 @@ export default {
       })
     },
     refreshWallet () {
+      localStorage.removeItem('walletPublicData')
       return initWallet()
     },
     revealHide () {
