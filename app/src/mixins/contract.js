@@ -64,10 +64,16 @@ export default {
     async getGasOptions (transactionObject, customGas = false) {
       const self = this
       const Web3 = require('web3')
-      console.log(transactionObject, 'transactionObject')
+
       this.web3 = this.web3 ? this.web3 : new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
+
+      // let gasPrice = await this.web3.eth.getGasPrice()
+
       this.web3.eth.estimateGas(transactionObject).then(function (gasAmount) {
-        if (customGas) gasAmount = customGas
+        // if (customGas) gasAmount = customGas
+
+        if (transactionObject.data) gasAmount += 21000
+
         self.gasOptions = [{
           label: 'Slow',
           value: self.converGasPriceToUSD(self.$store.state.investment.gasPrice.slow, gasAmount).toFixed(2),
@@ -145,7 +151,6 @@ export default {
       if (account) {
         transaction.sign(Buffer.from(account.privateKey.substring(0, 2) === '0x' ? account.privateKey.substring(2) : account.privateKey, 'hex'))
         const serializedTransaction = transaction.serialize()
-        console.log(serializedTransaction, account)
 
         let tx = this.web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
 
