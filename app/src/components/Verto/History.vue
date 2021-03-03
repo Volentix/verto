@@ -449,6 +449,10 @@ export default {
     }
   },
   async mounted () {
+    this.$bus.$on('refreshHistory', () => {
+      this.refreshHistory()
+    })
+
     this.getHistory()
   },
   methods: {
@@ -467,7 +471,8 @@ export default {
           account = this.$store.state.wallets.tokens.find(w => w.chain === 'eos' && w.type === 'eos')
         }
 
-        data = (await Lib.history(account.chain, account.type, account.name, this.pagination))
+        data = (await Lib.history(account.chain, account.name, account.type, this.pagination))
+
         data = data.history
 
         if (data[0].transID) {
@@ -577,6 +582,11 @@ export default {
         }
       }
       return normalizer[transaction.chain](transaction)
+    },
+    refreshHistory () {
+      let account = this.$store.state.investment.defaultAccount
+      Lib.deleteWalletHistoryData(account.chain === 'eos' ? account.name : account.key)
+      this.getHistory()
     },
     getTransactionDirection (from) {
       let names = []
