@@ -1134,7 +1134,7 @@ export default {
       connectLoading: false,
       currentWallet: null,
       ethWallets: [],
-      accountToBeCreated: true,
+      accountToBeCreated: false,
       getPassword: false,
       privateKey: false,
       privateKeyPassword: null,
@@ -2478,7 +2478,7 @@ export default {
       if (this.isEthToVtx) {
         this.ErrorMessage = ''
         if (this.depositCoin.amount < parseFloat(this.depositQuantity)) {
-          // this.ErrorMessage = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance'
+           this.ErrorMessage = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance'
         }
       }
     },
