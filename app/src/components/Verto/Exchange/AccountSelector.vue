@@ -158,7 +158,7 @@ export default {
       this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain)
       this.setAccount()
     },
-    '$store.state.investment.defaultAccount': function () {
+    '$store.state.investment.defaultAccount': function (val) {
       let w = this.$store.state.investment.defaultAccount
       this.accountOption = {
         value: w.key,
@@ -170,7 +170,6 @@ export default {
         total: w.total,
         icon: w.icon,
         image: w.icon,
-        origin: 'metamask',
         label: w.label,
         color: palette[this.accountOptions.length]
       }
