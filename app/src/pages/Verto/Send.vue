@@ -630,7 +630,7 @@ export default {
             this.privateKey.key,
             this.currentAccount.contract
           ).then((tx) => {
-            this.getGasOptions(tx, 30000)
+            this.getGasOptions(tx)
           })
         }
       } catch (error) {

@@ -16,7 +16,8 @@
                 Section currently in development: currently showing ETH wallets history
               </q-banner>
               <div class="row">
-                <h2 class="standard-content--title col-md-4 float-left flex justify-start q-pl-md q-pt-lg" >History</h2>
+                <div class="standard-content--title col-md-4 float-left flex justify-start q-pl-md q-pt-lg" >History  <q-icon name="cached"  @click="$bus.$emit('refreshHistory')" class="refresh-history q-pl-sm"/></div>
+
                 <div class="col flex justify-end q-pr-md"><AccountSelector class="q-mr-md" :showAllWallets="true"/></div>
               </div>
 
@@ -94,6 +95,10 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+
+ .refresh-history {
+   top: 25%;
+ }
   @import "~@/assets/styles/variables.scss";
   /deep/ .wallets-wrapper{
     padding-bottom: 0px !important;

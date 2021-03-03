@@ -306,10 +306,10 @@ Vue.component(VueQrcode.name, VueQrcode)
 var SocialSharing = require('vue-social-sharing')
 Vue.use(SocialSharing)
 
-import { CruxPay } from '@cruxpay/js-sdk'
-import HD from '@/util/hdwallet'
+// mport { CruxPay } from '@cruxpay/js-sdk'
+// import HD from '@/util/hdwallet'
 
-let cruxClient
+// let cruxClient
 
 export default {
 
@@ -350,7 +350,8 @@ export default {
       this.currentAccount = this.tableData.find(w => w.chain === newVal.chainID && w.type === newVal.type && (
         w.chain === 'eos' ? w.name.toLowerCase() === newVal.label : w.key === newVal.label)
       )
-      this.$store.state.currentwallet.wallet = this.currentAccount
+
+      // this.$store.state.currentwallet.wallet = this.currentAccount
     }
   },
   computed: {
@@ -413,6 +414,7 @@ export default {
     this.exchangeAddress = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
   },
   async mounted () {
+    /*
     let cruxKey = await HD.Wallet('crux')
 
     cruxClient = new CruxPay.CruxClient({
@@ -422,6 +424,7 @@ export default {
 
     await cruxClient.init()
     this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
+    */
   },
   updated () {
     // this.exchangeAddress = this.exchangeAddress === '' ? this.currentToken.chain !== 'eos' ? this.currentToken.key : this.currentToken.name : ''

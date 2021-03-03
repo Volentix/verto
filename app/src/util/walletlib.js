@@ -19,13 +19,18 @@ class Lib {
 
     let nonce = await localWeb3.eth.getTransactionCount(from)
 
-    let web3Value = localWeb3.utils.toHex(localWeb3.utils.toWei(value.toString()))
+    let web3Value = localWeb3.utils.toHex(localWeb3.utils.toWei(!value ? '1' : value.toString()))
 
     let sendTo = to
     let data = null
+
     if (token !== 'eth') {
       let web3Contract = new localWeb3.eth.Contract(abiArray, contract)
       data = web3Contract.methods.transfer(to, web3Value).encodeABI()
+
+      web3Contract.methods.transfer(to, web3Value).estimateGas(function (error, gasAmount) {
+        console.log(error, gasAmount, 'error, gasAmount)')
+      })
       sendTo = contract
       web3Value = '0x00'
     }
@@ -40,7 +45,7 @@ class Lib {
     if (data) {
       rawTx.data = data
     }
-    // console.log(rawTx, 'rawTx')
+
     return rawTx
   }
   getUniqueTokens (coins) {
@@ -102,12 +107,22 @@ class Lib {
     return token ? (type.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : token.image) : 'https://etherscan.io/images/main/empty-token.png'
   }
 
+  cacheWalletHistoryData (data, key) {
+    if (data && data.hasOwnProperty('history') && key) { localStorage.setItem('history_' + key, JSON.stringify(data)) }
+  }
+
+  deleteWalletHistoryData (key) {
+    console.log(key, 'refresh')
+    localStorage.removeItem('history_' + key)
+  }
+
   /*
   removeDuplicateTransactions (history) {
     // let duplicates = []
     //
     return history // .filter((el) => !duplicates.find(e => e === el.transID) && duplicates.push(el.transID))
-  } */
+  }
+  */
 
   history = async (walletType, key, token, data = null) => {
     const self = this
@@ -272,7 +287,18 @@ class Lib {
       }
     }[walletType]
 
-    return wallet ? wallet(key, token, data) : {}
+    let cachedData = localStorage.getItem('history_' + key)
+    let historyData = {}
+
+    if (!cachedData) {
+      historyData = await wallet(token, key, data)
+
+      this.cacheWalletHistoryData(historyData, key)
+    }
+
+    console.log(walletType, key, token, 'walletType, key, token')
+
+    return cachedData ? JSON.parse(cachedData) : historyData
   }
 
   balance = async (walletType, key, token) => {
