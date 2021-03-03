@@ -108,7 +108,7 @@
                                                                 <q-btn :loading="connectLoading" :class=" $store.state.wallets.metamask.accounts.length ? 'bg-green-1' : 'bg-red-1'" @click="connectWallet('metamask')" flat icon="fiber_manual_record" :color="!$store.state.wallets.metamask.accounts.length ? 'red' : 'green'" :label="!$store.state.wallets.metamask.accounts.length ? 'Connect' : 'Connected'">
                                                                     <img style="width: 35px;" class="q-pl-sm" src="https://cdn.freebiesupply.com/logos/large/2x/metamask-logo-png-transparent.png">
                                                                 </q-btn>
-                                                                 <span class="text-black  text-body2 text-center cursor-pointer">Disconnect</span>
+                                                                 <span v-if="$store.state.wallets.metamask.accounts.length" @click="$store.commit('wallets/disconnectMetamask')" class="text-black  text-body2 text-center cursor-pointer">Disconnect</span>
                                                             </q-item-section>
                                                         </q-item>
 
@@ -2478,7 +2478,7 @@ export default {
       if (this.isEthToVtx) {
         this.ErrorMessage = ''
         if (this.depositCoin.amount < parseFloat(this.depositQuantity)) {
-           this.ErrorMessage = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance'
+          this.ErrorMessage = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance'
         }
       }
     },

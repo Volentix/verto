@@ -54,6 +54,10 @@ export const setLoadingState = (state, value) => {
   state.loaded.eos = value.hasOwnProperty('eos') ? value.eos : state.loaded.eos
   state.loaded.eth = value.hasOwnProperty('eth') ? value.eth : state.loaded.eth
 }
+export const disconnectMetamask = (state) => {
+  state.metamask.accounts = []
+  state.metamask.tokens = []
+}
 export const updateHistory = (state, value) => {
   // let index = state.history.findIndex(o => o.month === value.month && o.day === value.day && o.year === value.year)
   // if(index < 0 )
