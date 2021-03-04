@@ -160,8 +160,6 @@ export default {
 
       if (!this.destinationCoin || !this.depositCoin) return
 
-      console.log(this.depositCoin.value, this.destinationCoin.value, '.value 1')
-
       if (this.destinationCoin && this.destinationCoin && this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
         this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
         this.dex = 'oneinch'
