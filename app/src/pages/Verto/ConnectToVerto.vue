@@ -247,7 +247,6 @@ export default {
   },
   async created () {
     this.$store.state.currentwallet.wallet = null
-    console.log(this.$store.state.currentwallet.wallet, 'this.$store.state.currentwallet.wallet', 11)
 
     if (!this.$route.query.url) {
       this.getCoinswitchCoins()
@@ -263,6 +262,13 @@ export default {
 
     this.hasConfig = !!(await configManager.hasVertoConfig())
     if (!this.hasConfig) {
+      this.$store.commit('settings/setDex', {
+        dex: 'coinswitch',
+        destinationCoin: this.destinationCoin,
+        depositCoin: this.depositCoin,
+        fromAmount: this.depositCoin.fromAmount
+      })
+
       this.$router.push({
         name: 'create-password'
       })
