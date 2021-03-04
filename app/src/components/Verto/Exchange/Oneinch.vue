@@ -1188,11 +1188,13 @@ export default {
             from: self.ethAccount.key,
             to: result.data.tx.to,
             value: parseInt(result.data.tx.value),
-            gas: web3.utils.toHex(self.swapData.gas),
+            gas: web3.utils.toHex(self.gasSelected.gas),
             gasPrice: web3.utils.toHex(self.gasSelected.gasPrice),
             data: result.data.tx.data,
             nonce: nonce
           }
+
+          console.log(transactionObject, 'transactionObject', self.gasSelected)
 
           self.sendSignedTransaction(transactionObject)
           self.step = 2
