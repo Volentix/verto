@@ -108,7 +108,7 @@
                                                                 <q-btn :loading="connectLoading" :class=" $store.state.wallets.metamask.accounts.length ? 'bg-green-1' : 'bg-red-1'" @click="connectWallet('metamask')" flat icon="fiber_manual_record" :color="!$store.state.wallets.metamask.accounts.length ? 'red' : 'green'" :label="!$store.state.wallets.metamask.accounts.length ? 'Connect' : 'Connected'">
                                                                     <img style="width: 35px;" class="q-pl-sm" src="https://cdn.freebiesupply.com/logos/large/2x/metamask-logo-png-transparent.png">
                                                                 </q-btn>
-                                                                 <span v-if="$store.state.wallets.metamask.accounts.length" @click="$store.commit('wallets/disconnectMetamask')" class="text-black  text-body2 text-center cursor-pointer">Disconnect</span>
+                                                                 <span v-if="$store.state.wallets.metamask.accounts.length" @click="disconnectMetamask()" class="text-black  text-body2 text-center cursor-pointer">Disconnect</span>
                                                             </q-item-section>
                                                         </q-item>
 
@@ -1565,6 +1565,31 @@ export default {
     // this.checkTxStatus('0x0a91245859e7fc6169e2bc900cecf21624f1520602d4fcc8aa4966aa12648193')
   },
   methods: {
+    disconnectMetamask () {
+      this.$store.commit('wallets/disconnectMetamask')
+
+      let w = this.$store.state.wallets.tokens.find(w => w.chain === 'eth' && w.type === 'eth')
+
+      if (!w) {
+        w = this.$store.state.wallets.tokens.find(w => w.chain === 'eos' && w.type === 'eos')
+      }
+
+      let accountOption = {
+        value: w.key,
+        key: w.key,
+        chain: w.chain,
+        usd: w.usd,
+        name: w.name,
+        type: w.type,
+        total: w.total,
+        icon: w.icon,
+        image: w.icon,
+        label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
+        color: 'teal'
+      }
+
+      this.$store.commit('investment/setDefaultAccount', accountOption)
+    },
     checkFreeEOsAccountRequirements () {
       if (this.isEthToVtx) {
         if (this.destinationQuantity >= 10000) {
