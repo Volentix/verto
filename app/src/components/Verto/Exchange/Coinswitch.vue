@@ -588,8 +588,8 @@
                                                         <div class="text-black">
                                                             <div class="text-h4 --subtitle" >{{globalTx.label}}</div>
                                                             <div v-if="globalTx.status == 'Completed' && accountToBeCreated" class="q-pb-md text-center">
-                                                               <span> You can add this account to verto anytime. <br>Just select the {{fromKey.name}}  wallet account and click <b>{{ fromKey.type == 'verto' ?  'Associate with EOS' : 'Import another account'}}</b></span>
-                                                               <div class="q-py-sm"> Click here to do it now</div>
+                                                               <span> You can add this account to verto anytime. <br>Just select the {{fromKey.name}}  wallet account and click <b class="text-deep-purple-14">{{ fromKey.type == 'verto' ?  'Associate with EOS' : 'Import another account'}}</b></span>
+                                                               <div class="q-py-sm"> Click this link (Available 2-3 minutes after the transaction)</div>
                                                                <q-btn label="Add to Verto" @click="goToAssociateEosAccount()" />
                                                              </div>
                                                             <q-input v-model="globalTx.hash" readonly rounded class="input-input pr80" outlined color="purple" type="text">
