@@ -1083,7 +1083,7 @@ export default {
         amount: web3.utils.toWei(self.swapData.fromAmount.toString(), 'ether'),
         slippage: 2,
         fromAddress: self.ethAccount.key,
-        toAddress: self.destinationCoin.address,
+        toAddress: self.ethAccount.key,
         disableEstimate: true
       }
       let swapRequestUrl = _1inch + '/v2.0/swap?' + new URLSearchParams(data).toString()
@@ -1173,8 +1173,8 @@ export default {
         toTokenAddress: self.destinationCoin.address,
         amount: web3.utils.toWei(this.swapData.fromAmount.toString(), 'ether'),
         slippage: 1,
-        fromAddress: this.depositCoin.address,
-        toAddress: this.destinationCoin.address,
+        fromAddress: self.ethAccount.key,
+        toAddress: self.ethAccount.key,
         disableEstimate: true
       }
       let swapRequestUrl = _1inch + '/v2.0/swap?' + new URLSearchParams(data).toString()
