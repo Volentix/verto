@@ -260,7 +260,7 @@ export default {
 
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
       w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName))
-
+    console.log(this.currentAccount, 'this.currentAccount')
     // his.currentAccount = this.tableData.find(w => w.chain === 'eos' && w.type === 'verto')
 
     this.currentToken = {
@@ -367,8 +367,6 @@ export default {
       this.currentAccount.icon = 'https://files.coinswitch.co/public/coins/eos.png'
 
       // Hability to have more than 1 EOS account associated with the same key
-
-      console.log(currentType, 'currentType')
 
       if (currentType === 'verto') {
         this.$configManager.updateCurrentWallet(this.currentAccount)
