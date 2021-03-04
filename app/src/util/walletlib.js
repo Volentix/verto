@@ -616,7 +616,7 @@ class Lib {
           nonce,
           chainId: 1
         }
-        console.log(rawTx, info, 'before')
+
         if (info && (typeof info === 'object') && info.gasData) {
           rawTx.gas = info.gasData.gas
           rawTx.gasPrice = info.gasData.gasPrice

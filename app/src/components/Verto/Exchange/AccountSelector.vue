@@ -142,7 +142,7 @@ export default {
         if (this.accountOption && this.accountOption.origin === 'metamask') {
           this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.metamask.tokens)
         } else {
-          this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
+          this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key && (this.accountOption.chain !== 'eos' || w.name === this.accountOption.name)))
         }
 
         if (this.accountOption.chain === 'eos') {
@@ -155,8 +155,12 @@ export default {
   },
   watch: {
     '$store.state.currentwallet.wallet': function () {
-      this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain)
-      this.setAccount()
+      let item = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain && (this.$store.state.currentwallet.wallet.chain !== 'eos' || (this.$store.state.currentwallet.wallet.chain === 'eos' && this.$store.state.currentwallet.wallet.name === a.name)))
+
+      if (item) {
+        this.setAccount()
+        this.accountOption = item
+      }
     },
     '$store.state.investment.defaultAccount': function (val) {
       let w = this.$store.state.investment.defaultAccount
@@ -173,7 +177,7 @@ export default {
         label: w.label,
         color: palette[this.accountOptions.length]
       }
-      this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
+      this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && (this.accountOption.chain !== 'eos' || w.name === this.accountOption.name)))
     },
     '$store.state.wallets.metamask': {
       deep: true,
