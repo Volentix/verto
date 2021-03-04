@@ -32,10 +32,11 @@
                 The position of each word is critical and should be stored in the correct sequence order.<br>
                 Anyone with access to these 24 words will be able to recover this Verto app and the private keys it is associated with,
                 so keep in a safe place that only you have access to.
-            </p>
+{
+                <p  class="q-py-sm text-bold" v-if="$store.state.settings.dexData.depositCoin && $store.state.settings.dexData.depositCoin"> Click go to exchange to swap {{$store.state.settings.dexData.fromAmount}}  {{$store.state.settings.dexData.depositCoin.value.toUpperCase()}} to {{$store.state.settings.dexData.destinationCoin.value.toUpperCase()}}</p>
             <div class="standard-content--body__form">
                 <div class="flex-end flex justify-end">
-                    <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="dataRefresh()" />
+                    <q-btn flat text-color="black" label="Go to Exchange" @click="dataRefresh('/verto/exchange')" /> <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Go to dashboard" @click="dataRefresh()" />
                 </div>
             </div>
         </div>
@@ -135,14 +136,12 @@ export default {
       for (const name of this.names) {
         i++
         this.progress = Math.round(i / count * 10000) / 100
-        console.log('this.progress', this.progress)
+
         this.status = 'Creating keys for: ' + name.value
 
-        let results = await HD.Wallet(name.value).then(async keys => {
+        await HD.Wallet(name.value).then(async keys => {
           return self.$configManager.saveWalletAndKey(name.label, self.vertoPassword, null, keys.publicKey, keys.privateKey, name.value, 'mnemonic')
         })
-
-        console.log('key creation: ', results)
       }
 
       // console.log('map', map)
@@ -166,9 +165,9 @@ export default {
           console.log('There was a problem getting account names', err)
         })
     },
-    async dataRefresh () {
+    async dataRefresh (to = '/verto/dashboard') {
       const self = this
-      this.$store.state.wallets.tokens = null
+      this.$store.state.wallets.tokens = []
 
       try {
         await initWallet()
@@ -181,9 +180,13 @@ export default {
         color: 'positive',
         message: 'Application refreshing'
       })
+
+      this.$store.state.currentwallet.wallet = {
+        empty: true
+      }
       setTimeout(function () {
         self.$router.push({
-          path: '/verto/dashboard'
+          path: to
         })
       }, 300)
     }
@@ -309,7 +312,7 @@ export default {
                 font-size: 16px;
                 letter-spacing: .5px;
                 border-radius: 40px;
-                width: 110px;
+                width: 210px;
                 margin-left: 10px;
                 margin-top: 10px;
             }
