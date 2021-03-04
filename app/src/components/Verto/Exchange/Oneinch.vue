@@ -1194,8 +1194,6 @@ export default {
             nonce: nonce
           }
 
-          console.log(transactionObject, 'transactionObject', self.gasSelected)
-
           self.sendSignedTransaction(transactionObject)
           self.step = 2
         }).catch(error => {
