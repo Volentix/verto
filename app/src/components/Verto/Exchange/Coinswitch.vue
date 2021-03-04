@@ -340,7 +340,7 @@
                                                     </div>
                                                     <div class="text-body1 text-red q-py-md" v-if="ErrorMessage">{{ ErrorMessage }}</div>
 
-                                                    <q-btn :disable="ErrorMessage.length != 0 || depositQuantity == 0 || depositQuantity < rateData.limitMinDepositCoin || destinationQuantity > rateData.limitMaxDestinationCoin" unelevated  @click="checkToGetRate() ; pStep = 2" color="light-grey" text-color="black" :label="accountToBeCreated ? 'Continue': 'Choose Accounts'" class="text-capitalize chose_accounts full-width" />
+                                                    <q-btn :disable=" ErrorMessage.length != 0 || depositQuantity == 0 || depositQuantity < rateData.limitMinDepositCoin || destinationQuantity > rateData.limitMaxDestinationCoin" unelevated  @click="checkToGetRate() ; pStep = 2" color="light-grey" text-color="black" :label="accountToBeCreated ? 'Continue': 'Choose Accounts'" class="text-capitalize chose_accounts full-width" />
                                                 </div>
                                                 <p v-if="accountToBeCreated" class="text-body1 q-pt-sm q-pl-md cursor-pointer" @click="accountToBeCreated = false ; freeeAccountName = null">Reject offer</p>
                                             </div>
@@ -528,7 +528,7 @@
                                                     </div>
                                                     <br>
 
-                                                    <q-btn unelevated @click="checkAddressMatchCoins()" :disable="(!disclaimerCheck && !isEthToVtx) || (!toCoin) && (destinationAddress.address && destinationAddress.address.length == 0)" color="light-grey" text-color="black" label="Place Order" class="text-capitalize chose_accounts full-width" />
+                                                    <q-btn unelevated @click="checkAddressMatchCoins()" :disable="(isEthToVtx && accountToBeCreated && fromKey == null) || (!disclaimerCheck && !isEthToVtx) || (!toCoin) && (destinationAddress.address && destinationAddress.address.length == 0)" color="light-grey" text-color="black" label="Place Order" class="text-capitalize chose_accounts full-width" />
                                                 </div>
                                             </div>
                                             <div v-if="pStep === 3 && !isEthToVtx" class="prototype">
@@ -588,8 +588,8 @@
                                                         <div class="text-black">
                                                             <div class="text-h4 --subtitle" >{{globalTx.label}}</div>
                                                             <div v-if="globalTx.status == 'Completed' && accountToBeCreated" class="q-pb-md text-center">
-                                                               <span> You can add this account to verto anytime. <br>Just select the {{fromKey.name}}  wallet account and click <b class="text-deep-purple-14">{{ fromKey.type == 'verto' ?  'Associate with EOS' : 'Import another account'}}</b></span>
-                                                               <div class="q-py-sm"> Click this link (Available 2-3 minutes after the transaction)</div>
+                                                               <span> You can add this account to verto anytime. <br>Just select the {{fromKey.name}}  wallet account and click <b @click="goToAssociateEosAccount()"  class="text-deep-purple-14 cursor-pointer">{{ fromKey.type == 'verto' ?  'Associate with EOS' : 'Import another account'}}</b></span>
+                                                               <div class="q-py-sm"> Click the button below to proceed (Available 2-3 minutes after the transaction)</div>
                                                                <q-btn label="Add to Verto" @click="goToAssociateEosAccount()" />
                                                              </div>
                                                             <q-input v-model="globalTx.hash" readonly rounded class="input-input pr80" outlined color="purple" type="text">
