@@ -99,7 +99,7 @@ class Wallets2Tokens {
                   await this.getEosUSD()
                 }
 
-                self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(async eos => {
+                self.tableData.filter(w => w.key === wallet.key && w.type === 'eos' && w.name === wallet.name).map(async eos => {
                 // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
                 // eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
                   eos.amount = t.amount ? t.amount : 0
@@ -169,7 +169,8 @@ class Wallets2Tokens {
       if (wallet.type.toLowerCase() === 'eos') {
         // If tokens are missing from this API, anyone can add them using this contract: https://bloks.io/account/customtokens?loadContract=true&tab=Actions&account=customtokens&scope=customtokens&limit=100&action=set
         await axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': wallet.name }).then(balances => {
-          console.log(balances.data, wallet.name)
+          console.log(wallet.name, balances.data, balances.data.filter(o => o.code === 'eosio.token').length)
+
           if (balances.data.filter(o => o.code === 'eosio.token').length === 0) {
             balances.data.push(
               { amount: '0.0000', code: 'eosio.token', symbol: 'EOS' }
@@ -226,13 +227,12 @@ class Wallets2Tokens {
                 })
               }
             } else {
-              console.log(balances.data, wallet.name)
               this.eos.getAccount(wallet.name).then(async a => {
                 if (this.eosUSD === 0) {
                   await this.getEosUSD()
                 }
 
-                self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(async eos => {
+                self.tableData.filter(w => w.key === wallet.key && w.type === 'eos' && w.name === wallet.name).map(async eos => {
                   // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
                   // eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
 

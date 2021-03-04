@@ -681,6 +681,7 @@ export default {
       this.depositCoin = this.destinationCoin
       this.destinationCoin = depositCoinVar
       this.getPairData()
+      this.checkBalance()
     },
     async getMinePair () {
       let endpoint = process.env[this.$store.state.settings.network].CACHE + 'https://defibox.io/api/swap/getMinePair'
@@ -826,6 +827,8 @@ export default {
           (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) ||
           (w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase())
       )
+
+      console.log(this.pairData, 'this.pairData ', this.depositCoin, this.destinationCoin)
 
       this.getLiquidityMultiplier()
       if (!this.pairData || this.pairData.liquidity_token === 0) {
@@ -1136,11 +1139,16 @@ export default {
         o.amount = token.amount
         return o
       })
+
+      console.log(this.depositCoin, 'this.depositCoin 1', this.depositCoinOptions)
+
       this.depositCoinUnfilter = this.depositCoinOptions
       if (!this.pool) {
         let item = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.$store.state.investment.defaultAccount.chain.toLowerCase())
         if (item) { this.depositCoin = item }
       }
+
+      console.log(this.depositCoin, 'this.depositCoin 2')
 
       this.setTokensFromPool()
 
