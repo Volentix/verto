@@ -74,13 +74,15 @@ export default {
       step: 1,
       step2: 1,
       notCreated: [{
+        label: 'Avalanche',
+        value: 'avax'
+      }, {
         label: 'PolkaDot',
         value: 'dot'
       }, {
         label: 'Kusama',
         value: 'ksm'
-      }
-      ],
+      }],
       isPwd: true,
       currentToken: [],
       vertoPassword: this.$store.state.settings.temporary,
