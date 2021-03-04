@@ -1,6 +1,7 @@
 <template>
 <div :key="rekey">
     <div class="wallets-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+
         <!-- <q-toggle v-model="active" label="Active" /> -->
         <div v-if="isMobile" class="is-mobile wallets-wrapper--list" :class="{'open': !walletShowHide}">
             <q-scroll-area :visible="true" class="scrollarea" :class="{'height' : !walletShowHide}">
@@ -492,6 +493,9 @@
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
                                         </q-expansion-item>
+                                         <q-item data-name='Associate with EOS' to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Import another account
+                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                        </q-item>
                                         <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
