@@ -23,6 +23,8 @@ class Wallets2Tokens {
 
     this.tableData = [ ...store.state.currentwallet.config.keys ]
 
+    console.log(this.tableData, 'his.tableData')
+
     if (store.state.settings.network === 'testnet') {
       this.tableData = this.tableData.filter(o => o.origin === 'eos_testnet')
       this.tableData.map(async wallet => {
@@ -170,12 +172,11 @@ class Wallets2Tokens {
       if (wallet.type.toLowerCase() === 'eos') {
         // If tokens are missing from this API, anyone can add them using this contract: https://bloks.io/account/customtokens?loadContract=true&tab=Actions&account=customtokens&scope=customtokens&limit=100&action=set
         await axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': wallet.name }).then(balances => {
-          // console.log('eos balances', balances)
-          // let balances = balancesArray.data.length === 0 ?
-          if (balances.data.length === 0) {
-            balances.data = [
+          console.log(balances.data, wallet.name)
+          if (balances.data.filter(o => o.code === 'eosio.token').length === 0) {
+            balances.data.push(
               { amount: '0.0000', code: 'eosio.token', symbol: 'EOS' }
-            ]
+            )
           }
 
           let privateKeysAttrs = this.extractEOSPrivateKey(wallet.privateKey, wallet.key)
@@ -228,6 +229,7 @@ class Wallets2Tokens {
                 })
               }
             } else {
+              console.log(balances.data, wallet.name)
               this.eos.getAccount(wallet.name).then(async a => {
                 if (this.eosUSD === 0) {
                   await this.getEosUSD()

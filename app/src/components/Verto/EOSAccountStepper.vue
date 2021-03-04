@@ -249,7 +249,7 @@ export default {
     this.tableData = await this.$store.state.wallets.tokens
     let self = this
     this.tableData.map(token => {
-      if (token.type === 'verto') {
+      if (token.chain === 'eos') {
         self.tokensOption.push({
           label: token.name.toLowerCase(),
           value: token.key,
@@ -258,11 +258,10 @@ export default {
       }
     })
 
-    /*
-                            this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-                              w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName))
-                              */
-    this.currentAccount = this.tableData.find(w => w.chain === 'eos' && w.type === 'verto')
+    this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName))
+
+    // his.currentAccount = this.tableData.find(w => w.chain === 'eos' && w.type === 'verto')
 
     this.currentToken = {
       label: this.currentAccount.name,
@@ -361,16 +360,29 @@ export default {
     },
     upgradeAccountName () {
       this.currentAccount = this.tableData.find(w => w.key.toLowerCase() === this.currentToken.value.toLowerCase())
+      let currentType = this.currentAccount.type
       this.currentAccount.type = 'eos'
       this.currentAccount.name = this.accountName.value
       this.currentAccount.to = `/verto/wallets/${this.currentAccount.chain}/${this.currentAccount.type}/${this.currentAccount.name}`
       this.currentAccount.icon = 'https://files.coinswitch.co/public/coins/eos.png'
-      this.$configManager.updateCurrentWallet(this.currentAccount)
-      this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
+
+      // Hability to have more than 1 EOS account associated with the same key
+
+      console.log(currentType, 'currentType')
+
+      if (currentType === 'verto') {
+        this.$configManager.updateCurrentWallet(this.currentAccount)
+        this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
+      } else {
+        this.$configManager.saveWalletAndKey(this.accountName.value, this.vertoPassword, this.privateKeyPassword, this.currentAccount.key, this.currentAccount.privateKey, 'eos', this.currentAccount.origin)
+      }
+
       // reset form variables
       this.vertoPassword = null
       this.privateKeyPassword = null
       this.accountName = null
+
+      localStorage.removeItem('walletPublicData')
       initWallet()
       // this.step = 1
       this.$router.push('/verto/dashboard')

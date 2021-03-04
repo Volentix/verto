@@ -415,6 +415,7 @@ class Lib {
   }
 
   send = async (walletType, token, from, to, value, memo, key, contract, data) => {
+    // console.log(walletType, token, from, to, value, memo, key, contract, data, 'walletType, token, from, to, value, memo, key, contract, data')
     const wallet = {
       async btc (token, from, to, value, memo, key) {
         // const bitcore = require('bitcore-lib')
@@ -584,7 +585,7 @@ class Lib {
         }
       },
       async eth (token, from, to, value, info, key, contract) {
-        // console.log('(token, from, to, value, gas, key, contract, info)', token, from, to, value, info, key, contract)
+       // console.log('(token, from, to, value, gas, key, contract, info)', token, from, to, value, info, key, contract)
 
         const Web3 = require('web3')
         const EthereumTx = require('ethereumjs-tx').Transaction
@@ -615,7 +616,7 @@ class Lib {
           nonce,
           chainId: 1
         }
-        // console.log(rawTx, info, 'before')
+        console.log(rawTx, info, 'before')
         if (info && (typeof info === 'object') && info.gasData) {
           rawTx.gas = info.gasData.gas
           rawTx.gasPrice = info.gasData.gasPrice

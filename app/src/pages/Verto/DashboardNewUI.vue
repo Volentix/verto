@@ -270,8 +270,11 @@ export default {
     })
     setTimeout(async () => {
       let manualSelectCurrentWallet = false
+
+      console.log(store.state.wallets.tokens.filter(o => o.type === 'eos'), 'eos type')
       await store.state.wallets.tokens.map(async (f) => {
         let stakedAmounts = 0
+
         if (f.type === 'vtx') {
           let stakes = await eos.getTable('vtxstake1111', f.name, 'accountstake')
           stakes.map(s => {

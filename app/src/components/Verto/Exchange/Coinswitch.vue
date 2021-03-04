@@ -12,7 +12,7 @@
                                     <div class="col col-12">
                                         <div class="trade-component">
                                             <q-btn @click="getVtx()" label="Get VTX" v-if="false" />
-                                            <div v-if="pStep === 1" class="prototype">
+                                            <div v-show="pStep === 1" class="prototype">
                                                 <div class="head">Market Order <span class="float-right cursor-pointer " @click="offer=true"><q-img style="width:25px;" src="https://www.joypixels.com/images/jp-home/fire.gif" /> Get a FREE EOS account</span></div>
                                                   <q-dialog
                                                         v-model="offer"
@@ -549,7 +549,7 @@
                                                         <hr style="height:15px;opacity:0" />
                                                         <div class="text-black">
                                                             <div class="text-h4 --subtitle" v-if="isTransactionPending">{{exchangeLabel}}</div>
-                                                            <q-input v-model="exchangeAddress.address" readonly rounded class="input-input pr80" outlined color="purple" type="text">
+                                                            <q-input v-model="exchangeAddress.address" label="Destination account" readonly rounded class="input-input pr80" outlined color="purple" type="text">
                                                                 <template v-slot:append>
                                                                     <div class="flex justify-end">
                                                                         <q-btn flat unelevated text-color="grey" @click="copyToClipboard(exchangeAddress.address , 'Exchange Address')" round class="btn-copy" icon="file_copy" />
@@ -558,7 +558,7 @@
                                                             </q-input>
                                                             <p v-if="destinationCoin.value === 'vtx'" class="text-body1 q-pt-md q-py-md text-center">This is a multi path transaction. ({{depositCoin.value.toUpperCase()}} -> EOS -> VTX). <br>If you close this page you might need to do the Swap from EOS to VTX manually</p>
                                                             <br v-if="exchangeAddress.tag">
-                                                            <q-input v-if="exchangeAddress.tag" v-model="exchangeAddress.tag" readonly rounded class="input-input pr80" outlined color="purple" type="text">
+                                                            <q-input v-if="exchangeAddress.tag" v-model="exchangeAddress.tag" label="Mandatory memo"  readonly rounded class="input-input pr80" outlined color="purple" type="text">
                                                                 <template v-slot:append>
                                                                     <div class="flex justify-end">
                                                                         <q-btn flat unelevated text-color="grey" @click="copyToClipboard(exchangeAddress.tag , 'Exchange Tag')" round class="btn-copy" icon="file_copy" />
@@ -587,6 +587,11 @@
                                                         <hr style="height:15px;opacity:0" />
                                                         <div class="text-black">
                                                             <div class="text-h4 --subtitle" >{{globalTx.label}}</div>
+                                                            <div v-if="globalTx.status == 'Completed' && accountToBeCreated" class="q-pb-md text-center">
+                                                               <span> You can add this account to verto anytime. <br>Just select the {{fromKey.name}}  wallet account and click <b>{{ fromKey.type == 'verto' ?  'Associate with EOS' : 'Import another account'}}</b></span>
+                                                               <div class="q-py-sm"> Click here to do it now</div>
+                                                               <q-btn label="Add to Verto" @click="goToAssociateEosAccount()" />
+                                                             </div>
                                                             <q-input v-model="globalTx.hash" readonly rounded class="input-input pr80" outlined color="purple" type="text">
                                                                 <template v-slot:append>
                                                                     <div class="flex justify-end">
@@ -595,6 +600,7 @@
                                                                 </template>
                                                             </q-input>
                                                              <a :href="'https://etherscan.io/tx/'+ globalTx.hash" target="_blank" class="text-body2 text-black"> More infos</a>
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1561,7 +1567,7 @@ export default {
   methods: {
     checkFreeEOsAccountRequirements () {
       if (this.isEthToVtx) {
-        if (this.destinationQuantity >= 10000) {
+        if (this.destinationQuantity >= 10) {
           if (this.accountToBeCreated) {
             this.freeEOS.message = 'Your free account EOS account "' + this.freeeAccountName + '" will be created'
           } else {
@@ -1576,6 +1582,15 @@ export default {
         this.freeEOS.message = 'You can only get an EOS account right now when Swapping ETH to VTX'
         this.freeEOS.qualified = false
       }
+    },
+    goToAssociateEosAccount () {
+      this.$store.commit('currentwallet/updateParams', {
+        chainID: this.fromKey.chain,
+        tokenID: this.fromKey.type,
+        accountName: this.fromKey.name
+      })
+      this.$store.state.currentwallet.wallet = this.fromKey
+      this.$router.push('/verto/eos-account')
     },
     async checkTxStatus (transactonHash) {
       this.trial++
@@ -1602,7 +1617,7 @@ export default {
       }
 
       if (transactionReceipt.status) {
-        this.$axios.post('https://cpu.volentix.io/api/eos/getVtx').then(response => {
+        this.$axios.post('http://localhost:3031/api/eos/getVtx').then(response => {
           let label = this.accountToBeCreated ? 'Confirmation & Account creation will take a few minutes' : 'Confirming transaction status...'
 
           if (response.data.hasOwnProperty('transferred')) {
@@ -1612,6 +1627,10 @@ export default {
             if (tx) {
               this.globalTx.label = tx.tx.quantity + ' has been sent to your account ' + tx.tx.to + ''
               this.globalTx.status = 'Completed'
+
+              if (this.accountToBeCreated) {
+
+              }
             } else if (error) {
               this.globalTx.label = label
               this.globalTx.status = 'Confirming'
@@ -1762,12 +1781,16 @@ export default {
           return
         }
         let account = this.fromKey
+
+        console.log(this.fromKey, 'this.fromKey', this.fromCoin)
+
         let data = {
           gasData: this.gasSelected,
-          txData: this.toCoin.value + (this.accountToBeCreated ? '' + this.account.key : ''),
+          txData: this.toCoin.value + (this.accountToBeCreated ? account.key : ''),
           gasLimit: 30000
         }
-        if (this.$store.state.investment.defaultAccount.origin === 'metamask' || this.$store.state.wallets.metamask.accounts.length) {
+
+        if (/* this.$store.state.investment.defaultAccount.origin === 'metamask' || */this.$store.state.wallets.metamask.accounts.length) {
           Lib.getRawETHTransaction(
             this.depositCoin.value,
             this.fromCoin.value,
@@ -1809,7 +1832,7 @@ export default {
             ethVTxAddress,
             this.depositQuantity,
             data,
-            account.privateKey,
+            this.privateKey.key,
             ''
           ).then(result => {
             this.pStep = 3
@@ -1931,15 +1954,13 @@ export default {
       this.optionsTo = []
       this.tableData.forEach(token => {
         if (token.type === 'eos') {
-          self.optionsFromKey.push({
-            label: token.name.toLowerCase(),
-            value: token.chain === 'eos' ? token.name.toLowerCase() : token.key,
-            key: token.key,
-            privateKey: token.privateKey,
-            privateKeyEncrypted: token.privateKeyEncrypted,
-            image: token.icon,
-            type: token.type
-          })
+          let account = token
+
+          account.label = token.name.toLowerCase()
+          account.value = token.chain === 'eos' ? token.name.toLowerCase() : token.key
+          account.image = token.icon
+
+          self.optionsFromKey.push(account)
         }
 
         if (this.depositCoin.value.toLowerCase() === token.type) {
@@ -2222,6 +2243,10 @@ export default {
         this.getPassword = true
         this.openModal = true
         this.checkPrivateKeyPassword()
+      } else if (this.isEthToVtx) {
+        this.privateKey = {
+          key: this.sendingFrom.privateKey
+        }
       }
     },
     swapEthToVTX () {
@@ -2294,6 +2319,8 @@ export default {
               tokenID: self.fromCoin.type,
               accountName: self.fromCoin.name,
               to: self.exchangeAddress.address,
+              memo: self.exchangeAddress.tag,
+              disableMemoEdit: true,
               amount: self.expectedDepositCoinAmount
             })
             if (self.currentWallet && self.$store.state.wallets.metamask.accounts.find(o => o.value === self.currentWallet.value)) {
@@ -2436,7 +2463,7 @@ export default {
               self.rateDataEos = self.rateData
               self.rateData = self.rateDataVtx
             } else {
-              self.depositQuantity = self.rateData.limitMinDepositCoin
+              // self.depositQuantity = self.rateData.limitMinDepositCoin
               self.quantityFromDeposit()
             }
 

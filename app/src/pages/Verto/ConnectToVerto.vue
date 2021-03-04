@@ -246,7 +246,9 @@ export default {
     }
   },
   async created () {
-    this.$store.state.currentwallet.wallet = null
+    this.$store.state.currentwallet.wallet = {
+      empty: true
+    }
     console.log(this.$store.state.currentwallet.wallet, 'this.$store.state.currentwallet.wallet', 11)
 
     if (!this.$route.query.url) {

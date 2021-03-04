@@ -207,7 +207,7 @@
                       </div>
                       <div class="col col-12">
                         <span v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" class="lab-input">Memo</span>
-                        <q-input v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+                        <q-input :disable="disableMemoEdit" v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
                       </div>
                     </div>
                   </div>
@@ -345,6 +345,7 @@ export default {
       formatedAmount: '',
       options: [],
       minimizedModal: false,
+      disableMemoEdit: false,
       message: '',
       configPath: '',
       tableData: [],
@@ -429,7 +430,12 @@ export default {
 
       if (this.params.amount) { this.sendAmount = this.params.amount }
 
-      if (this.params.to) { this.sendTo = this.params.to }
+      if (this.params.to) {
+        this.sendTo = this.params.to
+        this.sendMemo = this.params.memo
+        this.disableMemoEdit = this.params.disableMemoEdit
+        this.checkTo()
+      }
     } else if (this.$route.params.chainID && this.$route.params.chainID) {
       this.params = {
         chainID: this.$route.params.chainID,
@@ -507,7 +513,7 @@ export default {
 
     if (this.params.chainID === 'eth') {
       this.$store.dispatch('investment/getGasPrice')
-      this.checkTo()
+
       this.checkGas()
     }
   },

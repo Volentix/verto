@@ -160,6 +160,8 @@ export default {
 
       if (!this.destinationCoin || !this.depositCoin) return
 
+      console.log(this.depositCoin.value, this.destinationCoin.value, '.value 1')
+
       if (this.destinationCoin && this.destinationCoin && this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
         this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
         this.dex = 'oneinch'
@@ -175,6 +177,8 @@ export default {
       } else {
         this.dex = null
       }
+
+      console.log(this.depositCoin.value, this.destinationCoin.value, '.value 2', this.dex)
 
       if (!this.dex) {
         if (this.$store.state.settings.coins.oneinch.length && this.destinationCoin && this.destinationCoin) { this.error = 'Cannot swap ' + this.depositCoin.value.toUpperCase() + ' to ' + this.destinationCoin.value.toUpperCase() }
