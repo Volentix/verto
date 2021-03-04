@@ -1567,7 +1567,7 @@ export default {
   methods: {
     checkFreeEOsAccountRequirements () {
       if (this.isEthToVtx) {
-        if (this.destinationQuantity >= 10) {
+        if (this.destinationQuantity >= 10000) {
           if (this.accountToBeCreated) {
             this.freeEOS.message = 'Your free account EOS account "' + this.freeeAccountName + '" will be created'
           } else {
@@ -1617,7 +1617,7 @@ export default {
       }
 
       if (transactionReceipt.status) {
-        this.$axios.post('http://localhost:3031/api/eos/getVtx').then(response => {
+        this.$axios.post('https://cpu.volentix.io/api/eos/getVtx').then(response => {
           let label = this.accountToBeCreated ? 'Confirmation & Account creation will take a few minutes' : 'Confirming transaction status...'
 
           if (response.data.hasOwnProperty('transferred')) {
