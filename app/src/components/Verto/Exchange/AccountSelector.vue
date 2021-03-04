@@ -57,7 +57,7 @@
 <script>
 const palette = ['cyan', 'teal', 'light-blue', 'blue-1', 'pink', 'purple']
 export default {
-  props: ['chain', 'showAllWallets'],
+  props: ['chain', 'showAllWallets', 'autoSelect'],
   data () {
     return {
       accountOptions: [],
@@ -120,7 +120,7 @@ export default {
     } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount !== undefined) {
       this.accountOption = this.accountOptions.find(f => f.type === this.$store.state.investment.defaultAccount.type && f.chain === this.$store.state.investment.defaultAccount.chain)
     } else {
-      let item = this.accountOptions.find(o => (this.chain && o.chain === this.chain) || o.chain === 'eos')
+      let item = this.accountOptions.find(o => (this.autoSelectChain && o.chain === this.autoSelectChain) || (this.chain && o.chain === this.chain) || o.chain === 'eos')
 
       if (!item) {
         item = this.accountOptions.find(o => (this.chain && o.chain === this.chain) || o.chain === 'eth')
@@ -128,7 +128,7 @@ export default {
 
       this.accountOption = item
     }
-    this.accountOptions.sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))
+    this.accountOptions.sort((a, b) => (isNaN(parseFloat(b.total)) ? 0 : parseFloat(b.total)) - (isNaN(parseFloat(a.total)) ? 0 : parseFloat(a.total)))
     this.setAccount()
   },
   methods: {
