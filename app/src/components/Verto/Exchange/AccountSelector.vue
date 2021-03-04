@@ -120,10 +120,10 @@ export default {
     } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount !== undefined) {
       this.accountOption = this.accountOptions.find(f => f.type === this.$store.state.investment.defaultAccount.type && f.chain === this.$store.state.investment.defaultAccount.chain)
     } else {
-      let item = this.accountOptions.find(o => (this.chain && o.chain === this.chain) || o.chain === 'eth')
+      let item = this.accountOptions.find(o => (this.chain && o.chain === this.chain) || o.chain === 'eos')
 
       if (!item) {
-        item = this.accountOptions.find(o => (this.chain && o.chain === this.chain) || o.chain === 'eos')
+        item = this.accountOptions.find(o => (this.chain && o.chain === this.chain) || o.chain === 'eth')
       }
 
       this.accountOption = item
