@@ -157,7 +157,7 @@ export default {
     formatNumber (number, tofix) {
       let val = (number / 1).toFixed(tofix).replace(',', ' ')
       val = isNaN(val) ? 'N/A' : val
-      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      return val
     },
     initTable () {
       this.assets = []

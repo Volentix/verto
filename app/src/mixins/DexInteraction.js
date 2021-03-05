@@ -214,6 +214,7 @@ export default {
               'image': coin.logoUrl,
               'dex': 'coinswitch',
               'amount': item ? item.amount : 0,
+              'contract': item ? item.contract : null,
               'amountUSD': item ? item.usd : 0
             }
             return row
@@ -251,6 +252,7 @@ export default {
             'price': coins[key].current_price,
             'dex': 'oneinch',
             'amount': item ? item.amount : 0,
+            'contract': item ? item.contract : null,
             'amountUSD': item ? item.usd : 0
           }
 

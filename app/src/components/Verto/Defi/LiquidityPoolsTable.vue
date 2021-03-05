@@ -144,7 +144,7 @@ export default {
   methods: {
     formatNumber (number, tofix) {
       const val = (number / 1).toFixed(tofix).replace(',', ' ')
-      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      return val
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
