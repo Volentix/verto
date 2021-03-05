@@ -41,7 +41,7 @@
           <q-item-label caption class="ellipsis mw200 q-pt-xs flex"> <q-icon
             size="16px"
           :name="`img:${scope.opt.image}`"
-        />  <div style="width:110px" class="q-pl-sm">{{ scope.opt.label }}</div> <q-icon :color="scope.opt.color" name="fiber_manual_record"  :class="'q-mr-sm ellipsis mw200 q-pt-xs text-'+scope.opt.color" /> ${{ scope.opt.total ? scope.opt.total.toFixed(2) : 0 }}
+        />  <div style="width:110px" class="q-pl-sm">{{ scope.opt.label }}</div> <q-icon :color="scope.opt.color" name="fiber_manual_record"  :class="'q-mr-sm ellipsis mw200 q-pt-xs text-'+scope.opt.color" /> ${{ scope.opt.total ? formatNumber(scope.opt.total, 0) : 0 }}
           </q-item-label>
 
         </q-item-section>
@@ -56,6 +56,7 @@
 </template>
 <script>
 const palette = ['cyan', 'teal', 'light-blue', 'blue-1', 'pink', 'purple']
+import Formatter from '@/mixins/Formatter'
 export default {
   props: ['chain', 'showAllWallets', 'autoSelect'],
   data () {
@@ -65,75 +66,80 @@ export default {
     }
   },
   created () {
-    let tableData = this.$store.state.wallets.tokens
+    this.init()
+  },
+  methods: {
+    init (updateDefaultAccount = true) {
+      let tableData = this.$store.state.wallets.tokens
 
-    tableData.filter(w => w.chain === 'eos' && w.type === 'eos' && (this.chain === w.chain || !this.chain) && this.accountOptions.push({
-      value: w.name,
-      name: w.name,
-      key: w.key,
-      usd: w.usd,
-      chain: 'eos',
-      total: w.total,
-      image: w.icon,
-      icon: w.icon,
-      type: w.type,
-      label: w.name,
-      color: palette[this.accountOptions.length]
-    }))
-
-    tableData.filter(w => w.chain === 'eth' && (this.chain === w.chain || !this.chain) && w.type === 'eth' && this.accountOptions.push({
-      value: w.key,
-      name: w.name,
-      key: w.key,
-      chain: 'eth',
-      type: w.type,
-      usd: w.usd,
-      total: w.total,
-      icon: w.icon,
-      image: w.icon,
-      label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
-      color: palette[this.accountOptions.length]
-    }))
-
-    if (this.showAllWallets) {
-      tableData.filter(w => w.chain !== 'eth' && w.chain !== 'eos' && this.accountOptions.push({
-        value: w.key,
+      tableData.filter(w => w.chain === 'eos' && w.type === 'eos' && (this.chain === w.chain || !this.chain) && this.accountOptions.push({
+        value: w.name,
+        name: w.name,
         key: w.key,
-        chain: w.chain,
+        usd: w.usd,
+        chain: 'eos',
+        total: w.total,
+        image: w.icon,
+        icon: w.icon,
+        type: w.type,
+        label: w.name,
+        color: palette[this.accountOptions.length]
+      }))
+
+      tableData.filter(w => w.chain === 'eth' && (this.chain === w.chain || !this.chain) && w.type === 'eth' && this.accountOptions.push({
+        value: w.key,
+        name: w.name,
+        key: w.key,
+        chain: 'eth',
         type: w.type,
         usd: w.usd,
         total: w.total,
         icon: w.icon,
         image: w.icon,
-        name: w.name,
-        label: w.key.substring(0, 6).toLowerCase() + '...' + w.key.substr(w.key.length - 5).toLowerCase(),
+        label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
         color: palette[this.accountOptions.length]
       }))
-    }
 
-    if (this.$store.state.wallets.metamask.accounts.length) {
-      this.accountOptions.push(this.$store.state.wallets.metamask.accounts.find(o => o.type === 'eth' && o.chain === 'eth'))
-    }
-
-    if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.type) {
-      this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain)
-    } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount !== undefined) {
-      this.accountOption = this.accountOptions.find(f => f.type === this.$store.state.investment.defaultAccount.type && f.chain === this.$store.state.investment.defaultAccount.chain)
-    } else {
-      let item = this.accountOptions.find(o => (this.autoSelectChain && o.chain === this.autoSelectChain) || (this.chain && o.chain === this.chain) || o.chain === 'eos')
-
-      if (!item) {
-        item = this.accountOptions.find(o => (this.chain && o.chain === this.chain) || o.chain === 'eth')
+      if (this.showAllWallets) {
+        tableData.filter(w => w.chain !== 'eth' && w.chain !== 'eos' && this.accountOptions.push({
+          value: w.key,
+          key: w.key,
+          chain: w.chain,
+          type: w.type,
+          usd: w.usd,
+          total: w.total,
+          icon: w.icon,
+          image: w.icon,
+          name: w.name,
+          label: w.key.substring(0, 6).toLowerCase() + '...' + w.key.substr(w.key.length - 5).toLowerCase(),
+          color: palette[this.accountOptions.length]
+        }))
       }
 
-      this.accountOption = item
-    }
-    this.accountOptions.sort((a, b) => (isNaN(parseFloat(b.total)) ? 0 : parseFloat(b.total)) - (isNaN(parseFloat(a.total)) ? 0 : parseFloat(a.total)))
-    this.setAccount()
-  },
-  methods: {
+      if (this.$store.state.wallets.metamask.accounts.length) {
+        this.accountOptions.push(this.$store.state.wallets.metamask.accounts.find(o => o.type === 'eth' && o.chain === 'eth'))
+      }
+
+      this.accountOptions.sort((a, b) => (isNaN(parseFloat(b.total)) ? 0 : parseFloat(b.total)) - (isNaN(parseFloat(a.total)) ? 0 : parseFloat(a.total)))
+
+      if (!updateDefaultAccount) return
+      if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.type) {
+        this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain)
+      } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount !== undefined) {
+        this.accountOption = this.accountOptions.find(f => f.type === this.$store.state.investment.defaultAccount.type && f.chain === this.$store.state.investment.defaultAccount.chain)
+      } else {
+        let item = this.accountOptions.find(o => (this.autoSelectChain && o.chain === this.autoSelectChain) || (this.chain && o.chain === this.chain) || o.chain === 'eos')
+
+        if (!item) {
+          item = this.accountOptions.find(o => (this.chain && o.chain === this.chain) || o.chain === 'eth')
+        }
+
+        this.accountOption = item
+      }
+      this.setAccount()
+    },
     formatNumber (num, decimals = 4) {
-      return parseFloat(num).toFixed(decimals).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+      return parseFloat(num).toFixed(decimals)
     },
     setAccount () {
       if (this.accountOption) {
@@ -142,7 +148,7 @@ export default {
         if (this.accountOption && this.accountOption.origin === 'metamask') {
           this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.metamask.tokens)
         } else {
-          this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
+          this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key && (this.accountOption.chain !== 'eos' || w.name === this.accountOption.name)))
         }
 
         if (this.accountOption.chain === 'eos') {
@@ -154,9 +160,22 @@ export default {
     }
   },
   watch: {
+    '$store.state.wallets.tokens': {
+      deep: true,
+      handler (newVal, old) {
+        if (newVal.length !== old.length) {
+          this.accountOptions = []
+          this.init(false)
+        }
+      }
+    },
     '$store.state.currentwallet.wallet': function () {
-      this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain)
-      this.setAccount()
+      let item = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain && (this.$store.state.currentwallet.wallet.chain !== 'eos' || (this.$store.state.currentwallet.wallet.chain === 'eos' && this.$store.state.currentwallet.wallet.name === a.name)))
+
+      if (item) {
+        this.setAccount()
+        this.accountOption = item
+      }
     },
     '$store.state.investment.defaultAccount': function (val) {
       let w = this.$store.state.investment.defaultAccount
@@ -173,7 +192,7 @@ export default {
         label: w.label,
         color: palette[this.accountOptions.length]
       }
-      this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key))
+      this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && (this.accountOption.chain !== 'eos' || w.name === this.accountOption.name)))
     },
     '$store.state.wallets.metamask': {
       deep: true,
@@ -201,7 +220,8 @@ export default {
         }
       }
     }
-  }
+  },
+  mixins: [Formatter]
 }
 </script>
 <style lang="scss" scoped>
@@ -217,7 +237,7 @@ export default {
       height: $height;
       min-height: unset;
       .q-field__label.no-pointer-events{
-        left: 35px;
+        left: 15px;
       }
       .q-field__native{
         padding-left: 0px;

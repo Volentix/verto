@@ -1,5 +1,6 @@
 <template>
   <q-page :class="$store.state.settings.selectedDex+' column flex-center text-black bg-white'">
+
     <div class="landing" style="background: url('statics/landing_bg.png')">
       <transition enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
         <h2 class="landing--title">
@@ -8,7 +9,7 @@
           <img src="statics/picto_verto.svg" alt="" />
         </h2>
       </transition>
-      <div v-if="transactionHash" class="standard-content--body full-width">
+       <div v-if="transactionHash" class="standard-content--body full-width">
         <div class="standard-content--body__form">
           <p class="text-body1">
             Transaction submitted <router-link class="float-right" to="/verto/dashboard">Dashboard <q-icon name="chevron_right" /></router-link>
@@ -28,9 +29,22 @@
           </q-input>
         </div>
       </div>
+
+      <div v-else-if="loggedIn" class="standard-content--body full-width">
+        <div class="standard-content--body__form ">
+          <div class="text-body1 q-pb-sm"><b>Main portfolio:</b> ${{formatNumber($store.state.wallets.portfolioTotal)}}</div>
+          <AccountSelector :key="$store.state.wallets.tokens.length"/>
+          <div class="flex-center flex">
+          <q-linear-progress indeterminate style="max-width:400px"  color="grey" class="q-pb-md q-my-sm"/>
+          </div>
+          <p class="q-pt-sm text-body1" v-if="$store.state.wallets.tokens.length">Updating {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].chain.toUpperCase()}} wallet ({{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].name}}). {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total ? '($'+formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total,0)+')' : ''}}. <br>Fetching {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].type.toUpperCase()}} balance:  (${{formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].usd,2)}})...</p>
+        </div>
+      </div>
+
       <div class="standard-content--body full-width" v-else-if="!$store.state.wallets.tokens.length || !loggedIn">
         <div class="standard-content--body__form">
           <div v-if="pending">
+
           <div class="flex-center flex text-left q-pb-sm">
           Loading wallet balances
           </div>
@@ -190,6 +204,7 @@
 </template>
 
 <script>
+
 import DexInteraction from '../../mixins/DexInteraction'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
@@ -197,6 +212,8 @@ import initWallet from '@/util/Wallets2Tokens'
 import Oneinch from '../../components/Verto/Exchange/Oneinch'
 import Coinswitch from '../../components/Verto/Exchange/Coinswitch'
 import Swapeos from '../../components/Verto/Exchange/Swapeos'
+import AccountSelector from '../../components/Verto/Exchange/AccountSelector'
+import Formatter from '../../mixins/Formatter'
 import {
   mapState
 } from 'vuex'
@@ -205,11 +222,13 @@ export default {
   components: {
     Oneinch,
     Swapeos,
-    Coinswitch
+    Coinswitch,
+    AccountSelector
   },
   data () {
     return {
       hasConfig: false,
+      walletData: null,
       passHasError: false,
       password: '',
       transactionHash: false,
@@ -246,7 +265,11 @@ export default {
     }
   },
   async created () {
-    this.$store.state.currentwallet.wallet = null
+    this.$store.state.currentwallet.wallet = {
+      empty: true
+    }
+
+    this.walletData = localStorage.getItem('walletPublicData')
 
     if (!this.$route.query.url) {
       this.getCoinswitchCoins()
@@ -293,8 +316,10 @@ export default {
     tokens: {
       deep: true,
       handler (val) {
-        if (this.$route.params.fromCoin && !this.pending) {
+        if (this.$route.params.fromCoin && !this.pending && !this.walletData) {
           this.pending = true
+
+          this.loggedIn = true
 
           setTimeout(() => {
             this.$q.notify({
@@ -303,8 +328,10 @@ export default {
             })
             this.pending = false
             this.checkPair()
-            this.loggedIn = true
+
             this.spinnerVisible = false
+
+            this.$router.push('/verto/exchange')
           }, 10000)
         }
       }
@@ -340,6 +367,10 @@ export default {
       if (results.success) {
         this.$store.commit('settings/temporary', this.password)
         await initWallet()
+
+        if (this.walletData) {
+          this.$router.push('/verto/exchange')
+        }
       } else {
         if (results.message === 'no_default_key') {
           this.$router.push({
@@ -376,7 +407,7 @@ export default {
       })
     }
   },
-  mixins: [DexInteraction]
+  mixins: [DexInteraction, Formatter]
 }
 </script>
 
