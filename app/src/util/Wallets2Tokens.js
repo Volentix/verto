@@ -20,7 +20,6 @@ class Wallets2Tokens {
     self.eosUSD = 0
     this.getEosUSD()
 
-   
     store.state.wallets.portfolioTotal = 0
 
     this.tableData = [ ...store.state.currentwallet.config.keys ]
@@ -335,8 +334,6 @@ class Wallets2Tokens {
 
     if (data) {
       data = JSON.parse(data)
-
-      console.log(data, 'data')
 
       data.map(o => {
         let wallet = store.state.currentwallet.config.keys.find(a => a.key === o.key)
