@@ -1,5 +1,6 @@
 import store from '@/store'
 import { Keyring } from '@polkadot/api'
+// import AvaHDWallet from 'ava-hd-wallet'
 
 // Hierarchical Deterministic Wallets
 // https://iancoleman.io/bip39/ used to validate the derived keys as per bip44 non-hardened addresses.
@@ -17,6 +18,31 @@ class HD {
     const seed = bip39.mnemonicToSeedSync(mnemonic)
 
     const keys = {
+      avax () {
+        // const AvaHDWallet = require('ava-hd-wallet')
+        // const Wallet = new AvaHDWallet.fromMnemonic(mnemonic)
+        // const publicKey = Wallet.publicKey
+        // const privateKey = Wallet.privateKey
+
+        const avalanche = require('avalanche')
+        const ava = new avalanche.Avalanche('https://api.avax.network', 443, 'https', '1', '2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM')
+        const xchain = ava.XChain()
+        const keychain = xchain.keyChain()
+
+        const HDKey = require('hdkey')
+        const path = "m/44'/9000'/0'/0/0"
+        const hdkey = HDKey.fromMasterSeed(seed)
+        const key = hdkey.derive(path)
+
+        const privateKeyHEX = key.privateKey.toString('hex')
+        const privateKeyBuffer = Buffer.from(privateKeyHEX, 'hex')
+        const keypair = keychain.importKey(privateKeyBuffer)
+
+        const publicKey = keypair.getPublicKeyString()
+        const privateKey = keypair.getPrivateKeyString()
+
+        return { publicKey, privateKey }
+      },
       dot () {
         const keyring = new Keyring({ type: 'sr25519' })
         const newPair = keyring.createFromUri(mnemonic)
