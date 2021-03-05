@@ -1144,7 +1144,6 @@ export default {
         if (item) { this.depositCoin = item }
       }
 
-
       this.setTokensFromPool()
 
       this.getDestinationCoinOptions()

@@ -1257,10 +1257,10 @@ export default {
         } else {
           if (this.toCoinTemp && this.toCoinTemp.freeeos) { this.toCoin = null }
         }
-      } 
-      
-      if (this.pStep !== 3){
-        this.status =  null
+      }
+
+      if (this.pStep !== 3) {
+        this.status = null
       }
     },
     depositCoin (val) {
