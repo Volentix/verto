@@ -95,8 +95,16 @@ export default {
       // { 'value': 'xrp', 'label': 'Ripple' },
       // { 'value': 'ada', 'label': 'Cardano' },
       {
+        'value': 'avax',
+        'label': 'Avalanche'
+      },
+      {
         'value': 'dot',
         'label': 'Polkadot'
+      },
+      {
+        'value': 'ksm',
+        'label': 'Kusama'
       },
       {
         'value': 'xlm',

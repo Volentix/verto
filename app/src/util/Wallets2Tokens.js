@@ -151,7 +151,12 @@ class Wallets2Tokens {
           wallet.to = '/verto/wallets/' + wallet.type + '/' + wallet.type + '/' + wallet.key
           wallet.chain = wallet.type
           wallet.disabled = wallet.type !== 'eth' && wallet.type !== 'dot'
-          wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
+
+          if (wallet.type === 'ksm') {
+            wallet.icon = 'https://assets.coingecko.com/coins/images/9568/small/m4zRhP5e_400x400.jpg'
+          } else {
+            wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
+          }
         // wallet.vespucciScore = vespucciScore
         }
         wallet.disabled = false
