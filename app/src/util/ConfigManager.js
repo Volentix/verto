@@ -249,12 +249,10 @@ class ConfigManager {
           if (key.defaultKey) {
             // Should be false when using ConnectToVerto
             if (setDefaultWallet) { store.commit('currentwallet/updateCurrentWallet', key) }
-
-            return { success: true, message: 'success' }
           }
         }
 
-        return { success: false, message: 'no_default_key' }
+        return { success: true, message: 'success' }
       } catch (e) {
         // TODO: Exception handling
         return e
