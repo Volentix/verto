@@ -139,7 +139,7 @@ export default {
       this.setAccount()
     },
     formatNumber (num, decimals = 4) {
-      return parseFloat(num).toFixed(decimals).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+      return parseFloat(num).toFixed(decimals)
     },
     setAccount () {
       if (this.accountOption) {
