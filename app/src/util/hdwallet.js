@@ -19,13 +19,8 @@ class HD {
 
     const keys = {
       avax () {
-        // const AvaHDWallet = require('ava-hd-wallet')
-        // const Wallet = new AvaHDWallet.fromMnemonic(mnemonic)
-        // const publicKey = Wallet.publicKey
-        // const privateKey = Wallet.privateKey
-
         const avalanche = require('avalanche')
-        const ava = new avalanche.Avalanche('https://api.avax.network', 443, 'https', '1', '2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM')
+        const ava = new avalanche.Avalanche('https://api.avax.network', 443, 'https', 1, '2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM')
         const xchain = ava.XChain()
         const keychain = xchain.keyChain()
 
@@ -38,7 +33,7 @@ class HD {
         const privateKeyBuffer = Buffer.from(privateKeyHEX, 'hex')
         const keypair = keychain.importKey(privateKeyBuffer)
 
-        const publicKey = keypair.getPublicKeyString()
+        const publicKey = keypair.getAddressString()
         const privateKey = keypair.getPrivateKeyString()
 
         return { publicKey, privateKey }

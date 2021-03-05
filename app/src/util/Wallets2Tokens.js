@@ -152,6 +152,8 @@ class Wallets2Tokens {
 
           if (wallet.type === 'ksm') {
             wallet.icon = 'https://assets.coingecko.com/coins/images/9568/small/m4zRhP5e_400x400.jpg'
+          } else if (wallet.type === 'avax') {
+            wallet.icon = 'https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png'
           } else {
             wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
           }
