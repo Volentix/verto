@@ -19,6 +19,7 @@ class Wallets2Tokens {
     const self = this
     self.eosUSD = 0
     this.getEosUSD()
+
     store.state.wallets.portfolioTotal = 0
 
     this.tableData = [ ...store.state.currentwallet.config.keys ]
@@ -99,7 +100,7 @@ class Wallets2Tokens {
                   await this.getEosUSD()
                 }
 
-                self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(async eos => {
+                self.tableData.filter(w => w.key === wallet.key && w.type === 'eos' && w.name === wallet.name).map(async eos => {
                 // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
                 // eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
                   eos.amount = t.amount ? t.amount : 0
@@ -176,7 +177,6 @@ class Wallets2Tokens {
       if (wallet.type.toLowerCase() === 'eos') {
         // If tokens are missing from this API, anyone can add them using this contract: https://bloks.io/account/customtokens?loadContract=true&tab=Actions&account=customtokens&scope=customtokens&limit=100&action=set
         await axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': wallet.name }).then(balances => {
-          console.log(balances.data, wallet.name)
           if (balances.data.filter(o => o.code === 'eosio.token').length === 0) {
             balances.data.push(
               { amount: '0.0000', code: 'eosio.token', symbol: 'EOS' }
@@ -233,13 +233,12 @@ class Wallets2Tokens {
                 })
               }
             } else {
-              console.log(balances.data, wallet.name)
               this.eos.getAccount(wallet.name).then(async a => {
                 if (this.eosUSD === 0) {
                   await this.getEosUSD()
                 }
 
-                self.tableData.filter(w => w.key === wallet.key && w.type === 'eos').map(async eos => {
+                self.tableData.filter(w => w.key === wallet.key && w.type === 'eos' && w.name === wallet.name).map(async eos => {
                   // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
                   // eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
 
@@ -338,9 +337,10 @@ class Wallets2Tokens {
     if (data) {
       data = JSON.parse(data)
 
-      // add private key to cached infos
       data.map(o => {
         let wallet = store.state.currentwallet.config.keys.find(a => a.key === o.key)
+
+        if (wallet === undefined) return
 
         if (wallet.chain === 'eos' && wallet.privateKey) {
           let privateKeysAttrs = this.extractEOSPrivateKey(wallet.privateKey, wallet.key)

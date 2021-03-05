@@ -11,7 +11,6 @@
                                 <div class="row">
                                     <div class="col col-12">
                                         <div class="trade-component">
-                                            <q-btn @click="getVtx()" label="Get VTX" v-if="false" />
                                             <div v-show="pStep === 1" class="prototype">
                                                 <div class="head">Market Order <span class="float-right cursor-pointer " @click="offer=true"><q-img style="width:25px;" src="https://www.joypixels.com/images/jp-home/fire.gif" /> Get a FREE EOS account</span></div>
                                                   <q-dialog
@@ -536,7 +535,7 @@
                                                     <q-btn flat @click="pStep = 2" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back" class="--next-btn q-mr-md" />
                                                     Order in progress
                                                 </div>
-                                                <Send class="minisend" :embedded="true" v-if=" $store.state.currentwallet.wallet && showTXComponent"/>
+                                                <Send class="minisend" :embedded="true" v-if=" $store.state.currentwallet.wallet && showTXComponent && status != 'complete' "/>
                                                 <div class="standard-content--body">
                                                     <div class="standard-content--body__form q-pa-xl">
                                                         <div class="progress-custom-volentix column flex-center">
@@ -1259,6 +1258,10 @@ export default {
           if (this.toCoinTemp && this.toCoinTemp.freeeos) { this.toCoin = null }
         }
       }
+
+      if (this.pStep !== 3) {
+        this.status = null
+      }
     },
     depositCoin (val) {
       if (val && val.origin && val.origin === 'metamask') {
@@ -1652,10 +1655,6 @@ export default {
             if (tx) {
               this.globalTx.label = tx.tx.quantity + ' has been sent to your account ' + tx.tx.to + ''
               this.globalTx.status = 'Completed'
-
-              if (this.accountToBeCreated) {
-
-              }
             } else if (error) {
               this.globalTx.label = label
               this.globalTx.status = 'Confirming'
@@ -1806,8 +1805,6 @@ export default {
           return
         }
         let account = this.fromKey
-
-        console.log(this.fromKey, 'this.fromKey', this.fromCoin)
 
         let data = {
           gasData: this.gasSelected,
@@ -2045,6 +2042,7 @@ export default {
     },
     quantityFromDeposit () {
       // deal with precision
+      this.ErrorMessage = ''
       this.depositQuantity = isNaN(this.depositQuantity) ? 0 : this.depositQuantity
       if (this.destinationCoin.value === 'vtx' && this.depositCoin.value === 'eth') {
         this.destinationQuantity = (+this.depositQuantity / +this.rateData.rate) - +this.rateData.minerFee
@@ -2059,6 +2057,7 @@ export default {
     },
     quantityFromDestination () {
       // deal with precision
+      this.ErrorMessage = ''
 
       if (this.destinationCoin.value === 'vtx' && this.depositCoin.value === 'eth') {
         if (this.accountToBeCreated && this.destinationQuantity < 10000) {
@@ -2158,7 +2157,6 @@ export default {
       // check balance then...
       // let eosBal = Lib.balance('eos', this.toCoin.value, 'eos')
 
-      // Create free EOS account
       let eosBal = (await eos.getCurrencyBalanceP(this.toCoin.value)).toString().split(' ')[0]
 
       if (+eosBal < +this.destinationCoinAmount) {
@@ -2206,7 +2204,7 @@ export default {
     },
     payForUserCPU () {
       const actions = [{
-        account: this.toCoin.value,
+        account: 'eosio.token',
         name: 'transfer',
         authorization: [{
           actor: this.toCoin.value,
@@ -2333,6 +2331,11 @@ export default {
         headers
       })
         .then((response) => {
+          if (!response.data.success) {
+            self.ErrorMessage = response.data.msg
+            self.pStep = 1
+            return
+          }
           self.orderId = response.data.data.orderId
           self.exchangeAddress = response.data.data.exchangeAddress
           self.expectedDepositCoinAmount = response.data.data.expectedDepositCoinAmount
@@ -2351,16 +2354,17 @@ export default {
             if (self.currentWallet && self.$store.state.wallets.metamask.accounts.find(o => o.value === self.currentWallet.value)) {
               self.sendExternalTransaction('metamask')
             } else {
-              self.$store.state.currentwallet.wallet = self.tableData.find(a => a.key === self.fromCoin.key && a.type === self.fromCoin.type)
+              let account = self.tableData.find(a => a.key === self.fromCoin.key && a.type === self.depositCoin.value && (self.fromCoin.chain === 'eth' || a.name === self.fromCoin.value))
+
+              self.$store.state.currentwallet.wallet = account
               self.showTXComponent = true
             }
           }
           this.orderStatus()
         })
         .catch((err) => {
-          if (err) {}
-          // userError()
-          // //console.error('There was a problem posting the order', err)
+          self.ErrorMessage = err
+          self.pStep = 1
         })
     },
     getPairs () {
@@ -2745,7 +2749,7 @@ export default {
 
     &--body {
         .progress-custom-volentix {
-            max-width: 150px;
+            max-width: 190px;
             margin: auto;
             margin-top: 20px;
 
