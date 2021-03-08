@@ -587,9 +587,13 @@
                                                         <div class="text-black">
                                                             <div class="text-h4 --subtitle" >{{globalTx.label}}</div>
                                                             <div v-if="globalTx.status == 'Completed' && accountToBeCreated" class="q-pb-md text-center">
-                                                               <span> You can add this account to verto anytime. <br>Just select the {{fromKey.name}}  wallet account and click <b @click="goToAssociateEosAccount()"  class="text-deep-purple-14 cursor-pointer">{{ fromKey.type == 'verto' ?  'Associate with EOS' : 'Import another account'}}</b></span>
-                                                               <div class="q-py-sm"> Click the button below to proceed (Available 2-3 minutes after the transaction)</div>
-                                                               <q-btn label="Add to Verto" @click="goToAssociateEosAccount()" />
+                                                               <span> <span class="unbold">You can add this account to verto anytime.</span> <br>Just select the {{fromKey.name}}  wallet account and click <b @click="goToAssociateEosAccount()"  class="text-deep-purple-14 cursor-pointer">{{ fromKey.type == 'verto' ?  'Associate with EOS' : 'Import another account'}}</b></span>
+                                                               <div class="q-py-sm unbold"  v-if="intervalSeconds > 0" > Available around 3 minutes after the transaction</div>
+                                                               <div v-if="intervalSeconds > 0">
+                                                               Ready in {{intervalSeconds > 0 ? parseInt(intervalSeconds / 60)+ 'm : ' + (intervalSeconds % 60) + ' seconds': 'Account ready'}}...
+                                                               </div>
+                                                               <div class="q-py-sm" v-if="intervalSeconds < 0" > Account ready: Click the button below to proceed</div>
+                                                               <q-btn v-if="intervalSeconds < 0" label="Add to Verto" @click="goToAssociateEosAccount()" />
                                                              </div>
                                                             <q-input v-model="globalTx.hash" readonly rounded class="input-input pr80" outlined color="purple" type="text">
                                                                 <template v-slot:append>
@@ -1116,6 +1120,11 @@ const eos = new EosWrapper()
 
 const Web3 = require('web3')
 let web3
+
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
 export default {
   name: 'Coinswitch',
   props: ['disableDestinationCoin', 'crossChain'],
@@ -1177,6 +1186,8 @@ export default {
       minimizedModal: false,
       params: null,
       tableData: [],
+      intervalObject: null,
+      intervalSeconds: 180,
       currentAccount: null,
       goBack: '/verto/dashboard',
       fetchCurrentWalletFromState: true,
@@ -1329,7 +1340,7 @@ export default {
 
     this.gasInterval = setInterval(() => {
       this.$store.dispatch('investment/getGasPrice')
-    }, 10000)
+    }, 60000)
 
     window.addEventListener('resize', this.getWindowWidth)
 
@@ -1389,6 +1400,7 @@ export default {
   },
   destoryed () {
     clearInterval(this.gasInterval)
+    clearInterval(this.intervalObject)
   },
   computed: {
     isTransactionPending () {
@@ -1563,9 +1575,6 @@ export default {
 
     this.initMetamask()
     this.$store.dispatch('investment/getMarketDataVsUSD')
-
-    // this.pStep = 3
-    // this.checkTxStatus('0x0a91245859e7fc6169e2bc900cecf21624f1520602d4fcc8aa4966aa12648193')
   },
   methods: {
     disconnectMetamask () {
@@ -1611,6 +1620,29 @@ export default {
         this.freeEOS.qualified = false
       }
     },
+    async getAccountNames (key, name) {
+      const expectedBlockTime = 5000
+
+      let names = await eos.getAccountNamesFromPubKeyP(key)
+
+      if (names.account_names.includes(name)) {
+        this.$q.notify({
+          message: 'Account ready'
+        })
+        clearInterval(this.intervalObject)
+        this.intervalSeconds = -1
+
+        return true
+      } else {
+        await sleep(expectedBlockTime)
+      }
+
+      if (this.intervalSeconds <= 10) {
+        this.intervalSeconds = 180
+      }
+
+      this.getAccountNames(key, name)
+    },
     goToAssociateEosAccount () {
       this.$store.commit('currentwallet/updateParams', {
         chainID: this.fromKey.chain,
@@ -1630,10 +1662,6 @@ export default {
       }
 
       this.pStep = 3
-
-      const sleep = (milliseconds) => {
-        return new Promise(resolve => setTimeout(resolve, milliseconds))
-      }
 
       const expectedBlockTime = 5000
 
@@ -1655,6 +1683,17 @@ export default {
             if (tx) {
               this.globalTx.label = tx.tx.quantity + ' has been sent to your account ' + tx.tx.to + ''
               this.globalTx.status = 'Completed'
+
+              if (this.accountToBeCreated) {
+                this.intervalObject = setInterval(
+                  () => {
+                    this.intervalSeconds -= 1
+                  }
+                  ,
+                  1000
+                )
+                this.getAccountNames(this.fromKey.key, this.toCoin.value)
+              }
             } else if (error) {
               this.globalTx.label = label
               this.globalTx.status = 'Confirming'
@@ -1844,6 +1883,7 @@ export default {
             })
           })
         } else {
+          this.openModal = false
           this.isPrivateKeyEncrypted()
           if (this.openModal) return
 
@@ -2165,6 +2205,8 @@ export default {
           self.orderVTX()
         }, 1000)
       } else {
+        console.log('before Lib.send', this.toCoin, this.destinationCoinAmount, (this.privateKey && this.privateKey.key) ? this.privateKey.key.length : false)
+
         Lib.send(
           'eos',
           'eos',
@@ -2172,9 +2214,11 @@ export default {
           'swap.defi', // 'newdexpublic',
           this.destinationCoinAmount,
           'swap,0,448', // '{"type":"buy-market","symbol":"volentixgsys-vtx-eos","price":"0.00000","channel":"dapp","ref":"verto"}',
-          this.toCoin.privateKey,
+          this.privateKey.key,
           'eosio.token'
         ).then(result => {
+          console.log(result, 'Lib.send')
+
           if (result.success) {
             this.$q.notify({
               message: 'Your VTX have been received',
@@ -2190,6 +2234,8 @@ export default {
             })
           }
         }).catch((error) => {
+          console.log(error, 'error lib send catch')
+
           if (error.toString().includes('is greater than the maximum billable CPU time for the transaction') || error.toString().includes('the current CPU usage limit imposed on the transaction')) {
             this.payForUserCPU()
           } else {
@@ -2224,6 +2270,8 @@ export default {
         privateKey: this.toCoin.privateKey
       }
       this.sendFreeCPUTransaction(actions, account).then(result => {
+        console.log(result, 'sendFreeCPUTransaction')
+
         if (result.success) {
           this.$q.notify({
             message: 'Your VTX have been received',
@@ -2237,6 +2285,8 @@ export default {
           })
         }
       }).catch((error) => {
+        console.log(error, 'sendFreeCPUTransaction catch')
+
         this.$q.notify({
           message: error,
           color: 'negative',
@@ -2266,7 +2316,7 @@ export default {
         this.getPassword = true
         this.openModal = true
         this.checkPrivateKeyPassword()
-      } else if (this.isEthToVtx) {
+      } else {
         this.privateKey = {
           key: this.sendingFrom.privateKey
         }
@@ -2314,8 +2364,10 @@ export default {
       this.refundAddress.address = this.refundAddress.address === '' ? this.fromCoin.value : this.refundAddress.address
       // //console.log('this.refundAddress', this.refundAddress)
       this.destinationAddress.address = this.destinationAddress.address === '' ? this.toCoin.value : this.destinationAddress.address
+      this.openModal = false
       this.isPrivateKeyEncrypted()
       if (this.openModal) return
+
       this.pStep = 3
 
       self.exchangeAddress = ''
@@ -2586,6 +2638,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.unbold {
+      font-weight: 300;
+}
 
 .gasfield {
     /deep/ .q-item.gasSelector {
