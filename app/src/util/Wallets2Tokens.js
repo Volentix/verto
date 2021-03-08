@@ -6,13 +6,21 @@ import Web3 from 'web3'
 import EosWrapper from '@/util/EosWrapper'
 
 class Wallets2Tokens {
-  constructor () {
+  constructor (walletName = null) {
     let data = this.getWalletFromCache()
 
+    this.tableDataCache = []
+    this.tableData = []
+
+    store.state.wallets.portfolioTotal = 0
+
     if (data) {
-      this.tableData = data
-      this.updateWallet()
-      return
+      this.tableDataCache = data.filter(w => w.name !== walletName || !walletName)
+
+      if (!walletName) {
+        this.updateWallet()
+        return
+      }
     }
 
     this.eos = new EosWrapper()
@@ -20,9 +28,8 @@ class Wallets2Tokens {
     self.eosUSD = 0
     this.getEosUSD()
 
-    store.state.wallets.portfolioTotal = 0
+    this.tableData = [ ...store.state.currentwallet.config.keys ].filter(w => w.name === walletName || !walletName)
 
-    this.tableData = [ ...store.state.currentwallet.config.keys ]
     if (store.state.settings.network === 'testnet') {
       this.tableData = this.tableData.filter(o => o.origin === 'eos_testnet')
       this.tableData.map(async wallet => {
@@ -173,7 +180,7 @@ class Wallets2Tokens {
         }
       })
     }
-    store.state.currentwallet.config.keys.filter(o => store.state.settings.network === 'mainnet' && o.origin !== 'eos_testnet').map(async (wallet) => {
+    store.state.currentwallet.config.keys.filter(w => w.name === walletName || !walletName).filter(o => store.state.settings.network === 'mainnet' && o.origin !== 'eos_testnet').map(async (wallet) => {
       if (wallet.type.toLowerCase() === 'eos') {
         // If tokens are missing from this API, anyone can add them using this contract: https://bloks.io/account/customtokens?loadContract=true&tab=Actions&account=customtokens&scope=customtokens&limit=100&action=set
         await axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': wallet.name }).then(balances => {
@@ -299,7 +306,7 @@ class Wallets2Tokens {
                     selected: false,
                     disabled: false,
                     type: t.tokenInfo.symbol ? t.tokenInfo.symbol.toLowerCase() : '',
-                    name: t.tokenInfo.name,
+                    name: wallet.name,
                     key: wallet.key,
                     privateKey: wallet.privateKey,
                     amount: t.balance / (10 ** t.tokenInfo.decimals),
@@ -346,8 +353,8 @@ class Wallets2Tokens {
           let privateKeysAttrs = this.extractEOSPrivateKey(wallet.privateKey, wallet.key)
 
           if (privateKeysAttrs) {
-            wallet.privateKey = privateKeysAttrs.privateKey
-            wallet.privateKeyEncrypted = privateKeysAttrs.privateKeyEncrypted
+            wallet.privateKey = null
+            wallet.privateKeyEncrypted = true
           }
 
           let value = wallet.privateKey.split('_')
@@ -398,7 +405,8 @@ class Wallets2Tokens {
       })
   }
   updateWallet () {
-    store.commit('wallets/updateTokens', this.tableData)
+    let data = this.tableData.concat(this.tableDataCache)
+    store.commit('wallets/updateTokens', data)
     store.commit('wallets/updatePortfolioTotal', store.state.wallets.portfolioTotal)
   }
   async getUSD (contract, coin) {
@@ -441,8 +449,8 @@ class Wallets2Tokens {
     return currentAsset
   }
 }
-const initWallet = async () => {
-  let wallet = await (new Wallets2Tokens())
+const initWallet = async (walletName) => {
+  let wallet = await (new Wallets2Tokens(walletName))
   return wallet
 }
 export default initWallet
