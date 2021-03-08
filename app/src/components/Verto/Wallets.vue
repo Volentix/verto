@@ -495,7 +495,7 @@
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
                                         </q-expansion-item>
-                                         <q-item data-name='Associate with EOS' to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Import another account
+                                         <q-item data-name='Associate with EOS' v-if="$store.state.currentwallet.wallet.type !== 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Import another account
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
                                         <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
@@ -934,7 +934,7 @@ export default {
         this.$store.commit('currentwallet/updateParams', {
           chainID: this.$route.params.chainID || this.selectedCoin.chain,
           tokenID: this.$route.params.tokenID || this.selectedCoin.type,
-          accountName: this.$route.params.accountName || this.selectedCoin.name
+          accountName: this.$route.params.accountName || this.selectedCoin.name.toLowerCase()
         })
         // let stakedAmounts = 0
         // if (this.selectedCoin.type === 'vtx') {
