@@ -378,10 +378,10 @@ export default {
       // reset form variables
       this.vertoPassword = null
       this.privateKeyPassword = null
-      this.accountName = null
 
-      localStorage.removeItem('walletPublicData')
-      initWallet()
+      initWallet(this.accountName.value)
+
+      this.accountName = null
       // this.step = 1
       this.$router.push('/verto/dashboard')
     },
