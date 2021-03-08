@@ -42,7 +42,7 @@
         </div>
       </div>
     </div>
-    <div class="send-modal flex flex-center" :class="{'open' : openModalProgress, 'dark-theme': $store.state.settings.lightMode === 'true'}">
+    <div v-if="!params.to" class="send-modal flex flex-center" :class="{'open' : openModalProgress , 'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
           <span class="text-h5 --amount">{{sendAmount + ' ' + currentAccount.type.toUpperCase()}}</span>
@@ -230,7 +230,7 @@
                 </q-list>
 
                 <div class="standard-content--footer">
-                  <q-btn flat class="action-link next" :disable="currentAccount.chain == 'eth' &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="openModalFun()" text-color="white"  label="Transfer" />
+                  <q-btn flat :loading="openModalProgress" class="action-link next" :disable="currentAccount.chain == 'eth' &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="openModalFun()" text-color="white"  label="Transfer" />
                 </div>
               </div>
             </div>
@@ -332,7 +332,7 @@ export default {
       transErrorDialog: false,
       transSuccessDialog: false,
       transactionLink: '',
-      transStatus: 'Sent Successfully',
+      transStatus: 'Sending...',
       currentWallet: null,
       sendTo: '',
       screenSize: 1024,

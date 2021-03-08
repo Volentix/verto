@@ -252,7 +252,7 @@
                                 </div>
                             </div>
                         </q-item>
-                      <q-expansion-item :style="setPosition(token.total)" :data-total="token.total ? token.total : 0" @click=" $store.state.wallets.tokens.filter(f => f.chain == 'eos').length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eos' &&  f.type == 'eos')) : void(0)" v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'eos' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected full-width' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
+                      <q-expansion-item :style="setPosition(token.total)" :data-total="token.total ? token.total : 0" @click=" $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.name == token.name ).length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eos' &&   f.name == token.name)) : void(0)" v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'eos' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected full-width' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
                         <template v-slot:header>
                         <q-item-section avatar>
                              <img class="coin-icon" width="35px" src="https://files.coinswitch.co/public/coins/eos.png"  />
@@ -263,7 +263,9 @@
 
                         <q-item-section class="item-info col" side>
                            <div class="row items-center text-bold">
-                                ${{formatNumber(token.total ? token.total.toFixed(0) : 0 , 0)}}
+                             <q-btn class="single-wallet-refresh" flat icon-right="cached" @click="refreshWallet(token.name)" />
+
+                           ${{formatNumber(token.total ? token.total.toFixed(0) : 0 , 0)}}
                             </div>
                         </q-item-section>
                         </template>
@@ -329,7 +331,7 @@
                         </q-card>
 
                     </q-expansion-item>
-                    <q-expansion-item :style="setPosition(token.total)" :data-total="token.total" @click="$store.state.wallets.tokens.filter(f => f.chain == 'eth' ).length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eth' &&  f.type == 'eth')) : void(0)" v-for="(token, index)  in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
+                    <q-expansion-item :style="setPosition(token.total)" :data-total="token.total" @click="$store.state.wallets.tokens.filter(f => f.chain == 'eth' && f.name == token.name ).length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eth' &&  f.name == token.name)) : void(0)" v-for="(token, index)  in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" src="https://files.coinswitch.co/public/coins/eth.png"  />
@@ -881,9 +883,10 @@ export default {
         path: '/verto/wallet/privateKey'
       })
     },
-    refreshWallet () {
-      localStorage.removeItem('walletPublicData')
-      return initWallet()
+    refreshWallet (name = null) {
+      if (!name) { localStorage.removeItem('walletPublicData') }
+
+      return initWallet(name)
     },
     revealHide () {
       this.showHidden = !this.showHidden
@@ -1047,6 +1050,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.single-wallet-refresh {
+    display: none;
+}
+.q-expansion-item:hover  .single-wallet-refresh {
+    display: block  !important;
+}
 .on-top {
 -webkit-box-ordinal-group: 1;
 -moz-box-ordinal-group: 1;
