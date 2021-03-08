@@ -190,7 +190,7 @@ export default {
   },
   async created () {
     let found_eth = this.$store.state.wallets.tokens.filter(w => w.type === 'eth')
-    console.log('found_eth', found_eth)
+
     if (found_eth.length > 0 && found_eth[0].usd !== null && found_eth[0].usd > 0) {
       console.log('setInterval luanched')
       this.interval = setInterval(() => {
@@ -199,6 +199,8 @@ export default {
     }
     if (!this.$store.state.wallets.tokens.length) {
       initWallet()
+    } else if (this.$route.params.walletToRefresh) {
+      initWallet(this.$route.params.walletToRefresh)
     }
     /*
     this.tableData = this.$store.state.wallets.tokens.map(token => {
