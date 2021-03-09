@@ -486,6 +486,7 @@ export default {
         chain: 'eos',
         privateKey: w.privateKey,
         total: w.total,
+        origin: 'defi',
         image: w.icon,
         name: w.name,
         color: 'red'
@@ -493,6 +494,7 @@ export default {
       let ethACcounts = tableData.filter(w => w.chain === 'eth' && w.type === 'eth' && this.accountOptions.push({
         value: w.key,
         chain: 'eth',
+        origin: 'defi',
         key: w.key,
         usd: w.usd,
         type: w.type,
