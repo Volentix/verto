@@ -103,7 +103,7 @@ export default {
         {
           name: 'currentPrice',
           align: 'left',
-          label: '',
+          label: 'Price',
           field: 'currentPrice',
           format: val => `${val}`,
           sortable: true
