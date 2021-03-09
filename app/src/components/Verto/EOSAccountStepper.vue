@@ -156,7 +156,6 @@ import {
 } from '@/util/errorHandler'
 
 import configManager from '@/util/ConfigManager'
-import initWallet from '@/util/Wallets2Tokens'
 export default {
   name: 'VTXConverter',
   data () {
@@ -259,9 +258,7 @@ export default {
     })
 
     this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName))
-    console.log(this.currentAccount, 'this.currentAccount')
-    // his.currentAccount = this.tableData.find(w => w.chain === 'eos' && w.type === 'verto')
+      w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName.toLowerCase() : w.key === this.params.accountName))
 
     this.currentToken = {
       label: this.currentAccount.name,
@@ -379,11 +376,7 @@ export default {
       this.vertoPassword = null
       this.privateKeyPassword = null
 
-      initWallet(this.accountName.value)
-
-      this.accountName = null
-      // this.step = 1
-      this.$router.push('/verto/dashboard')
+      this.$router.push('/verto/dashboard/' + this.accountName.value)
     },
     checkPassword () {
       if (this.password.length > 2) {
