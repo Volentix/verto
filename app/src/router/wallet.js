@@ -325,7 +325,7 @@ export default [
       },
       {
         name: 'dashboard',
-        path: '/verto/dashboard',
+        path: '/verto/dashboard/:walletToRefresh?',
         component: () => import('pages/Verto/DashboardNewUI.vue'),
         meta: {
           authRequired: true

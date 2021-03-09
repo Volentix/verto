@@ -132,6 +132,7 @@ class Wallets2Tokens {
       })
     } else if (store.state.settings.network === 'mainnet') {
       this.tableData = this.tableData.filter(o => o.origin !== 'eos_testnet')
+      // console.log(this.tableData.map(o => o.name + ' ' + o.privateKey), 99)
       this.tableData.map(wallet => {
       // let vtxCoin = wallet.type === 'verto' ? 'vtx' : wallet.type
       // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === vtxCoin.toLowerCase())
