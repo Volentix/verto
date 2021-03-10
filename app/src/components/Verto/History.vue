@@ -27,7 +27,7 @@
     <div  class="q-pa-md" v-else-if="!history.length && !loading">
       No transactions recorded yet with this account
     </div>
-   <div  class="q-pa-md" v-else-if="!history.length">
+   <div  class="q-pa-md" v-else-if="loading">
     <q-markup-table flat>
       <thead>
         <tr>

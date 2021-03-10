@@ -144,7 +144,6 @@ export default {
     this.getWindowWidth()
 
     this.chainPools = this.$store.state.investment.pools.filter(o => o.chain === this.chain || !this.chain).slice(0, 30)
-
     if (this.rowsPerPage) { this.initialPagination.rowsPerPage = this.rowsPerPage }
     if (!this.$store.state.investment.zapperTokens.length) {
       this.$store.dispatch('investment/getZapperTokens')
