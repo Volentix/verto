@@ -24,9 +24,6 @@
                 History for the {{this.$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
     </q-banner>
 
-    <div  class="q-pa-md" v-else-if="!history.length && !loading">
-      No transactions recorded yet with this account
-    </div>
    <div  class="q-pa-md" v-else-if="loading">
     <q-markup-table flat>
       <thead>
@@ -76,7 +73,10 @@
       </tbody>
     </q-markup-table>
   </div>
-      <q-scroll-area :visible="true" class="q-pr-md" style="height: 85%;">
+    <div  class="q-pa-md" v-else-if="!history.length && !loading">
+      No transactions recorded yet with this account
+    </div>
+      <q-scroll-area v-else :visible="true" class="q-pr-md" style="height: 85%;">
        <div v-for="(day,indexDay) in history" :key="indexDay">
         <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7"> {{day.friendlyDay}} </div>
         <q-list bordered dark separator class="list-wrapper"  v-for="(transaction, indexTx) in day.data" :key="indexTx">
@@ -449,8 +449,11 @@ export default {
   watch: {
     '$store.state.investment.defaultAccount': function (val) {
       this.$store.state.currentwallet.wallet = val
+      this.loading = true
 
-      this.getHistory()
+      setTimeout(() => {
+        this.getHistory()
+      }, 1000)
     }
   },
   async mounted () {
@@ -462,7 +465,6 @@ export default {
   },
   methods: {
     async getHistory () {
-      this.loading = true
       this.history = []
 
       let account = this.$store.state.investment.defaultAccount
@@ -483,6 +485,7 @@ export default {
 
         if (data[0].transID) {
           this.legacyHistory = data
+          this.loading = false
           return
         }
 
@@ -491,8 +494,6 @@ export default {
           this.groupByDay(allHistoryData)
         }
       }
-
-      this.loading = false
     },
     async getEthWalletHistory (account) {
       let element = this.$store.state.wallets.tokens.find(o => o.type === 'eth' && o.key === account.key)
@@ -503,23 +504,19 @@ export default {
       let cacheData = localStorage.getItem('history_' + element.key)
 
       if (this.$store.state.wallets.history.length) {
-        data = this.$store.state.wallets.history
+        this.history = this.$store.state.wallets.history
+        this.loading = false
       } else if (cacheData) {
-        data = JSON.parse(cacheData)
+        this.history = JSON.parse(cacheData)
+        this.loading = false
       } else {
         data = await this.$store.dispatch('investment/getETHTransactions', element.key)
-        localStorage.setItem('history_' + element.key, JSON.stringify(data))
-        this.$store.commit('wallets/setHistory', data)
-      }
+        data = data.slice(0, 10).map(o => this.normalize(o, 'eth'))
 
-      data = data.map(o => {
-        o.chain = 'eth'
-        return this.normalize(o)
-      })
-
-      if (data && Array.isArray(data)) {
-        allHistoryData = allHistoryData.concat(data)
-        this.groupByDay(allHistoryData)
+        if (data && Array.isArray(data)) {
+          allHistoryData = allHistoryData.concat(data)
+          this.groupByDay(allHistoryData)
+        }
       }
     },
     getImage (transaction) {
@@ -537,13 +534,13 @@ export default {
       let token = this.getAllCoins().find((o) => o.value.toLowerCase() === type.toLowerCase())
       return token ? (type.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : token.image) : 'https://etherscan.io/images/main/empty-token.png'
     },
-    normalize (transaction) {
+    normalize (transaction, chain) {
       const self = this
       let normalizer = {
 
         eth (transaction) {
           let tx = JSON.parse(JSON.stringify(transaction))
-
+          tx.chain = 'eth'
           let date = (new Date(parseInt(transaction.timeStamp) * 1000))
           tx.explorerLink = 'https://etherscan.io/tx/' + transaction.hash
           tx.friendlyHash = transaction.hash.substring(0, 6) + '...' + transaction.hash.substr(transaction.hash.length - 5)
@@ -552,6 +549,7 @@ export default {
           tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
           tx.image = self.getTokenImage(transaction.symbol)
           tx.active = false
+
           tx.gasTotal = tx.gas
           tx.dateFormatted = date.toISOString().split('T')[0]
           self.getHistoricalData(transaction)
@@ -588,7 +586,7 @@ export default {
           return tx
         }
       }
-      return normalizer[transaction.chain](transaction)
+      return normalizer[chain](transaction)
     },
     refreshHistory () {
       let account = this.$store.state.investment.defaultAccount
@@ -632,9 +630,14 @@ export default {
           // this.$store.commit('wallets/updateHistory', item)
         }
       })
+      if (this.$store.state.investment.defaultAccount.chain === 'eth') {
+        localStorage.setItem('history_' + this.$store.state.investment.defaultAccount.key, JSON.stringify(this.history))
+        this.$store.commit('wallets/setHistory', this.history)
+      }
+      this.loading = false
     },
     async getUsdPrice (transaction, synchronus = true) {
-      return false
+      return true
 
       /*
       let value = false
