@@ -591,7 +591,10 @@ export default {
     refreshHistory () {
       let account = this.$store.state.investment.defaultAccount
       Lib.deleteWalletHistoryData(account.chain === 'eos' ? account.name : account.key)
-      this.getHistory()
+      this.loading = true
+      setTimeout(() => {
+        this.getHistory()
+      }, 500)
     },
     getTransactionDirection (from) {
       let names = []
