@@ -453,7 +453,7 @@ export default {
 
       setTimeout(() => {
         this.getHistory()
-      }, 1000)
+      }, 500)
     }
   },
   async mounted () {
@@ -511,7 +511,7 @@ export default {
         this.loading = false
       } else {
         data = await this.$store.dispatch('investment/getETHTransactions', element.key)
-        data = data.slice(0, 10).map(o => this.normalize(o, 'eth'))
+        data = data.slice(0, 30).map(o => this.normalize(o, 'eth'))
 
         if (data && Array.isArray(data)) {
           allHistoryData = allHistoryData.concat(data)
