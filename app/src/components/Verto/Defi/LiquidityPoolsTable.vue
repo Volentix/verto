@@ -2,7 +2,7 @@
   <div>
     <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
       <!-- :grid="$q.screen.xs" -->
-      <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="!$store.state.investment.pools.length" title="Explore Opportunities" :data="$store.state.investment.pools.slice(0,20)" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
+      <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="!$store.state.investment.pools.length" title="Explore Opportunities" :data="chainPools" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
@@ -81,7 +81,7 @@ export default {
     QScrollArea,
     Swapeos
   },
-  props: ['rowsPerPage'],
+  props: ['rowsPerPage', 'chain'],
   data () {
     return {
       initialPagination: {
@@ -89,6 +89,7 @@ export default {
       },
       poolsData: [],
       screenSize: 0,
+      chainPools: [],
       filter: '',
       columns: [
         {
@@ -132,10 +133,18 @@ export default {
     }
   },
   computed: {
-    ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools'])
+    ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools', 'defaultAccount'])
+  },
+  watch: {
+    defaultAccount () {
+      this.chainPools = this.$store.state.investment.pools.filter(o => o.chain === this.chain || !this.chain).slice(0, 30)
+    }
   },
   created () {
     this.getWindowWidth()
+
+    this.chainPools = this.$store.state.investment.pools.filter(o => o.chain === this.chain || !this.chain).slice(0, 30)
+
     if (this.rowsPerPage) { this.initialPagination.rowsPerPage = this.rowsPerPage }
     if (!this.$store.state.investment.zapperTokens.length) {
       this.$store.dispatch('investment/getZapperTokens')
