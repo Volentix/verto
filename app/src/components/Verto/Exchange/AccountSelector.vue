@@ -170,7 +170,6 @@ export default {
       }
     },
     '$store.state.currentwallet.wallet': function () {
-      console.log(1112)
       let item = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain && (this.$store.state.currentwallet.wallet.chain !== 'eos' || (this.$store.state.currentwallet.wallet.chain === 'eos' && this.$store.state.currentwallet.wallet.name === a.name)))
 
       if (item) {
