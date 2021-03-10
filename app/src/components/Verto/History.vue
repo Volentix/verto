@@ -23,6 +23,10 @@
     <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="this.$store.state.investment.defaultAccount && !['eos','eth'].includes(this.$store.state.investment.defaultAccount.chain)">
                 History for the {{this.$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
     </q-banner>
+
+    <div  class="q-pa-md" v-else-if="!history.length && !loading">
+      No transactions recorded yet with this account
+    </div>
    <div  class="q-pa-md" v-else-if="!history.length">
     <q-markup-table flat>
       <thead>
@@ -415,6 +419,7 @@ export default {
     return {
       sendComponent: false,
       showInfos: [],
+      loading: true,
       legacyHistory: [],
       receiveComponent: false,
       sendComponent2: false,
@@ -457,6 +462,7 @@ export default {
   },
   methods: {
     async getHistory () {
+      this.loading = true
       this.history = []
 
       let account = this.$store.state.investment.defaultAccount
@@ -485,35 +491,36 @@ export default {
           this.groupByDay(allHistoryData)
         }
       }
+
+      this.loading = false
     },
-    async getEthWalletHistory () {
-      let accounts = this.$store.state.wallets.tokens.filter((o => o.type === 'eth' && o.chain === 'eth') || (o => o.type === 'eos' && o.chain === 'eos'))
+    async getEthWalletHistory (account) {
+      let element = this.$store.state.wallets.tokens.find(o => o.type === 'eth' && o.key === account.key)
       let allHistoryData = []
-      accounts.forEach(async (element) => {
-        let data = null
 
-        let cacheData = localStorage.getItem('history')
+      let data = null
 
-        if (this.$store.state.wallets.history.length) {
-          data = this.$store.state.wallets.history
-        } else if (cacheData) {
-          data = JSON.parse(cacheData)
-        } else {
-          data = await this.$store.dispatch('investment/getETHTransactions', element.key)
-          // localStorage.setItem('history', JSON.stringify(data))
-          this.$store.commit('wallets/setHistory', data)
-        }
+      let cacheData = localStorage.getItem('history_' + element.key)
 
-        data = data.map(o => {
-          o.chain = 'eth'
-          return this.normalize(o)
-        })
+      if (this.$store.state.wallets.history.length) {
+        data = this.$store.state.wallets.history
+      } else if (cacheData) {
+        data = JSON.parse(cacheData)
+      } else {
+        data = await this.$store.dispatch('investment/getETHTransactions', element.key)
+        localStorage.setItem('history_' + element.key, JSON.stringify(data))
+        this.$store.commit('wallets/setHistory', data)
+      }
 
-        if (data && Array.isArray(data)) {
-          allHistoryData = allHistoryData.concat(data)
-          this.groupByDay(allHistoryData)
-        }
+      data = data.map(o => {
+        o.chain = 'eth'
+        return this.normalize(o)
       })
+
+      if (data && Array.isArray(data)) {
+        allHistoryData = allHistoryData.concat(data)
+        this.groupByDay(allHistoryData)
+      }
     },
     getImage (transaction) {
       return transaction.direction === 'outgoing'
@@ -627,6 +634,9 @@ export default {
       })
     },
     async getUsdPrice (transaction, synchronus = true) {
+      return false
+
+      /*
       let value = false
 
       let datePrice = localStorage.getItem(transaction.symbol + '-' + transaction.dateFormatted)
@@ -644,6 +654,7 @@ export default {
         value = parseFloat(datePrice)
       }
       return value
+      */
     },
     async getHistoricalData (transaction) {
       let datePrice = localStorage.getItem(transaction.symbol + '-' + transaction.dateFormatted)
@@ -672,64 +683,6 @@ export default {
         // console.log(transaction.gas, 'gas', value, transaction.symbol + '-' + transaction.dateFormatted)
       }
     }
-
-    // async loadDataTableHistory () {
-    //   if (this.$store.state.currentwallet.wallet.type === 'eos') {
-    //     // get them from the eos token side of things
-    //     let eosresult = await this.$axios.get(
-    //       process.env[this.$store.state.settings.network].DEMUX_API +
-    //         '/eos/' +
-    //         this.walletName +
-    //         '?skip=0&limit=100'
-    //     )
-
-    //     // the two APIs don't have the same output so let's map it out.
-    //     var self = this
-    //     let ledgerformatedresult = eosresult.data.data.map(function (eos) {
-    //       if (eos.from === self.walletName) {
-    //         eos.quantity = -eos.quantity
-    //       }
-    //       let row = {
-    //         amount: eos.quantity,
-    //         currency: eos.currency,
-    //         comment: eos.memo,
-    //         toaccount: eos.to,
-    //         fromaccount: eos.from,
-    //         timestamp: eos.timestamp,
-    //         blockNumber: eos.blockNumber,
-    //         trx_id: eos.trx_id,
-    //         tokey: eos.to
-    //       }
-    //       return row
-    //     })
-
-    //     result.data.data = result.data.data.concat(ledgerformatedresult)
-    //   }
-    // sort the transactions from the newest to the oldest
-    //   this.tableData = result.data.data
-    //     .sort((a, b) => a.blockNumber - b.blockNumber)
-    //     .reverse()
-    //   return true
-    // }
-    // async loadTableDataWallets () {
-    //   this.tableDataWallets = this.$store.state.currentwallet.config.keys
-    // let tableDataWalletsCustom = []
-    // console.log('tableDataWalletsCustom', tableDataWalletsCustom)
-    // this.tableDataWallets = tableDataWalletsCustom
-    // },
-
-    // async getBalanceByWalletKey (walletKey) {
-    //   let result = await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': walletKey }).then(balances => {
-    //     // console.log('getBalanceByWalletKey () {} eos balances', balances)
-    //     // let balances = balancesArray.data.length === 0 ?
-    //     // if (balances.data.length === 0) {
-    //     //   balances.data = [
-    //     //     { amount: '0.0000', code: 'eosio.token', symbol: 'EOS' }
-    //     //   ]
-    //     // }
-    //   })
-    //   return result
-    // }
   },
   mixins: [DexInteraction]
 }
