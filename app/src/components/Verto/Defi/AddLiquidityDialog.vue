@@ -533,13 +533,7 @@ export default {
           console.log(receipt)
         })
 
-        tx.on('receipt', receipt => {
-          console.log(receipt, 'success')
-          this.transactionStatus = 'Success'
-        })
-
         tx.on('error', error => {
-          console.log(error, 'error')
           this.error = error
           this.transactionStatus = null
         })
