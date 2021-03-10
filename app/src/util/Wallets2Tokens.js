@@ -279,6 +279,7 @@ class Wallets2Tokens {
 
           self.tableData.filter(w => w.key === wallet.key).map(eth => {
             eth.amount = ethplorer.ETH.balance
+            eth.key = wallet.key.toLowerCase()
             eth.usd = ethplorer.ETH.balance * ethplorer.ETH.price.rate
             eth.icon = 'https://zapper.fi/images/ETH-icon.png'
           })
@@ -314,7 +315,7 @@ class Wallets2Tokens {
                     disabled: false,
                     type: t.tokenInfo.symbol ? t.tokenInfo.symbol.toLowerCase() : '',
                     name: wallet.name,
-                    key: wallet.key,
+                    key: wallet.key.toLowerCase(),
                     privateKey: wallet.privateKey,
                     amount: t.balance / (10 ** t.tokenInfo.decimals),
                     usd: amount,
