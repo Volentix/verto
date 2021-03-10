@@ -448,7 +448,8 @@ export default {
   },
   watch: {
     '$store.state.investment.defaultAccount': function (val) {
-      this.$store.state.currentwallet.wallet = val
+      if (!this.$store.state.currentwallet.wallet || !this.$store.state.currentwallet.wallet.chain) { this.$store.state.currentwallet.wallet = val }
+
       this.loading = true
 
       setTimeout(() => {
