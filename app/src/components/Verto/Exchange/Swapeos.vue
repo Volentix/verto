@@ -539,7 +539,7 @@ import { Api, JsonRpc } from 'eosjs'
 import { JsSignatureProvider } from 'eosjs/dist/eosjs-jssig'
 import AccountSelector from './AccountSelector.vue'
 let rpc, api, signatureProvider
-import initWallet from '@/util/Wallets2Tokens'
+// import initWallet from '@/util/Wallets2Tokens'
 import DexInteraction from '../../../mixins/DexInteraction'
 import EOSContract from '../../../mixins/EOSContract'
 import vpoolsComponent from '../../../components/Verto/Defi/vpoolsComponent.vue'
@@ -1077,7 +1077,7 @@ export default {
           this.transactionStatus = 'Success'
           this.spinnervisible = false
           this.transactionHash = result.transaction_id
-          initWallet()
+          // initWallet()
           if (this.tab !== 'swap') {
             this.getPools()
             this.$store.dispatch('investment/getEOSInvestments', {

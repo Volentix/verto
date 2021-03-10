@@ -112,7 +112,6 @@ class Lib {
   }
 
   deleteWalletHistoryData (key) {
-    console.log(key, 'refresh')
     localStorage.removeItem('history_' + key)
   }
 
