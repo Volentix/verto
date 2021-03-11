@@ -1,6 +1,6 @@
 <template>
 <div :key="rekey">
-    <div class="wallets-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+    <div class="wallets-wrapper full-height max-height" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
 
         <!-- <q-toggle v-model="active" label="Active" /> -->
         <div v-if="isMobile" class="is-mobile wallets-wrapper--list" :class="{'open': !walletShowHide}">
@@ -188,18 +188,23 @@
             </div>
             <q-btn unelevated v-if="!showWallets" flat @click="toggleWallets()" :icon-right="showText ? 'keyboard_arrow_up': 'keyboard_arrow_down'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showText ? 'Hide all wallets' : 'Show all wallets'" :class="showText ? 'open': 'hide'" />
         </div>
-        <div v-else class="else-is-desktop wallets-wrapper--list open">
-            <div class="wallets-wrapper--list_title q-pa-sm q-pt-sm q-ml-sm flex items-center justify-between">
-                <span class="flex items-center"><q-icon name="o_account_balance_wallet" /> {{$store.state.currentwallet.wallet.empty ? 'Wallets' : $store.state.currentwallet.wallet.name.toUpperCase().replace('- HD', '')}}</span>
-                <q-icon v-if="!$store.state.currentwallet.wallet.empty" style="font-size: 25px" :name="`img:${$store.state.currentwallet.wallet.type !== 'usdt' ? $store.state.currentwallet.wallet.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'}`" />
-                <span class="flex items-center">
-                    <q-btn v-if="$store.state.currentwallet.wallet.empty" flat icon-right="cached" @click="refreshWallet()">
+        <div v-else class="else-is-desktop wallets-wrapper--list open full-height">
+            <div class="wallets-wrapper--list_title q-pa-sm q-pt-sm q-mr-sm flex items-center justify-between" :class="$store.state.currentwallet.wallet.empty ? 'q-ml-xs':'q-pl-lg q-ml-sm'">
+                <div class="flex items-center justify-between" :class="$store.state.currentwallet.wallet.empty ? '':'full-width'">
+                    <span class="flex items-center justify-between q-ml-xs q-pr-md">
+                        <q-icon name="o_account_balance_wallet" />
+                        {{$store.state.currentwallet.wallet.empty ? 'Wallets' : $store.state.currentwallet.wallet.name.toUpperCase().replace('- HD', '')}}
+                    </span>
+                    <q-icon v-if="!$store.state.currentwallet.wallet.empty" style="font-size: 25px" :name="`img:${$store.state.currentwallet.wallet.type !== 'usdt' ? $store.state.currentwallet.wallet.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'}`" />
+                </div>
+                <span v-if="$store.state.currentwallet.wallet.empty" class="flex items-center">
+                    <q-btn dense flat icon-right="cached" @click="refreshWallet()">
                         <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
                             <strong>Refresh</strong>
                         </q-tooltip>
                     </q-btn>
                     <!-- <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Hide Currencies' : 'Show Currencies'" :class="showText ? 'open': 'hide'" /> -->
-                    <q-btn v-if="$store.state.currentwallet.wallet.empty" flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" :class="showText ? 'open': 'hide'">
+                    <q-btn dense flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" :class="showText ? 'open': 'hide'">
                         <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
                             <strong>{{showHidden ? 'Hide Currencies' : 'Show Currencies'}}</strong>
                         </q-tooltip>
@@ -225,7 +230,7 @@
                     </div>
                 </div>
             </div>
-            <q-scroll-area :visible="true" ref="walletsScrollArea" class="walletsScrollArea q-mr-sm q-ml-xs" :class="{'short' : $store.state.currentwallet.wallet.empty, 'long' : !$store.state.currentwallet.wallet.empty}" :style="$store.state.currentwallet.wallet.empty ? 'height: 297px;': 'height: 334px;'">
+            <q-scroll-area :visible="true" ref="walletsScrollArea" class="walletsScrollArea q-mr-sm q-ml-xs" :class="{'short' : $store.state.currentwallet.wallet.empty, 'long' : !$store.state.currentwallet.wallet.empty}" :style="$store.state.currentwallet.wallet.empty ? 'height: 100%': 'height: 100%;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty" class="all-wallets">
 
@@ -263,9 +268,8 @@
 
                         <q-item-section class="item-info col" side>
                            <div class="row items-center text-bold">
-                             <q-btn class="single-wallet-refresh" flat icon-right="cached" @click="refreshWallet(token.name)" />
-
-                           ${{formatNumber(token.total ? token.total.toFixed(0) : 0 , 0)}}
+                                <q-btn class="single-wallet-refresh" flat icon-right="cached" @click="refreshWallet(token.name)" />
+                                ${{formatNumber(token.total ? token.total.toFixed(0) : 0 , 0)}}
                             </div>
                         </q-item-section>
                         </template>
@@ -463,7 +467,7 @@
                             <div class="header-wallet-wrapper culumn full-width">
                                 <div class="menu-wallet">
                                     <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
-                                        <q-separator style="margin-top: -20px" />
+                                        <!-- <q-separator style="margin-top: -20px" /> -->
                                         <q-item data-name='Associate with EOS' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
@@ -1102,6 +1106,7 @@ export default {
     @media screen and (min-width: 768px) {
         background: #FFF;
         padding: 5% 0px;
+        padding-top: 0px;
         margin-top: -10px;
         margin-right: 10px;
         border-radius: 0px 0px 10px 10px;
@@ -1200,8 +1205,10 @@ export default {
             font-family: $Titillium;
             font-weight: $bold;
             line-height: 30px;
-            margin-top: -20px;
+            margin-top: 0px;
             margin-bottom: 0px;
+            // margin-left: -10px;
+            // margin-right: -10px;
             color: #494949;
 
             i {
@@ -1317,6 +1324,7 @@ export default {
 
                 @media screen and (min-width: 768px) {
                     margin-bottom: 0px;
+                    margin-top: 0px;
 
                     /deep/ .q-focus-helper {
                         display: none !important;
@@ -1352,7 +1360,7 @@ export default {
                         font-family: $Titillium;
                         font-weight: $bold;
                         font-size: 15px !important;
-                        color: #627797 !important;
+                        color: #7272FA !important;;
                     }
 
                     /deep/ .sub-list-menu {
@@ -1539,7 +1547,11 @@ export default {
             flex-direction: column;
             justify-content: center;
             align-items: flex-end;
-
+            position: relative;
+            .single-wallet-refresh{
+                position: absolute;
+                right: 40px;
+            }
             &--amount {
                 font-size: 16px;
 
@@ -1616,12 +1628,15 @@ export default {
             &_title{
                 color: #FFF;
                 background: transparent !important;
+                // background: #7272FA !important;
                 // margin-left: 0px !important;
             }
             .q-list--bordered {
                 .q-item{
                     &:first-child{
-                        border-top: 1px solid rgba(0, 0, 0, 0);
+                        .q-link {
+                            border-top: 1px solid rgba(0, 0, 0, 0);
+                        }
                     }
                 }
                 .q-link {
@@ -1631,6 +1646,9 @@ export default {
                     }
                     &.bgblack{
                         background-color: #0b1f35;
+                    }
+                    &:first-child{
+                        border-top: 1px solid rgba(0, 0, 0, 0) !important;
                     }
                     @media screen and (min-width: 768px){
                         .menu-wallet .sub-list-menu .q-link{
@@ -1891,4 +1909,29 @@ export default {
         font-size: 12px;
     }
 }
+.max-height{
+    max-height: 83.5%;
+    @media screen and (min-height: 700px) {
+        // height: 54.5vh;
+        max-height: 83.70%;
+    }
+    @media screen and (min-height: 760px) {
+        // height: 54vh;
+        max-height: 83.25%;
+    }
+    @media screen and (min-height: 800px) {
+        // height: 55vh;
+        max-height: 84.15%;
+    }
+    @media screen and (min-height: 870px) {
+        // height: 56vh;
+        max-height: 84.15%;
+    }
+}
+/deep/ .q-item__section.column.q-item__section--avatar{
+    min-width: 66px;
+}
+// /deep/ .q-expansion-item__container > .q-item .q-item__section.column.q-item__section--avatar{
+//     min-width: 66px;
+// }
 </style>
