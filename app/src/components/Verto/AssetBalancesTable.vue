@@ -84,7 +84,7 @@ export default {
   data () {
     return {
       initialPagination: {
-        rowsPerPage: 4
+        rowsPerPage: 6
       },
       assets: [],
       poolsData: [],

@@ -25,60 +25,59 @@
         <q-card-section>
           <div class="text-h6">Choose your account</div>
         </q-card-section>
-
         <q-card-section class="q-pt-none">
-         <q-select style="width: 400px;"
-          :dark="$store.state.settings.lightMode === 'true'"
-          :light="$store.state.settings.lightMode === 'false'"
-          separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation()" v-model="accountOption" :options="accountOptions">
-            <template v-slot:selected>
-                <q-item v-if="accountOption">
-                    <q-item-section v-if="accountOption.image" avatar>
-                        <q-icon class="option--avatar" :name="'img:'+accountOption.image" />
-                    </q-item-section>
-                    <q-item-section>
-                        <q-item-label v-if="accountOption.usd">{{ accountOption.chain.toUpperCase() }} account - ${{ accountOption.usd.toFixed(4) }}</q-item-label>
-                        <q-item-label caption class="ellipsis mw200 q-pt-xs">{{ accountOption.value }}</q-item-label>
-                    </q-item-section>
-                </q-item>
-            </template>
-            <template v-slot:option="scope">
-              <q-item
-                class="custom-menu"
+          <q-select style="width: 400px;"
+            :dark="$store.state.settings.lightMode === 'true'"
+            :light="$store.state.settings.lightMode === 'false'"
+            separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation()" v-model="accountOption" :options="accountOptions">
+              <template v-slot:selected>
+                  <q-item v-if="accountOption">
+                      <q-item-section v-if="accountOption.image" avatar>
+                          <q-icon class="option--avatar" :name="'img:'+accountOption.image" />
+                      </q-item-section>
+                      <q-item-section>
+                          <q-item-label v-if="accountOption.usd">{{ accountOption.chain.toUpperCase() }} account - ${{ accountOption.usd.toFixed(4) }}</q-item-label>
+                          <q-item-label caption class="ellipsis mw200 q-pt-xs">{{ accountOption.value }}</q-item-label>
+                      </q-item-section>
+                  </q-item>
+              </template>
+              <template v-slot:option="scope">
+                <q-item
+                  class="custom-menu"
 
-                v-bind="scope.itemProps"
-                v-on="scope.itemEvents"
-              >
-                <q-item-section avatar>
-                <q-icon
-                  :name="`img:${scope.opt.image}`"
-                />
-                </q-item-section>
-                <q-item-section>
-                <q-item-label
-                  v-html="scope.opt.label"
-                />
-
-                <q-item-label
-                  v-if="scope.opt.name"
-                  caption
-                  >{{ scope.opt.name }}</q-item-label>
+                  v-bind="scope.itemProps"
+                  v-on="scope.itemEvents"
+                >
+                  <q-item-section avatar>
+                  <q-icon
+                    :name="`img:${scope.opt.image}`"
+                  />
+                  </q-item-section>
+                  <q-item-section>
                   <q-item-label
-                  v-if="scope.opt.total"
-                  caption
-                  >${{ scope.opt.total.toFixed(2) }}</q-item-label>
+                    v-html="scope.opt.label"
+                  />
 
-                </q-item-section>
-              </q-item>
-            </template>
-            <!-- <template v-slot:append>
-                <q-avatar>
-                    <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
-                </q-avatar>
-            </template> -->
-        </q-select>
+                  <q-item-label
+                    v-if="scope.opt.name"
+                    caption
+                    >{{ scope.opt.name }}</q-item-label>
+                    <q-item-label
+                    v-if="scope.opt.total"
+                    caption
+                    >${{ scope.opt.total.toFixed(2) }}</q-item-label>
+
+                  </q-item-section>
+                </q-item>
+              </template>
+              <!-- <template v-slot:append>
+                  <q-avatar>
+                      <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
+                  </q-avatar>
+              </template> -->
+          </q-select>
         </q-card-section>
-         <q-card-section>
+        <q-card-section>
           <!-- <q-btn label="Select wallet" color="primary" @click="chooseAccount = false"/> -->
           <q-btn
               unelevated
@@ -86,6 +85,8 @@
               color="primary"
               text-color="black"
               label="Select account"
+              outline
+              rounded
               class="text-capitalize chose_accounts full-width"
             />
         </q-card-section>
@@ -1701,6 +1702,7 @@ export default {
     height: 35px;
     color: #7272FA !important;
     height: 40px !important;
+    border: 1px solid #7272FA !important;;
   }
 }
 /deep/ .q-card{
@@ -1711,13 +1713,14 @@ export default {
 }
 /deep/ .q-card.q-card--dark.q-dark{
   background: #04111F !important;
-  border: 1px solid #627797 !important;
+  border: 1px solid #7272FA !important;;
   &.accountOptionCard {
       border: none !important;
       background: transparent !important;
   }
   /deep/ .select-input .q-field__control {
     background-color: transparent !important;
+    border: 1px solid #7272FA !important;;
     .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{
       color: #CCC;
     }
@@ -1740,7 +1743,7 @@ export default {
 }
 .q-pa-zero .q-field--standard .q-field__control:before{border-color: transparent !important}
 .q-pa-zero .q-field--standard .q-field__control{padding-right: 15px;}
-.q-card.q-card--dark.q-dark{background: #04111F !important;border: 1px solid #627797 !important;}
+.q-card.q-card--dark.q-dark{background: #04111F !important;border: 1px solid #7272FA !important;;}
 .q-card.q-card--dark.q-dark.accountOptionCard{border: none !important;background: transparent !important;}
 .q-card.q-card--dark.q-dark .select-input .q-field__control {background-color: transparent !important;}
 .q-card.q-card--dark.q-dark .select-input .q-field__control .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{color: #CCC;}
