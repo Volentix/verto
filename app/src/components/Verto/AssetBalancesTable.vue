@@ -84,7 +84,7 @@ export default {
   data () {
     return {
       initialPagination: {
-        rowsPerPage: 4
+        rowsPerPage: 6
       },
       loaded: true,
       assets: [],
@@ -104,7 +104,7 @@ export default {
         {
           name: 'currentPrice',
           align: 'left',
-          label: '',
+          label: 'Price',
           field: 'currentPrice',
           format: val => `${val}`,
           sortable: true

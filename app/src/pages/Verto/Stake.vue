@@ -128,7 +128,7 @@ export default {
             color: #FFF;
           }
           .total{
-            color: #627797 !important;
+            color: #7272FA !important;;
             strong{
               color: #FFF !important;
             }
