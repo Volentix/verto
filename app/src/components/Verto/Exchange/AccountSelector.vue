@@ -138,9 +138,6 @@ export default {
       }
       this.setAccount()
     },
-    formatNumber (num, decimals = 4) {
-      return parseFloat(num).toFixed(decimals)
-    },
     setAccount () {
       if (this.accountOption) {
         this.$store.commit('investment/setDefaultAccount', this.accountOption)

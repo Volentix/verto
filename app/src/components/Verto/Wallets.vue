@@ -281,7 +281,7 @@
                                         <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
                                     </q-item-section>
                                     <q-item-section class="item-name">
-                                        <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
+                                        <span class="item-name--name">{{item.type.toUpperCase()}}</span>
                                         <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
@@ -359,7 +359,7 @@
                                         <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
                                     </q-item-section>
                                     <q-item-section class="item-name">
-                                        <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
+                                        <span class="item-name--name">{{item.type.toUpperCase()}}</span>
                                         <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
@@ -709,14 +709,15 @@ export default {
     }
   },
   watch: {
+    '$store.state.wallets.portfolioTotal': function () {
+      this.loadingIndicator = true
+      setTimeout(() => {
+        this.loadingIndicator = false
+      }, 5000)
+    },
     tokens: {
       deep: true,
-      handler (val) {
-        this.loadingIndicator = true
-        setTimeout(() => {
-          this.loadingIndicator = false
-        }, 5000)
-
+      handler (val, old) {
         this.rekey++
       }
     }
