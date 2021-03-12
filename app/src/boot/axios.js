@@ -10,11 +10,12 @@ export default async ({ Vue }) => {
   }, function (error) {
   // Do something with response error
     if (error.response) {
-      // Catching errors in a spreadsheet: https://docs.google.com/spreadsheets/d/1fT_NHSnvVBt5-QH7VAl13Tr6lcMRoNbtI1gzA92Upic/edit?usp=sharing
+      /* Catching errors in a spreadsheet: https://docs.google.com/spreadsheets/d/1fT_NHSnvVBt5-QH7VAl13Tr6lcMRoNbtI1gzA92Upic/edit?usp=sharing
       axios.post('https://enh08uyf97tybts.m.pipedream.net', {
         data: error,
         url: (typeof window !== 'undefined') ? window.location.href : ''
       })
+      */
     }
   })
 }
