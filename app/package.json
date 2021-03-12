@@ -69,7 +69,7 @@
     "conseiljs-softsigner": "^5.0.0-alpha.0",
     "electron-log": "^3.0.5",
     "electron-updater": "^4.0.6",
-    "elliptic": "^6.5.3",
+    "elliptic": "^6.5.4",
     "eos-common": "^0.8.0",
     "eosjs": "^21.0.2",
     "eosjs-ecc": "^4.0.7",

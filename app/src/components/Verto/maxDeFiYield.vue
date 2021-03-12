@@ -82,7 +82,7 @@ export default {
               prev = value
             }
           }
-          this.maxDeFiYield.toTokenAmount = this.convertWalletToken(this.maxToken.type, this.maxDeFiYield.token)
+          if (this.maxToken && this.maxToken.type) { this.maxDeFiYield.toTokenAmount = this.convertWalletToken(this.maxToken.type, this.maxDeFiYield.token) }
         })
     },
     convertWalletToken (from, to) {

@@ -414,7 +414,6 @@ import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 
 import EosWrapper from '@/util/EosWrapper'
-import initWallet from '@/util/Wallets2Tokens'
 export default {
   components: {
     // desktop components
@@ -539,8 +538,7 @@ export default {
         this.resetErrors()
         const result = await this.$configManager.createEosWallet(this.addWallet)
         if (result.success) {
-          initWallet()
-          this.$router.push('/verto/dashboard')
+          this.$router.push('/verto/dashboard/' + this.addWallet.walletName)
         } else {
           this.submitKey = false
           if (result.message === 'bad_password') {
