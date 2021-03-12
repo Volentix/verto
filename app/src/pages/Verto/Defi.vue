@@ -244,7 +244,7 @@
             <div :class="{'bg-white2':$store.state.settings.lightMode === 'false'}">
               <!-- <q-scroll-area :visible="true" style="height: 87vh;"> -->
                 <div v-if="$store.state.settings.network == 'mainnet' && chain == 'eth' && accountOption.chain == 'eth'">
-                  <LiquidityPoolsTable :rowsPerPage="10" class="minHeight" v-if="menu == 'liquidity'"/>
+                  <LiquidityPoolsTable :chain="'eth'" :rowsPerPage="10" class="minHeight" v-if="menu == 'liquidity'"/>
                   <InvestmentsTable class="minHeight2" v-else-if="menu == 'investments'"/>
                   <DebtsTable class="minHeight2 DebtsTable" v-else-if="menu == 'debts'"/>
                   <TransactionsTable class="minHeight2" v-else-if="menu == 'transactions'"/>

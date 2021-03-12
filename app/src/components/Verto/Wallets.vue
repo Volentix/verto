@@ -230,7 +230,9 @@
                     </div>
                 </div>
             </div>
-            <q-scroll-area :visible="true" ref="walletsScrollArea" class="walletsScrollArea q-mr-sm q-ml-xs" :class="{'short' : $store.state.currentwallet.wallet.empty, 'long' : !$store.state.currentwallet.wallet.empty}" :style="$store.state.currentwallet.wallet.empty ? 'height: 100%': 'height: 100%;'">
+              <p class="text-body2 text-center" v-if="$store.state.wallets.tokens.length && loadingIndicator">Updating {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].chain.toUpperCase()}} wallet ({{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].name}}) {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total ? '($'+formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total,0)+')' : ''}} <br>Fetching {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].type.toUpperCase()}} balance:  (${{formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].usd,2)}})...</p>
+
+            <q-scroll-area :visible="true" ref="walletsScrollArea" class="walletsScrollArea q-mr-sm q-ml-xs" :class="{'short' : $store.state.currentwallet.wallet.empty, 'long' : !$store.state.currentwallet.wallet.empty}" :style="$store.state.currentwallet.wallet.empty ? 'height: 100%;': 'height: 100%;'">
                 <q-list bordered separator class="list-wrapper">
                     <div v-if="$store.state.currentwallet.wallet.empty" class="all-wallets">
 
@@ -283,7 +285,7 @@
                                         <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
                                     </q-item-section>
                                     <q-item-section class="item-name">
-                                        <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
+                                        <span class="item-name--name">{{item.type.toUpperCase()}}</span>
                                         <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
@@ -338,7 +340,7 @@
                     <q-expansion-item :style="setPosition(token.total)" :data-total="token.total" @click="$store.state.wallets.tokens.filter(f => f.chain == 'eth' && f.name == token.name ).length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eth' &&  f.name == token.name)) : void(0)" v-for="(token, index)  in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
                         <template v-slot:header>
                             <q-item-section avatar>
-                                <img class="coin-icon" width="35px" src="https://files.coinswitch.co/public/coins/eth.png"  />
+                                <img class="coin-icon" width="35px" src="https://zapper.fi/images/ETH-icon.png"  />
                             </q-item-section>
                             <q-item-section  class="item-name">
                                 <span class="item-name--name">
@@ -347,6 +349,7 @@
                             </q-item-section>
                             <q-item-section class="item-info col" side>
                                 <div class="row items-center text-bold">
+                             <q-btn class="single-wallet-refresh" flat icon-right="cached" @click="refreshWallet(token.name)" />
                                 ${{token.total.toFixed(0)}}
                                 </div>
                             </q-item-section>
@@ -360,7 +363,7 @@
                                         <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
                                     </q-item-section>
                                     <q-item-section class="item-name">
-                                        <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
+                                        <span class="item-name--name">{{item.type.toUpperCase()}}</span>
                                         <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
                                     </q-item-section>
                                     <q-item-section class="item-info" v-if="!item.disabled">
@@ -499,7 +502,7 @@
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
                                         </q-expansion-item>
-                                         <q-item data-name='Associate with EOS' v-if="$store.state.currentwallet.wallet.type !== 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Import another account
+                                         <q-item data-name='Associate with EOS' v-if="$store.state.currentwallet.wallet.type !== 'verto' && $store.state.currentwallet.wallet.chain === 'eos'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Import another account
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
                                         <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
@@ -710,9 +713,15 @@ export default {
     }
   },
   watch: {
+    '$store.state.wallets.portfolioTotal': function () {
+      this.loadingIndicator = true
+      setTimeout(() => {
+        this.loadingIndicator = false
+      }, 5000)
+    },
     tokens: {
       deep: true,
-      handler (val) {
+      handler (val, old) {
         this.rekey++
       }
     }
@@ -721,6 +730,7 @@ export default {
     return {
       searchAccount: '',
       hideEosSetup: null,
+      loadingIndicator: false,
       history: [],
       rekey: 98813538,
       toggled: false,
@@ -898,7 +908,7 @@ export default {
       // console.log("document.getElementById('hidden__holder--sep')", document.getElementById('hidden__holder--sep'))
       setTimeout(() => {
         let position = document.getElementById('hidden__holder--sep') ? document.getElementById('hidden__holder--sep').offsetTop : 0
-        this.$refs.walletsScrollArea.setScrollPosition(position, position === 0 ? 50 : 300)
+        if (this.$refs.walletsScrollArea) { this.$refs.walletsScrollArea.setScrollPosition(position, position === 0 ? 50 : 300) }
       }, 500)
     },
     togglePrivateKey () {
