@@ -364,7 +364,7 @@
 <script>
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
-import initWallet from '@/util/Wallets2Tokens'
+
 const Web3 = require('web3')
 let web3 = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
 export default {
@@ -489,11 +489,10 @@ export default {
     addEthAddress: async function () {
       if (this.submitKey) {
         this.resetErrors()
-        const result = await this.$configManager.saveWalletAndKey(this.addWallet.walletName, this.addWallet.vertoPassword, null, this.addWallet.address, '0x' + this.addWallet.addressPriv, 'eth', 'import')
-        // const result = await this.$configManager.createEthWallet(this.addWallet)
+        const result = await this.$configManager.saveWalletAndKey(this.addWallet.walletName, this.addWallet.vertoPassword, null, this.addWallet.address.toLowerCase(), '0x' + this.addWallet.addressPriv, 'eth', 'import')
+
         if (result.success) {
-          initWallet()
-          this.$router.push('/verto/dashboard')
+          this.$router.push('/verto/dashboard/' + this.addWallet.walletName)
         } else {
           this.submitKey = false
           if (result.message === 'bad_password') {

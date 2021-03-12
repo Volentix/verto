@@ -2,7 +2,7 @@
   <div>
     <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
       <!-- :grid="$q.screen.xs" -->
-      <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="!assets.length" :data="assets" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
+      <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="loaded" :data="assets" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="body-table-col">
             <div class="col-1 flex items-center">
@@ -86,6 +86,7 @@ export default {
       initialPagination: {
         rowsPerPage: 4
       },
+      loaded: true,
       assets: [],
       poolsData: [],
       screenSize: 0,
@@ -154,11 +155,6 @@ export default {
     }
   },
   methods: {
-    formatNumber (number, tofix) {
-      let val = (number / 1).toFixed(tofix).replace(',', ' ')
-      val = isNaN(val) ? 'N/A' : val
-      return val
-    },
     initTable () {
       this.assets = []
       JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).forEach((token, i) => {
@@ -185,6 +181,8 @@ export default {
           }
           this.assets.sort((a, b) => (isNaN(parseFloat(b.usd)) ? 0 : parseFloat(b.usd)) - (isNaN(parseFloat(a.usd)) ? 0 : parseFloat(a.usd)))
         }
+
+        this.loaded = false
       })
     },
     getHistoricalValue (token) {

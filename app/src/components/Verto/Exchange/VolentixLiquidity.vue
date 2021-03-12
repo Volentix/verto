@@ -932,7 +932,7 @@ export default {
   props: ['disableDestinationCoin', 'showLiquidity'],
   data () {
     return {
-      eosAccountName: 'berthonytha1',
+      eosAccountName: 'berthonytha2',
       tokensBalance: [],
       pools: [],
       openChannels: [],
@@ -976,7 +976,7 @@ export default {
         gasUsd: null
       },
       eosAccount: {
-        name: 'berthonytha1'
+        name: 'berthonytha2'
       },
       eosAccounts: [],
       eos: null,

@@ -272,7 +272,7 @@ export const getInvestments = (context, payload) => {
 
   axios.get(transactionEndpoint, config)
     .then(function (result) {
-      context.commit('setInvestments', result.data[payload.value])
+      context.commit('setInvestments', result.data[payload.value.toLowerCase()])
     }).catch(error => {
       console.log(error, 'Cannot get market Investments')
     })
@@ -281,7 +281,7 @@ export const getDebts = (context, payload) => {
   let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/balances/' + payload.platform + '?addresses%5B%5D=' + payload.value + '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
   axios.get(transactionEndpoint, config)
     .then(function (result) {
-      context.commit('setDebts', result.data[payload.value])
+      context.commit('setDebts', result.data[payload.value.toLowerCase()])
     }).catch(error => {
       console.log(error, 'Cannot get Debts')
     })
