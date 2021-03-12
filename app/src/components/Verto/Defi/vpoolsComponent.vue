@@ -99,7 +99,7 @@ import DexInteraction from '../../../mixins/DexInteraction'
 export default {
   data () {
     return {
-      eosAccount: 'berthonytha1',
+      eosAccount: 'berthonytha2',
       tokensBalance: [],
       openChannels: [],
       tab: 'tokens',
