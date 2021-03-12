@@ -38,6 +38,7 @@ class Wallets2Tokens {
           wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
           wallet.chain = 'eos'
         }
+
         wallet.disabled = false
         let balances = {
           data: []
@@ -269,12 +270,18 @@ class Wallets2Tokens {
         })
         this.updateWallet()
       } else if (wallet.type === 'eth') {
+        // Getting balance using zapper
+
         axios.get(process.env[store.state.settings.network].CACHE + 'https://api.ethplorer.io/getAddressInfo/' + wallet.key + '?apiKey=EK-kJ7LW-wCWTsAy-ALujf').then(res => {
           let ethplorer = res ? res.data : false
 
+          if (!ethplorer || !ethplorer.ETH) return this.getEthBalanceFromZapper(wallet)
+
           self.tableData.filter(w => w.key === wallet.key).map(eth => {
             eth.amount = ethplorer.ETH.balance
+            eth.key = wallet.key.toLowerCase()
             eth.usd = ethplorer.ETH.balance * ethplorer.ETH.price.rate
+            eth.icon = 'https://zapper.fi/images/ETH-icon.png'
           })
           let ethBalance = ethplorer.ETH.balance * ethplorer.ETH.price.rate
           store.state.wallets.portfolioTotal += isNaN(ethBalance) ? 0 : ethBalance
@@ -308,7 +315,7 @@ class Wallets2Tokens {
                     disabled: false,
                     type: t.tokenInfo.symbol ? t.tokenInfo.symbol.toLowerCase() : '',
                     name: wallet.name,
-                    key: wallet.key,
+                    key: wallet.key.toLowerCase(),
                     privateKey: wallet.privateKey,
                     amount: t.balance / (10 ** t.tokenInfo.decimals),
                     usd: amount,
@@ -371,6 +378,48 @@ class Wallets2Tokens {
   }
   async getEosUSD () {
     await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.newdex.io/v1/price?symbol=eosio.token-eos-usdt').then(res => { this.eosUSD = res.data.data.price })
+  }
+
+  getEthBalanceFromZapper (wallet) {
+    axios.get(process.env[store.state.settings.network].CACHE + 'https://api.zapper.fi/v1/balances/tokens?addresses%5B%5D=' + wallet.key + '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88').then(res => {
+      let ethBalance = {
+        usd: 0,
+        ammount: 0
+      }
+
+      if (!res.data[wallet.key.toLowerCase()] || !res.data[wallet.key.toLowerCase()].length) return
+
+      let e = res.data[wallet.key.toLowerCase()].find(o => o.symbol.toLowerCase() === 'eth')
+      if (e) {
+        ethBalance.usd = e.balanceUSD
+        ethBalance.ammount = e.balance
+      }
+
+      this.tableData.filter(w => w.key.toLowerCase() === wallet.key.toLowerCase()).map(eth => {
+        eth.amount = ethBalance.ammount
+        eth.usd = ethBalance.usd
+        eth.icon = 'https://zapper.fi/images/ETH-icon.png'
+      })
+
+      res.data[wallet.key.toLowerCase()].filter(o => o.symbol.toLowerCase() !== 'eth').forEach(t => {
+        this.tableData.push({
+          selected: false,
+          disabled: false,
+          type: t.symbol ? t.symbol.toLowerCase() : '',
+          name: wallet.name,
+          key: wallet.key,
+          privateKey: wallet.privateKey,
+          amount: t.balance,
+          usd: t.balanceUSD,
+          contract: t.tokenAddress,
+          chain: 'eth',
+          to: '/verto/wallets/eth/' + t.symbol.toLowerCase() + '/' + wallet.key,
+          icon: 'https://zapper.fi/images/' + t.img
+        })
+        store.state.wallets.portfolioTotal += isNaN(t.balanceUSD) ? 0 : t.balanceUSD
+        this.updateWallet()
+      })
+    })
   }
   extractEOSPrivateKey (privateKey, key) {
     // Looking for existing Private key format {"keys":[{},{}]}

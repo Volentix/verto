@@ -138,9 +138,6 @@ export default {
       }
       this.setAccount()
     },
-    formatNumber (num, decimals = 4) {
-      return parseFloat(num).toFixed(decimals)
-    },
     setAccount () {
       if (this.accountOption) {
         this.$store.commit('investment/setDefaultAccount', this.accountOption)
@@ -170,8 +167,7 @@ export default {
       }
     },
     '$store.state.currentwallet.wallet': function () {
-      console.log(1112)
-      let item = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain && (this.$store.state.currentwallet.wallet.chain !== 'eos' || (this.$store.state.currentwallet.wallet.chain === 'eos' && this.$store.state.currentwallet.wallet.name === a.name)))
+      let item = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain && (this.$store.state.currentwallet.wallet.chain !== 'eos' || (this.$store.state.currentwallet.wallet.chain === 'eos' && this.$store.state.currentwallet.wallet.type !== 'verto' && this.$store.state.currentwallet.wallet.name === a.name)))
 
       if (item) {
         this.setAccount()

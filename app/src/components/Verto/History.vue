@@ -23,7 +23,8 @@
     <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="this.$store.state.investment.defaultAccount && !['eos','eth'].includes(this.$store.state.investment.defaultAccount.chain)">
                 History for the {{this.$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
     </q-banner>
-   <div  class="q-pa-md" v-else-if="!history.length">
+
+   <div  class="q-pa-md" v-else-if="loading">
     <q-markup-table flat>
       <thead>
         <tr>
@@ -72,7 +73,10 @@
       </tbody>
     </q-markup-table>
   </div>
-      <q-scroll-area :visible="true" class="q-pr-md" style="height: 85%;">
+    <div  class="q-pa-md" v-else-if="!history.length && !loading">
+      No transactions recorded yet with this account
+    </div>
+      <q-scroll-area v-else :visible="true" class="q-pr-md" style="height: 85%;">
        <div v-for="(day,indexDay) in history" :key="indexDay">
         <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7"> {{day.friendlyDay}} </div>
         <q-list bordered dark separator class="list-wrapper"  v-for="(transaction, indexTx) in day.data" :key="indexTx">
@@ -415,6 +419,7 @@ export default {
     return {
       sendComponent: false,
       showInfos: [],
+      loading: true,
       legacyHistory: [],
       receiveComponent: false,
       sendComponent2: false,
@@ -443,9 +448,13 @@ export default {
   },
   watch: {
     '$store.state.investment.defaultAccount': function (val) {
-      this.$store.state.currentwallet.wallet = val
+      if (!this.$store.state.currentwallet.wallet || !this.$store.state.currentwallet.wallet.chain) { this.$store.state.currentwallet.wallet = val }
 
-      this.getHistory()
+      this.loading = true
+
+      setTimeout(() => {
+        this.getHistory()
+      }, 500)
     }
   },
   async mounted () {
@@ -477,6 +486,7 @@ export default {
 
         if (data[0].transID) {
           this.legacyHistory = data
+          this.loading = false
           return
         }
 
@@ -486,34 +496,29 @@ export default {
         }
       }
     },
-    async getEthWalletHistory () {
-      let accounts = this.$store.state.wallets.tokens.filter((o => o.type === 'eth' && o.chain === 'eth') || (o => o.type === 'eos' && o.chain === 'eos'))
+    async getEthWalletHistory (account) {
+      let element = this.$store.state.wallets.tokens.find(o => o.type === 'eth' && o.key === account.key)
       let allHistoryData = []
-      accounts.forEach(async (element) => {
-        let data = null
 
-        let cacheData = localStorage.getItem('history')
+      let data = null
 
-        if (this.$store.state.wallets.history.length) {
-          data = this.$store.state.wallets.history
-        } else if (cacheData) {
-          data = JSON.parse(cacheData)
-        } else {
-          data = await this.$store.dispatch('investment/getETHTransactions', element.key)
-          // localStorage.setItem('history', JSON.stringify(data))
-          this.$store.commit('wallets/setHistory', data)
-        }
+      let cacheData = localStorage.getItem('history_' + element.key)
 
-        data = data.map(o => {
-          o.chain = 'eth'
-          return this.normalize(o)
-        })
+      if (this.$store.state.wallets.history.length) {
+        this.history = this.$store.state.wallets.history
+        this.loading = false
+      } else if (cacheData) {
+        this.history = JSON.parse(cacheData)
+        this.loading = false
+      } else {
+        data = await this.$store.dispatch('investment/getETHTransactions', element.key)
+        data = data.slice(0, 30).map(o => this.normalize(o, 'eth'))
 
         if (data && Array.isArray(data)) {
           allHistoryData = allHistoryData.concat(data)
           this.groupByDay(allHistoryData)
         }
-      })
+      }
     },
     getImage (transaction) {
       return transaction.direction === 'outgoing'
@@ -530,13 +535,13 @@ export default {
       let token = this.getAllCoins().find((o) => o.value.toLowerCase() === type.toLowerCase())
       return token ? (type.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : token.image) : 'https://etherscan.io/images/main/empty-token.png'
     },
-    normalize (transaction) {
+    normalize (transaction, chain) {
       const self = this
       let normalizer = {
 
         eth (transaction) {
           let tx = JSON.parse(JSON.stringify(transaction))
-
+          tx.chain = 'eth'
           let date = (new Date(parseInt(transaction.timeStamp) * 1000))
           tx.explorerLink = 'https://etherscan.io/tx/' + transaction.hash
           tx.friendlyHash = transaction.hash.substring(0, 6) + '...' + transaction.hash.substr(transaction.hash.length - 5)
@@ -545,6 +550,7 @@ export default {
           tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
           tx.image = self.getTokenImage(transaction.symbol)
           tx.active = false
+
           tx.gasTotal = tx.gas
           tx.dateFormatted = date.toISOString().split('T')[0]
           self.getHistoricalData(transaction)
@@ -581,12 +587,15 @@ export default {
           return tx
         }
       }
-      return normalizer[transaction.chain](transaction)
+      return normalizer[chain](transaction)
     },
     refreshHistory () {
       let account = this.$store.state.investment.defaultAccount
       Lib.deleteWalletHistoryData(account.chain === 'eos' ? account.name : account.key)
-      this.getHistory()
+      this.loading = true
+      setTimeout(() => {
+        this.getHistory()
+      }, 500)
     },
     getTransactionDirection (from) {
       let names = []
@@ -625,8 +634,16 @@ export default {
           // this.$store.commit('wallets/updateHistory', item)
         }
       })
+      if (this.$store.state.investment.defaultAccount.chain === 'eth') {
+        localStorage.setItem('history_' + this.$store.state.investment.defaultAccount.key, JSON.stringify(this.history))
+        this.$store.commit('wallets/setHistory', this.history)
+      }
+      this.loading = false
     },
     async getUsdPrice (transaction, synchronus = true) {
+      return true
+
+      /*
       let value = false
 
       let datePrice = localStorage.getItem(transaction.symbol + '-' + transaction.dateFormatted)
@@ -644,6 +661,7 @@ export default {
         value = parseFloat(datePrice)
       }
       return value
+      */
     },
     async getHistoricalData (transaction) {
       let datePrice = localStorage.getItem(transaction.symbol + '-' + transaction.dateFormatted)
@@ -672,64 +690,6 @@ export default {
         // console.log(transaction.gas, 'gas', value, transaction.symbol + '-' + transaction.dateFormatted)
       }
     }
-
-    // async loadDataTableHistory () {
-    //   if (this.$store.state.currentwallet.wallet.type === 'eos') {
-    //     // get them from the eos token side of things
-    //     let eosresult = await this.$axios.get(
-    //       process.env[this.$store.state.settings.network].DEMUX_API +
-    //         '/eos/' +
-    //         this.walletName +
-    //         '?skip=0&limit=100'
-    //     )
-
-    //     // the two APIs don't have the same output so let's map it out.
-    //     var self = this
-    //     let ledgerformatedresult = eosresult.data.data.map(function (eos) {
-    //       if (eos.from === self.walletName) {
-    //         eos.quantity = -eos.quantity
-    //       }
-    //       let row = {
-    //         amount: eos.quantity,
-    //         currency: eos.currency,
-    //         comment: eos.memo,
-    //         toaccount: eos.to,
-    //         fromaccount: eos.from,
-    //         timestamp: eos.timestamp,
-    //         blockNumber: eos.blockNumber,
-    //         trx_id: eos.trx_id,
-    //         tokey: eos.to
-    //       }
-    //       return row
-    //     })
-
-    //     result.data.data = result.data.data.concat(ledgerformatedresult)
-    //   }
-    // sort the transactions from the newest to the oldest
-    //   this.tableData = result.data.data
-    //     .sort((a, b) => a.blockNumber - b.blockNumber)
-    //     .reverse()
-    //   return true
-    // }
-    // async loadTableDataWallets () {
-    //   this.tableDataWallets = this.$store.state.currentwallet.config.keys
-    // let tableDataWalletsCustom = []
-    // console.log('tableDataWalletsCustom', tableDataWalletsCustom)
-    // this.tableDataWallets = tableDataWalletsCustom
-    // },
-
-    // async getBalanceByWalletKey (walletKey) {
-    //   let result = await this.$axios.post('https://eos.greymass.com/v1/chain/get_currency_balances', { 'account': walletKey }).then(balances => {
-    //     // console.log('getBalanceByWalletKey () {} eos balances', balances)
-    //     // let balances = balancesArray.data.length === 0 ?
-    //     // if (balances.data.length === 0) {
-    //     //   balances.data = [
-    //     //     { amount: '0.0000', code: 'eosio.token', symbol: 'EOS' }
-    //     //   ]
-    //     // }
-    //   })
-    //   return result
-    // }
   },
   mixins: [DexInteraction]
 }
