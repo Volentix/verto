@@ -20,8 +20,8 @@
       <img v-if="$store.state.settings.lightMode === 'false'" src="statics/node-banners/ban6light.png" class="full-width scale3d" alt="">
       <img v-else src="statics/node-banners/ban6dark.png" class="full-width scale3d" alt="">
       <div class="qbtn-launch-wrapper flex justify-between items-center q-pr-lg full-width">
-        <span class="tagline">Earn Passive income</span>
-        <q-btn unelevated class="qbtn-download" outline color="white" text-color="black" label="Launch Node" />
+        <span class="tagline flex justify-between items-center">Earn <img src="statics/icon.png" class="q-ml-sm q-mr-sm q-mb-xs" width="25" alt=""> VTX</span>
+        <q-btn unelevated class="qbtn-download" color="white" text-color="black" label="Launch Node" />
       </div>
     </div>
     <div v-else class="row flex justify-between q-pt-sm q-pb-sm">
@@ -64,16 +64,17 @@ export default {
     .tagline{
       font-family: $Franklin;
       font-size: 20px;
-      font-weight: $bold;
-      margin-left: 80px;
-      margin-bottom: 5px;
+      font-weight: $light;
+      margin-left: 150px;
+      margin-bottom: 1px;
     }
   }
   .qbtn-download{
     border-radius: 30px;
-    height: 30px;
-    color: #fe68b5 !important;
-    background: #FFF !important;
+    height: 33px;
+    color: #7272FA !important;
+    background: transparent !important;
+    border: 1px solid #7272FA !important;
     margin-top: -2px;
     /deep/ .q-btn__wrapper{
       min-height: unset;

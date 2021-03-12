@@ -1,12 +1,12 @@
 <template>
   <q-page class="" :class="{'desktop-marg': screenSize > 1024, 'mobile-pad': screenSize < 1024, 'text-black bg-white': $store.state.settings.lightMode === 'false'}">
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-      <div class="desktop-version" v-if="screenSize > 1024">
-        <div class="row">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+      <div class="desktop-version full-height" v-if="screenSize > 1024">
+        <div class="row full-height">
           <div class="col col-md-3">
-            <div class="wallets-container">
+            <div class="wallets-container" style="height: 100%">
               <profile-header :isMobile="false" class="marg" version="type2222" />
-              <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+              <wallets :isMobile="false" :showWallets="false" class="full-height max-height" :isWalletsPage="false" :isWalletDetail="false" />
               <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
             </div>
           </div>
@@ -22,7 +22,7 @@
               </div>
 
               <div class="standard-content--body" style="height: 100%;">
-                <History   :isMobile="false" />
+                <History :isMobile="false" />
               </div>
             </div>
           </div>
@@ -183,5 +183,8 @@ export default {
         border-top: 1px solid rgba(white, 0.06);
       }
     }
+  }
+  .max-height{
+    max-height: 72vh;
   }
 </style>
