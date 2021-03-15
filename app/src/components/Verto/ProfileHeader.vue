@@ -66,19 +66,42 @@
       </div>
     </div>
     <div v-else-if="version === 'type6'" class="profile-wrapper--header static" style="background: url(statics/refer_friend_bg.png) center bottom / cover no-repeat rgb(255, 255, 255) !important; min-height: 390px; box-shadow: none !important; border-radius: 0px;" />
-    <div v-else class="column flex-center profile-wrapper--header" :class="{'desktop-ui' : !isMobile, 'selected-wallet':  !isMobile && !$store.state.currentwallet.wallet.empty}" style="background: url('statics/header_bg3.png');">
-      <q-btn v-if="!isMobile && !$store.state.currentwallet.wallet.empty" outline round @click="resetSelectedWallet()" to="/verto/dashboard" color="white" class="reset-btn" text-color="white" icon="close" />
-      <h3 class="profile-wrapper--header__title text-white" v-if="!isMobile && !$store.state.currentwallet.wallet.empty">{{$store.state.currentwallet.wallet.name.replace('- HD', '')}}</h3>
-      <h3 class="profile-wrapper--header__title text-white" v-else>Main Portfolio</h3>
-      <h2 class="profile-wrapper--header__balance text-white" v-if="!isMobile && !$store.state.currentwallet.wallet.empty">${{ isNaN($store.state.currentwallet.wallet.usd) ? 0 : nFormatter2($store.state.currentwallet.wallet.usd, 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent to <b>{{ isNaN($store.state.currentwallet.wallet.usd) ? 0 : nFormatter2(+$store.state.currentwallet.wallet.amount,3) + ' ' + $store.state.currentwallet.wallet.type.toUpperCase() }}</b></span></h2>
-      <h2 class="profile-wrapper--header__balance text-white" v-else>${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
+    <div v-else
+    class="column flex-center profile-wrapper--header"
+    :class="{'desktop-ui' : !isMobile, 'selected-wallet':  !isMobile && !$store.state.currentwallet.wallet.empty}"
+    :style="$store.state.settings.lightMode === 'true' ? `background: url('statics/header_bg3.png')` : `background: url('statics/header_bg3light.png')`"
+    >
+      <q-btn v-if="!isMobile && !$store.state.currentwallet.wallet.empty" flat round @click="resetSelectedWallet()" to="/verto/dashboard" color="transparent" class="reset-btn" text-color="white" size="md" icon="close" />
+      <h3 class="profile-wrapper--header__title" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
+      v-if="!isMobile && !$store.state.currentwallet.wallet.empty">{{$store.state.currentwallet.wallet.name.replace('- HD', '')}}</h3>
+      <h3 class="profile-wrapper--header__title" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
+      v-else>Main Portfolio</h3>
+      <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
+      v-if="!isMobile && !$store.state.currentwallet.wallet.empty">${{ isNaN($store.state.currentwallet.wallet.usd) ? 0 : nFormatter2($store.state.currentwallet.wallet.usd, 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent to <b>{{ isNaN($store.state.currentwallet.wallet.usd) ? 0 : nFormatter2(+$store.state.currentwallet.wallet.amount,3) + ' ' + $store.state.currentwallet.wallet.type.toUpperCase() }}</b></span></h2>
+      <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
+      v-else>${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <!-- {{$store.state.wallets.portfolioTotal}} -->
       <div class="profile-wrapper--header__action">
 
-        <q-btn unelevated v-if="screenSize <= 1024" :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm'].includes($store.state.currentwallet.wallet.chain))" to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
-        <q-btn unelevated v-if="screenSize > 1024" :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','btc','dot', 'ksm'].includes($store.state.currentwallet.wallet.chain))" @click="!$store.state.currentwallet.wallet.empty ? goToSendPage() : notifSelectWallet()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
-        <q-btn unelevated v-if="screenSize <= 1024" to="/verto/wallets/receive" :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm'].includes($store.state.currentwallet.wallet.chain))" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
-        <q-btn unelevated v-if="screenSize > 1024" :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm'].includes($store.state.currentwallet.wallet.chain)) " @click="!$store.state.currentwallet.wallet.empty ? goToReceivePage() : notifSelectWallet()" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
+        <q-btn unelevated v-if="screenSize <= 1024"
+          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm'].includes($store.state.currentwallet.wallet.chain))"
+          to="/verto/wallets/send" outline
+          class="profile-wrapper--header__action-btn"
+          color="indigo-12" text-color="white" label="Send" />
+        <q-btn unelevated v-if="screenSize > 1024"
+          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','btc','dot', 'ksm'].includes($store.state.currentwallet.wallet.chain))" @click="!$store.state.currentwallet.wallet.empty ? goToSendPage() : notifSelectWallet()"
+          class="profile-wrapper--header__action-btn" outline
+          color="indigo-12" text-color="white" label="Send" />
+        <q-btn unelevated v-if="screenSize <= 1024"
+          to="/verto/wallets/receive"
+          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm'].includes($store.state.currentwallet.wallet.chain))"
+          class="profile-wrapper--header__action-btn" outline
+          color="indigo-12" text-color="white" label="Receive" />
+        <q-btn unelevated v-if="screenSize > 1024"
+          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm'].includes($store.state.currentwallet.wallet.chain)) "
+          @click="!$store.state.currentwallet.wallet.empty ? goToReceivePage() : notifSelectWallet()"
+          class="profile-wrapper--header__action-btn" outline
+          color="indigo-12" text-color="white" label="Receive" />
 
       </div>
     </div>
@@ -282,7 +305,7 @@ export default {
         position: absolute;
         bottom: -25px;
         right: 0px;
-        color: #FFF;
+        // color: #FFF;
         font-size: 10px;
         font-weight: $light;
         width: 100%;
@@ -293,7 +316,7 @@ export default {
         margin-right: 10px;
         .profile-wrapper--header{
           &__title{
-            color: #fff !important;
+            // color: #fff !important;
             font-weight: $bold;
             font-family: $Titillium;
             font-size: 18px;
@@ -479,8 +502,9 @@ export default {
     }
   }
   .selected-wallet{
-      border: 5px solid #FFF !important;
-    }
+    border: 0px solid #7272FA !important;
+    border-bottom: 5px solid #7272FA !important;
+  }
   .send-modal{
     position: fixed;
     width: 100vw;
@@ -583,15 +607,22 @@ export default {
   .pl20{
     padding-left: 20px;
   }
-  .reset-btn{
+  /deep/ .reset-btn{
     position: absolute;
-    right: 10px;
-    top: 10px;
-    // width: 35px;
-    transform: scale(.5);
-
+    right: 0px;
+    top: 0px;
+    transform: scale(1);
+    background-color: transparent !important;
+    background: transparent !important;
   }
   .dark-theme{
+    /deep/ .reset-btn{
+      color: #7272FA !important;
+    }
+    .selected-wallet{
+      border: 1px solid #7272FA !important;
+      border-bottom: 5px solid #7272FA !important;
+    }
     .send-modal__content{
       background-color: #04111F !important;
       border: 1px solid #627797;

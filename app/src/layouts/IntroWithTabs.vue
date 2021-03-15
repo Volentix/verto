@@ -1,5 +1,5 @@
 <template>
-  <q-layout>
+  <q-layout class="qlayout-main-app" :class="{'dark' : $store.state.settings.lightMode === 'true'}">
     <div class="layout-main-app">
       <div class="desktop-version" v-if="screenSize > 1024">
         <TopMenu />
@@ -22,7 +22,7 @@
       <tabs-menu v-else class="mobile-version tabs-menu-component" />
       <!-- mobile-only  -->
       <GuideWizard :key="reRender" v-if="showWizard" class="wizard"/>
-      <div class="q-pr-xs" style="background: #E7E8E8;" :class="{'dark-theme-main-layout': $store.state.settings.lightMode === 'true'}">
+      <div class="q-pr-xs layout-main-app-wrapper" style="background: #E7E8E8;" :class="{'dark-theme-main-layout': $store.state.settings.lightMode === 'true'}">
         <q-scroll-area :visible="true" style="height: 100vh">
           <q-page-container>
             <router-view :showWizard="showWizardAction" />
@@ -96,6 +96,16 @@ export default {
       }
     }
   }
+  .layout-main-app{
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    // display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
 </style>
 <style>
   /* @media screen and (min-width: 1024px) {
@@ -113,8 +123,12 @@ export default {
   }
   body{
     overflow: hidden;
+    background: #E7E8E8;
   }
   .dark-theme-main-layout{
       background: #04111F !important;
+  }
+  .qlayout-main-app.dark{
+    background: #04111F !important;
   }
 </style>
