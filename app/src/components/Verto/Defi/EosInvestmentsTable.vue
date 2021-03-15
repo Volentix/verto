@@ -4,7 +4,8 @@
         <template v-slot:body-cell-asset="props">
             <q-td :props="props" class="body-table-col">
                 <div class="col-3 flex items-center">
-                    <span class="imgs q-mr-lg">
+
+                      <span class="imgs q-mr-lg">
                         <img :src="'https://ndi.340wan.com/eos/'+ props.row.contract0 +'-'+ props.row.symbol0.toLowerCase() +'.png'" alt="">
                         <img :src="'https://ndi.340wan.com/eos/'+ props.row.contract1 +'-'+ props.row.symbol1.toLowerCase() +'.png'" alt="">
                     </span>
@@ -12,8 +13,21 @@
                         <span class="pair">{{props.row.symbol0 + ' + ' + props.row.symbol1}}</span>
 
                     </span>
+
+                </div>
+            </q-td>
+        </template>
+         <template v-slot:body-cell-owner="props">
+            <q-td :props="props" class="body-table-col">
+                <div class="col-3 flex items-center">
+                  <q-chip color="black" outline text-color="black" class="cursor-pointer" @click.native="stakeData = props.row ; unstakeDialog = true">
+                      <q-icon name="remove"/>
+                    </q-chip>
+                    <span class="column pairs">
+                        <span class="pair">MODIFY</span>
+                    </span>
                     <q-chip color="black" outline text-color="black" class="cursor-pointer" @click.native="stakeData = props.row ; openDialog = true">
-                        Add Liquidity
+                      <q-icon name="add"/>
                     </q-chip>
 
                 </div>
@@ -33,6 +47,9 @@
         <Swapeos v-if="stakeData" :pool="{reserve0 : stakeData.count0 +' '+ stakeData.symbol0 , reserve1 : stakeData.count +' '+ stakeData.symbol1 }" :notWidget="true" />
         </q-card>
     </q-dialog>
+    <q-dialog v-model="unstakeDialog">
+        <EOSStakingDialog :notWidget="true" :stakeData="stakeData"  />
+    </q-dialog>
 </div>
 </template>
 
@@ -50,6 +67,7 @@ export default {
   data () {
     return {
       openDialog: false,
+      unstakeDialog: false,
       poolsData: [],
       stakeData: null,
       filter: '',
@@ -118,12 +136,8 @@ export default {
     ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools'])
   },
   async created () {
-    let tableData = await this.$store.state.wallets.tokens
-
-    let eosAccount = tableData.find(w => w.chain === 'eos' && w.type === 'eos')
-
     this.$store.dispatch('investment/getEOSInvestments', {
-      owner: eosAccount.name
+      owner: this.$store.state.investment.defaultAccount.name
     })
   }
 }
