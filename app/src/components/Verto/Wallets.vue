@@ -270,8 +270,9 @@
 
                         <q-item-section class="item-info col" side>
                            <div class="row items-center text-bold">
-                                <q-btn class="single-wallet-refresh" flat icon-right="cached" @click="refreshWallet(token.name)" />
-                                ${{formatNumber(token.total ? token.total.toFixed(0) : 0 , 0)}}
+                             <q-btn class="single-wallet-refresh" flat icon-right="cached" @click="refreshWallet(token.name)" />
+
+                           <span> ${{formatNumber(token.total ? token.total.toFixed(0) : 0 , 0)}}</span>
                             </div>
                         </q-item-section>
                         </template>
@@ -350,7 +351,7 @@
                             <q-item-section class="item-info col" side>
                                 <div class="row items-center text-bold">
                              <q-btn class="single-wallet-refresh" flat icon-right="cached" @click="refreshWallet(token.name)" />
-                                ${{token.total.toFixed(0)}}
+                               <span> ${{formatNumber(token.total, 0)}}</span>
                                 </div>
                             </q-item-section>
                         </template>
@@ -778,6 +779,22 @@ export default {
     if (!this.hideEosSetup) {
       this.hideEosSetup = !this.$store.state.wallets.tokens.find(f => f.type === 'verto' && f.chain === 'eos' && !f.hidden && !f.disabled)
     }
+
+    setTimeout(() => {
+      this.$store.state.wallets.tokens.map(async (f) => {
+        let stakedAmounts = 0
+        if (f.type === 'vtx') {
+          let stakes = await eos.getTable('vtxstake1111', f.name, 'accountstake')
+          stakes.map(s => {
+            s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
+            s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+            stakedAmounts += +s.stake_amount
+          })
+          f.staked = stakedAmounts
+        }
+        if (f.type === 'verto') { console.log('token', f) }
+      })
+    }, 6000)
   },
   async updated () {
     // //console.log('updated')
@@ -796,21 +813,6 @@ export default {
         accountName: this.accountName
       })
     }
-    // console.log(this.$store.state.wallets.tokens, 'this.$store.state.wallets.tokens')
-    this.$store.state.wallets.tokens.map(async (f) => {
-      let stakedAmounts = 0
-      if (f.type === 'vtx') {
-        let stakes = await eos.getTable('vtxstake1111', f.name, 'accountstake')
-        stakes.map(s => {
-          s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
-          s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
-          stakedAmounts += +s.stake_amount
-        })
-        f.staked = stakedAmounts
-      }
-      if (f.type === 'verto') { console.log('token', f) }
-    })
-    // console.log(JSON.stringify(this.$store.state.wallets.tokens))
   },
   computed: {
     //   $store.state.wallets.tokens.filter(this.filterdWalletList)
@@ -1068,6 +1070,10 @@ export default {
 .single-wallet-refresh {
     display: none;
 }
+.q-expansion-item:hover .q-item__section--side span{
+display: none
+}
+
 .q-expansion-item:hover  .single-wallet-refresh {
     display: block  !important;
 }
