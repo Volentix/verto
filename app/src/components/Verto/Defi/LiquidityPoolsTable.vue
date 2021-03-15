@@ -136,18 +136,20 @@ export default {
     ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools', 'defaultAccount'])
   },
   watch: {
+    '$store.state.investment.pools': function () {
+      this.chainPools = this.$store.state.investment.pools.filter(o => o.chain === this.chain || !this.chain).slice(0, 30)
+    },
     defaultAccount () {
       this.chainPools = this.$store.state.investment.pools.filter(o => o.chain === this.chain || !this.chain).slice(0, 30)
     }
   },
-  created () {
+  async created () {
     this.getWindowWidth()
 
     this.chainPools = this.$store.state.investment.pools.filter(o => o.chain === this.chain || !this.chain).slice(0, 30)
     if (this.rowsPerPage) { this.initialPagination.rowsPerPage = this.rowsPerPage }
-    if (!this.$store.state.investment.zapperTokens.length) {
-      this.$store.dispatch('investment/getZapperTokens')
-    }
+
+    await this.$store.dispatch('investment/getUniswapPools')
   },
   methods: {
     formatNumber (number, tofix) {

@@ -949,9 +949,9 @@ export default {
       this.error = null
       this.swapData.error = false
       this.swapData.fromAmount = isNaN(this.swapData.fromAmount) ? 0 : this.swapData.fromAmount
-      if (this.depositCoin.amount < this.swapData.fromAmount) {
+      if (parseFloat(this.depositCoin.amount) < parseFloat(this.swapData.fromAmount)) {
         this.error = 'Insufficient ' + this.depositCoin.label + ' balance'
-      } else if (this.tab === 'liquidity' && this.destinationCoin.amount < parseFloat(this.swapData.toAmount)) {
+      } else if (this.tab === 'liquidity' && parseFloat(this.destinationCoin.amount) < parseFloat(this.swapData.toAmount)) {
         this.error = 'Insufficient ' + this.destinationCoin.label + ' balance'
       }
     },

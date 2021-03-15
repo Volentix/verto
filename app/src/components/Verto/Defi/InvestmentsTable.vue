@@ -12,7 +12,7 @@
                        <span class="value">${{props.row.balanceUSD.toFixed(4)}}</span>
                     </span>
                     <q-chip outline  color="cyan-7"  text-color="white" v-if="props.row.isStaked">
-                        Stacked
+                        Staked
                     </q-chip>
 
                 </div>
