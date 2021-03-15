@@ -671,7 +671,7 @@ export default {
 
       return direction
     },
-    groupByDay (allHistoryData, previousData = []) {
+    groupByDay (allHistoryData) {
       allHistoryData.forEach((element) => {
         let dateObj = new Date(parseInt(element.timeStamp) * 1000)
         let month = dateObj.getUTCMonth() + 1
