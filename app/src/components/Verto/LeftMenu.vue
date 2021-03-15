@@ -54,7 +54,7 @@
       <span class="version full-width text-center column">
         <span class="q-mb-md">{{version}}</span>
         <span class="q-pa-sm text-grey">
-          This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-deep-purple-12" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
+          This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-deep-purple-12c" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
         </span>
 
       </span>
@@ -203,5 +203,8 @@ export default {
         color: rgba(white, .8);
       }
     }
+  }
+  .text-deep-purple-12c{
+    color: #7272FA !important;
   }
 </style>

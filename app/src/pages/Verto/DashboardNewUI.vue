@@ -1,25 +1,25 @@
 <template>
 <q-page class="column" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-white': $store.state.settings.lightMode === 'false', 'desktop-marg' : screenSize > 1024, 'mobile-pad': screenSize < 1024}">
-<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
 
-    <div class="desktop-version" v-if="screenSize > 1024">
-        <div class="row">
+    <div class="desktop-version full-height" v-if="screenSize > 1024">
+        <div class="row full-height">
             <div class="col col-md-3">
                 <div class="wallets-container" style="height: 100%">
                     <profile-header :isMobile="false" class="marg" version="type2222" />
-                    <wallets data-title="Interact with your account"  data-intro="Click on an account/token to see all actions you can perform. Click SETUP to associate EOS account(s) to account names" :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+                    <wallets data-title="Interact with your account" class="full-height max-height" data-intro="Click on an account/token to see all actions you can perform. Click SETUP to associate EOS account(s) to account names" :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                 </div>
             </div>
             <div class="col col-md-9 q-pr-md">
                 <div class="row">
-                    <div class="col col-md-6">
+                    <div class="col col-md-6 customSlider">
                         <chainToolsSection />
                     </div>
                     <div class="col q-pl-sm col-md-6 customSlider">
                         <maxDeFiYield class="slide" :class="{'active': !customSlider}" />
                         <startNodeSection class="slide" :class="{'active': customSlider}" :banner="6" />
                     </div>
-                    <div class="col col-md-12">
+                    <div class="col col-md-12 full-height max-height2">
                         <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                             <q-tabs
                                 v-model="tabPoolAndAssetBalances"
@@ -405,7 +405,7 @@ export default {
     /deep/ .profile-wrapper {
         &--header {
             margin-bottom: 0px;
-            border: 1px solid #627797;
+            border: 1px solid rgb(235, 235, 235);
             // border-bottom: none;
             border-radius: 10px 10px 0px 0px !important;
         }
@@ -777,6 +777,13 @@ export default {
     }
 }
 .dark-theme{
+    .marg {
+        /deep/ .profile-wrapper {
+            &--header {
+                border: 1px solid #627797;
+            }
+        }
+    }
     .tabPoolAndAssetBalances{
 
     }
@@ -840,6 +847,7 @@ export default {
     }
 }
 .customSlider{
+    height: 85px;
     .slide{
         opacity: 0;
         visibility: hidden;
@@ -857,6 +865,27 @@ export default {
         overflow: hidden;
     }
 }
+.max-height{
+    max-height: 72vh;
+}
+.liquidityPoolsTable /deep/ .q-scrollarea.desktop-size{
+    height: 54vh;
+    @media screen and (min-height: 700px) {
+        height: 54.5vh;
+    }
+    @media screen and (min-height: 760px) {
+        height: 54vh;
+    }
+    @media screen and (min-height: 800px) {
+        height: 55vh;
+    }
+    @media screen and (min-height: 870px) {
+        height: 56vh;
+    }
+}
+// .max-height2{
+//     max-height: 50.5%;
+// }
 </style>
 <style>
 .q-scrollarea__bar--v,

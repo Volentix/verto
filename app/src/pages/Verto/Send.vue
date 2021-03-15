@@ -102,13 +102,13 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-      <div class="desktop-version" v-if="screenSize > 1024">
-        <div class="row">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+      <div class="desktop-version full-height" v-if="screenSize > 1024">
+        <div class="row full-height">
           <div class="col col-md-3" v-if="!embedded">
-            <div class="wallets-container">
+            <div class="wallets-container" style="height: 100%">
               <profile-header :isMobile="false" class="marg" version="type2222" />
-              <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+              <wallets :isMobile="false" class="full-height max-height" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
               <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
             </div>
           </div>
@@ -1206,4 +1206,23 @@ export default {
     width: 30px;
     max-height: unset;
   }
+.max-height{
+    max-height: 80.80%;
+    @media screen and (min-height: 700px) {
+        // height: 54.5vh;
+        max-height: 83.70%;
+    }
+    @media screen and (min-height: 760px) {
+        // height: 54vh;
+        max-height: 86.55%;
+    }
+    @media screen and (min-height: 800px) {
+        // height: 55vh;
+        max-height: 87.40%;
+    }
+    @media screen and (min-height: 870px) {
+        // height: 56vh;
+        max-height: 90.15%;
+    }
+}
 </style>
