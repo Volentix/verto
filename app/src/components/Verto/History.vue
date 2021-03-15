@@ -389,6 +389,7 @@
           </q-item>
         </q-list>
         </div>
+         <p v-if="history.length && this.$store.state.currentwallet.wallet.chain == 'eth'" class="text-center text-body1 cursor-pointer" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" /></p>
       </q-scroll-area>
     </div>
   </div>
@@ -413,6 +414,9 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    refresh: {
+      required: false
     }
   },
   data () {
@@ -420,12 +424,14 @@ export default {
       sendComponent: false,
       showInfos: [],
       loading: true,
+      loadMoreLoading: false,
       legacyHistory: [],
       receiveComponent: false,
       sendComponent2: false,
       receiveComponent2: false,
       tradeComponent: false,
       active: true,
+      offset: 0,
       history: [],
       pagination: {
         position: -1,
@@ -458,10 +464,21 @@ export default {
     }
   },
   async mounted () {
-    this.$bus.$on('refreshHistory', () => {
-      this.refreshHistory()
-    })
+    /*
+    this.$bus.$on('refreshHistory', (e) => {
+      if (!this.isrefresh) {
+        this.refreshHistory()
+        this.refresh = true
 
+        setTimeout(() => {
+          this.refresh = false
+        }, 10000)
+      }
+    })
+    */
+    if (this.refresh) {
+      this.refreshHistory()
+    }
     this.getHistory()
   },
   methods: {
@@ -471,52 +488,59 @@ export default {
       let account = this.$store.state.investment.defaultAccount
 
       if (account.chain === 'eth') {
+        // Clear local data because of updated logic
+        let item = localStorage.getItem('tx_list_' + account.key)
+
+        if (!item) {
+          localStorage.removeItem('history_' + account.key)
+        }
+
         this.getEthWalletHistory(this.$store.state.investment.defaultAccount)
       } else {
-        let data = null
-        let allHistoryData = []
-
         if (!account.chain) {
           account = this.$store.state.wallets.tokens.find(w => w.chain === 'eos' && w.type === 'eos')
         }
 
-        data = (await Lib.history(account.chain, account.name, account.type, this.pagination))
+        let data = (await Lib.history(account.chain, account.name, account.type, this.pagination))
 
         data = data.history
 
-        if (data[0].transID) {
+        if (data && data[0].transID) {
           this.legacyHistory = data
           this.loading = false
           return
         }
 
         if (data && Array.isArray(data)) {
-          allHistoryData = allHistoryData.concat(data)
-          this.groupByDay(allHistoryData)
+          this.groupByDay(data)
         }
       }
     },
     async getEthWalletHistory (account) {
       let element = this.$store.state.wallets.tokens.find(o => o.type === 'eth' && o.key === account.key)
-      let allHistoryData = []
-
-      let data = null
 
       let cacheData = localStorage.getItem('history_' + element.key)
 
-      if (this.$store.state.wallets.history.length) {
-        this.history = this.$store.state.wallets.history
+      /* let item = this.$store.state.wallets.history.find(o => o.key === element.key)
+
+      if (item) {
+
+        this.history = item.history
         this.loading = false
-      } else if (cacheData) {
+
+      } else */
+
+      if (cacheData) {
         this.history = JSON.parse(cacheData)
         this.loading = false
       } else {
-        data = await this.$store.dispatch('investment/getETHTransactions', element.key)
-        data = data.slice(0, 30).map(o => this.normalize(o, 'eth'))
+        let data = await this.$store.dispatch('investment/getETHTransactions', element.key)
+        localStorage.setItem('tx_list_' + element.key, JSON.stringify(data))
+        data = data.slice(this.offset, 10).map(o => this.normalize(o, 'eth'))
 
         if (data && Array.isArray(data)) {
-          allHistoryData = allHistoryData.concat(data)
-          this.groupByDay(allHistoryData)
+          this.history = []
+          this.groupByDay(data)
         }
       }
     },
@@ -530,6 +554,38 @@ export default {
     getAction (transaction) {
       return transaction.direction === 'outgoing' ? 'Send'
         : transaction.direction === 'incoming' ? 'Receive' : 'Trade'
+    },
+    loadMore () {
+      this.loadMoreLoading = true
+
+      setTimeout(() => {
+        let account = this.$store.state.investment.defaultAccount
+
+        if (account.chain === 'eth') {
+          let cacheData = localStorage.getItem('history_' + account.key)
+
+          cacheData = JSON.parse(cacheData)
+
+          let txList = localStorage.getItem('tx_list_' + account.key)
+
+          txList = JSON.parse(txList)
+
+          this.offset = 0
+
+          cacheData.forEach((e) => {
+            this.offset += e.data.length
+          })
+
+          console.log(this.offset, 'this.offset', cacheData)
+
+          let data = txList.slice(this.offset, this.offset + 10).map(o => this.normalize(o, 'eth'))
+
+          if (data && Array.isArray(data)) {
+            this.groupByDay(data, cacheData)
+            this.loadMoreLoading = false
+          }
+        }
+      }, 200)
     },
     getTokenImage (type) {
       let token = this.getAllCoins().find((o) => o.value.toLowerCase() === type.toLowerCase())
@@ -591,8 +647,11 @@ export default {
     },
     refreshHistory () {
       let account = this.$store.state.investment.defaultAccount
+
+      console.log(account.key, 'account.key')
       Lib.deleteWalletHistoryData(account.chain === 'eos' ? account.name : account.key)
       this.loading = true
+      console.log(7)
       setTimeout(() => {
         this.getHistory()
       }, 500)
@@ -612,7 +671,7 @@ export default {
 
       return direction
     },
-    groupByDay (allHistoryData) {
+    groupByDay (allHistoryData, previousData = []) {
       allHistoryData.forEach((element) => {
         let dateObj = new Date(parseInt(element.timeStamp) * 1000)
         let month = dateObj.getUTCMonth() + 1
@@ -636,7 +695,7 @@ export default {
       })
       if (this.$store.state.investment.defaultAccount.chain === 'eth') {
         localStorage.setItem('history_' + this.$store.state.investment.defaultAccount.key, JSON.stringify(this.history))
-        this.$store.commit('wallets/setHistory', this.history)
+        // this.$store.commit('wallets/setHistory', {key:this.$store.state.investment.defaultAccount.key, historythis.history)
       }
       this.loading = false
     },

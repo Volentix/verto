@@ -2,7 +2,7 @@
   <q-layout>
     <div class="layout-main-app">
       <div class="desktop-version" v-if="screenSize > 1024">
-        <TopMenu :currentPage="currentPage" />
+        <TopMenu />
         <LeftMenu />
         <div class="menu-left-wrapper"></div>
         <q-page-sticky position="bottom-right"  :offset="fabPos">
@@ -46,7 +46,6 @@ export default {
   data () {
     return {
       screenSize: 0,
-      currentPage: '',
       showWizard: false,
       osName: '',
       fab: true,
@@ -66,17 +65,8 @@ export default {
     this.reRender = Math.random()
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
-    this.getCurrentRouter()
-    // console.log('this.osName', this.osName)
-  },
-  updated () {
-    this.getCurrentRouter()
   },
   methods: {
-    getCurrentRouter () {
-      this.currentPage = this.$router.currentRoute.path
-      console.log('this.currentPage', this.currentPage)
-    },
     showWizardAction () {
       this.reRender = Math.random()
       this.showWizard = true

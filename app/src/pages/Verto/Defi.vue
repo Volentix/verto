@@ -82,7 +82,7 @@
           <!-- <q-btn label="Select wallet" color="primary" @click="chooseAccount = false"/> -->
           <q-btn
               unelevated
-              @click="chooseAccount = false; showGuidedIntro()"
+              @click="chooseAccount = false; getAccountInformation(); showGuidedIntro()"
               color="primary"
               text-color="black"
               label="Select account"
@@ -96,7 +96,6 @@
         NO EOS or ETH wallet available
       </div>
       <div class="row" v-else>
-
         <q-splitter
           v-model="splitterModel"
           style="width: 100%"
@@ -159,7 +158,7 @@
                   :dark="$store.state.settings.lightMode === 'true'"
                   default-opened
                   class="bg-white q-py-md accountOption"
-                  :label="'Total Balance - $'+(accountOption.total ? accountOption.total.toFixed(2) : 0 )"
+                  :label="'Total Balance - $'+(formatNumber(accountOption.total, 0) )"
                   :caption="accountOption.label"
                 >
                   <q-card
@@ -210,7 +209,7 @@
                               <q-item-label
                               v-if="scope.opt.total"
                               caption
-                              >Balance: ${{ scope.opt.total.toFixed(2)  }}
+                              >Balance: ${{ formatNumber(scope.opt.total, 0)  }}
                               </q-item-label>
 
                             </q-item-section>
@@ -228,7 +227,7 @@
                           <q-icon :name="'img:'+token.icon" color="primary" text-color="white" />
                         </q-item-section>
                         <q-item-section>{{token.type.toUpperCase()}}</q-item-section>
-                        <q-item-section v-if="token.usd">${{isNaN(token.usd) ? 0 : token.usd.toFixed(4)}}</q-item-section>
+                        <q-item-section v-if="token.usd">${{formatNumber(token.usd, 0)}}</q-item-section>
                       </q-item>
                       </div>
                     </q-card-section>
@@ -242,7 +241,7 @@
           <template v-slot:after>
             <div :class="{'bg-white2':$store.state.settings.lightMode === 'false'}">
               <!-- <q-scroll-area :visible="true" style="height: 87vh;"> -->
-                <div v-if="$store.state.settings.network == 'mainnet' && chain == 'eth' && accountOption.chain == 'eth'">
+                <div :key="accountOption.name"  v-if="$store.state.settings.network == 'mainnet' && chain == 'eth' && accountOption.chain == 'eth'">
                   <LiquidityPoolsTable :chain="'eth'" :rowsPerPage="10" class="minHeight" v-if="menu == 'liquidity'"/>
                   <InvestmentsTable class="minHeight2" v-else-if="menu == 'investments'"/>
                   <DebtsTable class="minHeight2 DebtsTable" v-else-if="menu == 'debts'"/>
@@ -250,9 +249,9 @@
                   <InvestmentsOpportunitiesTable class="minHeight2" v-else-if="menu == 'staking'"/>
                   <Oneinch v-if="chain == 'eth'" class="q-pl-md q-pb-sm accountOptionOneinch" v-show="menu == 'swap'" />
                 </div>
-                <div v-if="chain == 'eos' && accountOption.chain == 'eos'">
+                <div  v-if="chain == 'eos' && accountOption.chain == 'eos'">
                   <Swapeos class="q-pl-md q-pb-sm minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'swap' || menu == 'add_liquidity' || menu == 'liquidity'" />
-                  <EosInvestmentsTable class="minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'investments'"/>
+                  <EosInvestmentsTable :key="$store.state.investment.defaultAccount.name" class="minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'investments'"/>
                   <TestnetPools class="minHeight3" v-if="$store.state.settings.network == 'testnet'"  v-show="menu == 'liquidity'" />
                   <TestnetInvestments class="minHeight3" v-if="$store.state.settings.network == 'testnet'" v-show="menu == 'investments'"  />
                   <VolentixLiquidity class="minHeight3" v-if="$store.state.settings.network == 'testnet'" :showLiquidity="false" v-show="menu == 'swap'" />
@@ -274,7 +273,7 @@
 // import { CruxPay } from '@cruxpay/js-sdk'
 // import HD from '@/util/hdwallet'
 import { QScrollArea } from 'quasar'
-
+import Formatter from '@/mixins/Formatter'
 import {
   osName
 } from 'mobile-device-detect'
@@ -400,7 +399,6 @@ export default {
         this.chain = val.chain
         this.switchChain(val)
       }
-
       // this.getAccountInformation(this.accountOption)
     },
     selectedEOSPool (val) {
@@ -594,7 +592,8 @@ export default {
       this.openModal = false
       this.openModalProgress = false
     }
-  }
+  },
+  mixins: [Formatter]
 }
 </script>
 
