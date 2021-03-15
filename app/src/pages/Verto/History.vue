@@ -16,13 +16,13 @@
                 Section currently in development: currently showing ETH wallets history
               </q-banner>
               <div class="row">
-                <div class="standard-content--title col-md-4 float-left flex justify-start q-pl-md q-pt-lg" >History  <q-icon name="cached"  @click="$bus.$emit('refreshHistory')" class="refresh-history q-pl-sm"/></div>
+                <div class="standard-content--title col-md-4 float-left flex justify-start q-pl-md q-pt-lg" >History  <q-icon name="cached"  @click="refresh++" class="refresh-history q-pl-sm"/></div>
 
                 <div class="col flex justify-end q-pr-md"><AccountSelector  :autoSelectChain="'eos'" class="q-mr-md" :showAllWallets="true"/></div>
               </div>
 
               <div class="standard-content--body" style="height: 100%;">
-                <History :isMobile="false" />
+                <History :refresh="refresh" :key="refresh" :isMobile="false" />
               </div>
             </div>
           </div>
@@ -53,6 +53,7 @@ export default {
   data () {
     return {
       pword: '',
+      refresh: 0,
       screenSize: 1024,
       minimizedModal: false,
       message: '',
@@ -72,7 +73,7 @@ export default {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
     async setupPlatformPath () {
-      this.configPath = await platformTools.filePath()
+      // this.configPath = await platformTools.filePath()
     },
     goChangePassword: function () {
       this.$router.push({ path: '/change-password' })

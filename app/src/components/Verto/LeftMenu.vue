@@ -8,7 +8,7 @@
         class="tabs-menu--wrapper-tabs text-grey-6"
       >
         <!-- <q-tab name="mails" icon="mail" label="Mails" /> -->
-        <q-route-tab class="tabs-menu--wrapper-tab" to="/verto/dashboard" name="dashboard">
+        <q-route-tab class="tabs-menu--wrapper-tab" @click="goToDashboard()" to="" name="dashboard">
           <div class="svg-icon-wrapper flex flex-center items-center">
             <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 66 68" style="enable-background:new 0 0 66 68;" xml:space="preserve"> <g> <path class="st0" d="M19.2,13c-3.4,0-6.2,2.8-6.2,6.2s2.8,6.2,6.2,6.2s6.2-2.8,6.2-6.2S22.6,13,19.2,13z M19.2,23.4 c-2.3,0-4.2-1.9-4.2-4.2c0-2.3,1.9-4.2,4.2-4.2c2.3,0,4.2,1.9,4.2,4.2C23.4,21.5,21.5,23.4,19.2,23.4z"/> <path class="st0" d="M19.2,27.8c-3.4,0-6.2,2.8-6.2,6.2s2.8,6.2,6.2,6.2s6.2-2.8,6.2-6.2S22.6,27.8,19.2,27.8z M19.2,38.2 c-2.3,0-4.2-1.9-4.2-4.2s1.9-4.2,4.2-4.2c2.3,0,4.2,1.9,4.2,4.2S21.5,38.2,19.2,38.2z"/> <path class="st0" d="M19.2,42.6c-3.4,0-6.2,2.8-6.2,6.2s2.8,6.2,6.2,6.2s6.2-2.8,6.2-6.2S22.6,42.6,19.2,42.6z M19.2,53 c-2.3,0-4.2-1.9-4.2-4.2s1.9-4.2,4.2-4.2c2.3,0,4.2,1.9,4.2,4.2S21.5,53,19.2,53z"/> <path class="st0" d="M30.5,20.2H54c0.6,0,1-0.4,1-1s-0.4-1-1-1H30.5c-0.6,0-1,0.4-1,1S30,20.2,30.5,20.2z"/> <path class="st0" d="M54,33H30.5c-0.6,0-1,0.4-1,1s0.4,1,1,1H54c0.6,0,1-0.4,1-1S54.6,33,54,33z"/> <path class="st0" d="M54,47.8H30.5c-0.6,0-1,0.4-1,1s0.4,1,1,1H54c0.6,0,1-0.4,1-1S54.6,47.8,54,47.8z"/> </g> </svg>
             <div class="text-tab-name">Dashboard</div>
@@ -73,6 +73,13 @@ export default {
     }
   },
   methods: {
+    goToDashboard () {
+      this.$store.state.currentwallet.wallet = {
+        empty: true
+      }
+
+      this.$router.push('/verto/dashboard')
+    }
   },
   mounted () {
     this.version = version

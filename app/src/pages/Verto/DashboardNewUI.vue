@@ -192,7 +192,6 @@ export default {
     let found_eth = this.$store.state.wallets.tokens.filter(w => w.type === 'eth')
 
     if (found_eth.length > 0 && found_eth[0].usd !== null && found_eth[0].usd > 0) {
-      console.log('setInterval luanched')
       this.interval = setInterval(() => {
         this.customSlider = this.$store.state.investment.zapperTokens.length ? !this.customSlider : this.customSlider
       }, 12000)
@@ -270,6 +269,7 @@ export default {
     this.$bus.$on('showHomeIntro', () => {
       this.showIntros()
     })
+
     setTimeout(async () => {
       let manualSelectCurrentWallet = false
       await store.state.wallets.tokens.map(async (f) => {
@@ -292,11 +292,14 @@ export default {
         }
       })
     }, 6000)
-    setTimeout(() => {
-      this.getCoinswitchCoins()
-      this.get1inchCoins()
-      this.getDefiboxCoins()
-    }, 3000)
+
+    if (!this.$store.state.settings.coins.defibox.length) {
+      setTimeout(() => {
+        this.getCoinswitchCoins()
+        this.get1inchCoins()
+        this.getDefiboxCoins()
+      }, 3000)
+    }
   },
   methods: {
     getWindowWidth () {

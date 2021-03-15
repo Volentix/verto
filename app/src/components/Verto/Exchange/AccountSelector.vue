@@ -136,6 +136,7 @@ export default {
 
         this.accountOption = item
       }
+
       this.setAccount()
     },
     setAccount () {
@@ -146,12 +147,6 @@ export default {
           this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.metamask.tokens)
         } else {
           this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key && (this.accountOption.chain !== 'eos' || w.name === this.accountOption.name)))
-        }
-
-        if (this.accountOption.chain === 'eos') {
-          this.$store.dispatch('investment/getEOSInvestments', {
-            owner: this.accountOption.name
-          })
         }
       }
     }

@@ -96,6 +96,9 @@ export default {
     this.getDefiboxCoins()
 
     this.version = version
+
+    localStorage.setItem('version', version)
+
     this.$refs.psswrd.focus()
   },
   created () {

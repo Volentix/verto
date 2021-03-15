@@ -7,7 +7,7 @@ export default {
         minimumFractionDigits: decimals
       })
 
-      return isNaN(value) ? 0 : formatter.format(value)
+      return isNaN(value) ? '0.00' : formatter.format(value)
     },
     formatDefiboxPool (pool) {
       return this.formatNumber(pool.split(' ')[0]) + ' ' + pool.split(' ')[1]

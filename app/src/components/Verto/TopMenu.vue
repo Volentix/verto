@@ -20,7 +20,7 @@
         <router-link to="/verto/dashboard">VERTO</router-link>
       </div>
       <div class="col col-3 flex items-center date-scrolling-msg">
-        <div class="flex items-center main_portfolio" :class="{'text-white': $store.state.settings.lightMode === 'true'}" v-if="currentPage === '/verto/defi'">
+        <div class="flex items-center main_portfolio" :class="{'text-white': $store.state.settings.lightMode === 'true'}" v-if="$router.currentRoute.path === '/verto/defi'">
           <h3 class="">Main Portfolio</h3> <span class="q-ml-sm q-mr-sm q-mb-xs">|</span> <h2 class="">${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }} USD</h2>
         </div>
         <!-- <div class="date">{{ refreshDate() }}</div> -->
@@ -192,7 +192,6 @@ import configManager from '@/util/ConfigManager'
 
 export default {
   name: 'TopMenu',
-  props: ['currentPage'],
   components: {
     // VTextMarquee: VTextMarquee
   },
