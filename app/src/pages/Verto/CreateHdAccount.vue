@@ -1,56 +1,58 @@
 <template>
 <q-page class="column import-private-key" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-grey-12': $store.state.settings.lightMode === 'false', 'desktop-marg': screenSize > 1024,  'mobile-pad': screenSize < 1024}">
-    <div class="desktop-version" v-if="screenSize > 1024">
-        <div class="row">
-          <div class="col col-md-3">
-            <div class="wallets-container">
-              <profile-header :isMobile="false" class="marg" version="type2222" />
-              <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
-              <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+      <div class="desktop-version full-height" v-if="screenSize > 1024">
+          <div class="row full-height">
+            <div class="col col-md-3">
+              <div class="wallets-container" style="height: 100%">
+                <profile-header :isMobile="false" class="marg" version="type2222" />
+                <wallets :isMobile="false" class="full-height max-height" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+                <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+              </div>
             </div>
-          </div>
-          <div class="col col-md-9">
-            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-                <div class="chain-tools-wrapper">
-                    <div class="standard-content">
-                        <h2 class="standard-content--title flex">Create HD Account</h2>
-                    </div>
-                    <div class="chain-tools-wrapper--list open">
-                        <div class="list-wrapper">
-                            <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                                <div>
-                                    <q-stepper :dark="$store.state.lightMode === 'false'" :light="$store.state.lightMode === 'true'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
-                                        <q-step title="Missing HD Account" :name="1" prefix="1" order="10" :done="step > 1">
-                                            <div class="text-black">
-                                                <q-select
-                                                  v-if="notCreated.length !== 0"
-                                                  :dark="$store.state.lightMode === 'true'"
-                                                  :light="$store.state.lightMode === 'false'"
-                                                  separator rounded outlined
-                                                  class="select-input"
-                                                  v-model="currentToken"
-                                                  :options="notCreated"
-                                                />
+            <div class="col col-md-9">
+              <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+                  <div class="chain-tools-wrapper">
+                      <div class="standard-content">
+                          <h2 class="standard-content--title flex">Create HD Account</h2>
+                      </div>
+                      <div class="chain-tools-wrapper--list open">
+                          <div class="list-wrapper">
+                              <div class="list-wrapper--chain__eos-to-vtx-convertor">
+                                  <div>
+                                      <q-stepper :dark="$store.state.lightMode === 'false'" :light="$store.state.lightMode === 'true'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
+                                          <q-step title="Missing HD Account" :name="1" prefix="1" order="10" :done="step > 1">
+                                              <div class="text-black">
+                                                  <q-select
+                                                    v-if="notCreated.length !== 0"
+                                                    :dark="$store.state.lightMode === 'true'"
+                                                    :light="$store.state.lightMode === 'false'"
+                                                    separator rounded outlined
+                                                    class="select-input"
+                                                    v-model="currentToken"
+                                                    :options="notCreated"
+                                                  />
 
-                                                <q-stepper-navigation v-show="currentToken" class="flex justify-end">
-                                                    <q-btn @click="addHdAccount()" color="deep-purple-14" class="--next-btn" rounded :label="$t('Add')" />
-                                                </q-stepper-navigation>
-                                            </div>
-                                        </q-step>
-                                    </q-stepper>
-                                </div>
-                            </div>
-                            <br><br><br>
-                        </div>
-                    </div>
-                </div>
+                                                  <q-stepper-navigation v-show="currentToken" class="flex justify-end">
+                                                      <q-btn @click="addHdAccount()" color="deep-purple-14" class="--next-btn" rounded :label="$t('Add')" />
+                                                  </q-stepper-navigation>
+                                              </div>
+                                          </q-step>
+                                      </q-stepper>
+                                  </div>
+                              </div>
+                              <br><br><br>
+                          </div>
+                      </div>
+                  </div>
+              </div>
             </div>
           </div>
-        </div>
-    </div>
-    <div v-else class="mobile-version">
-        <div class="chain-tools-wrapper">
-        </div>
+      </div>
+      <div v-else class="mobile-version">
+          <div class="chain-tools-wrapper">
+          </div>
+      </div>
     </div>
 </q-page>
 </template>
@@ -224,16 +226,57 @@ export default {
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
 
-.desktop-version{
+.desktop-card-style{
+    height: 101.5%;
+    max-height: 101.5%;
+    @media screen and (min-height: 700px) {
+        // height: 54.5vh;
+        max-height: 98.6%;
+    }
+    @media screen and (min-height: 760px) {
+        // height: 54vh;
+        max-height: 97%;
+    }
+    @media screen and (min-height: 800px) {
+        // height: 55vh;
+        max-height: 96.4%;
+    }
+    @media screen and (min-height: 870px) {
+        // height: 56vh;
+        max-height: 94.6%;
+    }
+}
+/deep/ .wallets-wrapper{
+    padding-bottom: 0px !important;
+  }
+  /deep/ .wallets-wrapper--list{
+    box-shadow: none;
+    margin-top: 0px;
+  }
+  .marg{
+    /deep/ .profile-wrapper{
+      &--header{
+        margin-bottom: 0px;
+      }
+    }
+  }
+  .mobile-pad{
+    padding-bottom: 50px
+  }
+  .desktop-version{
     background: #E7E8E8;
     padding-top: 13vh;
     padding-left: 18vh;
-    padding-bottom: 50px;
-    padding-right: 2%;
+    padding-bottom: 0px;
+    padding-right: 18px;
+    position: relative;
+    overflow: hidden;
     @media screen and (min-width: 768px) {
       padding-top: 11vh;
       padding-bottom: 0px;
     }
+  }
+.desktop-version{
     .standard-content{
         padding: 0% 2%;
     }
@@ -763,5 +806,8 @@ export default {
         color: #CCC !important;
       }
     }
+  }
+  .chain-tools-wrapper--list /deep/ .list-wrapper--chain__eos-to-vtx-convertor{
+      box-shadow: none !important;
   }
 </style>
