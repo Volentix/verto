@@ -294,10 +294,7 @@ export default {
     let tableData = await this.$store.state.wallets.tokens
     let params = this.$store.state.currentwallet.params
 
-    this.currentWallet = tableData.find(w => w.chain === params.chainID && w.type === params.tokenID && (
-      w.chain === 'eos' ? w.name.toLowerCase() === params.accountName : w.name === params.accountName)
-    )
-    console.log(this.currentWallet, params.chainID.toLowerCase())
+    this.currentWallet = tableData.find(w => w.chain === params.chainID && w.type === params.tokenID && w.name.toLowerCase() === params.accountName.toLowerCase())
     if (params.chainID.toLowerCase() === 'eth' && this.currentWallet.privateKey && this.currentWallet.privateKey.substring(0, 2) === '0x') {
       this.currentWallet.privateKey = this.currentWallet.privateKey.substring(2)
     }
