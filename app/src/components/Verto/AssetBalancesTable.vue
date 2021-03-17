@@ -152,12 +152,20 @@ export default {
     },
     '$store.state.tokens.walletTokensData': function () {
       this.initTable()
+    },
+    '$store.state.currentwallet.wallet': function (val) {
+      this.initTable()
     }
   },
   methods: {
     initTable () {
+      let account = null
+
+      if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.name) {
+        account = this.$store.state.currentwallet.wallet
+      }
       this.assets = []
-      JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).forEach((token, i) => {
+      JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter(o => !account || (o.chain === account.chain && o.name === account.name)))).forEach((token, i) => {
         token.amount = parseFloat(token.amount)
         token.usd = parseFloat(token.usd)
 
