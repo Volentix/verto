@@ -324,18 +324,20 @@ export default {
       let key = this.currentToken.value
       eos.getAccountNamesFromPubKeyP(key)
         .then(function (result) {
-          console.log('result pour getAccountNames ', result)
           self.accountNames = []
           for (var i = 0; i < result.account_names.length; i++) {
-            self.accountNames.push({
-              label: result.account_names[i],
-              value: result.account_names[i]
-            })
+            // do not display existing accounts names
+            if (!self.$store.state.wallets.tokens.find(o => o.name.toLowerCase() === result.account_names[i].toLowerCase())) {
+              self.accountNames.push({
+                label: result.account_names[i],
+                value: result.account_names[i]
+              })
+            }
           }
           self.walletName = result.account_names[0]
           self.step = 1
         }).catch((err) => {
-          userError('There was a problem getting account names', err)
+          console.log('There was a problem getting account names', err)
         })
       this.prompt = true
     },
@@ -366,6 +368,11 @@ export default {
       // Hability to have more than 1 EOS account associated with the same key
 
       if (currentType === 'verto') {
+        this.$store.state.currentwallet.config.keys.filter(c => c.key === this.currentAccount.key && c.type === currentType).map(w => {
+          w.name = this.currentAccount.name
+          w.type = 'eos'
+        })
+
         this.$configManager.updateCurrentWallet(this.currentAccount)
         this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
       } else {

@@ -230,7 +230,9 @@
                     </div>
                 </div>
             </div>
-              <p class="text-body2 text-center" v-if="$store.state.wallets.tokens.length && loadingIndicator">Updating {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].chain.toUpperCase()}} wallet ({{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].name}}) {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total ? '($'+formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total,0)+')' : ''}} <br>Fetching {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].type.toUpperCase()}} balance:  (${{formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].usd,2)}})...</p>
+              <p class="text-body2 text-center" v-if="$route.params.walletToRefresh && !$store.state.currentwallet.wallet.empty && loadingIndicator">Updating {{$route.params.walletToRefresh}} wallet...</p>
+              <p class="text-body2 text-center" v-else-if="$store.state.wallets.tokens.length && loadingIndicator && !singleWalletRefresh">Updating {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].chain.toUpperCase()}} wallet ({{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].name}}) {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total ? '($'+formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total,0)+')' : ''}} <br>Fetching {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].type.toUpperCase()}} balance:  (${{formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].usd,2)}})...</p>
+              <p class="text-body2 text-center" v-else-if="singleWalletRefresh && loadingIndicator">Updating {{singleWalletRefresh}} wallet...</p>
 
             <q-scroll-area :visible="true" ref="walletsScrollArea" class="walletsScrollArea q-mr-sm q-ml-xs" :class="{'short' : $store.state.currentwallet.wallet.empty, 'long' : !$store.state.currentwallet.wallet.empty}" :style="$store.state.currentwallet.wallet.empty ? 'height: 100%;': 'height: 100%;'">
                 <q-list bordered separator class="list-wrapper">
@@ -743,6 +745,7 @@ export default {
       openModal: false,
       accountName: '',
       tokenID: '',
+      singleWalletRefresh: false,
       selectedCoin: null,
       currentAsset: {
         'buySupport': '',
@@ -792,7 +795,6 @@ export default {
           })
           f.staked = stakedAmounts
         }
-        if (f.type === 'verto') { console.log('token', f) }
       })
     }, 6000)
   },
@@ -900,7 +902,12 @@ export default {
       })
     },
     refreshWallet (name = null) {
-      if (!name) { localStorage.removeItem('walletPublicData') }
+      if (!name) {
+        this.singleWalletRefresh = null
+        localStorage.removeItem('walletPublicData')
+      } else {
+        this.singleWalletRefresh = name
+      }
 
       return initWallet(name)
     },
@@ -1052,8 +1059,7 @@ export default {
     async hideCurrency () {
       // //console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
 
-      this.$store.state.wallets.tokens.filter(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
-        w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)).map(t => {
+      this.$store.state.wallets.tokens.filter(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && w.name.toLowerCase() === this.$route.params.accountName.toLowerCase()).map(t => {
         t.hidden = this.currentAccount.hidden
       })
 
@@ -1066,6 +1072,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.single-wallet-refresh {
+    right: 0 !important
+}
 
 .single-wallet-refresh {
     display: none;

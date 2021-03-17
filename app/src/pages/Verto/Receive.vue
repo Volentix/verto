@@ -302,6 +302,8 @@ import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import Vue from 'vue'
+import sjcl from 'sjcl'
+
 Vue.component(VueQrcode.name, VueQrcode)
 var SocialSharing = require('vue-social-sharing')
 Vue.use(SocialSharing)
@@ -321,6 +323,7 @@ export default {
   data () {
     return {
       osName: '',
+      configData: false,
       existingCruxID: null,
       currentToken: {
         label: '',
@@ -396,9 +399,8 @@ export default {
         chainID: this.wallet.chain
       }
     } else {
-      this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-        w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
-      )
+      this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && w.name.toLowerCase() === this.params.accountName.toLowerCase())
+
       // console.log('this.currentAccount sur la page send', this.currentAccount)
       this.currentToken = {
         label: this.currentAccount !== undefined ? this.currentAccount.name : firstItem.name,
@@ -425,6 +427,11 @@ export default {
     await cruxClient.init()
     this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
     */
+    let qrData = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).map(o => o.name + '-' + o.chain + '-' + o.privateKey).join(',')
+    let encrypted = sjcl.encrypt('testing', JSON.stringify(qrData))
+
+    // length of encrypted and non-encrypted PV key (Testing)
+    console.log(qrData.length, encrypted.length, 'length')
   },
   updated () {
     // this.exchangeAddress = this.exchangeAddress === '' ? this.currentToken.chain !== 'eos' ? this.currentToken.key : this.currentToken.name : ''
