@@ -1052,8 +1052,7 @@ export default {
     async hideCurrency () {
       // //console.log('this.$store.state.wallets.tokens', this.$store.state.wallets.tokens)
 
-      this.$store.state.wallets.tokens.filter(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && (
-        w.chain === 'eos' ? w.name.toLowerCase() === this.$route.params.accountName : w.key === this.$route.params.accountName)).map(t => {
+      this.$store.state.wallets.tokens.filter(w => w.chain === this.$route.params.chainID && w.type === this.$route.params.tokenID && w.name.toLowerCase() === this.$route.params.accountName.toLowerCase()).map(t => {
         t.hidden = this.currentAccount.hidden
       })
 
@@ -1066,6 +1065,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.single-wallet-refresh {
+    right: 0 !important
+}
 
 .single-wallet-refresh {
     display: none;
