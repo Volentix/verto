@@ -7,6 +7,8 @@ export const getTokenList = ({ commit, state }, payload) => {
 }
 
 export const getTokensMarketsData = ({ commit, state }, tokens) => {
+  if (!state.list) return
+
   let list = state.list.filter(t => !state.pending.find(o => o === t.id) && tokens.find(o => t.symbol === o.type && ((!t.platforms.hasOwnProperty('eos') && !t.platforms.hasOwnProperty('ethereum')) || o.chain === (t.platforms.hasOwnProperty('eos') ? 'eos' : (t.platforms.hasOwnProperty('ethereum') ? 'eth' : o.chain))) && !isNaN(o.amount) && o.amount !== 0) && !state.walletTokensData.find(a => a.id === t.id))
 
   if (list.length) {
