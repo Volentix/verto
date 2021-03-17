@@ -97,6 +97,26 @@ export default {
 </script>
 <style lang="scss" scoped>
 
+.desktop-card-style{
+    height: 101.5%;
+    max-height: 101.5%;
+    @media screen and (min-height: 700px) {
+        // height: 54.5vh;
+        max-height: 96.6%;
+    }
+    @media screen and (min-height: 760px) {
+        // height: 54vh;
+        max-height: 95%;
+    }
+    @media screen and (min-height: 800px) {
+        // height: 55vh;
+        max-height: 93.4%;
+    }
+    @media screen and (min-height: 870px) {
+        // height: 56vh;
+        max-height: 92%;
+    }
+  }
  .refresh-history {
    top: 25%;
  }
