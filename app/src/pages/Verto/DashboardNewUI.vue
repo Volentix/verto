@@ -196,10 +196,15 @@ export default {
         this.customSlider = this.$store.state.investment.zapperTokens.length ? !this.customSlider : this.customSlider
       }, 12000)
     }
+
     if (!this.$store.state.wallets.tokens.length) {
-      initWallet()
+      setTimeout(() => {
+        initWallet()
+      }, 500)
     } else if (this.$route.params.walletToRefresh) {
-      initWallet(this.$route.params.walletToRefresh)
+      setTimeout(() => {
+        initWallet(this.$route.params.walletToRefresh)
+      }, 500)
     }
     /*
     this.tableData = this.$store.state.wallets.tokens.map(token => {
