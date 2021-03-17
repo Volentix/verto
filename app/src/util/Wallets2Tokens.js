@@ -237,34 +237,38 @@ class Wallets2Tokens {
                     to: '/verto/wallets/eos/' + type + '/' + name,
                     icon: 'https://ndi.340wan.com/eos/' + t.code + '-' + t.symbol.toLowerCase() + '.png'
                   })
-                  store.state.wallets.portfolioTotal += usdValue * t.amount
+
                   this.updateWallet()
                 })
               }
             } else {
-              this.eos.getAccount(wallet.name).then(async a => {
-                if (this.eosUSD === 0) {
-                  await this.getEosUSD()
-                }
+              try {
+                this.getEOSTokens(wallet)
+              } catch (error) {
+                this.eos.getAccount(wallet.name).then(async a => {
+                  if (this.eosUSD === 0) {
+                    await this.getEosUSD()
+                  }
 
-                self.tableData.filter(w => w.key === wallet.key && w.type === 'eos' && w.name === wallet.name).map(async eos => {
+                  self.tableData.filter(w => w.key === wallet.key && w.type === 'eos' && w.name === wallet.name).map(async eos => {
                   // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
                   // eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
 
-                  eos.amount = t.amount ? t.amount : 0
-                  eos.usd = this.eosUSD * t.amount
-                  eos.contract = 'eosio.token'
-                  eos.privateKey = wallet.privateKey
-                  eos.privateKeyEncrypted = wallet.privateKeyEncrypted
-                  eos.precision = t.amount.split('.')[1] ? t.amount.split('.')[1].length : 0
-                  // console.log('a ---------------------', a)
-                  eos.proxy = a.voter_info ? a.voter_info.proxy : ''
-                  eos.staked = a.voter_info ? a.voter_info.staked / 10000 : 0
-                  // console.log('eos eos eos  ', eos)
-                  store.state.wallets.portfolioTotal += this.eosUSD * t.amount
+                    eos.amount = t.amount ? t.amount : 0
+                    eos.usd = this.eosUSD * t.amount
+                    eos.contract = 'eosio.token'
+                    eos.privateKey = wallet.privateKey
+                    eos.privateKeyEncrypted = wallet.privateKeyEncrypted
+                    eos.precision = t.amount.split('.')[1] ? t.amount.split('.')[1].length : 0
+                    // console.log('a ---------------------', a)
+                    eos.proxy = a.voter_info ? a.voter_info.proxy : ''
+                    eos.staked = a.voter_info ? a.voter_info.staked / 10000 : 0
+                    // console.log('eos eos eos  ', eos)
+                    store.state.wallets.portfolioTotal += this.eosUSD * t.amount
+                  })
                 })
-              })
-              this.updateWallet()
+                this.updateWallet()
+              }
             }
           })
         })
@@ -345,6 +349,36 @@ class Wallets2Tokens {
     // console.log('this.$store.state.wallets', this.$store.state)
     // store.commit('wallets/updateTokens', this.tableData)
     // store.commit('wallets/updatePortfolioTotal', store.state.wallets.portfolioTotal)
+  }
+
+  getEOSTokens (wallet) {
+    axios.get('https://www.api.bloks.io/account/' + wallet.name + '?type=getAccountTokens&coreSymbol=EOS')
+      .then((response) => {
+        if (response.data && response.data.tokens) {
+          response.data.tokens.forEach(token => {
+            let image = token.metadata.logo.split('https:').length === 3 ? token.metadata.logo : 'https://raw.githubusercontent.com/eoscafe/eos-airdrops/master/logos/placeholder.png'
+
+            this.tableData.push({
+              selected: false,
+              disabled: false,
+              type: token.currency.toLowerCase(),
+              name: wallet.name,
+              // vespucciScore,
+              key: wallet.key,
+              privateKey: wallet.privateKey,
+              privateKeyEncrypted: wallet.privateKeyEncrypted,
+              amount: token.amount,
+              usd: token.usd_value,
+              contract: token.contract,
+              precision: token.decimals,
+              chain: 'eos',
+              to: '/verto/wallets/eos/' + token.currency.toLowerCase() + '/' + wallet.name,
+              icon: image
+            })
+            this.updateWallet()
+          })
+        }
+      })
   }
   getWalletFromCache () {
     let data = localStorage.getItem('walletPublicData')
