@@ -9,7 +9,6 @@
                 <wallets :isMobile="false" class="full-height max-height" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                 <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
               </div>
-            </div>
           </div>
           <div class="col col-md-9">
             <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
@@ -52,11 +51,8 @@
             </div>
           </div>
       </div>
-      <div v-else class="mobile-version">
-          <div class="chain-tools-wrapper">
-          </div>
-      </div>
     </div>
+      </div>
 </q-page>
 </template>
 
@@ -104,8 +100,8 @@ const keys = [{
   'label': 'Stellar Lumens'
 },
 {
-  'value': 'xtze',
-  'label': 'Tezdos'
+  'value': 'xtz',
+  'label': 'Tezos'
 }
 ]
 export default {
