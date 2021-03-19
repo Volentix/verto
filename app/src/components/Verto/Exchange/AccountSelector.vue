@@ -124,9 +124,9 @@ export default {
 
       if (!updateDefaultAccount) return
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.type) {
-        this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain)
+        this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain && a.name.toLowerCase() === this.$store.state.currentwallet.wallet.name.toLowerCase())
       } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount !== undefined) {
-        this.accountOption = this.accountOptions.find(f => f.type === this.$store.state.investment.defaultAccount.type && f.chain === this.$store.state.investment.defaultAccount.chain)
+        this.accountOption = this.accountOptions.find(f => f.type === this.$store.state.investment.defaultAccount.type && f.chain === this.$store.state.investment.defaultAccount.chain && f.name.toLowerCase() === this.$store.state.investment.defaultAccount.name.toLowerCase())
       } else {
         let item = this.accountOptions.find(o => (this.autoSelectChain && o.chain === this.autoSelectChain) || (this.chain && o.chain === this.chain) || o.chain === 'eos')
 
@@ -136,7 +136,6 @@ export default {
 
         this.accountOption = item
       }
-
       this.setAccount()
     },
     setAccount () {
@@ -171,7 +170,7 @@ export default {
     },
     '$store.state.investment.defaultAccount': function (val) {
       if (!val || val.origin !== 'defi') return
-
+      console.log(val, 'origin')
       let w = this.$store.state.investment.defaultAccount
 
       this.accountOption = {

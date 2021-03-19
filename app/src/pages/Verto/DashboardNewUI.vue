@@ -40,7 +40,7 @@
                                 transition-next="jump-up"
                                 >
                                 <q-tab-panel name="explore">
-                                    <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="4"  v-if="$store.state.settings.network == 'mainnet'" />
+                                    <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="6"  v-if="$store.state.settings.network == 'mainnet'" />
                                     <TestnetPools :showAddLiquidity="true" class="bg-white" v-else />
                                 </q-tab-panel>
                                 <q-tab-panel name="asset">

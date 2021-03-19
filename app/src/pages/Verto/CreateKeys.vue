@@ -157,8 +157,9 @@ export default {
       // this.step = 3
     },
     associateEOSAccount () {
-      let tableData = this.$store.state.wallets.tokens
+      let tableData = [ ...this.$store.state.currentwallet.config.keys ]
       let currentAccount = tableData.find(w => w.chain === 'eos' && w.type === 'verto')
+      if (!currentAccount) return
       eos.getAccountNamesFromPubKeyP(currentAccount.key)
         .then((result) => {
           if (result.account_names.length) {
@@ -178,7 +179,7 @@ export default {
       this.$store.state.wallets.tokens = []
 
       try {
-        await initWallet()
+        localStorage.removeItem('walletPublicData')
         this.associateEOSAccount()
       } catch (error) {
         console.log('initWallet error', error)
