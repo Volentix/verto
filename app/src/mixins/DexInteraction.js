@@ -135,6 +135,7 @@ export default {
         key: w.key,
         chain: 'eth',
         type: 'eth',
+        name: w.name,
         usd: w.usd,
         total: w.total,
         image: w.icon,

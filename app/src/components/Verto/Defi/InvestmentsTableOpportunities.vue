@@ -1,6 +1,6 @@
 <template>
 <div>
-    <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="Staking Opportunities" :data="$store.state.investment.investmentOpportunities" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+    <q-table :pagination="initialPagination"  :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="Staking Opportunities" :data="$store.state.investment.investmentOpportunities" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
         <template v-slot:body-cell-asset="props">
             <q-td :props="props" class="body-table-col">
                 <div class="col-3 flex items-center">
@@ -57,6 +57,9 @@ export default {
   },
   data () {
     return {
+      initialPagination: {
+        rowsPerPage: 10
+      },
       openDialog: false,
       poolsData: [],
       filter: '',

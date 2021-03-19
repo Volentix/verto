@@ -29,6 +29,9 @@
       <div class="col col-7 flex justify-end q-pr-md items-center menu">
         <!-- to="/verto/create-polkadot-account" -->
        <!-- <router-link to="/verto/create-polkadot-account" >Polkadot</router-link> -->
+        <q-btn dense flat round icon="notifications_none" class="q-ml-md"  v-if="$store.state.settings.network == 'testnet'">
+          <q-badge color="white" class="text-black" floating>0</q-badge>
+        </q-btn>
         <q-btn-dropdown
           no-caps
           :color="$store.state.settings.lightMode === 'true' ? 'white':'black'"

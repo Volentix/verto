@@ -15,7 +15,8 @@ class Wallets2Tokens {
     store.state.wallets.portfolioTotal = 0
 
     if (data) {
-      this.tableDataCache = data.filter(w => w.name !== walletName || !walletName)
+      walletName = walletName ? walletName.toLowerCase() : walletName
+      this.tableDataCache = data.filter(w => w.name.toLowerCase() !== walletName || !walletName)
 
       if (!walletName) {
         this.updateWallet()
@@ -28,7 +29,7 @@ class Wallets2Tokens {
     self.eosUSD = 0
     this.getEosUSD()
 
-    this.tableData = [ ...store.state.currentwallet.config.keys ].filter(w => w.name === walletName || !walletName)
+    this.tableData = [ ...store.state.currentwallet.config.keys ].filter(w => w.name.toLowerCase() === walletName || !walletName)
 
     if (store.state.settings.network === 'testnet') {
       this.tableData = this.tableData.filter(o => o.origin === 'eos_testnet')
@@ -37,6 +38,7 @@ class Wallets2Tokens {
           wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
           wallet.icon = 'https://files.coinswitch.co/public/coins/' + wallet.type.toLowerCase() + '.png'
           wallet.chain = 'eos'
+          // wallet.name = 'crosschainfx'
         }
 
         wallet.disabled = false
@@ -198,9 +200,14 @@ class Wallets2Tokens {
             wallet.privateKey = privateKeysAttrs.privateKey
             wallet.privateKeyEncrypted = privateKeysAttrs.privateKeyEncrypted
           }
+          let fetchTokens = false
 
-          balances.data.map((t, index) => {
-            // console.log('eos token', t)
+          try {
+            this.getEOSTokens(wallet)
+          } catch (error) {
+            fetchTokens = true
+          }
+          balances.data.filter(o => o.symbol.toLowerCase() === 'eos' || fetchTokens === true).map((t, index) => {
             if (t.symbol.toLowerCase() !== 'eos') {
               if (+t.amount !== 0) {
                 let name = wallet.name.toLowerCase()
@@ -242,33 +249,30 @@ class Wallets2Tokens {
                 })
               }
             } else {
-              try {
-                this.getEOSTokens(wallet)
-              } catch (error) {
-                this.eos.getAccount(wallet.name).then(async a => {
-                  if (this.eosUSD === 0) {
-                    await this.getEosUSD()
-                  }
+              this.eos.getAccount(wallet.name).then(async a => {
+                if (this.eosUSD === 0) {
+                  await this.getEosUSD()
+                }
 
-                  self.tableData.filter(w => w.key === wallet.key && w.type === 'eos' && w.name === wallet.name).map(async eos => {
+                self.tableData.filter(w => w.key === wallet.key && w.type === 'eos' && w.name === wallet.name).map(async eos => {
                   // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
                   // eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
 
-                    eos.amount = t.amount ? t.amount : 0
-                    eos.usd = this.eosUSD * t.amount
-                    eos.contract = 'eosio.token'
-                    eos.privateKey = wallet.privateKey
-                    eos.privateKeyEncrypted = wallet.privateKeyEncrypted
-                    eos.precision = t.amount.split('.')[1] ? t.amount.split('.')[1].length : 0
-                    // console.log('a ---------------------', a)
-                    eos.proxy = a.voter_info ? a.voter_info.proxy : ''
-                    eos.staked = a.voter_info ? a.voter_info.staked / 10000 : 0
-                    // console.log('eos eos eos  ', eos)
-                    store.state.wallets.portfolioTotal += this.eosUSD * t.amount
-                  })
+                  eos.amount = t.amount ? t.amount : 0
+                  eos.usd = this.eosUSD * t.amount
+                  eos.contract = 'eosio.token'
+                  eos.privateKey = wallet.privateKey
+                  eos.privateKeyEncrypted = wallet.privateKeyEncrypted
+                  eos.precision = t.amount.split('.')[1] ? t.amount.split('.')[1].length : 0
+                  // console.log('a ---------------------', a)
+                  eos.proxy = a.voter_info ? a.voter_info.proxy : ''
+                  eos.staked = a.voter_info ? a.voter_info.staked / 10000 : 0
+                  // console.log('eos eos eos  ', eos)
+                  store.state.wallets.portfolioTotal += this.eosUSD * t.amount
                 })
-                this.updateWallet()
-              }
+              })
+
+              this.updateWallet()
             }
           })
         })
@@ -375,9 +379,9 @@ class Wallets2Tokens {
               to: '/verto/wallets/eos/' + token.currency.toLowerCase() + '/' + wallet.name,
               icon: image
             })
-            this.updateWallet()
           })
         }
+        this.updateWallet()
       })
   }
   getWalletFromCache () {
@@ -450,9 +454,8 @@ class Wallets2Tokens {
           to: '/verto/wallets/eth/' + t.symbol.toLowerCase() + '/' + wallet.key,
           icon: 'https://zapper.fi/images/' + t.img
         })
-        store.state.wallets.portfolioTotal += isNaN(t.balanceUSD) ? 0 : t.balanceUSD
-        this.updateWallet()
       })
+      this.updateWallet()
     })
   }
   extractEOSPrivateKey (privateKey, key) {
