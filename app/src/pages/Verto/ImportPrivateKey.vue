@@ -1,406 +1,408 @@
 <template>
 <q-page class="column import-private-key" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-grey-12': $store.state.settings.lightMode === 'false', 'desktop-marg': screenSize > 1024,  'mobile-pad': screenSize < 1024}">
-    <div class="desktop-version" v-if="screenSize > 1024">
-        <div class="row">
-          <div class="col col-md-3">
-            <div class="wallets-container">
-              <profile-header :isMobile="false" class="marg" version="type2222" />
-              <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
-              <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+        <div class="desktop-version full-height" v-if="screenSize > 1024">
+            <div class="row full-height">
+            <div class="col col-md-3">
+                <div class="wallets-container" style="height: 100%">
+                <profile-header :isMobile="false" class="marg" version="type2222" />
+                <wallets class="full-height max-height" :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+                <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+                </div>
             </div>
-          </div>
-          <div class="col col-md-9">
-            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-                <div class="chain-tools-wrapper">
-                    <div class="standard-content">
-                        <h2 v-show="showMainSteps" class="standard-content--title">Import EOS Account</h2>
-                        <h2 v-show="!showMainSteps" class="standard-content--title">Save Private Key</h2>
-                        <!-- <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div> -->
-                    </div>
-                    <div class="chain-tools-wrapper--list open">
-                        <div class="list-wrapper">
-                            <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                                <div v-show="showMainSteps">
-                                    <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
-                                        <!--
+            <div class="col col-md-9">
+                <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+                    <div class="chain-tools-wrapper">
+                        <div class="standard-content">
+                            <h2 v-show="showMainSteps" class="standard-content--title">Import EOS Account</h2>
+                            <h2 v-show="!showMainSteps" class="standard-content--title">Save Private Key</h2>
+                            <!-- <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div> -->
+                        </div>
+                        <div class="chain-tools-wrapper--list open">
+                            <div class="list-wrapper">
+                                <div class="list-wrapper--chain__eos-to-vtx-convertor">
+                                    <div v-show="showMainSteps">
+                                        <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
+                                            <!--
+                                                    1.Private key
+                                                    -->
+                                            <q-step title="Private Key" :name="1" prefix="1" order="10" :done="step > 1">
+                                                <div class="text-black">
+                                                    <div class="text-h4 --subtitle">
+                                                        <ul>
+                                                            <li>
+                                                                <span>
+                                                                    <span v-if="!eosKeyNext || eosKeyInvalid">
+                                                                        <q-chip dense color="red" class="sm-circle shadow-1">&nbsp;</q-chip>
+                                                                    </span>
+                                                                    <span v-else>
+                                                                        <q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip>
+                                                                    </span>
+                                                                    A valid EOS private key
+                                                                </span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <span>
+                                                        <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.addressPriv" :error="addWallet.addressError" @input="showEosKeyNext" @keyup.enter="nextFromPriv" :label="$t('EosAccount.enter_private_key')" />
+                                                    </span>
+                                                    <div v-show="eosKeyInvalid" class="text-h6 text-red">
+                                                        Key invalid
+                                                    </div>
+                                                    <q-stepper-navigation v-show="eosKeyNext && !eosKeyInvalid" class="flex justify-end">
+                                                        <q-btn @click="nextFromPriv()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                                                    </q-stepper-navigation>
+                                                </div>
+                                            </q-step>
+                                            <!--
+                                                    2. Account Name
+                                                    -->
+                                            <q-step title="Account Name" :name="2" prefix="2" order="20" :done="step > 2">
+                                                <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                                <div class="text-black">
+                                                    <div>
+                                                        <q-select light separator rounded outlined class="select-input" stack-label label="EOS Account Name" color="purple" v-model="addWallet.walletName" :options="accountNames" :error="addWallet.walletNameEmpty" />
+                                                    </div>
+                                                    <q-stepper-navigation v-show="addWallet.walletName" class="flex justify-end">
+                                                        <q-btn @click="$refs.stepper.next()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                                                    </q-stepper-navigation>
+                                                </div>
+                                            </q-step>
+                                            <!--
+                                                    3. Save Key Encrypted
+                                                    -->
+                                            <q-step title="Save Key" :name="3" prefix="3" order="30" :done="step > 3">
+                                                <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                                <div class="text-black">
+                                                    <div class="text-h4 --subtitle">
+                                                        <ul>
+                                                            <li><span>Save Private Key</span></li>
+                                                            <li>
+                                                                <span>
+                                                                    <span>
+                                                                        <q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip>
+                                                                    </span>
+                                                                    Password Encrypted
+                                                                </span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <q-stepper-navigation class="flex justify-end">
+                                                        <q-btn @click="showMainSteps = false" outline color="deep-purple-14 q-mr-md" class="--next-btn" rounded label="Yes" />
+                                                        <q-btn @click="$refs.stepper.next()" color="deep-purple-14" class="--next-btn" rounded label="No" />
+                                                    </q-stepper-navigation>
+                                                </div>
+                                            </q-step>
+                                            <!--
+                                                    4. Verto Password
+                                                    -->
+                                            <q-step title="Verto Password" :name="4" prefix="4" order="40" :done="step > 4">
+                                                <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                                <div class="text-black">
+                                                    <div>
+                                                        <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.vertoPassword" @input="showSubmitKey" @keyup.enter="addEosAddress" v-bind:label="$t('CreateVertoPassword.vertopassword')" :type="isPwd ? 'password' : 'text'">
+                                                            <template v-slot:append>
+                                                                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                                                            </template>
+                                                        </q-input>
+                                                    </div>
+                                                    <div v-show="incorrectPassword" class="text-h6 text-uppercase text-red q-pa-lg">
+                                                        {{ $t('Welcome.incorrect') }}
+                                                    </div>
+                                                    <div v-show="walletNameUsed" class="text-h6 text-uppercase text-red q-pa-lg">
+                                                        {{ $t('DisplayKey.name_is_used') }}
+                                                    </div>
+                                                    <div v-show="unknownError" class="text-h6 text-uppercase text-red q-pa-lg">
+                                                        Unknown Error
+                                                    </div>
+                                                    <q-stepper-navigation v-show="submitKey" class="flex justify-end">
+                                                        <q-btn @click="addEosAddress()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                                                    </q-stepper-navigation>
+                                                </div>
+                                            </q-step>
+                                        </q-stepper>
+                                    </div>
+                                    <div v-show="!showMainSteps">
+                                        <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step2" done-color="green" ref="stepperFilePassword" alternative-labels vertical color="primary" animated flat>
+                                            <!--
                                                 1.Private key
                                                 -->
-                                        <q-step title="Private Key" :name="1" prefix="1" order="10" :done="step > 1">
-                                            <div class="text-black">
-                                                <div class="text-h4 --subtitle">
-                                                    <ul>
-                                                        <li>
-                                                            <span>
-                                                                <span v-if="!eosKeyNext || eosKeyInvalid">
+                                            <q-step title="File Password" :name="1" prefix="1" :done="step2 > 1">
+                                                <q-btn flat @click="showMainSteps = true" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                                <div class="text-black">
+                                                    <div class="text-h4 --subtitle">
+                                                        <ul>
+                                                            <li><span>Recommended to be different than your wallet password</span></li>
+                                                            <li>
+                                                                <span v-show="!filePasswordApproved">
                                                                     <q-chip dense color="red" class="sm-circle shadow-1">&nbsp;</q-chip>
                                                                 </span>
-                                                                <span v-else>
+                                                                <span v-show="filePasswordApproved">
                                                                     <q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip>
                                                                 </span>
-                                                                A valid EOS private key
-                                                            </span>
-                                                        </li>
-                                                    </ul>
+                                                                Minimum 8 Digits
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <span class="q-pa-sm">
+                                                        <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePassword" @input="filePasswordCheck" label="Password For The File" @keyup.enter="gotoFileConfirmPassword()" :type="isPwd ? 'password' : 'text'">
+                                                            <template v-slot:append>
+                                                                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                                                            </template>
+                                                        </q-input>
+                                                    </span>
+                                                    <q-stepper-navigation v-show="filePasswordApproved" class="flex justify-end">
+                                                        <q-btn @click="gotoFileConfirmPassword()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
+                                                    </q-stepper-navigation>
                                                 </div>
-                                                <span>
-                                                    <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.addressPriv" :error="addWallet.addressError" @input="showEosKeyNext" @keyup.enter="nextFromPriv" :label="$t('EosAccount.enter_private_key')" />
-                                                </span>
-                                                <div v-show="eosKeyInvalid" class="text-h6 text-red">
-                                                    Key invalid
-                                                </div>
-                                                <q-stepper-navigation v-show="eosKeyNext && !eosKeyInvalid" class="flex justify-end">
-                                                    <q-btn @click="nextFromPriv()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
-                                                </q-stepper-navigation>
-                                            </div>
-                                        </q-step>
-                                        <!--
-                                                2. Account Name
+                                            </q-step>
+                                            <!--
+                                                2. Confirm
                                                 -->
-                                        <q-step title="Account Name" :name="2" prefix="2" order="20" :done="step > 2">
-                                            <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                            <div class="text-black">
-                                                <div>
-                                                    <q-select light separator rounded outlined class="select-input" stack-label label="EOS Account Name" color="purple" v-model="addWallet.walletName" :options="accountNames" :error="addWallet.walletNameEmpty" />
+                                            <q-step title="Confirm Password" :name="2" prefix="2" :done="step2 > 2">
+                                                <q-btn flat @click="$refs.stepperFilePassword.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                                <div class="text-black">
+                                                    <span class="q-pa-sm">
+                                                        <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePasswordConfirm" @input="filePasswordConfirmCheck" label="Confirm Password For The File" @keyup.enter="gotToSaveFileInWallet()" :type="isPwd ? 'password' : 'text'">
+                                                            <template v-slot:append>
+                                                                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                                                            </template>
+                                                        </q-input>
+                                                    </span>
+                                                    <div class="q-pa-sm" v-show="filePasswordConfirmApproved" @click="gotToSaveFileInWallet()">
+                                                        <q-icon name="navigate_next" size="3.2rem" color="green">
+                                                            <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
+                                                        </q-icon>
+                                                    </div>
+                                                    <q-stepper-navigation v-show="filePasswordConfirmApproved" class="flex justify-end">
+                                                        <q-btn @click="gotToSaveFileInWallet()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
+                                                    </q-stepper-navigation>
                                                 </div>
-                                                <q-stepper-navigation v-show="addWallet.walletName" class="flex justify-end">
-                                                    <q-btn @click="$refs.stepper.next()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
-                                                </q-stepper-navigation>
-                                            </div>
-                                        </q-step>
-                                        <!--
-                                                3. Save Key Encrypted
+                                            </q-step>
+                                            <!--
+                                                3. Save File In Wallet
                                                 -->
-                                        <q-step title="Save Key" :name="3" prefix="3" order="30" :done="step > 3">
-                                            <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                            <div class="text-black">
-                                                <div class="text-h4 --subtitle">
-                                                    <ul>
-                                                        <li><span>Save Private Key</span></li>
-                                                        <li>
-                                                            <span>
-                                                                <span>
-                                                                    <q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip>
-                                                                </span>
-                                                                Password Encrypted
-                                                            </span>
-                                                        </li>
-                                                    </ul>
+                                            <q-step title="Save In Wallet" :name="3" prefix="3" :done="step2 > 3">
+                                                <q-btn flat @click="$refs.stepperFilePassword.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                                <div class="text-black">
+                                                    <div class="text-h4 --subtitle">
+                                                        <ul>
+                                                            <li><span>Encrypt the private key in the wallet?</span></li>
+                                                        </ul>
+                                                    </div>
+                                                    <q-stepper-navigation class="flex justify-end">
+                                                        <q-btn @click="gotToVertoPassword(true)" outline color="deep-purple-14 q-mr-md" class="--next-btn" rounded label="Yes" />
+                                                        <q-btn @click="gotToVertoPassword(false)" color="deep-purple-14" class="--next-btn" rounded label="No" />
+                                                    </q-stepper-navigation>
                                                 </div>
-                                                <q-stepper-navigation class="flex justify-end">
-                                                    <q-btn @click="showMainSteps = false" outline color="deep-purple-14 q-mr-md" class="--next-btn" rounded label="Yes" />
-                                                    <q-btn @click="$refs.stepper.next()" color="deep-purple-14" class="--next-btn" rounded label="No" />
-                                                </q-stepper-navigation>
-                                            </div>
-                                        </q-step>
-                                        <!--
-                                                4. Verto Password
-                                                -->
-                                        <q-step title="Verto Password" :name="4" prefix="4" order="40" :done="step > 4">
-                                            <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                            <div class="text-black">
-                                                <div>
-                                                    <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.vertoPassword" @input="showSubmitKey" @keyup.enter="addEosAddress" v-bind:label="$t('CreateVertoPassword.vertopassword')" :type="isPwd ? 'password' : 'text'">
-                                                        <template v-slot:append>
-                                                            <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
-                                                        </template>
-                                                    </q-input>
-                                                </div>
-                                                <div v-show="incorrectPassword" class="text-h6 text-uppercase text-red q-pa-lg">
-                                                    {{ $t('Welcome.incorrect') }}
-                                                </div>
-                                                <div v-show="walletNameUsed" class="text-h6 text-uppercase text-red q-pa-lg">
-                                                    {{ $t('DisplayKey.name_is_used') }}
-                                                </div>
-                                                <div v-show="unknownError" class="text-h6 text-uppercase text-red q-pa-lg">
-                                                    Unknown Error
-                                                </div>
-                                                <q-stepper-navigation v-show="submitKey" class="flex justify-end">
-                                                    <q-btn @click="addEosAddress()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
-                                                </q-stepper-navigation>
-                                            </div>
-                                        </q-step>
-                                    </q-stepper>
+                                            </q-step>
+                                        </q-stepper>
+                                    </div>
                                 </div>
-                                <div v-show="!showMainSteps">
-                                    <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step2" done-color="green" ref="stepperFilePassword" alternative-labels vertical color="primary" animated flat>
-                                        <!--
-                                            1.Private key
-                                            -->
-                                        <q-step title="File Password" :name="1" prefix="1" :done="step2 > 1">
-                                            <q-btn flat @click="showMainSteps = true" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                            <div class="text-black">
-                                                <div class="text-h4 --subtitle">
-                                                    <ul>
-                                                        <li><span>Recommended to be different than your wallet password</span></li>
-                                                        <li>
-                                                            <span v-show="!filePasswordApproved">
-                                                                <q-chip dense color="red" class="sm-circle shadow-1">&nbsp;</q-chip>
-                                                            </span>
-                                                            <span v-show="filePasswordApproved">
-                                                                <q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip>
-                                                            </span>
-                                                            Minimum 8 Digits
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                                <span class="q-pa-sm">
-                                                    <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePassword" @input="filePasswordCheck" label="Password For The File" @keyup.enter="gotoFileConfirmPassword()" :type="isPwd ? 'password' : 'text'">
-                                                        <template v-slot:append>
-                                                            <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
-                                                        </template>
-                                                    </q-input>
-                                                </span>
-                                                <q-stepper-navigation v-show="filePasswordApproved" class="flex justify-end">
-                                                    <q-btn @click="gotoFileConfirmPassword()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
-                                                </q-stepper-navigation>
-                                            </div>
-                                        </q-step>
-                                        <!--
-                                            2. Confirm
-                                            -->
-                                        <q-step title="Confirm Password" :name="2" prefix="2" :done="step2 > 2">
-                                            <q-btn flat @click="$refs.stepperFilePassword.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                            <div class="text-black">
-                                                <span class="q-pa-sm">
-                                                    <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePasswordConfirm" @input="filePasswordConfirmCheck" label="Confirm Password For The File" @keyup.enter="gotToSaveFileInWallet()" :type="isPwd ? 'password' : 'text'">
-                                                        <template v-slot:append>
-                                                            <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
-                                                        </template>
-                                                    </q-input>
-                                                </span>
-                                                <div class="q-pa-sm" v-show="filePasswordConfirmApproved" @click="gotToSaveFileInWallet()">
-                                                    <q-icon name="navigate_next" size="3.2rem" color="green">
-                                                        <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
-                                                    </q-icon>
-                                                </div>
-                                                <q-stepper-navigation v-show="filePasswordConfirmApproved" class="flex justify-end">
-                                                    <q-btn @click="gotToSaveFileInWallet()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
-                                                </q-stepper-navigation>
-                                            </div>
-                                        </q-step>
-                                        <!--
-                                            3. Save File In Wallet
-                                            -->
-                                        <q-step title="Save In Wallet" :name="3" prefix="3" :done="step2 > 3">
-                                            <q-btn flat @click="$refs.stepperFilePassword.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                            <div class="text-black">
-                                                <div class="text-h4 --subtitle">
-                                                    <ul>
-                                                        <li><span>Encrypt the private key in the wallet?</span></li>
-                                                    </ul>
-                                                </div>
-                                                <q-stepper-navigation class="flex justify-end">
-                                                    <q-btn @click="gotToVertoPassword(true)" outline color="deep-purple-14 q-mr-md" class="--next-btn" rounded label="Yes" />
-                                                    <q-btn @click="gotToVertoPassword(false)" color="deep-purple-14" class="--next-btn" rounded label="No" />
-                                                </q-stepper-navigation>
-                                            </div>
-                                        </q-step>
-                                    </q-stepper>
-                                </div>
+                                <br><br><br>
                             </div>
-                            <br><br><br>
                         </div>
                     </div>
                 </div>
             </div>
-          </div>
-        </div>
-    </div>
-    <div v-else class="mobile-version">
-        <div class="chain-tools-wrapper">
-            <div class="standard-content">
-                <h2 v-show="showMainSteps" class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
-                    Import EOS Account
-                </h2>
-                <h2 v-show="!showMainSteps" class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
-                    Save Private Key
-                </h2>
-                <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
             </div>
-            <div class="chain-tools-wrapper--list open">
-                <div class="list-wrapper">
-                    <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                        <div v-show="showMainSteps">
-                            <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
-                                <!--
+        </div>
+        <div v-else class="mobile-version">
+            <div class="chain-tools-wrapper">
+                <div class="standard-content">
+                    <h2 v-show="showMainSteps" class="standard-content--title flex justify-center">
+                        <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
+                        Import EOS Account
+                    </h2>
+                    <h2 v-show="!showMainSteps" class="standard-content--title flex justify-center">
+                        <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
+                        Save Private Key
+                    </h2>
+                    <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
+                </div>
+                <div class="chain-tools-wrapper--list open">
+                    <div class="list-wrapper">
+                        <div class="list-wrapper--chain__eos-to-vtx-convertor">
+                            <div v-show="showMainSteps">
+                                <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
+                                    <!--
+                                            1.Private key
+                                            -->
+                                    <q-step title="Private Key" :name="1" prefix="1" order="10" :done="step > 1">
+                                        <div class="text-black">
+                                            <div class="text-h4 --subtitle">
+                                                <ul>
+                                                    <li>
+                                                        <span>
+                                                            <span v-if="!eosKeyNext || eosKeyInvalid">
+                                                                <q-chip dense color="red" class="sm-circle shadow-1">&nbsp;</q-chip>
+                                                            </span>
+                                                            <span v-else>
+                                                                <q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip>
+                                                            </span>
+                                                            A valid EOS private key
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <span>
+                                                <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.addressPriv" :error="addWallet.addressError" @input="showEosKeyNext" @keyup.enter="nextFromPriv" :label="$t('EosAccount.enter_private_key')" />
+                                            </span>
+                                            <div v-show="eosKeyInvalid" class="text-h6 text-red">
+                                                Key invalid
+                                            </div>
+                                            <q-stepper-navigation v-show="eosKeyNext && !eosKeyInvalid" class="flex justify-end">
+                                                <q-btn @click="nextFromPriv()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                                            </q-stepper-navigation>
+                                        </div>
+                                    </q-step>
+                                    <!--
+                                            2. Account Name
+                                            -->
+                                    <q-step title="Account Name" :name="2" prefix="2" order="20" :done="step > 2">
+                                        <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                        <div class="text-black">
+                                            <div>
+                                                <q-select light separator rounded outlined class="select-input" stack-label label="EOS Account Name" color="purple" v-model="addWallet.walletName" :options="accountNames" :error="addWallet.walletNameEmpty" />
+                                            </div>
+                                            <q-stepper-navigation v-show="addWallet.walletName" class="flex justify-end">
+                                                <q-btn @click="$refs.stepper.next()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                                            </q-stepper-navigation>
+                                        </div>
+                                    </q-step>
+                                    <!--
+                                            3. Save Key Encrypted
+                                            -->
+                                    <q-step title="Save Key" :name="3" prefix="3" order="30" :done="step > 3">
+                                        <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                        <div class="text-black">
+                                            <div class="text-h4 --subtitle">
+                                                <ul>
+                                                    <li><span>Save Private Key</span></li>
+                                                    <li>
+                                                        <span>
+                                                            <span>
+                                                                <q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip>
+                                                            </span>
+                                                            Password Encrypted
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <q-stepper-navigation class="flex justify-end">
+                                                <q-btn @click="showMainSteps = false" outline color="deep-purple-14 q-mr-md" class="--next-btn" rounded label="Yes" />
+                                                <q-btn @click="$refs.stepper.next()" color="deep-purple-14" class="--next-btn" rounded label="No" />
+                                            </q-stepper-navigation>
+                                        </div>
+                                    </q-step>
+                                    <!--
+                                            4. Verto Password
+                                            -->
+                                    <q-step title="Verto Password" :name="4" prefix="4" order="40" :done="step > 4">
+                                        <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                        <div class="text-black">
+                                            <div>
+                                                <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.vertoPassword" @input="showSubmitKey" @keyup.enter="addEosAddress" v-bind:label="$t('CreateVertoPassword.vertopassword')" :type="isPwd ? 'password' : 'text'">
+                                                    <template v-slot:append>
+                                                        <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                                                    </template>
+                                                </q-input>
+                                            </div>
+                                            <div v-show="incorrectPassword" class="text-h6 text-uppercase text-red q-pa-lg">
+                                                {{ $t('Welcome.incorrect') }}
+                                            </div>
+                                            <div v-show="walletNameUsed" class="text-h6 text-uppercase text-red q-pa-lg">
+                                                {{ $t('DisplayKey.name_is_used') }}
+                                            </div>
+                                            <div v-show="unknownError" class="text-h6 text-uppercase text-red q-pa-lg">
+                                                Unknown Error
+                                            </div>
+                                            <q-stepper-navigation v-show="submitKey" class="flex justify-end">
+                                                <q-btn @click="addEosAddress()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                                            </q-stepper-navigation>
+                                        </div>
+                                    </q-step>
+                                </q-stepper>
+                            </div>
+                            <div v-show="!showMainSteps">
+                                <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step2" done-color="green" ref="stepperFilePassword" alternative-labels vertical color="primary" animated flat>
+                                    <!--
                                         1.Private key
                                         -->
-                                <q-step title="Private Key" :name="1" prefix="1" order="10" :done="step > 1">
-                                    <div class="text-black">
-                                        <div class="text-h4 --subtitle">
-                                            <ul>
-                                                <li>
-                                                    <span>
-                                                        <span v-if="!eosKeyNext || eosKeyInvalid">
+                                    <q-step title="File Password" :name="1" prefix="1" :done="step2 > 1">
+                                        <q-btn flat @click="showMainSteps = true" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                        <div class="text-black">
+                                            <div class="text-h4 --subtitle">
+                                                <ul>
+                                                    <li><span>Recommended to be different than your wallet password</span></li>
+                                                    <li>
+                                                        <span v-show="!filePasswordApproved">
                                                             <q-chip dense color="red" class="sm-circle shadow-1">&nbsp;</q-chip>
                                                         </span>
-                                                        <span v-else>
+                                                        <span v-show="filePasswordApproved">
                                                             <q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip>
                                                         </span>
-                                                        A valid EOS private key
-                                                    </span>
-                                                </li>
-                                            </ul>
+                                                        Minimum 8 Digits
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <span class="q-pa-sm">
+                                                <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePassword" @input="filePasswordCheck" label="Password For The File" @keyup.enter="gotoFileConfirmPassword()" :type="isPwd ? 'password' : 'text'">
+                                                    <template v-slot:append>
+                                                        <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                                                    </template>
+                                                </q-input>
+                                            </span>
+                                            <q-stepper-navigation v-show="filePasswordApproved" class="flex justify-end">
+                                                <q-btn @click="gotoFileConfirmPassword()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
+                                            </q-stepper-navigation>
                                         </div>
-                                        <span>
-                                            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.addressPriv" :error="addWallet.addressError" @input="showEosKeyNext" @keyup.enter="nextFromPriv" :label="$t('EosAccount.enter_private_key')" />
-                                        </span>
-                                        <div v-show="eosKeyInvalid" class="text-h6 text-red">
-                                            Key invalid
-                                        </div>
-                                        <q-stepper-navigation v-show="eosKeyNext && !eosKeyInvalid" class="flex justify-end">
-                                            <q-btn @click="nextFromPriv()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
-                                        </q-stepper-navigation>
-                                    </div>
-                                </q-step>
-                                <!--
-                                        2. Account Name
+                                    </q-step>
+                                    <!--
+                                        2. Confirm
                                         -->
-                                <q-step title="Account Name" :name="2" prefix="2" order="20" :done="step > 2">
-                                    <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                    <div class="text-black">
-                                        <div>
-                                            <q-select light separator rounded outlined class="select-input" stack-label label="EOS Account Name" color="purple" v-model="addWallet.walletName" :options="accountNames" :error="addWallet.walletNameEmpty" />
+                                    <q-step title="Confirm Password" :name="2" prefix="2" :done="step2 > 2">
+                                        <q-btn flat @click="$refs.stepperFilePassword.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                        <div class="text-black">
+                                            <span class="q-pa-sm">
+                                                <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePasswordConfirm" @input="filePasswordConfirmCheck" label="Confirm Password For The File" @keyup.enter="gotToSaveFileInWallet()" :type="isPwd ? 'password' : 'text'">
+                                                    <template v-slot:append>
+                                                        <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                                                    </template>
+                                                </q-input>
+                                            </span>
+                                            <div class="q-pa-sm" v-show="filePasswordConfirmApproved" @click="gotToSaveFileInWallet()">
+                                                <q-icon name="navigate_next" size="3.2rem" color="green">
+                                                    <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
+                                                </q-icon>
+                                            </div>
+                                            <q-stepper-navigation v-show="filePasswordConfirmApproved" class="flex justify-end">
+                                                <q-btn @click="gotToSaveFileInWallet()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
+                                            </q-stepper-navigation>
                                         </div>
-                                        <q-stepper-navigation v-show="addWallet.walletName" class="flex justify-end">
-                                            <q-btn @click="$refs.stepper.next()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
-                                        </q-stepper-navigation>
-                                    </div>
-                                </q-step>
-                                <!--
-                                        3. Save Key Encrypted
+                                    </q-step>
+                                    <!--
+                                        3. Save File In Wallet
                                         -->
-                                <q-step title="Save Key" :name="3" prefix="3" order="30" :done="step > 3">
-                                    <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                    <div class="text-black">
-                                        <div class="text-h4 --subtitle">
-                                            <ul>
-                                                <li><span>Save Private Key</span></li>
-                                                <li>
-                                                    <span>
-                                                        <span>
-                                                            <q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip>
-                                                        </span>
-                                                        Password Encrypted
-                                                    </span>
-                                                </li>
-                                            </ul>
+                                    <q-step title="Save In Wallet" :name="3" prefix="3" :done="step2 > 3">
+                                        <q-btn flat @click="$refs.stepperFilePassword.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                        <div class="text-black">
+                                            <div class="text-h4 --subtitle">
+                                                <ul>
+                                                    <li><span>Encrypt the private key in the wallet?</span></li>
+                                                </ul>
+                                            </div>
+                                            <q-stepper-navigation class="flex justify-end">
+                                                <q-btn @click="gotToVertoPassword(true)" outline color="deep-purple-14 q-mr-md" class="--next-btn" rounded label="Yes" />
+                                                <q-btn @click="gotToVertoPassword(false)" color="deep-purple-14" class="--next-btn" rounded label="No" />
+                                            </q-stepper-navigation>
                                         </div>
-                                        <q-stepper-navigation class="flex justify-end">
-                                            <q-btn @click="showMainSteps = false" outline color="deep-purple-14 q-mr-md" class="--next-btn" rounded label="Yes" />
-                                            <q-btn @click="$refs.stepper.next()" color="deep-purple-14" class="--next-btn" rounded label="No" />
-                                        </q-stepper-navigation>
-                                    </div>
-                                </q-step>
-                                <!--
-                                        4. Verto Password
-                                        -->
-                                <q-step title="Verto Password" :name="4" prefix="4" order="40" :done="step > 4">
-                                    <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                    <div class="text-black">
-                                        <div>
-                                            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.vertoPassword" @input="showSubmitKey" @keyup.enter="addEosAddress" v-bind:label="$t('CreateVertoPassword.vertopassword')" :type="isPwd ? 'password' : 'text'">
-                                                <template v-slot:append>
-                                                    <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
-                                                </template>
-                                            </q-input>
-                                        </div>
-                                        <div v-show="incorrectPassword" class="text-h6 text-uppercase text-red q-pa-lg">
-                                            {{ $t('Welcome.incorrect') }}
-                                        </div>
-                                        <div v-show="walletNameUsed" class="text-h6 text-uppercase text-red q-pa-lg">
-                                            {{ $t('DisplayKey.name_is_used') }}
-                                        </div>
-                                        <div v-show="unknownError" class="text-h6 text-uppercase text-red q-pa-lg">
-                                            Unknown Error
-                                        </div>
-                                        <q-stepper-navigation v-show="submitKey" class="flex justify-end">
-                                            <q-btn @click="addEosAddress()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
-                                        </q-stepper-navigation>
-                                    </div>
-                                </q-step>
-                            </q-stepper>
+                                    </q-step>
+                                </q-stepper>
+                            </div>
                         </div>
-                        <div v-show="!showMainSteps">
-                            <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step2" done-color="green" ref="stepperFilePassword" alternative-labels vertical color="primary" animated flat>
-                                <!--
-                                    1.Private key
-                                    -->
-                                <q-step title="File Password" :name="1" prefix="1" :done="step2 > 1">
-                                    <q-btn flat @click="showMainSteps = true" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                    <div class="text-black">
-                                        <div class="text-h4 --subtitle">
-                                            <ul>
-                                                <li><span>Recommended to be different than your wallet password</span></li>
-                                                <li>
-                                                    <span v-show="!filePasswordApproved">
-                                                        <q-chip dense color="red" class="sm-circle shadow-1">&nbsp;</q-chip>
-                                                    </span>
-                                                    <span v-show="filePasswordApproved">
-                                                        <q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip>
-                                                    </span>
-                                                    Minimum 8 Digits
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <span class="q-pa-sm">
-                                            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePassword" @input="filePasswordCheck" label="Password For The File" @keyup.enter="gotoFileConfirmPassword()" :type="isPwd ? 'password' : 'text'">
-                                                <template v-slot:append>
-                                                    <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
-                                                </template>
-                                            </q-input>
-                                        </span>
-                                        <q-stepper-navigation v-show="filePasswordApproved" class="flex justify-end">
-                                            <q-btn @click="gotoFileConfirmPassword()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
-                                        </q-stepper-navigation>
-                                    </div>
-                                </q-step>
-                                <!--
-                                    2. Confirm
-                                    -->
-                                <q-step title="Confirm Password" :name="2" prefix="2" :done="step2 > 2">
-                                    <q-btn flat @click="$refs.stepperFilePassword.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                    <div class="text-black">
-                                        <span class="q-pa-sm">
-                                            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePasswordConfirm" @input="filePasswordConfirmCheck" label="Confirm Password For The File" @keyup.enter="gotToSaveFileInWallet()" :type="isPwd ? 'password' : 'text'">
-                                                <template v-slot:append>
-                                                    <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
-                                                </template>
-                                            </q-input>
-                                        </span>
-                                        <div class="q-pa-sm" v-show="filePasswordConfirmApproved" @click="gotToSaveFileInWallet()">
-                                            <q-icon name="navigate_next" size="3.2rem" color="green">
-                                                <q-tooltip>{{ $t('SaveYourKeys.create') }}</q-tooltip>
-                                            </q-icon>
-                                        </div>
-                                        <q-stepper-navigation v-show="filePasswordConfirmApproved" class="flex justify-end">
-                                            <q-btn @click="gotToSaveFileInWallet()" color="deep-purple-14" class="--next-btn" rounded :label="$t('SaveYourKeys.create')" />
-                                        </q-stepper-navigation>
-                                    </div>
-                                </q-step>
-                                <!--
-                                    3. Save File In Wallet
-                                    -->
-                                <q-step title="Save In Wallet" :name="3" prefix="3" :done="step2 > 3">
-                                    <q-btn flat @click="$refs.stepperFilePassword.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                    <div class="text-black">
-                                        <div class="text-h4 --subtitle">
-                                            <ul>
-                                                <li><span>Encrypt the private key in the wallet?</span></li>
-                                            </ul>
-                                        </div>
-                                        <q-stepper-navigation class="flex justify-end">
-                                            <q-btn @click="gotToVertoPassword(true)" outline color="deep-purple-14 q-mr-md" class="--next-btn" rounded label="Yes" />
-                                            <q-btn @click="gotToVertoPassword(false)" color="deep-purple-14" class="--next-btn" rounded label="No" />
-                                        </q-stepper-navigation>
-                                    </div>
-                                </q-step>
-                            </q-stepper>
-                        </div>
+                        <br><br><br>
                     </div>
-                    <br><br><br>
                 </div>
             </div>
         </div>
@@ -589,6 +591,56 @@ export default {
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
 
+/deep/ .wallets-wrapper{
+    padding-bottom: 0px !important;
+  }
+  /deep/ .wallets-wrapper--list{
+    box-shadow: none;
+    margin-top: 0px;
+  }
+  .marg{
+    /deep/ .profile-wrapper{
+      &--header{
+        margin-bottom: 0px;
+      }
+    }
+  }
+  .mobile-pad{
+    padding-bottom: 50px
+  }
+  .desktop-version{
+    background: #E7E8E8;
+    padding-top: 13vh;
+    padding-left: 18vh;
+    padding-bottom: 0px;
+    padding-right: 18px;
+    position: relative;
+    overflow: hidden;
+    @media screen and (min-width: 768px) {
+      padding-top: 11vh;
+      padding-bottom: 0px;
+    }
+  }
+.desktop-card-style{
+    height: 101.5%;
+    max-height: 101.5%;
+    @media screen and (min-height: 700px) {
+        // height: 54.5vh;
+        max-height: 98.6%;
+    }
+    @media screen and (min-height: 760px) {
+        // height: 54vh;
+        max-height: 97%;
+    }
+    @media screen and (min-height: 800px) {
+        // height: 55vh;
+        max-height: 96.4%;
+    }
+    @media screen and (min-height: 870px) {
+        // height: 56vh;
+        max-height: 94.6%;
+    }
+}
 .desktop-version{
     background: #E7E8E8;
     padding-top: 13vh;

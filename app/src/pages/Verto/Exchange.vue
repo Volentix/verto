@@ -1,13 +1,13 @@
 <template>
 <q-page class="column" :class="{'desktop-marg':screenSize > 1024, 'mobile-pad': screenSize < 1024 , 'text-black bg-grey-12': $store.state.settings.lightMode === 'false'}">
     <!-- padding-bottom: 100px;background: #f3f3f3 !important -->
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-        <div class="desktop-version" v-if="screenSize > 1024">
-            <div class="row">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+        <div class="desktop-version full-height" v-if="screenSize > 1024">
+            <div class="row full-height">
                 <div class="col col-md-3">
                     <div class="wallets-container" style="height: 100%">
                         <profile-header :isMobile="false" class="marg" version="type2222" />
-                        <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+                        <wallets :isMobile="false" class="full-height max-height" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                         <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
                     </div>
                 </div>
@@ -768,12 +768,11 @@ export default {
     box-shadow: none;
     margin-top: 0px;
 }
-
 .marg {
     /deep/ .profile-wrapper {
         &--header {
             margin-bottom: 0px;
-            border: 1px solid #627797;
+            border: 1px solid rgb(235, 235, 235);
             // border-bottom: none;
             border-radius: 10px 10px 0px 0px !important;
         }
@@ -1073,10 +1072,26 @@ export default {
     }
 }
 
-.desktop-card-style {
+.desktop-card-style{
     height: 100%;
+    max-height: 95%;
+    @media screen and (min-height: 700px) {
+        // height: 54.5vh;
+        max-height: 95%;
+    }
+    @media screen and (min-height: 760px) {
+        // height: 54vh;
+        max-height: 94%;
+    }
+    @media screen and (min-height: 800px) {
+        // height: 55vh;
+        max-height: 96%;
+    }
+    @media screen and (min-height: 870px) {
+        // height: 56vh;
+        max-height: 94.6%;
+    }
 }
-
 .standard-content {
     padding: 5% 10%;
     display: flex;
