@@ -77,7 +77,8 @@
                             <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy" :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'grey'" icon="o_file_copy" />
                           </div>
                           <span class="qrcode-widget">
-                            <qrcode dark :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
+                            <qrcode v-if="currentToken && currentToken.type.length" dark :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
+                            <qrcode v-if="configData" dark :value="configData" :options="{size: 200}"></qrcode>
                             <span class="exchange-address full-width text-center">{{currentToken.type === 'eos' ? currentToken.label : currentToken.value}}</span>
                           </span>
                         </div>
@@ -429,7 +430,7 @@ export default {
     */
     let qrData = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).map(o => o.name + '-' + o.chain + '-' + o.privateKey).join(',')
     let encrypted = sjcl.encrypt('testing', JSON.stringify(qrData))
-
+    // this.configData = encrypted
     // length of encrypted and non-encrypted PV key (Testing)
     console.log(qrData.length, encrypted.length, 'length')
   },
