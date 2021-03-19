@@ -435,7 +435,7 @@ export default {
       }
 
     qrData = JSON.stringify(qrData)
-    let encrypted = sjcl.encrypt('testing', JSON.stringify(qrData))
+    let encrypted = sjcl.encrypt(Math.random().toString(36).substring(7), JSON.stringify(qrData))
     this.configData = encrypted
     // length of encrypted and non-encrypted PV key (Testing)
     console.log(qrData.length, encrypted.length, 'length')
