@@ -1,12 +1,14 @@
 <template>
 <q-page class="column import-private-key" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-grey-12': $store.state.settings.lightMode === 'false', 'desktop-marg': screenSize > 1024,  'mobile-pad': screenSize < 1024}">
-    <div class="desktop-version" v-if="screenSize > 1024">
-        <div class="row">
-          <div class="col col-md-3">
-            <div class="wallets-container">
-              <profile-header :isMobile="false" class="marg" version="type2222" />
-              <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
-              <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+      <div class="desktop-version full-height" v-if="screenSize > 1024">
+          <div class="row full-height">
+            <div class="col col-md-3">
+              <div class="wallets-container" style="height: 100%">
+                <profile-header :isMobile="false" class="marg" version="type2222" />
+                <wallets :isMobile="false" class="full-height max-height" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+                <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
+              </div>
             </div>
           </div>
           <div class="col col-md-9">
@@ -49,11 +51,11 @@
                 </div>
             </div>
           </div>
-        </div>
-    </div>
-    <div v-else class="mobile-version">
-        <div class="chain-tools-wrapper">
-        </div>
+      </div>
+      <div v-else class="mobile-version">
+          <div class="chain-tools-wrapper">
+          </div>
+      </div>
     </div>
 </q-page>
 </template>
@@ -278,16 +280,57 @@ export default {
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
 
-.desktop-version{
+.desktop-card-style{
+    height: 101.5%;
+    max-height: 101.5%;
+    @media screen and (min-height: 700px) {
+        // height: 54.5vh;
+        max-height: 98.6%;
+    }
+    @media screen and (min-height: 760px) {
+        // height: 54vh;
+        max-height: 97%;
+    }
+    @media screen and (min-height: 800px) {
+        // height: 55vh;
+        max-height: 96.4%;
+    }
+    @media screen and (min-height: 870px) {
+        // height: 56vh;
+        max-height: 94.6%;
+    }
+}
+/deep/ .wallets-wrapper{
+    padding-bottom: 0px !important;
+  }
+  /deep/ .wallets-wrapper--list{
+    box-shadow: none;
+    margin-top: 0px;
+  }
+  .marg{
+    /deep/ .profile-wrapper{
+      &--header{
+        margin-bottom: 0px;
+      }
+    }
+  }
+  .mobile-pad{
+    padding-bottom: 50px
+  }
+  .desktop-version{
     background: #E7E8E8;
     padding-top: 13vh;
     padding-left: 18vh;
-    padding-bottom: 50px;
-    padding-right: 2%;
+    padding-bottom: 0px;
+    padding-right: 18px;
+    position: relative;
+    overflow: hidden;
     @media screen and (min-width: 768px) {
       padding-top: 11vh;
       padding-bottom: 0px;
     }
+  }
+.desktop-version{
     .standard-content{
         padding: 0% 2%;
     }
@@ -817,5 +860,8 @@ export default {
         color: #CCC !important;
       }
     }
+  }
+  .chain-tools-wrapper--list /deep/ .list-wrapper--chain__eos-to-vtx-convertor{
+      box-shadow: none !important;
   }
 </style>

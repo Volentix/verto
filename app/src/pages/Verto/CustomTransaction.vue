@@ -7,11 +7,11 @@
       'text-black bg-white': $store.state.settings.lightMode === 'false',
     }"
   >
-    <div :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }">
-      <div class="desktop-version" v-if="screenSize > 1024">
-        <div class="row">
+    <div :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }" style="height: 100vh;">
+      <div class="desktop-version full-height" v-if="screenSize > 1024">
+        <div class="row full-height">
           <div class="col col-md-3">
-            <div class="wallets-container">
+            <div class="wallets-container" style="height: 100%">
               <profile-header
                 :isMobile="false"
                 class="marg"
@@ -22,6 +22,7 @@
                 :showWallets="false"
                 :isWalletsPage="false"
                 :isWalletDetail="false"
+                class="full-height max-height"
               />
               <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
             </div>
@@ -386,6 +387,26 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
+.desktop-card-style{
+    height: 101.5%;
+    max-height: 101.5%;
+    @media screen and (min-height: 700px) {
+        // height: 54.5vh;
+        max-height: 98.6%;
+    }
+    @media screen and (min-height: 760px) {
+        // height: 54vh;
+        max-height: 97%;
+    }
+    @media screen and (min-height: 800px) {
+        // height: 55vh;
+        max-height: 96.4%;
+    }
+    @media screen and (min-height: 870px) {
+        // height: 56vh;
+        max-height: 94.6%;
+    }
+  }
 .action {
     border: 1px solid;
     border-radius: 12px;
