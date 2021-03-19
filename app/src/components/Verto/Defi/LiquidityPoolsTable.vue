@@ -20,7 +20,7 @@
           <q-td :props="props">
             <div class="column items-start justify-center q-pl-md">
               <q-btn v-if="screenSize <= 1024" unelevated @click="$store.commit('investment/setSelectedPool', props.row); openDialog = true" class="qbtn-custom qbtn-custom2 q-pl-sm q-pr-sm q-mr-sm" color="black" text-color="grey" label="Add liquidity" />
-              <span class="value" v-if="props.row.chain != 'eos'">${{formatNumber(parseInt(props.value), 0)}}</span>
+              <span class="value" v-if="props.row.chain != 'eos'">${{formatNumber(props.value, 0)}}</span>
               <span class="value" v-else>{{props.value}}</span>
             </div>
           </q-td>
@@ -28,7 +28,7 @@
         <template v-slot:body-cell-volume="props">
           <q-td :props="props">
             <div class="column items-end justify-center q-pl-md">
-              <span class="value" v-if="props.row.chain != 'eos'">${{formatNumber(parseInt(props.value), 0)}}</span>
+              <span class="value" v-if="props.row.chain != 'eos'">${{formatNumber(props.value, 0)}}</span>
               <span class="value" v-else>{{props.value}}</span>
             </div>
           </q-td>
@@ -36,7 +36,7 @@
         <template v-slot:body-cell-fees="props">
           <q-td :props="props">
             <div class="column items-end justify-center q-pl-md">
-              <span class="value" v-if="props.row.chain != 'eos'">${{formatNumber(parseInt(props.value), 0)}}</span>
+              <span class="value" v-if="props.row.chain != 'eos'">${{formatNumber(props.value, 0)}}</span>
               <span class="value" v-else>{{props.value}}</span>
             </div>
           </q-td>
@@ -75,6 +75,7 @@ import {
 import {
   mapState
 } from 'vuex'
+import Formatter from '../../../mixins/Formatter'
 export default {
   components: {
     AddLiquidityDialog,
@@ -152,10 +153,6 @@ export default {
     await this.$store.dispatch('investment/getUniswapPools')
   },
   methods: {
-    formatNumber (number, tofix) {
-      const val = (number / 1).toFixed(tofix).replace(',', ' ')
-      return val
-    },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
@@ -165,7 +162,8 @@ export default {
         row => row.poolName.toLowerCase().includes(lowerTerms)
       )
     }
-  }
+  },
+  mixins: [Formatter]
 }
 
 </script>

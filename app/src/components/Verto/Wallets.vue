@@ -230,7 +230,7 @@
                     </div>
                 </div>
             </div>
-              <p class="text-body2 text-center" v-if="$route.params.walletToRefresh && !$store.state.currentwallet.wallet.empty && loadingIndicator">Updating {{$route.params.walletToRefresh}} wallet...</p>
+              <p class="text-body2 text-center" v-if="$route.params.walletToRefresh && loadingIndicator">Updating {{$route.params.walletToRefresh}} wallet...</p>
               <p class="text-body2 text-center" v-else-if="$store.state.wallets.tokens.length && loadingIndicator && !singleWalletRefresh">Updating {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].chain.toUpperCase()}} wallet ({{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].name}}) {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total ? '($'+formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total,0)+')' : ''}} <br>Fetching {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].type.toUpperCase()}} balance:  (${{formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].usd,2)}})...</p>
               <p class="text-body2 text-center" v-else-if="singleWalletRefresh && loadingIndicator">Updating {{singleWalletRefresh}} wallet...</p>
 
@@ -676,7 +676,7 @@
 </template>
 
 <script>
-import Lib from '@/util/walletlib'
+// import Lib from '@/util/walletlib'
 import initWallet from '@/util/Wallets2Tokens'
 import {
   QScrollArea,
@@ -974,7 +974,7 @@ export default {
         this.$store.commit('investment/setDefaultAccount', this.selectedCoin)
         this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.selectedCoin.chain && w.key === this.selectedCoin.key))
 
-        // //console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
+        /* //console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
 
         if (this.selectedCoin.chain !== 'eos' && this.selectedCoin.chain !== 'eth') {
           this.history = []
@@ -986,6 +986,7 @@ export default {
           }
           this.history = (await Lib.history(this.selectedCoin.chain, this.selectedCoin.type, nameOrKey, pagination)).history
         }
+        */
       } else {
         menu.selected = false
         this.$store.state.currentwallet.wallet = undefined
@@ -1073,6 +1074,9 @@ export default {
 
 <style lang="scss" scoped>
 
+.q-expansion-item--expanded * , .q-expansion-item--expanded  {
+    background: whitesmoke;
+}
 .single-wallet-refresh {
     right: 0 !important
 }
