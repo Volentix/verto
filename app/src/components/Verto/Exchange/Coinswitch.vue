@@ -587,7 +587,7 @@
                                                         <div class="text-black">
                                                             <div class="text-h4 --subtitle" >{{globalTx.label}}</div>
                                                             <div v-if="globalTx.status == 'Completed' && accountToBeCreated" class="q-pb-md text-center">
-                                                               <span> <span class="unbold">You can add this account to verto anytime.</span> <br>Just select the {{fromKey.name}}  wallet account and click <b @click="goToAssociateEosAccount()"  class="text-deep-purple-14 cursor-pointer">{{ fromKey.type == 'verto' ?  'Associate with EOS' : 'Import another account'}}</b></span>
+                                                               <span> <span class="unbold">You can add this account to verto anytime.</span> <br>Just select the {{fromKey.name}}  wallet account and click <b @click="intervalSeconds < 0 && goToAssociateEosAccount()"  class="text-deep-purple-14 cursor-pointer">{{ fromKey.type == 'verto' ?  'Associate with EOS' : 'Import another account'}}</b></span>
                                                                <div class="q-py-sm unbold"  v-if="intervalSeconds > 0" > Available around 3 minutes after the transaction</div>
                                                                <div v-if="intervalSeconds > 0">
                                                                Ready in {{intervalSeconds > 0 ? parseInt(intervalSeconds / 60)+ 'm : ' + (intervalSeconds % 60) + ' seconds': 'Account ready'}}...

@@ -122,7 +122,7 @@ export default {
     min-width: 30px;
 }
 
-.desktop-card-style.current-investments .body-table-col .imgs img {
+ .imgs img {
     border-radius: 40px;
     height: 25px;
 }

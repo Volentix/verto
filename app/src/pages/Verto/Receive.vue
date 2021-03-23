@@ -77,7 +77,8 @@
                             <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy" :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'grey'" icon="o_file_copy" />
                           </div>
                           <span class="qrcode-widget">
-                            <qrcode dark :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
+                            <qrcode v-if="currentToken && currentToken.type.length" dark :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
+                            <qrcode v-if="configData" v-show="false" dark :value="configData" :options="{size: 200}"></qrcode>
                             <span class="exchange-address full-width text-center">{{currentToken.type === 'eos' ? currentToken.label : currentToken.value}}</span>
                           </span>
                         </div>
@@ -427,11 +428,26 @@ export default {
     await cruxClient.init()
     this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
     */
-    let qrData = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).map(o => o.name + '-' + o.chain + '-' + o.privateKey).join(',')
-    let encrypted = sjcl.encrypt('testing', JSON.stringify(qrData))
+    let qrData =
+      {
+        keys: JSON.parse(JSON.stringify(this.$store.state.currentwallet.config.keys)).map(o => o.name + '-' + o.chain + '-' + o.privateKey).join(','),
+        mnemonic: this.$store.state.currentwallet.config.mnemonic
+      }
 
+    qrData = JSON.stringify(qrData)
+    let encrypted = sjcl.encrypt(Math.random().toString(36).substring(7), JSON.stringify(qrData))
+    this.configData = encrypted
     // length of encrypted and non-encrypted PV key (Testing)
     console.log(qrData.length, encrypted.length, 'length')
+    /* var CryptoJS = require('crypto-js')
+
+    // Encrypt
+    var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(qrData), 'testing').toString()
+    var bytes = CryptoJS.AES.decrypt(ciphertext, 'testing')
+    var originalText = bytes.toString(CryptoJS.enc.Utf8)
+
+    console.log(ciphertext, 'cypher', ciphertext.length)
+    */
   },
   updated () {
     // this.exchangeAddress = this.exchangeAddress === '' ? this.currentToken.chain !== 'eos' ? this.currentToken.key : this.currentToken.name : ''
