@@ -25,7 +25,7 @@
                                 <q-spinner size="50px" color="primary" />
                               </q-inner-loading>
                               <q-stepper vertical ref="stepper" alternative-labels animated v-model="step" class="q-pb-md">
-                                <q-step default :name="1" :done="step > 1" title="Staking proxy" class="" v-if="currentProxy.length == 0">
+                                <q-step default :name="1" :done="step > 1" title="Staking proxy" class="" v-if="currentProxy.length == 0 || !currentProxy">
                                   <q-card-section>
                                     <div class="text-uppercase">
                                       <q-item class="">
@@ -165,6 +165,7 @@
                                 </q-step>
 
                                 <q-step default :name="5" :done="step > 5" title="Result" class="  ">
+
                                   <q-card-section>
                                     <div class="text-uppercase">
                                       <q-inner-loading :visible="spinnervisible">
@@ -182,6 +183,8 @@
                                       <div v-show="voteError" class="text-h6 text-uppercase text-red q-pa-md">
                                         {{ ErrorMessage }}
                                       </div>
+
+                                      <q-btn v-show="voteError" icon="keyboard_arrow_up" size="1rem" flat label="Go Back" @click="step = 1" color="deep-purple-14" />
                                     </div>
                                   </q-card-section>
                                 </q-step>
@@ -406,7 +409,7 @@ export default {
           }
         ]
       }
-
+      console.log(transactionObject, 'transactionObject', this.privateKey)
       try {
         this.step = 5
         this.spinnervisible = true
@@ -414,13 +417,34 @@ export default {
         await eos.transact(transactionObject, { keyProvider: this.privateKey.key })
 
         this.spinnervisible = false
-        this.SuccessMessage = 'You have successfully signed up.'
+        this.SuccessMessage = 'You have successfully unsigned up.'
       } catch (error) {
         this.spinnervisible = false
-        this.ErrorMessage = error
+
         if (error.toString().includes('is greater than the maximum billable CPU time for the transaction')) {
           this.freeCPU = true
+
           this.sendFreeCPUTransaction(transactionObject.actions)
+
+          let account = this.$store.state.currentwallet.wallet
+          account.privateKey = this.privateKey.key
+          this.sendFreeCPUTransaction(transactionObject.actions, account).then(result => {
+            console.log(result, 'result')
+            if (result.success) {
+              this.SuccessMessage = 'You have successfully unsigned up.'
+            } else {
+              this.voteError = true
+              this.ErrorMessage = result.message
+            }
+            this.spinnervisible = false
+          }).catch((error) => {
+            this.voteError = true
+            this.spinnervisible = false
+            this.ErrorMessage = error
+          })
+        } else {
+          this.voteError = true
+          this.ErrorMessage = error.message
         }
         /*
          if (error.includes('maximum billable CPU time')) {
@@ -432,8 +456,6 @@ export default {
         }
         */
       }
-
-      this.privateKey.key = null
     },
     async voteProxy () {
       let transactionObject = {
@@ -509,7 +531,9 @@ export default {
         this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain.  Check back in 24h to see the rewards received on your account.'
       } catch (error) {
         this.spinnervisible = false
-        this.ErrorMessage = error
+        this.ErrorMessage = error.me
+
+        console.log(error, 'error')
         if (error.toString().includes('is greater than the maximum billable CPU time for the transaction')) {
           this.freeCPU = true
           this.sendFreeCPUTransaction(transactionObject.actions)
@@ -524,8 +548,6 @@ export default {
         }
         */
       }
-
-      this.privateKey.key = null
     },
     async claimProxy () {
       const privateKeyEncrypted = JSON.stringify(this.$store.state.currentwallet.wallet.privateKeyEncrypted)

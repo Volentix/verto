@@ -261,7 +261,7 @@
                                 </div>
                             </div>
                         </q-item>
-                      <q-expansion-item :style="setPosition(token.total)" :data-total="token.total ? token.total : 0" @click=" $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.name == token.name ).length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eos' &&   f.name == token.name)) : void(0)" v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'eos' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected full-width' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
+                      <q-expansion-item :style="setPosition(token.total)" :data-total="token.total ? token.total : 0" @click="showMenu($store.state.wallets.tokens.find(f => f.chain == 'eos' &&   f.name == token.name))" v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'eos' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected full-width' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
                         <template v-slot:header>
                         <q-item-section avatar>
                              <img class="coin-icon" width="35px" src="https://files.coinswitch.co/public/coins/eos.png"  />
@@ -340,7 +340,7 @@
                         </q-card>
 
                     </q-expansion-item>
-                    <q-expansion-item :style="setPosition(token.total)" :data-total="token.total" @click="$store.state.wallets.tokens.filter(f => f.chain == 'eth' && f.name == token.name ).length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eth' &&  f.name == token.name)) : void(0)" v-for="(token, index)  in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
+                    <q-expansion-item :style="setPosition(token.total)" :data-total="token.total" @click="showMenu($store.state.wallets.tokens.find(f => f.chain == 'eth' &&  f.name == token.name))" v-for="(token, index)  in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" src="https://zapper.fi/images/ETH-icon.png"  />
@@ -486,6 +486,55 @@
                                         <!-- <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Stake Proxy EOS
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item> -->
+                                        <div class="row flex flex-center text-center q-pb-md">
+                                         <div class="row col-4">
+                                          <q-circular-progress
+                                            show-value
+                                            font-size="12px"
+                                            :value="circularProgress.cpu"
+                                            size="70px"
+                                            :thickness="0.22"
+                                            color="teal"
+                                            track-color="grey-3"
+                                            class="q-ma-md"
+                                            >
+                                            {{ circularProgress.cpu }}%
+                                            </q-circular-progress>
+                                           <div class="col-12">CPU</div>
+                                        </div>
+                                         <div class="row col-4">
+                                          <q-circular-progress
+                                            show-value
+                                            font-size="12px"
+                                            :value="circularProgress.net"
+                                            size="70px"
+                                            :thickness="0.22"
+                                            color="teal"
+                                            track-color="grey-3"
+                                            class="q-ma-md"
+                                            >
+                                            {{ circularProgress.net }}%
+                                            </q-circular-progress>
+                                           <div class="col-12">NET</div>
+                                        </div>
+
+                                        <div class="row col-4">
+                                          <q-circular-progress
+                                            show-value
+                                            font-size="12px"
+                                            :value="circularProgress.ram"
+                                            size="70px"
+                                            :thickness="0.22"
+                                            color="teal"
+                                            track-color="grey-3"
+                                            class="q-ma-md"
+                                            >
+                                            {{ circularProgress.ram }}%
+                                            </q-circular-progress>
+                                           <div class="col-12">RAM</div>
+                                        </div>
+
+                                            </div>
                                         <q-expansion-item
                                             v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Chain tools'
                                             expand-separator
@@ -498,6 +547,10 @@
                                         <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake / Unstake CPU' clickable v-ripple class="p-relative" to="/verto/stake">Stake / Unstake CPU
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
+                                         <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Buy/Sell Ram' clickable v-ripple class="p-relative" to="/verto/ram-market">Buy / Sell Ram
+                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                        </q-item>
+
                                         <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Stake Proxy EOS
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
@@ -732,6 +785,11 @@ export default {
   data () {
     return {
       searchAccount: '',
+      circularProgress: {
+        ram: 0,
+        cpu: 0,
+        net: 0
+      },
       hideEosSetup: null,
       loadingIndicator: false,
       history: [],
@@ -970,6 +1028,12 @@ export default {
         //   this.selectedCoin.staked = stakedAmounts
         // }
         // this.$store.state.currentwallet.wallet = this.currentAccount
+
+        if (this.selectedCoin.type === 'eos' && this.selectedCoin.accountData) {
+          this.circularProgress.ram = parseInt((this.selectedCoin.accountData.ram_usage / this.selectedCoin.accountData.ram_quota) * 100)
+          this.circularProgress.cpu = parseInt((this.selectedCoin.accountData.cpu_limit.used / this.selectedCoin.accountData.cpu_limit.max) * 100)
+          this.circularProgress.net = parseInt((this.selectedCoin.accountData.net_limit.used / this.selectedCoin.accountData.net_limit.max) * 100)
+        }
         this.$store.state.currentwallet.wallet = this.selectedCoin
         this.$store.commit('investment/setDefaultAccount', this.selectedCoin)
         this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.selectedCoin.chain && w.key === this.selectedCoin.key))
