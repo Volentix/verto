@@ -84,7 +84,7 @@ export default {
   data () {
     return {
       initialPagination: {
-        rowsPerPage: 6
+        rowsPerPage: this.rowsPerPage
       },
       loaded: true,
       assets: [],

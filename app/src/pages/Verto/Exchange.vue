@@ -40,26 +40,26 @@
             </div>
         </div>
         <div v-else class="mobile-version chain-tools-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-            <!-- <div class="standard-content"> -->
-                <!-- <h2 class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" :to="goBack" :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" icon="keyboard_backspace" />
-                    Exchange
-                </h2> -->
+          <div class="chain-tools-wrapper">
+            <div class="standard-content">
+                <h2 class="standard-content--title flex justify-start">vDex</h2>
                 <!-- <div class="exchange_picto flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div> -->
-            <!-- </div> -->
-            <br>
-            <div class="chain-tools-wrapper--list chain-tools-wrapper--list___1 open">
+            </div>
+            <div class="chain-tools-wrapper--list chain-tools-wrapper--list___2 open">
                 <div class="list-wrapper">
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                        <q-checkbox :dark="$store.state.settings.lightMode === 'true'" v-model="vpoolsTestMode" label="Enable vpools" :color="$store.state.settings.lightMode === 'true' ? 'white':'primary'" :text-color="$store.state.settings.lightMode === 'true' ? 'blue':'primary'" />
+                        <!-- <div class="row q-mb-md">
+                            <q-select class="default-view col-md-3 col-6 offset-md-9" v-model="defaultView" :options="['Coinswitch', '1Inch', 'Swap EOS']" label="Default view" />
+                        </div> -->
                         <VolentixLiquidity v-if="vpoolsTestMode" />
-                        <Oneinch v-else-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
-                        <Swapeos v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
-                        <Coinswitch v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
+                        <Oneinch class="oneinch-wrapper" :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
+                        <Swapeos :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
+                        <Coinswitch class="coinswitch-wrapper" :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
                     </div>
                     <br><br><br>
                 </div>
             </div>
+          </div>
         </div>
     </div>
     <q-dialog persistent v-model="showDisclaimerWrapper">
