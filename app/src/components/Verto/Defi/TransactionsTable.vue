@@ -1,6 +1,6 @@
 <template>
-    <div>
-      <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="Transactions" :data="$store.state.investment.transactions" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities">
+    <div class="full-height">
+      <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="Transactions" :data="$store.state.investment.transactions" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities full-height">
           <template v-slot:body-cell-asset="props">
             <q-td :props="props" class="body-table-col">
               <div class="col-3 flex items-center">

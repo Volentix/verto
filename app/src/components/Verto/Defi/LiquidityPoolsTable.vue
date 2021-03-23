@@ -1,8 +1,8 @@
 <template>
-  <div>
-    <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
+  <div class="full-height">
+    <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}" class="full-height">
       <!-- :grid="$q.screen.xs" -->
-      <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="!$store.state.investment.pools.length" title="Explore Opportunities" :data="chainPools" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
+      <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="!$store.state.investment.pools.length" title="Explore Opportunities" :data="chainPools" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities full-height" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
@@ -183,7 +183,7 @@ export default {
   height: 360px;
 }
 .mobile-size{
-  height: 818px;
+  height: 818px !important;
 }
 
 .desktop-card-style{
@@ -205,6 +205,10 @@ export default {
 .desktop-card-style.current-investments .body-table-col .imgs {
     margin-top: 5px;
     min-width: 30px;
+    @media screen and (max-width: 1023px) {
+      min-width: 48px;
+      margin-right: 0px;
+    }
 }
 
 .desktop-card-style.current-investments .body-table-col .imgs img {

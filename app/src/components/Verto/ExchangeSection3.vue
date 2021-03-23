@@ -103,7 +103,7 @@ export default {
       destinationCoin: {
         label: 'VTX',
         value: 'vtx',
-        image: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/volentixgsys/VTX.png'
+        image: 'statics/icons/favicon-32x32.png'
       },
       destinationCoinOptions: null,
       destinationCoinUnfilter: null

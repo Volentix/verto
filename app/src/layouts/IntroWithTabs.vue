@@ -131,4 +131,10 @@ export default {
   .qlayout-main-app.dark{
     background: #04111F !important;
   }
+  @media screen and (max-width: 1023px) {
+    .layout-main-app-wrapper{
+      padding-right: 0px !important;
+      background: #FFFFFF !important;
+    }
+  }
 </style>
