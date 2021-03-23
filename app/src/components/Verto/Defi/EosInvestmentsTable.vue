@@ -4,7 +4,6 @@
         <template v-slot:body-cell-asset="props">
             <q-td :props="props" class="body-table-col">
                 <div class="col-3 flex items-center">
-
                       <span class="imgs q-mr-lg">
                         <img :src="'https://ndi.340wan.com/eos/'+ props.row.contract0 +'-'+ props.row.symbol0.toLowerCase() +'.png'" alt="">
                         <img :src="'https://ndi.340wan.com/eos/'+ props.row.contract1 +'-'+ props.row.symbol1.toLowerCase() +'.png'" alt="">
