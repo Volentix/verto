@@ -98,7 +98,8 @@ module.exports = function (ctx) {
         'QBreadcrumbs',
         'QBreadcrumbsEl',
         'QSkeleton',
-        'QMarkupTable'
+        'QMarkupTable',
+        'QRadio'
       ],
 
       directives: [

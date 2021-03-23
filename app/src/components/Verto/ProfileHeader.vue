@@ -77,7 +77,7 @@
       <h3 class="profile-wrapper--header__title" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-else>Main Portfolio</h3>
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
-      v-if="!isMobile && !$store.state.currentwallet.wallet.empty">${{ isNaN($store.state.currentwallet.wallet.usd) ? 0 : nFormatter2($store.state.currentwallet.wallet.usd, 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent to <b>{{ isNaN($store.state.currentwallet.wallet.usd) ? 0 : nFormatter2(+$store.state.currentwallet.wallet.amount,3) + ' ' + $store.state.currentwallet.wallet.type.toUpperCase() }}</b></span></h2>
+      v-if="!isMobile && !$store.state.currentwallet.wallet.empty">${{ balance.usd }} USD <span class="profile-wrapper--header__equivalent">Equivalent to <b>{{ isNaN(balance.equivAmount) ? 0 : nFormatter2(+balance.equivAmount,3) + ' ' + balance.equivType.toUpperCase() }}</b></span></h2>
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-else>${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <!-- {{$store.state.wallets.portfolioTotal}} -->
@@ -213,6 +213,28 @@ export default {
     //   }
     // })
     // console.log('this.$store.state.wallets.portfolioTotal', this.$store.state.wallets.portfolioTotal)
+  },
+  computed: {
+    balance () {
+      let total = {
+        usd: 0,
+        equivType: this.$store.state.currentwallet.wallet.chain,
+        equivAmount: 0
+      }
+
+      if (['eos', 'eth'].includes(this.$store.state.currentwallet.wallet.chain)) {
+        let account = this.$store.state.wallets.tokens.find(o => ['eos', 'eth'].includes(this.$store.state.currentwallet.wallet.chain) && o.name.toLowerCase() === this.$store.state.currentwallet.wallet.name.toLowerCase())
+        total.usd = this.nFormatter2(account.total, 3)
+        total.equivType = this.$store.state.currentwallet.wallet.type
+        total.equivAmount = account.total / (+this.$store.state.currentwallet.wallet.usd / +this.$store.state.currentwallet.wallet.amount)
+      } else if (!isNaN(this.$store.state.currentwallet.wallet.usd)) {
+        total.usd = this.nFormatter2(this.$store.state.currentwallet.wallet.usd, 3)
+        total.equivType = this.$store.state.currentwallet.wallet.type
+        total.equivAmount = this.$store.state.currentwallet.wallet.usd / (+this.$store.state.currentwallet.wallet.usd / +this.$store.state.currentwallet.wallet.amount)
+      }
+
+      return total
+    }
   },
   methods: {
     resetSelectedWallet () {

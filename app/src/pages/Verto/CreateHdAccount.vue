@@ -34,7 +34,7 @@
                                                   :options="notCreated"
                                                 />
                                                 <p  class="text-body1" v-else> No Missing HD keys found</p>
-                                                <p  class="text-body1 text-red q-pt-md" v-if="successMessage">{{successMessage}}</p>
+                                                <p  class="text-body1 text-green q-pt-md" v-if="successMessage">{{successMessage}}</p>
 
                                                 <q-stepper-navigation v-show="currentToken && !successMessage" class="flex justify-end">
                                                     <q-btn @click="addHdAccount()" color="deep-purple-14" class="--next-btn" rounded :label="$t('Add')" />
@@ -169,10 +169,10 @@ export default {
           To do maybe? :
           Select mulitple keys and add them with one click
         */
-        this.successMessage = self.currentToken.label + ' account successfully created. '
+        this.successMessage = self.currentToken.label + ' account successfully created. Redirecting...'
 
         setTimeout(() => {
-          this.$router.push('/verto/dashboard/' + self.currentToken.label)
+          this.$router.push('/verto/dashboard/' + self.currentToken.label.toLowerCase())
         }, 1000)
       } else {
         this.submitKey = false

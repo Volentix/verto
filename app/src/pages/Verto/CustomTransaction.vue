@@ -301,7 +301,9 @@ export default {
         if (error.toString().includes('is greater than the maximum billable CPU time for the transaction')) {
           this.freeCPU = true
           this.spinnervisible = true
-          this.sendFreeCPUTransaction(transactionObject.actions).then(result => {
+          let account = this.$store.state.currentwallet.wallet
+          account.privateKey = this.privateKey.key
+          this.sendFreeCPUTransaction(transactionObject.actions, account).then(result => {
             console.log(result, 'result')
             if (result.success) {
               this.transactionLink = result.message
