@@ -56,6 +56,15 @@ export default {
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
   },
+  watch: {
+    '$store.state.currentwallet.wallet': function (val) {
+      if (!val) {
+        this.$store.state.currentwallet.wallet = {
+          empty: true
+        }
+      }
+    }
+  },
   created () {
     let closewizard = localStorage.getItem('closewizard')
     if (!closewizard) {

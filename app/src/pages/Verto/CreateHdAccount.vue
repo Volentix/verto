@@ -9,51 +9,50 @@
                 <wallets :isMobile="false" class="full-height max-height" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                 <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
               </div>
-            </div>
-            <div class="col col-md-9">
-              <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-                  <div class="chain-tools-wrapper">
-                      <div class="standard-content">
-                          <h2 class="standard-content--title flex">Create HD Account</h2>
-                      </div>
-                      <div class="chain-tools-wrapper--list open">
-                          <div class="list-wrapper">
-                              <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                                  <div>
-                                      <q-stepper :dark="$store.state.lightMode === 'false'" :light="$store.state.lightMode === 'true'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
-                                          <q-step title="Missing HD Account" :name="1" prefix="1" order="10" :done="step > 1">
-                                              <div class="text-black">
-                                                  <q-select
-                                                    v-if="notCreated.length !== 0"
-                                                    :dark="$store.state.lightMode === 'true'"
-                                                    :light="$store.state.lightMode === 'false'"
-                                                    separator rounded outlined
-                                                    class="select-input"
-                                                    v-model="currentToken"
-                                                    :options="notCreated"
-                                                  />
-
-                                                  <q-stepper-navigation v-show="currentToken" class="flex justify-end">
-                                                      <q-btn @click="addHdAccount()" color="deep-purple-14" class="--next-btn" rounded :label="$t('Add')" />
-                                                  </q-stepper-navigation>
-                                              </div>
-                                          </q-step>
-                                      </q-stepper>
-                                  </div>
-                              </div>
-                              <br><br><br>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-            </div>
           </div>
-      </div>
-      <div v-else class="mobile-version">
-          <div class="chain-tools-wrapper">
+          <div class="col col-md-9">
+            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+                <div class="chain-tools-wrapper">
+                    <div class="standard-content">
+                        <h2 class="standard-content--title flex">Create HD Account</h2>
+                    </div>
+                    <div class="chain-tools-wrapper--list open">
+                        <div class="list-wrapper">
+                            <div class="list-wrapper--chain__eos-to-vtx-convertor">
+                                <div>
+                                    <q-stepper :dark="$store.state.lightMode === 'false'" :light="$store.state.lightMode === 'true'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
+                                        <q-step title="Missing HD Account" :name="1" prefix="1" order="10" :done="step > 1">
+                                            <div class="text-black">
+                                                <q-select
+                                                  v-if="notCreated.length !== 0"
+                                                  :dark="$store.state.lightMode === 'true'"
+                                                  :light="$store.state.lightMode === 'false'"
+                                                  separator rounded outlined
+                                                  label="Select chain"
+                                                  class="select-input"
+                                                  v-model="currentToken"
+                                                  :options="notCreated"
+                                                />
+                                                <p  class="text-body1" v-else> No Missing HD keys found</p>
+                                                <p  class="text-body1 text-red q-pt-md" v-if="successMessage">{{successMessage}}</p>
+
+                                                <q-stepper-navigation v-show="currentToken && !successMessage" class="flex justify-end">
+                                                    <q-btn @click="addHdAccount()" color="deep-purple-14" class="--next-btn" rounded :label="$t('Add')" />
+                                                </q-stepper-navigation>
+                                            </div>
+                                        </q-step>
+                                    </q-stepper>
+                                </div>
+                            </div>
+                            <br><br><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
           </div>
       </div>
     </div>
+      </div>
 </q-page>
 </template>
 
@@ -63,7 +62,48 @@ import ProfileHeader from '../../components/Verto/ProfileHeader'
 
 import HD from '@/util/hdwallet'
 import configManager from '@/util/ConfigManager'
-import initWallet from '@/util/Wallets2Tokens'
+
+const keys = [{
+  'value': 'btc',
+  'label': 'Bitcoin'
+},
+{
+  'value': 'eth',
+  'label': 'Ethereum'
+},
+{
+  'value': 'bnb',
+  'label': 'Binance Coin'
+},
+{
+  'value': 'ltc',
+  'label': 'Litecoin'
+},
+{
+  'value': 'dash',
+  'label': 'DASH'
+},
+{
+  'value': 'avax',
+  'label': 'Avalanche'
+},
+{
+  'value': 'dot',
+  'label': 'Polkadot'
+},
+{
+  'value': 'ksm',
+  'label': 'Kusama'
+},
+{
+  'value': 'xlm',
+  'label': 'Stellar Lumens'
+},
+{
+  'value': 'xtz',
+  'label': 'Tezos'
+}
+]
 export default {
   components: {
     // desktop components
@@ -85,8 +125,9 @@ export default {
         label: 'Kusama',
         value: 'ksm'
       }],
+      successMessage: null,
       isPwd: true,
-      currentToken: [],
+      currentToken: null,
       vertoPassword: this.$store.state.settings.temporary,
       config: this.$store.state.currentwallet.config,
       walletAddressUsed: false,
@@ -106,6 +147,7 @@ export default {
   created () {
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
+    this.notCreated = keys.filter(o => !this.$store.state.wallets.tokens.find(w => w.chain === o.value))
   },
   methods: {
     async addHdAccount () {
@@ -122,8 +164,16 @@ export default {
       })
 
       if (result.success) {
-        initWallet()
-        this.$router.push('/verto/dashboard')
+        // Append wallet name to url to avoid loading the entire wallet
+        /*
+          To do maybe? :
+          Select mulitple keys and add them with one click
+        */
+        this.successMessage = self.currentToken.label + ' account successfully created. '
+
+        setTimeout(() => {
+          this.$router.push('/verto/dashboard/' + self.currentToken.label)
+        }, 1000)
       } else {
         this.submitKey = false
         if (result.message === 'address_already_used') {

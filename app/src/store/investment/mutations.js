@@ -95,11 +95,11 @@ export const setInvestments = (state, payload) => {
   state.investments = state.investments.concat(payload.pools ? payload.pools : payload).map((o, index) => {
     o.index = index
     return o
-  }).filter(o => !o.canStake)
+  }).filter(o => !o.canStake).filter((investment, index, self) => self.findIndex(t => t.address === investment.address) === index)
   state.investmentOpportunities = state.investmentOpportunities.concat(payload.pools ? payload.pools : payload).map((o, index) => {
     o.index = index
     return o
-  }).filter(o => o.canStake)
+  }).filter(o => o.canStake).filter((investment, index, self) => self.findIndex(t => t.address === investment.address) === index)
 }
 export const setTransactions = (state, payload) => {
   state.transactions = state.transactions.concat(payload.filter(item => !state.transactions.find(o => o.hash === item.hash))).map((o, index) => {
