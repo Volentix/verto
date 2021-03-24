@@ -240,23 +240,195 @@
             </q-tabs>
           </template>
           <template v-slot:after>
-            <div :class="{'bg-white2':$store.state.settings.lightMode === 'false'}">
+            <div :class="{'bg-white2':$store.state.settings.lightMode === 'false'}" class="full-height">
               <!-- <q-scroll-area :visible="true" style="height: 87vh;"> -->
-                <div :key="defaultAccount.name"  v-if="$store.state.settings.network == 'mainnet' && chain == 'eth' && accountOption.chain == 'eth'">
-                  <LiquidityPoolsTable :chain="'eth'" :rowsPerPage="10" class="minHeight" v-if="menu == 'liquidity'"/>
-                  <InvestmentsTable class="minHeight2" v-else-if="menu == 'investments'"/>
-                  <DebtsTable class="minHeight2 DebtsTable" v-else-if="menu == 'debts'"/>
-                  <TransactionsTable class="minHeight2" v-else-if="menu == 'transactions'"/>
-                  <InvestmentsOpportunitiesTable class="minHeight2" v-else-if="menu == 'staking'"/>
-                  <Oneinch v-if="chain == 'eth'" class="q-pl-md q-pb-sm accountOptionOneinch" v-show="menu == 'swap'" />
+                <div :key="accountOption.name"  v-if="$store.state.settings.network == 'mainnet' && chain == 'eth' && accountOption.chain == 'eth'" class="full-height">
+                  <LiquidityPoolsTable :chain="'eth'" :rowsPerPage="10" class="minHeight full-height" v-if="menu == 'liquidity'"/>
+                  <InvestmentsTable class="minHeight2 full-height" v-else-if="menu == 'investments'"/>
+                  <DebtsTable class="minHeight2 DebtsTable full-height" v-else-if="menu == 'debts'"/>
+                  <TransactionsTable class="minHeight2 full-height" v-else-if="menu == 'transactions'"/>
+                  <InvestmentsOpportunitiesTable class="minHeight2 full-height" v-else-if="menu == 'staking'"/>
+                  <Oneinch v-if="chain == 'eth'" class="q-pl-md q-pb-sm accountOptionOneinch full-height" v-show="menu == 'swap'" />
                 </div>
-                <div  v-if="chain == 'eos' && accountOption.chain == 'eos'">
+                <div v-if="chain == 'eos' && accountOption.chain == 'eos'" class="full-height">
                   <Swapeos class="q-pl-md q-pb-sm minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'swap' || menu == 'add_liquidity' || menu == 'liquidity'" />
-                  <EosInvestmentsTable :key="defaultAccount.name"  class="minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'investments'"/>
-                  <TestnetPools class="minHeight3" v-if="$store.state.settings.network == 'testnet'"  v-show="menu == 'liquidity'" />
-                  <TestnetInvestments class="minHeight3" v-if="$store.state.settings.network == 'testnet'" v-show="menu == 'investments'"  />
-                  <VolentixLiquidity class="minHeight3" v-if="$store.state.settings.network == 'testnet'" :showLiquidity="false" v-show="menu == 'swap'" />
-                  <VolentixLiquidity class="minHeight3" v-if="$store.state.settings.network == 'testnet'" :showLiquidity="true" v-show="menu == 'add_liquidity'" />
+                  <EosInvestmentsTable :key="$store.state.investment.defaultAccount.name" class="full-height minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'investments'"/>
+                  <TestnetPools class="minHeight3 full-height" v-if="$store.state.settings.network == 'testnet'"  v-show="menu == 'liquidity'" />
+                  <TestnetInvestments class="minHeight3 full-height" v-if="$store.state.settings.network == 'testnet'" v-show="menu == 'investments'"  />
+                  <VolentixLiquidity class="minHeight3 full-height" v-if="$store.state.settings.network == 'testnet'" :showLiquidity="false" v-show="menu == 'swap'" />
+                  <VolentixLiquidity class="minHeight3 full-height" v-if="$store.state.settings.network == 'testnet'" :showLiquidity="true" v-show="menu == 'add_liquidity'" />
+                </div>
+              <!-- </q-scroll-area> -->
+            </div>
+          </template>
+        </q-splitter>
+      </div>
+    </div>
+    <div class="mobile-version" v-else>
+      <div class="text-h6 row flex flex-center" v-if="!accountOption">
+        NO EOS or ETH wallet available
+      </div>
+      <div class="row" v-else>
+        <q-splitter
+          v-model="splitterModel"
+          style="width: 100%"
+        >
+          <template style="width:40%" v-slot:before>
+            <q-tabs
+              class="tabs-chains defi-sidebar-wrapper q-pa-md q-pr-xs bg-white"
+              v-model="chain"
+              vertical
+              align="left"
+              inline-label
+            >
+                <div>
+                  <q-list class="text-center flex" data-title="Switch between chains"  data-intro="Each chain have their own related and associated features">
+                    <q-item v-if="$store.state.settings.network == 'mainnet'" clickable @click="chain = 'eth';  switchChain() " :class="[chain == 'eth' ? 'bg-white' :'']">
+                    <q-img src="https://files.coinswitch.co/public/coins/eth.png" style="width:20px;"/>
+                      <q-item-section class="q-pl-sm">Ethereum</q-item-section>
+                    </q-item>
+                    <q-item clickable class="col" @click="chain = 'eos'; switchChain() " :class="[chain == 'eos' ? 'bg-white' :'']">
+                      <q-img src="https://files.coinswitch.co/public/coins/eos.png" style="width:20px;"/>
+                    <q-item-section class="q-pl-sm">EOS</q-item-section>
+                    </q-item>
+                  </q-list>
+                </div>
+                <q-scroll-area :visible="true" class="q-pr-md" style="min-height: 70vh;height: 100%;">
+                  <div auto-close stretch flat>
+                    <q-list class="text-left" data-title="Menu"  data-intro="Click on a menu item to switch the view of the main section" separator>
+                      <q-item clickable @click="menu = 'swap'" :class="[menu == 'swap' ? 'bg-grey-3' : 'bg-white']">
+                        <q-item-section>Swap</q-item-section>
+                        <q-item-section side><q-icon name="navigate_next"/></q-item-section>
+                        </q-item>
+                          <q-item v-if="chain == 'eos'" clickable @click="menu = 'add_liquidity'" :class="[menu == 'add_liquidity' ? 'bg-grey-3' : 'bg-white']">
+                          <q-item-section>Add liquidity</q-item-section>
+                          <q-item-section side><q-icon name="navigate_next"/></q-item-section>
+                        </q-item>
+                        <q-item clickable @click="menu = 'liquidity'" :class="[menu == 'liquidity' ? 'bg-grey-3' : 'bg-white']">
+                          <q-item-section>Liquidity Pools</q-item-section>
+                          <q-item-section side><q-icon name="navigate_next"/></q-item-section>
+                        </q-item>
+                        <q-item clickable @click="menu = 'investments'" :class="[menu == 'investments' ? 'bg-grey-3' : 'bg-white']">
+                          <q-item-section>Investments</q-item-section>
+                          <q-item-section side><q-icon name="navigate_next"/></q-item-section>
+                        </q-item>
+                        <q-item v-if="chain == 'eth'" clickable @click="menu = 'debts'" :class="[menu == 'debts' ? 'bg-grey-3' : 'bg-white']">
+                          <q-item-section>Debts</q-item-section>
+                          <q-item-section side><q-icon name="navigate_next"/></q-item-section>
+                        </q-item>
+                        <q-item v-if="chain == 'eth'" clickable @click="menu = 'transactions'" :class="[menu == 'transactions' ? 'bg-grey-3' : 'bg-white']">
+                          <q-item-section>Transactions</q-item-section>
+                          <q-item-section side><q-icon name="navigate_next"/></q-item-section>
+                        </q-item>
+                        <q-item v-if="chain == 'eth'" clickable @click="menu = 'staking'" :class="[menu == 'staking' ? 'bg-grey-3' : 'bg-white']">
+                          <q-item-section>Stake</q-item-section>
+                          <q-item-section side><q-icon name="navigate_next"/></q-item-section>
+                        </q-item>
+                    </q-list>
+
+                <q-expansion-item
+                  v-if="accountOption.value"
+                  :dark="$store.state.settings.lightMode === 'true'"
+                  default-opened
+                  class="bg-white q-py-md accountOption"
+                  :label="'Total Balance - $'+(formatNumber(accountOption.total, 0) )"
+                  :caption="accountOption.label"
+                >
+                  <q-card
+                    :dark="$store.state.settings.lightMode === 'true'"
+                    flat
+                    class="accountOptionCard"
+                    >
+                    <q-card-section class="q-pa-zero">
+                      <q-select
+                      data-title="Changing account..."  data-intro="Click here to switch to another account"
+                      :dark="$store.state.settings.lightMode === 'true'"
+                      class="full-width"
+                      :class="{'bg-white2': $store.state.settings.lightMode === 'false'}"
+                      @input="getAccountInformation(accountOption)"
+                      v-model="accountOption"
+                      :options="accountOptions">
+                        <template v-slot:selected>
+                          <q-item
+                            :dark="$store.state.settings.lightMode === 'true'"
+                            v-if="accountOption">
+                            <q-item-section>
+                              <q-item-label >Change account</q-item-label>
+                              <q-item-label caption class="ellipsis mw200 q-pt-xs">{{ accountOption.label }}</q-item-label>
+                            </q-item-section>
+                          </q-item>
+                        </template>
+                        <template v-slot:option="scope">
+                          <q-item
+                            class="custom-menu"
+                            v-bind="scope.itemProps"
+                            v-on="scope.itemEvents"
+                          >
+                            <q-item-section avatar>
+                            <q-icon
+                              :name="`img:${scope.opt.image}`"
+                            />
+                            </q-item-section>
+                            <q-item-section>
+                            <q-item-label
+                              v-html="scope.opt.label"
+                            />
+
+                            <q-item-label
+                              v-if="scope.opt.name"
+                              caption
+                              >{{ scope.opt.name }}
+                              </q-item-label>
+                              <q-item-label
+                              v-if="scope.opt.total"
+                              caption
+                              >Balance: ${{ formatNumber(scope.opt.total, 0)  }}
+                              </q-item-label>
+
+                            </q-item-section>
+                          </q-item>
+                        </template>
+                        <!-- <template v-slot:append>
+                            <q-avatar>
+                                <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
+                            </q-avatar>
+                        </template> -->
+                      </q-select>
+                      <div  data-title="Token list"  data-intro="On this list you will find tokens associated with your selected account" >
+                      <q-item clickable :key="index"  v-for="(token,index) in $store.state.wallets.tokens.filter(o => o.chain ==  chain && (( o.name == accountOption.label && chain == 'eos') || (o && o.key && o.key.toLowerCase() == accountOption.value.toLowerCase() && chain == 'eth' )))">
+                        <q-item-section avatar top>
+                          <q-icon :name="'img:'+token.icon" color="primary" text-color="white" />
+                        </q-item-section>
+                        <q-item-section>{{token.type.toUpperCase()}}</q-item-section>
+                        <q-item-section v-if="token.usd">${{formatNumber(token.usd, 0)}}</q-item-section>
+                      </q-item>
+                      </div>
+                    </q-card-section>
+                  </q-card>
+                </q-expansion-item>
+
+                  </div>
+                </q-scroll-area>
+            </q-tabs>
+          </template>
+          <template v-slot:after>
+            <div :class="{'bg-white2':$store.state.settings.lightMode === 'false'}" class="full-height">
+              <!-- <q-scroll-area :visible="true" style="height: 87vh;"> -->
+                <div :key="accountOption.name"  v-if="$store.state.settings.network == 'mainnet' && chain == 'eth' && accountOption.chain == 'eth'" class="full-height">
+                  <LiquidityPoolsTable :chain="'eth'" :rowsPerPage="10" class="minHeight full-height" v-if="menu == 'liquidity'"/>
+                  <InvestmentsTable class="minHeight2 full-height" v-else-if="menu == 'investments'"/>
+                  <DebtsTable class="minHeight2 DebtsTable full-height" v-else-if="menu == 'debts'"/>
+                  <TransactionsTable class="minHeight2 full-height" v-else-if="menu == 'transactions'"/>
+                  <InvestmentsOpportunitiesTable class="minHeight2 full-height" v-else-if="menu == 'staking'"/>
+                  <Oneinch v-if="chain == 'eth'" class="q-pl-md q-pb-sm accountOptionOneinch full-height" v-show="menu == 'swap'" />
+                </div>
+                <div v-if="chain == 'eos' && accountOption.chain == 'eos'" class="full-height">
+                  <Swapeos class="q-pl-md q-pb-sm minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'swap' || menu == 'add_liquidity' || menu == 'liquidity'" />
+                  <EosInvestmentsTable :key="$store.state.investment.defaultAccount.name" class="full-height minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'investments'"/>
+                  <TestnetPools class="minHeight3 full-height" v-if="$store.state.settings.network == 'testnet'"  v-show="menu == 'liquidity'" />
+                  <TestnetInvestments class="minHeight3 full-height" v-if="$store.state.settings.network == 'testnet'" v-show="menu == 'investments'"  />
+                  <VolentixLiquidity class="minHeight3 full-height" v-if="$store.state.settings.network == 'testnet'" :showLiquidity="false" v-show="menu == 'swap'" />
+                  <VolentixLiquidity class="minHeight3 full-height" v-if="$store.state.settings.network == 'testnet'" :showLiquidity="true" v-show="menu == 'add_liquidity'" />
                 </div>
               <!-- </q-scroll-area> -->
             </div>
@@ -1743,6 +1915,34 @@ export default {
   margin-bottom: 0px;
   border: 1px solid #CCC;
   border-radius: 10px !important;
+}
+.mobile-version{
+  /deep/ .q-splitter.no-wrap{
+    display: flex;
+    flex-direction: column;
+    .q-splitter__panel{
+      &.q-splitter__before{
+        width: 100% !important;
+        height: 86px !important;
+        margin-bottom: 10px;
+        margin-left: 10px;
+        margin-right: 0px;
+        max-width: calc(100% - 20px);
+      }
+      &.q-splitter__after{
+        .q-scrollarea{
+          height: 73vh !important;
+        }
+        .swapeos-component{
+          margin: 0px 0px;
+          margin-left: 10px;
+          padding-right: 5px;
+          margin-right: 10px;
+          padding-left: 0px;
+        }
+      }
+    }
+  }
 }
 </style>
 <style>

@@ -1,7 +1,6 @@
 <template>
 <q-page class="column" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-white': $store.state.settings.lightMode === 'false', 'desktop-marg' : screenSize > 1024, 'mobile-pad': screenSize < 1024}">
 <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
-
     <div class="desktop-version full-height" v-if="screenSize > 1024">
         <div class="row full-height">
             <div class="col col-md-3">
@@ -40,11 +39,11 @@
                                 transition-next="jump-up"
                                 >
                                 <q-tab-panel name="explore">
-                                    <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="6"  v-if="$store.state.settings.network == 'mainnet'" />
+                                    <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="7"  v-if="$store.state.settings.network == 'mainnet'" />
                                     <TestnetPools :showAddLiquidity="true" class="bg-white" v-else />
                                 </q-tab-panel>
                                 <q-tab-panel name="asset">
-                                    <AssetBalancesTable data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="10"/>
+                                    <AssetBalancesTable data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="6"/>
                                 </q-tab-panel>
                             </q-tab-panels>
                         </div>
@@ -64,23 +63,27 @@
         </div>
     </div>
     <div class="mobile-version" v-else>
-        <profile-header class="marg" version="type2222" />
+        <!-- <profile-header class="marg" version="type2222" /> -->
         <!-- <q-btn color="white" flat text-color="black" class="full-width" label="Public Proposals" to="/verto/card-wps/public-proposals" /> -->
-        <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+        <!-- <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" /> -->
+        <div class="wallets-container" style="height: 100%">
+            <profile-header class="marg" version="type2222" />
+            <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+        </div>
         <div class="cards-wrapper--content q-pl-md q-pr-md">
             <!-- <startNodeSection :banner="1" /> -->
             <!-- <hr style="height:0px;opacity:0" /> -->
-            <ExchangeSection />
+            <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
             <hr style="height:0px;opacity:0" />
-            <makeVTXSection />
+            <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
             <!-- <card-make-VTX /> -->
             <hr style="height:0px;opacity:0" />
-            <LiquidityPoolsSection />
+            <LiquidityPoolsSection2 v-if="true  && $store.state.settings.network == 'mainnet'" />
             <hr style="height:0px;opacity:0" />
             <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-                <liquidityPoolsTable :rowsPerPage="4" />
+                <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="8"  v-if="$store.state.settings.network == 'mainnet'" />
             </div>
-            <hr style="height:0px;opacity:0" />
+            <hr style="height:30px;opacity:0" />
             <!-- <card-WPS /> -->
             <!-- <hr style="height:0px;opacity:0" /> -->
             <!-- <card-convert-any-to-VTX /> -->
@@ -111,11 +114,11 @@ import StartNodeSection from '../../components/Verto/StartNodeSection'
 import maxDeFiYield from '../../components/Verto/maxDeFiYield'
 import ChainToolsSection from '../../components/Verto/ChainToolsSection'
 // import TransactionsSection from '../../components/Verto/TransactionsSection'
-import LiquidityPoolsSection from '../../components/Verto/Defi/LiquidityPoolsSection'
+// import LiquidityPoolsSection from '../../components/Verto/Defi/LiquidityPoolsSection'
 import LiquidityPoolsSection2 from '../../components/Verto/Defi/LiquidityPoolsSection2'
-import MakeVTXSection from '../../components/Verto/MakeVTXSection'
+// import MakeVTXSection from '../../components/Verto/MakeVTXSection'
 import MakeVTXSection2 from '../../components/Verto/MakeVTXSection2'
-import ExchangeSection from '../../components/Verto/ExchangeSection'
+// import ExchangeSection from '../../components/Verto/ExchangeSection'
 import ExchangeSection3 from '../../components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 import AssetBalancesTable from '../../components/Verto/AssetBalancesTable'
@@ -160,13 +163,13 @@ export default {
     TestnetPools,
     ChainToolsSection,
     // TransactionsSection,
-    LiquidityPoolsSection,
+    // LiquidityPoolsSection,
     LiquidityPoolsSection2,
     liquidityPoolsTable,
     AssetBalancesTable,
-    MakeVTXSection,
+    // MakeVTXSection,
     MakeVTXSection2,
-    ExchangeSection,
+    // ExchangeSection,
     ExchangeSection3
     // VespucciRatingSection
 
@@ -476,7 +479,7 @@ export default {
         }
         .current-investments{
             .body-table-col .imgs{
-                min-width: 60px !important;
+                min-width: 55px !important;
             }
         }
     }
@@ -772,6 +775,7 @@ export default {
                 left: 0px;
                 border-radius: 0px 0px 20px 20px;
                 box-shadow: 0px 3px 6px 0px rgba(black, .19);
+                display: none;
             }
         }
     }
@@ -874,18 +878,18 @@ export default {
     max-height: 72vh;
 }
 .liquidityPoolsTable /deep/ .q-scrollarea.desktop-size{
-    height: 54vh;
+    height: 54vh !important;
     @media screen and (min-height: 700px) {
-        height: 54.5vh;
+        height: 54.5vh !important;
     }
     @media screen and (min-height: 760px) {
-        height: 54vh;
+        height: 54vh !important;
     }
     @media screen and (min-height: 800px) {
-        height: 55vh;
+        height: 55vh !important;
     }
     @media screen and (min-height: 870px) {
-        height: 56vh;
+        height: 56vh !important;
     }
 }
 // .max-height2{
