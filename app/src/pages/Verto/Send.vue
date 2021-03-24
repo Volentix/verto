@@ -119,7 +119,59 @@
                 <div class="standard-content--body">
                   <div class="standard-content--body__form">
                     <div class="row">
-                      <div class="col col-8 q-pr-lg">
+                      <div class="col col-8 q-pr-lg" v-if="['eth','eos'].includes(selectedCoin.chain)">
+                        <span class="lab-input">Select token </span>
+                        <q-select
+                            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
+                            separator
+                            rounded
+                            outlined
+                            class="select-input"
+                            v-model="currentToken"
+                            :options="options.filter( o => o.chainID == selectedCoin.chain && o.label.toLowerCase() == selectedCoin.name.toLowerCase())"
+                        >
+                          <template v-slot:option="scope">
+                            <q-item
+                              class="custom-menu"
+                              v-bind="scope.itemProps"
+                              v-on="scope.itemEvents"
+                            >
+                              <q-item-section avatar>
+                                <q-icon class="option--avatar" :name="`img:${scope.opt.image}`" />
+                              </q-item-section>
+                              <q-item-section dark>
+                                <q-item-label v-html="scope.opt.type.toUpperCase()" />
+                                <q-item-label v-html="scope.opt.amount"  caption/>
+                              </q-item-section>
+                            </q-item>
+                          </template>
+                          <template v-slot:selected>
+                            <q-item
+                              v-if="currentToken"
+                            >
+                              <q-item-section avatar>
+                                <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
+                              </q-item-section>
+                              <q-item-section>
+                                <q-item-label v-html="currentToken.type.toUpperCase()" />
+                                <q-item-label class="q-pt-sm" v-html="currentToken.amount" caption/>
+                              </q-item-section>
+                            </q-item>
+                            <q-item
+                              v-else>
+                            </q-item>
+                          </template>
+                        </q-select>
+                        <!-- <q-input v-model="from" rounded class="input-input pr80" outlined color="purple" type="text" :label="(currentAccount.type !== 'eos' && currentAccount.type !== 'verto') ? 'Current ' + currentAccount.type.toUpperCase() + ' Address' : 'Current ' + currentAccount.type.toUpperCase() + ' Account'">
+                          <template v-slot:append>
+                            <div class="flex justify-end">
+                              <q-btn flat unelevated text-color="grey" @click="copyToClipboard(from , 'Address')" round class="btn-copy" icon="o_file_copy" />
+                            </div>
+                          </template>
+                        </q-input> -->
+                      </div>
+
+                      <div class="col col-8 q-pr-lg" v-else>
                         <span class="lab-input">From</span>
                         <q-select
                             :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
@@ -195,7 +247,7 @@
                           bottom-slots
                           :error="toError"
                           :error-message="toErrorMessage"
-                          :label="currentToken.type.toUpperCase() + ' Address'"
+                          :label="currentToken.chainID.toUpperCase() + ' Address'"
                         >
                           <template v-slot:append>
                             <div class="flex justify-end">

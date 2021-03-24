@@ -20,7 +20,7 @@
       <img v-if="$store.state.settings.lightMode === 'false'" src="statics/node-banners/ban6light.png" class="full-width scale3d" alt="">
       <img v-else src="statics/node-banners/ban6dark.png" class="full-width scale3d" alt="">
       <div class="qbtn-launch-wrapper flex justify-between items-center q-pr-lg full-width">
-        <span class="tagline flex justify-between items-center">Earn <img src="statics/icon.png" class="q-ml-sm q-mr-sm q-mb-xs" width="25" alt=""> VTX</span>
+        <span class="tagline flex justify-between items-center">Earn <img src="statics/icons/favicon-32x32.png" class="q-ml-sm q-mr-sm q-mb-xs" width="25" alt=""> VTX</span>
         <q-btn unelevated class="qbtn-download" color="white" text-color="black" label="Launch Node" />
       </div>
     </div>
