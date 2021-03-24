@@ -4,7 +4,7 @@
       <!-- :grid="$q.screen.xs" -->
       <q-table row-key="type" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="loaded" :data="assets" :columns="columns" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
-          <q-td :props="props" class="body-table-col">
+          <q-td :props="props" class="body-table-col cursor-pointer" @click="$emit('setAsset', props.row)">
             <div class="col-1 flex items-center">
               <span class="imgs">
                 <img :src="props.row.icon" alt="">
@@ -66,6 +66,7 @@
             </template>
           </q-input>
         </template>
+
       </q-table>
     </q-scroll-area>
   </div>
@@ -84,7 +85,7 @@ export default {
   data () {
     return {
       initialPagination: {
-        rowsPerPage: 6
+        rowsPerPage: this.rowsPerPage
       },
       loaded: true,
       assets: [],

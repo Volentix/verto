@@ -288,8 +288,8 @@ class Lib {
 
     let cachedData = localStorage.getItem('history_' + key)
     let historyData = {}
-
-    if (!cachedData || !cachedData.history) {
+    let h = JSON.parse(cachedData)
+    if (!cachedData || !h.history) {
       historyData = await wallet(token, key, data)
 
       this.cacheWalletHistoryData(historyData, key)

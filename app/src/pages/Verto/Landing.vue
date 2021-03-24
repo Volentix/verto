@@ -97,6 +97,17 @@ export default {
 
     this.version = version
 
+    let oldVersion = localStorage.getItem('version')
+
+    if (oldVersion) {
+      oldVersion = oldVersion.substring(4)
+
+      if (+oldVersion <= 237 && +(version.substring(4)) > 22) {
+        console.log(888)
+        localStorage.removeItem('walletPublicData')
+      }
+    }
+
     localStorage.setItem('version', version)
 
     this.$refs.psswrd.focus()
