@@ -102,7 +102,7 @@ export default {
     if (oldVersion) {
       oldVersion = oldVersion.substring(4)
 
-      if (+oldVersion <= 237 && +(version.substring(4)) > 22) {
+      if (+oldVersion <= 237 && +(version.substring(4)) > 327) {
         console.log(888)
         localStorage.removeItem('walletPublicData')
       }
