@@ -21,58 +21,58 @@
     </div>
     <div class="transaction-wrapper--list open" v-else style="height: 100%;">
     <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="this.$store.state.investment.defaultAccount && !['eos','eth'].includes(this.$store.state.investment.defaultAccount.chain)">
-                History for the {{this.$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
+      History for the {{this.$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
     </q-banner>
 
-   <div  class="q-pa-md" v-else-if="loading">
-    <q-markup-table flat>
-      <thead>
-        <tr>
-          <th class="text-left" style="width: 150px">
-            <q-skeleton animation="blink" type="text" />
-          </th>
-          <th class="text-right">
-            <q-skeleton animation="blink" type="text" />
-          </th>
-          <th class="text-right">
-            <q-skeleton animation="blink" type="text" />
-          </th>
-          <th class="text-right">
-            <q-skeleton animation="blink" type="text" />
-          </th>
-          <th class="text-right">
-            <q-skeleton animation="blink" type="text" />
-          </th>
-          <th class="text-right">
-            <q-skeleton animation="blink" type="text" />
-          </th>
-        </tr>
-      </thead>
+    <div  class="q-pa-md" v-else-if="loading">
+      <q-markup-table flat>
+        <thead>
+          <tr>
+            <th class="text-left" style="width: 150px">
+              <q-skeleton animation="blink" type="text" />
+            </th>
+            <th class="text-right">
+              <q-skeleton animation="blink" type="text" />
+            </th>
+            <th class="text-right">
+              <q-skeleton animation="blink" type="text" />
+            </th>
+            <th class="text-right">
+              <q-skeleton animation="blink" type="text" />
+            </th>
+            <th class="text-right">
+              <q-skeleton animation="blink" type="text" />
+            </th>
+            <th class="text-right">
+              <q-skeleton animation="blink" type="text" />
+            </th>
+          </tr>
+        </thead>
 
-      <tbody>
-        <tr v-for="n in 5" :key="n">
-          <td class="text-left">
-            <q-skeleton animation="blink" type="text" width="85px" />
-          </td>
-          <td class="text-right">
-            <q-skeleton animation="blink" type="text" width="50px" />
-          </td>
-          <td class="text-right">
-            <q-skeleton animation="blink" type="text" width="35px" />
-          </td>
-          <td class="text-right">
-            <q-skeleton animation="blink" type="text" width="65px" />
-          </td>
-          <td class="text-right">
-            <q-skeleton animation="blink" type="text" width="25px" />
-          </td>
-          <td class="text-right">
-            <q-skeleton animation="blink" type="text" width="85px" />
-          </td>
-        </tr>
-      </tbody>
-    </q-markup-table>
-  </div>
+        <tbody>
+          <tr v-for="n in 5" :key="n">
+            <td class="text-left">
+              <q-skeleton animation="blink" type="text" width="85px" />
+            </td>
+            <td class="text-right">
+              <q-skeleton animation="blink" type="text" width="50px" />
+            </td>
+            <td class="text-right">
+              <q-skeleton animation="blink" type="text" width="35px" />
+            </td>
+            <td class="text-right">
+              <q-skeleton animation="blink" type="text" width="65px" />
+            </td>
+            <td class="text-right">
+              <q-skeleton animation="blink" type="text" width="25px" />
+            </td>
+            <td class="text-right">
+              <q-skeleton animation="blink" type="text" width="85px" />
+            </td>
+          </tr>
+        </tbody>
+      </q-markup-table>
+    </div>
     <div  class="q-pa-md" v-else-if="!history.length && !loading">
       No transactions recorded yet with this account
     </div>
@@ -83,7 +83,7 @@
 
           <q-item v-if="transaction.direction == 'outgoing'" clickable class="column history-item-wrapper send-component" >
             <q-item-section class="history-item flex justify-between">
-              <div class="row items-center">
+              <div class="row" :class="[isMobile ? 'items-start':'items-center']">
                 <div class="col col-4">
                   <div class="flex items-center">
                     <div class="q-mr-md flex flex-center">
@@ -138,7 +138,7 @@
             </q-item-section>
             <q-item-section class="history-item__detail">
               <div class="row items-center border-top">
-                <div class="col col-4 q-pl-xl" v-if="transaction.chain == 'eth'">
+                <div class="col" :class="[isMobile ? 'col-6':'col-4 q-pl-xl']" v-if="transaction.chain == 'eth'">
                   <div class="text-bold text-grey">Fee</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
@@ -147,7 +147,7 @@
                     </span> (${{transaction.usdFees}})
                   </div>
                 </div>
-                 <div class="col col-4 q-pl-xl" v-else-if="transaction.chain == 'eos'">
+                <div class="col" :class="[isMobile ? 'col-6':'col-4 q-pl-xl']" v-else-if="transaction.chain == 'eos'">
                   <div class="text-bold text-grey">Memo</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
@@ -155,8 +155,7 @@
                     </span>
                   </div>
                 </div>
-
-                <div class="col col-4 q-pl-xl flex items-center">
+                <div class="col" :class="[isMobile ? 'col-6':'col-4 q-pl-xl flex items-center']">
                   <div class="column">
                     <span class="text-bold text-grey">Transaction hash</span>  <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
                      <q-tooltip>
@@ -295,7 +294,7 @@
           </q-item>
           <q-item v-else-if="transaction.direction == 'incoming'" clickable class="column history-item-wrapper receive-component" @click="transaction.active = !transaction.active" :class="{'active': transaction.active}">
             <q-item-section class="history-item flex justify-between">
-              <div class="row items-center">
+              <div class="row" :class="[isMobile ? 'items-start':'items-center']">
                 <div class="col col-4">
                   <div class="flex items-center">
                     <div class="q-mr-md flex flex-center">
@@ -351,7 +350,7 @@
             </q-item-section>
             <q-item-section class="history-item__detail">
               <div class="row items-center border-top">
-                <div class="col col-4 q-pl-xl" v-if="transaction.chain == 'eth'">
+                <div class="col" :class="[isMobile ? 'col-6':'col-4 q-pl-xl']" v-if="transaction.chain == 'eth'">
                   <div class="text-bold text-grey">Fee</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
@@ -360,15 +359,13 @@
                     </span> (${{transaction.usdFees}})
                   </div>
                 </div>
-                 <div class="col q-mr-xl q-pl-xl" v-else-if="transaction.chain == 'eos'">
+                <div class="col" :class="[isMobile ? '':'q-mr-xl q-pl-xl']" v-else-if="transaction.chain == 'eos'">
                   <div class="text-bold text-grey">Memo</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
-
-                      <div class="ellipsis">{{transaction.memo}}</div>
-
+                    <div class="ellipsis">{{transaction.memo}}</div>
                   </div>
                 </div>
-                <div class="col col-4 q-pl-xl flex items-center">
+                <div class="col" :class="[isMobile ? 'col-6':'col-4 q-pl-xl flex items-center']">
                   <div class="column">
                     <span class="text-bold text-grey">Transaction hash</span>
                     <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
