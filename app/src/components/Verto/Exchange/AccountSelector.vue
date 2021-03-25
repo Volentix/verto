@@ -232,6 +232,9 @@ export default {
       min-height: unset;
       .q-field__label.no-pointer-events{
         left: 15px;
+        @media screen and (max-width: 1024px) {
+          left: 31px;
+        }
       }
       .q-field__native{
         padding-left: 0px;
