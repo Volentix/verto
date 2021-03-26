@@ -258,6 +258,7 @@ export default {
       }
     },
     setTxData (data) {
+      this.transactionLink = false
       this.transactionObject = data
     },
     getWindowWidth () {

@@ -70,8 +70,6 @@ export default {
   },
   methods: {
     changeAmount () {
-      console.log(+this.sendAmount, this.wallet, this.action, this.unit)
-
       if (+this.sendAmount > +this.wallet.amount && this.action === 'buy' && this.unit === 'eos') {
         this.sendAmount = +this.wallet.amount
       }
@@ -79,8 +77,6 @@ export default {
       if (this.sendAmount < 0) {
         this.sendAmount = 0
       }
-
-      console.log(this.sendAmount, 'this.sendAmount')
 
       if (+this.sendAmount === 0 || isNaN(this.sendAmount)) {
         this.$emit('setTxData', false)

@@ -622,7 +622,6 @@ export default {
     }
   },
   async created () {
-    // console.log(this.depositCoinOptions, this.depositCoin.amount, 1)
     this.setTokensFromPool()
     let tableData = await this.$store.state.wallets.tokens
     this.eosAccounts = tableData.filter((w) => w.chain === 'eos')
@@ -927,8 +926,10 @@ export default {
 
       if (!this.depositCoin || !this.depositCoinOptions.find(v => v.value === this.depositCoin.value)) {
         this.depositCoin = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
+        console.log(56, this.depositCoin.value)
       }
       this.depositCoin = this.depositCoin ? this.coins.find((w) => w.value.toLowerCase() === this.depositCoin.value.toLowerCase()) : this.coins.find((w) => w.value.toLowerCase() === 'eos')
+      console.log(77, this.depositCoin.value)
       this.getDestinationCoinOptions()
       this.destinationCoin = this.destinationCoin ? this.coins.find((w) => w.value.toLowerCase() === this.destinationCoin.value.toLowerCase()) : this.destinationCoinOptions[0]
       this.getPairData()
@@ -1172,7 +1173,10 @@ export default {
       this.depositCoinUnfilter = this.depositCoinOptions
       if (!this.pool) {
         let item = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.$store.state.investment.defaultAccount.chain.toLowerCase())
-        if (item) { this.depositCoin = item }
+        if (item) {
+          this.depositCoin = item
+          console.log(45, this.depositCoin.value, this.$store.state.investment.defaultAccount.chain)
+        }
       }
       // console.log(this.depositCoinOptions, this.depositCoin.amount, 12)
       this.setTokensFromPool()

@@ -96,7 +96,7 @@ export default {
       depositCoin: {
         label: 'ETH',
         value: 'eth',
-        image: 'https://files.coinswitch.co/public/coins/eth.png'
+        image: 'https://zapper.fi/images/ETH-icon.png'
       },
       depositCoinOptions: null,
       depositCoinUnfilter: null,
