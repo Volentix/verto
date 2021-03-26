@@ -34,7 +34,7 @@
           <span :class="asset.color">{{asset.change24hPercentage}}</span>
         </h3>
 
-        <ul class="tab-btn">
+        <ul class="tab-btn" v-if="false">
           <li><a href="#">1H</a></li>
           <li><a href="#" class="active-tab">1D</a></li>
           <li><a href="#">1W</a></li>
@@ -43,7 +43,7 @@
         </ul>
       </div>
 
-      <div class="left left2">
+      <div class="left left2"  v-if="false">
         <table>
           <tr>
             <td>
@@ -192,32 +192,59 @@
 
     <div class="right-area q-pr-lg col">
       <div class="right">
-        <ul>
-          <li class="active-b">
-            <a href="#">Buy</a>
+        <ul v-if="false">
+          <li @click="tab='buy' " :class="{'active-b': tab == 'buy'}">
+            <a href="javascript:void(0)">Buy</a>
           </li>
-          <li>
-            <a href="#">Sell</a>
+          <li  @click="tab='sell'" :class="{'active-b': tab == 'sell'}">
+            <a href="javascript:void(0)">Sell</a>
           </li>
         </ul>
+        <q-tabs
+        v-model="tab"
+        inline-label
+        mobile-arrows
+      >
+        <q-tab name="buy" icon="sync_alt" label="Buy" />
+        <q-tab name="sell" icon="east" label="Sell" />
+
+      </q-tabs>
 
         <form action="#" method="#">
           <div class="input-bg">
-            <label>
+            <label class="row">
               <div class="half">
                 <p>Pay with</p>
-                <input type="text" name="" placeholder="0" />
+                <q-input  flat v-model="depositQuantity"  @input="isNaN(depositQuantity) ? depositQuantity = 0 : '' " dense/>
               </div>
 
-              <div class="select-op">
-                <select>
-                  <option>USDC</option>
-                  <option>USD Coin</option>
-                  <option>Wrapped Ether</option>
-                  <option>Wrapped BTC</option>
-                  <option>Dai</option>
-                  <option>True USD</option>
-                </select>
+              <div class="select-op col">
+                <q-select dense  style="width:100%" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'"   borderless class="select-input" v-model="depositCoin"   :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                            <template v-slot:option="scope">
+                                <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                    <q-item-section size="1rem" avatar>
+                                        <q-icon class="option--avatar option--avatar__custom"  :name="`img:${scope.opt.image}`" />
+                                    </q-item-section>
+                                    <q-item-section dark>
+                                        <q-item-label v-html="scope.opt.label" />
+                                        <q-item-label v-if="scope.opt.value.toLowerCase() !== scope.opt.label.toLowerCase()" caption>{{ scope.opt.value }}</q-item-label>
+
+                                    </q-item-section>
+                                </q-item>
+                            </template>
+                            <template v-slot:selected>
+                                <q-item v-if="depositCoin" class="q-mt-md">
+                                    <q-item-section avatar>
+                                        <q-icon class="option--avatar option--avatar__custom" :name="`img:${depositCoin.image}`" />
+                                    </q-item-section>
+                                    <q-item-section>
+                                        <q-item-label v-html="depositCoin.value.toUpperCase()" />
+                                    </q-item-section>
+                                </q-item>
+                                <q-item v-else>
+                                </q-item>
+                            </template>
+                        </q-select>
               </div>
             </label>
           </div>
@@ -225,15 +252,14 @@
             <label>
               <div>
                 <p>Receive</p>
-                <input type="text" name="" placeholder="0" />
+                <q-input  flat v-model="destinationQuantity"  readonly style="width:100%" :suffix="asset.type.toUpperCase()" dense />
               </div>
 
-              <div class="select-eth">ETH</div>
             </label>
           </div>
 
           <div class="buy">
-            <a href="#">BUY</a>
+            <a href="javascript:void(0)" @click="goToExchange()">BUY</a>
           </div>
         </form>
       </div>
@@ -247,13 +273,63 @@
 <script>
 import Formatter from '@/mixins/Formatter'
 import History from '../../components/Verto/History'
+import DexInteraction from '../../mixins/DexInteraction'
 export default {
 
   components: {
     History
   },
+  created () {
+    this.destinationCoin = {
+      label: this.asset.type.toUpperCase(),
+      value: this.asset.type,
+      icon: this.asset.icon
+    }
+    this.depositCoinOptions = this.getUniqueTokens(this.getAllCoins()).filter(o => this.$store.state.wallets.tokens.find(a => !isNaN(a.amount) && a.amount !== 0 && a.type === o.value))
+    this.depositCoinUnfilter = this.depositCoinOptions
+
+    if (this.depositCoin.value === this.destinationCoin.value) {
+      this.depositCoin = this.depositCoinOptions.find(o => o.value.toLowerCase() !== this.depositCoin.value)
+    }
+  },
+  methods: {
+
+    goToExchange () {
+      this.depositCoin.fromAmount = this.depositQuantity
+      this.checkPair()
+      if (this.dex) {
+        let depositCoin = this.depositCoin
+        let destinationCoin = this.destinationCoin
+        this.$router.push({
+          path: '/verto/exchange/:coinToSend/:coinToReceive',
+          name: 'exchange-v3',
+          params: {
+            depositCoin: depositCoin,
+            destinationCoin: destinationCoin,
+            dex: this.dex
+          }
+        })
+      }
+    }
+
+  },
+  data () {
+    return {
+      tab: 'buy',
+      depositCoinUnfilter: [],
+      depositCoinOptions: [],
+      depositQuantity: 0,
+      destinationQuantity: 'Click the Buy button',
+      destinationCoin: null,
+      depositCoin: {
+        label: 'ETH',
+        value: 'eth',
+        image: 'https://zapper.fi/images/ETH-icon.png'
+      }
+    }
+  },
   props: ['asset'],
-  mixins: [Formatter]
+  mixins: [Formatter, DexInteraction]
 
 }
 </script>
@@ -591,6 +667,7 @@ export default {
 }
 
 .right ul li a {
+      text-decoration: none;
   background: transparent;
   color: #000;
   font-size: 16px;
@@ -683,13 +760,14 @@ export default {
   line-height: 20px;
   font-weight: 500;
   color: #fff;
-  background: #346af0;
+  background: #7272fa;
   border-radius: 10000px;
   padding: 13px 50px;
   border: 1px solid #e8e8e9;
   margin-top: 30px;
   text-align: center;
   transition: all 0.3s ease;
+  text-decoration: none;
 }
 
 .buy a:hover {
