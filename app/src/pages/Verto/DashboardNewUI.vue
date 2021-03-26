@@ -11,14 +11,21 @@
             </div>
             <div class="col col-md-9 q-pr-md">
                 <div class="row">
-                    <div class="col col-md-6 customSlider">
+                    <div class="col col-md-6 customSlider" v-show="!assetSelected">
                         <chainToolsSection />
                     </div>
-                    <div class="col q-pl-sm col-md-6 customSlider">
+                    <div class="col q-pl-sm col-md-6 customSlider" v-show="!assetSelected">
                         <maxDeFiYield class="slide" :class="{'active': !customSlider}" />
                         <startNodeSection class="slide" :class="{'active': customSlider}" :banner="6" />
                     </div>
+                     <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white " v-if="assetSelected">
+                        <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Dahsboard"  icon="home" />
+                        <q-breadcrumbs-el class="cursor-pointer" @click="assetSelected = null" label="Assets" />
+                        <q-breadcrumbs-el class="cursor-pointer" :label="assetSelected.type.toUpperCase()" :icon="'img:'+assetSelected.icon" />
+                    </q-breadcrumbs>
+                    <SingleToken :asset="assetSelected" class="col-md-12" v-if="assetSelected" />
                     <div class="col col-md-12 full-height max-height2">
+
                         <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                             <q-tabs
                                 v-model="tabPoolAndAssetBalances"
@@ -43,7 +50,7 @@
                                     <TestnetPools :showAddLiquidity="true" class="bg-white" v-else />
                                 </q-tab-panel>
                                 <q-tab-panel name="asset">
-                                    <AssetBalancesTable data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="6"/>
+                                    <AssetBalancesTable @setAsset="setAsset" data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="6"/>
                                 </q-tab-panel>
                             </q-tab-panels>
                         </div>
@@ -121,6 +128,7 @@ import MakeVTXSection2 from '../../components/Verto/MakeVTXSection2'
 // import ExchangeSection from '../../components/Verto/ExchangeSection'
 import ExchangeSection3 from '../../components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
+import SingleToken from '../../components/Verto/SingleToken'
 import AssetBalancesTable from '../../components/Verto/AssetBalancesTable'
 
 import {
@@ -158,6 +166,7 @@ export default {
     ProfileHeader,
     Wallets,
     // AppsSection,
+    SingleToken,
     StartNodeSection,
     maxDeFiYield,
     TestnetPools,
@@ -179,6 +188,7 @@ export default {
       customSlider: true,
       rawPools: [],
       cruxKey: {},
+      assetSelected: false,
       interval: null,
       osName: '',
       tabPoolAndAssetBalances: 'asset',
@@ -310,6 +320,9 @@ export default {
     }
   },
   methods: {
+    setAsset (asset) {
+      this.assetSelected = asset
+    },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },

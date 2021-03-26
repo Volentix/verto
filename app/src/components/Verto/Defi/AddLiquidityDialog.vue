@@ -276,7 +276,7 @@ export default {
     this.getWindowWidth()
     this.$store.dispatch('investment/getGasPrice')
     let tableData = await this.$store.state.wallets.tokens
-    this.ethTokens = tableData.filter(w => w.chain === 'eth' && this.$store.state.investment.zapperTokens.find(o => o.symbol.toLowerCase() === w.type.toLowerCase()))
+    this.ethTokens = tableData.filter(w => w.chain === 'eth')
 
     this.ethWallets = tableData.filter(w => w.chain === 'eth' && w.type === 'eth').map(o => {
       o.value = o.key
@@ -379,13 +379,13 @@ export default {
       if (!this.$store.state.investment.selectedPool) {
         this.$store.commit('investment/setSelectedPool', this.$store.state.investment.pools[0])
       }
-      let tokens = this.$store.state.investment.zapperTokens
+      // let tokens = this.$store.state.investment.zapperTokens
 
       this.tokenOptions = this.ethTokens.map(o => {
         o.label = o.type.toUpperCase()
         o.value = o.contract ? o.contract : o.key
         o.key = this.currentEthWallet.key
-        o.data = o.label === 'ETH' ? tokens.find(t => t.address.toLowerCase() === '0x0000000000000000000000000000000000000000') : tokens.find(t => t.address.toLowerCase() === o.value.toLowerCase())
+        // o.data = o.label === 'ETH' ? tokens.find(t => t.address.toLowerCase() === '0x0000000000000000000000000000000000000000') : tokens.find(t => t.address.toLowerCase() === o.value.toLowerCase())
         o.isERC20 = !!o.contract
         return o
       })
@@ -467,7 +467,7 @@ export default {
       return transactionObject
     },
     getPoolOutput (index) {
-      return (this.sendAmount * (this.currentToken.data.price / this.pool.tokensData[index].price) / 2).toFixed(4)
+      return (this.sendAmount * (this.currentToken.tokenPrice / this.pool.tokensData[index].price) / 2).toFixed(4)
     },
     async sendTransaction () {
       let transactionObject = await this.getTransactionObject(true, true)

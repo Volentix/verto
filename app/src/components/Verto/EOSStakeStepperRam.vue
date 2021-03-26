@@ -94,8 +94,8 @@
                                                         <q-tab-panels v-model="action" animated>
                                                         <q-tab-panel :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" name="staking">
                                                             <div class="full-width">
-                                                                <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="'CPU' "  prefix="EOS" rounded outlined class="--input" @input="changeEosStakingAmount()" />
-                                                                <q-input  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmountNet" type="number" :suffix="'NET' "  prefix="EOS" rounded outlined class="--input" @input="changeEosStakingAmount()" />
+                                                                <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="'CPU' "  prefix="EOS" rounded outlined class="--input" @input="changeAmount()" />
+                                                                <q-input  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmountNet" type="number" :suffix="'NET' "  prefix="EOS" rounded outlined class="--input" @input="changeAmount()" />
                                                                 <br>
                                                                  <span class="--amount row text-h4"> {{ sendAmount }} {{ params.tokenID.toUpperCase() }} (CPU)</span>
                                                                <span  class="--amount row text-h4"> {{ sendAmountNet }} {{ params.tokenID.toUpperCase() }} (NET)</span>
@@ -104,8 +104,8 @@
 
                                                         <q-tab-panel name="unstaking">
                                                             <div class="full-width">
-                                                               <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="'' "  prefix="EOS" rounded outlined class="--input" @input="changeEosStakingAmount()" />
-                                                                <q-input  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmountNet" type="number" :suffix="'NET' "  prefix="EOS" rounded outlined class="--input" @input="changeEosStakingAmount()" />
+                                                               <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="'' "  prefix="EOS" rounded outlined class="--input" @input="changeAmount()" />
+                                                                <q-input  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmountNet" type="number" :suffix="'NET' "  prefix="EOS" rounded outlined class="--input" @input="sendAmountNet > currentAccount.amount ? sendAmountNet = currentAccount.amount : '' ; " />
                                                                 <br>
                                                             <span class="--title row text-h6"> Amount to unstake </span>
                                                             <span class="--amount row text-h4"> {{ sendAmount }} {{ params.tokenID.toUpperCase() }} (CPU)</span>
@@ -321,10 +321,10 @@ export default {
       })
       this.currentAccount.staked = stakedAmounts
     } else {
-      this.currentAccount.staked = {
-        net: 0,
-        cpu: 0
-      }
+        this.currentAccount.staked = {
+            net: ,
+            cpu:
+        }
     }
 
     // console.log('stakes', this.stakes)
@@ -355,24 +355,6 @@ export default {
         this.sendAmount = Math.round(Math.pow(10, this.currentAccount.precision) * this.stakedAmount * (this.slider / 100)) / Math.pow(10, this.currentAccount.precision)
       }
       this.checkAmount()
-    },
-
-    changeEosStakingAmount () {
-      if (this.action === 'staking') {
-        this.sendAmount = this.sendAmount > +this.currentAccount.amount ? +this.currentAccount.amount : this.sendAmount
-        this.sendAmountNet = this.sendAmountNet > +this.currentAccount.amount ? +this.currentAccount.amount : this.sendAmountNet
-      } else if (this.action === 'unstaking') {
-        this.sendAmount = this.sendAmount > +this.currentAccount.staked.cpu ? +this.currentAccount.staked.cpu : this.sendAmount
-        this.sendAmountNet = this.sendAmountNet > +this.currentAccount.staked.net ? +this.currentAccount.staked.net : this.sendAmountNet
-      }
-
-      if (this.sendAmountNet < 0) {
-        this.sendAmountNet = 0
-      }
-
-      if (this.sendAmount < 0) {
-        this.sendAmount = 0
-      }
     },
     changeAmount () {
       if (this.sendAmount > +this.currentAccount.amount && this.action === 'staking') {
@@ -432,13 +414,13 @@ export default {
             from: this.currentAccount.name,
             receiver: this.currentAccount.name,
             stake_cpu_quantity: parseFloat(this.sendAmount).toFixed(4) + ' EOS',
-            stake_net_quantity: parseFloat(this.sendAmountNet).toFixed(4) + ' EOS',
+            stake_net_quantity: parseFloat(0).toFixed(4) + ' EOS',
             transfer: false
           } : {
             from: this.currentAccount.name,
             receiver: this.currentAccount.name,
             unstake_cpu_quantity: parseFloat(this.sendAmount).toFixed(4) + ' EOS',
-            unstake_net_quantity: parseFloat(this.sendAmountNet).toFixed(4) + ' EOS'
+            unstake_net_quantity: parseFloat(0).toFixed(4) + ' EOS'
           }
         }]
       }

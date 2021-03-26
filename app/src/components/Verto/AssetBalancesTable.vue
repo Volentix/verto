@@ -4,7 +4,7 @@
       <!-- :grid="$q.screen.xs" -->
       <q-table row-key="type" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="loaded" :data="assets" :columns="columns" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
-          <q-td :props="props" class="body-table-col">
+          <q-td :props="props" class="body-table-col cursor-pointer" @click="$emit('setAsset', props.row)">
             <div class="col-1 flex items-center">
               <span class="imgs">
                 <img :src="props.row.icon" alt="">
@@ -66,6 +66,7 @@
             </template>
           </q-input>
         </template>
+
       </q-table>
     </q-scroll-area>
   </div>
@@ -144,7 +145,14 @@ export default {
   },
   created () {
     this.getWindowWidth()
+
     this.initTable()
+
+    this.$bus.$on('selectedChain', () => {
+      let chain = localStorage.getItem('selectedChain')
+      console.log(chain, 'chain 4')
+      this.initTable(chain)
+    })
   },
   watch: {
     '$store.state.wallets.tokens': function () {
@@ -158,14 +166,15 @@ export default {
     }
   },
   methods: {
-    initTable () {
+    initTable (chain) {
       let account = null
 
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.name) {
         account = this.$store.state.currentwallet.wallet
       }
       this.assets = []
-      JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter(o => !account || (o.chain === account.chain && o.name === account.name)))).forEach((token, i) => {
+      console.log(chain, 'chain 8')
+      JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter(o => (!account && !chain) || (chain && o.chain === chain) || (account && o.chain === account.chain && o.name === account.name)))).forEach((token, i) => {
         token.amount = parseFloat(token.amount)
         token.usd = parseFloat(token.usd)
 

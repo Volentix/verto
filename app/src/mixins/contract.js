@@ -41,7 +41,7 @@ export default {
         }
         this.approvalRequired = true
 
-        let value = this.web3.utils.toWei(amountToSend, 'ether')
+        let value = this.web3.utils.toWei(amountToSend.toString(), 'ether')
 
         tx = tokenContract.methods.approve(
           toAddress,

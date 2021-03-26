@@ -172,6 +172,14 @@ export default [
         }
       },
       {
+        name: 'ram-market',
+        path: '/verto/ram-market',
+        component: () => import('pages/Verto/GeneralEOSTransaction.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
         name: 'stake',
         path: '/verto/stake',
         component: () => import('pages/Verto/Stake.vue'),
