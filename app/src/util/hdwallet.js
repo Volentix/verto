@@ -5,6 +5,54 @@ import { Keyring } from '@polkadot/api'
 // Hierarchical Deterministic Wallets
 // https://iancoleman.io/bip39/ used to validate the derived keys as per bip44 non-hardened addresses.
 class HD {
+  constructor () {
+    this.names = [{
+      'value': 'btc',
+      'label': 'Bitcoin'
+    },
+    {
+      'value': 'eth',
+      'label': 'Ethereum'
+    },
+    {
+      'value': 'bnb',
+      'label': 'Binance Coin'
+    },
+    {
+      'value': 'ltc',
+      'label': 'Litecoin'
+    },
+    {
+      'value': 'dash',
+      'label': 'DASH'
+    },
+    {
+      'value': 'avax',
+      'label': 'Avalanche'
+    },
+    {
+      'value': 'dot',
+      'label': 'Polkadot'
+    },
+    {
+      'value': 'eos',
+      'label': 'EOS'
+    },
+    {
+      'value': 'ksm',
+      'label': 'Kusama'
+    },
+    {
+      'value': 'xlm',
+      'label': 'Stellar Lumens'
+    },
+    {
+      'value': 'xtz',
+      'label': 'Tezos'
+    }
+    ]
+  }
+
   Wallet = async (walletType) => {
     // const bip32 = require('bip32')
     // const util = require('ethereumjs-util')
