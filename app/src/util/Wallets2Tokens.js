@@ -160,7 +160,7 @@ class Wallets2Tokens {
         } else {
           wallet.to = '/verto/wallets/' + wallet.type + '/' + wallet.type + '/' + wallet.key
           wallet.chain = wallet.type
-          wallet.disabled = wallet.type !== 'eth' && wallet.type !== 'dot'
+          wallet.disabled = wallet.type !== 'eth' && wallet.type !== 'dot' && wallet.type !== 'ksm' && wallet.type !== 'bnb'
 
           if (wallet.type === 'ksm') {
             wallet.icon = 'https://assets.coingecko.com/coins/images/9568/small/m4zRhP5e_400x400.jpg'
