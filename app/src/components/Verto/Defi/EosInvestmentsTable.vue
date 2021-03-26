@@ -1,6 +1,6 @@
 <template>
 <div class="full-height">
-    <q-table :pagination="initialPagination" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :loading="$store.state.investment.tableLoading" :grid="$q.screen.xs" title="EOS ivestments" :data="$store.state.investment.eosInvestments" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities full-height">
+    <q-table :pagination="initialPagination" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :loading="$store.state.investment.tableLoading" title="EOS ivestments" :data="$store.state.investment.eosInvestments" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities full-height">
         <template v-slot:body-cell-asset="props">
             <q-td :props="props" class="body-table-col">
                 <div class="col-3 flex items-center">
@@ -10,9 +10,7 @@
                     </span>
                     <span class="column pairs">
                         <span class="pair">{{props.row.symbol0 + ' + ' + props.row.symbol1}}</span>
-
                     </span>
-
                 </div>
             </q-td>
         </template>
