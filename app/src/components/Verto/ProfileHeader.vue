@@ -84,21 +84,21 @@
       <div class="profile-wrapper--header__action">
 
         <q-btn unelevated v-if="screenSize <= 1024"
-          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm'].includes($store.state.currentwallet.wallet.chain))"
+          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb'].includes($store.state.currentwallet.wallet.chain))"
           to="/verto/wallets/send" outline
           class="profile-wrapper--header__action-btn"
           color="indigo-12" text-color="white" label="Send" />
         <q-btn unelevated v-if="screenSize > 1024"
-          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','btc','dot', 'ksm'].includes($store.state.currentwallet.wallet.chain))" @click="!$store.state.currentwallet.wallet.empty ? goToSendPage() : notifSelectWallet()"
+          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','btc','dot', 'ksm','bnb'].includes($store.state.currentwallet.wallet.chain))" @click="!$store.state.currentwallet.wallet.empty ? goToSendPage() : notifSelectWallet()"
           class="profile-wrapper--header__action-btn" outline
           color="indigo-12" text-color="white" label="Send" />
         <q-btn unelevated v-if="screenSize <= 1024"
           to="/verto/wallets/receive"
-          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm'].includes($store.state.currentwallet.wallet.chain))"
+          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb'].includes($store.state.currentwallet.wallet.chain))"
           class="profile-wrapper--header__action-btn" outline
           color="indigo-12" text-color="white" label="Receive" />
         <q-btn unelevated v-if="screenSize > 1024"
-          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm'].includes($store.state.currentwallet.wallet.chain)) "
+          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb'].includes($store.state.currentwallet.wallet.chain)) "
           @click="!$store.state.currentwallet.wallet.empty ? goToReceivePage() : notifSelectWallet()"
           class="profile-wrapper--header__action-btn" outline
           color="indigo-12" text-color="white" label="Receive" />

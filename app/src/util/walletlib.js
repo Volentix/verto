@@ -423,30 +423,48 @@ class Lib {
         const insight = new explorers.Insight(process.env[store.state.settings.network].CACHE + 'https://explorer.btc.zelcore.io/') // 'https://insight.bitpay.com')
         const network = store.state.settings.network === 'testnet' ? bitcoin.networks.testnet : bitcoin.networks.bitcoin
         const keyPair = bitcoin.ECPair.fromWIF(key)
+        const returnedUTXOS = await insight.getUtxos(from)
+
         const psbt = new bitcoin.Psbt({
           network
         })
-        const p2sh = bitcoin.payments.p2sh({
-          redeem: bitcoin.payments.p2wpkh({
-            pubkey: keyPair.publicKey,
-            network
-          }),
-          network
+
+        // const p2sh = bitcoin.payments.p2sh({
+        //   redeem: bitcoin.payments.p2wpkh({
+        //     pubkey: keyPair.publicKey,
+        //     network
+        //   }),
+        //   network
+        // })
+
+        returnedUTXOS.forEach((UTXO) => {
+          console.log('UTXO', UTXO)
+          let formattedWitnessUtxo = {
+            script: Buffer.from(UTXO.witnessUtxo.script),
+            value: UTXO.witnessUtxo.value
+          }
+          psbt.addInput({
+            hash: UTXO.hash,
+            index: UTXO.index,
+            witnessUtxo: formattedWitnessUtxo
+          })
         })
 
         psbt.addOutput({
           address: to,
           value: value * 100000000
         })
-        psbt.addInput({
-          hash: 'xxxx',
-          index: 0,
-          redeemScript: p2sh.redeem.output,
-          witnessUtxo: {
-            script: p2sh.output,
-            value: 10000
-          }
-        })
+
+        // psbt.addInput({
+        //   hash: 'xxxx',
+        //   index: 0,
+        //   redeemScript: p2sh.redeem.output,
+        //   witnessUtxo: {
+        //     script: p2sh.output,
+        //     value: 10000
+        //   }
+        // })
+
         psbt.signAllInputs(keyPair)
         psbt.finalizeAllInputs()
         const tx = psbt.extractTransaction()
@@ -532,6 +550,55 @@ class Lib {
           message = err
           success = false
         }
+
+        return {
+          success,
+          message
+        }
+      },
+      async bnb (token, from, to, value, memo, key, contract) {
+        const { BncClient } = require('@binance-chain/javascript-sdk')
+        const api = 'https://dex.binance.org/'
+
+        const bnbClient = new BncClient(api)
+        const httpClient = axios.create({ baseURL: api })
+
+        bnbClient.chooseNetwork('mainnet') // or this can be "testnet"
+        bnbClient.setPrivateKey(key)
+        bnbClient.initChain()
+
+        const sequenceURL = `${api}api/v1/account/${from}/sequence`
+
+        let message, success
+
+        httpClient.get(sequenceURL).then((res) => {
+          const sequence = res.data.sequence || 0
+          return bnbClient.transfer(
+            from,
+            to,
+            value,
+            token,
+            memo,
+            sequence
+          )
+        })
+          .then((result) => {
+            console.log(result)
+            if (result.status === 200) {
+              console.log('success', result.result[0].hash)
+              message = 'https://explorer.binance.org/tx/' + result.result[0].hash
+              success = true
+            } else {
+              console.error('error', result)
+              message = result
+              success = false
+            }
+          })
+          .catch((error) => {
+            console.error('error', error)
+            message = error
+            success = false
+          })
 
         return {
           success,
