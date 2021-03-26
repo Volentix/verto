@@ -32,7 +32,7 @@
                     </div>
                 </div>
 
-                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="$store.state.wallets.tokens.filter(f => f.type == chain.chain).length == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type == chain.chain)) : showChainAccounts(index)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="$store.state.wallets.tokens.filter(f => f.type == chain.chain).length == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type == chain.chain)) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" :src="chain.icon"  />
@@ -388,7 +388,7 @@
                                 </div>
                         </q-item>
 
-                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="$store.state.wallets.tokens.filter(f => f.type == chain.chain).length == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type == chain.chain)) : showChainAccounts(index)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="$store.state.wallets.tokens.filter(f => f.type == chain.chain).length == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type == chain.chain)) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" :src="chain.icon"  />
@@ -833,6 +833,7 @@ export default {
   },
   watch: {
     '$store.state.wallets.portfolioTotal': function () {
+      this.setChains()
       this.loadingIndicator = true
       setTimeout(() => {
         this.loadingIndicator = false
@@ -912,18 +913,7 @@ export default {
       this.hideEosSetup = !this.$store.state.wallets.tokens.find(f => f.type === 'verto' && f.chain === 'eos' && !f.hidden && !f.disabled)
     }
 
-    this.chains = this.$store.state.wallets.tokens.filter((v, i, a) => v.type === v.chain && a.findIndex(t => (t.type === v.type && t.chain === v.chain)) === i)
-      .map(o => {
-        let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
-        o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
-        o.count = accounts.filter(o => o.type === o.chain).length
-
-        let chain = HD.names.find(a => a.value === o.chain)
-        o.label = chain ? chain.label : o.chain
-
-        return o
-      })
-    this.chains.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
+    this.setChains()
 
     setTimeout(() => {
       this.$store.state.wallets.tokens.map(async (f) => {
@@ -971,8 +961,24 @@ export default {
     }
   },
   methods: {
-    showChainAccounts (index) {
+    setChains () {
+      this.chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).filter((v, i, a) => v.type === v.chain && a.findIndex(t => (t.type === v.type && t.chain === v.chain)) === i)
+        .map(o => {
+          let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
+          o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
+          o.count = accounts.filter(o => o.type === o.chain).length
+
+          let chain = HD.names.find(a => a.value === o.chain)
+          o.label = chain ? chain.label : o.chain
+
+          return o
+        })
+      this.chains.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
+    },
+    showChainAccounts (index, chain) {
       let nodeList = document.querySelectorAll('.all-wallets .q-expansion-item__toggle-icon')
+      localStorage.setItem('selectedChain', chain)
+      this.$bus.$emit('selectedChain')
 
       let items = Array.prototype.slice.call(nodeList)
 
@@ -1155,7 +1161,6 @@ export default {
       return Math.abs(num) > 999 ? Math.sign(num) * ((Math.abs(num) / 1000).toFixed(1)) + 'k' : Math.sign(num) * Math.abs(num)
     },
     setRessourcesInfos () {
-      console.log(this.$store.state.currentwallet.wallet, 'this.$store.state.currentwallet.wallet ')
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.chain === 'eos' && this.$store.state.currentwallet.wallet.accountData) {
         this.circularProgress.ram = parseInt((this.$store.state.currentwallet.wallet.accountData.ram_usage / this.$store.state.currentwallet.wallet.accountData.ram_quota) * 100)
         this.circularProgress.cpu = parseInt((this.$store.state.currentwallet.wallet.accountData.cpu_limit.used / this.$store.state.currentwallet.wallet.accountData.cpu_limit.max) * 100)
