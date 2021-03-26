@@ -26,7 +26,7 @@
           <div class="text-h6">Choose your account</div>
         </q-card-section>
         <q-card-section class="q-pt-none">
-          <q-select style="width: 400px;"
+          <q-select :style="screenSize > 1024 ? 'width: 400px;':'width: 100%;'"
             :dark="$store.state.settings.lightMode === 'true'"
             :light="$store.state.settings.lightMode === 'false'"
             separator rounded outlined class="select-input ellipsis mw200" @input="getAccountInformation()" v-model="accountOption" :options="accountOptions">
@@ -272,55 +272,62 @@
         <q-splitter
           v-model="splitterModel"
           style="width: 100%"
+          :class="[chainMenu ? 'chainMenu_active':'']"
         >
           <template style="width:40%" v-slot:before>
             <q-tabs
-              class="tabs-chains defi-sidebar-wrapper q-pa-md q-pr-xs bg-white"
+              class="tabs-chains defi-sidebar-wrapper bg-white"
               v-model="chain"
               vertical
-              align="left"
+              align="center"
               inline-label
             >
                 <div>
                   <q-list class="text-center flex" data-title="Switch between chains"  data-intro="Each chain have their own related and associated features">
-                    <q-item v-if="$store.state.settings.network == 'mainnet'" clickable @click="chain = 'eth';  switchChain() " :class="[chain == 'eth' ? 'bg-white' :'']">
-                    <q-img src="https://files.coinswitch.co/public/coins/eth.png" style="width:20px;"/>
-                      <q-item-section class="q-pl-sm">Ethereum</q-item-section>
+                    <q-item v-if="$store.state.settings.network == 'mainnet'" clickable @click="chain = 'eth'; chainMenu = true;  switchChain(); " :class="[chain == 'eth' ? 'bg-white' :'']">
+                      <q-item-section>
+                        <div class="flex flex-center">
+                          <q-img src="https://files.coinswitch.co/public/coins/eth.png" width="30px" class="q-mr-sm" /> ETH
+                        </div>
+                      </q-item-section>
                     </q-item>
-                    <q-item clickable class="col" @click="chain = 'eos'; switchChain() " :class="[chain == 'eos' ? 'bg-white' :'']">
-                      <q-img src="https://files.coinswitch.co/public/coins/eos.png" style="width:20px;"/>
-                    <q-item-section class="q-pl-sm">EOS</q-item-section>
+                    <q-item clickable class="col flex flex-center" @click="chain = 'eos'; chainMenu = true; switchChain() " :class="[chain == 'eos' ? 'bg-white' :'']">
+                      <q-item-section>
+                        <div class="flex flex-center">
+                          <q-img src="https://files.coinswitch.co/public/coins/eos.png" width="30px" class="q-mr-sm" /> EOS
+                        </div>
+                      </q-item-section>
                     </q-item>
                   </q-list>
                 </div>
                 <q-scroll-area :visible="true" class="q-pr-md" style="min-height: 70vh;height: 100%;">
                   <div auto-close stretch flat>
                     <q-list class="text-left" data-title="Menu"  data-intro="Click on a menu item to switch the view of the main section" separator>
-                      <q-item clickable @click="menu = 'swap'" :class="[menu == 'swap' ? 'bg-grey-3' : 'bg-white']">
+                      <q-item clickable @click="menu = 'swap'; chainMenu = false; chainMenu = false" :class="[menu == 'swap' ? 'bg-grey-3' : 'bg-white']">
                         <q-item-section>Swap</q-item-section>
                         <q-item-section side><q-icon name="navigate_next"/></q-item-section>
                         </q-item>
-                          <q-item v-if="chain == 'eos'" clickable @click="menu = 'add_liquidity'" :class="[menu == 'add_liquidity' ? 'bg-grey-3' : 'bg-white']">
+                          <q-item v-if="chain == 'eos'" clickable @click="menu = 'add_liquidity'; chainMenu = false" :class="[menu == 'add_liquidity' ? 'bg-grey-3' : 'bg-white']">
                           <q-item-section>Add liquidity</q-item-section>
                           <q-item-section side><q-icon name="navigate_next"/></q-item-section>
                         </q-item>
-                        <q-item clickable @click="menu = 'liquidity'" :class="[menu == 'liquidity' ? 'bg-grey-3' : 'bg-white']">
+                        <q-item clickable @click="menu = 'liquidity'; chainMenu = false" :class="[menu == 'liquidity' ? 'bg-grey-3' : 'bg-white']">
                           <q-item-section>Liquidity Pools</q-item-section>
                           <q-item-section side><q-icon name="navigate_next"/></q-item-section>
                         </q-item>
-                        <q-item clickable @click="menu = 'investments'" :class="[menu == 'investments' ? 'bg-grey-3' : 'bg-white']">
+                        <q-item clickable @click="menu = 'investments'; chainMenu = false" :class="[menu == 'investments' ? 'bg-grey-3' : 'bg-white']">
                           <q-item-section>Investments</q-item-section>
                           <q-item-section side><q-icon name="navigate_next"/></q-item-section>
                         </q-item>
-                        <q-item v-if="chain == 'eth'" clickable @click="menu = 'debts'" :class="[menu == 'debts' ? 'bg-grey-3' : 'bg-white']">
+                        <q-item v-if="chain == 'eth'" clickable @click="menu = 'debts'; chainMenu = false" :class="[menu == 'debts' ? 'bg-grey-3' : 'bg-white']">
                           <q-item-section>Debts</q-item-section>
                           <q-item-section side><q-icon name="navigate_next"/></q-item-section>
                         </q-item>
-                        <q-item v-if="chain == 'eth'" clickable @click="menu = 'transactions'" :class="[menu == 'transactions' ? 'bg-grey-3' : 'bg-white']">
+                        <q-item v-if="chain == 'eth'" clickable @click="menu = 'transactions'; chainMenu = false" :class="[menu == 'transactions' ? 'bg-grey-3' : 'bg-white']">
                           <q-item-section>Transactions</q-item-section>
                           <q-item-section side><q-icon name="navigate_next"/></q-item-section>
                         </q-item>
-                        <q-item v-if="chain == 'eth'" clickable @click="menu = 'staking'" :class="[menu == 'staking' ? 'bg-grey-3' : 'bg-white']">
+                        <q-item v-if="chain == 'eth'" clickable @click="menu = 'staking'; chainMenu = false" :class="[menu == 'staking' ? 'bg-grey-3' : 'bg-white']">
                           <q-item-section>Stake</q-item-section>
                           <q-item-section side><q-icon name="navigate_next"/></q-item-section>
                         </q-item>
@@ -492,6 +499,7 @@ export default {
       tab2: 'mails',
       update: 9818,
       chain: 'eth',
+      chainMenu: false,
       menu: 'liquidity',
       splitterModel: 25,
       chooseAccount: true,
@@ -1917,28 +1925,72 @@ export default {
   border-radius: 10px !important;
 }
 .mobile-version{
+  .defi-sidebar-wrapper{
+    overflow: hidden;
+  }
   /deep/ .q-splitter.no-wrap{
     display: flex;
     flex-direction: column;
+    &.chainMenu_active{
+      .q-splitter__panel.q-splitter__before{
+        height: auto !important;
+      }
+    }
     .q-splitter__panel{
       &.q-splitter__before{
         width: 100% !important;
-        height: 86px !important;
+        height: 52px !important;
         margin-bottom: 10px;
         margin-left: 10px;
         margin-right: 0px;
         max-width: calc(100% - 20px);
+        position: absolute;
+        z-index: 3;
+        left: 0px;
+        top: 10px;
+        .q-item.q-item-type{
+          width: 50%;
+        }
+        .q-tabs--vertical .q-tabs__arrow{
+          display: none;
+        }
+        .q-scrollarea{
+          min-height: 78vh;
+          height: 100%;
+          position: relative;
+          .scroll.relative-position{
+            min-height: 78vh;
+            .q-item.q-item-type{
+              width: 100%;
+            }
+          }
+        }
       }
       &.q-splitter__after{
         .q-scrollarea{
-          height: 73vh !important;
+          // margin-top: 70px;
+          height: 89vh !important;
         }
+        // .explore-opportunities{
+        //   margin-top: 70px;
+        //   margin-right: 10px !important;
+        // }
+        .explore-opportunities,
+        .accountOptionOneinch,
         .swapeos-component{
           margin: 0px 0px;
           margin-left: 10px;
           padding-right: 5px;
           margin-right: 10px;
           padding-left: 0px;
+          margin-top: 70px;
+          .prototype .q-tabs{
+            max-width: calc(100% - 30px);
+            margin-left: 10px;
+          }
+          .q-scrollarea{
+            height: 78vh !important;
+          }
         }
       }
     }
