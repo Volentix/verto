@@ -43,12 +43,8 @@
                 Section currently in development: currently showing ETH wallets
                 history
               </q-banner>
-              <div class="row">
-                <h2
-                  class="standard-content--title col-md-4 float-left flex justify-start q-pl-md q-pt-lg"
-                >
-                  Transaction builder
-                </h2>
+              <div class="row" v-if="false">
+
                 <div class="col flex justify-end q-pr-md">
                   <AccountSelector :showAllWallets="true" />
                 </div>
@@ -56,82 +52,14 @@
 
               <div class="standard-content--body" style="height: 100%">
                 <div class="row">
-                  <div class="col-md-6">
-                    <div
-                      :class="'text-'+colors[index]+' q-pa-md action q-mb-md'"
-                      v-for="(action, index) in actions"
-                      :key="index"
-                    >
-                      <div class="text-body1">
-                        Action {{ index + 1 }}
-                        <q-btn
-                          flat
-                          label="Add new actiion"
-                          color="primary"
-                          @click="actions.push(actionTemplate)"
-                        ></q-btn>
-                      </div>
-                      <div class="row q-col-gutter-md">
-                        <div class="col-md-12 row q-col-gutter-md">
-                          <q-input
-                            filled
-                            class="col-6"
-                            label="Contract"
-                            v-model="actions[index].account"
-                          />
-                          <q-input
-                            v-model="actions[index].name"
-                            filled
-                            class="col-6"
-                            label="Name"
-                          />
-                        </div>
-                        <div class="col-md-12 text-body2">
-                          Data
+                  <div class="col-md-6 q-pl-md">
+                    <BuySellEosRam @setTxData="setTxData" />
 
-                        </div>
-                        <div
-                          class="col-md-12 row"
-                          v-for="i in actions[index].dataCount"
-                          :key="i"
-                        >
-                          <q-input
-                            filled
-                            v-model="actions[index].dataKeys[i-1]"
-                            class="col-md-6"
-                            :label="'Property ' + i"
-                          />
-                          <q-input
-                            v-model="actions[index].dataValues[i-1]"
-                            filled
-                            class="col-md-6"
-                            label="Value"
-                          />
-                        </div>
-                        <q-btn
-                            flat
-                            dense
-                            label="Add new property"
-                            color="primary"
-                            @click="actions[index].dataCount++"
-                          ></q-btn>
-                      </div>
-
-                       <q-input
-                            filled
-                            v-model="actions[index].memo"
-                            class="col-md-12"
-                            label="Memo"
-                          />
-
-                    </div>
-                  </div>
-                   <div class="col-md-6  q-pa-md">
-                       <p class="text-h6 text-bold" v-if="!decryptPrivateKey && !transactionLink">Click button below to process</p>
+                       <p class="text-h6 text-bold" v-if="transactionObject && !decryptPrivateKey && !transactionLink">Click button below to process</p>
                        <p class="text-red text-body2">{{ErrorMessage}}</p>
                        <p class="text-green text-body2">{{SuccessMessage}}</p>
 
-                       <div v-if="decryptPrivateKey" >
+                         <div v-if="decryptPrivateKey" >
                                   <q-card-section>
                                     <div class="text-uppercase">
                                       <q-item-section>
@@ -151,7 +79,7 @@
                                     </div>
                                   </q-card-section>
                                 </div>
-                        <q-btn label="Process" :loading="spinnervisible" @click="process()"  v-if="!decryptPrivateKey && !transactionLink" outline />
+                        <q-btn label="Process" :disable="!transactionObject" :loading="spinnervisible" @click="process()"  v-if="transactionObject && !decryptPrivateKey && !transactionLink" outline />
                          <q-input v-if="transactionLink" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" readonly class="input-input" rounded outlined color="purple" v-model="transactionLink">
                             <template v-slot:append>
                             <div class="flex justify-end">
@@ -161,7 +89,6 @@
                         </q-input>
                         <a v-if="transactionLink" :href="transactionLink" target="_blank" class="text-body2 text-black"> More infos</a>
 
-                       <div class="preFormatted q-pt-md">{{ transaction }}</div>
                        </div>
                 </div>
               </div>
@@ -178,6 +105,7 @@ import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import configManager from '@/util/ConfigManager'
 import AccountSelector from '../../components/Verto/Exchange/AccountSelector'
+import BuySellEosRam from '../../components/Verto/BuySellEosRam'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 import { version } from '../../../package.json'
@@ -189,7 +117,8 @@ export default {
   components: {
     ProfileHeader,
     Wallets,
-    AccountSelector
+    AccountSelector,
+    BuySellEosRam
   },
   data () {
     return {
@@ -198,6 +127,7 @@ export default {
       privateKeyPassword: '',
       SuccessMessage: '',
       transactionLink: null,
+      transactionObject: false,
       invalidPrivateKeyPassword: false,
       isPwd: true,
       privateKey: {
@@ -282,9 +212,7 @@ export default {
         this.decryptPrivateKey = true
         return
       }
-      let transactionObject = {
-        actions: this.transaction
-      }
+      let transactionObject = this.transactionObject
 
       try {
         this.spinnervisible = true
@@ -296,8 +224,6 @@ export default {
         this.transStatus = 'Sent Successfully'
         this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain.'
       } catch (error) {
-        this.spinnervisible = false
-        this.ErrorMessage = error.message
         if (error.toString().includes('is greater than the maximum billable CPU time for the transaction')) {
           this.freeCPU = true
           this.spinnervisible = true
@@ -313,8 +239,12 @@ export default {
             }
             this.spinnervisible = false
           }).catch((error) => {
+            this.spinnervisible = true
             this.ErrorMessage = error.message
           })
+        } else {
+          this.ErrorMessage = error.message
+          this.spinnervisible = false
         }
         /*
          if (error.includes('maximum billable CPU time')) {
@@ -327,35 +257,9 @@ export default {
         */
       }
     },
-    setTransaction () {
-      this.transaction = []
-      this.transactionLink = null
-      this.ErrorMessage = null
-
-      // console.log()
-      this.actions.forEach(e => {
-        let data = {}
-
-        e.dataKeys.forEach((o, i) => {
-          if (o && o.length) { data[o] = isNaN(e.dataValues[i]) ? e.dataValues[i] : parseInt(e.dataValues[i]) }
-        })
-
-        if (e.memo && e.memo.trim().length) {
-          data['memo'] = e.memo
-        }
-
-        let tx = {
-          account: e.account,
-          name: e.name,
-          authorization: [{
-            actor: this.$store.state.investment.defaultAccount.name,
-            permission: 'active'
-          }],
-          data: data
-        }
-
-        this.transaction.push(tx)
-      })
+    setTxData (data) {
+      this.transactionLink = false
+      this.transactionObject = data
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth

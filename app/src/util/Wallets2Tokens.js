@@ -12,7 +12,7 @@ class Wallets2Tokens {
     this.tableDataCache = []
     this.tableData = []
 
-    store.state.wallets.portfolioTotal = 0
+    // store.state.wallets.portfolioTotal = 0
 
     if (data) {
       walletName = walletName ? walletName.toLowerCase() : walletName
@@ -28,7 +28,11 @@ class Wallets2Tokens {
     const self = this
     self.eosUSD = 0
     this.getEosUSD()
-
+    /* store.state.currentwallet.config.keys.push({
+      type: 'eos',
+      name: 'vertofreecpu',
+      chain: 'eos'
+    }) */
     this.tableData = [ ...store.state.currentwallet.config.keys ].filter(w => w.name.toLowerCase() === walletName || !walletName)
 
     if (store.state.settings.network === 'testnet') {
@@ -93,6 +97,7 @@ class Wallets2Tokens {
                     privateKey: wallet.privateKey,
                     privateKeyEncrypted: wallet.privateKeyEncrypted,
                     amount: t.amount,
+                    tokenPrice: usdValue,
                     usd: usdValue * t.amount,
                     contract: t.code,
                     precision: t.amount ? t.amount.split('.')[1].length : 0,
@@ -100,7 +105,7 @@ class Wallets2Tokens {
                     to: '/verto/wallets/eos/' + type + '/' + name,
                     icon: 'https://ndi.340wan.com/eos/' + t.code + '-' + t.symbol.toLowerCase() + '.png'
                   })
-                  store.state.wallets.portfolioTotal += usdValue * t.amount
+                  // store.state.wallets.portfolioTotal += usdValue * t.amount
                   this.updateWallet()
                 })
               }
@@ -119,11 +124,11 @@ class Wallets2Tokens {
                   eos.privateKey = wallet.privateKey
                   eos.privateKeyEncrypted = wallet.privateKeyEncrypted
                   eos.precision = t.amount.split('.')[1].length
-                  // console.log('a ---------------------', a)
+                  eos.tokenPrice = this.eosUSD
                   eos.proxy = a.voter_info ? a.voter_info.proxy : ''
                   eos.staked = a.voter_info ? a.voter_info.staked / 10000 : 0
                   // console.log('eos eos eos  ', eos)
-                  store.state.wallets.portfolioTotal += this.eosUSD * t.amount
+                  // store.state.wallets.portfolioTotal += this.eosUSD * t.amount
                 })
               })
               this.updateWallet()
@@ -237,6 +242,7 @@ class Wallets2Tokens {
                     privateKey: wallet.privateKey,
                     privateKeyEncrypted: wallet.privateKeyEncrypted,
                     amount: t.amount,
+                    tokenPrice: usdValue,
                     usd: usdValue * t.amount,
                     contract: t.code,
                     precision: t.amount.split('.')[1] ? t.amount.split('.')[1].length : 0,
@@ -261,14 +267,15 @@ class Wallets2Tokens {
                   eos.amount = t.amount ? t.amount : 0
                   eos.usd = this.eosUSD * t.amount
                   eos.contract = 'eosio.token'
+                  eos.tokenPrice = this.eosUSD
                   eos.privateKey = wallet.privateKey
                   eos.privateKeyEncrypted = wallet.privateKeyEncrypted
                   eos.precision = t.amount.split('.')[1] ? t.amount.split('.')[1].length : 0
-                  // console.log('a ---------------------', a)
+                  eos.accountData = a
                   eos.proxy = a.voter_info ? a.voter_info.proxy : ''
                   eos.staked = a.voter_info ? a.voter_info.staked / 10000 : 0
                   // console.log('eos eos eos  ', eos)
-                  store.state.wallets.portfolioTotal += this.eosUSD * t.amount
+                  // store.state.wallets.portfolioTotal += this.eosUSD * t.amount
                 })
               })
 
@@ -289,10 +296,11 @@ class Wallets2Tokens {
             eth.amount = ethplorer.ETH.balance
             eth.key = wallet.key.toLowerCase()
             eth.usd = ethplorer.ETH.balance * ethplorer.ETH.price.rate
+            eth.tokenPrice = ethplorer.ETH.price.rate
             eth.icon = 'https://zapper.fi/images/ETH-icon.png'
           })
-          let ethBalance = ethplorer.ETH.balance * ethplorer.ETH.price.rate
-          store.state.wallets.portfolioTotal += isNaN(ethBalance) ? 0 : ethBalance
+          // let ethBalance = ethplorer.ETH.balance * ethplorer.ETH.price.rate
+          // store.state.wallets.portfolioTotal += isNaN(ethBalance) ? 0 : ethBalance
           // console.log('ethplorer', ethplorer)
           if (ethplorer) {
             axios.get(process.env[store.state.settings.network].CACHE + 'https://api.tokensets.com/v1/rebalancing_sets', {
@@ -323,6 +331,7 @@ class Wallets2Tokens {
                     disabled: false,
                     type: t.tokenInfo.symbol ? t.tokenInfo.symbol.toLowerCase() : '',
                     name: wallet.name,
+                    tokenPrice: t.tokenInfo.price.rate,
                     key: wallet.key.toLowerCase(),
                     privateKey: wallet.privateKey,
                     amount: t.balance / (10 ** t.tokenInfo.decimals),
@@ -332,7 +341,7 @@ class Wallets2Tokens {
                     to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase() + '/' + wallet.key,
                     icon: t.tokenInfo.image
                   })
-                  store.state.wallets.portfolioTotal += isNaN(amount) ? 0 : amount
+                  // store.state.wallets.portfolioTotal += isNaN(amount) ? 0 : amount
                   this.updateWallet()
                 })
               }
@@ -352,7 +361,7 @@ class Wallets2Tokens {
     // this.$store.state.wallets.portfolioTotal = this.$store.state.wallets.portfolioTotal + usdValue * t.amount
     // console.log('this.$store.state.wallets', this.$store.state)
     // store.commit('wallets/updateTokens', this.tableData)
-    // store.commit('wallets/updatePortfolioTotal', store.state.wallets.portfolioTotal)
+    // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)
   }
 
   getEOSTokens (wallet) {
@@ -373,6 +382,7 @@ class Wallets2Tokens {
               privateKeyEncrypted: wallet.privateKeyEncrypted,
               amount: token.amount,
               usd: token.usd_value,
+              tokenPrice: token.price,
               contract: token.contract,
               precision: token.decimals,
               chain: 'eos',
@@ -494,7 +504,7 @@ class Wallets2Tokens {
   updateWallet () {
     let data = this.tableData.concat(this.tableDataCache)
     store.commit('wallets/updateTokens', data)
-    store.commit('wallets/updatePortfolioTotal', store.state.wallets.portfolioTotal)
+    // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)
   }
   async getUSD (contract, coin) {
     if (coin === 'usdt' || coin === 'eosdt') {

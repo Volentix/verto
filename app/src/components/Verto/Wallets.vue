@@ -31,6 +31,91 @@
                         </div>
                     </div>
                 </div>
+
+                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="$store.state.wallets.tokens.filter(f => f.type == chain.chain).length == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type == chain.chain)) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                        <template v-slot:header>
+                            <q-item-section avatar>
+                                <img class="coin-icon" width="35px" :src="chain.icon"  />
+                            </q-item-section>
+                            <q-item-section  class="item-name">
+                            <span class="item-name--name"> {{chain.label}}</span>
+                            <span  class="item-name--staked" v-if="chain.count > 1">{{chain.count}} accounts</span>
+
+                            </q-item-section>
+
+                            <q-item-section class="item-info col" side>
+                            <div class="row items-center text-bold">
+
+                            <span> ${{formatNumber(chain.chainTotal ? chain.chainTotal.toFixed(0) : 0 , 0)}}</span>
+                                </div>
+                            </q-item-section>
+                            </template>
+
+                            <q-card :dark="$store.state.settings.lightMode === 'true'">
+                            <q-card-section>
+                                <q-item :set="chainTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && f.name.toLowerCase() == item.name.toLowerCase())" :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.type == chain.chain && f.chain == chain.chain && !f.hidden && !f.disabled).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                                <div class="header-wallet-wrapper culumn full-width">
+                                    <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
+                                        <q-item-section avatar>
+                                            <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
+                                        </q-item-section>
+                                        <q-item-section class="item-name">
+                                            <span class="item-name--name">{{item.name}}</span>
+                                            <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
+
+                                            <span  class="item-name--staked" >{{chainTokens.length}} token{{ chainTokens.length > 1 ? 's' : '' }}</span>
+
+                                        </q-item-section>
+                                        <q-item-section class="item-info" v-if="!item.disabled">
+                                            <span class="item-info--amount">{{formatNumber(item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(4) : new Number(item.amount).toFixed(4).toString()) : 0, 2) }} {{item.type.toUpperCase()}}</span>
+                                            <span class="item-info--amountUSD" v-if="item.total">${{formatNumber(new Number(isNaN(item.total) ? 0 : item.total).toFixed(2),0)}}</span>
+                                            <span class="item-info--amountUSD" v-else>${{formatNumber(new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2),0)}}</span>
+                                        </q-item-section>
+                                        <q-item-section class="item-info" v-else>
+                                            <span class="item-info--amount">in progress</span>
+                                        </q-item-section>
+                                    </div>
+                                    <div class="menu-wallet" v-if="false">
+                                        <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
+                                            <!-- <q-item v-if="false" class="p-relative full-width no-pad">
+                                                <div class="vespucci-score--wrapper full-width flex justify-between items-center">
+                                                    <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
+                                                    <span class="value">{{ item.vespucciScore }}</span>
+                                                    <span class="powered">Powered by Vespucci</span>
+                                                </div>
+                                            </q-item> -->
+                                            <q-separator style="margin-top: 10px" />
+                                            <q-item data-name='Trade' v-if="item.disabled" clickable v-ripple class="p-relative" to="/verto/exchange">Trade
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
+                                                <q-item-section>
+                                                    <q-item-label>{{item.hidden ? 'Reveal' : 'Hide'}} Currency Chain</q-item-label>
+                                                </q-item-section>
+                                                <q-item-section avatar>
+                                                    <q-toggle class="p-abs" color="blue" @input="hideCurrency()" v-model="item.hidden" />
+                                                </q-item-section>
+                                            </q-item>
+                                        </q-list>
+                                    </div>
+                                </div>
+                            </q-item>
+
+                            </q-card-section>
+                            <q-separator />
+
+                            </q-card>
+
+                        </q-expansion-item>
                 <q-list v-if="false" bordered separator class="list-wrapper">
                     <q-item v-for="(item) in $store.state.wallets.tokens.filter(f => !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8" :to="item.to">
                         <div class="header-wallet-wrapper culumn full-width">
@@ -187,40 +272,44 @@
             <q-btn unelevated v-if="!showWallets" flat @click="toggleWallets()" :icon-right="showText ? 'keyboard_arrow_up': 'keyboard_arrow_down'" class="full-width wallets-wrapper--list__hide-wallets" color="white" text-color="black" :label="showText ? 'Hide all wallets' : 'Show all wallets'" :class="showText ? 'open': 'hide'" />
         </div>
         <div v-else class="else-is-desktop wallets-wrapper--list open full-height">
-            <div class="chain-switch-wrapper">
+            <div class="chain-switch-wrapper" v-if="false">
                 <q-btn-toggle
-                    v-model="chainSwitcher"
+                    v-model="selectedChain"
                     flat
                     no-caps
+                    @click="$store.state.currentwallet.wallet = {
+                        empty : true
+                    }"
+                    clearable
                     class="full-width"
                     toggle-color="teal"
                     :options="[
-                        {value: 'ethereum', slot: 'ethereum'},
+                        {value: 'eth', slot: 'ethereum'},
                         {value: 'eos', slot: 'eos'}
                     ]"
                 >
                     <template v-slot:ethereum>
-                        <div class="ethereum-chain-wrapper flex items-center">
+                        <div class="ethereum-chain-wrapper flex items-center" >
                             <div class="column items-center">
-                                <q-icon class="q-mrsm" :name="`img:https://files.coinswitch.co/public/coins/eth.png`" />
+                                <q-icon class="q-mrsm q-pb-sm" size="1rem" :name="`img:https://zapper.fi/images/ETH-icon.png`" />
                                 <span class="chain-name">ETH</span>
                             </div>
-                            <div class="column items-start">
-                                <span class="chain-total-accounts"><strong>2</strong> Accounts</span>
-                                <span class="chain-total-balances">$1.34K USD</span>
+                            <div class="column items-start" :set="accounts = $store.state.wallets.tokens.filter(o => o.type == 'eth' && o.chain == 'eth')">
+                                <span class="chain-total-accounts"><strong>{{accounts.length}}</strong> Account{{accounts.length > 1 ? 's' : '' }}</span>
+                                <span class="chain-total-balances">{{nFormatter2(accounts.reduce((a, b) => +a + +b.total, 0))}} USD</span>
                             </div>
                             <q-tooltip>Switch to ETH chain</q-tooltip>
                         </div>
                     </template>
                     <template v-slot:eos>
-                        <div class="eos-chain-wrapper flex items-center">
+                        <div class="eos-chain-wrapper flex items-center" >
                             <div class="column items-center">
-                                <q-icon class="q-mrsm" :name="`img:https://files.coinswitch.co/public/coins/eos.png`" />
+                                <q-icon class="q-mrsm q-pb-sm" size="1rem" :name="`img:https://files.coinswitch.co/public/coins/eos.png`" />
                                 <span class="chain-name">EOS</span>
                             </div>
-                            <div class="column items-start">
-                                <span class="chain-total-accounts"><strong>(4)</strong> Accounts</span>
-                                <span class="chain-total-balances">$2.34M USD</span>
+                             <div class="column items-start" :set="accounts = $store.state.wallets.tokens.filter(o => o.type == 'eos' && o.chain == 'eos')">
+                                <span class="chain-total-accounts"><strong>{{accounts.length}}</strong> Account{{accounts.length > 1 ? 's' : '' }}</span>
+                                <span class="chain-total-balances">{{nFormatter2(accounts.reduce((a, b) => +a + +b.total, 0))}} USD</span>
                             </div>
                             <q-tooltip>Switch to EOS chain</q-tooltip>
                         </div>
@@ -295,47 +384,54 @@
                                             <span class="item-info--amount">in progress</span>
                                         </q-item-section>
                                     </div>
+
                                 </div>
                         </q-item>
-                        <q-expansion-item :style="setPosition(token.total)" :data-total="token.total ? token.total : 0" @click=" $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.name == token.name ).length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eos' &&   f.name == token.name)) : void(0)" v-for="(token, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'eos' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected full-width' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
-                            <template v-slot:header>
+
+                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="$store.state.wallets.tokens.filter(f => f.type == chain.chain).length == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type == chain.chain)) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                        <template v-slot:header>
                             <q-item-section avatar>
-                                <img class="coin-icon" width="35px" src="https://files.coinswitch.co/public/coins/eos.png"  />
+                                <img class="coin-icon" width="35px" :src="chain.icon"  />
                             </q-item-section>
                             <q-item-section  class="item-name">
-                            <span class="item-name--name"> {{token.name.replace('- HD', '')}}</span>
+                            <span class="item-name--name"> {{chain.label}}</span>
+                            <span  class="item-name--staked" v-if="chain.count > 1">{{chain.count}} accounts</span>
+
                             </q-item-section>
 
                             <q-item-section class="item-info col" side>
                             <div class="row items-center text-bold">
-                                <q-btn class="single-wallet-refresh" flat icon-right="cached" @click="refreshWallet(token.name)" />
 
-                            <span> ${{formatNumber(token.total ? token.total.toFixed(0) : 0 , 0)}}</span>
+                            <span> ${{formatNumber(chain.chainTotal ? chain.chainTotal.toFixed(0) : 0 , 0)}}</span>
                                 </div>
                             </q-item-section>
                             </template>
 
                             <q-card :dark="$store.state.settings.lightMode === 'true'">
                             <q-card-section>
-                                <q-item :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.name == token.name && !f.hidden && !f.disabled).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                                <q-item :set="chainTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && f.name.toLowerCase() == item.name.toLowerCase())" :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.type == chain.chain && f.chain == chain.chain && !f.hidden && !f.disabled).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                                 <div class="header-wallet-wrapper culumn full-width">
-                                    <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
+                                    <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
                                             <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
                                         </q-item-section>
                                         <q-item-section class="item-name">
-                                            <span class="item-name--name">{{item.type.toUpperCase()}}</span>
-                                            <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
+                                            <span class="item-name--name">{{item.name}}</span>
+                                            <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
+
+                                            <span  class="item-name--staked" >{{chainTokens.length}} token{{ chainTokens.length > 1 ? 's' : '' }}</span>
+
                                         </q-item-section>
                                         <q-item-section class="item-info" v-if="!item.disabled">
-                                            <span class="item-info--amount">{{formatNumber(item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(4) : new Number(item.amount).toFixed(4).toString()) : 0, 0) }} {{item.type.toUpperCase()}}</span>
-                                            <span class="item-info--amountUSD">${{formatNumber(new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2),0)}}</span>
+                                            <span class="item-info--amount">{{formatNumber(item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(4) : new Number(item.amount).toFixed(4).toString()) : 0, 2) }} {{item.type.toUpperCase()}}</span>
+                                            <span class="item-info--amountUSD" v-if="item.total">${{formatNumber(new Number(isNaN(item.total) ? 0 : item.total).toFixed(2),0)}}</span>
+                                            <span class="item-info--amountUSD" v-else>${{formatNumber(new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2),0)}}</span>
                                         </q-item-section>
                                         <q-item-section class="item-info" v-else>
                                             <span class="item-info--amount">in progress</span>
                                         </q-item-section>
                                     </div>
-                                    <div class="menu-wallet">
+                                    <div class="menu-wallet" v-if="false">
                                         <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
                                             <!-- <q-item v-if="false" class="p-relative full-width no-pad">
                                                 <div class="vespucci-score--wrapper full-width flex justify-between items-center">
@@ -376,83 +472,10 @@
                             </q-card>
 
                         </q-expansion-item>
-                        <q-expansion-item :style="setPosition(token.total)" :data-total="token.total" @click="$store.state.wallets.tokens.filter(f => f.chain == 'eth' && f.name == token.name ).length == 1 ? showMenu($store.state.wallets.tokens.find(f => f.chain == 'eth' &&  f.name == token.name)) : void(0)" v-for="(token, index)  in $store.state.wallets.tokens.filter(f => f.chain == 'eth' &&  f.type == 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : token.selected}" :key="Math.random()+index" clickable :active="token.hidden" >
-                            <template v-slot:header>
-                                <q-item-section avatar>
-                                    <img class="coin-icon" width="35px" src="https://zapper.fi/images/ETH-icon.png"  />
-                                </q-item-section>
-                                <q-item-section  class="item-name">
-                                    <span class="item-name--name">
-                                    {{token.name.length ? token.name.replace('- HD', '') : 'ETH Account '+(index + 1)}}
-                                </span>
-                                </q-item-section>
-                                <q-item-section class="item-info col" side>
-                                    <div class="row items-center text-bold">
-                                <q-btn class="single-wallet-refresh" flat icon-right="cached" @click="refreshWallet(token.name)" />
-                                <span> ${{formatNumber(token.total, 0)}}</span>
-                                    </div>
-                                </q-item-section>
-                            </template>
-                            <q-card :dark="$store.state.settings.lightMode === 'true'">
-                                <q-card-section>
-                                <q-item  :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.chain == 'eth'  && f.key == token.key  && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
-                                    <div class="header-wallet-wrapper culumn full-width">
-                                    <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
-                                        <q-item-section avatar>
-                                            <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
-                                        </q-item-section>
-                                        <q-item-section class="item-name">
-                                            <span class="item-name--name">{{item.type.toUpperCase()}}</span>
-                                            <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
-                                        </q-item-section>
-                                        <q-item-section class="item-info" v-if="!item.disabled">
-                                            <span class="item-info--amount">{{formatNumber(item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 )}} {{item.type.toUpperCase()}}</span>
-                                            <span class="item-info--amountUSD">${{formatNumber(new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2), 0)}}</span>
-                                        </q-item-section>
-                                        <q-item-section class="item-info" v-else>
-                                            <span class="item-info--amount">in progress</span>
-                                        </q-item-section>
-                                    </div>
-                                    <div class="menu-wallet">
-                                        <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
-                                            <!-- <q-item v-if="false" class="p-relative full-width no-pad">
-                                                <div class="vespucci-score--wrapper full-width flex justify-between items-center">
-                                                    <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
-                                                    <span class="value">{{ item.vespucciScore }}</span>
-                                                    <span class="powered">Powered by Vespucci</span>
-                                                </div>
-                                            </q-item> -->
-                                            <q-separator style="margin-top: 10px" />
-                                            <q-item data-name='Trade' v-if="item.disabled" clickable v-ripple class="p-relative" to="/verto/exchange">Trade
-                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                            </q-item>
-                                            <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
-                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                            </q-item>
-                                            <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
-                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                            </q-item>
-                                            <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
-                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                            </q-item>
-                                            <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
-                                                <q-item-section>
-                                                    <q-item-label>{{item.hidden ? 'Reveal' : 'Hide'}} Currency Chain</q-item-label>
-                                                </q-item-section>
-                                                <q-item-section avatar>
-                                                    <q-toggle class="p-abs" color="blue" @input="hideCurrency()" v-model="item.hidden" />
-                                                </q-item-section>
-                                            </q-item>
-                                        </q-list>
-                                    </div>
-                                </div>
-                            </q-item>
-                            </q-card-section>
-                            </q-card>
-                        </q-expansion-item>
-                        <q-item :style="setPosition(item.usd)" :data-total="!isNaN(item.usd) ? item.usd : 0 "  v-for="(item) in $store.state.wallets.tokens.filter(f => (f.chain == 'eos' && f.type == 'verto' && !f.hidden && !f.disabled) || f.chain != 'eos'  && f.chain != 'eth' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+
+                        <q-item  v-show="!selectedChain || item.chain == selectedChain" :style="setPosition(item.usd)" :data-total="!isNaN(item.usd) ? item.usd : 0 "  v-for="(item) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'verto' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                             <div class="header-wallet-wrapper culumn full-width">
-                                <div @click="!item.disabled ? showMenu(item) : void(0)" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
+                                <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                     <q-item-section avatar class="item-coin">
                                         <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
                                         <span class="item-name--name">{{item.type.toUpperCase()}}</span>
@@ -522,6 +545,58 @@
                                         <!-- <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Stake Proxy EOS
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item> -->
+                                        <div class="row text-center q-pb-md" v-if="$store.state.currentwallet.wallet.type === 'eos'" >
+                                         <div class="row col-4  flex flex-center ">
+                                          <q-circular-progress
+                                            show-value
+                                            font-size="12px"
+                                            :value="circularProgress.cpu"
+                                            size="70px"
+                                            :thickness="0.22"
+                                            color="deep-purple-2"
+                                            track-color="grey-3"
+                                            class="q-ma-md"
+                                            >
+                                            {{ circularProgress.cpu }}%
+                                            </q-circular-progress>
+                                            <span class="accountInfos">{{circularProgress.cpuInfos}} µs</span>
+                                           <div class="col-12">CPU</div>
+                                        </div>
+                                         <div class="row col-4  flex flex-center ">
+                                          <q-circular-progress
+                                            show-value
+                                            font-size="12px"
+                                            :value="circularProgress.net"
+                                            size="70px"
+                                            :thickness="0.22"
+                                            color="deep-purple-2"
+                                            track-color="grey-3"
+                                            class="q-ma-md"
+                                            >
+                                            {{ circularProgress.net }}%
+                                            </q-circular-progress>
+                                            <span class="accountInfos">{{circularProgress.netInfos}} KB</span>
+                                           <div class="col-12">NET</div>
+                                        </div>
+
+                                        <div class="row col-4  flex flex-center ">
+                                          <q-circular-progress
+                                            show-value
+                                            font-size="12px"
+                                            :value="circularProgress.ram"
+                                            size="70px"
+                                            :thickness="0.22"
+                                            color="deep-purple-2"
+                                            track-color="grey-3"
+                                            class="q-ma-md"
+                                            >
+                                            {{ circularProgress.ram }}%
+                                            </q-circular-progress>
+                                            <span class="accountInfos">{{circularProgress.ramInfos}} KB</span>
+                                           <div class="col-12">RAM</div>
+                                        </div>
+
+                                            </div>
                                         <q-expansion-item
                                             v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Chain tools'
                                             expand-separator
@@ -534,6 +609,10 @@
                                         <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake / Unstake CPU' clickable v-ripple class="p-relative" to="/verto/stake">Stake / Unstake CPU
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
+                                         <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Buy/Sell Ram' clickable v-ripple class="p-relative" to="/verto/ram-market">Buy / Sell Ram
+                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                        </q-item>
+
                                         <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Stake Proxy EOS
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
@@ -714,6 +793,7 @@
 <script>
 // import Lib from '@/util/walletlib'
 import initWallet from '@/util/Wallets2Tokens'
+import HD from '@/util/hdwallet'
 import {
   QScrollArea,
   openURL
@@ -753,10 +833,16 @@ export default {
   },
   watch: {
     '$store.state.wallets.portfolioTotal': function () {
+      this.setChains()
       this.loadingIndicator = true
       setTimeout(() => {
         this.loadingIndicator = false
       }, 5000)
+    },
+    $route (to, from) {
+      if (to !== from) {
+        // this.setRessourcesInfos()
+      }
     },
     tokens: {
       deep: true,
@@ -767,8 +853,15 @@ export default {
   },
   data () {
     return {
+      selectedChain: null,
       chainSwitcher: '',
       searchAccount: '',
+      chains: [],
+      circularProgress: {
+        ram: 0,
+        cpu: 0,
+        net: 0
+      },
       hideEosSetup: null,
       loadingIndicator: false,
       history: [],
@@ -820,6 +913,8 @@ export default {
       this.hideEosSetup = !this.$store.state.wallets.tokens.find(f => f.type === 'verto' && f.chain === 'eos' && !f.hidden && !f.disabled)
     }
 
+    this.setChains()
+
     setTimeout(() => {
       this.$store.state.wallets.tokens.map(async (f) => {
         let stakedAmounts = 0
@@ -834,6 +929,8 @@ export default {
         }
       })
     }, 6000)
+
+    this.setRessourcesInfos()
   },
   async updated () {
     // //console.log('updated')
@@ -864,6 +961,33 @@ export default {
     }
   },
   methods: {
+    setChains () {
+      this.chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).filter((v, i, a) => v.type === v.chain && a.findIndex(t => (t.type === v.type && t.chain === v.chain)) === i)
+        .map(o => {
+          let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
+          o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
+          o.count = accounts.filter(o => o.type === o.chain).length
+
+          let chain = HD.names.find(a => a.value === o.chain)
+          o.label = chain ? chain.label : o.chain
+
+          return o
+        })
+      this.chains.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
+    },
+    showChainAccounts (index, chain) {
+      let nodeList = document.querySelectorAll('.all-wallets .q-expansion-item__toggle-icon')
+      localStorage.setItem('selectedChain', chain)
+      this.$bus.$emit('selectedChain')
+
+      let items = Array.prototype.slice.call(nodeList)
+
+      items.forEach((e, i) => {
+
+        // if (i !== index) e.click()
+
+      })
+    },
     focusOnChainTools () {
       document.querySelector('.chainToolsDropdownBtn').classList.add('active')
       setTimeout(() => {
@@ -1007,10 +1131,12 @@ export default {
         //   this.selectedCoin.staked = stakedAmounts
         // }
         // this.$store.state.currentwallet.wallet = this.currentAccount
+
         this.$store.state.currentwallet.wallet = this.selectedCoin
         this.$store.commit('investment/setDefaultAccount', this.selectedCoin)
         this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.selectedCoin.chain && w.key === this.selectedCoin.key))
 
+        this.setRessourcesInfos()
         /* //console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
 
         if (this.selectedCoin.chain !== 'eos' && this.selectedCoin.chain !== 'eth') {
@@ -1033,6 +1159,20 @@ export default {
     },
     kFormatter (num) {
       return Math.abs(num) > 999 ? Math.sign(num) * ((Math.abs(num) / 1000).toFixed(1)) + 'k' : Math.sign(num) * Math.abs(num)
+    },
+    setRessourcesInfos () {
+      if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.chain === 'eos' && this.$store.state.currentwallet.wallet.accountData) {
+        this.circularProgress.ram = parseInt((this.$store.state.currentwallet.wallet.accountData.ram_usage / this.$store.state.currentwallet.wallet.accountData.ram_quota) * 100)
+        this.circularProgress.cpu = parseInt((this.$store.state.currentwallet.wallet.accountData.cpu_limit.used / this.$store.state.currentwallet.wallet.accountData.cpu_limit.max) * 100)
+        this.circularProgress.net = parseInt((this.$store.state.currentwallet.wallet.accountData.net_limit.used / this.$store.state.currentwallet.wallet.accountData.net_limit.max) * 100)
+        this.circularProgress.cpu = this.circularProgress.cpu > 100 ? 100 : this.circularProgress.cpu
+        this.circularProgress.net = this.circularProgress.net > 100 ? 100 : this.circularProgress.net
+        this.circularProgress.ram = this.circularProgress.ram > 100 ? 100 : this.circularProgress.ram
+
+        this.circularProgress.cpuInfos = this.$store.state.currentwallet.wallet.accountData.cpu_limit.used
+        this.circularProgress.netInfos = this.$store.state.currentwallet.wallet.accountData.net_limit.used
+        this.circularProgress.ramInfos = this.$store.state.currentwallet.wallet.accountData.ram_usage / 1000
+      }
     },
     setPosition (total) {
       let style = ''
@@ -1110,7 +1250,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+ .single-chain /deep/ i.q-expansion-item__toggle-icon {
+  display:none
+}
 
+span.accountInfos {
+    text-align: center;
+    font-size: 11px;
+    color: #907bb3;
+}
 .q-expansion-item--expanded * , .q-expansion-item--expanded  {
     background: whitesmoke;
 }
