@@ -75,11 +75,11 @@
       <h3 class="profile-wrapper--header__title" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-if="!isMobile && !$store.state.currentwallet.wallet.empty">{{$store.state.currentwallet.wallet.name.replace('- HD', '')}}</h3>
       <h3 class="profile-wrapper--header__title" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
-      v-else>Main Portfolio</h3>
+      v-else>{{ chainData ?  chainData.label : 'Main Portfolio' }}</h3>
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-if="!isMobile && !$store.state.currentwallet.wallet.empty">${{ balance.usd }} USD <span class="profile-wrapper--header__equivalent">Equivalent to <b>{{ isNaN(balance.equivAmount) ? 0 : nFormatter2(+balance.equivAmount,3) + ' ' + balance.equivType.toUpperCase() }}</b></span></h2>
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
-      v-else>${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
+      v-else>${{ nFormatter2( chainData ?  chainData.total : $store.state.wallets.portfolioTotal , 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <!-- {{$store.state.wallets.portfolioTotal}} -->
       <div class="profile-wrapper--header__action">
 
@@ -109,8 +109,10 @@
 </template>
 
 <script>
+
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import Vue from 'vue'
+import HD from '@/util/hdwallet'
 
 Vue.component(VueQrcode.name, VueQrcode)
 
@@ -152,6 +154,7 @@ export default {
     return {
       tableData: [],
       totalBalance: 0,
+      chainData: null,
       chainID: '',
       openModal: false,
       tokenID: '',
@@ -213,6 +216,10 @@ export default {
     //   }
     // })
     // console.log('this.$store.state.wallets.portfolioTotal', this.$store.state.wallets.portfolioTotal)
+
+    this.$bus.$on('selectedChain', () => {
+      this.setChainData()
+    })
   },
   computed: {
     balance () {
@@ -226,17 +233,30 @@ export default {
         let account = this.$store.state.wallets.tokens.find(o => ['eos', 'eth'].includes(this.$store.state.currentwallet.wallet.chain) && o.name.toLowerCase() === this.$store.state.currentwallet.wallet.name.toLowerCase())
         total.usd = this.nFormatter2(account.total, 3)
         total.equivType = this.$store.state.currentwallet.wallet.type
-        total.equivAmount = account.total / (+this.$store.state.currentwallet.wallet.usd / +this.$store.state.currentwallet.wallet.amount)
+        total.equivAmount = account.total / +this.$store.state.currentwallet.wallet.tokenPrice
       } else if (!isNaN(this.$store.state.currentwallet.wallet.usd)) {
         total.usd = this.nFormatter2(this.$store.state.currentwallet.wallet.usd, 3)
         total.equivType = this.$store.state.currentwallet.wallet.type
-        total.equivAmount = this.$store.state.currentwallet.wallet.usd / (+this.$store.state.currentwallet.wallet.usd / +this.$store.state.currentwallet.wallet.amount)
+        total.equivAmount = this.$store.state.currentwallet.wallet.usd / +this.$store.state.currentwallet.wallet.tokenPrice
       }
 
       return total
     }
   },
   methods: {
+    setChainData () {
+      this.chainData = {}
+      let chain = localStorage.getItem('selectedChain')
+
+      this.chainData.total = this.$store.state.wallets.tokens.filter((c) => c.chain === chain).reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
+
+      let chainData = HD.names.find(a => a.value === chain)
+      this.chainData.label = chainData ? chainData.label : chain
+
+      setTimeout(() => {
+        this.chainData = null
+      }, 10000)
+    },
     resetSelectedWallet () {
       // console.log('resetSelectedWallet called')
 
