@@ -145,7 +145,14 @@ export default {
   },
   created () {
     this.getWindowWidth()
+
     this.initTable()
+
+    this.$bus.$on('selectedChain', () => {
+      let chain = localStorage.getItem('selectedChain')
+      console.log(chain, 'chain 4')
+      this.initTable(chain)
+    })
   },
   watch: {
     '$store.state.wallets.tokens': function () {
@@ -159,14 +166,15 @@ export default {
     }
   },
   methods: {
-    initTable () {
+    initTable (chain) {
       let account = null
 
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.name) {
         account = this.$store.state.currentwallet.wallet
       }
       this.assets = []
-      JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter(o => !account || (o.chain === account.chain && o.name === account.name)))).forEach((token, i) => {
+      console.log(chain, 'chain 8')
+      JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter(o => (!account && !chain) || (chain && o.chain === chain) || (account && o.chain === account.chain && o.name === account.name)))).forEach((token, i) => {
         token.amount = parseFloat(token.amount)
         token.usd = parseFloat(token.usd)
 
