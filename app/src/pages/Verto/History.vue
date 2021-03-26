@@ -1,6 +1,6 @@
 <template>
   <q-page class="" :class="{'desktop-marg': screenSize > 1024, 'mobile-pad': screenSize < 1024, 'text-black bg-white': $store.state.settings.lightMode === 'false'}">
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" class="history-main-top-wrapper" style="height: 100vh;">
       <div class="desktop-version full-height" v-if="screenSize > 1024">
         <div class="row full-height">
           <div class="col col-md-3">
@@ -25,6 +25,25 @@
                 <History :refresh="refresh" :key="refresh" :isMobile="false" />
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      <div class="mobile-version full-height" v-else>
+        <div class="desktop-card-style apps-section history-card" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100%;">
+          <q-banner inline-actions class="text-white bg-red q-my-md " v-if="false">
+            Section currently in development: currently showing ETH wallets history
+          </q-banner>
+          <div class="row items-center q-pl-md q-mt-lg">
+            <div class="standard-content--title col-md-4 flex items-center" >
+              History
+              <q-icon name="cached"  @click="refresh++" class="refresh-history q-pl-sm"/>
+            </div>
+            <div class="col flex justify-end">
+              <AccountSelector  :autoSelectChain="'eos'" class="q-mr-md" :showAllWallets="true"/>
+            </div>
+          </div>
+          <div class="standard-content--body" style="height: 100%;">
+            <History :refresh="refresh" :key="refresh" :isMobile="true" />
           </div>
         </div>
       </div>
@@ -207,5 +226,58 @@ export default {
   }
   .max-height{
     max-height: 72vh;
+  }
+  .mobile-version{
+    /deep/ .transaction-wrapper{
+      padding: 0px 0%;
+      margin-top: 0px;
+      .transaction-wrapper--list{
+        padding: 4% 3%;
+        box-shadow: none;
+        margin-bottom: 0px;
+        .list-wrapper .history-item-wrapper{
+          height: 110px;
+          .history-item {
+            height: 60px;
+            margin-top: 0px;
+            margin-bottom: 10px;
+          }
+          .active .history-item__detail{
+            padding-top: 10px;
+          }
+          &:hover{
+            height: auto;
+          }
+        }
+        .history-item{
+          .row{
+            .row{
+              flex-direction: column;
+              align-items: flex-start;
+              padding-left: 20px;
+              .col.col-6,
+              .col.col-9{
+                width: 100%;
+                &.justify-end{
+                  display: block;
+                }
+                .q-mr-md{
+                  margin-right: 9px;
+                }
+              }
+              .col.col-3{
+                width: 100%;
+                display: block;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .history-main-top-wrapper{
+    @media screen and (max-width: 1024px) {
+      height: 93vh !important;
+    }
   }
 </style>

@@ -2210,6 +2210,11 @@ export default {
                 margin-top: -8px;
                 font-size: 10px;
                 margin-left: -13px;
+                @media screen and (max-width: 1024px) {
+                    margin-top: -1px;
+                    font-size: 12px;
+                    margin-left: -7px;
+                }
             }
         }
 
@@ -2280,6 +2285,9 @@ export default {
             padding: 15px 10px;
             border-radius: 10px;
             position: relative;
+            @media screen and (max-width: 1024px) {
+                padding-bottom: 25px !important;
+            }
 
             /deep/ .chose_accounts {
                 background-color: transparent !important;
