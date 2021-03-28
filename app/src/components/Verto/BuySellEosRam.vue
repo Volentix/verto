@@ -1,47 +1,45 @@
 <template>
-<div>
+<div :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }">
 <div
   class="text-h6 text-bold q-pt-md"
 >
   Buy / Sell Ram
 </div>
 <div style="max-width:400px;">
-<q-tabs
-    v-model="action"
-    dense
-    :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
-    class="text-grey q-mt-md"
-    active-color="primary"
-    indicator-color="primary"
-    align="justify"
-    narrow-indicator
-    >
-    <q-tab name="buy" label="Buy" />
-    <q-tab name="sell" label="Sell" />
-
+    <q-tabs
+      v-model="action"
+      dense
+      :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
+      class="text-grey q-mt-md"
+      :class="{
+        'text-white': $store.state.settings.lightMode === 'true'
+      }"
+      :active-color="$store.state.settings.lightMode === 'true' ? 'white':'primary'"
+      :indicator-color="$store.state.settings.lightMode === 'true' ? 'white':'primary'"
+      align="justify"
+      narrow-indicator
+      >
+      <q-tab name="buy" label="Buy" />
+      <q-tab name="sell" label="Sell" />
     </q-tabs>
-
     <q-separator />
-
     <q-tab-panels v-model="action" animated>
-    <q-tab-panel :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" name="buy">
+      <q-tab-panel :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" name="buy">
         <div class="full-width">
-            <p class="text-body1">Enter EOS amount</p>
-            <q-radio  v-if="false" v-model="unit" val="eos" label="EOS" />
-            <q-radio  v-if="false" v-model="unit" val="bytes" label="Bytes" />
-            <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="unit.toUpperCase()"  rounded outlined class="--input q-my-md" @input="changeAmount()" />
-            Buy {{sendAmount}} EOS of RAM
+          <p class="text-body1">Enter EOS amount</p>
+          <q-radio  v-if="false" v-model="unit" val="eos" label="EOS" />
+          <q-radio  v-if="false" v-model="unit" val="bytes" label="Bytes" />
+          <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="unit.toUpperCase()"  rounded outlined class="--input q-my-md" @input="changeAmount()" />
+          Buy {{sendAmount}} EOS of RAM
         </div>
-    </q-tab-panel>
-
-    <q-tab-panel name="sell">
+      </q-tab-panel>
+      <q-tab-panel name="sell">
         <div class="full-width">
-            <p class="text-body1">Amount of RAM to Sell (Bytes)</p>
-             <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmount" type="number" suffix="Bytes"  rounded outlined class="--input q-mb-md" @input="changeAmount()" />
-
-        Selling {{sendAmount}} Bytes
-    </div>
-    </q-tab-panel>
+          <p class="text-body1">Amount of RAM to Sell (Bytes)</p>
+          <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmount" type="number" suffix="Bytes"  rounded outlined class="--input q-mb-md" @input="changeAmount()" />
+          Selling {{sendAmount}} Bytes
+        </div>
+      </q-tab-panel>
     </q-tab-panels>
 
 </div>
@@ -109,3 +107,10 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.dark-theme {
+  /deep/ .q-tab-panels{
+    background: #04111f !important;
+  }
+}
+</style>
