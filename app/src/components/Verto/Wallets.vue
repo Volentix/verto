@@ -2202,6 +2202,10 @@ span.accountInfos {
     }
 }
 .dark-theme{
+    .q-expansion-item--expanded *,
+    .q-expansion-item--expanded{
+        background: #071e36;
+    }
     .chain-switch-wrapper{
         background-color: rgba(#CCC, .1);
         border-bottom: 1px solid rgba(#CCC, .7);
