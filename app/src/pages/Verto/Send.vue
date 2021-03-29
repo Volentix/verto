@@ -615,7 +615,7 @@ export default {
     },
     changeAccount () {
       this.currentAccount = this.$store.state.wallets.tokens.find(w => w.chain === this.currentToken.chainID && (this.currentToken.chainID !== 'eos' || w.name.toLowerCase() === this.currentToken.label.toLowerCase()))
-      console.log(this.currentAccount, 563)
+
       if (this.currentAccount.privateKey) {
         this.privateKey.key = this.currentAccount.privateKey
         this.isPrivateKeyEncrypted = false
@@ -726,7 +726,7 @@ export default {
           txData: null
         }
       }
-      console.log(this.currentAccount, this.sendAmount, this.currentToken, 77)
+
       Lib.send(
         this.currentAccount.chain,
         this.currentToken.type,
@@ -824,7 +824,7 @@ export default {
     },
     formatAmountString () {
       let numberOfDecimals = 0
-      console.log('this.currentAccount', this.currentAccount, 712)
+
       let stringAmount = (Math.round(this.sendAmount * Math.pow(10, this.currentAccount.precision)) / Math.pow(10, this.currentAccount.precision)).toString()
       const amountParsed = stringAmount.split('.')
       if (amountParsed && amountParsed.length > 1) {
