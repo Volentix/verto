@@ -1007,7 +1007,8 @@ export default {
       }
     },
     '$store.state.investment.accountTokens': function (val) {
-      let coins = !this.crossChain ? this.$store.state.settings.coins.oneinch : this.getAllCoins()
+      let coins = this.$store.state.settings.coins.oneinch
+      coins = this.getUniqueTokens(coins)
 
       this.depositCoinOptions = coins.filter(t => val.find(o => o.type.toLowerCase() === t.value.toLowerCase())).map(o => {
         o.amount = val.find(t => t.type.toLowerCase() === o.value.toLowerCase()).amount
@@ -1020,10 +1021,20 @@ export default {
       this.depositCoinUnfilter = this.depositCoinOptions
 
       if (!this.depositCoin || !this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())) {
-        this.depositCoin = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.$store.state.investment.defaultAccount.chain)
-        this.getSwapQuote()
+        let item = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.$store.state.investment.defaultAccount.chain)
+        if (item) {
+          this.depositCoin = item
+          this.getSwapQuote()
+        } else {
+          this.checkPair()
+        }
       } else if (this.depositCoin && this.depositCoin.value) {
-        this.depositCoin = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())
+        let item = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())
+        if (item) {
+          this.depositCoin = item
+        } else {
+          this.checkPair()
+        }
       }
     }
   },
@@ -1041,7 +1052,8 @@ export default {
       this.getRate()
     },
     getCoins () {
-      this.depositCoinOptions = !this.crossChain ? this.$store.state.settings.coins.oneinch : this.getAllCoins()
+      this.depositCoinOptions = this.$store.state.settings.coins.oneinch
+
       this.destinationCoin = !this.destinationCoin || !this.destinationCoin.value.length ? this.$store.state.settings.coins.oneinch[this.$store.state.settings.coins.oneinch.length - 1] : this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())
       this.depositCoinUnfilter = this.depositCoinOptions
       this.destinationCoinUnfilter = this.depositCoinOptions
