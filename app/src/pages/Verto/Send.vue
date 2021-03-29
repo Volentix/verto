@@ -258,8 +258,8 @@
                         </q-input>
                       </div>
                       <div class="col col-12">
-                        <span v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" class="lab-input">Memo</span>
-                        <q-input :disable="disableMemoEdit" v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+                        <span v-if="currentToken.chainID && currentToken.chainID.toLowerCase() != 'eth'" class="lab-input">Memo</span>
+                        <q-input :disable="disableMemoEdit" v-if="currentToken.chainID && currentToken.chainID.toLowerCase() != 'eth'" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
                       </div>
                     </div>
                   </div>
@@ -332,8 +332,8 @@
               </template>
             </q-input>
 
-            <span v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" class="lab-input">Memo</span>
-            <q-input v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+            <span  class="lab-input">Memo</span>
+            <q-input  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
 
           </div>
           <br>
@@ -393,7 +393,7 @@ export default {
       fetchCurrentWalletFromState: true,
       from: '',
       isPwd: true,
-      sendAmount: 0.001,
+      sendAmount: 0,
       formatedAmount: '',
       options: [],
       minimizedModal: false,
@@ -470,7 +470,7 @@ export default {
         */
 
         // this.$store.commit('currentwallet/updateCurrentWallet', this.currentAccount)
-        this.sendAmount = this.$store.state.currentwallet.params && this.$store.state.currentwallet.params.amount ? this.$store.state.currentwallet.params.amount : 0.001
+        this.sendAmount = this.$store.state.currentwallet.params && this.$store.state.currentwallet.params.amount ? this.$store.state.currentwallet.params.amount : 0
       }
     }
   },
