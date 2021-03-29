@@ -190,11 +190,11 @@ export default {
       let from = this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
       let to = this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())
 
-      if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain !== 'eos' && this.$store.state.investment.defaultAccount.chain !== 'eos' && this.destinationCoin && this.destinationCoin && this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
+      if ((!this.$store.state.investment.defaultAccount || this.$store.state.investment.defaultAccount.chain !== 'eos') && this.destinationCoin && this.depositCoin && this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
         this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
         this.dex = 'oneinch'
         this.setDefaultWallet('eth')
-      } else if ((this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain === 'eth') || (this.$store.state.investment.defaultAccount.chain !== 'eos' && this.destinationCoin && this.destinationCoin && (!from || !to) && (this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
+      } else if ((this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain === 'eth') || ((!this.$store.state.investment.defaultAccount || this.$store.state.investment.defaultAccount.chain !== 'eos') && this.destinationCoin && this.destinationCoin && (!from || !to) && (this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
       this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())))) {
         this.dex = 'coinswitch'
         this.setDefaultWallet('eth')
