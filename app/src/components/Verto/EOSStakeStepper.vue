@@ -414,6 +414,7 @@ export default {
       this.privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
       if (this.privateKey.success) {
         this.invalidPrivateKeyPassword = false
+        this.currentAccount.privateKey = this.privateKey.key
       } else {
         this.invalidPrivateKeyPassword = true
         return false
