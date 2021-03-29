@@ -274,7 +274,7 @@
                                                         <p :class="{'text-green' :freeEOS.qualified, 'text-red' : !freeEOS.qualified , 'text-body2' : true }">{{freeEOS.message}}</p>
                                                         <span v-if="freeEOS.qualified && !accountToBeCreated" class="float-right cursor-pointer " @click="offer=true"><q-btn flat icon="img:https://www.joypixels.com/images/jp-home/fire.gif" label="Choose account name" /></span>
                                                         </div>
-                                                        <div v-if="rateData && ErrorMessage.length == 0 && fromCoinType && !isLoading" class="col col-6 info_rate_holder small text-right flex justify-end items-center" :class="{'_loading': fetchingRate}">
+                                                        <div v-if="destinationCoin && destinationCoin.value.toLowerCase() != 'vtx' && rateData && ErrorMessage.length == 0 && fromCoinType && !isLoading" class="col col-6 info_rate_holder small text-right flex justify-end items-center" :class="{'_loading': fetchingRate}">
                                                             <!-- 1 ETH = 374.705 USDT -->
                                                             <span >{{ '1 ' + fromCoinType.toUpperCase() + '&nbsp;= &nbsp;' + rateData.rate.toFixed(5) + ' ' + toCoinType.toUpperCase() }}</span>
                                                             <div class="info_rate">
@@ -946,7 +946,7 @@
                                                         <p :class="{'text-green' :freeEOS.qualified, 'text-red' : !freeEOS.qualified , 'text-body2' : true }">{{freeEOS.message}}</p>
                                                         <span v-if="freeEOS.qualified && !accountToBeCreated" class="float-right cursor-pointer " @click="offer=true"><q-btn flat icon="img:https://www.joypixels.com/images/jp-home/fire.gif" label="Choose account name" /></span>
                                                         </div>
-                                                        <div v-if="rateData && ErrorMessage.length == 0 && fromCoinType && !isLoading" class="col col-6 info_rate_holder small text-right flex justify-end items-center" :class="{'_loading': fetchingRate}">
+                                                        <div v-if="destinationCoin && destinationCoin.value.toLowerCase() != 'vtx' && rateData && ErrorMessage.length == 0 && fromCoinType && !isLoading" class="col col-6 info_rate_holder small text-right flex justify-end items-center" :class="{'_loading': fetchingRate}">
                                                             <!-- 1 ETH = 374.705 USDT -->
                                                             <span >{{ '1 ' + fromCoinType.toUpperCase() + '&nbsp;= &nbsp;' + rateData.rate.toFixed(5) + ' ' + toCoinType.toUpperCase() }}</span>
                                                             <div class="info_rate">
@@ -1602,7 +1602,7 @@ export default {
       this.initMetamask()
     },
     '$store.state.investment.accountTokens': function (val) {
-      this.coins = this.crossChain ? this.getAllCoins('coinswitch') : this.$store.state.settings.coins.coinswitch
+      this.coins = this.$store.state.settings.coins.coinswitch
       this.depositCoinOptions = this.getUniqueTokens(this.coins).filter(t => val.find(o => o.type === t.value)).map(o => {
         let token = this.$store.state.investment.accountTokens.find(t => t.type === o.value)
         o.usd = token.usd

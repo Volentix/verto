@@ -141,11 +141,13 @@ export default {
     setAccount () {
       if (this.accountOption) {
         this.$store.commit('investment/setDefaultAccount', this.accountOption)
-
+        console.log(this.accountOption.name, 888)
         if (this.accountOption && this.accountOption.origin === 'metamask') {
           this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.metamask.tokens)
         } else {
-          this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key && (this.accountOption.chain !== 'eos' || w.name === this.accountOption.name)))
+          let tokens = this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key && (this.accountOption.chain !== 'eos' || w.name.toLowerCase() === this.accountOption.name.toLowerCase()))
+          console.log(tokens, 'tokens')
+          this.$store.commit('investment/setAccountTokens', tokens)
         }
       }
     }
