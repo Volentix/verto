@@ -77,28 +77,28 @@
       <h3 class="profile-wrapper--header__title" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-else>{{ chainData ?  chainData.label : 'Main Portfolio' }}</h3>
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
-      v-if="!isMobile && !$store.state.currentwallet.wallet.empty">${{ balance.usd }} USD <span class="profile-wrapper--header__equivalent">Equivalent to <b>{{ isNaN(balance.equivAmount) ? 0 : nFormatter2(+balance.equivAmount,3) + ' ' + balance.equivType.toUpperCase() }}</b></span></h2>
+      v-if="!isMobile && !$store.state.currentwallet.wallet.empty">${{ balance.usd }} USD <span class="profile-wrapper--header__equivalent" v-if="!isNaN(balance.equivAmount) ">Equivalent to <b>{{ isNaN(balance.equivAmount) ? 0 : nFormatter2(+balance.equivAmount,3) + ' ' + balance.equivType.toUpperCase() }}</b></span></h2>
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-else>${{ nFormatter2( chainData ?  chainData.total : $store.state.wallets.portfolioTotal , 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <!-- {{$store.state.wallets.portfolioTotal}} -->
       <div class="profile-wrapper--header__action">
 
         <q-btn unelevated v-if="screenSize <= 1024"
-          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb'].includes($store.state.currentwallet.wallet.chain))"
+          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.state.currentwallet.wallet.chain))"
           to="/verto/wallets/send" outline
           class="profile-wrapper--header__action-btn"
           color="indigo-12" text-color="white" label="Send" />
         <q-btn unelevated v-if="screenSize > 1024"
-          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','btc','dot', 'ksm','bnb'].includes($store.state.currentwallet.wallet.chain))" @click="!$store.state.currentwallet.wallet.empty ? goToSendPage() : notifSelectWallet()"
+          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','btc','dot', 'ksm','bnb','avax'].includes($store.state.currentwallet.wallet.chain))" @click="!$store.state.currentwallet.wallet.empty ? goToSendPage() : notifSelectWallet()"
           class="profile-wrapper--header__action-btn" outline
           color="indigo-12" text-color="white" label="Send" />
         <q-btn unelevated v-if="screenSize <= 1024"
           to="/verto/wallets/receive"
-          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb'].includes($store.state.currentwallet.wallet.chain))"
+          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.state.currentwallet.wallet.chain))"
           class="profile-wrapper--header__action-btn" outline
           color="indigo-12" text-color="white" label="Receive" />
         <q-btn unelevated v-if="screenSize > 1024"
-          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb'].includes($store.state.currentwallet.wallet.chain)) "
+          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.state.currentwallet.wallet.chain)) "
           @click="!$store.state.currentwallet.wallet.empty ? goToReceivePage() : notifSelectWallet()"
           class="profile-wrapper--header__action-btn" outline
           color="indigo-12" text-color="white" label="Receive" />
@@ -252,10 +252,11 @@ export default {
 
       let chainData = HD.names.find(a => a.value === chain)
       this.chainData.label = chainData ? chainData.label : chain
-
+      /*
       setTimeout(() => {
         this.chainData = null
       }, 10000)
+      */
     },
     resetSelectedWallet () {
       // console.log('resetSelectedWallet called')
@@ -308,6 +309,9 @@ export default {
       })
     },
     nFormatter2 (num, digits) {
+      if (isNaN(num)) {
+        return 0
+      }
       var si = [
         { value: 1, symbol: '' },
         { value: 1E3, symbol: 'k' },
