@@ -180,6 +180,7 @@
                             rounded
                             outlined
                             class="select-input"
+                            @input="changeAccount()"
                             v-model="currentToken"
                             :options="options"
                         >
@@ -193,7 +194,7 @@
                                 <q-icon class="option--avatar" :name="`img:${scope.opt.image}`" />
                               </q-item-section>
                               <q-item-section dark>
-                                <q-item-label v-html="scope.opt.label" />
+                                <q-item-label v-html="scope.opt.label + ' - ' + scope.opt.type.toUpperCase()" />
                                 <q-item-label caption class="ellipsis mw200">{{ scope.opt.value }}</q-item-label>
                               </q-item-section>
                             </q-item>
@@ -206,7 +207,7 @@
                                 <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
                               </q-item-section>
                               <q-item-section>
-                                <q-item-label v-html="currentToken.label" />
+                                <q-item-label v-html="currentToken.label"/>
                                 <q-item-label caption class="ellipsis mw200">{{ currentToken.value }}</q-item-label>
                               </q-item-section>
                             </q-item>
@@ -511,10 +512,12 @@ export default {
       if (!token.disabled && token.type.toLowerCase() !== 'verto' && parseFloat(token.amount) > 0) {
         self.options.push({
           label: token.name.toLowerCase(),
-          value: token.chain !== 'eos' ? token.key : token.key + ' - ' + token.type.toUpperCase(),
+          value: !['eos', 'eth'].includes(token.chain) ? token.key : token.key + ' - ' + token.type.toUpperCase(),
           image: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
           type: token.type,
           contract: token.contract,
+          key: token.key,
+          name: token.name,
           precision: token.precision,
           amount: token.amount,
           chainID: token.chain
@@ -532,6 +535,8 @@ export default {
         contract: this.selectedCoin.contract,
         precision: this.selectedCoin.precision,
         chainID: this.selectedCoin.chain,
+        key: this.selectedCoin.key,
+        name: this.selectedCoin.name,
         amount: this.selectedCoin.amount
       }
     } else {
@@ -569,11 +574,9 @@ export default {
 
     */
 
-    if (this.params.chainID === 'eth') {
-      this.$store.dispatch('investment/getGasPrice')
+    this.$store.dispatch('investment/getGasPrice')
 
-      this.checkGas()
-    }
+    this.checkGas()
   },
   methods: {
 
@@ -609,6 +612,16 @@ export default {
         type: 'warning',
         position: 'top'
       })
+    },
+    changeAccount () {
+      this.currentAccount = this.$store.state.wallets.tokens.find(w => w.chain === this.currentToken.chainID && (this.currentToken.chainID !== 'eos' || w.name.toLowerCase() === this.currentToken.label.toLowerCase()))
+      console.log(this.currentAccount, 563)
+      if (this.currentAccount.privateKey) {
+        this.privateKey.key = this.currentAccount.privateKey
+        this.isPrivateKeyEncrypted = false
+      } else {
+        this.isPrivateKeyEncrypted = true
+      }
     },
     checkMemo () {
       if (this.sendMemo.length > 0) {
