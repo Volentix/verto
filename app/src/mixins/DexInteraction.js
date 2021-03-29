@@ -77,6 +77,8 @@ export default {
       if (destinationCoin) this.destinationCoin = destinationCoin
     },
     getUniqueTokens (coins) {
+      if (!coins) return
+
       let duplicates = []
 
       return coins.map((el) => {

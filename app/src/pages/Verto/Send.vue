@@ -45,7 +45,7 @@
     <div v-if="!params.to" class="send-modal flex flex-center" :class="{'open' : openModalProgress , 'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
-          <span class="text-h5 --amount">{{sendAmount + ' ' + currentAccount.type.toUpperCase()}}</span>
+          <span class="text-h5 --amount">{{sendAmount + ' ' + currentToken.type.toUpperCase()}}</span>
           <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black' : 'white'" rounded flat unelevated @click="hideModalFun()" class="close-btn" :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" label="+" />
         </div>
         <div class="send-modal__content--body column flex-center">
@@ -121,6 +121,7 @@
                     <div class="row">
                       <div class="col col-8 q-pr-lg" v-if="['eth','eos'].includes(selectedCoin.chain)">
                         <span class="lab-input">Select token </span>
+
                         <q-select
                             :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                             separator
@@ -221,10 +222,11 @@
                             </div>
                           </template>
                         </q-input> -->
+
                       </div>
                       <div class="col col-4">
                         <span class="lab-input">Amount</span>
-                        <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentAccount.amount) ? parseFloat(currentAccount.amount) : parseFloat(sendAmount) ; checkGas();" :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
+                        <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentToken.amount) ? parseFloat(currentToken.amount) : parseFloat(sendAmount) ; checkGas();" :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                           <template v-slot:append>
                             <div class="flex justify-end">
                               <span class="tokenID">{{ currentToken.type }}</span>
@@ -512,6 +514,8 @@ export default {
           value: token.chain !== 'eos' ? token.key : token.key + ' - ' + token.type.toUpperCase(),
           image: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
           type: token.type,
+          contract: token.contract,
+          precision: token.precision,
           amount: token.amount,
           chainID: token.chain
         })
@@ -525,6 +529,8 @@ export default {
         value: this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.key + ' - ' + this.selectedCoin.type.toUpperCase(),
         image: this.selectedCoin.type !== 'usdt' ? this.selectedCoin.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
         type: this.selectedCoin.type,
+        contract: this.selectedCoin.contract,
+        precision: this.selectedCoin.precision,
         chainID: this.selectedCoin.chain,
         amount: this.selectedCoin.amount
       }
@@ -707,16 +713,16 @@ export default {
           txData: null
         }
       }
-
+      console.log(this.currentAccount, this.sendAmount, this.currentToken, 77)
       Lib.send(
         this.currentAccount.chain,
-        this.currentAccount.type,
+        this.currentToken.type,
         this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name,
         this.sendToResolved,
         this.sendAmount,
         this.sendMemo,
         this.privateKey.key,
-        this.currentAccount.contract
+        this.currentToken.contract
       ).then(result => {
         if (result.success) {
           this.getPassword = false
@@ -752,7 +758,7 @@ export default {
     },
     payForUserCPU () {
       const actions = [{
-        account: this.currentAccount.contract,
+        account: this.currentToken.contract,
         name: 'transfer',
         authorization: [{
           actor: this.currentAccount.name,
@@ -762,7 +768,7 @@ export default {
         data: {
           from: this.currentAccount.name.toLowerCase(),
           to: this.sendToResolved.toLowerCase(),
-          quantity: parseFloat(this.sendAmount).toFixed(this.currentAccount.precision) + ' ' + this.currentAccount.type.toUpperCase(),
+          quantity: parseFloat(this.sendAmount).toFixed(this.currentToken.precision) + ' ' + this.currentToken.type.toUpperCase(),
           memo: this.sendMemo
         }
       }]
@@ -805,7 +811,7 @@ export default {
     },
     formatAmountString () {
       let numberOfDecimals = 0
-      // console.log('this.currentAccount', this.currentAccount)
+      console.log('this.currentAccount', this.currentAccount, 712)
       let stringAmount = (Math.round(this.sendAmount * Math.pow(10, this.currentAccount.precision)) / Math.pow(10, this.currentAccount.precision)).toString()
       const amountParsed = stringAmount.split('.')
       if (amountParsed && amountParsed.length > 1) {

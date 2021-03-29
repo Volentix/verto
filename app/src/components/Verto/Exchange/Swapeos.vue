@@ -1179,7 +1179,7 @@ export default {
       // console.log(this.depositCoinOptions, this.depositCoin.amount, 11)
 
       this.coins = this.crossChain ? this.getAllCoins() : this.getCoinsByAccount('defibox', this.defaultAccount.label)
-      this.depositCoinOptions = this.coins.filter(t => val.find(o => o.type === t.value && ((o.name && o.name.toLowerCase() === t.name.toLowerCase()) || this.$store.state.investment.defaultAccount.chain === 'eth'))).map(o => {
+      this.depositCoinOptions = this.coins.filter(t => val.find(o => o.type === t.value && ((o.name && t.name && o.name.toLowerCase() === t.name.toLowerCase()) || this.$store.state.investment.defaultAccount.chain === 'eth'))).map(o => {
         let token = this.$store.state.investment.accountTokens.find(t => t.type === o.value.toLowerCase())
         o.usd = token.usd
         o.amount = token.amount
