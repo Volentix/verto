@@ -16,8 +16,6 @@
                                     <q-item-section dark>
                                         <q-item-label v-html="scope.opt.label" />
                                         <q-item-label v-if="scope.opt.value.toLowerCase() !== scope.opt.label.toLowerCase()" caption>{{ scope.opt.value }}</q-item-label>
-                                        <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
-                                        <q-item-label v-if="scope.opt.name" caption>{{ scope.opt.name }}</q-item-label>
                                     </q-item-section>
                                 </q-item>
                             </template>
@@ -49,7 +47,7 @@
                                     <q-item-section dark>
                                         <q-item-label v-html="scope.opt.label" />
                                         <q-item-label v-if="scope.opt.value.toLowerCase() !== scope.opt.label.toLowerCase()" caption>{{ scope.opt.value }}</q-item-label>
-                                        <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
+
                                     </q-item-section>
                                 </q-item>
                             </template>
@@ -126,6 +124,7 @@ export default {
   methods: {
     initData () {
       this.depositCoinOptions = this.getAllCoins()
+      this.depositCoinOptions = this.getUniqueTokens(this.depositCoinOptions)
 
       this.depositCoinUnfilter = this.depositCoinOptions
       this.destinationCoinUnfilter = this.depositCoinUnfilter
