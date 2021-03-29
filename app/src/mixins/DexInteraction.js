@@ -184,7 +184,7 @@ export default {
       } else {
         // this.dex = null
       }
-      console.log(this.dex, this.depositCoin.value, this.destinationCoin.value, 99)
+
       if (!this.dex) {
         if (this.$store.state.settings.coins.oneinch.length && this.destinationCoin && this.destinationCoin) { this.error = 'Cannot swap ' + this.depositCoin.value.toUpperCase() + ' to ' + this.destinationCoin.value.toUpperCase() }
       } else {
