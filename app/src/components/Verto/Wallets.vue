@@ -32,7 +32,7 @@
                     </div>
                 </div>
 
-                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="$store.state.wallets.tokens.filter(f => f.type == chain.chain).length == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type == chain.chain)) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="$store.state.wallets.tokens.filter(f => f.chain == chain.chain).length == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.chain == chain.chain)) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" :src="chain.icon"  />
@@ -1063,6 +1063,8 @@ export default {
           o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
           o.count = accounts.filter(o => o.type === o.chain).length
 
+          console.log(o.count, 'o.count', o.chain)
+
           let chain = HD.names.find(a => a.value === o.chain)
           o.label = chain ? chain.label : o.chain
 
@@ -1192,7 +1194,7 @@ export default {
       this.openModal = true
     },
     async showMenu (menu, to) {
-      // //console.log(menu.selected)
+      console.log(menu, '77')
       if (!menu.selected) {
         setTimeout(() => {
           this.$refs.walletsScrollArea.setScrollPosition(0, 50)

@@ -81,9 +81,7 @@
 // let headers = {
 //   'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
 // }
-import {
-  mapState
-} from 'vuex'
+
 import DexInteraction from '../../mixins/DexInteraction'
 export default {
   name: 'ExchangeSection',
@@ -117,9 +115,6 @@ export default {
   },
   mounted () {
     this.initData()
-  },
-  computed: {
-    ...mapState('settings', ['coins'])
   },
   methods: {
     initData () {
