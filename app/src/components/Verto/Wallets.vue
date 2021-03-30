@@ -1257,9 +1257,11 @@ export default {
     kFormatter (num) {
       return Math.abs(num) > 999 ? Math.sign(num) * ((Math.abs(num) / 1000).toFixed(1)) + 'k' : Math.sign(num) * Math.abs(num)
     },
-    setRessourcesInfos () {
-      console.log(this.$store.state.currentwallet.wallet.chain, this.$store.state.currentwallet.wallet.accountData)
-      if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.chain === 'eos' && this.$store.state.currentwallet.wallet.accountData) {
+    async setRessourcesInfos () {
+      if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.chain === 'eos') {
+        if (!this.$store.state.currentwallet.wallet.accountData) {
+          this.$store.state.currentwallet.wallet.accountData = await eos.getAccount(this.$store.state.currentwallet.wallet.name)
+        }
         this.circularProgress.ram = parseInt((this.$store.state.currentwallet.wallet.accountData.ram_usage / this.$store.state.currentwallet.wallet.accountData.ram_quota) * 100)
         this.circularProgress.cpu = parseInt((this.$store.state.currentwallet.wallet.accountData.cpu_limit.used / this.$store.state.currentwallet.wallet.accountData.cpu_limit.max) * 100)
         this.circularProgress.net = parseInt((this.$store.state.currentwallet.wallet.accountData.net_limit.used / this.$store.state.currentwallet.wallet.accountData.net_limit.max) * 100)
