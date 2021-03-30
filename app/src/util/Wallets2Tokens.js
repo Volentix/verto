@@ -376,7 +376,6 @@ class Wallets2Tokens {
               disabled: false,
               type: token.currency.toLowerCase(),
               name: wallet.name,
-              // vespucciScore,
               key: wallet.key,
               privateKey: wallet.privateKey,
               privateKeyEncrypted: wallet.privateKeyEncrypted,

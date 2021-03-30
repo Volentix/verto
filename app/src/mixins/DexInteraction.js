@@ -13,8 +13,10 @@ export default {
     depositCoin (val) {
       this.error = null
 
-      if (!this.destinationCoinOptions) this.destinationCoinOptions = this.getAllCoins()
-      this.destinationCoinOptions = this.destinationCoinOptions.filter(o => o.value !== this.depositCoin.value)
+      if (!this.destinationCoinOptions) {
+        this.destinationCoinOptions = this.getAllCoins()
+        this.destinationCoinOptions = this.destinationCoinOptions.filter(o => o.value !== this.depositCoin.value)
+      }
 
       if (this.destinationCoin && this.depositCoin && this.destinationCoin.value.toLowerCase() === this.depositCoin.value.toLowerCase()) {
         this.destinationCoin = this.destinationCoinOptions.find(o => o.value.toLowerCase() !== this.depositCoin.value.toLowerCase())
@@ -26,6 +28,25 @@ export default {
     },
     '$store.state.settings.coins': function () {
       this.checkPair()
+    },
+
+    '$store.state.investment.accountTokens': function (val) {
+      this.coins = this.$store.state.settings.coins.oneinch
+      this.depositCoinOptions = this.getUniqueTokens(this.coins).filter(t => val.find(o => o.type === t.value)).map(o => {
+        let token = this.$store.state.investment.accountTokens.find(t => t.type === o.value)
+        o.usd = token.usd
+        o.amount = token.amount
+        return o
+      })
+
+      this.depositCoinUnfilter = this.depositCoinOptions
+
+      if (!this.depositCoin || !this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())) {
+        let item = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
+        if (item) { this.depositCoin = item }
+      } else if (this.depositCoin && this.depositCoin.value) {
+        this.depositCoin = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())
+      }
     },
     '$store.state.wallets.tokens': function (val) {
       if (val && !this.$store.state.settings.coins.coinswitch.length) {
@@ -56,10 +77,12 @@ export default {
       if (destinationCoin) this.destinationCoin = destinationCoin
     },
     getUniqueTokens (coins) {
+      if (!coins) return
+
       let duplicates = []
 
       return coins.map((el) => {
-        let search = coins.filter(o => el.value.toLowerCase() === o.value.toLowerCase())
+        let search = coins.filter(o => el.value.toLowerCase() === o.value.toLowerCase() && el.contract === o.contract)
         let value = search[0]
 
         if (search.length !== 1 && !duplicates.includes(el.value.toLowerCase())) {
@@ -86,13 +109,16 @@ export default {
           'contract': coin.contract,
           'precision': coin.precision,
           'image': coin.chain === 'eos' ? 'https://ndi.340wan.com/eos/' + this.checkContractFormat(coin.contract) + '-' + coin.type.toLowerCase() + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type.toLowerCase() + '.png',
-          'dex': 'coinswitch',
+          'dex': coin.chain === 'eos' ? 'defibox' : 'coinswitch',
           'amount': parseFloat(coin.amount),
           'amountUSD': coin.usd
         }
 
         coins.unshift(row)
       })
+
+      // coins = this.getUniqueTokens(coins)
+
       return coins.sort(function (a, b) {
         return a.name ? -1 : 1
       })
@@ -100,7 +126,7 @@ export default {
     getAllCoins (dex = false) {
       let coins = this.$store.state.settings.coins.coinswitch.concat(this.$store.state.settings.coins.oneinch).concat(this.$store.state.settings.coins.defibox)
 
-      coins = this.getUniqueTokens(coins).filter(o => !(this.$store.state.wallets.tokens.filter(x => x.chain === 'eos').map(w => w.type.toLowerCase()).includes(o.value.toLowerCase())))
+      coins = coins.filter(o => !(this.$store.state.wallets.tokens.filter(x => x.chain === 'eos').map(w => w.type.toLowerCase()).includes(o.value.toLowerCase())))
 
       this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type !== 'verto').forEach((coin) => {
         let row = {
@@ -116,10 +142,9 @@ export default {
           'amountUSD': coin.usd
         }
 
-        if (dex !== 'coinswitch' || !coins.find(c => c.value.toLowerCase() === coin.type.toLowerCase())) {
-          coins.unshift(row)
-        }
+        coins.unshift(row)
       })
+      // coins = this.getUniqueTokens(coins)
       return coins.sort(function (a, b) {
         return a.name ? -1 : 1
       })
@@ -160,29 +185,31 @@ export default {
       this.error = false
       let crosschain = ['eth', 'btc']
 
+      // console.log(this.dex, this.destinationCoin, this.depositCoin, 234, this.$store.state.investment.defaultAccount.chain)
+
       if (!this.destinationCoin || !this.depositCoin) return
 
       let from = this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
       let to = this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())
 
-      if (this.destinationCoin && this.destinationCoin && this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
+      if ((!this.$store.state.investment.defaultAccount || this.$store.state.investment.defaultAccount.chain !== 'eos') && this.destinationCoin && this.depositCoin && this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
         this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
         this.dex = 'oneinch'
         this.setDefaultWallet('eth')
-      } else if ((this.destinationCoin && this.destinationCoin && (this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
-      this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase()))) || !(from && to)) {
+      } else if ((this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain === 'eth') || ((!this.$store.state.investment.defaultAccount || this.$store.state.investment.defaultAccount.chain !== 'eos') && this.destinationCoin && this.destinationCoin && (!from || !to) && (this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
+      this.$store.state.settings.coins.coinswitch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())))) {
         this.dex = 'coinswitch'
         this.setDefaultWallet('eth')
-      } else if (this.destinationCoin && this.destinationCoin && !crosschain.includes(this.depositCoin.value.toLowerCase()) && !crosschain.includes(this.destinationCoin.value.toLowerCase()) && this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
-        this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
+      } else if ((this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain === 'eos') || (this.destinationCoin && this.destinationCoin && !crosschain.includes(this.depositCoin.value.toLowerCase()) && !crosschain.includes(this.destinationCoin.value.toLowerCase()) && this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
+        this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase()))) {
         this.dex = 'defibox'
         this.setDefaultWallet('eos')
       } else {
-        this.dex = null
+        // this.dex = null
       }
-      console.log(this.dex, this.depositCoin.value)
+      // console.log(this.dex, this.destinationCoin, this.depositCoin)
       if (!this.dex) {
-        if (this.$store.state.settings.coins.oneinch.length && this.destinationCoin && this.destinationCoin) { this.error = 'Cannot swap ' + this.depositCoin.value.toUpperCase() + ' to ' + this.destinationCoin.value.toUpperCase() }
+        if (this.$store.state.settings.coins.oneinch.length && this.destinationCoin && this.depositCoin) { this.error = 'Cannot swap ' + this.depositCoin.value.toUpperCase() + ' to ' + this.destinationCoin.value.toUpperCase() }
       } else {
         this.$store.commit('settings/setDex', {
           dex: this.dex,

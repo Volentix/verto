@@ -69,7 +69,7 @@
                                                         </div>
                                                         <div class="col">
                                                             <span class="--title row text-h6"> Current Stake<br>{{ params.tokenID.toUpperCase() }} (Staked) </span>
-                                                            <span class="--amount row text-h4"> {{ currentAccount.staked }} </span>
+                                                            <span class="--amount row text-h4"> CPU: {{ currentAccount.staked.cpu }} EOS <br>NET: {{ currentAccount.staked.net }} EOS </span>
                                                         </div>
                                                     </div>
 
@@ -137,7 +137,7 @@
                                             </q-input>
                                         </div>
                                         <q-stepper-navigation class="flex justify-end">
-                                            <q-btn @click="sendStakingTransaction()" color="deep-purple-14" class="--next-btn" rounded label="Submit" />
+                                            <q-btn @click="sendStakingTransaction()" :disable="!privateKey.success" color="deep-purple-14" class="--next-btn" rounded label="Submit" />
                                         </q-stepper-navigation>
                                     </q-step>
                                     <q-step v-else title="Confirm & Submit" :name="2" prefix="2" :done="step > 2">
@@ -321,10 +321,15 @@ export default {
       })
       this.currentAccount.staked = stakedAmounts
     } else {
-      this.currentAccount.staked = {
-        net: 0,
-        cpu: 0
-      }
+      this.currentAccount.staked =
+      this.$store.state.currentwallet.wallet.accountData
+        ? {
+          net: this.$store.state.currentwallet.wallet.accountData.net_weight / 10000,
+          cpu: this.$store.state.currentwallet.wallet.accountData.cpu_weight / 10000
+        } : {
+          net: 0,
+          cpu: 0
+        }
     }
 
     // console.log('stakes', this.stakes)
@@ -414,6 +419,7 @@ export default {
       this.privateKey = this.$configManager.decryptPrivateKey(this.privateKeyPassword, privateKeyEncrypted)
       if (this.privateKey.success) {
         this.invalidPrivateKeyPassword = false
+        this.currentAccount.privateKey = this.privateKey.key
       } else {
         this.invalidPrivateKeyPassword = true
         return false
