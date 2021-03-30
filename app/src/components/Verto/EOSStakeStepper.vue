@@ -137,7 +137,7 @@
                                             </q-input>
                                         </div>
                                         <q-stepper-navigation class="flex justify-end">
-                                            <q-btn @click="sendStakingTransaction()" color="deep-purple-14" class="--next-btn" rounded label="Submit" />
+                                            <q-btn @click="sendStakingTransaction()" :disable="!privateKey.success" color="deep-purple-14" class="--next-btn" rounded label="Submit" />
                                         </q-stepper-navigation>
                                     </q-step>
                                     <q-step v-else title="Confirm & Submit" :name="2" prefix="2" :done="step > 2">
