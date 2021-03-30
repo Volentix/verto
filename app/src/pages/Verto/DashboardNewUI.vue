@@ -50,7 +50,7 @@
                                     <TestnetPools :showAddLiquidity="true" class="bg-white" v-else />
                                 </q-tab-panel>
                                 <q-tab-panel name="asset">
-                                    <AssetBalancesTable @setAsset="setAsset" data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="6"/>
+                                    <AssetBalancesTable @setAsset="setAsset" data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="7" />
                                 </q-tab-panel>
                             </q-tab-panels>
                         </div>

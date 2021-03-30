@@ -65,9 +65,13 @@
                       <div class="text-body1">
                         Action {{ index + 1 }}
                         <q-btn
-                          flat
-                          label="Add new actiion"
-                          color="primary"
+                          :flat="$store.state.settings.lightMode === 'false'"
+                          :dark="$store.state.settings.lightMode === 'true'"
+                          :outline="$store.state.settings.lightMode === 'true'"
+                          label="Add new action"
+                          :color="$store.state.settings.lightMode === 'true' ? 'white':'primary'"
+                          no-caps
+                          class="q-mb-sm q-ml-md"
                           @click="actions.push(actionTemplate)"
                         ></q-btn>
                       </div>
@@ -75,6 +79,7 @@
                         <div class="col-md-12 row q-col-gutter-md">
                           <q-input
                             filled
+                            :dark="$store.state.settings.lightMode === 'true'"
                             class="col-6"
                             label="Contract"
                             v-model="actions[index].account"
@@ -82,6 +87,7 @@
                           <q-input
                             v-model="actions[index].name"
                             filled
+                            :dark="$store.state.settings.lightMode === 'true'"
                             class="col-6"
                             label="Name"
                           />
@@ -91,38 +97,46 @@
 
                         </div>
                         <div
-                          class="col-md-12 row"
+                          class="col-md-12 row q-col-gutter-md"
                           v-for="i in actions[index].dataCount"
                           :key="i"
                         >
                           <q-input
                             filled
                             v-model="actions[index].dataKeys[i-1]"
-                            class="col-md-6"
+                            class="col-6"
+                            :dark="$store.state.settings.lightMode === 'true'"
                             :label="'Property ' + i"
                           />
                           <q-input
                             v-model="actions[index].dataValues[i-1]"
                             filled
-                            class="col-md-6"
+                            :dark="$store.state.settings.lightMode === 'true'"
+                            class="col-6"
                             label="Value"
                           />
                         </div>
+                      </div>
+                      <div class="text-body1">
                         <q-btn
-                            flat
-                            dense
+                            :flat="$store.state.settings.lightMode === 'false'"
+                            :dark="$store.state.settings.lightMode === 'true'"
+                            :outline="$store.state.settings.lightMode === 'true'"
                             label="Add new property"
-                            color="primary"
+                            :color="$store.state.settings.lightMode === 'true' ? 'white':'primary'"
+                            no-caps
+                            class="q-mb-sm q-mt-sm"
                             @click="actions[index].dataCount++"
-                          ></q-btn>
+                          />
                       </div>
 
                        <q-input
-                            filled
-                            v-model="actions[index].memo"
-                            class="col-md-12"
-                            label="Memo"
-                          />
+                          filled
+                          v-model="actions[index].memo"
+                          :dark="$store.state.settings.lightMode === 'true'"
+                          class="col-md-12"
+                          label="Memo"
+                        />
 
                     </div>
                   </div>
@@ -131,26 +145,26 @@
                        <p class="text-red text-body2">{{ErrorMessage}}</p>
                        <p class="text-green text-body2">{{SuccessMessage}}</p>
 
-                       <div v-if="decryptPrivateKey" >
-                                  <q-card-section>
-                                    <div class="text-uppercase">
-                                      <q-item-section>
-                                        <q-item-label>Enter your private key password to sign the transaction</q-item-label>
-                                      </q-item-section>
+                        <div v-if="decryptPrivateKey" >
+                          <q-card-section>
+                            <div class="text-uppercase">
+                              <q-item-section>
+                                <q-item-label>Enter your private key password to sign the transaction</q-item-label>
+                              </q-item-section>
 
-                                      <div >
-                                        <q-input v-model="privateKeyPassword" color="deep-purple-14" label="Private Key Password" debounce="500" :error="invalidPrivateKeyPassword" error-message="The password is incorrect" @input="checkPrivateKeyPassword" :type="isPwd ? 'password' : 'text'">
-                                          <template v-slot:append>
-                                            <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
-                                          </template>
-                                        </q-input>
-                                      </div>
+                              <div >
+                                <q-input :dark="$store.state.settings.lightMode === 'true'" v-model="privateKeyPassword" color="deep-purple-14" label="Private Key Password" debounce="500" :error="invalidPrivateKeyPassword" error-message="The password is incorrect" @input="checkPrivateKeyPassword" :type="isPwd ? 'password' : 'text'">
+                                  <template v-slot:append>
+                                    <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                                  </template>
+                                </q-input>
+                              </div>
 
-                                        <q-btn  :disable="!privateKey.success" :loading="spinnervisible"  label="Submit" outline @click="process" />
+                                <q-btn  :disable="!privateKey.success" :loading="spinnervisible"  label="Submit" outline @click="process" />
 
-                                    </div>
-                                  </q-card-section>
-                                </div>
+                            </div>
+                          </q-card-section>
+                        </div>
                         <q-btn label="Process" :loading="spinnervisible" @click="process()"  v-if="!decryptPrivateKey && !transactionLink" outline />
                          <q-input v-if="transactionLink" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" readonly class="input-input" rounded outlined color="purple" v-model="transactionLink">
                             <template v-slot:append>
