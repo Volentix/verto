@@ -45,7 +45,7 @@
     <div v-if="!params.to" class="send-modal flex flex-center" :class="{'open' : openModalProgress , 'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
-          <span class="text-h5 --amount">{{sendAmount + ' ' + currentAccount.type.toUpperCase()}}</span>
+          <span class="text-h5 --amount">{{sendAmount + ' ' + currentToken.type.toUpperCase()}}</span>
           <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black' : 'white'" rounded flat unelevated @click="hideModalFun()" class="close-btn" :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" label="+" />
         </div>
         <div class="send-modal__content--body column flex-center">
@@ -121,6 +121,7 @@
                     <div class="row">
                       <div class="col col-8 q-pr-lg" v-if="['eth','eos'].includes(selectedCoin.chain)">
                         <span class="lab-input">Select token </span>
+
                         <q-select
                             :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                             separator
@@ -179,6 +180,7 @@
                             rounded
                             outlined
                             class="select-input"
+                            @input="changeAccount()"
                             v-model="currentToken"
                             :options="options"
                         >
@@ -192,7 +194,7 @@
                                 <q-icon class="option--avatar" :name="`img:${scope.opt.image}`" />
                               </q-item-section>
                               <q-item-section dark>
-                                <q-item-label v-html="scope.opt.label" />
+                                <q-item-label v-html="scope.opt.label + ' - ' + scope.opt.type.toUpperCase()" />
                                 <q-item-label caption class="ellipsis mw200">{{ scope.opt.value }}</q-item-label>
                               </q-item-section>
                             </q-item>
@@ -205,7 +207,7 @@
                                 <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
                               </q-item-section>
                               <q-item-section>
-                                <q-item-label v-html="currentToken.label" />
+                                <q-item-label v-html="currentToken.label"/>
                                 <q-item-label caption class="ellipsis mw200">{{ currentToken.value }}</q-item-label>
                               </q-item-section>
                             </q-item>
@@ -221,10 +223,11 @@
                             </div>
                           </template>
                         </q-input> -->
+
                       </div>
                       <div class="col col-4">
                         <span class="lab-input">Amount</span>
-                        <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentAccount.amount) ? parseFloat(currentAccount.amount) : parseFloat(sendAmount) ; checkGas();" :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
+                        <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentToken.amount) ? parseFloat(currentToken.amount) : parseFloat(sendAmount) ; checkGas();" :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                           <template v-slot:append>
                             <div class="flex justify-end">
                               <span class="tokenID">{{ currentToken.type }}</span>
@@ -258,8 +261,8 @@
                         </q-input>
                       </div>
                       <div class="col col-12">
-                        <span v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" class="lab-input">Memo</span>
-                        <q-input :disable="disableMemoEdit" v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+                        <span v-if="currentToken.chainID && currentToken.chainID.toLowerCase() != 'eth'" class="lab-input">Memo</span>
+                        <q-input :disable="disableMemoEdit" v-if="currentToken.chainID && currentToken.chainID.toLowerCase() != 'eth'" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
                       </div>
                     </div>
                   </div>
@@ -332,8 +335,8 @@
               </template>
             </q-input>
 
-            <span v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" class="lab-input">Memo</span>
-            <q-input v-if="currentToken.chainID && currentToken.chainID.toLowerCase() == 'eos'" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+            <span  class="lab-input">Memo</span>
+            <q-input  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
 
           </div>
           <br>
@@ -393,7 +396,7 @@ export default {
       fetchCurrentWalletFromState: true,
       from: '',
       isPwd: true,
-      sendAmount: 0.001,
+      sendAmount: 0,
       formatedAmount: '',
       options: [],
       minimizedModal: false,
@@ -470,7 +473,7 @@ export default {
         */
 
         // this.$store.commit('currentwallet/updateCurrentWallet', this.currentAccount)
-        this.sendAmount = this.$store.state.currentwallet.params && this.$store.state.currentwallet.params.amount ? this.$store.state.currentwallet.params.amount : 0.001
+        this.sendAmount = this.$store.state.currentwallet.params && this.$store.state.currentwallet.params.amount ? this.$store.state.currentwallet.params.amount : 0
       }
     }
   },
@@ -509,9 +512,13 @@ export default {
       if (!token.disabled && token.type.toLowerCase() !== 'verto' && parseFloat(token.amount) > 0) {
         self.options.push({
           label: token.name.toLowerCase(),
-          value: token.chain !== 'eos' ? token.key : token.key + ' - ' + token.type.toUpperCase(),
+          value: !['eos', 'eth'].includes(token.chain) ? token.key : token.key + ' - ' + token.type.toUpperCase(),
           image: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
           type: token.type,
+          contract: token.contract,
+          key: token.key,
+          name: token.name,
+          precision: token.precision,
           amount: token.amount,
           chainID: token.chain
         })
@@ -525,7 +532,11 @@ export default {
         value: this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.key + ' - ' + this.selectedCoin.type.toUpperCase(),
         image: this.selectedCoin.type !== 'usdt' ? this.selectedCoin.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
         type: this.selectedCoin.type,
+        contract: this.selectedCoin.contract,
+        precision: this.selectedCoin.precision,
         chainID: this.selectedCoin.chain,
+        key: this.selectedCoin.key,
+        name: this.selectedCoin.name,
         amount: this.selectedCoin.amount
       }
     } else {
@@ -563,11 +574,9 @@ export default {
 
     */
 
-    if (this.params.chainID === 'eth') {
-      this.$store.dispatch('investment/getGasPrice')
+    this.$store.dispatch('investment/getGasPrice')
 
-      this.checkGas()
-    }
+    this.checkGas()
   },
   methods: {
 
@@ -603,6 +612,16 @@ export default {
         type: 'warning',
         position: 'top'
       })
+    },
+    changeAccount () {
+      this.currentAccount = this.$store.state.wallets.tokens.find(w => w.chain === this.currentToken.chainID && (this.currentToken.chainID !== 'eos' || w.name.toLowerCase() === this.currentToken.label.toLowerCase()))
+
+      if (this.currentAccount.privateKey) {
+        this.privateKey.key = this.currentAccount.privateKey
+        this.isPrivateKeyEncrypted = false
+      } else {
+        this.isPrivateKeyEncrypted = true
+      }
     },
     checkMemo () {
       if (this.sendMemo.length > 0) {
@@ -710,13 +729,13 @@ export default {
 
       Lib.send(
         this.currentAccount.chain,
-        this.currentAccount.type,
+        this.currentToken.type,
         this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name,
         this.sendToResolved,
         this.sendAmount,
         this.sendMemo,
         this.privateKey.key,
-        this.currentAccount.contract
+        this.currentToken.contract
       ).then(result => {
         if (result.success) {
           this.getPassword = false
@@ -752,7 +771,7 @@ export default {
     },
     payForUserCPU () {
       const actions = [{
-        account: this.currentAccount.contract,
+        account: this.currentToken.contract,
         name: 'transfer',
         authorization: [{
           actor: this.currentAccount.name,
@@ -762,7 +781,7 @@ export default {
         data: {
           from: this.currentAccount.name.toLowerCase(),
           to: this.sendToResolved.toLowerCase(),
-          quantity: parseFloat(this.sendAmount).toFixed(this.currentAccount.precision) + ' ' + this.currentAccount.type.toUpperCase(),
+          quantity: parseFloat(this.sendAmount).toFixed(this.currentToken.precision) + ' ' + this.currentToken.type.toUpperCase(),
           memo: this.sendMemo
         }
       }]
@@ -805,7 +824,7 @@ export default {
     },
     formatAmountString () {
       let numberOfDecimals = 0
-      // console.log('this.currentAccount', this.currentAccount)
+
       let stringAmount = (Math.round(this.sendAmount * Math.pow(10, this.currentAccount.precision)) / Math.pow(10, this.currentAccount.precision)).toString()
       const amountParsed = stringAmount.split('.')
       if (amountParsed && amountParsed.length > 1) {
