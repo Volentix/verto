@@ -69,7 +69,7 @@
                                                         </div>
                                                         <div class="col">
                                                             <span class="--title row text-h6"> Current Stake<br>{{ params.tokenID.toUpperCase() }} (Staked) </span>
-                                                            <span class="--amount row text-h4"> {{ currentAccount.staked }} </span>
+                                                            <span class="--amount row text-h4"> CPU: {{ currentAccount.staked.cpu }} EOS <br>NET: {{ currentAccount.staked.net }} EOS </span>
                                                         </div>
                                                     </div>
 
@@ -321,10 +321,15 @@ export default {
       })
       this.currentAccount.staked = stakedAmounts
     } else {
-      this.currentAccount.staked = {
-        net: 0,
-        cpu: 0
-      }
+      this.currentAccount.staked =
+      this.$store.state.currentwallet.wallet.accountData
+        ? {
+          net: this.$store.state.currentwallet.wallet.accountData.net_weight / 10000,
+          cpu: this.$store.state.currentwallet.wallet.accountData.cpu_weight / 10000
+        } : {
+          net: 0,
+          cpu: 0
+        }
     }
 
     // console.log('stakes', this.stakes)
