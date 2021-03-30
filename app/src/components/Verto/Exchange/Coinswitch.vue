@@ -99,9 +99,9 @@
 
                                                         </q-card>
                                                         </q-dialog>
-                                                       <div class="row  float-right full-width  text-red q-mb-md">
-                                                       <div class="col-md-12 flex justify-between">
-                                                       <AccountSelector  />
+                                                        <div class="row  float-right full-width  text-red q-mb-md">
+                                                        <div class="col-md-12 flex justify-end">
+                                                        <AccountSelector  />
                                                         <q-item dense class="metamask-btn float-right" style="max-width:350px">
                                                             <q-item-section class="text-body1 q-pr-sm">
                                                                 <q-btn :loading="connectLoading" :class=" $store.state.wallets.metamask.accounts.length ? 'bg-green-1' : 'bg-red-1'" @click="connectWallet('metamask')" flat icon="fiber_manual_record" :color="!$store.state.wallets.metamask.accounts.length ? 'red' : 'green'" :label="!$store.state.wallets.metamask.accounts.length ? 'Connect' : 'Connected'">
@@ -267,7 +267,7 @@
                                                 </div>
                                                 <div class="you-receive">
                                                     <br>
-                                                    <q-btn :disable="accountToBeCreated" outline round color="black" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
+                                                    <q-btn :disable="accountToBeCreated" outline round :color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="swap_vert" @click="switchAmounts()" class="swap_vert" />
                                                     <div class="you-receive-head row items-center">
                                                         <div class="col col-4 text-left">You Receive</div>
                                                         <div v-if="!ErrorMessage || !ErrorMessage.length" class="col col-8 info_rate_holder  text-right  justify-end items-center" :class="{'_loading': fetchingRate}">

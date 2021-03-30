@@ -20,20 +20,21 @@
                         <div class="list-wrapper">
                             <div class="list-wrapper--chain__eos-to-vtx-convertor">
                                 <div>
-                                    <q-stepper :dark="$store.state.lightMode === 'false'" :light="$store.state.lightMode === 'true'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
-                                        <q-step title="Missing HD Account" :name="1" prefix="1" order="10" :done="step > 1">
+                                    <q-stepper :dark="$store.state.settings.lightMode === 'true'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
+                                        <q-step :dark="$store.state.settings.lightMode === 'true'" title="Missing HD Account" :name="1" prefix="1" order="10" :done="step > 1">
                                             <div class="text-black">
                                                 <q-select
                                                   v-if="notCreated.length !== 0"
-                                                  :dark="$store.state.lightMode === 'true'"
-                                                  :light="$store.state.lightMode === 'false'"
+                                                  :dark="$store.state.settings.lightMode === 'true'"
                                                   separator rounded outlined
                                                   label="Select chain"
                                                   class="select-input"
                                                   v-model="currentToken"
                                                   :options="notCreated"
                                                 />
-                                                <p  class="text-body1" v-else> No Missing HD keys found</p>
+                                                <p  class="text-body1" :class="{
+                                                   'text-grey': $store.state.settings.lightMode === 'true'
+                                                }" v-else> No Missing HD keys found</p>
                                                 <p  class="text-body1 text-green q-pt-md" v-if="successMessage">{{successMessage}}</p>
 
                                                 <q-stepper-navigation v-show="currentToken && !successMessage" class="flex justify-end">
@@ -303,6 +304,7 @@ export default {
     box-shadow: none;
     margin-top: 0px;
   }
+
   .marg{
     /deep/ .profile-wrapper{
       &--header{
@@ -341,6 +343,9 @@ export default {
     }
   }
   .dark-theme{
+    /deep/ .marg .profile-wrapper--header {
+      border: 1px solid #627797;
+    }
     .mobile-version{
       background: #04111F;
       .standard-content--title{
@@ -860,4 +865,5 @@ export default {
   .chain-tools-wrapper--list /deep/ .list-wrapper--chain__eos-to-vtx-convertor{
       box-shadow: none !important;
   }
+
 </style>
