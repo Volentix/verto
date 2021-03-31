@@ -3,7 +3,10 @@
   <div class="words-order-wrapper">
     <div class="words-order-wrapper--list">
       <div class="words-order-wrapper--list__empty">
-        <ul>
+        <p class="text-body1">Choose the first and the last word from the precedent list. We just want to make sure you didn't forget to save it</p>
+        <q-select rounded :set="valid = isChoiceInvalid(0, first)" :error="!valid.success && valid.message != null" :error-message="valid.message"  outlined class="q-pb-lg" v-model="first" :options="arrayAlphabericallyOrdered" label="Select the first word" />
+        <q-select rounded :set="valid = isChoiceInvalid(arrayMnemonic.length - 1, last)" :error="!valid.success && valid.message != null"  :error-message="valid.message"  outlined v-model="last" :options="arrayAlphabericallyOrdered" label="Select the last word" />
+        <ul  v-if="false">
         <li v-for="(word, index) in arrayOrdered" :key="index">
           <q-input
             :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
@@ -18,7 +21,7 @@
         </li>
         </ul>
       </div>
-      <div class="words-order-wrapper--list__random">
+      <div class="words-order-wrapper--list__random" v-if="false">
         <ul>
         <li v-for="(word, index) in arrayShuffled" :key="index">
           <q-input
@@ -52,8 +55,11 @@ export default {
   data () {
     return {
       arrayMnemonic: [],
+      first: null,
+      last: null,
       arrayShuffled: [],
       arrayOrdered: [],
+      arrayAlphabericallyOrdered: [],
       arrayShuffleShow: [],
       arrayTest2: [],
       arrayTest3: []
@@ -62,11 +68,33 @@ export default {
   mounted () {
     this.arrayMnemonic = this.words.split(' ')
     this.arrayShuffled = [...this.arrayMnemonic]
-    this.shuffle(this.arrayShuffled)
+    this.arrayAlphabericallyOrdered = this.arrayShuffled.sort()
+    // this.shuffle(this.arrayShuffled)
   },
   computed: {
   },
   methods: {
+    isChoiceInvalid (index, word) {
+      let value = {
+        success: false,
+        message: null
+      }
+      if (word) {
+        if (this.arrayMnemonic[index] === word) {
+          value.success = true
+        } else {
+          value.message = word + ' is not the ' + (index === 0 ? 'first' : 'last') + ' word from your mnemonic'
+        }
+
+        if (this.arrayMnemonic[0] === this.first && this.arrayMnemonic[this.arrayMnemonic.length - 1] === this.last) {
+          this.$store.commit('settings/rightOrder', true)
+        } else {
+          this.$store.commit('settings/rightOrder', false)
+        }
+      }
+
+      return value
+    },
     chooseMe (word, index, show) {
       if (show) {
         this.arrayOrdered.push(word)

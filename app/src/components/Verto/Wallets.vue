@@ -928,7 +928,6 @@ export default {
   },
   watch: {
     '$store.state.wallets.portfolioTotal': function () {
-      this.setChains()
       this.loadingIndicator = true
       setTimeout(() => {
         this.loadingIndicator = false
@@ -942,6 +941,7 @@ export default {
     tokens: {
       deep: true,
       handler (val, old) {
+        this.setChains()
         this.rekey++
       }
     }
@@ -1062,8 +1062,6 @@ export default {
           let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
           o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
           o.count = accounts.filter(o => o.type === o.chain).length
-
-          console.log(o.count, 'o.count', o.chain)
 
           let chain = HD.names.find(a => a.value === o.chain)
           o.label = chain ? chain.label : o.chain
@@ -1258,7 +1256,7 @@ export default {
       return Math.abs(num) > 999 ? Math.sign(num) * ((Math.abs(num) / 1000).toFixed(1)) + 'k' : Math.sign(num) * Math.abs(num)
     },
     async setRessourcesInfos () {
-      if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.chain === 'eos') {
+      if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.chain === 'eos' && this.$store.state.currentwallet.wallet.chain !== 'verto') {
         if (!this.$store.state.currentwallet.wallet.accountData) {
           this.$store.state.currentwallet.wallet.accountData = await eos.getAccount(this.$store.state.currentwallet.wallet.name)
         }

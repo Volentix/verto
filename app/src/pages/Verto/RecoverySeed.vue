@@ -1,6 +1,23 @@
 <template>
   <q-page :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-white': $store.state.settings.lightMode === 'false'}">
-    <div v-if="step===1" class="standard-content">
+    <div class="row">
+      <div class="col col-md-4 app-logo flex q-pa-md items-center">
+        <!-- <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;"> -->
+        <svg
+          class="svg_logo q-mr-sm"
+          width="20"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 20.58"
+        >
+          <path
+            d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z"
+            transform="translate(-183 -18.21)"
+          ></path>
+        </svg>
+        <router-link to="/verto/dashboard">VERTO</router-link>
+      </div>
+    </div>
+     <div v-if="step===1" class="standard-content">
       <h2 class="standard-content--desc"></h2>
       <div class="standard-content--body">
         <div class="standard-content--body__img column flex-center">
@@ -15,31 +32,37 @@
     </div>
     <div v-if="step===2" class="standard-content">
       <div>
-        <h2 class="standard-content--title">This is your 24 - word recovery seed phrase.</h2>
-        <h2 class="standard-content--desc">Save these words in the right order in a secure location. Nobody will be able to help if you lose them!</h2>
+        <h2 class="standard-content--title">24 - word recovery seed phrase.</h2>
+        <p class="text-body1">This list of words is used to generate all your HD wallets. You can use them to restore and access your wallet at any time</p>
+        <h2 class="standard-content--desc q-pa-md text-red rounded-borders shadow-1">Save these words in the right order in a secure location. Nobody will be able to help if you lose them!</h2>
       </div>
       <div class="standard-content--body">
         <div class="standard-content--body__mnemonic">
           <h4 class="standard-content--body__mnemonic--title flex justify-between">
             Mnemonic
-            <q-btn round flat unelevated text-color="grey" class="btn-copy" @click="copy2clip(mnemonic)" icon="o_file_copy" />
+
+             <q-btn round flat unelevated text-color="grey" label="Download" class="btn-copy q-pr-md gt-xs" @click="downloadMnemonic()" icon="get_app" />
+            <q-btn round flat unelevated text-color="grey" label="Copy" class="btn-copy q-pr-md" @click="copy2clip(mnemonic)" icon="o_file_copy" />
           </h4>
           <q-input
             :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
             ref="mnemonic"
             type="textarea"
+            readonly
+            class="text-h6 mnemonic"
             v-model="mnemonic"
             @focus="$event.target.select()"
           />
+          <q-btn label="Regenerate"  @click="createMnemonic" icon="cached" flat /> <q-btn label="Import"  @click="mnemonic = ''; step = 4" icon="publish" flat />
         </div>
       </div>
       <div class="standard-content--footer">
          <q-btn flat class="action-link back" color="black" text-color="white" label="Back" @click="step=1" />
-         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Verify" @click="step=3" />
+         <q-btn class="action-link next" color="deep-purple-14" :loading="spinnervisible" text-color="white" :label="downloaded ? 'Next': 'Verify'" @click="downloaded ? saveMnemonic() : step=3" />
       </div>
     </div>
     <div v-if="step===3" class="standard-content">
-      <h2 class="standard-content--title">Put the words in the right order</h2>
+      <h2 class="standard-content--title">Select the first and the last word</h2>
       <div class="standard-content--body">
         <words-order :words="mnemonic" />
         <div v-if="!vertoPassword">
@@ -93,6 +116,7 @@
             type="textarea"
             @input="validateMnemonic()"
             v-model="mnemonic"
+            autofocus
             error-message="The mnemonic seed is invalid"
             :error="!mnemonicValidated"
           />
@@ -111,7 +135,8 @@ const bip39 = require('bip39')
 import HD from '@/util/hdwallet'
 import WordsOrder from '../../components/Verto/WordsOrder'
 // import { userError } from '@/util/errorHandler'
-
+let platformTools = require('@/util/platformTools')
+if (platformTools.default) platformTools = platformTools.default
 export default {
   components: {
     WordsOrder
@@ -121,6 +146,7 @@ export default {
       step: 1,
       isPwd: true,
       words: 24,
+      downloaded: false,
       wordOptions: [
         {
           label: 'Verto (24 words)',
@@ -150,6 +176,10 @@ export default {
     }
   },
   async created () {
+    if (this.$route.params.step) {
+      this.step = parseInt(this.$route.params.step)
+      if (this.step === 2) { this.createMnemonic() }
+    }
   },
   async mounted () {
     // console.log('mnemonic', this.mnemonic, 'config', this.config, 'verto password', this.vertoPassword)
@@ -159,21 +189,37 @@ export default {
   computed: {
   },
   methods: {
+    async downloadMnemonic () {
+      try {
+        var today = new Date()
+        var dd = String(today.getDate()).padStart(2, '0')
+        var mm = String(today.getMonth() + 1).padStart(2, '0')
+        var yyyy = today.getFullYear()
+
+        today = mm + '_' + dd + '_' + yyyy + '_' + today.getHours() + 'h_' + today.getMinutes() + 'm'
+
+        await platformTools.downloadFile(this.mnemonic, 'Verto_mnemonic_' + today + '.txt')
+        this.downloaded = true
+      } catch (error) {
+        this.$q.notify({ color: 'negative', message: 'Please copy the list of words, an error occured during the download' })
+      }
+    },
     validateMnemonic () {
+      this.mnemonic = this.mnemonic ? this.mnemonic.trim() : this.mnemonic
       this.mnemonicValidated = bip39.validateMnemonic(this.mnemonic)
     },
     async createMnemonic () {
-      // console.log('generating mnemonic')
+      this.downloaded = false
       this.mnemonic = bip39.generateMnemonic(256)
 
       this.step = 2
     },
     async saveMnemonic (isRecovering = false) {
-      if (this.goodPassword && (this.$store.state.settings.rightOrder || this.step === 4)) {
+      if ((this.goodPassword && (this.$store.state.settings.rightOrder || this.step === 4)) || this.downloaded === true) {
         // console.log('we are good with order')
 
         if (this.vertoPassword) {
-          // console.log('in saveMnemonic with password')
+          this.spinnervisible = true
           this.config.mnemonic = this.mnemonic
           await this.$configManager.updateConfig(this.vertoPassword, this.config)
           const keys = await HD.Wallet('eos')
@@ -197,6 +243,7 @@ export default {
       } else {
         this.$q.notify({ color: 'negative', message: 'The words are not yet in the right order' })
       }
+      this.spinnervisible = false
     },
     checkVertoPassword () {
       const self = this
@@ -231,12 +278,51 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
+.mnemonic /deep/ textarea {
+  line-height: 28px  !important
+}
+.row {
+    .col {
+      &.menu {
+        a {
+          font-weight: $regular;
+          font-family: $Titillium;
+          font-size: 16px;
+          color: #333;
+          text-decoration: none;
+          padding: 5px 10px;
+          border-radius: 5px;
+
+          &:hover {
+            background-color: rgba(black, 0.02);
+          }
+        }
+      }
+
+      &.app-logo {
+        svg {
+          fill: #000;
+        }
+        a {
+          font-weight: $bold;
+          text-transform: uppercase;
+          font-family: $Titillium;
+          font-size: 20px;
+          color: #333;
+          text-decoration: none;
+        }
+      }
+
+      cursor: pointer;
+      position: relative;
+    }
+  }
 .standard-content{
   padding: 5% 10%;
   display: flex;
   flex-direction: column;
   // justify-content: space-between;
-  min-height: 100vh !important;
+
   max-width: 800px;
   margin: auto;
   @media screen and (min-width: 768px) {
