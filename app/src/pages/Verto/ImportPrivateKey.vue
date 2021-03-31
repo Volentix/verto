@@ -44,7 +44,7 @@
                                                         </ul>
                                                     </div>
                                                     <span>
-                                                        <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.addressPriv" :error="addWallet.addressError" @input="showEosKeyNext" @keyup.enter="nextFromPriv" :label="$t('EosAccount.enter_private_key')" />
+                                                        <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.addressPriv" :error="addWallet.addressError" @input="showEosKeyNext" @keyup.enter="nextFromPriv" :label="$t('EosAccount.enter_private_key')" type="password" />
                                                     </span>
                                                     <div v-show="eosKeyInvalid" class="text-h6 text-red">
                                                         Key invalid
@@ -62,6 +62,7 @@
                                                 <div class="text-black">
                                                     <div>
                                                         <q-select light separator rounded outlined class="select-input" stack-label label="EOS Account Name" color="purple" v-model="addWallet.walletName" :options="accountNames" :error="addWallet.walletNameEmpty" />
+                                                        <p class="text-red q-mt-sm" v-if="accountNames.length == 0">No account found</p>
                                                     </div>
                                                     <q-stepper-navigation v-show="addWallet.walletName" class="flex justify-end">
                                                         <q-btn @click="$refs.stepper.next()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
@@ -416,6 +417,7 @@ import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 
 import EosWrapper from '@/util/EosWrapper'
+let eos = new EosWrapper()
 export default {
   components: {
     // desktop components
@@ -507,7 +509,7 @@ export default {
       if (!this.eosKeyNext) {
         return
       }
-      if ((new EosWrapper()).isPrivKeyValid(this.addWallet.addressPriv)) {
+      if (eos.isPrivKeyValid(this.addWallet.addressPriv)) {
         this.importPrivateKey()
         this.$refs.stepper.next()
       } else {
@@ -516,7 +518,10 @@ export default {
     },
     showEosKeyNext () {
       this.eosKeyInvalid = false
-      if (this.addWallet.addressPriv.length === 51) {
+
+      let valid = eos.isPrivKeyValid(this.addWallet.addressPriv)
+
+      if (valid) {
         this.eosKeyNext = true
       } else {
         this.eosKeyNext = false
@@ -569,7 +574,7 @@ export default {
       var self = this
       eos.getAccountNamesFromPubKeyP(this.addWallet.address)
         .then(function (result) {
-          self.accountNames = []
+          self.accountNames = ['test']
           for (var i = 0; i < result.account_names.length; i++) {
             self.accountNames.push({
               label: result.account_names[i],
