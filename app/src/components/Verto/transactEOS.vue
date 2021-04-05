@@ -1,59 +1,7 @@
 <template>
-  <q-page
-    class=""
-    :class="{
-      'desktop-marg': screenSize > 1024,
-      'mobile-pad': screenSize < 1024,
-      'text-black bg-white': $store.state.settings.lightMode === 'false',
-    }"
-  >
-    <div :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }" style="height: 100vh;">
-      <div class="desktop-version full-height" v-if="screenSize > 1024">
-        <div class="row full-height">
-          <div class="col col-md-3">
-            <div class="wallets-container" style="height: 100%">
-              <profile-header
-                :isMobile="false"
-                class="marg"
-                version="type2222"
-              />
-              <wallets
-                :isMobile="false"
-                :showWallets="false"
-                :isWalletsPage="false"
-                :isWalletDetail="false"
-                class="full-height max-height"
-              />
-              <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
-            </div>
-          </div>
-          <div class="col col-md-9">
-            <div
-              class="desktop-card-style apps-section history-card"
-              :class="{
-                'dark-theme': $store.state.settings.lightMode === 'true',
-              }"
-              style="height: 100%"
-            >
-              <q-banner
-                inline-actions
-                class="text-white bg-red q-my-md"
-                v-if="false"
-              >
-                Section currently in development: currently showing ETH wallets
-                history
-              </q-banner>
-              <div class="row" v-if="false">
 
-                <div class="col flex justify-end q-pr-md">
-                  <AccountSelector :showAllWallets="true" />
-                </div>
-              </div>
-
-              <div class="standard-content--body" style="height: 100%">
                 <div class="row">
                   <div class="col-md-12 q-pl-md">
-                    <BuySellEosRam @setTxData="setTxData" />
 
                        <p class="text-h6 text-bold" v-if="transactionObject && !decryptPrivateKey && !transactionLink">Click button below to process</p>
                        <p class="text-red text-body2">{{ErrorMessage}}</p>
@@ -78,7 +26,7 @@
 
                                     </div>
                                   </q-card-section>
-                                </div>
+                         </div>
                         <q-btn label="Process" :disable="!transactionObject" :loading="spinnervisible" @click="process()"  v-if="transactionObject && !decryptPrivateKey && !transactionLink" outline />
                          <q-input v-if="transactionLink" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" readonly class="input-input" rounded outlined color="purple" v-model="transactionLink">
                             <template v-slot:append>
@@ -89,24 +37,15 @@
                         </q-input>
                         <a v-if="transactionLink" :href="transactionLink" target="_blank" class="text-body2 text-black"> More infos</a>
 
-                       </div>
+                     </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </q-page>
+
 </template>
 
 <script>
 
-import Wallets from '../../components/Verto/Wallets'
-import ProfileHeader from '../../components/Verto/ProfileHeader'
 import configManager from '@/util/ConfigManager'
-import AccountSelector from '../../components/Verto/Exchange/AccountSelector'
-import BuySellEosRam from '../../components/Verto/BuySellEosRam'
+
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 import { version } from '../../../package.json'
@@ -115,12 +54,7 @@ if (platformTools.default) platformTools = platformTools.default
 import EOSContract from '../../mixins/EOSContract'
 
 export default {
-  components: {
-    ProfileHeader,
-    Wallets,
-    AccountSelector,
-    BuySellEosRam
-  },
+
   data () {
     return {
       colors: ['cyan', 'teal', 'light-blue', 'blue-1', 'pink', 'purple'],
@@ -213,6 +147,7 @@ export default {
         this.decryptPrivateKey = true
         return
       }
+      console.log(this.transactionObject, 'this.transactionObject')
       let transactionObject = this.transactionObject
 
       try {
@@ -224,6 +159,7 @@ export default {
         this.spinnervisible = false
         this.transStatus = 'Sent Successfully'
         this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain.'
+        this.$emit('setSuccessData', true)
       } catch (error) {
         if (error.toString().includes('is greater than the maximum billable CPU time for the transaction')) {
           this.freeCPU = true
@@ -231,10 +167,10 @@ export default {
           let account = this.$store.state.currentwallet.wallet
           account.privateKey = this.privateKey.key
           this.sendFreeCPUTransaction(transactionObject.actions, account).then(result => {
-            console.log(result, 'result')
             if (result.success) {
               this.transactionLink = result.message
               this.transStatus = !result.status ? 'Sent Successfully' : result.status
+              this.$emit('setSuccessData', true)
             } else {
               this.ErrorMessage = result.message
             }
@@ -298,26 +234,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
-.desktop-card-style{
-    height: 101.5%;
-    max-height: 101.5%;
-    @media screen and (min-height: 700px) {
-        // height: 54.5vh;
-        max-height: 98.6%;
-    }
-    @media screen and (min-height: 760px) {
-        // height: 54vh;
-        max-height: 97%;
-    }
-    @media screen and (min-height: 800px) {
-        // height: 55vh;
-        max-height: 96.4%;
-    }
-    @media screen and (min-height: 870px) {
-        // height: 56vh;
-        max-height: 94.6%;
-    }
-  }
+
 .action {
     border: 1px solid;
     border-radius: 12px;
@@ -326,88 +243,5 @@ export default {
 
     font-family: monospace;
     white-space: pre;
-}
-/deep/ .wallets-wrapper {
-  padding-bottom: 0px !important;
-}
-/deep/ .wallets-wrapper--list {
-  box-shadow: none;
-  margin-top: 0px;
-}
-.marg {
-  /deep/ .profile-wrapper {
-    &--header {
-      margin-bottom: 0px;
-    }
-  }
-}
-.mobile-pad {
-  padding-bottom: 50px;
-  background: #fff !important;
-}
-.desktop-version {
-  background: #e7e8e8;
-  padding-top: 13vh;
-  padding-left: 20vh;
-  padding-bottom: 50px;
-  padding-right: 18px;
-  @media screen and (min-width: 768px) {
-    padding-top: 11vh;
-    padding-bottom: 0px;
-  }
-}
-.standard-content {
-  padding: 5% 10%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 100vh !important;
-  padding-bottom: 100px;
-  @media screen and (min-width: 768px) {
-    padding: 2%;
-    flex-direction: column;
-    justify-content: flex-start;
-    min-height: unset !important;
-    padding-bottom: 20px;
-  }
-  &--title {
-    font-size: 35px;
-    font-weight: $bold;
-    position: relative;
-    line-height: 50px;
-    font-family: $Titillium;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    @media screen and (min-width: 768px) {
-      margin-top: -20px;
-      font-size: 25px;
-    }
-    .btn-align-left {
-      position: absolute;
-      left: -15px;
-      top: 10px;
-    }
-  }
-}
-.dark-theme {
-  .desktop-version {
-    background: #04111f;
-  }
-  .history-card {
-  }
-  /deep/ .profile-wrapper {
-    &--header {
-      margin-bottom: 0px;
-      border: 1px solid #627797;
-      // border-bottom: none;
-      border-radius: 10px 10px 0px 0px !important;
-    }
-  }
-  /deep/ .transaction-wrapper--list {
-    background-color: #04111f;
-    .q-list--bordered .q-link {
-      border-top: 1px solid rgba(white, 0.06);
-    }
-  }
 }
 </style>

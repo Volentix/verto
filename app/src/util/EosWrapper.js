@@ -18,7 +18,10 @@ class EosWrapper {
     const bool = ecc.isValidPrivate(privKey) === true
     return bool
   }
-
+  isPubKeyValid (pubKey) {
+    const bool = ecc.isValidPublic(pubKey) === true
+    return bool
+  }
   fromPrivToPub (wif) {
     const pubKey = ecc.privateToPublic(wif)
     return pubKey
