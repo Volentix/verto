@@ -65,7 +65,7 @@
                                                         <p class="text-red q-mt-sm" v-if="accountNames.length == 0">No account found</p>
                                                     </div>
                                                     <q-stepper-navigation v-show="addWallet.walletName" class="flex justify-end">
-                                                        <q-btn @click="$refs.stepper.next()" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
+                                                        <q-btn @click="step = 4" color="deep-purple-14" class="--next-btn" rounded :label="$t('next')" />
                                                     </q-stepper-navigation>
                                                 </div>
                                             </q-step>
@@ -98,7 +98,7 @@
                                                     4. Verto Password
                                                     -->
                                             <q-step title="Verto Password" :name="4" prefix="4" order="40" :done="step > 4">
-                                                <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
+                                                <q-btn flat @click="step = 2" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
                                                 <div class="text-black">
                                                     <div>
                                                         <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.vertoPassword" @input="showSubmitKey" @keyup.enter="addEosAddress" v-bind:label="$t('CreateVertoPassword.vertopassword')" :type="isPwd ? 'password' : 'text'">
@@ -574,7 +574,7 @@ export default {
       var self = this
       eos.getAccountNamesFromPubKeyP(this.addWallet.address)
         .then(function (result) {
-          self.accountNames = ['test']
+          self.accountNames = []
           for (var i = 0; i < result.account_names.length; i++) {
             self.accountNames.push({
               label: result.account_names[i],
