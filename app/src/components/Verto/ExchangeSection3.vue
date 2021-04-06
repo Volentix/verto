@@ -34,9 +34,11 @@
                         </q-select>
                     </div>
                 </div>
-                <div class="col flex items-center q-pl-sm col-6 call-action-col">
+                <div class="col flex items-center q-pl-sm col-2 call-action-col">
+                  <q-icon name="swap_horiz" size="sm" class="swap_horiz" />
+                </div>
+                <div class="col flex items-center q-pl-sm col-4 call-action-col">
                     <!-- <i class="step-2-lab step-1-lab flex ">Receive</i> -->
-                    <q-icon name="swap_horiz" size="sm" class="swap_horiz" />
                     <div class="call-action">
                         <q-select :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input" use-input @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                             <template v-slot:option="scope">
@@ -369,7 +371,7 @@ export default {
     transform: translateY(-20px);
 }
 .exchange-container{
-    min-height: 138px;
+    height: 100px;
     margin: -3px;
     &--head-title{
         border-bottom: 1px solid rgba(#CCC, .4);
@@ -377,7 +379,7 @@ export default {
         font-size: 16px;
         font-weight: 700;
         height: 45px;
-        margin-bottom: 10px;
+        margin-bottom: -5px;
         padding-top: 11px;
         color: #FFF;
         background-size: 90% auto !important;

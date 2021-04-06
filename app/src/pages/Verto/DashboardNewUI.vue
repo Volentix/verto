@@ -453,7 +453,7 @@ export default {
     .tabPoolAndAssetBalances{
         position: absolute;
         left: 1px;
-        top: 1px;
+        top: calc(3vh + 1px);
         z-index: 3;
         width: 400px;
         padding-right: 90px;
@@ -857,26 +857,27 @@ export default {
     }
 }
 .customSlider{
-    // height: 85px;
-    .slide{
-        opacity: 0;
-        visibility: hidden;
-        position: absolute;
-        transition: opacity 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        &.active{
-            opacity: 1;
-            visibility: visible;
-            position: relative;
-        }
-    }
+  height: 85px;
+  .slide{
+      opacity: 0;
+      visibility: hidden;
+      position: absolute;
+      transition: opacity 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      &.active{
+          opacity: 1;
+          visibility: visible;
+          position: relative;
+      }
+  }
 }
 .tabPoolAndAssetBalancesPanels{
-    /deep/ .q-panel.scroll{
-        overflow: hidden;
-    }
+  margin-top: 3vh;
+  /deep/ .q-panel.scroll{
+      overflow: hidden;
+  }
 }
 .max-height{
-    max-height: 72vh;
+  max-height: 72vh;
 }
 .tabPoolAndAssetBalancesPanels{
   box-shadow: 0px 3px 6px 0px rgba(black, .19) !important;
@@ -886,18 +887,18 @@ export default {
   // background-color: #fff !important;
 }
 .liquidityPoolsTable /deep/ .q-scrollarea.desktop-size{
-    height: 66vh !important;
+    height: 71.5vh !important;
     @media screen and (min-height: 700px) {
-      height: 65.5vh !important;
+      height: 70.5vh !important;
     }
     @media screen and (min-height: 760px) {
-      height: 66.5vh !important;
+      height: 70.5vh !important;
     }
     @media screen and (min-height: 800px) {
-      height: 65.4vh !important;
+      height: 69.2vh !important;
     }
     @media screen and (min-height: 870px) {
-      height: 65.2vh !important;
+      height: 69vh !important;
     }
 }
 // .max-height2{
