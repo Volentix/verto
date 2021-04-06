@@ -1,6 +1,6 @@
 {
   "name": "verto",
-  "version": "0.9.239",
+  "version": "0.9.241",
   "description": "A multi-currency crypto wallet with initial support for EOS & VTX",
   "productName": "Verto",
   "cordovaId": "org.cordova.verto",
@@ -44,7 +44,7 @@
     "audit:lighthouse": "lighthouse http://localhost:3000 view --output-path=./test/lighthouse/reports/index.html --config-path=./test/lighthouse/configs/full-config.js"
   },
   "dependencies": {
-    "@binance-chain/javascript-sdk": "^2.16.2",
+    "@binance-chain/javascript-sdk": "^4.1.1",
     "@chenfengyuan/vue-countdown": "^1.1.2",
     "@chenfengyuan/vue-qrcode": "^1.0.0",
     "@cruxpay/js-sdk": "^0.1.8",
