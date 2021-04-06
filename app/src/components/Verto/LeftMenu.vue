@@ -32,7 +32,7 @@
             <div class="text-tab-name">Exchange</div>
           </div>
         </q-route-tab>
-        <q-route-tab v-if="this.$store.state.settings.network == 'testnet' && $store.state.wallets.tokens.length" class="tabs-menu--wrapper-tab" to="/verto/vdexnode" name="nodes">
+        <q-route-tab v-if="this.$store.state.settings.network == 'testnet' && $store.state.wallets.tokens.length" class="tabs-menu--wrapper-tab" to="/verto/vdexnode" name="nodes_interne">
           <div class="svg-icon-wrapper flex flex-center items-center">
             <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 66 68" style="enable-background:new 0 0 66 68;" xml:space="preserve"> <path class="st0" d="M44,36.9c-2.6,0-4.9,1.5-6.1,3.6L28,35.6c0.2-0.7,0.4-1.4,0.4-2.2c0-0.8-0.2-1.6-0.4-2.4l10.4-5.6 c1.3,1.7,3.3,2.9,5.7,2.9c3.9,0,7-3.2,7-7s-3.2-7-7-7s-7,3.2-7,7c0,0.8,0.2,1.6,0.4,2.4L27,29.2c-1.3-1.7-3.3-2.9-5.7-2.9 c-3.9,0-7,3.2-7,7s3.2,7,7,7c2.4,0,4.5-1.2,5.8-3l10,5c-0.1,0.5-0.2,1-0.2,1.6c0,3.9,3.2,7,7,7s7-3.2,7-7S47.8,36.9,44,36.9z M44,16.3c2.8,0,5,2.3,5,5s-2.3,5-5,5s-5-2.3-5-5S41.2,16.3,44,16.3z M21.3,38.4c-2.8,0-5-2.3-5-5s2.3-5,5-5s5,2.3,5,5 S24.1,38.4,21.3,38.4z M44,49c-2.8,0-5-2.3-5-5s2.3-5,5-5s5,2.3,5,5S46.7,49,44,49z"/> </svg>
             <div class="text-tab-name">Nodes</div>
@@ -42,6 +42,12 @@
           <div class="svg-icon-wrapper flex justify-start items-center">
             <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 66 68" style="enable-background:new 0 0 66 68;" xml:space="preserve"> <g> <path class="st0" d="M34,9C20.8,9,10,19.8,10,33s10.8,24,24,24s24-10.8,24-24S47.2,9,34,9z M34,55c-12.1,0-22-9.9-22-22 s9.9-22,22-22s22,9.9,22,22S46.1,55,34,55z"/> <path class="st0" d="M41.3,35.1C41.2,35.1,41.2,35.1,41.3,35.1c-0.7-0.2-1.3-0.4-1.9-0.5c0.7-0.5,1.3-1.2,1.7-1.9 c0.6-1,1-2.2,1-3.3v-6.8l0-0.2c-0.1-3.7-3.2-6.6-6.8-6.5l-2.3,0l-0.2,0c0,0,0,0,0,0C29,16,26,19,26,22.6v6.8c0,1.2,0.3,2.3,1,3.3 c0.4,0.7,1,1.4,1.7,1.9c-0.7,0.1-1.3,0.3-1.9,0.5c0,0,0,0,0,0C23,36.2,20,38.2,20,41v4c0,0.6,0.4,1,1,1s1-0.4,1-1v-4 c0-1.5,2-2.9,4.9-3.9l6.4,5.6c0.2,0.2,0.4,0.2,0.7,0.2s0.5-0.1,0.7-0.2l6.4-5.6c2.8,1,4.8,2.4,5,3.9V45c0,0.6,0.4,1,1,1s1-0.4,1-1 v-4c0,0,0-0.1,0-0.1C47.7,38.4,44.9,36.3,41.3,35.1z M32.7,18C32.7,18,32.7,18,32.7,18l0.2,0l2.4,0c0,0,0.1,0,0.1,0 c2.5,0,4.6,2,4.7,4.5l0,0.6c-1.4,0.2-4.5,0.3-6.5-1c-1.6-1-3.6-1.3-5.3-0.8C28.8,19.4,30.5,18,32.7,18z M32.8,34 c-1.7,0-3.3-0.9-4.2-2.3C28.2,31,28,30.2,28,29.4v-5.8c1.4-0.7,3.1-0.6,4.4,0.2c1.7,1.1,3.9,1.4,5.7,1.4c0.7,0,1.3,0,1.9-0.1l0,4.2 c0,0.8-0.2,1.6-0.7,2.3c-0.9,1.4-2.4,2.3-4.1,2.3c0,0,0,0-0.1,0H32.8z M34,40.7l-4.8-4.2c1.5-0.3,3.1-0.5,4.8-0.5 c1.6,0,3.2,0.2,4.7,0.5L34,40.7z"/> </g> </svg>
             <div class="text-tab-name">Profile</div>
+          </div>
+        </q-route-tab>
+        <q-route-tab class="tabs-menu--wrapper-tab" to="" @click="goToLink" name="nodes">
+          <div class="svg-icon-wrapper flex flex-center items-center">
+            <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 66 68" style="enable-background:new 0 0 66 68;" xml:space="preserve"> <path class="st0" d="M44,36.9c-2.6,0-4.9,1.5-6.1,3.6L28,35.6c0.2-0.7,0.4-1.4,0.4-2.2c0-0.8-0.2-1.6-0.4-2.4l10.4-5.6 c1.3,1.7,3.3,2.9,5.7,2.9c3.9,0,7-3.2,7-7s-3.2-7-7-7s-7,3.2-7,7c0,0.8,0.2,1.6,0.4,2.4L27,29.2c-1.3-1.7-3.3-2.9-5.7-2.9 c-3.9,0-7,3.2-7,7s3.2,7,7,7c2.4,0,4.5-1.2,5.8-3l10,5c-0.1,0.5-0.2,1-0.2,1.6c0,3.9,3.2,7,7,7s7-3.2,7-7S47.8,36.9,44,36.9z M44,16.3c2.8,0,5,2.3,5,5s-2.3,5-5,5s-5-2.3-5-5S41.2,16.3,44,16.3z M21.3,38.4c-2.8,0-5-2.3-5-5s2.3-5,5-5s5,2.3,5,5 S24.1,38.4,21.3,38.4z M44,49c-2.8,0-5-2.3-5-5s2.3-5,5-5s5,2.3,5,5S46.7,49,44,49z"/> </svg>
+            <div class="text-tab-name">Nodes</div>
           </div>
         </q-route-tab>
         <q-route-tab disabled to="" class="tabs-menu--wrapper-tab" name="earn">
@@ -64,6 +70,7 @@
 
 <script>
 import { version } from '../../../package.json'
+import { openURL } from 'quasar'
 export default {
   name: 'LeftMenu',
   data () {
@@ -73,6 +80,9 @@ export default {
     }
   },
   methods: {
+    goToLink () {
+      openURL('https://volentix.io/node/')
+    },
     goToDashboard () {
       this.$store.state.currentwallet.wallet = {
         empty: true

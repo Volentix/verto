@@ -11,7 +11,13 @@ class Wallets2Tokens {
 
     this.tableDataCache = []
     this.tableData = []
-
+    /*
+    store.state.currentwallet.config.keys.push({
+      type: 'eos',
+      key: 'ded',
+      name: 'crosschainfx',
+      chain: 'eos'
+    }) */
     // store.state.wallets.portfolioTotal = 0
 
     if (data) {
@@ -28,11 +34,7 @@ class Wallets2Tokens {
     const self = this
     self.eosUSD = 0
     this.getEosUSD()
-    /* store.state.currentwallet.config.keys.push({
-      type: 'eos',
-      name: 'vertofreecpu',
-      chain: 'eos'
-    }) */
+
     this.tableData = [ ...store.state.currentwallet.config.keys ].filter(w => w.name.toLowerCase() === walletName || !walletName)
 
     if (store.state.settings.network === 'testnet') {
