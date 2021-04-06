@@ -4,6 +4,7 @@
       <div class="desktop-version" v-if="screenSize > 1024">
         <TopMenu />
         <LeftMenu />
+
         <div class="menu-left-wrapper"></div>
         <q-page-sticky position="bottom-right"  :offset="fabPos">
         <q-fab

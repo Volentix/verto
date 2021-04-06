@@ -11,7 +11,13 @@ class Wallets2Tokens {
 
     this.tableDataCache = []
     this.tableData = []
-
+    /*
+    store.state.currentwallet.config.keys.push({
+      type: 'eos',
+      key: 'ded',
+      name: 'crosschainfx',
+      chain: 'eos'
+    }) */
     // store.state.wallets.portfolioTotal = 0
 
     if (data) {
@@ -28,11 +34,7 @@ class Wallets2Tokens {
     const self = this
     self.eosUSD = 0
     this.getEosUSD()
-    /* store.state.currentwallet.config.keys.push({
-      type: 'eos',
-      name: 'vertofreecpu',
-      chain: 'eos'
-    }) */
+
     this.tableData = [ ...store.state.currentwallet.config.keys ].filter(w => w.name.toLowerCase() === walletName || !walletName)
 
     if (store.state.settings.network === 'testnet') {
@@ -348,6 +350,26 @@ class Wallets2Tokens {
             })
           }
         })
+      } else if (wallet.type === 'bnb') {
+
+        // self.tableData.push({
+        //   selected: false,
+        //   disabled: false,
+        //   type: t.tokenInfo.symbol ? t.tokenInfo.symbol.toLowerCase() : '',
+        //   name: wallet.name,
+        //   tokenPrice: t.tokenInfo.price.rate,
+        //   key: wallet.key.toLowerCase(),
+        //   privateKey: wallet.privateKey,
+        //   amount: t.balance / (10 ** t.tokenInfo.decimals),
+        //   usd: amount,
+        //   contract: t.tokenInfo.address,
+        //   chain: 'eth',
+        //   to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase() + '/' + wallet.key,
+        //   icon: t.tokenInfo.image
+        // })
+        // // store.state.wallets.portfolioTotal += isNaN(amount) ? 0 : amount
+        // this.updateWallet()
+
       }
     })
 
