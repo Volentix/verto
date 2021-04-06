@@ -11,12 +11,11 @@
             </div>
             <div class="col col-md-9 q-pr-md">
                 <div class="row">
-                    <div class="col col-md-6 customSlider" v-show="!assetSelected">
-                        <chainToolsSection />
+                    <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected">
+                        <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
                     </div>
-                    <div class="col q-pl-sm col-md-6 customSlider" v-show="!assetSelected">
-                        <maxDeFiYield class="slide" :class="{'active': !customSlider}" />
-                        <startNodeSection class="slide" :class="{'active': customSlider}" :banner="6" />
+                    <div class="col q-pl-sm col-md-6 customSlider q-mb-sm" v-show="!assetSelected">
+                        <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
                     </div>
                      <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white " v-if="assetSelected">
                         <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Dahsboard"  icon="home" />
@@ -25,7 +24,6 @@
                     </q-breadcrumbs>
                     <SingleToken :asset="assetSelected" class="col-md-12" v-if="assetSelected" />
                     <div class="col col-md-12 full-height max-height2">
-
                         <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                             <q-tabs
                                 v-model="tabPoolAndAssetBalances"
@@ -46,24 +44,14 @@
                                 transition-next="jump-up"
                                 >
                                 <q-tab-panel name="explore">
-                                    <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="7"  v-if="$store.state.settings.network == 'mainnet'" />
+                                    <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="8"  v-if="$store.state.settings.network == 'mainnet'" />
                                     <TestnetPools :showAddLiquidity="true" class="bg-white" v-else />
                                 </q-tab-panel>
                                 <q-tab-panel name="asset">
-                                    <AssetBalancesTable @setAsset="setAsset" data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="7" />
+                                    <AssetBalancesTable @setAsset="setAsset" data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="8" />
                                 </q-tab-panel>
                             </q-tab-panels>
                         </div>
-                    </div>
-                    <div class="col q-pr-sm col-md-4">
-                        <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
-                        <!-- <ExchangeSection2 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  /> -->
-                    </div>
-                    <div class="col q-pr-sm col-md-4">
-                        <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
-                    </div>
-                    <div class="col col-md-4">
-                        <LiquidityPoolsSection2 v-if="true  && $store.state.settings.network == 'mainnet'" />
                     </div>
                 </div>
             </div>
@@ -117,9 +105,9 @@ import ProfileHeader from '../../components/Verto/ProfileHeader'
 // import CardCreateWallet from '../../components/Verto/CardCreateWallet'
 import Wallets from '../../components/Verto/Wallets'
 // import AppsSection from '../../components/Verto/AppsSection'
-import StartNodeSection from '../../components/Verto/StartNodeSection'
-import maxDeFiYield from '../../components/Verto/maxDeFiYield'
-import ChainToolsSection from '../../components/Verto/ChainToolsSection'
+// import StartNodeSection from '../../components/Verto/StartNodeSection'
+// import maxDeFiYield from '../../components/Verto/maxDeFiYield'
+// import ChainToolsSection from '../../components/Verto/ChainToolsSection'
 // import TransactionsSection from '../../components/Verto/TransactionsSection'
 // import LiquidityPoolsSection from '../../components/Verto/Defi/LiquidityPoolsSection'
 import LiquidityPoolsSection2 from '../../components/Verto/Defi/LiquidityPoolsSection2'
@@ -167,10 +155,10 @@ export default {
     Wallets,
     // AppsSection,
     SingleToken,
-    StartNodeSection,
-    maxDeFiYield,
+    // StartNodeSection,
+    // maxDeFiYield,
+    // ChainToolsSection,
     TestnetPools,
-    ChainToolsSection,
     // TransactionsSection,
     // LiquidityPoolsSection,
     LiquidityPoolsSection2,
@@ -869,7 +857,7 @@ export default {
     }
 }
 .customSlider{
-    height: 85px;
+    // height: 85px;
     .slide{
         opacity: 0;
         visibility: hidden;
@@ -890,19 +878,26 @@ export default {
 .max-height{
     max-height: 72vh;
 }
+.tabPoolAndAssetBalancesPanels{
+  box-shadow: 0px 3px 6px 0px rgba(black, .19) !important;
+  border-radius: 8px 8px !important;
+  overflow: hidden;
+  // padding: 5px;
+  // background-color: #fff !important;
+}
 .liquidityPoolsTable /deep/ .q-scrollarea.desktop-size{
-    height: 54vh !important;
+    height: 66vh !important;
     @media screen and (min-height: 700px) {
-        height: 54.5vh !important;
+      height: 65.5vh !important;
     }
     @media screen and (min-height: 760px) {
-        height: 54vh !important;
+      height: 66.5vh !important;
     }
     @media screen and (min-height: 800px) {
-        height: 55vh !important;
+      height: 65.4vh !important;
     }
     @media screen and (min-height: 870px) {
-        height: 56vh !important;
+      height: 65.2vh !important;
     }
 }
 // .max-height2{

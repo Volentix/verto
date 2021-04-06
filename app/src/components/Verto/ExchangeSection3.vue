@@ -380,8 +380,8 @@ export default {
         margin-bottom: 10px;
         padding-top: 11px;
         color: #FFF;
-        background-size: 100% auto !important;
-        background-position: 30px -10px !important;
+        background-size: 90% auto !important;
+        background-position: 100% -42px !important;
         &.lightmd{
             color: #04111F;
         }
