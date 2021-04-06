@@ -77,7 +77,7 @@
       <h3 class="profile-wrapper--header__title" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-else>{{ chainData ?  chainData.label : 'Main Portfolio' }}</h3>
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
-      v-if="!isMobile && !$store.state.currentwallet.wallet.empty">${{ balance.usd }} USD <span class="profile-wrapper--header__equivalent" v-if="!isNaN(balance.equivAmount) ">Equivalent to <b>{{ isNaN(balance.equivAmount) ? 0 : nFormatter2(+balance.equivAmount,3) + ' ' + balance.equivType.toUpperCase() }}</b></span></h2>
+      v-if="!isMobile && !$store.state.currentwallet.wallet.empty && balance.equivType">${{ balance.usd }} USD <span class="profile-wrapper--header__equivalent" v-if="!isNaN(balance.equivAmount) ">Equivalent to <b>{{ isNaN(balance.equivAmount) ? 0 : nFormatter2(+balance.equivAmount,3) + ' ' + balance.equivType.toUpperCase() }}</b></span></h2>
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-else>${{ nFormatter2( chainData ?  chainData.total : $store.state.wallets.portfolioTotal , 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <!-- {{$store.state.wallets.portfolioTotal}} -->
@@ -248,10 +248,10 @@ export default {
       this.chainData = {}
       let chain = localStorage.getItem('selectedChain')
 
-      this.chainData.total = this.$store.state.wallets.tokens.filter((c) => c.chain === chain).reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
+      this.chainData.total = this.$store.state.wallets.tokens.filter((c) => chain === 'vtx' ? (c.chain === 'eos' && c.type === chain) : c.chain === chain).reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
 
       let chainData = HD.names.find(a => a.value === chain)
-      this.chainData.label = chainData ? chainData.label : chain
+      this.chainData.label = chain === 'vtx' ? 'VTX' : (chainData ? chainData.label : chain)
       /*
       setTimeout(() => {
         this.chainData = null
