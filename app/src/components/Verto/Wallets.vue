@@ -1048,7 +1048,7 @@
                 <span class="add-remove-wrapper--desc text-black">Main chains and balances above zero will show in this list</span>
             </div> -->
         </div>
-        <div v-else class="is-mobile wallets-wrapper--list" :class="{'open': !walletShowHide}">
+        <div v-if="isMobile" class="is-mobile wallets-wrapper--list" :class="{'open': !walletShowHide}">
             <q-scroll-area :visible="true" class="scrollarea" :class="{'height' : !walletShowHide}">
                 <div class="wallets-wrapper--list_title q-pa-sm q-pt-sm q-ml-sm flex items-center justify-between" v-if="false">
                     <span></span>
