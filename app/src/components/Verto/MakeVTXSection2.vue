@@ -445,7 +445,7 @@ export default {
       }
     }
     .exchange-container{
-      min-height: 138px;
+      height: 100px;
       margin: -3px;
       &--head-title{
         border-bottom: 1px solid rgba(#CCC, .4);
@@ -453,7 +453,7 @@ export default {
         font-size: 16px;
         font-weight: 700;
         height: 45px;
-        margin-bottom: 10px;
+        margin-bottom: -8px;
         padding-top: 11px;
         color: #FFF;
         background-size: 90% auto !important;
