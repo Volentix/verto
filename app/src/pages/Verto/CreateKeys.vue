@@ -1,8 +1,25 @@
 <template>
 <q-page :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-white': $store.state.settings.lightMode === 'false'}">
-    <div v-if="step===2" class="standard-content" style="padding-bottom: 0px">
+    <div class="row">
+      <div class="col col-md-4 app-logo flex q-pa-md items-center">
+        <!-- <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;"> -->
+        <svg
+          class="svg_logo q-mr-sm"
+          width="20"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 20.58"
+        >
+          <path
+            d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z"
+            transform="translate(-183 -18.21)"
+          ></path>
+        </svg>
+        <router-link to="/verto/dashboard">VERTO</router-link>
+      </div>
+    </div>
+     <div v-if="step===2" class="standard-content" style="padding-bottom: 0px">
         <div class="standard-content--body">
-            <h2 class="standard-content--title"> Creating </h2>
+            <h2 class="standard-content--title text-center"> Creating keys... </h2>
             <!-- <p class="diclaimer"> {{ status }} </p> -->
             <div class="standard-content--body__form">
                 <div class="send-modal__content--body column flex-center">
@@ -12,10 +29,11 @@
                     </svg>
                     <div class="--label text-cyan-5 text-h6">{{ progress }} %</div>
                 </div>
-                <div class="send-modal__content--footer">
-                    <div class="text-h4 --status">{{ status }}</div>
+                <div class="send-modal__content--footer" v-if="status">
+                    <div class="text-h4 text-h4 q-mb-none --status">Creating keys for: </div>
+                    <div class="text-h6 text-center"><q-icon class="q-pr-sm" size="sm" :name="'img:'+ (status.icon ?  status.icon : 'https://files.coinswitch.co/public/coins/'+status.value+'.png')"/>{{status.label}}</div>
                 </div>
-                <div class="flex-end flex justify-end">
+                <div class="flex-end flex justify-end" v-if="false">
                     <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="step=3" :disable="!mapped" />
                 </div>
             </div>
@@ -32,7 +50,7 @@
                 The position of each word is critical and should be stored in the correct sequence order.<br>
                 Anyone with access to these 24 words will be able to recover this Verto app and the private keys it is associated with,
                 so keep in a safe place that only you have access to.
-{
+
                 <p  class="q-py-sm text-bold" v-if="$store.state.settings.dexData.depositCoin && $store.state.settings.dexData.depositCoin"> Click go to exchange to swap {{$store.state.settings.dexData.fromAmount}}  {{$store.state.settings.dexData.depositCoin.value.toUpperCase()}} to {{$store.state.settings.dexData.destinationCoin.value.toUpperCase()}}</p>
             <div class="standard-content--body__form">
                 <div class="flex-end flex justify-end">
@@ -66,7 +84,7 @@ export default {
       addressMap: null,
       showMap: false,
       state: null,
-      status: '',
+      status: null,
       progress: 0,
       available: false,
       assets: {},
@@ -95,6 +113,7 @@ export default {
       // { 'value': 'xrp', 'label': 'Ripple' },
       // { 'value': 'ada', 'label': 'Cardano' },
       {
+        'icon': 'https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png',
         'value': 'avax',
         'label': 'Avalanche'
       },
@@ -102,7 +121,7 @@ export default {
         'value': 'dot',
         'label': 'Polkadot'
       },
-      {
+      { 'icon': 'https://assets.coingecko.com/coins/images/9568/small/m4zRhP5e_400x400.jpg',
         'value': 'ksm',
         'label': 'Kusama'
       },
@@ -145,7 +164,7 @@ export default {
         i++
         this.progress = Math.round(i / count * 10000) / 100
 
-        this.status = 'Creating keys for: ' + name.value
+        this.status = name
 
         await HD.Wallet(name.value).then(async keys => {
           return self.$configManager.saveWalletAndKey(name.label, self.vertoPassword, null, keys.publicKey, keys.privateKey, name.value, 'mnemonic')
@@ -153,8 +172,8 @@ export default {
       }
 
       // console.log('map', map)
-      this.mapped = true
-      // this.step = 3
+      // this.mapped = true
+      this.step = 3
     },
     associateEOSAccount () {
       let tableData = [ ...this.$store.state.currentwallet.config.keys ]
@@ -205,7 +224,42 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
+.row {
+    .col {
+      &.menu {
+        a {
+          font-weight: $regular;
+          font-family: $Titillium;
+          font-size: 16px;
+          color: #333;
+          text-decoration: none;
+          padding: 5px 10px;
+          border-radius: 5px;
 
+          &:hover {
+            background-color: rgba(black, 0.02);
+          }
+        }
+      }
+
+      &.app-logo {
+        svg {
+          fill: #000;
+        }
+        a {
+          font-weight: $bold;
+          text-transform: uppercase;
+          font-family: $Titillium;
+          font-size: 20px;
+          color: #333;
+          text-decoration: none;
+        }
+      }
+
+      cursor: pointer;
+      position: relative;
+    }
+  }
 .standard-content {
     padding: 5% 10%;
     display: flex;
@@ -376,7 +430,7 @@ export default {
                 font-family: $Titillium;
                 margin-top: 40px;
                 text-align: center;
-                margin-bottom: 70px;
+
             }
         }
     }
