@@ -173,7 +173,7 @@ export default {
         account = this.$store.state.currentwallet.wallet
       }
       this.assets = []
-      console.log(chain, 'chain 8')
+
       JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter(o => (!account && !chain) || (chain && o.chain === chain) || (account && o.chain === account.chain && o.name === account.name)))).forEach((token, i) => {
         token.amount = parseFloat(token.amount)
         token.usd = parseFloat(token.usd)
