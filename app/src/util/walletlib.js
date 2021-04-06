@@ -562,47 +562,47 @@ class Lib {
 
         const bnbClient = new BncClient(api)
         const httpClient = axios.create({ baseURL: api })
+        const sequenceURL = `${api}api/v1/account/${from}/sequence`
 
         bnbClient.chooseNetwork('mainnet') // or this can be "testnet"
         bnbClient.setPrivateKey(key)
-        bnbClient.initChain()
-
-        const sequenceURL = `${api}api/v1/account/${from}/sequence`
+        await bnbClient.initChain()
 
         let message, success
-
-        httpClient.get(sequenceURL).then((res) => {
+        try {
+          const res = await httpClient.get(sequenceURL)
           const sequence = res.data.sequence || 0
-          return bnbClient.transfer(
+          const result = await bnbClient.transfer(
             from,
             to,
             value,
-            token,
+            token.toUpperCase(),
             memo,
             sequence
           )
-        })
-          .then((result) => {
-            console.log(result)
-            if (result.status === 200) {
-              console.log('success', result.result[0].hash)
-              message = 'https://explorer.binance.org/tx/' + result.result[0].hash
-              success = true
-            } else {
-              console.error('error', result)
-              message = result
-              success = false
-            }
-          })
-          .catch((error) => {
-            console.error('error', error)
-            message = error
+
+          console.log(result)
+          if (result.status === 200) {
+            console.log('success', result.result[0].hash)
+
+            message = 'https://explorer.binance.org/tx/' + result.result[0].hash
+            success = true
+          } else {
+            console.error('error else', result.message)
+
+            message = result.message
             success = false
-          })
+          }
+        } catch (error) {
+          console.error('error catch', error)
+
+          message = error
+          success = false
+        }
 
         return {
-          success,
-          message
+          message,
+          success
         }
       },
       async eos (token, from, to, value, memo, key, contract) {

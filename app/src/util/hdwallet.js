@@ -53,7 +53,7 @@ class HD {
     ]
   }
 
-  Wallet = async (walletType) => {
+  Wallet = async (walletType, addressIndex = 0) => {
     // const bip32 = require('bip32')
     // const util = require('ethereumjs-util')
     // const createHash = require('create-hash')
@@ -111,7 +111,7 @@ class HD {
         const wif = require('wif')
         const ecc = require('eosjs-ecc')
         const hdwallet = hdkey.fromMasterSeed(seed)
-        const eosPath = "m/44'/194'/0'/0/0"
+        const eosPath = "m/44'/194'/0'/0/" + addressIndex.toString()
         const eosNode = hdwallet.derive(eosPath)
         const publicKey = ecc.PublicKey(eosNode._publicKey).toString()
         const privateKey = wif.encode(128, eosNode._privateKey, false)

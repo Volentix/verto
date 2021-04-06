@@ -1523,7 +1523,7 @@ export default {
       destinationCoin: {
         'label': 'Ethereum',
         'value': 'eth',
-        'image': 'https://files.coinswitch.co/public/coins/eth.png'
+        'image': 'https://zapper.fi/images/ETH-icon.png'
       },
       destinationQuantity: 0,
       destinationCoinOptions: null,
