@@ -2,7 +2,7 @@
   <div>
     <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
       <!-- :grid="$q.screen.xs" -->
-      <q-table row-key="type" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="loaded" :data="assets" :columns="columns" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
+      <q-table   @row-click="onRowClick" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="loaded" :data="assets" :columns="columns" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="body-table-col cursor-pointer" @click="$emit('setAsset', props.row)">
             <div class="col-1 flex items-center">
@@ -150,7 +150,7 @@ export default {
 
     this.$bus.$on('selectedChain', () => {
       let chain = localStorage.getItem('selectedChain')
-      console.log(chain, 'chain 4')
+
       this.initTable(chain)
     })
   },
@@ -166,6 +166,9 @@ export default {
     }
   },
   methods: {
+    onRowClick (evt, row) {
+      this.$emit('setAsset', row)
+    },
     initTable (chain) {
       let account = null
 
