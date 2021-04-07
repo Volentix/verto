@@ -381,12 +381,12 @@ class Lib {
           usd
         }
       },
-      async bnb (key) {
+      async bnb (key, token) {
         let amount = 0
         try {
           const balances = (await axios.get('https://dex.binance.org/api/v1/account/' + key)).data.balances
           if (balances) {
-            balances.filter(b => b.symbol === 'BNB').map(b => {
+            balances.filter(b => b.symbol === token.toUpperCase()).map(b => {
               amount = +b.free + +b.frozen + +b.locked
             })
           }
@@ -395,6 +395,25 @@ class Lib {
           /// /console.log('', err)
         }
         const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')).data.binancecoin.usd
+        return {
+          amount,
+          usd
+        }
+      },
+      async ada (key, token) {
+        let amount = 0
+        try {
+          const balances = (await axios.get('https://cardano-mainnet.blockfrost.io/api/v0/addresses/' + key, { project_id: 'hFiQ3t403yXFYs3bfOKDwVX9BMGpJbDH' })).data.amount
+          if (balances) {
+            balances.filter(b => b.unit === token).map(b => {
+              amount = +b.quantity
+            })
+          }
+          console.log('ada', balances, amount)
+        } catch (err) {
+          console.log('ada catch', err)
+        }
+        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd')).data.cardano.usd
         return {
           amount,
           usd
@@ -599,6 +618,44 @@ class Lib {
           message = error
           success = false
         }
+
+        return {
+          message,
+          success
+        }
+      },
+      async ada (token, from, to, value, memo, key, contract) {
+        let message, success
+        // try {
+        //   const res = await httpClient.get(sequenceURL)
+        //   const sequence = res.data.sequence || 0
+        //   const result = await bnbClient.transfer(
+        //     from,
+        //     to,
+        //     value,
+        //     token.toUpperCase(),
+        //     memo,
+        //     sequence
+        //   )
+
+        //   console.log(result)
+        //   if (result.status === 200) {
+        //     console.log('success', result.result[0].hash)
+
+        //     message = 'https://explorer.binance.org/tx/' + result.result[0].hash
+        //     success = true
+        //   } else {
+        //     console.error('error else', result.message)
+
+        //     message = result.message
+        //     success = false
+        //   }
+        // } catch (error) {
+        //   console.error('error catch', error)
+
+        //   message = error
+        //   success = false
+        // }
 
         return {
           message,
