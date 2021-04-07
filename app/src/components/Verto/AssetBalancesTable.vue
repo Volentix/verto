@@ -19,7 +19,7 @@
           <q-td :props="props" class="body-table-col _rate_usd">
             <div class="col-3 flex items-center">
               <span class="flex items-center pairs">
-                <span class="q-pl-xs qmtxs current_price text-grey-3">${{formatNumber(props.row.rateUsd,8)}}<q-tooltip>Current price</q-tooltip></span>
+                <span class="q-pl-xs qmtxs current_price" :class="{'text-grey-3': $store.state.settings.lightMode === 'true', 'text-grey-8': $store.state.settings.lightMode === 'false'}">${{formatNumber(props.row.rateUsd,8)}}<q-tooltip>Current price</q-tooltip></span>
               </span>
             </div>
           </q-td>
@@ -28,9 +28,9 @@
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
               <span class="column items-start">
-                <span class="pair q-pr-xs allocation text-grey-3">{{ formatNumber(props.row.percentage, 2)}}% <q-tooltip>% of Portfolio</q-tooltip></span>
+                <span class="pair q-pr-xs allocation" :class="{'text-grey-3': $store.state.settings.lightMode === 'true', 'text-grey-8': $store.state.settings.lightMode === 'false'}">{{ formatNumber(props.row.percentage, 2)}}% <q-tooltip>% of Portfolio</q-tooltip></span>
                 <span class="pair q-pr-xs balance text-bold">
-                  {{formatNumber(props.row.amount, 2).split('.')[0]}}.<span class="text-grey-5">{{formatNumber(props.row.amount, 2).split('.')[1]}}</span>
+                  {{formatNumber(props.row.amount, 2).split('.')[0]}}.<span :class="{'text-grey-5': $store.state.settings.lightMode === 'true', 'text-grey-8': $store.state.settings.lightMode === 'false'}">{{formatNumber(props.row.amount, 2).split('.')[1]}}</span>
                   {{" "+props.row.friendlyType.toUpperCase()}}<q-tooltip>{{props.row.type.toUpperCase()}}</q-tooltip></span>
               </span>
             </div>
@@ -40,7 +40,7 @@
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
               <span class="column items-start">
-                <span class="pair q-pr-xs allocation text-grey-3">${{ formatNumber((props.row.usd/2), 2) }} USD</span>
+                <span class="pair q-pr-xs allocation" :class="{'text-grey-3': $store.state.settings.lightMode === 'true', 'text-grey-8': $store.state.settings.lightMode === 'false'}">${{ formatNumber((props.row.usd/2), 2) }} USD</span>
               </span>
             </div>
           </q-td>
