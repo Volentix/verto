@@ -344,6 +344,26 @@ class Wallets2Tokens {
             })
           }
         })
+      } else if (wallet.type === 'bnb') {
+
+        // self.tableData.push({
+        //   selected: false,
+        //   disabled: false,
+        //   type: t.tokenInfo.symbol ? t.tokenInfo.symbol.toLowerCase() : '',
+        //   name: wallet.name,
+        //   tokenPrice: t.tokenInfo.price.rate,
+        //   key: wallet.key.toLowerCase(),
+        //   privateKey: wallet.privateKey,
+        //   amount: t.balance / (10 ** t.tokenInfo.decimals),
+        //   usd: amount,
+        //   contract: t.tokenInfo.address,
+        //   chain: 'eth',
+        //   to: '/verto/wallets/eth/' + t.tokenInfo.symbol.toLowerCase() + '/' + wallet.key,
+        //   icon: t.tokenInfo.image
+        // })
+        // // store.state.wallets.portfolioTotal += isNaN(amount) ? 0 : amount
+        // this.updateWallet()
+
       }
     })
 

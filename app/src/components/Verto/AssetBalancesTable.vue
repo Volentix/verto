@@ -4,22 +4,22 @@
       <!-- :grid="$q.screen.xs" -->
       <q-table   @row-click="onRowClick" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="loaded" :data="assets" :columns="columns" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
-          <q-td :props="props" class="body-table-col cursor-pointer" @click="$emit('setAsset', props.row)">
+          <q-td :props="props" class="body-table-col _coin_type cursor-pointer" @click="$emit('setAsset', props.row)">
             <div class="col-1 flex items-center">
               <span class="imgs">
                 <img :src="props.row.icon" alt="">
               </span>
-              <span class="flex items-center pairs">
+              <span class="flex items-center pairs thicker">
                 <span class="pair q-pr-xs">{{props.row.friendlyType.toUpperCase()}}<q-tooltip>{{props.row.type.toUpperCase()}}</q-tooltip></span> <span class="text-grey"></span>
               </span>
             </div>
           </q-td>
         </template>
         <template v-slot:body-cell-currentPrice="props">
-          <q-td :props="props" class="body-table-col">
+          <q-td :props="props" class="body-table-col _rate_usd">
             <div class="col-3 flex items-center">
               <span class="flex items-center pairs">
-                <span class="q-pl-xs qmtxs current_price text-grey-8">${{formatNumber(props.row.rateUsd,2)}}<q-tooltip>Current price</q-tooltip></span>
+                <span class="q-pl-xs qmtxs current_price text-grey-8">${{formatNumber(props.row.rateUsd,8)}}<q-tooltip>Current price</q-tooltip></span>
               </span>
             </div>
           </q-td>
@@ -36,6 +36,15 @@
             </div>
           </q-td>
         </template>
+        <template v-slot:body-cell-average_cost="props">
+          <q-td :props="props" class="body-table-col">
+            <div class="col-3 flex items-center">
+              <span class="column items-start">
+                <span class="pair q-pr-xs allocation text-grey-8">${{ formatNumber((props.row.usd/2), 2) }} USD</span>
+              </span>
+            </div>
+          </q-td>
+        </template>
         <template v-slot:body-cell-usd="props">
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
@@ -48,7 +57,7 @@
           </q-td>
         </template>
         <template v-slot:body-cell-dailyChange="props">
-          <q-td :props="props" class="body-table-col">
+          <q-td :props="props" class="body-table-col _daily_change">
             <div class="col-3 flex items-center">
               <span v-if="props.row.change24h" class="column items-start">
                 <span :class="'pair q-pr-xs allocation '+props.row.color">({{props.row.change24hPercentage}})</span>
@@ -111,6 +120,14 @@ export default {
           sortable: true
         },
         {
+          name: 'dailyChange',
+          align: 'left',
+          label: 'Daily Change',
+          field: 'dailyChange',
+          format: val => `${val}`,
+          sortable: true
+        },
+        {
           name: 'amount',
           align: 'left',
           label: 'Balance',
@@ -127,10 +144,10 @@ export default {
           sortable: true
         },
         {
-          name: 'dailyChange',
+          name: 'average_cost',
           align: 'left',
-          label: 'Daily Change',
-          field: 'dailyChange',
+          label: 'Average Cost',
+          field: 'average_cost',
           format: val => `${val}`,
           sortable: true
         },
@@ -251,6 +268,22 @@ export default {
 }
 .desktop-card-style.current-investments .body-table-col .pairs{
   margin-bottom: -2px;
+}
+.desktop-card-style.current-investments .body-table-col{
+  &._coin_type{
+    width: 110px;
+    position: relative;
+    .thicker{
+      position: absolute;
+      left: 50px;
+    }
+  }
+  &._rate_usd{
+    width: 150px;
+  }
+  &._daily_change{
+    width: 80px;
+  }
 }
 .desktop-card-style.current-investments .body-table-col .pairs .pair {
     font-weight: 700;

@@ -20,13 +20,13 @@
                       <div class="chain-tools-wrapper--list open">
                         <div class="list-wrapper">
                           <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                            <q-card flat style="width: 100%; max-width: 700px">
+                            <q-card :dark="$store.state.settings.lightMode === 'true'" flat style="width: 100%; max-width: 700px">
                               <q-inner-loading :visible="spinnervisible">
                                 <q-spinner size="50px" color="primary" />
                               </q-inner-loading>
-                              <q-stepper vertical ref="stepper" alternative-labels animated v-model="step" class="q-pb-md">
-                                <q-step default :name="1" :done="step > 1" title="Staking proxy" class="" v-if="currentProxy.length == 0 || !currentProxy">
-                                  <q-card-section>
+                              <q-stepper :dark="$store.state.settings.lightMode === 'true'" vertical ref="stepper" alternative-labels animated v-model="step" class="q-pb-md">
+                                <q-step :dark="$store.state.settings.lightMode === 'true'" default :name="1" :done="step > 1" title="Staking proxy" class="" v-if="currentProxy.length == 0 || !currentProxy">
+                                  <q-card-section :dark="$store.state.settings.lightMode === 'true'">
                                     <div class="text-uppercase">
                                       <q-item class="">
                                         <q-item-section class="col-auto">
@@ -42,16 +42,16 @@
                                         <q-item-label class="col-6 text-left">Staked EOS: {{ stakedAmount }}</q-item-label>
                                       </q-item>
 
-                                      <q-item tag="label" v-ripple>
-                                        <q-item-section>
+                                      <q-item tag="label" :dark="$store.state.settings.lightMode === 'true'" v-ripple>
+                                        <q-item-section :dark="$store.state.settings.lightMode === 'true'">
                                           <q-item-label>Proxy to EOS Nation for an APR of {{ apr }}%</q-item-label>
                                           <q-item-label caption>APR is calculated at the time of claim and is subject to change based on the amount of EOS proxied.</q-item-label>
                                         </q-item-section>
-                                        <q-item-section side>
+                                        <q-item-section :dark="$store.state.settings.lightMode === 'true'" side>
                                           <q-toggle checked-icon="check" color="deep-purple-14" unchecked-icon="clear" keep-color v-model="proxyModel" />
                                         </q-item-section>
                                       </q-item>
-                                      <p class="text-red q-pt-sm" v-if="stakedAmount < 1.5">Your need 1.5 STAKED EOS minimum to proceed</p>
+                                      <p class="text-red q-ml-md q-pt-sm" v-if="stakedAmount < 1.5">Your need 1.5 STAKED EOS minimum to proceed</p>
                                       <div v-show="showNext" class="q-pa-sm">
                                         <q-btn label="Next" :disable="stakedAmount < 1.5" @click="step = 2" color="deep-purple-14" />
                                       </div>
@@ -59,8 +59,8 @@
                                   </q-card-section>
                                 </q-step>
 
-                                <q-step default :name="1" :done="step > 1" title="Staking proxy" class="" v-else-if="currentProxy == 'proxy4nation'">
-                                  <q-card-section>
+                                <q-step :dark="$store.state.settings.lightMode === 'true'" default :name="1" :done="step > 1" title="Staking proxy" class="" v-else-if="currentProxy == 'proxy4nation'">
+                                  <q-card-section :dark="$store.state.settings.lightMode === 'true'">
                                     <div class="text-uppercase">
                                       <q-item class="">
                                         <q-item-section class="col-auto">
@@ -69,14 +69,14 @@
                                         <q-item-label class="col-6 text-left">Current Staking Proxy: {{ currentProxy }}</q-item-label>
                                       </q-item>
 
-                                      <q-item class="">
+                                      <q-item class="" :dark="$store.state.settings.lightMode === 'true'">
                                         <q-item-section class="col-auto">
                                           <q-chip dense :color="stakedAmount ? 'deep-purple-14' : 'gray'" class="shadow-1">&nbsp;</q-chip>
                                         </q-item-section>
                                         <q-item-label class="col-6 text-left">Staked EOS: {{ stakedAmount }}</q-item-label>
                                       </q-item>
 
-                                      <q-item tag="label" v-ripple>
+                                      <q-item tag="label" v-ripple :dark="$store.state.settings.lightMode === 'true'">
                                         <q-item-section>
                                           <q-item-label>{{ currentProxy }} is your current staking proxy</q-item-label>
                                           <q-item-label caption>Click the button bellow to unsignup</q-item-label>
@@ -89,67 +89,66 @@
                                   </q-card-section>
                                 </q-step>
 
-                                <q-step v-if="currentProxy != 'proxy4nation'" default :name="2" :done="step > 2" title="Portfolio" class="  ">
-                                  <q-card-section>
+                                <q-step :dark="$store.state.settings.lightMode === 'true'" v-if="currentProxy != 'proxy4nation'" default :name="2" :done="step > 2" title="Portfolio" class="  ">
+                                  <q-card-section :dark="$store.state.settings.lightMode === 'true'">
                                     <div class="text-uppercase">
-                                      <q-item tag="label">
-                                        <q-item-section>
+                                      <q-item tag="label" :dark="$store.state.settings.lightMode === 'true'">
+                                        <q-item-section :dark="$store.state.settings.lightMode === 'true'">
                                           <q-item-label>Select your rewards Portfolio %</q-item-label>
                                           <q-item-label caption></q-item-label>
                                         </q-item-section>
                                       </q-item>
-                                      <q-list dense>
-                                        <q-item v-for="(item, index) in rewards" :key="index">
-                                          <q-item-section>
-                                            <q-item-label caption>
+                                      <q-list dense :dark="$store.state.settings.lightMode === 'true'">
+                                        <q-item v-for="(item, index) in rewards" :key="index" :dark="$store.state.settings.lightMode === 'true'">
+                                          <q-item-section :dark="$store.state.settings.lightMode === 'true'">
+                                            <q-item-label caption :dark="$store.state.settings.lightMode === 'true'">
                                               <q-badge color="deep-purple-14" class="q-mb-lg text-h7">
                                                 {{ item.symbol.split(",")[1] }}
                                               </q-badge>
                                             </q-item-label>
-                                            <q-slider v-model="rewards[index].value" :label-value="rewards[index].value || 0 + '%'" :min="0" :max="100" :step="5" color="black" markers label label-always @input="monitor(index)" />
+                                            <q-slider :dark="$store.state.settings.lightMode === 'true'" v-model="rewards[index].value" :label-value="rewards[index].value || 0 + '%'" :min="0" :max="100" :step="5" color="black" markers label label-always @input="monitor(index)" />
                                           </q-item-section>
                                         </q-item>
                                       </q-list>
 
                                       <div class="q-pa-sm">
-                                        <q-btn label="Next" color="deep-purple-14" @click="formatRewards()" />
-
-                                        <q-icon name="keyboard_arrow_up" size="3rem" @click="step = step - 1" color="black" />
+                                        <q-btn :dark="$store.state.settings.lightMode === 'true'" label="Next" color="deep-purple-14" @click="formatRewards()" />
+                                        <q-icon :dark="$store.state.settings.lightMode === 'true'" name="keyboard_arrow_up" size="3rem" @click="step = step - 1" color="black" />
                                       </div>
                                     </div>
                                   </q-card-section>
                                 </q-step>
 
-                                <q-step v-if="currentProxy != 'proxy4nation'" default :name="3" :done="step > 3" title="Compound" class="  ">
-                                  <q-card-section>
+                                <q-step :dark="$store.state.settings.lightMode === 'true'" v-if="currentProxy != 'proxy4nation'" default :name="3" :done="step > 3" title="Compound" class="  ">
+                                  <q-card-section :dark="$store.state.settings.lightMode === 'true'">
                                     <div class="text-uppercase">
-                                      <q-item tag="label" v-ripple>
-                                        <q-item-section>
+                                      <q-item tag="label" v-ripple :dark="$store.state.settings.lightMode === 'true'">
+                                        <q-item-section :dark="$store.state.settings.lightMode === 'true'">
                                           <q-item-label>Compound your vote staking rewards</q-item-label>
                                           <q-item-label caption>You can choose to receive your EOS rewards already staked</q-item-label>
                                         </q-item-section>
-                                        <q-item-section side>
-                                          <q-toggle v-model="staked" checked-icon="check" color="deep-purple-14" unchecked-icon="clear" :true-value="1" :false-value="0" keep-color />
+                                        <q-item-section side :dark="$store.state.settings.lightMode === 'true'">
+                                          <q-toggle :dark="$store.state.settings.lightMode === 'true'" v-model="staked" checked-icon="check" color="deep-purple-14" unchecked-icon="clear" :true-value="1" :false-value="0" keep-color />
                                         </q-item-section>
                                       </q-item>
 
                                       <div class="q-pa-sm">
-                                        <q-btn :label="$store.state.currentwallet.wallet.privateKey ? 'Submit' : 'Next'" color="deep-purple-14" @click="$store.state.currentwallet.wallet.privateKey ? voteProxy() : (step = 4)" />
-                                        <q-icon name="keyboard_arrow_up" size="3rem" @click="step = step - 1" color="black" />
+                                        <q-btn :dark="$store.state.settings.lightMode === 'true'" :label="$store.state.currentwallet.wallet.privateKey ? 'Submit' : 'Next'" color="deep-purple-14" @click="$store.state.currentwallet.wallet.privateKey ? voteProxy() : (step = 4)" />
+                                        <q-icon :dark="$store.state.settings.lightMode === 'true'" name="keyboard_arrow_up" size="3rem" @click="step = step - 1" color="black" />
                                       </div>
                                     </div>
                                   </q-card-section>
                                 </q-step>
 
-                                <q-step v-if="!$store.state.currentwallet.wallet.privateKey" default :name="4" :done="step > 4" title="Sign & Submit" class="  ">
-                                  <q-card-section>
+                                <q-step :dark="$store.state.settings.lightMode === 'true'" v-if="!$store.state.currentwallet.wallet.privateKey" default :name="4" :done="step > 4" title="Sign & Submit" class="  ">
+                                  <q-card-section :dark="$store.state.settings.lightMode === 'true'">
                                     <div class="text-uppercase">
-                                      <q-item-section>
+                                      <q-item-section :dark="$store.state.settings.lightMode === 'true'">
                                         <q-item-label>Enter your private key password to sign the transaction</q-item-label>
                                       </q-item-section>
 
                                       <div class="q-pa-md">
-                                        <q-input v-model="privateKeyPassword" dark color="deep-purple-14" label="Private Key Password" debounce="500" :error="invalidPrivateKeyPassword" error-message="The password is incorrect" @input="checkPrivateKeyPassword" :type="isPwd ? 'password' : 'text'">
+                                        <q-input :dark="$store.state.settings.lightMode === 'true'" v-model="privateKeyPassword" color="deep-purple-14" label="Private Key Password" debounce="500" :error="invalidPrivateKeyPassword" error-message="The password is incorrect" @input="checkPrivateKeyPassword" :type="isPwd ? 'password' : 'text'">
                                           <template v-slot:append>
                                             <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                                           </template>
@@ -164,15 +163,15 @@
                                   </q-card-section>
                                 </q-step>
 
-                                <q-step default :name="5" :done="step > 5" title="Result" class="  ">
+                                <q-step :dark="$store.state.settings.lightMode === 'true'" default :name="5" :done="step > 5" title="Result" class="  ">
 
-                                  <q-card-section>
+                                  <q-card-section :dark="$store.state.settings.lightMode === 'true'">
                                     <div class="text-uppercase">
-                                      <q-inner-loading :visible="spinnervisible">
+                                      <q-inner-loading :dark="$store.state.settings.lightMode === 'true'" :visible="spinnervisible">
                                         <q-spinner size="50px" color="primary" />
                                       </q-inner-loading>
 
-                                      <q-item-section v-if="spinnervisible">
+                                      <q-item-section :dark="$store.state.settings.lightMode === 'true'" v-if="spinnervisible">
                                         <q-item-label>Processing the transaction</q-item-label>
                                       </q-item-section>
 
@@ -189,7 +188,7 @@
                                   </q-card-section>
                                 </q-step>
                               </q-stepper>
-                              <q-card-section v-if="false">
+                              <q-card-section v-if="false" :dark="$store.state.settings.lightMode === 'true'">
                                 <q-item-label
                                   >Provided By:
                                   <img width="100" src="statics/img/eosnation.png" />
@@ -1188,6 +1187,19 @@ export default {
       .col-title h4{
           color: #FFF;
       }
+  }
+  .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+    background-color: #04111F;
+  }
+  .desktop-card-style{
+    background-color: #04111F;
+    border: 1px solid #627797;
+  }
+  /deep/ .q-dark{
+    background-color: #04111F;
+  }
+  /deep/ .q-stepper--dark.q-dark{
+    background-color: #04111F;
   }
 }
 .list-wrapper--chain__eos-to-vtx-convertor > .q-card {
