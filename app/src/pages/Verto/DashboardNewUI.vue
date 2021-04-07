@@ -19,12 +19,11 @@
                         <startNodeSection class="slide" :class="{'active': customSlider}" :banner="6" />
                     </div>
                      <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white " v-if="assetSelected">
-                        <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Dahsboard"  icon="home" />
-                        <q-breadcrumbs-el class="cursor-pointer" @click="assetSelected = null" label="Assets" />
-                        <q-breadcrumbs-el class="cursor-pointer" :label="assetSelected.type.toUpperCase()" :icon="'img:'+assetSelected.icon" />
+                        <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
+
                     </q-breadcrumbs>
                     <SingleToken :asset="assetSelected" class="col-md-12" v-if="assetSelected" />
-                    <div class="col col-md-12 full-height max-height2">
+                    <div class="col col-md-12 full-height max-height2" v-else>
 
                         <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                             <q-tabs
@@ -49,7 +48,7 @@
                                     <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="7"  v-if="$store.state.settings.network == 'mainnet'" />
                                     <TestnetPools :showAddLiquidity="true" class="bg-white" v-else />
                                 </q-tab-panel>
-                                <q-tab-panel name="asset">
+                                <q-tab-panel name="asset" >
                                     <AssetBalancesTable @setAsset="setAsset" data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="6"/>
                                 </q-tab-panel>
                             </q-tab-panels>
@@ -287,7 +286,9 @@ export default {
     this.$bus.$on('showHomeIntro', () => {
       this.showIntros()
     })
-
+    this.$bus.$on('selectedChain', () => {
+      this.setChainData()
+    })
     setTimeout(async () => {
       let manualSelectCurrentWallet = false
       await store.state.wallets.tokens.map(async (f) => {
@@ -320,6 +321,17 @@ export default {
     }
   },
   methods: {
+    setChainData () {
+      let chain = localStorage.getItem('selectedChain')
+      if (chain && chain === 'vtx') {
+        let asset = this.$store.state.wallets.tokens.find(o => o.type === 'vtx' && o.amount > 0)
+
+        if (asset) {
+          this.tabPoolAndAssetBalances = 'explore'
+          this.setAsset(asset)
+        }
+      }
+    },
     setAsset (asset) {
       this.assetSelected = asset
     },

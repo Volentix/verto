@@ -7,6 +7,7 @@
           <div class="apps-section">
             <!-- 1inch component -->
             <!-- add your code here -->
+
             <q-dialog v-model="getPassword" persistent>
               <q-card>
                 <q-card-section>
@@ -195,7 +196,8 @@
                                     @input="
                                       swapData.error = false;
                                       getDestinationCoinOptions();
-                                      getPairData();
+                                      getPairData();;
+                                      hideSlippage = true
                                     "
                                     @filter="filterDepositCoin"
                                     :disabled="!depositCoinOptions"
@@ -229,7 +231,7 @@
                                   rounded
                                   :dark="$store.state.settings.lightMode === 'true'"
                                   :light="$store.state.settings.lightMode === 'false'"
-                                  @blur="swapData.fromAmount = parseFloat(swapData.fromAmount).toFixed(depositCoin.precision)"
+                                  @blur="swapData.fromAmount = parseFloat(swapData.fromAmount).toFixed(depositCoin.precision); "
                                   outlined
                                   class="text-h5 depositQuantity"
                                   :class="{'bg-white': $store.state.settings.lightMode === 'false'}"
@@ -237,7 +239,8 @@
                                   @input="
                                     swapData.error = false;
                                     getPairData();
-                                    privateKey = false
+                                    privateKey = false;
+                                    hideSlippage = false
                                   "
                                   v-model="swapData.fromAmount"
 
@@ -349,7 +352,7 @@
                                 {{ error }}
                               </span>
                             </div>
-                            <div :class="{ 'text-red' :  slippage >= 5 , 'text-orange' : slippage >= 2 && slippage < 5, 'text-green' : slippage < 2, 'slippage-wrapper': true }" v-if="tab == 'swap'">
+                            <div :class="{ 'text-red' :  slippage >= 5 , 'text-orange' : slippage >= 2 && slippage < 5, 'text-green' : slippage < 2, 'slippage-wrapper': true }" v-if="tab == 'swap' && !hideSlippage">
                                 <span @click="slippageDialog = true" class="flex items-center pointer">Slippage: {{slippage}}: % <q-icon name="o_info" class="q-ml-sm" size="xs" /></span> <span v-if="pairData && pairData.price && false">{{this.pairData.price}}</span>
                               <p v-if="($store.state.settings.eos.swapSlippage < slippage && tab == 'swap')" class="text-black q-mt-sm"><span @click="slippageProtectionDialog = true" class="text-deep-purple-12 cursor-pointer"><q-icon name="settings" /> Edit</span> slippage settings to proceed</p></div>
                             <q-btn v-if="error" unelevated :disable="true" color="grey-4" text-color="black" :label="error" class="text-capitalize invalid_btn full-width" />
@@ -561,6 +564,7 @@ export default {
       slippageTransactionSettingsDialog: false,
       slippageProtectionDialog: false,
       name: 'Swapeos',
+      hideSlippage: true,
       openModal: false,
       getPassword: false,
       privateKey: false,
@@ -629,8 +633,9 @@ export default {
     // //console.log(this.destinationCoin, this.destinationCoin)
     if (this.$store.state.settings.dexData.depositCoin && this.crossChain) {
       let item = this.$store.state.settings.coins.defibox.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
-      console.log(item, 'itemitem')
+
       if (item) {
+        console.log(item.contract, 12)
         this.depositCoin = item
       }
     }
@@ -688,6 +693,8 @@ export default {
       this.destinationCoin = depositCoinVar
       this.getPairData()
       this.checkBalance()
+      this.calculateDestinationQuantity()
+      this.hideSlippage = true
     },
     async getMinePair () {
       let endpoint = process.env[this.$store.state.settings.network].CACHE + 'https://defibox.io/api/swap/getMinePair'
@@ -756,17 +763,17 @@ export default {
 
       this.pairData.pool1 = asset(this.pairData.reserve0)
       this.pairData.pool2 = asset(this.pairData.reserve1)
-      let mul = 0.0001
+      // let mul = 0.0001
       if (this.pairData.pool1.symbol.code().to_string() === this.depositCoin.value.toUpperCase()) {
         this.poolOne = this.pairData.pool1
         this.poolTwo = this.pairData.pool2
-        mul = 10000
+        // mul = 10000
       } else {
         this.poolOne = this.pairData.pool2
         this.poolTwo = this.pairData.pool1
       }
-
-      this.pairData.price = (this.poolTwo.amount / this.poolOne.amount) / mul
+      // console.log(parseFloat(this.swapData.fromAmount), parseFloat(this.poolTwo.amount), parseFloat(this.poolOne.amount), parseFloat(mul), 'mul')
+      this.pairData.price = (this.poolTwo.amount / this.poolOne.amount)
 
       this.pairData.fee = 0
 
@@ -830,9 +837,11 @@ export default {
       // this.swapData.fromAmount = isNaN(amount) ? 0 : amount
       this.pairData = this.pairs.find(
         (w) =>
-          (w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase()) ||
-          (w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase())
+          (w.token1.contract === this.destinationCoin.contract && w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase() && this.depositCoin.contract === w.token0.contract) ||
+          (w.token0.contract === this.destinationCoin.contract && w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase() && this.depositCoin.contract === w.token1.contract)
       )
+
+      console.log(this.pairData, this.destinationCoin.contract, this.depositCoin.contract)
 
       this.getLiquidityMultiplier()
       if (!this.pairData || this.pairData.liquidity_token === 0) {
@@ -918,11 +927,12 @@ export default {
     },
     async getPools () {
       this.coins = this.crossChain ? this.getUniqueTokens(this.getAllCoins()) : this.getCoinsByAccount('defibox', this.defaultAccount.label)
-
+      this.coins = this.coins.filter((o, i, list) => list.findIndex(a => a.contract === o.contract && a.type === o.type && a.name === o.name) === i)
       this.depositCoinOptions = this.coins.filter(t => this.$store.state.investment.accountTokens.find(o => o.type.toLowerCase() === t.value.toLowerCase() && ((o.name && o.name.toLowerCase() === t.name.toLowerCase()) || this.$store.state.investment.defaultAccount.chain === 'eth'))).map(o => {
-        let token = this.$store.state.investment.accountTokens.find(t => t.type.toLowerCase() === o.value.toLowerCase())
+        let token = this.$store.state.investment.accountTokens.find(t => t.type.toLowerCase() === o.value.toLowerCase() && t.contract === o.contract)
         o.usd = token.usd
         o.amount = token.amount
+        o.contract = token.contract
         return o
       })
 
@@ -932,9 +942,10 @@ export default {
         let item = this.depositCoinOptions.find(v => v.value === this.$store.state.investment.defaultAccount.chain)
 
         this.depositCoin = item || this.depositCoin
+        // console.log(this.depositCoin.contract, 3)
       }
       this.depositCoin = this.depositCoin ? this.coins.find((w) => w.value.toLowerCase() === this.depositCoin.value.toLowerCase()) : this.coins.find((w) => w.value.toLowerCase() === 'eos')
-
+      // console.log(this.depositCoin.contract, 4)
       this.getDestinationCoinOptions()
       this.destinationCoin = this.destinationCoin ? this.coins.find((w) => w.value.toLowerCase() === this.destinationCoin.value.toLowerCase()) : this.destinationCoinOptions[0]
       this.getPairData()
@@ -1072,7 +1083,7 @@ export default {
           )
         }
       }
-      console.log(transactionObject, 'transactionObject')
+      // console.log(transactionObject, 'transactionObject')
       api
         .transact(transactionObject, {
           blocksBehind: 3,
@@ -1155,9 +1166,7 @@ export default {
     'swapData.toAmount' (val) {
       if (!this.pairData) return
 
-      if (this.pairData.reserve0.includes(this.depositCoin.value)) {
-
-      }
+      // console.log(this.pairData, parseFloat(this.swapData.fromAmount), parseFloat(val), this.pairData.price, 'slippage')
 
       this.slippage = (Math.abs(((parseFloat(val) / parseFloat(this.swapData.fromAmount)) - this.pairData.price) / this.pairData.price) * 100).toFixed(2)
       this.slippage = isNaN(this.slippage) ? 0 : this.slippage
@@ -1179,10 +1188,12 @@ export default {
       // console.log(this.depositCoinOptions, this.depositCoin.amount, 11)
 
       this.coins = this.crossChain ? this.getAllCoins() : this.getCoinsByAccount('defibox', this.defaultAccount.label)
+      this.coins = this.coins.filter((o, i, list) => list.findIndex(a => a.contract === o.contract && a.type === o.type && a.name === o.name) === i)
       this.depositCoinOptions = this.coins.filter(t => val.find(o => o.type === t.value && ((o.name && t.name && o.name.toLowerCase() === t.name.toLowerCase()) || this.$store.state.investment.defaultAccount.chain === 'eth'))).map(o => {
         let token = this.$store.state.investment.accountTokens.find(t => t.type === o.value.toLowerCase())
         o.usd = token.usd
         o.amount = token.amount
+        o.contract = token.contract
         return o
       })
 
@@ -1191,7 +1202,7 @@ export default {
       if (!this.pool) {
         let item = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.$store.state.investment.defaultAccount.chain.toLowerCase())
         if (item) {
-          console.log(45, this.depositCoin, this.$store.state.investment.defaultAccount.chain)
+          // console.log(item, item.contract, 1, this.depositCoinOptions)
           this.depositCoin = item
         }
       }
@@ -1200,6 +1211,8 @@ export default {
 
       this.getDestinationCoinOptions()
       this.getPairData()
+
+      this.hideSlippage = true
     },
     '$store.state.settings.defiMenu': function (val) {
       this.tab = val === 'add_liquidity' ? 'liquidity' : val

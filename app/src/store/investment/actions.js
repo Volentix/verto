@@ -74,7 +74,7 @@ export const getBalancerPools = ({ rootState, commit, state }, payload) => {
 }
 
 export const getUniswapPools = ({ rootState, context, commit, state }, payload) => {
-  axios.get(process.env[rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/pool-stats/uniswap?api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88', {}, config).then((result) => {
+  axios.get(process.env[rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/pool-stats/uniswap-v2?api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88', {}, config).then((result) => {
     result.data/* .map(function (e) {
       if (e.protocol === 'uniswap' && state.poolDataHistory['UniswapV1']) {
         var t = e.liquidity / e.supply,
