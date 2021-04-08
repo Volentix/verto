@@ -21,7 +21,7 @@
         </div>
       </div>
       <div v-else class="mobile-version">
-        <profile-header />
+        <profile-header :isMobile="true" class="marg" version="type2222" />
         <profile />
       </div>
     </div>

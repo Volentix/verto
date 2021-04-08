@@ -213,11 +213,11 @@ export default {
         // -webkit-background-clip: text;
         // -webkit-text-fill-color: transparent;
         color:white;
-        text-shadow: 0 0 10px rgba(255,255,255,.8),
-                 0 0 20px rgba(255,255,255,.8),
-                 0 0 22px  rgba(255,255,255,.8),
-                 0 0 40px  rgba(94, 66, 220, 0.8),
-                 0 0 60px  rgba(94, 66, 220, 0.8),
+        text-shadow: 0 0 10px rgba(255,255,255,.5),
+                 0 0 20px rgba(255,255,255,.5),
+                 0 0 22px  rgba(255,255,255,.5),
+                 0 0 40px  rgba(94, 66, 220, 0.5),
+                 0 0 60px  rgba(94, 66, 220, 0.5),
                  0 0 80px  rgba(120, 66, 220, 0.5),
                  0 0 100px rgba(94, 66, 220, 0.5),
                  0 0 140px rgba(94, 66, 220, 0.5),

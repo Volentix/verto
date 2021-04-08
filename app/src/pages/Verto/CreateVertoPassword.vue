@@ -149,6 +149,9 @@ export default {
       contractable: true
     }
   },
+  created () {
+
+  },
   async mounted () {
     this.$refs.psswrd.focus()
   },

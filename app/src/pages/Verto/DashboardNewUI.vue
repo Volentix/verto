@@ -63,21 +63,21 @@
         <!-- <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" /> -->
         <div class="wallets-container" style="height: 100%">
             <profile-header class="marg" version="type2222" />
-            <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+            <wallets :showWallets="true" :isWalletsPage="false" :isWalletDetail="false" />
         </div>
         <div class="cards-wrapper--content q-pl-md q-pr-md">
             <!-- <startNodeSection :banner="1" /> -->
             <!-- <hr style="height:0px;opacity:0" /> -->
-            <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
-            <hr style="height:0px;opacity:0" />
+            <!-- <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  /> -->
+            <hr style="height:10px;opacity:0" />
             <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
             <!-- <card-make-VTX /> -->
-            <hr style="height:0px;opacity:0" />
-            <LiquidityPoolsSection2 v-if="true  && $store.state.settings.network == 'mainnet'" />
-            <hr style="height:0px;opacity:0" />
-            <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+            <!-- <hr style="height:0px;opacity:0" /> -->
+            <!-- <LiquidityPoolsSection2 v-if="true  && $store.state.settings.network == 'mainnet'" /> -->
+            <!-- <hr style="height:0px;opacity:0" /> -->
+            <!-- <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                 <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="8"  v-if="$store.state.settings.network == 'mainnet'" />
-            </div>
+            </div> -->
             <hr style="height:30px;opacity:0" />
             <!-- <card-WPS /> -->
             <!-- <hr style="height:0px;opacity:0" /> -->
@@ -110,7 +110,7 @@ import Wallets from '../../components/Verto/Wallets'
 // import ChainToolsSection from '../../components/Verto/ChainToolsSection'
 // import TransactionsSection from '../../components/Verto/TransactionsSection'
 // import LiquidityPoolsSection from '../../components/Verto/Defi/LiquidityPoolsSection'
-import LiquidityPoolsSection2 from '../../components/Verto/Defi/LiquidityPoolsSection2'
+// import LiquidityPoolsSection2 from '../../components/Verto/Defi/LiquidityPoolsSection2'
 // import MakeVTXSection from '../../components/Verto/MakeVTXSection'
 import MakeVTXSection2 from '../../components/Verto/MakeVTXSection2'
 // import ExchangeSection from '../../components/Verto/ExchangeSection'
@@ -161,7 +161,7 @@ export default {
     TestnetPools,
     // TransactionsSection,
     // LiquidityPoolsSection,
-    LiquidityPoolsSection2,
+    // LiquidityPoolsSection2,
     liquidityPoolsTable,
     AssetBalancesTable,
     // MakeVTXSection,
@@ -207,6 +207,9 @@ export default {
         initWallet(this.$route.params.walletToRefresh)
       }, 500)
     }
+
+    window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : true)
+    this.$store.state.settings.lightMode = window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : true
     /*
     this.tableData = this.$store.state.wallets.tokens.map(token => {
       token.selected = false
