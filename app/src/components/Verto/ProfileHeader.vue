@@ -88,7 +88,7 @@
           to="/verto/wallets/send" outline
           class="profile-wrapper--header__action-btn --send"
           :class="{'--dark':$store.state.settings.lightMode === 'true'}"
-          color="white" :text-color="white" label="Send" />
+          color="white" text-color="white" label="Send" />
         <q-btn unelevated v-if="screenSize > 1024"
           :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','btc','dot', 'ksm','bnb','avax'].includes($store.state.currentwallet.wallet.chain))"
           @click="!$store.state.currentwallet.wallet.empty ? goToSendPage() : notifSelectWallet()"

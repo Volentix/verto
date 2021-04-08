@@ -471,6 +471,16 @@ export default {
         background-size: auto calc(100% + 30px) !important;
         background-position: -10px -10px !important;
       }
+      @media screen and (max-width: 768px) {
+        background-size: calc(100% + 40px) auto !important;
+        background-position: -100px bottom !important;
+        background-repeat-x: repeat !important;
+        &.dark{
+          background-size: calc(100% + 40px) auto !important;
+          background-position: -100px bottom !important;
+          background-repeat-x: repeat !important;
+        }
+      }
       &--head-title{
         border-bottom: 1px solid rgba(#CCC, 0);
         // background-color: rgba(#CCC, .1);
