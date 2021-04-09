@@ -82,7 +82,7 @@ export default {
     QScrollArea,
     Swapeos
   },
-  props: ['rowsPerPage', 'chain'],
+  props: ['rowsPerPage', 'chain', 'asset'],
   data () {
     return {
       initialPagination: {
@@ -147,7 +147,7 @@ export default {
   async created () {
     this.getWindowWidth()
 
-    this.chainPools = this.$store.state.investment.pools.filter(o => o.chain === this.chain || !this.chain).slice(0, 30)
+    this.chainPools = this.$store.state.investment.pools.filter(o => o.chain === this.chain || (this.asset && o.poolName.toLowerCase().includes(this.asset.type)) || (!this.chain && !this.asset)).slice(0, 30)
     if (this.rowsPerPage) { this.initialPagination.rowsPerPage = this.rowsPerPage }
 
     await this.$store.dispatch('investment/getUniswapPools')
