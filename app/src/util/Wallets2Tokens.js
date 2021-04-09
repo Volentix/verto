@@ -11,13 +11,7 @@ class Wallets2Tokens {
 
     this.tableDataCache = []
     this.tableData = []
-    /*
-    store.state.currentwallet.config.keys.push({
-      type: 'eos',
-      key: 'ded',
-      name: 'crosschainfx',
-      chain: 'eos'
-    }) */
+
     // store.state.wallets.portfolioTotal = 0
 
     if (data) {

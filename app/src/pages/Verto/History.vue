@@ -18,7 +18,7 @@
               <div class="row">
                 <div class="standard-content--title col-md-4 float-left flex justify-start q-pl-md q-pt-lg" >History  <q-icon name="cached"  @click="refresh++" class="refresh-history q-pl-sm"/></div>
 
-                <div class="col flex justify-end q-pr-md"><AccountSelector  :autoSelectChain="'eos'" class="q-mr-md" :showAllWallets="true"/></div>
+                <div class="col flex justify-end q-pr-md"><AccountSelector  style="width: 200px;" :autoSelectChain="'eos'" class="q-mr-md" :showAllWallets="true"/></div>
               </div>
 
               <div class="standard-content--body" style="height: 100%;">
