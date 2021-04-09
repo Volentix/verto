@@ -152,7 +152,7 @@ export default {
               justify-content: flex-start;
               padding-left: 3vh;
               .svg-icon-wrapper{
-                overflow: hidden;
+                // overflow: hidden;
                 // width: 60px;
                 // height: 50px;
               }
@@ -207,7 +207,27 @@ export default {
         fill: rgba(white, .8);
       }
       .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab.q-router-link--active.q-tab--active .text-tab-name{
-        color: #7272FA;
+        // color: #ddddf7;
+        // text-shadow: 0px 0px 3px #7272FA;
+        // background: linear-gradient(135deg, #7272FA 38%, #f969cd 100%);
+        // -webkit-background-clip: text;
+        // -webkit-text-fill-color: transparent;
+        color:white;
+        text-shadow: 0 0 10px rgba(255,255,255,.5),
+                 0 0 20px rgba(255,255,255,.5),
+                 0 0 22px  rgba(255,255,255,.5),
+                 0 0 40px  rgba(94, 66, 220, 0.5),
+                 0 0 60px  rgba(94, 66, 220, 0.5),
+                 0 0 80px  rgba(120, 66, 220, 0.5),
+                 0 0 100px rgba(94, 66, 220, 0.5),
+                 0 0 140px rgba(94, 66, 220, 0.5),
+                 0 0 200px rgba(94, 66, 220, 0.5);
+      }
+      .tabs-menu--wrapper-tabs{
+        margin-top: -15px;
+        /deep/ .q-tabs__content.row{
+          padding-top: 40px;
+        }
       }
       .tabs-menu--wrapper-tabs .tabs-menu--wrapper-tab .text-tab-name{
         color: rgba(white, .8);

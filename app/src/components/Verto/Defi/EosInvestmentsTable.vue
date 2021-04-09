@@ -1,6 +1,46 @@
 <template>
-<div class="full-height">
-    <q-table :pagination="initialPagination" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :loading="$store.state.investment.tableLoading" title="EOS ivestments" :data="$store.state.investment.eosInvestments" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities full-height">
+  <div class="full-height">
+    <q-table v-if="mobile" :pagination="initialPagination" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :loading="$store.state.investment.tableLoading" title="EOS ivestments" :data="$store.state.investment.eosInvestments" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments current-investments--mobile explore-opportunities full-height">
+        <!-- <template v-slot:body-cell-index /> -->
+        <template v-slot:body-cell-asset="props">
+            <q-td :props="props" class="body-table-col">
+                <div class="col-3 flex items-center">
+                      <span class="imgs q-mr-lg">
+                        <img :src="'https://ndi.340wan.com/eos/'+ props.row.contract0 +'-'+ props.row.symbol0.toLowerCase() +'.png'" alt="">
+                        <img :src="'https://ndi.340wan.com/eos/'+ props.row.contract1 +'-'+ props.row.symbol1.toLowerCase() +'.png'" alt="">
+                    </span>
+                    <span class="column pairs">
+                        <span class="pair">{{props.row.symbol0 + ' + ' + props.row.symbol1}}</span>
+                    </span>
+                </div>
+            </q-td>
+        </template>
+        <template v-slot:body-cell-capital="props">
+            <q-td :props="props" class="body-table-col --action">
+                <div class="col-5 flex items-center">
+                  <div class="column">
+                    <span class="pair">{{props.row.count0 + ' ' + props.row.symbol0 + ' / ' + props.row.count1 + ' ' + props.row.symbol1}}</span>
+                    <div class="flex">
+                      <q-chip :color="$store.state.settings.lightMode === 'false' ? 'black':'white'" outline text-color="black" @click.native="stakeData = props.row ; openDialog = true">
+                        <q-icon name="add"/>
+                      </q-chip>
+                      <q-chip :color="$store.state.settings.lightMode === 'false' ? 'black':'white'" outline text-color="black" @click.native="stakeData = props.row ; unstakeDialog = true">
+                        <q-icon name="remove"/>
+                      </q-chip>
+                    </div>
+                  </div>
+                </div>
+            </q-td>
+        </template>
+        <template v-slot:top-right>
+            <q-input :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" borderless dense debounce="300" v-model="filter" placeholder="Search">
+                <template v-slot:append>
+                    <q-icon name="search" />
+                </template>
+            </q-input>
+        </template>
+    </q-table>
+    <q-table v-else :pagination="initialPagination" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :loading="$store.state.investment.tableLoading" title="EOS ivestments" :data="$store.state.investment.eosInvestments" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities full-height">
         <template v-slot:body-cell-asset="props">
             <q-td :props="props" class="body-table-col">
                 <div class="col-3 flex items-center">
@@ -45,9 +85,9 @@
         </q-card>
     </q-dialog>
     <q-dialog v-model="unstakeDialog">
-        <EOSStakingDialog :notWidget="true" :stakeData="stakeData"  />
+      <EOSStakingDialog :notWidget="true" :stakeData="stakeData"  />
     </q-dialog>
-</div>
+  </div>
 </template>
 
 <script>
@@ -57,6 +97,13 @@ import {
 import EOSStakingDialog from './EOSStakingDialog'
 import Swapeos from '@/components/Verto/Exchange/Swapeos'
 export default {
+  props: {
+    mobile: {
+      type: Boolean,
+      default: false,
+      required: false
+    }
+  },
   components: {
     EOSStakingDialog,
     Swapeos
@@ -71,50 +118,44 @@ export default {
       poolsData: [],
       stakeData: null,
       filter: '',
-      columns: [{
-        name: 'index',
-        required: true,
-        label: '#',
-        align: 'left',
-        field: 'index',
-        format: val => `${val + 1}`,
-        sortable: true
-      },
-      {
-        name: 'asset',
-        required: true,
-        label: 'Asset',
-        align: 'left',
-        field: row => row,
-        format: val => `${val}`,
-        sortable: true
-      },
-      {
-        name: 'capital',
-        align: 'center',
-        label: 'Capital',
-        field: row => row.count0 + ' ' + row.symbol0 + ' / ' + row.count1 + ' ' + row.symbol1
+      columns: [
+        // {
+        //   name: 'index',
+        //   required: true,
+        //   label: '#',
+        //   align: 'left',
+        //   field: 'index',
+        //   format: val => `${val + 1}`,
+        //   sortable: true
+        // },
+        {
+          name: 'asset',
+          required: true,
+          label: 'Asset',
+          align: 'left',
+          field: row => row,
+          format: val => `${val}`,
+          sortable: true
+        },
+        {
+          name: 'capital',
+          align: 'center',
+          label: 'Capital',
+          field: row => row.count0 + ' ' + row.symbol0 + ' / ' + row.count1 + ' ' + row.symbol1
 
-      },
-      {
-        name: 'token',
-        align: 'center',
-        label: 'Token',
-        field: row => row.token + ' ' + row.code
+        },
+        {
+          name: 'token',
+          align: 'center',
+          label: 'Token',
+          field: row => row.token + ' ' + row.code
 
-      },
-      {
-        name: 'owner',
-        align: 'center',
-        label: 'Owner',
-        field: 'owner'
-
-      },
-      {
-        name: 'action',
-        label: '',
-        sortable: false
-      }
+        },
+        {
+          name: 'action',
+          label: '',
+          sortable: false
+        }
       ]
 
     }
@@ -151,6 +192,14 @@ export default {
 /deep/ .row.swdapeos-component--row{
     display: flex;
     justify-content: center;
+}
+.desktop-card-style.current-investments--mobile{
+  height: auto !important;
+}
+.desktop-card-style.current-investments .body-table-col{
+  &.--action{
+    width: 200px;
+  }
 }
 .desktop-card-style.current-investments .body-table-col .pairs .pair {
     font-weight: 700;
