@@ -17,7 +17,7 @@
                     <div class="col q-pl-sm col-md-6 customSlider q-mb-sm" v-show="!assetSelected">
                         <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
                     </div>
-                     <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white " v-if="assetSelected">
+                     <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
                         <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
 
                     </q-breadcrumbs>
@@ -350,6 +350,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+ .breadcrumbs {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    margin-top: 0px;
+ }
 .exchange-container{
     min-height: 138px;
     margin: -3px;

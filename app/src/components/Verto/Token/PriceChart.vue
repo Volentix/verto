@@ -1,7 +1,7 @@
 <script>
 
 import { Line } from 'vue-chartjs'
-
+import Formatter from '@/mixins/Formatter'
 export default {
   extends: Line,
   props: ['dataType', 'data'],
@@ -14,12 +14,6 @@ export default {
           fill: false,
           borderColor: '#7272fa',
           tension: 0.01,
-          legend: {
-            display: false,
-            labels: {
-              display: false
-            }
-          },
           borderWidth: 2,
           pointRadius: 0.1
         }
@@ -28,6 +22,9 @@ export default {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      legend: {
+        display: false
+      },
       scales: {
         y: {
           beginAtZero: true
@@ -50,13 +47,14 @@ export default {
   async mounted () {
     this.chartdata.labels = this.data.prices.map(o => o[0])
     if (this.dataType === 'price') {
-      this.chartdata.datasets[0].label = ''
+      this.chartdata.labels = this.data.prices.map(o => (new Date(o[0])).toUTCString())
       this.chartdata.datasets[0].data = this.data.prices.map(o => o[1])
     } else if (this.dataType === 'volume') {
       this.chartdata.datasets[0].label = 'Volume'
       this.chartdata.datasets[0].data = this.data.total_volumes.map(o => o[1])
     }
     this.renderChart(this.chartdata, this.options)
-  }
+  },
+  mixins: [Formatter]
 }
 </script>
