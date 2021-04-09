@@ -138,7 +138,7 @@
             </q-item-section>
             <q-item-section class="history-item__detail">
               <div class="row items-center border-top">
-                <div class="col" :class="[isMobile ? 'col-6':'col-4 q-pl-xl']" v-if="transaction.chain == 'eth'">
+                <div class="col" :class="[isMobile ? 'col-6':' q-pl-xl']" v-if="transaction.chain == 'eth'">
                   <div class="text-bold text-grey">Fee</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
@@ -147,7 +147,7 @@
                     </span> (${{transaction.usdFees}})
                   </div>
                 </div>
-                <div class="col" :class="[isMobile ? 'col-6':'col-4 q-pl-xl']" v-else-if="transaction.chain == 'eos'">
+                <div class="col" :class="[isMobile ? 'col-6':'q-pl-xl']" v-else-if="transaction.chain == 'eos'">
                   <div class="text-bold text-grey">Memo</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
@@ -274,7 +274,7 @@
                   </div>
 
                 </div>
-                <div class="col col-4 q-pl-xl flex items-center">
+                <div class="col q-pl-xl flex items-center">
                   <div class="column">
                     <span class="text-bold text-grey">Transaction hash</span>
                     <span :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
@@ -350,7 +350,7 @@
             </q-item-section>
             <q-item-section class="history-item__detail">
               <div class="row items-center border-top">
-                <div class="col" :class="[isMobile ? 'col-6':'col-4 q-pl-xl']" v-if="transaction.chain == 'eth'">
+                <div class="col" :class="[isMobile ? 'col-6':' q-pl-xl']" v-if="transaction.chain == 'eth'">
                   <div class="text-bold text-grey">Fee</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>

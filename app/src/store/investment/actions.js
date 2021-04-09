@@ -10,7 +10,7 @@ const config = {
 }
 
 export const getGasPrice = ({ commit, state }, payload) => {
-  axios.get('https://gasprice.poa.network/').then((result) => {
+  axios.get('https://ethgasstation.info/json/ethgasAPI.json').then((result) => {
     commit('updateGasPrice', result.data)
   })
 }

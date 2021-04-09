@@ -186,6 +186,26 @@ export default {
     onRowClick (evt, row) {
       this.$emit('setAsset', row)
     },
+    getIncomingTransaction (ethAddress) {
+      let request = {
+        jsonrpc: '2.0',
+        id: 0,
+        method: 'alchemy_getAssetTransfers',
+        params: [
+          {
+            fromBlock: '0xff',
+            toBlock: 'latest',
+            fromAddress: '',
+            toAddress: ethAddress,
+            excludeZeroValue: true
+          }
+        ]
+      }
+      this.$axios.post('https://eth-mainnet.alchemyapi.io/v2/Le_8-Zg9gV0p_gRbw3kpCJj94eH6Fjg_', request)
+        .then((res) => {
+          console.log(res)
+        })
+    },
     initTable (chain) {
       let account = null
 

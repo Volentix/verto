@@ -2,8 +2,8 @@
    <template>
   <div class="wrapper row q-pb-lg">
     <div class="left-area col-md-8">
-      
-      <div class="left q-ml-md">
+
+      <div class="left q-ml-md q-pt-md">
         <span
          class="z-max"
           ><img :src="asset.icon" style="max-width: 30px" alt="image" />
@@ -29,12 +29,12 @@
             "
             >.{{ formatNumber(asset.rateUsd, 2).split(".")[1] }}</span
           >
-          <span class="q-pl-md" :class="asset.color">{{ formatNumber(asset.change24hPercentage, 2)}}</span>
+          <span class="q-pl-md text-h6" :class="asset.color">{{asset.change24hPercentage}}</span>
         </h3>
           </div>
         </span>
 
-        <div class="token-chart ">
+        <div class="token-chart q-mt-lg">
           <!--  <q-spinner-dots color="deep-purple-12" v-if="!chartData" /> -->
           <span class="text-caption" v-if="!chartData">
             Loading historical price (1 month period)</span
@@ -243,7 +243,8 @@
     </div>
 
     <div class="right-area q-pr-lg col">
-      <div class="right">
+      <transition name="fade" mode="out-in">
+      <div class="right" :class="{'active-card':!extrasInfos, 'inactive-card' : extrasInfos}">
         <ul v-if="false">
           <li @click="tab = 'buy'" :class="{ 'active-b': tab == 'buy' }">
             <a href="javascript:void(0)">Swap</a>
@@ -322,24 +323,52 @@
             v-model="depositQuantity"
           >
             <template v-slot:append>
-              <q-icon :name="`img:${asset.icon}`" />
-              <span class="text-body1">{{ asset.type.toUpperCase() }}</span>
+              <q-icon size="1rem"  class="q-pl-sm" :name="`img:${asset.icon}`" />
+              <span class="text-body2 text-black ">{{ asset.type.toUpperCase() }}</span>
             </template>
             <template v-slot:counter>
               <span v-if="assetBalance"></span>Balance:
               {{ formatNumber(assetBalance, 2) }} {{ asset.type.toUpperCase() }}
             </template>
           </q-input>
-          <q-input label="To" class="col-12 q-px-md" v-model="sendTo" />
-          <q-input
-            label="Memo (Optional)"
-            class="col-12 q-px-md"
-            v-if="sendTo && sendTo.length"
-            v-model="memo"
-          />
-            <q-select v-if="false" dense label="To" outlined style="width:100%" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'"   borderless class="z-top" v-model="depositCoin"    :loading="!depositCoinOptions" :options="paymentOptions">
+          <q-select v-if="tab == 'swap' && destinationCoin" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input q-mt-md" use-input @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                             <template v-slot:option="scope">
                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                    <q-item-section avatar>
+                                        <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
+                                    </q-item-section>
+                                    <q-item-section dark>
+                                        <q-item-label v-html="scope.opt.label" />
+                                        <q-item-label v-if="scope.opt.value.toLowerCase() !== scope.opt.label.toLowerCase()" caption>{{ scope.opt.value }}</q-item-label>
+                                        <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
+
+                                    </q-item-section>
+                                </q-item>
+                            </template>
+                            <template v-slot:selected>
+                                <q-item v-if="destinationCoin">
+                                    <q-item-section avatar>
+                                        <q-icon class="option--avatar option--avatar__custom" :name="`img:${destinationCoin.image}`" />
+                                    </q-item-section>
+                                    <q-item-section>
+                                        <q-item-label v-html="destinationCoin.label" />
+                                    </q-item-section>
+                                </q-item>
+                                <q-item v-else>
+                                </q-item>
+                            </template>
+                        </q-select>
+          <q-input
+           v-if=" false && tab == 'swap' && depositCoin"
+            bottom-slots
+            :label="'To '+ depositCoin.value.toUpperCase() + ' amount'"
+            class="col-12 q-px-md q-pt-md"
+            v-model="destinationQuantity"
+          >
+            <template v-slot:append>
+               <q-select style="width:60px" dense   :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'"   borderless  v-model="depositCoin"    :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                            <template v-slot:option="scope">
+                                <q-item  v-bind="scope.itemProps" v-on="scope.itemEvents">
                                     <q-item-section size="1rem" avatar>
                                         <q-icon class="option--avatar option--avatar__custom"  :name="`img:${scope.opt.image}`" />
                                     </q-item-section>
@@ -351,18 +380,26 @@
                                 </q-item>
                             </template>
                             <template v-slot:selected>
-                                <q-item v-if="depositCoin" class="q-mt-md">
-                                    <q-item-section avatar>
-                                        <q-icon class="option--avatar option--avatar__custom" :name="`img:${depositCoin.image}`" />
+                                <q-item v-if="depositCoin" >
+
+                                    <q-item-section class="row destination">
+                                      <div><q-icon class="q-pr-sm"  size="1rem" :name="`img:${depositCoin.image}`" /></div>
+                                      <div>{{depositCoin.value.toUpperCase()}}</div>
                                     </q-item-section>
-                                    <q-item-section>
-                                        <q-item-label v-html="depositCoin.value.toUpperCase()" />
-                                    </q-item-section>
-                                </q-item>
-                                <q-item v-else>
                                 </q-item>
                             </template>
                         </q-select>
+            </template>
+
+          </q-input>
+          <q-input  v-if="tab == 'send'" label="To" class="col-12 q-px-md" v-model="sendTo" />
+          <q-input
+            v-if="asset.chain == 'eos' && tab == 'send' && sendTo && sendTo.length"
+            label="Memo (Optional)"
+            class="col-12 q-px-md"
+            v-model="memo"
+          />
+
         </div>
         <form action="#" method="#">
           <div class="input-bg" v-if="false">
@@ -387,9 +424,9 @@
                   borderless
                   class="select-input"
                   v-model="depositCoin"
-                  :disabled="!depositCoinOptions"
-                  :loading="!depositCoinOptions"
-                  :options="depositCoinOptions"
+                  :disabled="!destinationCoinOptions"
+                  :loading="!destinationCoinOptions"
+                  :options="destinationCoinOptions"
                 >
                   <template v-slot:option="scope">
                     <q-item
@@ -474,25 +511,29 @@
             >Reset</span
           >
         </form>
-      </div>
-    </div>
 
-    <div
-      class="col-12 col-md-12 row showhistory"
+      </div>
+      </transition>
+      <div
+      class="col-12 col-md-12 row showhistory q-pt-md"
+      :class="{'cropped': extrasInfos == false}"
       v-if="$store.state.investment.defaultAccount"
+      @mouseover="extrasInfos = true"
+      @mouseleave="extrasInfos = false"
     >
-    <q-tabs v-model="tokenTabOption" inline-label mobile-arrows  align="left">
+    <q-tabs class="z-top bg-white" v-model="tokenTabOption" inline-label mobile-arrows  align="left">
           <q-tab name="history" label="History" :class="{'bg-grey-3' : tokenTabOption == 'history'}" />
           <q-tab name="opportunities" label="Opportunities"  :class="{'bg-grey-3' : tokenTabOption == 'opportunities'}"/>
 
         </q-tabs>
-    <div class="text-body2 bg-grey-3 q-px-md q-pb-md q-pt-sm">View {{tokenTabOption}}</div>
+    <div class="text-body2 bg-grey-3 q-px-md q-pb-md q-pt-sm" v-if="false">View {{tokenTabOption}}</div>
       <History v-if="tokenTabOption == 'history'" :isMobile="false" />
       <AssetBalancesTable v-else-if="tokenTabOption == 'assets'" @setAsset="setAsset" :rowsPerPage="6"/>
       <liquidityPoolsTable  v-else-if="tokenTabOption == 'opportunities'"  :asset="asset" :rowsPerPage="7"   />
-
     </div>
   </div>
+    </div>
+
 </template>
 <script>
 import transactEOS from './transactEOS'
@@ -535,22 +576,26 @@ export default {
     }
   },
   created () {
-    this.destinationCoin = {
+    this.depositCoin = {
       label: this.asset.type.toUpperCase(),
       value: this.asset.type,
       icon: this.asset.icon
     }
+
+    this.destinationCoinOptions = this.$store.state.settings.coins[this.asset.chain === 'eos' ? 'defibox' : 'oneinch']
+
+    this.destinationCoinUnfilter = this.destinationCoinOptions
+
     if (this.asset.chain !== 'eos') {
       this.tab = 'swap'
+    } else {
+      this.destinationCoin = this.destinationCoinOptions.find(
+        (o) => o.value.toLowerCase() !== this.depositCoin.value
+      )
     }
-    this.depositCoinOptions = this.getUniqueTokens(
-      this.getAllCoins()
-    )
-    console.log(this.depositCoinOptions, 'depositCoinOptions')
-    this.depositCoinUnfilter = this.depositCoinOptions
 
     if (this.depositCoin.value === this.destinationCoin.value) {
-      this.depositCoin = this.depositCoinOptions.find(
+      this.depositCoin = this.destinationCoinOptions.find(
         (o) => o.value.toLowerCase() !== this.depositCoin.value
       )
     }
@@ -615,6 +660,12 @@ export default {
     setSuccessData (status) {
       this.success = status
       this.spinnerVisible = false
+    },
+    filterDestinationCoin (val, update, abort) {
+      update(() => {
+        const needle = val.toLowerCase()
+        this.destinationCoinOptions = this.destinationCoinUnfilter.filter(v => v.value.toLowerCase().indexOf(needle) > -1 || v.label.toLowerCase().indexOf(needle) > -1)
+      })
     },
     getBalance () {
       let item = this.paymentOptions.find(
@@ -682,29 +733,68 @@ export default {
       chartData: false,
       tokenTabOption: 'history',
       depositCoinUnfilter: [],
-      depositCoinOptions: [],
+      destinationCoinOptions: [],
       paymentOption: null,
       intervalHistory: 30,
       sendTo: '',
+      extrasInfos: false,
       success: false,
       spinnerVisible: false,
       memo: '',
       paymentOptions: [],
       depositQuantity: 0,
       destinationQuantity: 'Click the Buy button',
-      destinationCoin: null,
-      depositCoin: {
+      depositCoin: null,
+      destinationCoin: {
         label: 'ETH',
         value: 'eth',
         image: 'https://zapper.fi/images/ETH-icon.png'
       }
+
     }
   },
   props: ['asset'],
   mixins: [Formatter, DexInteraction]
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
+.destination {
+      display: contents;
+}
+
+  .showhistory /deep/ .col.col-6.flex.justify-end {
+   display: none;
+}
+
+.showhistory /deep/ .row.items-center .col.col-6 {
+   width:100%
+}
+
+.showhistory /deep/ .row.items-center .col.col-3.flex.justify-end {
+     display: none;
+}
+
+.showhistory /deep/ .col.q-mr-xl.q-pl-xl {
+   display: none;
+}
+
+.showhistory /deep/ .col.col-4.q-pl-xl .text-grey {
+   display: none;
+}
+
+.active-card {
+    opacity: 1;
+    display: block;
+}
+
+.inactive-card {
+    display: none;
+    transition: opacity 1s ease-out;
+    opacity: 0;
+}
+.cropped {
+  height: 170px  !important;
+}
 .token-chart /deep/ canvas {
   height: 200px !important;
   margin-top: -100px;
