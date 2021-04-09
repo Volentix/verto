@@ -45,7 +45,7 @@
     <div v-if="!params.to" class="send-modal flex flex-center" :class="{'open' : openModalProgress , 'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
-          <span class="text-h5 --amount">{{sendAmount + ' ' + currentToken.type.toUpperCase()}}</span>
+          <span v-if="currentToken && currentToken.type" class="text-h5 --amount">{{sendAmount + ' ' + currentToken.type.toUpperCase()}}</span>
           <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black' : 'white'" rounded flat unelevated @click="hideModalFun()" class="close-btn" :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" label="+" />
         </div>
         <div class="send-modal__content--body column flex-center">
@@ -121,7 +121,6 @@
                     <div class="row">
                       <div class="col col-8 q-pr-lg" v-if="['eth','eos'].includes(selectedCoin.chain)">
                         <span class="lab-input">Select token </span>
-
                         <q-select
                             :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                             separator
@@ -271,7 +270,7 @@
                 <q-list v-if="gasOptions.length && currentAccount.chain == 'eth' " class="gasfield q-mb-md"  separator>
                     <q-item dense class="gasSelector">
                         <q-item-section v-for="(gas, index) in gasOptions" :key="index">
-                            <q-item :class="[gasSelected.label == gas.label ? 'selected bg-black text-white' : '' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
+                            <q-item :class="[gasSelected.label == gas.label && !customGas ? 'selected bg-black text-white' : '' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
                                 <q-item-section>
                                     <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 text-black']">${{gas.value }}</q-item-label>
                                     <q-item-label class="text-body1 text-grey"> {{gas.label }}</q-item-label>
@@ -281,9 +280,29 @@
                                 </q-item-section>
                             </q-item>
                         </q-item-section>
+
+                        <q-item-section v-if="customGas">
+                            <q-item class="selected bg-black text-white" clickable separator v-ripple>
+                                <q-item-section>
+                                    <q-item-label class="text-black">${{customGas.value}}</q-item-label>
+                                    <q-item-label class="text-body1 text-grey"> Custom </q-item-label>
+                                </q-item-section>
+                                <q-item-section avatar>
+                                    <q-icon color="primary" name="local_gas_station" />
+                                </q-item-section>
+                            </q-item>
+                        </q-item-section>
                     </q-item>
                 </q-list>
 
+                <div class="row q-col-gutter-md" style="max-width:300px" v-if="showGasOptions &&  currentAccount.chain == 'eth'">
+                 <q-input outlined label="Gas Price (GWEI)"  @input="isBalanceEnough(); setCustomGas()" v-model="gasPriceGwei" dense   class="col-6"/>
+                 <q-input outlined label="Gas limit" @input="isBalanceEnough(); setCustomGas()"  v-model="gasLimit" dense  class="col-6" />
+                </div>
+                <span v-if="gasOptions.length && currentAccount.chain == 'eth' ">
+                <span class="q-pl-md cursor-pointer" @click="showGasOptions = true" v-if="!showGasOptions"><q-icon name="add" /> Advanced options</span>
+                <span class="cursor-pointer q-pt-xs" @click="showGasOptions = false" v-else>Hide </span>
+                </span>
                 <div class="standard-content--footer">
                   <q-btn flat :loading="openModalProgress" class="action-link next" :disable="currentAccount.chain == 'eth' &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="openModalFun()" text-color="white"  label="Transfer" />
                 </div>
@@ -381,7 +400,11 @@ export default {
       osName: '',
       progressValue: 20,
       gasOptions: [],
+      gasPriceGwei: null,
+      customGas: false,
+      gasLimit: 21000,
       gasSelected: null,
+      showGasOptions: false,
       openModal: false,
       openModalProgress: false,
       transErrorDialog: false,
@@ -455,6 +478,9 @@ export default {
       this.checkGas()
     },
     gasSelected (val) {
+      this.gasPriceGwei = val.gasPrice / 1000000000
+      this.gasLimit = val.gas
+
       this.isBalanceEnough()
     },
     sendAmount () {
@@ -580,6 +606,13 @@ export default {
   },
   methods: {
 
+    setCustomGas () {
+      this.customGas = {
+        value: this.converGasPriceToUSD(+this.gasPriceGwei, +this.gasLimit).toFixed(2),
+        gas: +this.gasLimit,
+        gasPrice: +this.gasPriceGwei * 1000000000
+      }
+    },
     getCurrentWallet () {
       return this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
         w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : true)
@@ -591,7 +624,9 @@ export default {
     isBalanceEnough () {
       if (!this.gasSelected || this.currentToken.chainID !== 'eth') return
       const Web3 = require('web3')
-      let ethValue = Web3.utils.fromWei(Math.round((this.gasSelected.gas * this.gasSelected.gasPrice)).toString(), 'ether')
+
+      let ethValue = Web3.utils.fromWei(Math.round(((+this.gasPriceGwei) * 1000000000 * (+this.gasLimit))).toString(), 'ether')
+      console.log(ethValue, 'this.gasLimit)')
       this.sendAmount = parseFloat(this.sendAmount) === 0 && parseFloat(this.currentToken.amount) !== 0 ? this.currentToken.amount : this.sendAmount
       if ((parseFloat(this.sendAmount) + parseFloat(ethValue)) > parseFloat(this.currentToken.amount)) {
         this.sendAmount = parseFloat(this.currentToken.amount) - parseFloat(ethValue).toFixed(8)
@@ -707,7 +742,8 @@ export default {
             this.privateKey.key,
             this.currentAccount.contract
           ).then((tx) => {
-            this.getGasOptions(tx)
+            console.log(tx, 'tx')
+            this.getGasOptions(tx, this.gasLimit)
           })
         }
       } catch (error) {
@@ -722,7 +758,7 @@ export default {
       // Pass gas details in memo
       if (this.currentAccount.chain === 'eth') {
         this.sendMemo = {
-          gasData: this.gasSelected,
+          gasData: this.customGas ? this.customGas : this.gasSelected,
           txData: null
         }
       }
