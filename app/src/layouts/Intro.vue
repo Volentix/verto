@@ -26,7 +26,7 @@ export default {
   name: 'Intro',
   data () {
     return {
-      lightMode: true
+      lightMode: false
     }
   },
   created () {

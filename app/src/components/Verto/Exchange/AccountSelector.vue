@@ -18,12 +18,13 @@
       <q-item
         :dark="$store.state.settings.lightMode === 'true'"
         v-if="accountOption"
+        class="full-width"
         >
         <q-item-section class="q-pr-sm">
           <q-item-label caption class="ellipsis mw200 text-black flex items-center">
             <q-icon :color="accountOption.color" name="fiber_manual_record" class="q-mr-xs" />
             <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':''">{{ accountOption.label }}</span>
-            <q-icon size="16px" class="q-ml-sm" :name="`img:${accountOption.image}`" />
+            <q-icon size="16px" class="q-ml-sm absolute-right" :name="`img:${accountOption.image}`" />
           </q-item-label>
           </q-item-section>
       </q-item>
@@ -125,7 +126,7 @@ export default {
       if (!updateDefaultAccount) return
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.type) {
         this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain && a.name.toLowerCase() === this.$store.state.currentwallet.wallet.name.toLowerCase())
-      } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount !== undefined) {
+      } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount !== undefined && (!this.chain || this.$store.state.investment.defaultAccount.chain === this.chain)) {
         this.accountOption = this.accountOptions.find(f => f.type === this.$store.state.investment.defaultAccount.type && f.chain === this.$store.state.investment.defaultAccount.chain && f.name.toLowerCase() === this.$store.state.investment.defaultAccount.name.toLowerCase())
       } else {
         let item = this.accountOptions.find(o => (this.autoSelectChain && o.chain === this.autoSelectChain) || (this.chain && o.chain === this.chain) || o.chain === 'eos')

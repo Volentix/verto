@@ -17,13 +17,13 @@
                     <div class="col q-pl-sm col-md-6 customSlider q-mb-sm" v-show="!assetSelected">
                         <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
                     </div>
-                     <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white " v-if="assetSelected">
-                        <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Dahsboard"  icon="home" />
-                        <q-breadcrumbs-el class="cursor-pointer" @click="assetSelected = null" label="Assets" />
-                        <q-breadcrumbs-el class="cursor-pointer" :label="assetSelected.type.toUpperCase()" :icon="'img:'+assetSelected.icon" />
+                     <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
+                        <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
+
                     </q-breadcrumbs>
                     <SingleToken :asset="assetSelected" class="col-md-12" v-if="assetSelected" />
-                    <div class="col col-md-12 full-height max-height2">
+                    <div class="col col-md-12 full-height max-height2" v-else>
+
                         <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                             <q-tabs
                                 v-model="tabPoolAndAssetBalances"
@@ -63,21 +63,21 @@
         <!-- <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" /> -->
         <div class="wallets-container" style="height: 100%">
             <profile-header class="marg" version="type2222" />
-            <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
+            <wallets :showWallets="true" :isWalletsPage="false" :isWalletDetail="false" />
         </div>
         <div class="cards-wrapper--content q-pl-md q-pr-md">
             <!-- <startNodeSection :banner="1" /> -->
             <!-- <hr style="height:0px;opacity:0" /> -->
-            <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
-            <hr style="height:0px;opacity:0" />
+            <!-- <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  /> -->
+            <hr style="height:10px;opacity:0" />
             <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
             <!-- <card-make-VTX /> -->
-            <hr style="height:0px;opacity:0" />
-            <LiquidityPoolsSection2 v-if="true  && $store.state.settings.network == 'mainnet'" />
-            <hr style="height:0px;opacity:0" />
-            <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+            <!-- <hr style="height:0px;opacity:0" /> -->
+            <!-- <LiquidityPoolsSection2 v-if="true  && $store.state.settings.network == 'mainnet'" /> -->
+            <!-- <hr style="height:0px;opacity:0" /> -->
+            <!-- <div class="desktop-card-style current-investments explore-opportunities q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                 <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="8"  v-if="$store.state.settings.network == 'mainnet'" />
-            </div>
+            </div> -->
             <hr style="height:30px;opacity:0" />
             <!-- <card-WPS /> -->
             <!-- <hr style="height:0px;opacity:0" /> -->
@@ -110,7 +110,7 @@ import Wallets from '../../components/Verto/Wallets'
 // import ChainToolsSection from '../../components/Verto/ChainToolsSection'
 // import TransactionsSection from '../../components/Verto/TransactionsSection'
 // import LiquidityPoolsSection from '../../components/Verto/Defi/LiquidityPoolsSection'
-import LiquidityPoolsSection2 from '../../components/Verto/Defi/LiquidityPoolsSection2'
+// import LiquidityPoolsSection2 from '../../components/Verto/Defi/LiquidityPoolsSection2'
 // import MakeVTXSection from '../../components/Verto/MakeVTXSection'
 import MakeVTXSection2 from '../../components/Verto/MakeVTXSection2'
 // import ExchangeSection from '../../components/Verto/ExchangeSection'
@@ -161,7 +161,7 @@ export default {
     TestnetPools,
     // TransactionsSection,
     // LiquidityPoolsSection,
-    LiquidityPoolsSection2,
+    // LiquidityPoolsSection2,
     liquidityPoolsTable,
     AssetBalancesTable,
     // MakeVTXSection,
@@ -207,6 +207,9 @@ export default {
         initWallet(this.$route.params.walletToRefresh)
       }, 500)
     }
+
+    window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : true)
+    this.$store.state.settings.lightMode = window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : true
     /*
     this.tableData = this.$store.state.wallets.tokens.map(token => {
       token.selected = false
@@ -275,7 +278,9 @@ export default {
     this.$bus.$on('showHomeIntro', () => {
       this.showIntros()
     })
-
+    this.$bus.$on('selectedChain', () => {
+      this.setChainData()
+    })
     setTimeout(async () => {
       let manualSelectCurrentWallet = false
       await store.state.wallets.tokens.map(async (f) => {
@@ -308,6 +313,17 @@ export default {
     }
   },
   methods: {
+    setChainData () {
+      let chain = localStorage.getItem('selectedChain')
+      if (chain && chain === 'vtx') {
+        let asset = this.$store.state.wallets.tokens.find(o => o.type === 'vtx' && o.amount > 0)
+
+        if (asset) {
+          this.tabPoolAndAssetBalances = 'explore'
+          this.setAsset(asset)
+        }
+      }
+    },
     setAsset (asset) {
       this.assetSelected = asset
     },
@@ -337,6 +353,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+ .breadcrumbs {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    margin-top: 0px;
+ }
 .exchange-container{
     min-height: 138px;
     margin: -3px;
@@ -453,7 +475,7 @@ export default {
     .tabPoolAndAssetBalances{
         position: absolute;
         left: 1px;
-        top: 1px;
+        top: calc(3vh + 1px);
         z-index: 3;
         width: 400px;
         padding-right: 90px;
@@ -857,26 +879,27 @@ export default {
     }
 }
 .customSlider{
-    // height: 85px;
-    .slide{
-        opacity: 0;
-        visibility: hidden;
-        position: absolute;
-        transition: opacity 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        &.active{
-            opacity: 1;
-            visibility: visible;
-            position: relative;
-        }
-    }
+  height: 85px;
+  .slide{
+      opacity: 0;
+      visibility: hidden;
+      position: absolute;
+      transition: opacity 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      &.active{
+          opacity: 1;
+          visibility: visible;
+          position: relative;
+      }
+  }
 }
 .tabPoolAndAssetBalancesPanels{
-    /deep/ .q-panel.scroll{
-        overflow: hidden;
-    }
+  margin-top: 3vh;
+  /deep/ .q-panel.scroll{
+      overflow: hidden;
+  }
 }
 .max-height{
-    max-height: 72vh;
+  max-height: 72vh;
 }
 .tabPoolAndAssetBalancesPanels{
   box-shadow: 0px 3px 6px 0px rgba(black, .19) !important;
@@ -886,18 +909,18 @@ export default {
   // background-color: #fff !important;
 }
 .liquidityPoolsTable /deep/ .q-scrollarea.desktop-size{
-    height: 66vh !important;
+    height: 71.5vh !important;
     @media screen and (min-height: 700px) {
-      height: 65.5vh !important;
+      height: 70.5vh !important;
     }
     @media screen and (min-height: 760px) {
-      height: 66.5vh !important;
+      height: 70.5vh !important;
     }
     @media screen and (min-height: 800px) {
-      height: 65.4vh !important;
+      height: 69.2vh !important;
     }
     @media screen and (min-height: 870px) {
-      height: 65.2vh !important;
+      height: 69vh !important;
     }
 }
 // .max-height2{

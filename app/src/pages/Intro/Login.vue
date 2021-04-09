@@ -69,6 +69,12 @@ export default {
       showSubmit: false
     }
   },
+  created(){
+    console.log('window.localStorage.getItem', window.localStorage.getItem('skin'))
+    window.localStorage.setItem('skin', true)
+    console.log('window.localStorage.getItem', window.localStorage.getItem('skin'))
+    this.$store.state.settings.lightMode = true
+  },
   async mounted () {
     this.version = version
     this.hasConfig = !!await configManager.hasVertoConfig()
