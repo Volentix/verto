@@ -716,7 +716,7 @@ class Lib {
 
         let nonce = await web3.eth.getTransactionCount(from)
 
-        let data = '0x00'
+        let data = '0x'
         let web3Value = web3.utils.toHex(web3.utils.toWei(value.toString()))
         // let transactionHash = ''
         let sendTo = to
@@ -739,12 +739,13 @@ class Lib {
           nonce,
           chainId: 1
         }
-
+        console.log(info, 'info', rawTx)
         if (info && (typeof info === 'object') && info.gasData) {
+          console.log(57777)
           rawTx.gas = info.gasData.gas
           rawTx.gasPrice = info.gasData.gasPrice
-          if (info.gasData.gasLimit) {
-            rawTx.gasLimit = info.gasData.gasLimit
+          if (info.gasLimit) {
+            rawTx.gasLimit = info.gasLimit
           }
         } else {
           let gasPrices = await getCurrentGasPrices()
@@ -752,7 +753,7 @@ class Lib {
           let gas = await web3.eth.estimateGas(rawTx)
           rawTx.gas = gas
         }
-
+        console.log(rawTx, 'rawTx')
         const transaction = new EthereumTx(rawTx)
         transaction.sign(Buffer.from(key.substring(0, 2) === '0x' ? key.substring(2) : key, 'hex'))
         const serializedTransaction = transaction.serialize()
@@ -821,7 +822,7 @@ class Lib {
                 success: false
               })
             })
-            // console.log(response, 'response')
+            console.log(response, 'response')
             if (response.data.error) {
               reject({
                 message: response.data.error.message,

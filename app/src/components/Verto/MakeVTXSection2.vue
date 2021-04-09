@@ -1,8 +1,8 @@
 <template>
   <div class="desktop-card-style make-vtx" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-    <div class="exchange-container">
-        <div v-if="$store.state.settings.lightMode === 'true'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md" style="background: url('statics/bg3d2.png');">Staking</div>
-        <div v-else class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md lightmd" style="background: url('statics/bg3d2light.png') #FFF;">Staking</div>
+    <div class="exchange-container" :class="{'dark': $store.state.settings.lightMode === 'true'}" :style="$store.state.settings.lightMode === 'true' ? 'background: url(statics/bg3d2.png)':'background: url(statics/bg3d2light.png)'">
+        <div v-if="$store.state.settings.lightMode === 'true'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md">Staking</div>
+        <div v-else class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md lightmd">Staking</div>
         <div class="row items-center q-pa-md">
             <div class="col-6 column p-desc q-pb-sm">
               <span class="text-bold stake-amount">10,000 VTX</span>
@@ -445,19 +445,51 @@ export default {
       }
     }
     .exchange-container{
-      min-height: 138px;
+      height: 100px;
       margin: -3px;
+      background-size: auto calc(100% + 20px) !important;
+      background-position: -10px -10px !important;
+      background-repeat: no-repeat !important;
+      &.dark{
+        background-size: auto 100% !important;
+        background-position: -10px -2px !important;
+        background-repeat: no-repeat !important;
+      }
+      @media screen and (min-height: 700px) {
+        background-size: auto calc(100% + 30px) !important;
+        background-position: -10px -10px !important;
+      }
+      @media screen and (min-height: 760px) {
+        background-size: auto calc(100% + 30px) !important;
+        background-position: -10px -10px !important;
+      }
+      @media screen and (min-height: 800px) {
+        background-size: auto calc(100% + 30px) !important;
+        background-position: -10px -10px !important;
+      }
+      @media screen and (min-height: 870px) {
+        background-size: auto calc(100% + 30px) !important;
+        background-position: -10px -10px !important;
+      }
+      @media screen and (max-width: 768px) {
+        background-size: calc(100% + 40px) auto !important;
+        background-position: -100px bottom !important;
+        background-repeat-x: repeat !important;
+        &.dark{
+          background-size: calc(100% + 40px) auto !important;
+          background-position: -100px bottom !important;
+          background-repeat-x: repeat !important;
+        }
+      }
       &--head-title{
-        border-bottom: 1px solid rgba(#CCC, .4);
+        border-bottom: 1px solid rgba(#CCC, 0);
         // background-color: rgba(#CCC, .1);
         font-size: 16px;
         font-weight: 700;
         height: 45px;
-        margin-bottom: 10px;
+        margin-bottom: -8px;
         padding-top: 11px;
         color: #FFF;
-        background-size: 90% auto !important;
-        background-position: 100% -42px !important;
         // background-repeat: no-repeat !important;
 
         &.lightmd{

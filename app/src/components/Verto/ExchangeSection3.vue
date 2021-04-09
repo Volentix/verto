@@ -1,42 +1,11 @@
 <template>
     <div class="desktop-card-style make-vtx" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-        <div class="exchange-container">
-            <div v-if="$store.state.settings.lightMode === 'true'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md" style="background: url('statics/bg3d1.png');">Exchange</div>
-            <div v-else class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md lightmd" style="background: url('statics/bg3d1light.png');">Exchange</div>
+        <div class="exchange-container" :class="{'dark': $store.state.settings.lightMode === 'true'}" :style="$store.state.settings.lightMode === 'true' ? 'background: url(statics/bg3d1.png)':'background: url(statics/bg3d1light.png)'">
+            <div v-if="$store.state.settings.lightMode === 'true'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md">Exchange</div>
+            <div v-else class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md lightmd">Exchange</div>
             <div class="row call-action-row items-center q-pt-sm q-pl-md q-pr-md">
-                <div class="col q-pr-sm col-4">
-                    <!-- <i class="step-1-lab flex">Send</i> -->
-                    <div class="call-action">
-                        <q-select :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
-                            <template v-slot:option="scope">
-                                <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
-                                    <q-item-section avatar>
-                                        <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
-                                    </q-item-section>
-                                    <q-item-section dark>
-                                        <q-item-label v-html="scope.opt.label" />
-                                        <q-item-label v-if="scope.opt.value.toLowerCase() !== scope.opt.label.toLowerCase()" caption>{{ scope.opt.value }}</q-item-label>
-                                    </q-item-section>
-                                </q-item>
-                            </template>
-                            <template v-slot:selected>
-                                <q-item v-if="depositCoin">
-                                    <q-item-section avatar>
-                                        <q-icon class="option--avatar option--avatar__custom" :name="`img:${depositCoin.image}`" />
-                                    </q-item-section>
-                                    <q-item-section>
-                                        <q-item-label v-html="depositCoin.value.toUpperCase()" />
-                                    </q-item-section>
-                                </q-item>
-                                <q-item v-else>
-                                </q-item>
-                            </template>
-                        </q-select>
-                    </div>
-                </div>
-                <div class="col flex items-center q-pl-sm col-6 call-action-col">
-                    <!-- <i class="step-2-lab step-1-lab flex ">Receive</i> -->
-                    <q-icon name="swap_horiz" size="sm" class="swap_horiz" />
+                <div class="col q-pr-sm col-3">
+                    <i class="step-2-lab step-1-lab flex ">Buy</i>
                     <div class="call-action">
                         <q-select :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input" use-input @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                             <template v-slot:option="scope">
@@ -65,9 +34,43 @@
                             </template>
                         </q-select>
                     </div>
+                </div>
+                <div class="col flex items-center q-pl-sm col-1 call-action-col">
+                  <q-icon name="swap_horiz" size="sm" class="swap_horiz" />
+                </div>
+                <div class="col flex items-center q-pl-md col-3 call-action-col">
+                    <!-- <i class="step-1-lab flex">Send</i> -->
+                    <i class="step-3-lab step-1-lab flex ">With</i>
+                    <div class="call-action">
+                        <q-select :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                            <template v-slot:option="scope">
+                                <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                                    <q-item-section avatar>
+                                        <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
+                                    </q-item-section>
+                                    <q-item-section dark>
+                                        <q-item-label v-html="scope.opt.label" />
+                                        <q-item-label v-if="scope.opt.value.toLowerCase() !== scope.opt.label.toLowerCase()" caption>{{ scope.opt.value }}</q-item-label>
+                                    </q-item-section>
+                                </q-item>
+                            </template>
+                            <template v-slot:selected>
+                                <q-item v-if="depositCoin">
+                                    <q-item-section avatar>
+                                        <q-icon class="option--avatar option--avatar__custom" :name="`img:${depositCoin.image}`" />
+                                    </q-item-section>
+                                    <q-item-section>
+                                        <q-item-label v-html="depositCoin.value.toUpperCase()" />
+                                    </q-item-section>
+                                </q-item>
+                                <q-item v-else>
+                                </q-item>
+                            </template>
+                        </q-select>
+                    </div>
                     <div class="text-red" v-if="error">{{error}}</div>
                 </div>
-                <div class="col-2 flex justify-end q-pt-sm">
+                <div class="col-5 flex justify-end q-pt-xs">
                     <q-btn unelevated class="qbtn-start" color="black" @click="goToExchange" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" label="Go" />
                 </div>
             </div>
@@ -137,11 +140,13 @@ export default {
       */
     },
     goToExchange () {
-      // console.log('this.depositCoin', this.depositCoin)
+      this.$store.state.investment.defaultAccount = null
       this.checkPair()
+
       if (this.dex) {
         let depositCoin = this.depositCoin
         let destinationCoin = this.destinationCoin
+
         this.$router.push({
           path: '/verto/exchange/:coinToSend/:coinToReceive',
           name: 'exchange-v3',
@@ -180,6 +185,9 @@ export default {
                 transform: scale(.8) translate(-20px, -5px);
             }
         }
+        .call-action-col{
+          position: relative;
+        }
         .col {
             .step-1-lab {
                 font-size: 8px;
@@ -194,21 +202,34 @@ export default {
                 z-index: 2;
                 padding: 0px 5px;
                 b {
-                    width: 14px;
-                    height: 14px;
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: center;
-                    align-items: center;
-                    background-color: #7272FA;
-                    border-radius: 20px;
-                    color: #FFF;
-                    margin: 0px 2px;
-                    font-size: 8px;
+                  width: 14px;
+                  height: 14px;
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: center;
+                  align-items: center;
+                  background-color: #7272FA;
+                  border-radius: 20px;
+                  color: #FFF;
+                  margin: 0px 2px;
+                  font-size: 8px;
                 }
 
                 &.step-2-lab {
-                    // margin-top: 5px;
+                  position: absolute;
+                  top: 15px;
+                  left: 13px;
+                  font-size: 10px;
+                  font-weight: $light;
+                  background: transparent !important;
+                }
+                &.step-3-lab {
+                  position: absolute;
+                  top: 0px;
+                  left: 13px;
+                  font-size: 10px;
+                  font-weight: $light;
+                  background: transparent !important;
                 }
             }
 
@@ -369,21 +390,45 @@ export default {
     transform: translateY(-20px);
 }
 .exchange-container{
-    min-height: 138px;
+    height: 100px;
     margin: -3px;
+    background-size: auto calc(100% + 20px) !important;
+    background-position: -10px -10px !important;
+    background-repeat: no-repeat !important;
+    &.dark{
+      background-size: auto 100% !important;
+      background-position: 30px 0px !important;
+      background-repeat: no-repeat !important;
+    }
+    @media screen and (min-height: 700px) {
+      background-size: auto calc(100% + 30px) !important;
+      background-position: -10px -10px !important;
+    }
+    @media screen and (min-height: 760px) {
+      background-size: auto calc(100% + 30px) !important;
+      background-position: -10px -10px !important;
+    }
+    @media screen and (min-height: 800px) {
+      background-size: auto calc(100% + 30px) !important;
+      background-position: -10px -10px !important;
+    }
+    @media screen and (min-height: 870px) {
+      background-size: auto calc(100% + 30px) !important;
+      background-position: -10px -10px !important;
+    }
     &--head-title{
-        border-bottom: 1px solid rgba(#CCC, .4);
+        border-bottom: 1px solid rgba(#CCC, 0);
         // background-color: rgba(#CCC, .1);
         font-size: 16px;
         font-weight: 700;
         height: 45px;
-        margin-bottom: 10px;
+        margin-bottom: -5px;
         padding-top: 11px;
         color: #FFF;
         background-size: 90% auto !important;
         background-position: 100% -42px !important;
         &.lightmd{
-            color: #04111F;
+          color: #04111F;
         }
     }
     .row{}
