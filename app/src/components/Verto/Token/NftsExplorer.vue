@@ -5,7 +5,7 @@
         <h2 class="q-pa-none q-ma-none">Explore ⚡</h2>
       </div>
       <div class="buttons-wrap">
-        <div class="buttons">
+        <div class="buttons" v-if="false">
           <a href="#" class="blac-btn">All</a>
           <a href="#">🌈 Art</a>
           <a href="#">📸 Photography</a>
@@ -91,7 +91,7 @@
     </div>
 
     <div class="part2 row q-col-gutter-md">
-      <div class="part2-main col-md-3" v-for="item in 13" :key="item">
+      <div class="part2-main col-md-4" v-for="item in 13" :key="item">
         <div class="wrap-content">
           <div class="main-top">
             <div class="mt-img">
