@@ -79,7 +79,7 @@
                           </q-item>
                         </template>
                         <template v-slot:append>
-                          <q-btn round flat unelevated text-color="grey" @click="copyToClipboard(currentAccount.type !== 'eos' && currentAccount.type !== 'verto'  ? currentAccount.name : currentAccount.key , 'Account name')" @click.stop icon="o_file_copy" />
+                          <q-btn round flat unelevated text-color="grey" @click="copyToClipboard(currentAccount.type !== 'eos' && currentAccount.type !== 'verto'  ? currentAccount.name : currentAccount.key , 'Account name'); changeSlider()" @click.stop icon="o_file_copy" />
                         </template>
                       </q-select>
 
@@ -133,7 +133,7 @@
                               <q-slider
                                 v-model="stakePeriod"
                                 :label-value="`${stakePeriod * 30}` + ' days'"
-                                :min="1"
+                                :min="2"
                                 :max="10"
                                 :step="1"
                                 color="orange"
@@ -386,12 +386,14 @@ export default {
   async created () {
     stakingContract = this.$store.state.settings.network === 'mainnet' ? 'vtxstake1111' : 'vltxstakenow'
     volentixContract = this.$store.state.settings.network === 'mainnet' ? 'volentixgsys' : 'volentixtsys'
-
+    this.tableData = this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type === 'vtx').map(o => {
+      o.label = o.name
+      return o
+    })
     let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     // console.log('---this.wallet---', this.wallet)
 
     if (this.wallet) {
-      console.log('this.wallet, this.wallet, this.wallet', this.wallet)
       this.currentAccount = this.wallet
       this.params = {
         chainID: this.currentAccount.chain,
@@ -400,8 +402,7 @@ export default {
       }
     } else {
       this.params = this.$store.state.currentwallet.params
-      this.tableData = await this.$store.state.wallets.tokens
-      this.currentAccount = await this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+      this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
         w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
       )
     }
