@@ -521,12 +521,12 @@
       @mouseover="extrasInfos = true"
       @mouseleave="extrasInfos = false"
     >
-    <q-tabs class="z-top bg-white" v-model="tokenTabOption" inline-label mobile-arrows  align="left">
+    <q-tabs class="z-top bg-white" v-if="false" v-model="tokenTabOption" inline-label mobile-arrows  align="left">
           <q-tab name="history" label="History" :class="{'bg-grey-3' : tokenTabOption == 'history'}" />
           <q-tab name="opportunities" label="Opportunities"  :class="{'bg-grey-3' : tokenTabOption == 'opportunities'}"/>
 
         </q-tabs>
-    <div class="text-body2 bg-grey-3 q-px-md q-pb-md q-pt-sm" v-if="false">View {{tokenTabOption}}</div>
+    <div class="text-body2 bg-grey-3 q-px-md q-pb-md q-pt-sm" >History</div>
       <History v-if="tokenTabOption == 'history'" :isMobile="false" />
       <AssetBalancesTable v-else-if="tokenTabOption == 'assets'" @setAsset="setAsset" :rowsPerPage="6"/>
       <liquidityPoolsTable  v-else-if="tokenTabOption == 'opportunities'"  :asset="asset" :rowsPerPage="7"   />
@@ -770,16 +770,31 @@ export default {
    width:100%
 }
 
-.showhistory /deep/ .row.items-center .col.col-3.flex.justify-end {
+.showhistory /deep/ .row.items-center .col.col-3.flex.justify-end ,  .showhistory /deep/ .row.items-center .col.q-pl-xl:nth-child(1) {
      display: none;
 }
 
-.showhistory /deep/ .col.q-mr-xl.q-pl-xl {
+.showhistory /deep/ .col.q-mr-xl.q-pl-xl:nth-child(1) {
    display: none;
 }
-
-.showhistory /deep/ .col.col-4.q-pl-xl .text-grey {
+.showhistory /deep/ .col.col-4.q-pl-xl.flex.items-center {
+     padding-left: 0  !important;
+     padding-top:10px
+}
+.showhistory /deep/ .history-item-wrapper {
+    padding-top:10px  !important
+}
+.showhistory /deep/ .col.col-4.q-pl-xl:nth-child(1)  .text-grey {
    display: none;
+}
+.showhistory /deep/ .col.col-4.q-pl-xl.flex.items-center {
+     width:100%
+}
+.showhistory /deep/  .txLabel {
+    display: none;
+}
+.showhistory /deep/ .col.col-9 {
+    width: 100%;
 }
 
 .active-card {
@@ -793,8 +808,9 @@ export default {
     opacity: 0;
 }
 .cropped {
-  height: 170px  !important;
+  height: 190px  !important;
 }
+
 .token-chart /deep/ canvas {
   height: 200px !important;
   margin-top: -100px;

@@ -11,17 +11,19 @@
             </div>
             <div class="col col-md-9 q-pr-md">
                 <div class="row">
-                    <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected">
+                    <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet'" >
                         <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
                     </div>
-                    <div class="col q-pl-sm col-md-6 customSlider q-mb-sm" v-show="!assetSelected">
+                    <div class="col q-pl-sm col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet'">
                         <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
                     </div>
                      <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
                         <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
 
                     </q-breadcrumbs>
-                    <SingleToken :asset="assetSelected" class="col-md-12" v-if="assetSelected" />
+                    <NftsExplorer v-if="$store.state.settings.network != 'mainnet'" />
+                    <AssetsExplorer  v-if="false && $store.state.settings.network != 'mainnet'" />
+                    <SingleToken  :asset="assetSelected" class="col-md-12" v-if="assetSelected" />
                     <div class="col col-md-12 full-height max-height2" v-else>
 
                         <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
@@ -118,6 +120,7 @@ import ExchangeSection3 from '../../components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 import SingleToken from '../../components/Verto/SingleToken'
 import AssetBalancesTable from '../../components/Verto/AssetBalancesTable'
+import AssetsExplorer from '../../components/Verto/Token/AssetsExplorer'
 
 import {
   mapState
@@ -147,14 +150,17 @@ import 'intro.js/minified/introjs.min.css'
 import {
   osName
 } from 'mobile-device-detect'
+import NftsExplorer from '../../components/Verto/Token/NftsExplorer.vue'
 export default {
   components: {
     // ConvertAnyCoin,
     // QScrollArea,
+    NftsExplorer,
     ProfileHeader,
     Wallets,
     // AppsSection,
     SingleToken,
+    AssetsExplorer,
     // StartNodeSection,
     // maxDeFiYield,
     // ChainToolsSection,
@@ -175,6 +181,7 @@ export default {
     return {
       customSlider: true,
       rawPools: [],
+      showAssetsExplorer: false,
       cruxKey: {},
       assetSelected: false,
       interval: null,
