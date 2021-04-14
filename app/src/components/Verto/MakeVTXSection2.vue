@@ -72,6 +72,7 @@ export default {
       this.checkPair()
       let depositCoin = this.depositCoin
       let destinationCoin = this.destinationCoin
+
       this.$router.push({
         path: '/verto/exchange/:coinToSend/:coinToReceive',
         name: 'exchange-v3',
@@ -83,6 +84,10 @@ export default {
       })
     },
     goToStaking () {
+      if (this.vtxAccount) {
+        this.$store.state.currentwallet.wallet = this.vtxAccount
+      }
+
       this.$router.push({
         path: '/verto/stake',
         params: {
@@ -146,6 +151,8 @@ export default {
 
       if (count === 1) {
         this.vtxAccount = account
+      } else {
+        this.vtxAccount = null
       }
     },
     async setHighestVTXAccount () {

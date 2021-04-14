@@ -331,7 +331,7 @@
               {{ formatNumber(assetBalance, 2) }} {{ asset.type.toUpperCase() }}
             </template>
           </q-input>
-          <q-select v-if="tab == 'swap' && destinationCoin" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input q-mt-md" use-input @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+          <q-select  v-if="(tab == 'swap' || tab == 'add liquidity') && destinationCoin" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input q-mt-md" use-input @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                             <template v-slot:option="scope">
                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                     <q-item-section avatar>
@@ -401,7 +401,7 @@
           />
 
         </div>
-        <form action="#" method="#">
+        <form action="#" method="#" v-if="tab == 'send'">
           <div class="input-bg" v-if="false">
             <label class="row">
               <div class="half">
@@ -497,7 +497,12 @@
             ref="transact"
             class="q-pt-md"
           />
-          <div
+
+          <span v-if="success" class="cursor-pointer" @click="success = false"
+            >Reset</span
+          >
+        </form>
+        <div
             class="buy text-capitalize q-pt-md"
             v-if="!spinnerVisible && !success"
           >
@@ -507,10 +512,6 @@
               >{{ tab }}</a
             >
           </div>
-          <span v-if="success" class="cursor-pointer" @click="success = false"
-            >Reset</span
-          >
-        </form>
 
       </div>
       </transition>
@@ -571,6 +572,8 @@ export default {
           this.sendTo.trim().length !== 0 &&
           parseFloat(this.depositQuantity) !== 0 &&
           parseFloat(this.assetBalance) !== 0
+      } else if (this.tab === 'swap') {
+        valid = true
       }
       return valid
     }
@@ -701,6 +704,7 @@ export default {
       this.getBalance()
     },
     triggerAction () {
+      console.log(99, this.tab)
       if (this.tab === 'swap') {
         this.goToExchange()
       } else if (this.tab === 'send') {

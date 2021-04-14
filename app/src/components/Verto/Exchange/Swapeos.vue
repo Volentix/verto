@@ -639,7 +639,7 @@ export default {
         this.depositCoin = item
       }
     }
-    // console.log(this.depositCoinOptions, this.depositCoin.amount, 2)
+    console.log(this.$store.state.settings, 'this.$store.state.settings.dexData')
     if (this.$store.state.settings.dexData.destinationCoin && this.crossChain) {
       this.destinationCoin = this.$store.state.settings.coins.defibox.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
     }
@@ -1185,7 +1185,7 @@ export default {
       }
     },
     '$store.state.investment.accountTokens': function (val) {
-      // console.log(this.depositCoinOptions, this.depositCoin.amount, 11)
+      console.log(this.depositCoin, this.destinationCoin, 11)
 
       this.coins = this.crossChain ? this.getAllCoins() : this.getCoinsByAccount('defibox', this.defaultAccount.label)
       this.coins = this.coins.filter((o, i, list) => list.findIndex(a => a.contract === o.contract && a.type === o.type && a.name === o.name) === i)
@@ -1200,7 +1200,18 @@ export default {
       this.depositCoinUnfilter = this.depositCoinOptions
 
       if (!this.pool) {
-        let item = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.$store.state.investment.defaultAccount.chain.toLowerCase())
+        let item = null
+
+        if (this.$store.state.settings.dexData.depositCoin) {
+          item = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
+        }
+
+        if (this.$store.state.settings.dexData.destinationCoin) {
+          let dest = this.coins.find(v => v.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
+          this.destinationCoin = dest || this.destinationCoin
+        }
+        item = item || this.depositCoinOptions.find(v => v.value.toLowerCase() === this.$store.state.investment.defaultAccount.chain.toLowerCase())
+
         if (item) {
           // console.log(item, item.contract, 1, this.depositCoinOptions)
           this.depositCoin = item

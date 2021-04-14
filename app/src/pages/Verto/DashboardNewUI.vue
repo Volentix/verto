@@ -21,7 +21,7 @@
                         <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
 
                     </q-breadcrumbs>
-                    <NftsExplorer v-if="$store.state.settings.network != 'mainnet'" />
+                    <NftsExplorer v-if="false && $store.state.settings.network != 'mainnet'" />
                     <AssetsExplorer  v-if="$store.state.settings.network != 'mainnet'" />
                     <SingleToken  :asset="assetSelected" class="col-md-12" v-if="assetSelected" />
                     <div class="col col-md-12 full-height max-height2" v-else>
