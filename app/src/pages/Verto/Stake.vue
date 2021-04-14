@@ -14,9 +14,10 @@
             <div class="desktop-card-style apps-section" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
               <q-scroll-area :visible="true" class="q-pr-md" style="height: 98%;">
                 <div class="standard-content">
-                  <h2 class="standard-content--title flex justify-start">{{$store.state.currentwallet.params.tokenID == 'eos' ? 'Staking / Unstaking' :  'Staking' }}</h2>
+                  <h2  v-if="false" class="standard-content--title flex justify-start">{{$store.state.currentwallet.params.tokenID == 'eos' ? 'Staking / Unstaking' :  'Staking' }}</h2>
                   <div class="standard-content--body">
                     <div class="standard-content--body__form">
+
                       <VTXStakeStepper v-if="$store.state.currentwallet.params.tokenID == 'vtx'" />
                       <EosStakeStepper v-else-if="$store.state.currentwallet.params.tokenID == 'eos'"/>
                     </div>

@@ -23,7 +23,13 @@ class Wallets2Tokens {
         return
       }
     }
-
+    /*
+    store.state.currentwallet.config.keys.push({
+      chain: 'eos',
+      type: 'eos',
+      name: 'crosschainfx'
+    })
+    */
     this.eos = new EosWrapper()
     const self = this
     self.eosUSD = 0
