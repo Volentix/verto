@@ -35,65 +35,87 @@
                     <q-step title="Choose an account"
                       :name="0"
                       prefix="0"
+                      v-if="false"
                       :done="step > 0"
                     >
-                      <q-select
-                          :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
-                          separator
-                          rounded
-                          outlined
-                          class="select-input"
-                          v-model="currentAccount"
-                          use-input
-                          :options="tableData"
-                      >
-                        <template v-slot:option="scope">
-                          <q-item
-                            class="custom-menu"
-                            v-bind="scope.itemProps"
-                            v-on="scope.itemEvents"
-                          >
-                            <q-item-section avatar>
-                              <q-icon class="option--avatar" :name="`img:${scope.opt.icon}`" />
-                            </q-item-section>
-                            <q-item-section dark>
-                              <q-item-label v-html="scope.opt.name" />
-                              <q-item-label caption class="ellipsis">{{ scope.opt.key }}</q-item-label>
-                            </q-item-section>
-                          </q-item>
-                        </template>
-                        <template v-slot:selected>
-                          <q-item
-                            v-if="currentAccount"
-                          >
-                            <q-item-section avatar>
-                              <q-icon class="option--avatar" :name="`img:${currentAccount.icon}`" />
-                            </q-item-section>
-                            <q-item-section>
-                              <q-item-label v-html="currentAccount.name" />
-                              <q-item-label caption class="ellipsis ellipsis_important">{{ currentAccount.key }}</q-item-label>
-                            </q-item-section>
-                          </q-item>
-                          <q-item
-                            v-else>
-                          </q-item>
-                        </template>
-                        <template v-slot:append>
-                          <q-btn round flat unelevated text-color="grey" @click="copyToClipboard(currentAccount.type !== 'eos' && currentAccount.type !== 'verto'  ? currentAccount.name : currentAccount.key , 'Account name'); changeSlider()" @click.stop icon="o_file_copy" />
-                        </template>
-                      </q-select>
 
                       <q-stepper-navigation v-if="currentAccount" class="flex justify-end">
                         <q-btn @click="step = 1" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
                       </q-stepper-navigation>
 
                     </q-step>
-                    <q-step :title="`How many ${params.tokenID.toUpperCase()}`"
+                    <q-step :title="`Set staking options`"
                       :name="1"
                       prefix="1"
                       :done="step > 1"
                     >
-                      <q-btn flat @click="step = 0" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <span class="text-body2">Switch account here</span>
+                        <q-select
+                            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
+                            separator
+                            rounded
+                            outlined
+                            @input="$store.state.currentwallet.wallet = currentAccount ; initData()"
+                            class="select-input q-pt-sm"
+                            v-model="currentAccount"
+                            use-input
+                            :options="tableData"
+                        >
+                          <template v-slot:option="scope">
+                            <q-item
+                              class="custom-menu"
+                              v-bind="scope.itemProps"
+                              v-on="scope.itemEvents"
+                            >
+                              <q-item-section avatar>
+                                <q-icon class="option--avatar" :name="`img:${scope.opt.icon}`" />
+                              </q-item-section>
+                              <q-item-section dark>
+                                <q-item-label v-html="scope.opt.name" />
+                                <q-item-label caption class="ellipsis">{{ scope.opt.key }}</q-item-label>
+                              </q-item-section>
+                            </q-item>
+                          </template>
+                          <template v-slot:selected>
+                            <q-item
+                              v-if="currentAccount"
+                            >
+                              <q-item-section avatar>
+                                <q-icon class="option--avatar" :name="`img:${currentAccount.icon}`" />
+                              </q-item-section>
+                              <q-item-section>
+                                <q-item-label v-html="currentAccount.name" />
+                                <q-item-label caption class="ellipsis ellipsis_important">{{ currentAccount.key }}</q-item-label>
+                              </q-item-section>
+                            </q-item>
+                            <q-item
+                              v-else>
+                            </q-item>
+                          </template>
+                          <template v-slot:append>
+                            <q-btn round flat unelevated text-color="grey" @click="copyToClipboard(currentAccount.type !== 'eos' && currentAccount.type !== 'verto'  ? currentAccount.name : currentAccount.key , 'Account name'); changeSlider()" @click.stop icon="o_file_copy" />
+                          </template>
+                        </q-select>
+                      </div>
+                      <div class="col-md-6 q-pl-lg">
+                        <div class="row">
+                              <div class="">
+                                <span class="--title row text-h6"> Current Balance<br>{{ params.tokenID.toUpperCase() }} (Liquid) </span>
+                                <span class="--amount row text-h4"> {{ formatNumber(currentAccount.amount, 0) }} {{ params.tokenID.toUpperCase() }} </span>
+                              </div>
+                              <div class="col --progress hr-vertical flex flex-center">
+                                <span class="bar"></span>
+                              </div>
+                              <div class="col">
+                                <span class="--title row text-h6"> Current Stake<br>{{ params.tokenID.toUpperCase() }} (Staked) </span>
+                                <span class="--amount row text-h4"> {{ formatNumber(currentAccount.staked, 0) }} {{ params.tokenID.toUpperCase() }}</span>
+                              </div>
+                            </div>
+                      </div>
+                    </div>
+
                       <div class="text-black">
                         <!-- <p class="text-h6 text-grey">Condition 1</p> -->
                         <div v-if="condition === 1" class="condition_1">
@@ -110,26 +132,20 @@
                         </div>
                         <div v-if="condition === 3" class="condition_3">
                           <div class="text-black">
-                            <div class="row">
-                              <div class="">
-                                <span class="--title row text-h6"> Current Balance<br>{{ params.tokenID.toUpperCase() }} (Liquid) </span>
-                                <span class="--amount row text-h4"> {{ currentAccount.amount }} </span>
-                              </div>
-                              <div class="col --progress hr-vertical flex flex-center">
-                                <span class="bar"></span>
-                              </div>
-                              <div class="col">
-                                <span class="--title row text-h6"> Current Stake<br>{{ params.tokenID.toUpperCase() }} (Staked) </span>
-                                <span class="--amount row text-h4"> {{ currentAccount.staked }} </span>
-                              </div>
-                            </div>
-                            <div class="slider-holder stake-period">
+                           <div class="row">
+                            <div class="col-md-6">
+                             <div class="slider-holder stake-period ">
                               <br>
-                              <div class="row q-mb-lg">
-                                <span class="--title row text-h6"> Stake period </span>
+                              <div class="row ">
+                                <span class="--title row text-h6">Set Stake period and amount </span><br/>
+
                               </div>
+                                 <p> Slide to change the value</p>
                               <br>
                               <!-- 90 days , 180 days, 300 days -->
+                              <q-badge color="grey-3" text-color="black"  class="z-max">
+                                Staking period
+                              </q-badge>
                               <q-slider
                                 v-model="stakePeriod"
                                 :label-value="`${stakePeriod * 30}` + ' days'"
@@ -146,9 +162,11 @@
                                 @input="changeSlider()"
                               />
                             </div>
-                              <br>
-                              <br>
-                            <div class="slider-holder">
+
+                            <div class="slider-holder  q-pt-lg">
+                               <q-badge color="grey-3" text-color="black" class="z-max">
+                                Amount to stake
+                              </q-badge>
                               <q-slider
                                 v-model="slider"
                                 :label-value="slider + '%'"
@@ -176,10 +194,18 @@
                                  <q-btn color="white" outline text-color="grey" class="full-width" label="100%" @click="sliderToPercent(100)" />
                               </div>
                             </div>
-                            <div class="row full-width">
+                            <div
+                       class="flex" v-show="sendAmount >= 10000">
+                        <q-btn @click="step = 2" v-if="condition === 1" unelevated color="deep-purple-14" class="--next-btn" rounded :label="`Get ${ params.tokenID.toUpperCase() }`" />
+                        <q-btn @click="step = 2" v-if="condition === 2" unelevated color="deep-purple-14" class="--next-btn" rounded label="Get EOS account" />
+                        <q-btn @click="step = 2" v-if="condition === 3" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
+                      </div>
+                            </div>
+                            <div  class="col-md-6 q-pa-md flex flex-center">
+                            <div class="row full-width shadow-1 q-ma-lg q-pa-lg rounded-borders" style="max-width:300px;">
                               <div class="full-width">
                                 <span class="--title row text-h6"> Amount to stake </span>
-                                <span class="--amount row text-h4"> {{  sendAmount }} {{ params.tokenID.toUpperCase() }}</span>
+                                <span class="--amount row text-h4"> {{  formatNumber(sendAmount, 2) }} {{ params.tokenID.toUpperCase() }}</span>
                                 <q-input
                                  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                                   v-model="sendAmount"
@@ -191,26 +217,20 @@
                                   @input="changeAmount()"
                                   :rules="[val => val >= 10000 || '10000 VTX Minimum']"
                                 />
-                                <br>
-                              </div>
+                                <span class="--title row text-h6 text-indigo-6" :class="{'q-pt-md' : sendAmount < 10000}"> Estimated stake reward </span>
+                                <span class="--amount row text-h4"> {{ formatNumber(estimatedReward, 2) }} {{ params.tokenID.toUpperCase() }} </span>
+                                <span class="--title row text-h6 text-indigo-6 q-pt-lg"> Staking period </span>
+                                <span class="--amount row text-h4">{{ `${stakePeriod * 30}` + ' days'}}</span>
+
+                            </div>
+                            </div>
+                            </div>
                             </div>
 
-                            <div class="row full-width">
-                              <div class="full-width">
-                                <br>
-                                <span class="--title row text-h6 text-indigo-6"> Estimated stake reward </span>
-                                <span class="--amount row text-h4"> {{ estimatedReward }} {{ params.tokenID.toUpperCase() }} </span>
-                                <br>
-                              </div>
-                            </div>
                           </div>
+
                         </div>
                       </div>
-                      <q-stepper-navigation class="flex justify-end" v-show="sendAmount >= 10000">
-                        <q-btn @click="step = 2" v-if="condition === 1" unelevated color="deep-purple-14" class="--next-btn" rounded :label="`Get ${ params.tokenID.toUpperCase() }`" />
-                        <q-btn @click="step = 2" v-if="condition === 2" unelevated color="deep-purple-14" class="--next-btn" rounded label="Get EOS account" />
-                        <q-btn @click="step = 2" v-if="condition === 3" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
-                      </q-stepper-navigation>
                     </q-step>
                     <q-step v-if="isPrivateKeyEncrypted" title="Sign & Submit"
                       :name="2"
@@ -331,7 +351,7 @@ import { date } from 'quasar'
 import { userError } from '@/util/errorHandler'
 import EosWrapper from '@/util/EosWrapper'
 import EOSContract from '@/mixins/EOSContract'
-
+import Formatter from '@/mixins/Formatter'
 const eos = new EosWrapper()
 
 let stakingContract, volentixContract
@@ -341,11 +361,11 @@ export default {
   name: 'VTXConverter',
   data () {
     return {
-      tab: 'staked',
-      step: 0,
+      tab: 'stake',
+      step: 1,
       condition: 3,
       currentAccount: {},
-      stakePeriod: 1,
+      stakePeriod: 10,
       estimatedReward: 0,
       options: [],
       tableData: [],
@@ -388,6 +408,7 @@ export default {
     volentixContract = this.$store.state.settings.network === 'mainnet' ? 'volentixgsys' : 'volentixtsys'
     this.tableData = this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type === 'vtx').map(o => {
       o.label = o.name
+      o.value = o.name
       return o
     })
     let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
@@ -421,6 +442,9 @@ export default {
     async initData () {
       this.currentAccount.amount = (await eos.getCurrencyBalanceP(this.currentAccount.name, volentixContract, 'VTX')).toString().split(' ')[0]
       this.currentAccount.amount = this.currentAccount.amount ? this.currentAccount.amount : 0
+
+      this.sendAmount = 10000
+      this.changeAmount()
 
       if (this.stakes.length === 0) {
         this.tab = 'stake'
@@ -489,9 +513,9 @@ export default {
     },
     changeSlider () {
       if (this.slider >= 0) {
-        this.sendAmount = Math.round(Math.pow(10, this.currentAccount.precision) * this.currentAccount.amount * (this.slider / 100)) / Math.pow(10, this.currentAccount.precision)
+        this.sendAmount = parseInt(Math.round(Math.pow(10, this.currentAccount.precision) * this.currentAccount.amount * (this.slider / 100)) / Math.pow(10, this.currentAccount.precision))
       } else {
-        this.sendAmount = Math.round(Math.pow(10, this.currentAccount.precision) * this.stakedAmount * (this.slider / 100)) / Math.pow(10, this.currentAccount.precision)
+        this.sendAmount = parseInt(Math.round(Math.pow(10, this.currentAccount.precision) * this.stakedAmount * (this.slider / 100)) / Math.pow(10, this.currentAccount.precision))
       }
       this.checkAmount()
     },
@@ -642,7 +666,7 @@ export default {
       return stringAmount + ' ' + this.params.tokenID.toUpperCase()
     }
   },
-  mixins: [EOSContract]
+  mixins: [EOSContract, Formatter]
 }
 </script>
 
