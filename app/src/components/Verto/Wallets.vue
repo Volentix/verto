@@ -780,9 +780,12 @@
                                         <q-item  data-name='Staking' clickable v-ripple class="p-relative" to="/verto/stake">Stake VTX
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
-                                        <q-item  data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Run a node
+                                         <a href="https://volentix.io/node/" target="_blank">
+                                        <q-item  data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" >
+                                           Run a node
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
+                                        </a>
                                         </q-expansion-item>
                                         <q-expansion-item
                                             v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Chain tools'
@@ -1653,7 +1656,6 @@ export default {
       this.openModal = true
     },
     async showMenu (menu, to) {
-      console.log(menu, '77')
       if (!menu.selected) {
         setTimeout(() => {
           this.$refs.walletsScrollArea.setScrollPosition(0, 50)
@@ -1811,6 +1813,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+a {
+    text-decoration: none;
+    color: inherit;
+}
 .wallet-list {
     background: #f3f3f3;
 }
