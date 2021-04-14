@@ -89,7 +89,7 @@
                     <div class="q-mr-md flex flex-center">
                       <img width="32" :src="getImage(transaction)" />
                     </div>
-                    <div class="">
+                    <div class="txLabel">
                       <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{getAction(transaction)}}</div>
                       <div class="text-grey">{{transaction.time }}</div>
 
@@ -182,7 +182,7 @@
                     <div class="q-mr-md flex flex-center">
                       <img width="32" :src="getImage(transaction)" />
                     </div>
-                    <div class="">
+                    <div class="txLabel">
                       <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{getAction(transaction)}}</div>
                       <div class="text-grey">{{transaction.time}}</div>
 
@@ -300,7 +300,7 @@
                     <div class="q-mr-md flex flex-center">
                       <img width="32" :src="getImage(transaction)" />
                     </div>
-                    <div class="">
+                    <div class="txLabel">
                       <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{getAction(transaction)}}</div>
                       <div class="text-grey">{{transaction.time}}</div>
                     </div>
