@@ -98,7 +98,14 @@ export default [
         meta: {
           authRequired: true
         }
-      },
+      }, /* {
+        name: 'assets-explorer',
+        path: '/verto/assets-explorer',
+        component: () => import('pages/Verto/AssetsExplorer.vue'),
+        meta: {
+          authRequired: false
+        }
+      }, */
       {
         name: 'import-public-key',
         path: '/verto/import-public-key',

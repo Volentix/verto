@@ -185,7 +185,7 @@ export default {
       this.error = false
       let crosschain = ['eth', 'btc']
 
-      // console.log(this.dex, this.destinationCoin, this.depositCoin, 234, this.$store.state.investment.defaultAccount.chain)
+      console.log(this.dex, this.destinationCoin, this.depositCoin, 234, this.$store.state.investment.defaultAccount.chain)
 
       if (!this.destinationCoin || !this.depositCoin) return
 
