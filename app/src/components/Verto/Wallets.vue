@@ -45,14 +45,14 @@
                             <q-item-section class="item-info col" side>
                             <div class="row items-center text-bold">
 
-                            <span> ${{formatNumber(account.total ? account.total.toFixed(0) : 0 , 0)}}</span>
+                            <span> ${{formatNumber(vtxAccounts.total ? vtxAccounts.total.toFixed(0) : 0 , 0)}}</span>
                                 </div>
                             </q-item-section>
                             </template>
 
-                            <q-card :dark="$store.state.settings.lightMode === 'true'">
+                            <q-card :dark="$store.state.settings.lightMode === 'true'" v-if="false">
                             <q-card-section>
-                                <q-item :set="accountTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && f.name.toLowerCase() == item.name.toLowerCase())" :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.type == account.chain && f.chain == account.chain && !f.hidden && !f.disabled).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                                <q-item :set="accountTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && f.name.toLowerCase() == item.name.toLowerCase())" :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f =>  !f.hidden && !f.disabled).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                                 <div class="header-wallet-wrapper culumn full-width">
                                     <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
@@ -780,9 +780,12 @@
                                         <q-item  data-name='Staking' clickable v-ripple class="p-relative" to="/verto/stake">Stake VTX
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
-                                        <q-item  data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Run a node
+                                         <a href="https://volentix.io/node/" target="_blank">
+                                        <q-item  data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" >
+                                           Run a node
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
+                                        </a>
                                         </q-expansion-item>
                                         <q-expansion-item
                                             v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Chain tools'
@@ -1502,7 +1505,6 @@ export default {
       this.openModal = true
     },
     async showMenu (menu, to) {
-      console.log(menu, '77')
       if (!menu.selected) {
         setTimeout(() => {
           this.$refs.walletsScrollArea.setScrollPosition(0, 50)
@@ -1660,6 +1662,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+a {
+    text-decoration: none;
+    color: inherit;
+}
 .wallet-list {
     background: #f3f3f3;
 }

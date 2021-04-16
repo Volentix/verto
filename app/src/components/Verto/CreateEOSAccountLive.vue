@@ -568,6 +568,12 @@
                           class="select-input q-pt-md"
                           v-model="paymentOption"
                           :options="paymentOptions"
+                          :virtual-scroll-slice-size="4"
+                          :virtual-scroll-item-size="220"
+                          :virtual-scroll-sticky-size-end="48"
+                          :virtual-scroll-sticky-size-start="0"
+                          :virtual-scroll-slice-ratio-after="4"
+
                         >
                           <template v-slot:option="scope">
                             <q-item
@@ -617,7 +623,7 @@
                         </q-select>
                        </div>
                         <div v-else >
-                          {{privateKey.key}}
+
                           <p class="text-green text-body1 q-mt-md">Account created succesfully</p>
                           <div v-if="privateKey.key">
                           <p class="text-body1">Enter your Verto Password to add this account to your wallet</p>
@@ -814,7 +820,7 @@ export default {
       .filter(
         (o, i, self) =>
           o.chain === 'eos' &&
-          o.type === 'eos' &&
+          (o.type === 'eos' || o.type === 'verto') &&
           self.findIndex((a) => a.key === o.key) === i
       )
       .map((token) => {
@@ -855,6 +861,7 @@ export default {
     if (self.tokensOption.length === 1) {
       this.currentToken = self.tokensOption[0]
       this.publicKey = this.currentToken.value
+      this.privateKey.key = this.currentToken.privateKey
     }
 
     let rpc = new JsonRpc(
@@ -1345,6 +1352,9 @@ export default {
 @import "~@/assets/styles/variables.scss";
 .optionTab {
   max-width: 500px;
+}
+/deep/ .q-menu.q-position-engine.scroll {
+    height:220px
 }
 .chain-tools-wrapper {
   &--list {

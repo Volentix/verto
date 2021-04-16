@@ -185,7 +185,7 @@ export default {
       this.error = false
       let crosschain = ['eth', 'btc']
 
-      // console.log(this.dex, this.destinationCoin, this.depositCoin, 234, this.$store.state.investment.defaultAccount.chain)
+      console.log(this.dex, this.destinationCoin, this.depositCoin, 234, this.$store.state.investment.defaultAccount.chain)
 
       if (!this.destinationCoin || !this.depositCoin) return
 
@@ -207,7 +207,7 @@ export default {
       } else {
         // this.dex = null
       }
-      // console.log(this.dex, this.destinationCoin, this.depositCoin)
+      console.log(this.dex, this.destinationCoin.value, this.depositCoin.value)
       if (!this.dex) {
         if (this.$store.state.settings.coins.oneinch.length && this.destinationCoin && this.depositCoin) { this.error = 'Cannot swap ' + this.depositCoin.value.toUpperCase() + ' to ' + this.destinationCoin.value.toUpperCase() }
       } else {
