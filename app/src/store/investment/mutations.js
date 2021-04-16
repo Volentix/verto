@@ -128,6 +128,10 @@ export const setAccountTokens = (state, payload) => {
 export const setTableLoadingStatus = (state, payload) => {
   state.tableLoading = payload
 }
+export const setAllEOSInvestments = (state, payload) => {
+  state.allEosWalletsInvestments = state.allEosWalletsInvestments.concat(payload)
+}
+
 export const setEOSInvestments = (state, payload) => {
   state.eosInvestments = payload.map((o, index) => {
     o.index = index

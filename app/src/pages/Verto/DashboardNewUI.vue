@@ -14,17 +14,17 @@
                     <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet'" >
                         <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
                     </div>
-                    <div class="col q-pl-sm col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet'">
-                        <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
+                    <div class="col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet'">
+                        <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  />
                     </div>
                      <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
-                        <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
+                     <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
 
                     </q-breadcrumbs>
                     <NftsExplorer v-if="false && $store.state.settings.network != 'mainnet'" />
-                    <AssetsExplorer  v-if="$store.state.settings.network != 'mainnet'" />
+                    <AssetsExplorer v-show="!assetSelected" @setAsset="setAsset"  v-if="$store.state.settings.network != 'mainnet'" />
                     <SingleToken  :asset="assetSelected" class="col-md-12" v-if="assetSelected" />
-                    <div class="col col-md-12 full-height max-height2" v-else>
+                    <div class="col col-md-12 full-height max-height2" v-else-if="$store.state.settings.network == 'mainnet'" >
 
                         <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                             <q-tabs

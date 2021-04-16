@@ -762,6 +762,10 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+
+.left.left2 {
+  margin-top: 30px;
+}
 .destination {
       display: contents;
 }

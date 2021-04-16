@@ -295,3 +295,14 @@ export const getEOSInvestments = (context, payload) => {
       console.log(error, 'Cannot get EOSInvestments')
     })
 }
+export const getAllEOSInvestments = (context, accounts) => {
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://defibox.io/api/swap/account/capital'
+  accounts.forEach(account => {
+    axios.post(transactionEndpoint, { owner: account })
+      .then(function (result) {
+        if (result.data.data && result.data.data.length) { context.commit('setAllEOSInvestments', result.data.data) }
+      }).catch(error => {
+        console.log(error, 'Cannot get EOSInvestments')
+      })
+  })
+}
