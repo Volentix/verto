@@ -109,7 +109,7 @@
       </div>
     </div>
 </div>
-
+ <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="8"  v-if="$store.state.settings.network == 'mainnet'" />
    </q-scroll-area>
     <div class="small-grid" v-if="false">
       <div class="main">
@@ -245,11 +245,13 @@ import {
 import Formatter from '@/mixins/Formatter'
 import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
 import ExchangeSection from '@/components/Verto/ExchangeSection3'
+import liquidityPoolsTable from '@/components/Verto/Defi/LiquidityPoolsTable'
 export default {
   components: {
     QScrollArea,
     ExchangeSection,
-    MakeVTXSection
+    MakeVTXSection,
+    liquidityPoolsTable
   },
   props: ['rowsPerPage'],
   data () {
