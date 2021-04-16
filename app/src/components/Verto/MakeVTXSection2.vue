@@ -9,7 +9,8 @@
               <span class="text-grey stake-amount-required">Minimum required</span>
             </div>
             <div class="col-6 flex justify-end">
-                <q-btn unelevated class="qbtn-start" color="black" @click="goToExchange" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" label="Get VTX Now" />
+                <q-btn v-if="!canStakeVTX" unelevated class="qbtn-start" color="black" @click="goToExchange" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" label="Get VTX Now" />
+                <q-btn v-else unelevated class="qbtn-start" color="black" @click="goToStaking" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" label="Stake VTX Now" />
             </div>
         </div>
     </div>
@@ -26,6 +27,7 @@ export default {
   data () {
     return {
       estimatedReward: 0,
+      canStakeVTX: false,
       depositCoin: {
         label: 'Ethereum',
         value: 'eth',
@@ -36,6 +38,7 @@ export default {
         value: 'vtx',
         image: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/volentixgsys/VTX.png'
       },
+      vtxAccount: null,
       activate: true,
       screenSize: 0,
       base: 'https://files.coinswitch.co/public/coins/',
@@ -58,12 +61,18 @@ export default {
       }, 2000)
     }
   },
+  watch: {
+    '$store.state.wallets.tokens': function () {
+      this.canUserStake()
+    }
+  },
   methods: {
     goToExchange () {
       // console.log('this.depositCoin', this.depositCoin)
       this.checkPair()
       let depositCoin = this.depositCoin
       let destinationCoin = this.destinationCoin
+
       this.$router.push({
         path: '/verto/exchange/:coinToSend/:coinToReceive',
         name: 'exchange-v3',
@@ -71,6 +80,19 @@ export default {
           depositCoin: depositCoin,
           destinationCoin: destinationCoin,
           dex: this.dex
+        }
+      })
+    },
+    goToStaking () {
+      if (this.vtxAccount) {
+        this.$store.state.currentwallet.wallet = this.vtxAccount
+      }
+
+      this.$router.push({
+        path: '/verto/stake',
+        params: {
+          showSummary: true,
+          vtxAccount: this.vtxAccount
         }
       })
     },
@@ -116,9 +138,26 @@ export default {
       }
       return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol
     },
+    canUserStake () {
+      let count = 0
+      let account = null
+      this.$store.state.wallets.tokens.forEach(c => {
+        if (c.type === 'vtx' && c.chain === 'eos' && !isNaN(c.amount) && c.amount >= 10000) {
+          count++
+          account = c
+          this.canStakeVTX = true
+        }
+      })
+
+      if (count === 1) {
+        this.vtxAccount = account
+      } else {
+        this.vtxAccount = null
+      }
+    },
     async setHighestVTXAccount () {
       let tableDatas = (await this.$store.state.wallets.tokens).filter((c) => {
-        if (c.type === 'vtx') {
+        if (c.type === 'vtx' && c.chain === 'eos') {
           // console.log('c.type', c.type)
           return c
         }

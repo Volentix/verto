@@ -11,19 +11,21 @@
             </div>
             <div class="col col-md-9 q-pr-md">
                 <div class="row">
-                    <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected">
+                    <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet'" >
                         <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
                     </div>
-                    <div class="col q-pl-sm col-md-6 customSlider q-mb-sm" v-show="!assetSelected">
+                    <div class="col q-pl-sm col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet'">
                         <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
                     </div>
-                     <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white " v-if="assetSelected">
-                        <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Dahsboard"  icon="home" />
-                        <q-breadcrumbs-el class="cursor-pointer" @click="assetSelected = null" label="Assets" />
-                        <q-breadcrumbs-el class="cursor-pointer" :label="assetSelected.type.toUpperCase()" :icon="'img:'+assetSelected.icon" />
+                     <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
+                        <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
+
                     </q-breadcrumbs>
-                    <SingleToken :asset="assetSelected" class="col-md-12" v-if="assetSelected" />
-                    <div class="col col-md-12 full-height max-height2">
+                    <NftsExplorer v-if="false && $store.state.settings.network != 'mainnet'" />
+                    <AssetsExplorer  v-if="$store.state.settings.network != 'mainnet'" />
+                    <SingleToken  :asset="assetSelected" class="col-md-12" v-if="assetSelected" />
+                    <div class="col col-md-12 full-height max-height2" v-else>
+
                         <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                             <q-tabs
                                 v-model="tabPoolAndAssetBalances"
@@ -118,6 +120,7 @@ import ExchangeSection3 from '../../components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 import SingleToken from '../../components/Verto/SingleToken'
 import AssetBalancesTable from '../../components/Verto/AssetBalancesTable'
+import AssetsExplorer from '../../components/Verto/Token/AssetsExplorer'
 
 import {
   mapState
@@ -147,14 +150,17 @@ import 'intro.js/minified/introjs.min.css'
 import {
   osName
 } from 'mobile-device-detect'
+import NftsExplorer from '../../components/Verto/Token/NftsExplorer.vue'
 export default {
   components: {
     // ConvertAnyCoin,
     // QScrollArea,
+    NftsExplorer,
     ProfileHeader,
     Wallets,
     // AppsSection,
     SingleToken,
+    AssetsExplorer,
     // StartNodeSection,
     // maxDeFiYield,
     // ChainToolsSection,
@@ -175,6 +181,7 @@ export default {
     return {
       customSlider: true,
       rawPools: [],
+      showAssetsExplorer: false,
       cruxKey: {},
       assetSelected: false,
       interval: null,
@@ -278,7 +285,9 @@ export default {
     this.$bus.$on('showHomeIntro', () => {
       this.showIntros()
     })
-
+    this.$bus.$on('selectedChain', () => {
+      this.setChainData()
+    })
     setTimeout(async () => {
       let manualSelectCurrentWallet = false
       await store.state.wallets.tokens.map(async (f) => {
@@ -311,6 +320,17 @@ export default {
     }
   },
   methods: {
+    setChainData () {
+      let chain = localStorage.getItem('selectedChain')
+      if (chain && chain === 'vtx') {
+        let asset = this.$store.state.wallets.tokens.find(o => o.type === 'vtx' && o.amount > 0)
+
+        if (asset) {
+          this.tabPoolAndAssetBalances = 'explore'
+          this.setAsset(asset)
+        }
+      }
+    },
     setAsset (asset) {
       this.assetSelected = asset
     },
@@ -340,6 +360,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+ .breadcrumbs {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    margin-top: 0px;
+ }
 .exchange-container{
     min-height: 138px;
     margin: -3px;

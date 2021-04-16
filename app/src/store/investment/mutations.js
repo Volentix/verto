@@ -50,7 +50,12 @@ export const setTokens = (state, tokens) => {
   state.zapperTokens = tokens
 }
 export const updateGasPrice = (state, gasPrice) => {
-  state.gasPrice = gasPrice
+  let prices = {
+    fast: gasPrice.fast / 10,
+    instant: gasPrice.fastest / 10,
+    slow: gasPrice.average / 10
+  }
+  state.gasPrice = prices
 }
 export const setMetamaskConnectionStatus = (state, status) => {
   state.metamaskConnected = status

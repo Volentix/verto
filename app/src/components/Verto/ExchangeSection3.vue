@@ -140,11 +140,13 @@ export default {
       */
     },
     goToExchange () {
-      // console.log('this.depositCoin', this.depositCoin)
+      this.$store.state.investment.defaultAccount = null
       this.checkPair()
+
       if (this.dex) {
         let depositCoin = this.depositCoin
         let destinationCoin = this.destinationCoin
+
         this.$router.push({
           path: '/verto/exchange/:coinToSend/:coinToReceive',
           name: 'exchange-v3',

@@ -96,6 +96,7 @@ export default {
 
         if (!self.gasSelected && self.gasOptions[1]) {
           self.gasSelected = self.gasOptions[1]
+          if (self.gasPriceGwei) { self.gasPriceGwei = self.$store.state.investment.gasPrice.fast }
         }
         self.invalidTransaction = false
       })

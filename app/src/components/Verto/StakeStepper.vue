@@ -332,7 +332,7 @@ export default {
   name: 'VTXConverter',
   data () {
     return {
-      tab: 'staked',
+      tab: 'stake',
       step: 0,
       condition: 3,
       currentAccount: {},

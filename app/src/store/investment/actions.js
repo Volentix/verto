@@ -10,7 +10,7 @@ const config = {
 }
 
 export const getGasPrice = ({ commit, state }, payload) => {
-  axios.get('https://gasprice.poa.network/').then((result) => {
+  axios.get('https://ethgasstation.info/json/ethgasAPI.json').then((result) => {
     commit('updateGasPrice', result.data)
   })
 }
@@ -74,7 +74,7 @@ export const getBalancerPools = ({ rootState, commit, state }, payload) => {
 }
 
 export const getUniswapPools = ({ rootState, context, commit, state }, payload) => {
-  axios.get(process.env[rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/pool-stats/uniswap?api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88', {}, config).then((result) => {
+  axios.get(process.env[rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/pool-stats/uniswap-v2?api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88', {}, config).then((result) => {
     result.data/* .map(function (e) {
       if (e.protocol === 'uniswap' && state.poolDataHistory['UniswapV1']) {
         var t = e.liquidity / e.supply,
@@ -269,7 +269,7 @@ export const getETHTransactions = async (context, address) => {
 
 export const getInvestments = (context, payload) => {
   let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/balances/' + payload.platform + '?addresses%5B%5D=' + payload.value + '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
-
+  console.log(context, payload, 77)
   axios.get(transactionEndpoint, config)
     .then(function (result) {
       context.commit('setInvestments', result.data[payload.value.toLowerCase()])
