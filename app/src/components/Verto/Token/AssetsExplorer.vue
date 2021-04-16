@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper q-px-lg q-pt-lg">
+  <div :class="{'q-pt-lg': !allAssets}" class="wrapper q-px-lg full-width">
     <div class="top-part-all"  v-if="false">>
       <div class="text-h6">Invest</div>
       <div class="top-4part">
@@ -26,27 +26,63 @@
       </div>
     </div>
    <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
-<div class="q-pt-md" v-for="(item, index) in assetsOptions.filter(o =>  !allAssets || o.title == allAssets.title)" :key="index">
-    <div class="sub-top">
-      <div class="subt-text" v-if="!allAssets" >
-        <p>{{item.title}}</p>
-      </div>
-      <div class="subt-text" v-else>
-        <p>Showing {{item.data.length}} <span class="text-lowercase">{{item.title}}</span> </p>
+   <div v-show="!allAssets">
+    <div class="sub-top row">
+      <div class="subt-text col-md-7" >
+        <p class="q-ma-none text-bold text-body1"><q-icon name="img:https://verto.volentix.io/statics/icons/favicon-32x32.png"  class="q-pr-sm"/>Trade & Earn VTX  </p>
       </div>
 
-      <div v-if="!allAssets" class="see-text q-mr-lg" @click="allAssets = item">
-        <a href="javascript:void(0)">See all (<span class="text-deep-purple-12">{{item.data.length}}</span>) <q-icon name="arrow_forward_ios" /></a>
+      <div  class="see-text  col" >
+       <q-input dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol or address"  >
+         <template v-slot:append>
+          <q-icon v-if="tokenSearchVal !== ''" name="close" @click="tokenSearchVal = ''" class="cursor-pointer" />
+          <q-icon name="search" />
+        </template>
+       </q-input>
       </div>
-      <div v-else class="see-text q-mr-lg" @click="allAssets = null">
-        <a href="javascript:void(0)"> <q-icon name="arrow_back_ios" /> Go back </a>
+    </div>
+    <div class="row q-col-gutter-md q-pr-lg" v-show="!tokenSearchVal.length">
+
+      <div class="col-md-6">
+        <ExchangeSection data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" />
       </div>
+       <div class="col-md-6">
+      <makeVTXSection data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"   />
+       </div>
+    </div>
+</div>
+<div class="q-pt-md" v-show="filterTokens(item.id == 'investments' ? allInvestments : item.data).length || tokenSearchVal.length" v-for="(item, index) in assetsOptions.filter(o =>  !allAssets || o.title == allAssets.title)" :key="index">
+    <div class="sub-top">
+      <div class="subt-text" v-if="!allAssets" >
+        <p class="q-ma-none text-bold text-body1">{{item.title}} <span class="text-body2">| {{item.subtitle}}</span></p>
+      </div>
+      <div class="subt-text" v-else>
+        <p> <q-breadcrumbs class="col-12  bg-white breadcrumbs" v-if="allAssets">
+                     <q-breadcrumbs-el  class="cursor-pointer" @click="allAssets = null" label="Back"  icon="keyboard_backspace" />
+                     <q-breadcrumbs-el  class="cursor-pointer"  :label="'Showing '+filterTokens(item.data).length+ ' ' + item.title"  />
+              </q-breadcrumbs>
+          </p>
+      </div>
+
+      <div v-if="!allAssets" class="see-text q-mr-lg cursor-pointer" @click="allAssets = item">
+       See all (<span class="text-deep-purple-12">{{filterTokens(item.id == 'investments' ? allInvestments : item.data).length}}</span>) <q-icon name="arrow_forward_ios" />
+      </div>
+
+      <div  class="see-text  col" v-else>
+       <q-input dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol or address"  >
+         <template v-slot:append>
+          <q-icon v-if="tokenSearchVal !== ''" name="close" @click="tokenSearchVal = ''" class="cursor-pointer" />
+          <q-icon name="search" />
+        </template>
+       </q-input>
+      </div>
+
     </div>
 
     <div class="row q-col-gutter-md q-pr-lg">
 
-      <div class=" col-md-3 " v-for="(asset, i) in item.data.slice(0,(!allAssets ? 4 : allAssets.length))" :key="i">
-        <div class="main">
+      <div class=" col-md-3 " @click="showTokenPage(asset)" v-for="(asset, i) in filterTokens(item.id == 'investments' ? allInvestments : item.data).slice(0,(!allAssets ? 4 : allAssets.length))" :key="i">
+        <div class="main cursor-pointer">
         <div class="main-top">
           <div class="mt-img">
             <img :src="asset.icon"  />
@@ -59,19 +95,23 @@
           </div>
           </div>
           <h2 class="q-my-none">
-          ${{formatNumber(asset.usd,0)}} <span  v-if="parseInt(asset.usd).toString().length <= 5" class="g-txt">.{{formatNumber(asset.usd,2).split('.')[1]}}</span> <span :class="'sr-txt absolute-top-right '+ asset.color">↓ 1.3%</span>
-          <a href="#">Trade</a>
+          ${{formatNumber(asset.usd,0)}} <span  v-if="parseInt(asset.usd).toString().length <= 5" class="g-txt">.{{formatNumber(asset.usd,2).split('.')[1]}}</span> <span v-if="asset.change24hPercentage" :class="'sr-txt absolute-top-right '+ asset.color">↓ {{asset.change24hPercentage.substring(1)}}</span>
+          <a href="javascript:void(0)">Trade</a>
 
         </h2>
          <div class="q-pt-sm">Price: <span class="text-grey q-pl-xs">${{formatNumber(asset.rateUsd,4)}}</span></div>
-         <div class="q-pt-sm" v-if="asset.protocol"><q-icon  size="1.5rem" :name="'img:'+asset.protocolIcon" />{{asset.protocol}}: <br><span class="text-grey q-pl-xs">{{asset.poolName}} pool</span></div>
+         <div class="q-pt-sm" v-if="asset.protocol"><q-icon class="q-pr-sm" size="1.2rem" :name="'img:'+asset.protocolIcon" />{{asset.protocol}}: <br>
+         <span class="text-grey q-pl-xs" v-if="asset.poolsCount == 1">{{asset.poolName}} pool</span>
+         <span class="text-grey q-pl-xs" v-else>{{asset.poolsCount}} pools</span>
+         </div>
         </div>
 
       </div>
     </div>
 </div>
+
    </q-scroll-area>
-    <div class="small-grid">
+    <div class="small-grid" v-if="false">
       <div class="main">
         <div class="main-top">
           <div class="mt-img">
@@ -132,13 +172,13 @@
       </div>
     </div>
 
-    <div class="sub-top">
+    <div class="sub-top" v-if="false">
       <div class="subt-text">
         <h3>All Tags</h3>
       </div>
     </div>
 
-    <div class="tags-wrap">
+    <div class="tags-wrap" v-if="false" >
       <a href="#"><span>#</span>1inch</a>
       <a href="#"><span>#</span>Aave</a>
       <a href="#"><span>#</span>Balancer</a>
@@ -203,9 +243,13 @@ import {
   QScrollArea
 } from 'quasar'
 import Formatter from '@/mixins/Formatter'
+import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
+import ExchangeSection from '@/components/Verto/ExchangeSection3'
 export default {
   components: {
-    QScrollArea
+    QScrollArea,
+    ExchangeSection,
+    MakeVTXSection
   },
   props: ['rowsPerPage'],
   data () {
@@ -232,18 +276,26 @@ export default {
       assetsOptions: [
         {
           title: 'Active assets',
+          subtitle: 'Send, swap & invest',
           data: []
         },
         {
           title: 'Invested assets',
-          data: []
+          id: 'investments',
+          subtitle: 'Tokens invested in liquidity pools',
+          data: {
+            eth: [],
+            eos: []
+          }
         },
         {
           title: 'Ntfs',
+          subtitle: 'Non-fungible tokens you own',
           data: []
         },
         {
           title: 'Opportunities',
+          subtitle: 'Investment opportunities',
           data: []
         }
       ],
@@ -252,6 +304,7 @@ export default {
       },
       loaded: true,
       assets: [],
+      tokenSearchVal: '',
       poolsData: [],
       screenSize: 0,
       filter: '',
@@ -320,9 +373,14 @@ export default {
     this.initTable()
 
     this.$store.state.wallets.tokens.filter(o => o.chain === 'eth' && o.type === 'eth').forEach(w => {
-      console.log(w, 1000)
       this.getInvestments(w)
     })
+
+    let eosWallets = this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type === 'eos').map(o => o.name)
+
+    this.$store.state.investment.allEosWalletsInvestments = []
+    this.$store.dispatch('investment/getAllEOSInvestments', eosWallets)
+
     this.$bus.$on('selectedChain', () => {
       let chain = localStorage.getItem('selectedChain')
 
@@ -336,6 +394,9 @@ export default {
     '$store.state.investment.investments': function (investments) {
       this.getInvestedTokens(investments)
     },
+    '$store.state.investment.allEosWalletsInvestments': function (investments) {
+      this.getInvestedEosTokens(investments)
+    },
     '$store.state.ivet.walletTokensData': function () {
       this.initTable()
     },
@@ -343,7 +404,48 @@ export default {
       this.initTable()
     }
   },
+  computed: {
+    allInvestments () {
+      return Object.keys(this.assetsOptions[1].data).reduce((all, chain) => this.assetsOptions[1].data[chain] && this.assetsOptions[1].data[chain].length ? all.concat(this.assetsOptions[1].data[chain]) : [], [])
+    }
+  },
   methods: {
+    showTokenPage (asset) {
+      this.$emit('setAsset', asset)
+    },
+    getInvestedEosTokens (investments) {
+      let assets = []
+      const setValue = (t, index) => {
+        let tkData = this.$store.state.tokens.walletTokensData.find(a => a.symbol.toLowerCase() === t['symbol' + index].toLowerCase())
+
+        return {
+          usd: tkData ? tkData.current_price * t['count' + index] : '',
+          rateUsd: tkData ? tkData.current_price : '',
+          type: t['symbol' + index].toLowerCase(),
+          chain: 'eos',
+          poolsCount: 1,
+          poolName: t.symbol0 + ' / ' + t.symbol1,
+          amount: t['count' + index],
+          icon: 'https://ndi.340wan.com/eos/' + t['contract' + index] + '-' + t['symbol' + index].toLowerCase() + '.png',
+          protocol: 'Defibox',
+          protocolIcon: 'https://ndi.340wan.com/eos/token.defi-box.png'
+        }
+      }
+      investments.forEach(item => {
+        let indexes = [0, 1]
+        indexes.forEach(i => {
+          let index = assets.findIndex(t => t.type === item['symbol' + i].toLowerCase())
+          if (index > -1) {
+            assets[index].poolsCount += 1
+            assets[index].amount += item['count' + i]
+            return
+          }
+          assets.push(setValue(item, i))
+        })
+      })
+
+      this.assetsOptions[1].data.eos = assets
+    },
     getInvestedTokens (investments) {
       let assets = []
 
@@ -351,12 +453,21 @@ export default {
         t.tokens.forEach(a => {
           let protocolData = this.platformOptions.find(o => o.label.toLowerCase() === t.protocolDisplay.toLowerCase())
 
+          let index = assets.findIndex(t => t.type === a.symbol.toLowerCase())
+          if (index > -1) {
+            assets[index].poolsCount += 1
+            assets[index].usd += a.balanceUSD
+            assets[index].amount += a.balance
+            return
+          }
+
           let data = {
             usd: a.balanceUSD,
             rateUsd: a.price,
             type: a.symbol.toLowerCase(),
             chain: 'eos',
             poolName: t.label,
+            poolsCount: 1,
             amount: a.balance,
             icon: 'https://zapper.fi/images/' + a.symbol + '-icon.png',
             protocol: protocolData ? protocolData.label : null,
@@ -366,13 +477,12 @@ export default {
         })
       })
 
-      this.assetsOptions[1].data = assets
+      this.assetsOptions[1].data.eth = assets
     },
     getInvestments (wallet) {
       const self = this
       let investment = {
         eos () {
-
         },
         eth () {
           self.$store.state.investment.investments = []
@@ -416,6 +526,12 @@ export default {
         .then((res) => {
           console.log(res)
         })
+    },
+    filterTokens (tokens) {
+      if (this.tokenSearchVal.trim().length) {
+        tokens = tokens.filter(o => o.type.toLowerCase().includes(this.tokenSearchVal.toLowerCase()))
+      }
+      return tokens
     },
     initTable (chain) {
       let account = null
@@ -483,7 +599,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+/deep/ .q-field--filled .q-field__control {
+    padding: 0 12px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 9px 9px 9px 9px;
+}
+.wrapper {
+      height: 100vh;
+}
 .desktop-size{
   height: 100%;
 }
@@ -676,9 +799,8 @@ export default {
 }
 
 .sub-top p {
-  font-size: 14px;
+
   line-height: 16px;
-  font-weight: 500;
   letter-spacing: -0.2px;
   color: #a1a1a5;
   word-break: break-word;
@@ -802,13 +924,14 @@ export default {
   border-radius: 99999px;
   border: none;
   outline: none;
-  background-color: #2962ef;
+  background-color: #7979f9;
   color: #fff;
   position: absolute;
   right: 0px;
   z-index: 1;
   opacity: 0;
   transition: all 0.2s ease-in-out;
+  text-decoration: none;
 }
 
 .main h2 a::before {
