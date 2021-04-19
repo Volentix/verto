@@ -26,6 +26,7 @@
       </div>
     </div>
    <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
+
    <div v-show="!allAssets">
     <div class="sub-top row">
       <div class="subt-text col-md-7" >
@@ -115,7 +116,7 @@
       </div>
     </div>
 </div>
- <liquidityPoolsTable data-title="Liquidity pools" class="q-pt-md" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="10"  />
+ <liquidityPoolsTable :key="4 + uniqueKey" data-title="Liquidity pools" class="q-pt-md" data-intro="Here you can click the ADD button to add liquidity to any pools" :chain="currentChain" :rowsPerPage="10"  />
 
    </q-scroll-area>
     <div class="small-grid" v-if="false">
@@ -417,7 +418,6 @@ export default {
       this.getInvestedEosTokens(investments)
     },
     '$store.state.tokens.walletTokensData': function (val) {
-      console.log(val)
       this.initTable()
       this.getInvestedEosTokens(this.$store.state.investment.allEosWalletsInvestments)
       this.uniqueKey++
