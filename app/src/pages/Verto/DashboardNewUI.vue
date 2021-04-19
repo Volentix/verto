@@ -322,10 +322,15 @@ export default {
       if (chain && chain === 'vtx') {
         let asset = this.$store.state.wallets.tokens.find(o => o.type === 'vtx' && o.amount > 0)
 
-        if (asset) {
-          this.tabPoolAndAssetBalances = 'explore'
-          this.setAsset(asset)
+        if (!asset) {
+          asset = {
+            type: 'vtx',
+            chain: 'eos',
+            icon: 'statics/icons/favicon-32x32.png'
+          }
         }
+        this.tabPoolAndAssetBalances = 'explore'
+        this.setAsset(asset)
       }
     },
     setAsset (asset) {
