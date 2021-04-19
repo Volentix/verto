@@ -99,6 +99,7 @@ export const setMarketData = (state, payload) => {
 export const setInvestments = (state, payload) => {
   state.investments = state.investments.concat(payload.pools ? payload.pools : payload).map((o, index) => {
     o.index = index
+    o.chain = 'eth'
     return o
   }).filter(o => !o.canStake).filter((investment, index, self) => self.findIndex(t => t.address === investment.address) === index)
   state.investmentOpportunities = state.investmentOpportunities.concat(payload.pools ? payload.pools : payload).map((o, index) => {
