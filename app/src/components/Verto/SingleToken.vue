@@ -762,7 +762,10 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-
+.wrapper {
+    background: #fff;
+    min-height: 78vh;
+}
 .left.left2 {
   margin-top: 30px;
 }

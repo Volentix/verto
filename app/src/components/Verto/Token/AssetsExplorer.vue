@@ -29,7 +29,7 @@
    <div v-show="!allAssets">
     <div class="sub-top row">
       <div class="subt-text col-md-7" >
-        <p class="q-ma-none text-bold text-body1"><q-icon name="img:https://verto.volentix.io/statics/icons/favicon-32x32.png"  class="q-pr-sm"/>Trade & Earn VTX  </p>
+        <p class="q-ma-none text-bold text-body1"><q-icon name="img:https://verto.volentix.io/statics/icons/favicon-32x32.png"  class="q-pr-sm"/>Trade & Earn VTX {{currentChain}} </p>
       </div>
 
       <div  class="see-text  col" >
@@ -49,9 +49,15 @@
        <div class="col-md-6">
       <makeVTXSection data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"   />
        </div>
+       <PriceChart
+            :dataType="'price'"
+            class="col-md-12"
+            v-if="chartData && false"
+            :data="chartData"
+          />
     </div>
 </div>
-<div class="q-pt-md" v-show="filterTokens(item.id == 'investments' ? allInvestments : item.data).length || tokenSearchVal.length" v-for="(item, index) in assetsOptions.filter(o =>  !allAssets || o.title == allAssets.title)" :key="index">
+<div class="q-pt-md" v-show="filterTokens(item).length || tokenSearchVal.length" v-for="(item, index) in assetsOptions.filter(o =>  !allAssets || o.title == allAssets.title)" :key="index+uniqueKey">
     <div class="sub-top">
       <div class="subt-text" v-if="!allAssets" >
         <p class="q-ma-none text-bold text-body1">{{item.title}} <span class="text-body2">| {{item.subtitle}}</span></p>
@@ -59,13 +65,13 @@
       <div class="subt-text" v-else>
         <p> <q-breadcrumbs class="col-12  bg-white breadcrumbs" v-if="allAssets">
                      <q-breadcrumbs-el  class="cursor-pointer" @click="allAssets = null" label="Back"  icon="keyboard_backspace" />
-                     <q-breadcrumbs-el  class="cursor-pointer"  :label="'Showing '+filterTokens(item.data).length+ ' ' + item.title"  />
+                     <q-breadcrumbs-el  class="cursor-pointer"  :label="'Showing '+filterTokens(item).length+ ' ' + item.title"  />
               </q-breadcrumbs>
           </p>
       </div>
 
       <div v-if="!allAssets" class="see-text q-mr-lg cursor-pointer" @click="allAssets = item">
-       See all (<span class="text-deep-purple-12">{{filterTokens(item.id == 'investments' ? allInvestments : item.data).length}}</span>) <q-icon name="arrow_forward_ios" />
+       See all (<span class="text-deep-purple-12">{{filterTokens(item).length}}</span>) <q-icon name="arrow_forward_ios" />
       </div>
 
       <div  class="see-text  col" v-else>
@@ -81,7 +87,7 @@
 
     <div class="row q-col-gutter-md q-pr-lg">
 
-      <div class=" col-md-3 " @click="showTokenPage(asset)" v-for="(asset, i) in filterTokens(item.id == 'investments' ? allInvestments : item.data).slice(0,(!allAssets ? 4 : allAssets.length))" :key="i">
+      <div class=" col-md-3 " @click="showTokenPage(asset)" v-for="(asset, i) in filterTokens(item).slice(0,(!allAssets ? ($q.screen.height > 1100 ? 8 : 4) : allAssets.length))" :key="i">
         <div class="main cursor-pointer">
         <div class="main-top">
           <div class="mt-img">
@@ -90,7 +96,7 @@
 
           <div>
             <h6>
-              {{asset.type.toUpperCase()}}<svg class="q-ml-md" viewBox="0 0 32 32" fill="none" style="width: 20px; height: 20px; vertical-align: middle; margin-left: 0px;"><path d="M15.705 4.215a.5.5 0 01.59 0l2.725 1.988a.5.5 0 00.296.096l3.373-.007a.5.5 0 01.477.347l1.036 3.21a.5.5 0 00.182.251l2.733 1.978a.5.5 0 01.182.56l-1.048 3.207a.5.5 0 000 .31l1.048 3.206a.5.5 0 01-.182.561L24.384 21.9a.5.5 0 00-.182.251l-1.037 3.21a.5.5 0 01-.476.346l-3.373-.006a.5.5 0 00-.296.096l-2.725 1.988a.5.5 0 01-.59 0l-2.725-1.988a.5.5 0 00-.296-.096l-3.373.006a.5.5 0 01-.476-.346l-1.037-3.21a.5.5 0 00-.182-.251l-2.733-1.978a.5.5 0 01-.182-.56l1.048-3.207a.5.5 0 000-.31l-1.048-3.207a.5.5 0 01.182-.56L7.616 10.1a.5.5 0 00.182-.251l1.037-3.21a.5.5 0 01.476-.347l3.373.007a.5.5 0 00.296-.096l2.725-1.988z" fill="url(#verified_svg__paint0_linear)"></path><path opacity="0.5" d="M16 4.619l2.725 1.988a1 1 0 00.591.192l3.374-.007 1.036 3.21a1 1 0 00.365.503l2.733 1.978-1.048 3.206a.999.999 0 000 .622l1.048 3.206-2.733 1.977a1 1 0 00-.365.503l-1.036 3.21-3.374-.006a1 1 0 00-.59.192L16 27.381l-2.725-1.988a1 1 0 00-.591-.192l-3.374.006-1.036-3.21a1 1 0 00-.365-.503l-2.733-1.977 1.048-3.206a1 1 0 000-.622l-1.048-3.206 2.733-1.978-.293-.405.293.405a1 1 0 00.365-.502l1.036-3.21 3.374.006a1 1 0 00.59-.192L16 4.619z" stroke="url(#verified_svg__paint1_linear)"></path><g filter="url(#verified_svg__filter0_d)"><path d="M21.506 11.464a.677.677 0 00-.948.001l-6.745 6.636-2.378-2.334a.675.675 0 00-.946.963L13.813 20l7.695-7.57a.677.677 0 00-.002-.966z" fill="#fff"></path><path d="M21.506 11.464a.677.677 0 00-.948.001l-6.745 6.636-2.378-2.334a.675.675 0 00-.946.963L13.813 20l7.695-7.57a.677.677 0 00-.002-.966z" stroke="#fff" stroke-width="0.5"></path></g><defs><linearGradient id="verified_svg__paint0_linear" x1="6.4" y1="5.2" x2="25.6" y2="26.2" gradientUnits="userSpaceOnUse"><stop stop-color="#376DF3"></stop><stop offset="1" stop-color="#1E56E0"></stop></linearGradient><linearGradient id="verified_svg__paint1_linear" x1="7" y1="4" x2="24.4" y2="26.8" gradientUnits="userSpaceOnUse"><stop stop-color="#2D61E1"></stop><stop offset="1" stop-color="#1549CA"></stop></linearGradient><filter id="verified_svg__filter0_d" x="8.037" y="10.021" width="15.922" height="13.33" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"></feColorMatrix><feOffset dy="1"></feOffset><feGaussianBlur stdDeviation="1"></feGaussianBlur><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0"></feColorMatrix><feBlend in2="BackgroundImageFix" result="effect1_dropShadow"></feBlend><feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape"></feBlend></filter></defs></svg>
+              {{asset.type.toUpperCase()}}<svg v-if="false" class="q-ml-md" viewBox="0 0 32 32" fill="none" style="width: 20px; height: 20px; vertical-align: middle; margin-left: 0px;"><path d="M15.705 4.215a.5.5 0 01.59 0l2.725 1.988a.5.5 0 00.296.096l3.373-.007a.5.5 0 01.477.347l1.036 3.21a.5.5 0 00.182.251l2.733 1.978a.5.5 0 01.182.56l-1.048 3.207a.5.5 0 000 .31l1.048 3.206a.5.5 0 01-.182.561L24.384 21.9a.5.5 0 00-.182.251l-1.037 3.21a.5.5 0 01-.476.346l-3.373-.006a.5.5 0 00-.296.096l-2.725 1.988a.5.5 0 01-.59 0l-2.725-1.988a.5.5 0 00-.296-.096l-3.373.006a.5.5 0 01-.476-.346l-1.037-3.21a.5.5 0 00-.182-.251l-2.733-1.978a.5.5 0 01-.182-.56l1.048-3.207a.5.5 0 000-.31l-1.048-3.207a.5.5 0 01.182-.56L7.616 10.1a.5.5 0 00.182-.251l1.037-3.21a.5.5 0 01.476-.347l3.373.007a.5.5 0 00.296-.096l2.725-1.988z" fill="url(#verified_svg__paint0_linear)"></path><path opacity="0.5" d="M16 4.619l2.725 1.988a1 1 0 00.591.192l3.374-.007 1.036 3.21a1 1 0 00.365.503l2.733 1.978-1.048 3.206a.999.999 0 000 .622l1.048 3.206-2.733 1.977a1 1 0 00-.365.503l-1.036 3.21-3.374-.006a1 1 0 00-.59.192L16 27.381l-2.725-1.988a1 1 0 00-.591-.192l-3.374.006-1.036-3.21a1 1 0 00-.365-.503l-2.733-1.977 1.048-3.206a1 1 0 000-.622l-1.048-3.206 2.733-1.978-.293-.405.293.405a1 1 0 00.365-.502l1.036-3.21 3.374.006a1 1 0 00.59-.192L16 4.619z" stroke="url(#verified_svg__paint1_linear)"></path><g filter="url(#verified_svg__filter0_d)"><path d="M21.506 11.464a.677.677 0 00-.948.001l-6.745 6.636-2.378-2.334a.675.675 0 00-.946.963L13.813 20l7.695-7.57a.677.677 0 00-.002-.966z" fill="#fff"></path><path d="M21.506 11.464a.677.677 0 00-.948.001l-6.745 6.636-2.378-2.334a.675.675 0 00-.946.963L13.813 20l7.695-7.57a.677.677 0 00-.002-.966z" stroke="#fff" stroke-width="0.5"></path></g><defs><linearGradient id="verified_svg__paint0_linear" x1="6.4" y1="5.2" x2="25.6" y2="26.2" gradientUnits="userSpaceOnUse"><stop stop-color="#376DF3"></stop><stop offset="1" stop-color="#1E56E0"></stop></linearGradient><linearGradient id="verified_svg__paint1_linear" x1="7" y1="4" x2="24.4" y2="26.8" gradientUnits="userSpaceOnUse"><stop stop-color="#2D61E1"></stop><stop offset="1" stop-color="#1549CA"></stop></linearGradient><filter id="verified_svg__filter0_d" x="8.037" y="10.021" width="15.922" height="13.33" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"></feColorMatrix><feOffset dy="1"></feOffset><feGaussianBlur stdDeviation="1"></feGaussianBlur><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0"></feColorMatrix><feBlend in2="BackgroundImageFix" result="effect1_dropShadow"></feBlend><feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape"></feBlend></filter></defs></svg>
             </h6>
           </div>
           </div>
@@ -100,16 +106,17 @@
 
         </h2>
          <div class="q-pt-sm">Price: <span class="text-grey q-pl-xs">${{formatNumber(asset.rateUsd,4)}}</span></div>
-         <div class="q-pt-sm" v-if="asset.protocol"><q-icon class="q-pr-sm" size="1.2rem" :name="'img:'+asset.protocolIcon" />{{asset.protocol}}: <br>
+         <div class="q-py-sm" v-if="asset.protocol"><q-icon class="q-pr-sm" size="1.2rem" :name="'img:'+asset.protocolIcon" />{{asset.protocol}}:
+         </div>
          <span class="text-grey q-pl-xs" v-if="asset.poolsCount == 1">{{asset.poolName}} pool</span>
          <span class="text-grey q-pl-xs" v-else>{{asset.poolsCount}} pools</span>
-         </div>
         </div>
 
       </div>
     </div>
 </div>
- <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="8"  v-if="$store.state.settings.network == 'mainnet'" />
+ <liquidityPoolsTable data-title="Liquidity pools" class="q-pt-md" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="10"  />
+
    </q-scroll-area>
     <div class="small-grid" v-if="false">
       <div class="main">
@@ -246,17 +253,22 @@ import Formatter from '@/mixins/Formatter'
 import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
 import ExchangeSection from '@/components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '@/components/Verto/Defi/LiquidityPoolsTable'
+import PriceChart from '@/components/Verto/Token/PriceChart'
 export default {
   components: {
     QScrollArea,
     ExchangeSection,
     MakeVTXSection,
-    liquidityPoolsTable
+    liquidityPoolsTable,
+    PriceChart
   },
   props: ['rowsPerPage'],
   data () {
     return {
+      chartData: false,
+      uniqueKey: 1235878,
       allAssets: null,
+      currentChain: false,
       platformOptions: [{
         label: 'Uniswap V2',
         value: 'Uniswap V2',
@@ -385,9 +397,14 @@ export default {
 
     this.$bus.$on('selectedChain', () => {
       let chain = localStorage.getItem('selectedChain')
+      if (chain !== 'vtx') {
+        this.currentChain = chain
+        this.uniqueKey++
+      }
 
       this.initTable(chain)
     })
+    this.getVTXHistoriclPrice()
   },
   watch: {
     '$store.state.wallets.tokens': function () {
@@ -399,8 +416,11 @@ export default {
     '$store.state.investment.allEosWalletsInvestments': function (investments) {
       this.getInvestedEosTokens(investments)
     },
-    '$store.state.ivet.walletTokensData': function () {
+    '$store.state.tokens.walletTokensData': function (val) {
+      console.log(val)
       this.initTable()
+      this.getInvestedEosTokens(this.$store.state.investment.allEosWalletsInvestments)
+      this.uniqueKey++
     },
     '$store.state.currentwallet.wallet': function (val) {
       this.initTable()
@@ -445,8 +465,15 @@ export default {
           assets.push(setValue(item, i))
         })
       })
-
+      this.$store.dispatch('tokens/getTokensMarketsData', assets)
       this.assetsOptions[1].data.eos = assets
+    },
+    async getVTXHistoriclPrice (days = 30) {
+      let response = await this.$axios.get(
+        'https://api.coingecko.com/api/v3/coins/volentix-vtx/market_chart?vs_currency=usd&days=' +
+            days
+      )
+      this.chartData = response.data
     },
     getInvestedTokens (investments) {
       let assets = []
@@ -467,7 +494,7 @@ export default {
             usd: a.balanceUSD,
             rateUsd: a.price,
             type: a.symbol.toLowerCase(),
-            chain: 'eos',
+            chain: 'eth',
             poolName: t.label,
             poolsCount: 1,
             amount: a.balance,
@@ -529,9 +556,12 @@ export default {
           console.log(res)
         })
     },
-    filterTokens (tokens) {
+    filterTokens (item) {
+      let tokens = []
       if (this.tokenSearchVal.trim().length) {
-        tokens = tokens.filter(o => o.type.toLowerCase().includes(this.tokenSearchVal.toLowerCase()))
+        tokens = item.data.filter(o => o.type.toLowerCase().includes(this.tokenSearchVal.toLowerCase()))
+      } else {
+        tokens = item.id === 'investments' ? this.allInvestments.filter(o => !this.currentChain || o.chain === this.currentChain) : item.data
       }
       return tokens
     },
@@ -553,16 +583,15 @@ export default {
 
             this.assets[index].amount += token.amount
             this.assets[index].usd += isNaN(token.usd) ? 0 : token.usd
-            this.assets[index].rateUsd = isNaN(token.usd) ? 0 : (token.usd / token.amount)
+            this.assets[index].rateUsd = isNaN(token.tokenPrice) ? 0 : token.tokenPrice
             this.assets[index].percentage = this.assets[index].usd / parseFloat(this.$store.state.wallets.portfolioTotal) * 100
             this.assets[index] = this.getHistoricalValue(this.assets[index])
           } else {
             token.percentage = token.usd / parseFloat(this.$store.state.wallets.portfolioTotal) * 100
             token.index = this.assets.length
-            token.rateUsd = isNaN(token.usd) ? 0 : (token.usd / token.amount)
+            token.rateUsd = isNaN(token.tokenPrice) ? 0 : token.tokenPrice
             token.friendlyType = token.type.length > 6 ? token.type.substring(0, 6) + '...' : token.type
             token = this.getHistoricalValue(token)
-
             this.assets.push(token)
           }
           this.assets.sort((a, b) => (isNaN(parseFloat(b.usd)) ? 0 : parseFloat(b.usd)) - (isNaN(parseFloat(a.usd)) ? 0 : parseFloat(a.usd)))
@@ -743,8 +772,8 @@ export default {
 
 .wrapper {
   background: #fff;
-
-  padding-bottom: 80px;
+  height: 81vh;
+  border-radius: 12px;
 }
 
 .top-4part {
@@ -789,7 +818,7 @@ export default {
 
   grid-template-columns: repeat(auto-fit, minmax(150px, auto));
   grid-gap: 4px;
-  margin-bottom: 24px;
+  margin-bottom: 14px;
 }
 
 .sub-top h3 {
