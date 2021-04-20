@@ -143,20 +143,18 @@ export default {
       this.$store.state.investment.defaultAccount = null
       this.checkPair()
 
-      if (this.dex) {
-        let depositCoin = this.depositCoin
-        let destinationCoin = this.destinationCoin
+      let depositCoin = this.depositCoin
+      let destinationCoin = this.destinationCoin
 
-        this.$router.push({
-          path: '/verto/exchange/:coinToSend/:coinToReceive',
-          name: 'exchange-v3',
-          params: {
-            depositCoin: depositCoin,
-            destinationCoin: destinationCoin,
-            dex: this.dex
-          }
-        })
-      }
+      this.$router.push({
+        path: '/verto/exchange/:coinToSend/:coinToReceive',
+        name: 'exchange-v3',
+        params: {
+          depositCoin: depositCoin,
+          destinationCoin: destinationCoin,
+          dex: this.dex
+        }
+      })
     },
     filterDepositCoin (val, update, abort) {
       update(() => {

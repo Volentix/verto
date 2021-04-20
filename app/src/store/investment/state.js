@@ -18,6 +18,7 @@ export default function () {
     metamaskConnected: false,
     tableLoading: true,
     eosInvestments: [],
+    allEosWalletsInvestments: [],
     globalTokens: [],
     eosPools: [],
     testnetEOSInvestments: []
