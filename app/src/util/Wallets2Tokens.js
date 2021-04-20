@@ -13,11 +13,13 @@ class Wallets2Tokens {
     this.tableData = []
 
     // store.state.wallets.portfolioTotal = 0
+    /*
     store.state.currentwallet.config.keys.push({
       chain: 'eos',
       type: 'eos',
       name: 'crosschainfx'
     })
+    */
 
     if (data) {
       walletName = walletName ? walletName.toLowerCase() : walletName
@@ -196,6 +198,8 @@ class Wallets2Tokens {
         let eosBalance = await this.eos.getCurrencyBalanceP(wallet.name, 'eosio.token', 'EOS')
 
         let balances = []
+
+        eosBalance = (!eosBalance || eosBalance[0] || isNaN(eosBalance[0].split(' ')[1])) ? 0 : eosBalance[0].split(' ')[1]
         balances.push(
           { amount: !eosBalance ? '0.0000' : eosBalance, code: 'eosio.token', symbol: 'EOS' }
         )
