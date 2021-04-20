@@ -772,7 +772,7 @@ export default {
 
 .wrapper {
   background: #fff;
-  height: 81vh;
+  height: 85vh;
   border-radius: 12px;
 }
 
