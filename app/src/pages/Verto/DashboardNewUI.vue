@@ -11,20 +11,20 @@
             </div>
             <div class="col col-md-9 q-pr-md">
                 <div class="row">
-                    <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet'" >
-                        <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  />
+                    <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet' && false" >
+                        <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if=" $store.state.settings.network == 'mainnet'"  />
                     </div>
-                    <div class="col q-pl-sm col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet'">
-                        <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  v-if="true && $store.state.settings.network == 'mainnet'" />
+                    <div class="col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet' && false">
+                        <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  />
                     </div>
                      <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
-                        <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
+                     <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
 
                     </q-breadcrumbs>
                     <NftsExplorer v-if="false && $store.state.settings.network != 'mainnet'" />
-                    <AssetsExplorer  v-if="$store.state.settings.network != 'mainnet'" />
+                    <AssetsExplorer v-show="!assetSelected" @setAsset="setAsset" />
                     <SingleToken  :asset="assetSelected" class="col-md-12" v-if="assetSelected" />
-                    <div class="col col-md-12 full-height max-height2" v-else>
+                    <div class="col col-md-12 full-height max-height2" v-else-if="$store.state.settings.network == 'mainnet' && false" >
 
                         <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                             <q-tabs
@@ -325,10 +325,15 @@ export default {
       if (chain && chain === 'vtx') {
         let asset = this.$store.state.wallets.tokens.find(o => o.type === 'vtx' && o.amount > 0)
 
-        if (asset) {
-          this.tabPoolAndAssetBalances = 'explore'
-          this.setAsset(asset)
+        if (!asset) {
+          asset = {
+            type: 'vtx',
+            chain: 'eos',
+            icon: 'statics/icons/favicon-32x32.png'
+          }
         }
+        this.tabPoolAndAssetBalances = 'explore'
+        this.setAsset(asset)
       }
     },
     setAsset (asset) {

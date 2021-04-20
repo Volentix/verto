@@ -99,6 +99,7 @@ export const setMarketData = (state, payload) => {
 export const setInvestments = (state, payload) => {
   state.investments = state.investments.concat(payload.pools ? payload.pools : payload).map((o, index) => {
     o.index = index
+    o.chain = 'eth'
     return o
   }).filter(o => !o.canStake).filter((investment, index, self) => self.findIndex(t => t.address === investment.address) === index)
   state.investmentOpportunities = state.investmentOpportunities.concat(payload.pools ? payload.pools : payload).map((o, index) => {
@@ -128,6 +129,10 @@ export const setAccountTokens = (state, payload) => {
 export const setTableLoadingStatus = (state, payload) => {
   state.tableLoading = payload
 }
+export const setAllEOSInvestments = (state, payload) => {
+  state.allEosWalletsInvestments = state.allEosWalletsInvestments.concat(payload)
+}
+
 export const setEOSInvestments = (state, payload) => {
   state.eosInvestments = payload.map((o, index) => {
     o.index = index
