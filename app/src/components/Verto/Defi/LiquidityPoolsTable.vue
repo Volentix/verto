@@ -1,6 +1,6 @@
 <template>
   <div class="full-height">
-    <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}" class="full-height">
+    <q-scroll-area  :visible="true"  :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}" >
       <!-- :grid="$q.screen.xs" -->
       <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="!$store.state.investment.pools.length" title="Explore Opportunities" :data="chainPools" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities full-height" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
@@ -178,7 +178,7 @@ export default {
     justify-content: center;
 }
 .desktop-size{
-  height: 360px;
+  height: 560px  !important;
 }
 .mobile-size{
   height: 818px !important;
