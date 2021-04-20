@@ -17,7 +17,7 @@
               alt=""
             />
           </h2>
-          <h3 class="q-pt-md q-pl-lg q-pr-md">
+          <h3 v-if="asset.rateUsd" class="q-pt-md q-pl-lg q-pr-md">
           ${{ formatNumber(asset.rateUsd, 0)
           }}<span
             style="
@@ -108,22 +108,23 @@
               <h5 class="text-bold">
                 Profit/Loss <span><i class="far fa-question-circle"></i></span>
               </h5>
-              <p>+$10,648.27</p>
+              <p>-</p>
 
               <h5 class="text-bold">24-hour Return</h5>
-              <p>{{asset.change24h}} <span :class="'pair q-pr-xs allocation '+asset.color">({{asset.change24hPercentage}})</span></p>
+              <p v-if="asset.change24hPercentage">{{asset.change24h}} <span :class="'pair q-pr-xs allocation '+asset.color">({{asset.change24hPercentage}})</span></p>
+              <p v-else><span :class="'pair q-pr-xs allocation '+asset.color">-</span></p>
             </td>
 
             <td class="m-left q-pt-md">
               <h5 class="text-bold">
                 Average Cost <span><i class="far fa-question-circle"></i></span>
               </h5>
-              <p>$597.11</p>
+              <p>-</p>
 
               <h5 class="text-bold">
                 Paid Fees <span><i class="far fa-question-circle"></i></span>
               </h5>
-              <p>$1,328.49</p>
+              <p>-</p>
             </td>
           </tr>
         </table>
@@ -762,6 +763,13 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.wrapper {
+    background: #fff;
+    min-height: 78vh;
+}
+.left.left2 {
+  margin-top: 30px;
+}
 .destination {
       display: contents;
 }
