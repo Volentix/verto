@@ -362,7 +362,7 @@
                               unelevated
                               @click="sendTransaction()"
                               :loading="spinnervisible"
-                              :disable="($store.state.settings.eos.swapSlippage < slippage && tab == 'swap') || parseFloat(swapData.toAmount) === 0 || !depositCoin.name || parseFloat(depositCoin.amount) < parseFloat(swapData.fromAmount) || spinnervisible"
+                              :disable=" parseFloat(swapData.toAmount) === 0 || !depositCoin.name || parseFloat(depositCoin.amount) < parseFloat(swapData.fromAmount) || spinnervisible"
                               outline
                               color="purple"
                               :label="tab != 'liquidity' ? 'Swap now' : 'Add liquidity'"
