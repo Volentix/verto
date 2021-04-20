@@ -199,9 +199,10 @@ class Wallets2Tokens {
 
         let balances = []
 
-        eosBalance = (!eosBalance || eosBalance[0] || isNaN(eosBalance[0].split(' ')[1])) ? 0 : eosBalance[0].split(' ')[1]
+        eosBalance = (!eosBalance || !eosBalance[0] || isNaN(eosBalance[0].split(' ')[0])) ? 0 : eosBalance[0].split(' ')[0]
+
         balances.push(
-          { amount: !eosBalance ? '0.0000' : eosBalance, code: 'eosio.token', symbol: 'EOS' }
+          { amount: eosBalance, code: 'eosio.token', symbol: 'EOS' }
         )
 
         let privateKeysAttrs = this.extractEOSPrivateKey(wallet.privateKey, wallet.key)
