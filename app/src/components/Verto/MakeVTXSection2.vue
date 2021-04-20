@@ -148,7 +148,7 @@ export default {
           this.canStakeVTX = true
         }
       })
-
+      this.canStakeVTX = true
       if (count === 1) {
         this.vtxAccount = account
       } else {

@@ -30,7 +30,7 @@
    <div v-show="!allAssets">
     <div class="sub-top row">
       <div class="subt-text col-md-7" >
-        <p class="q-ma-none text-bold text-body1"><q-icon name="img:https://verto.volentix.io/statics/icons/favicon-32x32.png"  class="q-pr-sm"/>Trade & Earn VTX {{currentChain}} </p>
+        <p class="q-ma-none text-bold text-body1"><q-icon name="img:https://verto.volentix.io/statics/icons/favicon-32x32.png"  class="q-pr-sm"/>Trade & Earn VTX  </p>
       </div>
 
       <div  class="see-text  col" >
