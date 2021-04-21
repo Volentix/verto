@@ -34,7 +34,7 @@
       </div>
 
       <div  class="see-text  col" >
-       <q-input dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol or address"  >
+       <q-input dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol"  >
          <template v-slot:append>
           <q-icon v-if="tokenSearchVal !== ''" name="close" @click="tokenSearchVal = ''" class="cursor-pointer" />
           <q-icon name="search" />
@@ -75,7 +75,12 @@
        See all (<span class="text-deep-purple-12">{{filterTokens(item).length}}</span>) <q-icon name="arrow_forward_ios" />
       </div>
 
-      <div  class="see-text  col" v-else>
+      <div  class="see-text col flex justify-end" v-else>
+        <span v-if="item.id == 'assets'">
+      <span class="text-body2 q-pr-sm  q-mt-sm">List view</span>
+      <q-icon name="table_rows" @click="listViewMode = 'list'" size="1.2rem" :color="listViewMode == 'list' ? 'deep-purple-3': 'grey'" class="q-pr-xs q-pt-sm" />
+      <q-icon name="dashboard_customize"  @click="listViewMode = 'card'" size="1.2rem" :color="listViewMode == 'card' ? 'deep-purple-3': 'grey'" class="q-pt-sm q-pr-sm"  />
+      </span>
        <q-input dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol or address"  >
          <template v-slot:append>
           <q-icon v-if="tokenSearchVal !== ''" name="close" @click="tokenSearchVal = ''" class="cursor-pointer" />
@@ -88,7 +93,7 @@
 
     <div class="row q-col-gutter-md q-pr-lg">
 
-      <div class=" col-md-3 " @click="showTokenPage(asset)" v-for="(asset, i) in filterTokens(item).slice(0,(!allAssets ? ($q.screen.height > 1100 ? 8 : 4) : allAssets.length))" :key="i">
+      <div class=" col-md-3 " v-show="!allAssets || listViewMode == 'card'" @click="showTokenPage(asset)" v-for="(asset, i) in filterTokens(item).slice(0,(!allAssets ? ($q.screen.height > 1100 ? 8 : 4) : allAssets.length))" :key="i">
         <div class="main cursor-pointer">
         <div class="main-top">
           <div class="mt-img">
@@ -110,13 +115,14 @@
          <div class="q-py-sm" v-if="asset.protocol"><q-icon class="q-pr-sm" size="1.2rem" :name="'img:'+asset.protocolIcon" />{{asset.protocol}}:
          </div>
          <span class="text-grey q-pl-xs" v-if="asset.poolsCount == 1">{{asset.poolName}} pool</span>
-         <span class="text-grey q-pl-xs" v-else>{{asset.poolsCount}} pools</span>
+         <span class="text-grey q-pl-xs" v-else-if="asset.poolsCount">{{asset.poolsCount}} pools</span>
         </div>
 
       </div>
+      <AssetBalancesTable @setAsset="setAsset" data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="8"  v-if="allAssets && listViewMode == 'list'" class="full-width" :tableData="filterTokens(allAssets)" />
     </div>
 </div>
- <liquidityPoolsTable :key="4 + uniqueKey" data-title="Liquidity pools" class="q-pt-md" data-intro="Here you can click the ADD button to add liquidity to any pools" :chain="currentChain" :rowsPerPage="10"  />
+ <liquidityPoolsTable v-if="!allAssets" :key="4 + uniqueKey" data-title="Liquidity pools" class="q-pt-md" data-intro="Here you can click the ADD button to add liquidity to any pools" :chain="currentChain" :rowsPerPage="10"  />
 
    </q-scroll-area>
     <div class="small-grid" v-if="false">
@@ -253,6 +259,7 @@ import {
 import Formatter from '@/mixins/Formatter'
 import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
 import ExchangeSection from '@/components/Verto/ExchangeSection3'
+import AssetBalancesTable from '@/components/Verto/AssetBalancesTable'
 import liquidityPoolsTable from '@/components/Verto/Defi/LiquidityPoolsTable'
 import PriceChart from '@/components/Verto/Token/PriceChart'
 export default {
@@ -261,6 +268,7 @@ export default {
     ExchangeSection,
     MakeVTXSection,
     liquidityPoolsTable,
+    AssetBalancesTable,
     PriceChart
   },
   props: ['rowsPerPage'],
@@ -269,6 +277,7 @@ export default {
       chartData: false,
       uniqueKey: 1235878,
       allAssets: null,
+      listViewMode: 'card',
       currentChain: false,
       platformOptions: [{
         label: 'Uniswap V2',
@@ -292,6 +301,7 @@ export default {
         {
           title: 'Active assets',
           subtitle: 'Send, swap & invest',
+          id: 'assets',
           data: []
         },
         {
@@ -586,6 +596,7 @@ export default {
             this.assets[index].rateUsd = isNaN(token.tokenPrice) ? 0 : token.tokenPrice
             this.assets[index].percentage = this.assets[index].usd / parseFloat(this.$store.state.wallets.portfolioTotal) * 100
             this.assets[index] = this.getHistoricalValue(this.assets[index])
+            console.log(token, 2)
           } else {
             token.percentage = token.usd / parseFloat(this.$store.state.wallets.portfolioTotal) * 100
             token.index = this.assets.length
@@ -593,6 +604,7 @@ export default {
             token.friendlyType = token.type.length > 6 ? token.type.substring(0, 6) + '...' : token.type
             token = this.getHistoricalValue(token)
             this.assets.push(token)
+            console.log(token, 1)
           }
           this.assets.sort((a, b) => (isNaN(parseFloat(b.usd)) ? 0 : parseFloat(b.usd)) - (isNaN(parseFloat(a.usd)) ? 0 : parseFloat(a.usd)))
         }
