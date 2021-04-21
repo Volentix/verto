@@ -817,7 +817,7 @@ export default {
     opacity: 0;
 }
 .cropped {
-  height: 190px  !important;
+  height: 195px  !important;
 }
 
 .token-chart /deep/ canvas {
@@ -1331,6 +1331,12 @@ export default {
   }
 }
 .dark-theme{
+  .showhistory{
+    border: 1px solid #627797 !important;
+    border-radius: 10px !important;
+    margin-top: 10px;
+    overflow: hidden;
+  }
   .wrapper {
     background-color: #04111F;
     // border: 1px solid #627797;
@@ -1342,6 +1348,7 @@ export default {
     .left-area,
     .right-area,
     .left,
+    .text-body2,
     .right.active-card{
       background: transparent !important;
     }

@@ -1067,7 +1067,7 @@ export default {
 .dark-theme{
   .wrapper {
     background-color: #04111F;
-    border: 1px solid #627797;
+    // border: 1px solid #627797;
     /deep/ .q-dark{
       background-color: #04111F !important;
     }
