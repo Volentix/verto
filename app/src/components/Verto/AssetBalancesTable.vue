@@ -1,8 +1,7 @@
 <template>
   <div>
-    <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
-      <!-- :grid="$q.screen.xs" -->
-      <q-table   @row-click="onRowClick" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="loaded" :data="assets" :columns="columns" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
+
+      <q-table v-if="assets.length"  @row-click="onRowClick" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="loaded" :data="assets" :columns="columns" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="body-table-col _coin_type cursor-pointer" @click="$emit('setAsset', props.row)">
             <div class="col-1 flex items-center">
@@ -40,7 +39,7 @@
           <q-td :props="props" class="body-table-col">
             <div class="col-3 flex items-center">
               <span class="column items-start">
-                <span class="pair q-pr-xs allocation" :class="{'text-grey-3': $store.state.settings.lightMode === 'true', 'text-grey-8': $store.state.settings.lightMode === 'false'}">${{ formatNumber((props.row.usd/2), 2) }} USD</span>
+                <span class="pair q-pr-xs allocation" :class="{'text-grey-3': $store.state.settings.lightMode === 'true', 'text-grey-8': $store.state.settings.lightMode === 'false'}">-</span>
               </span>
             </div>
           </q-td>
@@ -69,7 +68,7 @@
           </q-td>
         </template>
         <template v-slot:top-right>
-          <q-input borderless dense :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" filled debounce="300" v-model="filter" placeholder="Search">
+          <q-input v-if="!tableData" borderless dense :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" filled debounce="300" v-model="filter" placeholder="Search">
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -77,20 +76,15 @@
         </template>
 
       </q-table>
-    </q-scroll-area>
+
   </div>
 </template>
 
 <script>
-import {
-  QScrollArea
-} from 'quasar'
+
 import Formatter from '@/mixins/Formatter'
 export default {
-  components: {
-    QScrollArea
-  },
-  props: ['rowsPerPage'],
+  props: ['rowsPerPage', 'tableData'],
   data () {
     return {
       initialPagination: {
@@ -207,12 +201,19 @@ export default {
         })
     },
     initTable (chain) {
+      this.assets = []
+
+      if (this.tableData) {
+        console.log(this.tableData, 'this.data')
+        this.assets = this.tableData
+        this.loaded = false
+        return
+      }
       let account = null
 
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.name) {
         account = this.$store.state.currentwallet.wallet
       }
-      this.assets = []
 
       JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter(o => (!account && !chain) || (chain && o.chain === chain) || (account && o.chain === account.chain && o.name === account.name)))).forEach((token, i) => {
         token.amount = parseFloat(token.amount)

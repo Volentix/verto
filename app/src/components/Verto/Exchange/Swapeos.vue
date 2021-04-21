@@ -639,7 +639,7 @@ export default {
         this.depositCoin = item
       }
     }
-    console.log(this.$store.state.settings, 'this.$store.state.settings.dexData')
+
     if (this.$store.state.settings.dexData.destinationCoin && this.crossChain) {
       this.destinationCoin = this.$store.state.settings.coins.defibox.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
     }
@@ -664,8 +664,11 @@ export default {
     if (![3, 5].includes(this.$store.state.settings.eos.swapSlippage)) {
       this.swapData.customPriceSlipage = this.$store.state.settings.eos.swapSlippage
     }
-
-    // console.log(this.depositCoinOptions, this.depositCoin.amount, 4)
+  },
+  mounted () {
+    if (this.$route.params.tab === 'swap') {
+      this.tab = this.$route.params.tab
+    }
   },
   computed: {
     ...mapState('investment', ['defaultAccount'])
