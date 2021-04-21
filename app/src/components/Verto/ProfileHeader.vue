@@ -86,21 +86,26 @@
         <q-btn unelevated v-if="screenSize <= 1024"
           :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.state.currentwallet.wallet.chain))"
           to="/verto/wallets/send" outline
-          class="profile-wrapper--header__action-btn"
-          color="indigo-12" text-color="white" label="Send" />
+          class="profile-wrapper--header__action-btn --send"
+          :class="{'--dark':$store.state.settings.lightMode === 'true'}"
+          color="white" text-color="white" label="Send" />
         <q-btn unelevated v-if="screenSize > 1024"
-          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','btc','dot', 'ksm','bnb','avax'].includes($store.state.currentwallet.wallet.chain))" @click="!$store.state.currentwallet.wallet.empty ? goToSendPage() : notifSelectWallet()"
-          class="profile-wrapper--header__action-btn" outline
-          color="indigo-12" text-color="white" label="Send" />
+          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','btc','dot', 'ksm','bnb','avax'].includes($store.state.currentwallet.wallet.chain))"
+          @click="!$store.state.currentwallet.wallet.empty ? goToSendPage() : notifSelectWallet()"
+          class="profile-wrapper--header__action-btn --send" outline
+          :class="{'--dark':$store.state.settings.lightMode === 'true'}"
+          color="white" text-color="white" label="Send" />
         <q-btn unelevated v-if="screenSize <= 1024"
           to="/verto/wallets/receive"
           :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.state.currentwallet.wallet.chain))"
-          class="profile-wrapper--header__action-btn" outline
+          class="profile-wrapper--header__action-btn --receive" outline
+          :class="{'--dark':$store.state.settings.lightMode === 'true'}"
           color="indigo-12" text-color="white" label="Receive" />
         <q-btn unelevated v-if="screenSize > 1024"
           :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.state.currentwallet.wallet.chain)) "
           @click="!$store.state.currentwallet.wallet.empty ? goToReceivePage() : notifSelectWallet()"
-          class="profile-wrapper--header__action-btn" outline
+          :class="{'--dark':$store.state.settings.lightMode === 'true'}"
+          class="profile-wrapper--header__action-btn --receive" outline
           color="indigo-12" text-color="white" label="Receive" />
 
       </div>
@@ -378,6 +383,22 @@ export default {
             margin-top: 10px;
             font-size: 14px;
             height: 36px;
+          }
+        }
+        .profile-wrapper--header__action-btn{
+          &.--send{
+            background: transparent !important;
+            &.--dark{
+              color: #FFF !important;
+              font-weight: $bold !important;
+            }
+          }
+          &.--receive{
+            background: transparent !important;
+            &.--dark{
+              color: #FFF !important;
+              font-weight: $bold !important;
+            }
           }
         }
       }
