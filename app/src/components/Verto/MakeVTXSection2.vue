@@ -66,6 +66,9 @@ export default {
       this.canUserStake()
     }
   },
+  mounted () {
+    this.canUserStake()
+  },
   methods: {
     goToExchange () {
       // console.log('this.depositCoin', this.depositCoin)
@@ -84,16 +87,21 @@ export default {
       })
     },
     goToStaking () {
+      let params = {}
       if (this.vtxAccount) {
         this.$store.state.currentwallet.wallet = this.vtxAccount
+        params = {
+          showSummary: true,
+          vtxAccount: this.vtxAccount,
+          chainID: this.vtxAccount.chain,
+          tokenID: this.vtxAccount.type,
+          accountName: this.vtxAccount.name
+        }
+        this.$store.state.currentwallet.params = params
       }
-
       this.$router.push({
         path: '/verto/stake',
-        params: {
-          showSummary: true,
-          vtxAccount: this.vtxAccount
-        }
+        params: params
       })
     },
     getWindowWidth () {
@@ -142,13 +150,13 @@ export default {
       let count = 0
       let account = null
       this.$store.state.wallets.tokens.forEach(c => {
-        if (c.type === 'vtx' && c.chain === 'eos' && !isNaN(c.amount) && c.amount >= 10000) {
+        if (c.type === 'vtx' && c.chain === 'eos' && !isNaN(c.amount) && parseFloat(c.amount) >= 10000) {
           count++
           account = c
           this.canStakeVTX = true
         }
       })
-      this.canStakeVTX = true
+
       if (count === 1) {
         this.vtxAccount = account
       } else {
