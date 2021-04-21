@@ -573,7 +573,7 @@ export default {
           this.sendTo.trim().length !== 0 &&
           parseFloat(this.depositQuantity) !== 0 &&
           parseFloat(this.assetBalance) !== 0
-      } else if (this.tab === 'swap') {
+      } else if (this.tab === 'swap' || this.tab === 'add liquidity') {
         valid = true
       }
       return valid
@@ -705,8 +705,7 @@ export default {
       this.getBalance()
     },
     triggerAction () {
-      console.log(99, this.tab)
-      if (this.tab === 'swap') {
+      if (this.tab === 'swap' || this.tab === 'add liquidity') {
         this.goToExchange()
       } else if (this.tab === 'send') {
         this.spinnerVisible = true
@@ -725,7 +724,8 @@ export default {
           params: {
             depositCoin: depositCoin,
             destinationCoin: destinationCoin,
-            dex: this.dex
+            dex: this.dex,
+            tab: this.tab
           }
         })
       }
