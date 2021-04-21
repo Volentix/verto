@@ -110,7 +110,7 @@
          <div class="q-py-sm" v-if="asset.protocol"><q-icon class="q-pr-sm" size="1.2rem" :name="'img:'+asset.protocolIcon" />{{asset.protocol}}:
          </div>
          <span class="text-grey q-pl-xs" v-if="asset.poolsCount == 1">{{asset.poolName}} pool</span>
-         <span class="text-grey q-pl-xs" v-else>{{asset.poolsCount}} pools</span>
+         <span class="text-grey q-pl-xs" v-else-if="asset.poolsCount">{{asset.poolsCount}} pools</span>
         </div>
 
       </div>
@@ -586,6 +586,7 @@ export default {
             this.assets[index].rateUsd = isNaN(token.tokenPrice) ? 0 : token.tokenPrice
             this.assets[index].percentage = this.assets[index].usd / parseFloat(this.$store.state.wallets.portfolioTotal) * 100
             this.assets[index] = this.getHistoricalValue(this.assets[index])
+            console.log(token, 2)
           } else {
             token.percentage = token.usd / parseFloat(this.$store.state.wallets.portfolioTotal) * 100
             token.index = this.assets.length
@@ -593,6 +594,7 @@ export default {
             token.friendlyType = token.type.length > 6 ? token.type.substring(0, 6) + '...' : token.type
             token = this.getHistoricalValue(token)
             this.assets.push(token)
+            console.log(token, 1)
           }
           this.assets.sort((a, b) => (isNaN(parseFloat(b.usd)) ? 0 : parseFloat(b.usd)) - (isNaN(parseFloat(a.usd)) ? 0 : parseFloat(a.usd)))
         }
