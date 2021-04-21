@@ -100,7 +100,7 @@
                         </q-select>
                       </div>
                       <div class="col-md-6 q-pl-lg">
-                        <div class="row">
+                        <div class="row current-stake-balanca">
                               <div class="">
                                 <span class="--title row text-h6"> Current Balance<br>{{ params.tokenID.toUpperCase() }} (Liquid) </span>
                                 <span class="--amount row text-h4"> {{ formatNumber(currentAccount.amount, 0) }} {{ params.tokenID.toUpperCase() }} </span>
@@ -202,7 +202,7 @@
                       </div>
                             </div>
                             <div  class="col-md-6 q-pa-md flex flex-center">
-                            <div class="row full-width shadow-1 q-ma-lg q-pa-lg rounded-borders" style="max-width:300px;">
+                            <div class="summary-wrapper row full-width shadow-1 q-ma-lg q-pa-lg rounded-borders" style="max-width:300px;">
                               <div class="full-width">
                                 <span class="--title row text-h6"> Amount to stake </span>
                                 <span class="--amount row text-h4"> {{  formatNumber(sendAmount, 2) }} {{ params.tokenID.toUpperCase() }}</span>
@@ -1115,7 +1115,61 @@ export default {
     width: 100%;
     max-width: 145px;
   }
+  .current-stake-balanca{
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 337px;
+    margin-top: 5px;
+    margin-left: 2px;
+    transform: scale(.9);
+    @media screen and (min-height: 700px) {
+      margin-left: 25px;
+    }
+    @media screen and (min-height: 760px) {
+      margin-left: 37px;
+    }
+  }
+  .summary-wrapper{
+    margin-top: -5px;
+    border-radius: 8px;
+  }
   .dark-theme{
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+      /deep/ .q-tab-panel{
+        background-color: #04111F;
+      }
+    }
+    .chain-tools-wrapper--list .list-wrapper .select-input{
+      /deep/ .q-field__control .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{
+        color: #FFF !important;
+      }
+    }
+    .current-stake-balanca{
+      border: 1px solid #627797;
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 337px;
+      margin-top: 5px;
+      margin-left: 2px;
+      transform: scale(.9);
+      @media screen and (min-height: 700px) {
+        margin-left: 25px;
+      }
+      @media screen and (min-height: 760px) {
+        margin-left: 37px;
+      }
+    }
+    .summary-wrapper{
+      border: 1px solid #627797;
+      margin-top: -5px;
+      border-radius: 8px;
+    }
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--amount{
+      color: #FFF !important;
+    }
+    .slider-holder.stake-period{
+      color: #FFF !important;
+    }
     .vtx-converter-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
       background-color: #04111F;
     }
