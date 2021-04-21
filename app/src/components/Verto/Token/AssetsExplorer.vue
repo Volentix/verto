@@ -32,7 +32,7 @@
             <p class="q-ma-none text-bold text-body1"><q-icon name="img:statics/icons/favicon-96x96.png" style="font-size: 24px" class="q-mr-sm"/>Trade & Earn VTX  </p>
           </div>
           <div class="see-text col">
-          <q-input :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol or address"  >
+          <q-input :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol"  >
             <template v-slot:append>
               <q-icon v-if="tokenSearchVal !== ''" name="close" @click="tokenSearchVal = ''" class="cursor-pointer" />
               <q-icon name="search" />
@@ -62,8 +62,8 @@
           </div>
           <div class="subt-text" v-else>
             <p>
-              <q-breadcrumbs class="col-12 bg-white breadcrumbs" v-if="allAssets">
-                <q-breadcrumbs-el  class="cursor-pointer" @click="allAssets = null" label="Back"  icon="keyboard_backspace" />
+              <q-breadcrumbs class="col-12  breadcrumbs"  v-if="allAssets">
+                <q-breadcrumbs-el  class="cursor-pointer" :class="{'text-white':$store.state.settings.lightMode === 'true'}" @click="allAssets = null" label="Back"  icon="keyboard_backspace" />
                 <q-breadcrumbs-el  class="cursor-pointer"  :label="'Showing '+filterTokens(item).length+ ' ' + item.title"  />
               </q-breadcrumbs>
             </p>
@@ -73,8 +73,13 @@
           See all (<span class="text-deep-purple-12">{{filterTokens(item).length}}</span>) <q-icon name="arrow_forward_ios" />
           </div>
 
-          <div  class="see-text  col" v-else>
-          <q-input dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol or address"  >
+          <div  class="see-text col flex  justify-end" v-else>
+      <span v-if="item.id == 'assets'" class="flex flex-center">
+      <span class="text-body2 q-pr-sm ">List view</span>
+      <q-icon name="table_rows" @click="listViewMode = 'list'" size="1.2rem" :color="listViewMode == 'list' ? 'deep-purple-3': 'grey'" class="q-pr-xs " />
+      <q-icon name="dashboard_customize"  @click="listViewMode = 'card'" size="1.2rem" :color="listViewMode == 'card' ? 'deep-purple-3': 'grey'" class="q-pr-sm"  />
+      </span>
+          <q-input :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol"  >
             <template v-slot:append>
               <q-icon v-if="tokenSearchVal !== ''" name="close" @click="tokenSearchVal = ''" class="cursor-pointer" />
               <q-icon name="search" />
@@ -85,7 +90,7 @@
         </div>
         <div class="row q-col-gutter-md q-pr-lg">
 
-          <div class=" col-md-3 " @click="showTokenPage(asset)" v-for="(asset, i) in filterTokens(item).slice(0,(!allAssets ? ($q.screen.height > 1100 ? 8 : 4) : allAssets.length))" :key="i">
+          <div class=" col-md-3 " v-show="!allAssets || item.id == 'investments' || listViewMode == 'card' " @click="showTokenPage(asset)" v-for="(asset, i) in filterTokens(item).slice(0,(!allAssets ? ($q.screen.height > 1100 ? 8 : 4) : allAssets.length))" :key="i">
             <div class="main cursor-pointer">
             <div class="main-top">
               <div class="mt-img">
@@ -107,14 +112,15 @@
             <div class="q-py-sm" v-if="asset.protocol"><q-icon class="q-pr-sm" size="1.2rem" :name="'img:'+asset.protocolIcon" />{{asset.protocol}}:
             </div>
             <span class="text-grey" v-if="asset.poolsCount == 1">{{asset.poolName}} pool</span>
-            <span class="text-grey" v-else>{{asset.poolsCount}} pools</span>
+            <span class="text-grey" v-else-if="asset.poolsCount">{{asset.poolsCount}} pools</span>
             </div>
 
           </div>
-        </div>
-      </div>
-      <liquidityPoolsTable :key="4 + uniqueKey" data-title="Liquidity pools" class="q-pt-md" data-intro="Here you can click the ADD button to add liquidity to any pools" :chain="currentChain" :rowsPerPage="10"  />
-    </q-scroll-area>
+        <AssetBalancesTable @setAsset="showTokenPage" data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="8"  v-if="allAssets && listViewMode == 'list'" class="full-width" :tableData="filterTokens(allAssets)" />
+    </div>
+</div>
+ <liquidityPoolsTable v-if="!allAssets" :key="4 + uniqueKey" data-title="Liquidity pools" class="q-pt-md" data-intro="Here you can click the ADD button to add liquidity to any pools" :chain="currentChain" :rowsPerPage="10"  />
+   </q-scroll-area>
     <div class="small-grid" v-if="false">
       <div class="main">
         <div class="main-top">
@@ -249,10 +255,12 @@ import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
 import ExchangeSection from '@/components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '@/components/Verto/Defi/LiquidityPoolsTable'
 import PriceChart from '@/components/Verto/Token/PriceChart'
+import AssetBalancesTable from '@/components/Verto/AssetBalancesTable'
 export default {
   components: {
     QScrollArea,
     ExchangeSection,
+    AssetBalancesTable,
     MakeVTXSection,
     liquidityPoolsTable,
     PriceChart
@@ -261,6 +269,7 @@ export default {
   data () {
     return {
       chartData: false,
+      listViewMode: 'card',
       uniqueKey: 1235878,
       allAssets: null,
       currentChain: false,
@@ -285,6 +294,7 @@ export default {
       assetsOptions: [
         {
           title: 'Active assets',
+          id: 'assets',
           subtitle: 'Send, swap & invest',
           data: []
         },
@@ -551,11 +561,9 @@ export default {
         })
     },
     filterTokens (item) {
-      let tokens = []
+      let tokens = item.id === 'investments' ? this.allInvestments.filter(o => !this.currentChain || o.chain === this.currentChain) : item.data
       if (this.tokenSearchVal.trim().length) {
-        tokens = item.data.filter(o => o.type.toLowerCase().includes(this.tokenSearchVal.toLowerCase()))
-      } else {
-        tokens = item.id === 'investments' ? this.allInvestments.filter(o => !this.currentChain || o.chain === this.currentChain) : item.data
+        tokens = tokens.filter(o => o.type.toLowerCase().includes(this.tokenSearchVal.toLowerCase()))
       }
       return tokens
     },
