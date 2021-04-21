@@ -38,7 +38,7 @@
                 <div class="col flex items-center q-pl-sm col-1 call-action-col">
                   <q-icon name="swap_horiz" size="sm" class="swap_horiz" />
                 </div>
-                <div class="col flex items-center q-pl-md col-3 call-action-col">
+                <div class="col flex items-center q-pl-md col-3 call-action-col call-action-col--with">
                     <!-- <i class="step-1-lab flex">Send</i> -->
                     <i class="step-3-lab step-1-lab flex ">With</i>
                     <div class="call-action">
@@ -70,7 +70,7 @@
                     </div>
                     <div class="text-red" v-if="error">{{error}}</div>
                 </div>
-                <div class="col-5 flex justify-end q-pt-xs">
+                <div class="col-5 flex q-pt-xs">
                     <q-btn unelevated class="qbtn-start" color="black" @click="goToExchange" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" label="Go" />
                 </div>
             </div>
@@ -185,6 +185,9 @@ export default {
         }
         .call-action-col{
           position: relative;
+          &--with{
+            margin-left: -10px;
+          }
         }
         .col {
             .step-1-lab {
@@ -395,7 +398,7 @@ export default {
     background-repeat: no-repeat !important;
     &.dark{
       background-size: auto 100% !important;
-      background-position: 30px 0px !important;
+      background-position: calc(100% + 45px) 0px !important;
       background-repeat: no-repeat !important;
     }
     @media screen and (min-height: 700px) {
@@ -453,7 +456,7 @@ export default {
     position: relative;
     padding-top: 10px;
     .swap_horiz{
-        margin-left: -5px;
+        margin-left: -10px;
         margin-right: 5px;
     }
     .text-red{
