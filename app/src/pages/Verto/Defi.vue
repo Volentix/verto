@@ -332,88 +332,86 @@
                           <q-item-section side><q-icon name="navigate_next"/></q-item-section>
                         </q-item>
                     </q-list>
-
-                <q-expansion-item
-                  v-if="accountOption.value"
-                  :dark="$store.state.settings.lightMode === 'true'"
-                  default-opened
-                  class="bg-white q-py-md accountOption"
-                  :label="'Total Balance - $'+(formatNumber(accountOption.total, 0) )"
-                  :caption="accountOption.label"
-                >
-                  <q-card
-                    :dark="$store.state.settings.lightMode === 'true'"
-                    flat
-                    class="accountOptionCard"
-                    >
-                    <q-card-section class="q-pa-zero">
-                      <q-select
-                      data-title="Changing account..."  data-intro="Click here to switch to another account"
+                    <q-expansion-item
+                      v-if="accountOption.value"
                       :dark="$store.state.settings.lightMode === 'true'"
-                      class="full-width"
-                      :class="{'bg-white2': $store.state.settings.lightMode === 'false'}"
-                      @input="getAccountInformation(accountOption)"
-                      v-model="accountOption"
-                      :options="accountOptions">
-                        <template v-slot:selected>
-                          <q-item
-                            :dark="$store.state.settings.lightMode === 'true'"
-                            v-if="accountOption">
-                            <q-item-section>
-                              <q-item-label >Change account</q-item-label>
-                              <q-item-label caption class="ellipsis mw200 q-pt-xs">{{ accountOption.label }}</q-item-label>
+                      default-opened
+                      class="bg-white q-py-md accountOption"
+                      :label="'Total Balance - $'+(formatNumber(accountOption.total, 0) )"
+                      :caption="accountOption.label"
+                    >
+                      <q-card
+                        :dark="$store.state.settings.lightMode === 'true'"
+                        flat
+                        class="accountOptionCard"
+                        >
+                        <q-card-section class="q-pa-zero">
+                          <q-select
+                          data-title="Changing account..."  data-intro="Click here to switch to another account"
+                          :dark="$store.state.settings.lightMode === 'true'"
+                          class="full-width"
+                          :class="{'bg-white2': $store.state.settings.lightMode === 'false'}"
+                          @input="getAccountInformation(accountOption)"
+                          v-model="accountOption"
+                          :options="accountOptions">
+                            <template v-slot:selected>
+                              <q-item
+                                :dark="$store.state.settings.lightMode === 'true'"
+                                v-if="accountOption">
+                                <q-item-section>
+                                  <q-item-label >Change account</q-item-label>
+                                  <q-item-label caption class="ellipsis mw200 q-pt-xs">{{ accountOption.label }}</q-item-label>
+                                </q-item-section>
+                              </q-item>
+                            </template>
+                            <template v-slot:option="scope">
+                              <q-item
+                                class="custom-menu"
+                                v-bind="scope.itemProps"
+                                v-on="scope.itemEvents"
+                              >
+                                <q-item-section avatar>
+                                <q-icon
+                                  :name="`img:${scope.opt.image}`"
+                                />
+                                </q-item-section>
+                                <q-item-section>
+                                <q-item-label
+                                  v-html="scope.opt.label"
+                                />
+
+                                <q-item-label
+                                  v-if="scope.opt.name"
+                                  caption
+                                  >{{ scope.opt.name }}
+                                  </q-item-label>
+                                  <q-item-label
+                                  v-if="scope.opt.total"
+                                  caption
+                                  >Balance: ${{ formatNumber(scope.opt.total, 0)  }}
+                                  </q-item-label>
+
+                                </q-item-section>
+                              </q-item>
+                            </template>
+                            <!-- <template v-slot:append>
+                                <q-avatar>
+                                    <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
+                                </q-avatar>
+                            </template> -->
+                          </q-select>
+                          <div  data-title="Token list"  data-intro="On this list you will find tokens associated with your selected account" >
+                          <q-item clickable :key="index"  v-for="(token,index) in $store.state.wallets.tokens.filter(o => o.chain ==  chain && (( o.name == accountOption.label && chain == 'eos') || (o && o.key && o.key.toLowerCase() == accountOption.value.toLowerCase() && chain == 'eth' )))">
+                            <q-item-section avatar top>
+                              <q-icon :name="'img:'+token.icon" color="primary" text-color="white" />
                             </q-item-section>
+                            <q-item-section>{{token.type.toUpperCase()}}</q-item-section>
+                            <q-item-section v-if="token.usd">${{formatNumber(token.usd, 0)}}</q-item-section>
                           </q-item>
-                        </template>
-                        <template v-slot:option="scope">
-                          <q-item
-                            class="custom-menu"
-                            v-bind="scope.itemProps"
-                            v-on="scope.itemEvents"
-                          >
-                            <q-item-section avatar>
-                            <q-icon
-                              :name="`img:${scope.opt.image}`"
-                            />
-                            </q-item-section>
-                            <q-item-section>
-                            <q-item-label
-                              v-html="scope.opt.label"
-                            />
-
-                            <q-item-label
-                              v-if="scope.opt.name"
-                              caption
-                              >{{ scope.opt.name }}
-                              </q-item-label>
-                              <q-item-label
-                              v-if="scope.opt.total"
-                              caption
-                              >Balance: ${{ formatNumber(scope.opt.total, 0)  }}
-                              </q-item-label>
-
-                            </q-item-section>
-                          </q-item>
-                        </template>
-                        <!-- <template v-slot:append>
-                            <q-avatar>
-                                <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
-                            </q-avatar>
-                        </template> -->
-                      </q-select>
-                      <div  data-title="Token list"  data-intro="On this list you will find tokens associated with your selected account" >
-                      <q-item clickable :key="index"  v-for="(token,index) in $store.state.wallets.tokens.filter(o => o.chain ==  chain && (( o.name == accountOption.label && chain == 'eos') || (o && o.key && o.key.toLowerCase() == accountOption.value.toLowerCase() && chain == 'eth' )))">
-                        <q-item-section avatar top>
-                          <q-icon :name="'img:'+token.icon" color="primary" text-color="white" />
-                        </q-item-section>
-                        <q-item-section>{{token.type.toUpperCase()}}</q-item-section>
-                        <q-item-section v-if="token.usd">${{formatNumber(token.usd, 0)}}</q-item-section>
-                      </q-item>
-                      </div>
-                    </q-card-section>
-                  </q-card>
-                </q-expansion-item>
-
+                          </div>
+                        </q-card-section>
+                      </q-card>
+                    </q-expansion-item>
                   </div>
                 </q-scroll-area>
             </q-tabs>
@@ -422,6 +420,7 @@
             <div :class="{'bg-white2':$store.state.settings.lightMode === 'false'}" class="full-height">
               <!-- <q-scroll-area :visible="true" style="height: 87vh;"> -->
                 <div :key="accountOption.name"  v-if="$store.state.settings.network == 'mainnet' && chain == 'eth' && accountOption.chain == 'eth'" class="full-height">
+                  <div class="mobile-message" :class="{'text-white' : $store.state.settings.lightMode === 'true'}">For better performance, we invite you to visit the application on a larger screen</div>
                   <LiquidityPoolsTable :chain="'eth'" :rowsPerPage="10" class="minHeight full-height" v-if="menu == 'liquidity'"/>
                   <InvestmentsTable class="minHeight2 full-height" v-else-if="menu == 'investments'"/>
                   <DebtsTable class="minHeight2 DebtsTable full-height" v-else-if="menu == 'debts'"/>
@@ -430,8 +429,9 @@
                   <Oneinch v-if="chain == 'eth'" class="q-pl-md q-pb-sm accountOptionOneinch full-height" v-show="menu == 'swap'" />
                 </div>
                 <div v-if="chain == 'eos' && accountOption.chain == 'eos'" class="full-height">
+                  <div class="mobile-message" :class="{'text-white' : $store.state.settings.lightMode === 'true'}">For better performance, we invite you to visit the application on a larger screen</div>
                   <Swapeos class="q-pl-md q-pb-sm minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'swap' || menu == 'add_liquidity' || menu == 'liquidity'" />
-                  <EosInvestmentsTable :key="$store.state.investment.defaultAccount.name" class="full-height minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'investments'"/>
+                  <EosInvestmentsTable :mobile="true" :key="$store.state.investment.defaultAccount.name" class="full-height minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'investments'"/>
                   <TestnetPools class="minHeight3 full-height" v-if="$store.state.settings.network == 'testnet'"  v-show="menu == 'liquidity'" />
                   <TestnetInvestments class="minHeight3 full-height" v-if="$store.state.settings.network == 'testnet'" v-show="menu == 'investments'"  />
                   <VolentixLiquidity class="minHeight3 full-height" v-if="$store.state.settings.network == 'testnet'" :showLiquidity="false" v-show="menu == 'swap'" />
@@ -1924,6 +1924,13 @@ export default {
   border: 1px solid #CCC;
   border-radius: 10px !important;
 }
+.dark-theme{
+  .mobile-version{
+    .defi-sidebar-wrapper{
+      background: #04111F !important;
+    }
+  }
+}
 .mobile-version{
   .defi-sidebar-wrapper{
     overflow: hidden;
@@ -1995,6 +2002,13 @@ export default {
       }
     }
   }
+}
+.mobile-message{
+  font-size: 14px;
+  font-weight: $light;
+  margin-top: 70px;
+  margin-bottom: -60px;
+  padding: 5px 15px;
 }
 </style>
 <style>
