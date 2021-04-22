@@ -900,27 +900,85 @@ export default {
       }
     }
   }
-  .dark-theme{
-    /deep/ .summary-wrapper{
-      background-color: rgba(white, .06);
-      color: #FFF;
-      .q-item{
-        border-top: 1px solid rgba(white,.12) !important;
-        .q-item__label{
-          color: #FFF;
-        }
-        &:first-child{
-          border-top: none !important;
-        }
-      }
+
+/deep/ .swapeos-component,
+/deep/ .oneinch-wrapper,
+/deep/ .coinswitch-wrapper{
+  .trade-component .prototype .you-receive .chose_accounts{
+    font-size: 16px !important;
+    border-radius: 40px;
+    margin-top: 40px;
+    height: 54px;
+    width: fit-content !important;
+    float: right;
+    font-size: 14px !important;
+    height: 35px;
+    // color: #7272FA !important;
+    height: 40px !important;
+  }
+  .trade-component .prototype .you-receive{
+    .q-btn:not(.swap_vert){
+      font-size: 16px !important;
+      border-radius: 40px;
+      margin-top: 40px;
+      height: 54px;
+      width: fit-content !important;
+      float: right;
     }
-    /deep/ .swapeos-component,
-    /deep/ .oneinch-wrapper,
-    /deep/ .coinswitch-wrapper{
-      .trade-component .prototype .head{
+  }
+  .q-tab{
+    &.q-tab--active{
+      opacity: 1;
+    }
+  }
+}
+
+.dark-theme{
+  /deep/ .summary-wrapper{
+    background-color: rgba(white, .06);
+    color: #FFF;
+    .q-item{
+      border-top: 1px solid rgba(white,.12) !important;
+      .q-item__label{
         color: #FFF;
       }
-      .trade-component .prototype .you-receive .chose_accounts{
+      &:first-child{
+        border-top: none !important;
+      }
+    }
+  }
+  /deep/ .swapeos-component,
+  /deep/ .oneinch-wrapper,
+  /deep/ .coinswitch-wrapper{
+    .text-caption{
+      color: #FFF;
+      margin-top: 5px;
+    }
+    .trade-component .prototype .head{
+      color: #FFF;
+    }
+    .trade-component .prototype .you-receive .chose_accounts{
+      background-color: #FFF !important;
+      font-size: 16px !important;
+      // font-family: $Franklin !important;
+      color: #04111F !important;
+      border-radius: 40px;
+      margin-top: 40px;
+      height: 54px;
+      width: fit-content !important;
+      float: right;
+      font-size: 14px !important;
+      height: 35px;
+      color: #7272FA !important;
+      height: 40px !important;
+    }
+    .trade-component .prototype .you-receive-head,
+    .trade-component .prototype .you-pay-head{
+      color: #FFF;
+    }
+    .trade-component .prototype .you-receive{
+      background-color: rgba(white, .05);
+      .q-btn:not(.swap_vert){
         background-color: #FFF !important;
         font-size: 16px !important;
         // font-family: $Franklin !important;
@@ -930,146 +988,125 @@ export default {
         height: 54px;
         width: fit-content !important;
         float: right;
-        font-size: 14px !important;
-        height: 35px;
-        color: #7272FA !important;
-        height: 40px !important;
       }
-      .trade-component .prototype .you-receive-head,
-      .trade-component .prototype .you-pay-head{
-        color: #FFF;
-      }
-      .trade-component .prototype .you-receive{
-        background-color: rgba(white, .05);
-        .q-btn:not(.swap_vert){
-          background-color: #FFF !important;
-          font-size: 16px !important;
-          // font-family: $Franklin !important;
-          color: #04111F !important;
-          border-radius: 40px;
-          margin-top: 40px;
-          height: 54px;
-          width: fit-content !important;
-          float: right;
-        }
-        .swap_vert{
-          background-color: #04111F !important;
-        }
-      }
-      .q-tab{
-        color: #FFF;
-        opacity: .2;
-        background: transparent;
-        &.q-tab--active{
-          opacity: 1;
-        }
+      .swap_vert{
+        background-color: #04111F !important;
       }
     }
-    /deep/ .q-checkbox__label{
+    .q-tab{
+      color: #FFF;
+      opacity: .2;
+      background: transparent;
+      &.q-tab--active{
+        opacity: 1;
+      }
+    }
+  }
+  /deep/ .q-checkbox__label{
+    color: #FFF;
+  }
+  /deep/ .q-tab--active{
+    color: #FFF;
+    background: #627797;
+  }
+  /deep/ .q-tab--inactive{
+    color: #627797;
+  }
+  /deep/ .summary-wrapper__list{
+    color: #CCC;
+    .q-item__label + .q-item__label{
       color: #FFF;
     }
-    /deep/ .q-tab--active{
-      color: #FFF;
-      background: #627797;
-    }
-    /deep/ .q-tab--inactive{
-      color: #627797;
-    }
-    /deep/ .summary-wrapper__list{
+  }
+  /deep/ .multi-swap-path--list{
+    .q-item__label{
       color: #CCC;
-      .q-item__label + .q-item__label{
+    }
+    .q-item__section{
+      align-items: center;
+      justify-content: flex-end;
+    }
+  }
+  /deep/ .trade-component {
+    .prototype{
+      .you-receive{
+        background-color: #04111F;
+      }
+      .head{
         color: #FFF;
       }
+      .you-receive-head{
+        color: #FFF;
+      }
+      .you-pay-head{
+        color: #FFF;
+      }
+      .you-pay-body{
+
+      }
+      /deep/.swap_vert {
+        background-color: #04111F !important;
+
+        .q-btn__wrapper:before {
+          border: 3px solid #627797;
+        }
+      }
     }
-    /deep/ .multi-swap-path--list{
-      .q-item__label{
+    .select-input{
+      /deep/ .q-field__control .q-field__native .q-item__label.q-item__label--caption{
         color: #CCC;
       }
-      .q-item__section{
-        align-items: center;
-        justify-content: flex-end;
-      }
     }
-    /deep/ .trade-component {
-      .prototype{
-        .you-receive{
+  }
+  .desktop-version{
+      background: #04111F;
+      padding-bottom: 8px;
+      min-height: 102vh;
+      overflow: hidden;
+      position: relative;
+      scrollbar-width: 0px;
+      .col-title h4{
+          color: #FFF;
+      }
+  }
+  .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+      background-color: #04111F;
+  }
+  &.mobile-version{
+      .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
           background-color: #04111F;
-        }
-        .head{
-          color: #FFF;
-        }
-        .you-receive-head{
-          color: #FFF;
-        }
-        .you-pay-head{
-          color: #FFF;
-        }
-        .you-pay-body{
-
-        }
-        /deep/.swap_vert {
-          background-color: #04111F !important;
-
-          .q-btn__wrapper:before {
-            border: 3px solid #627797;
-          }
-        }
       }
-      .select-input{
-        /deep/ .q-field__control .q-field__native .q-item__label.q-item__label--caption{
+      .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--subtitle{
           color: #CCC;
-        }
       }
-    }
-    .desktop-version{
-        background: #04111F;
-        padding-bottom: 8px;
-        min-height: 102vh;
-        overflow: hidden;
-        position: relative;
-        scrollbar-width: 0px;
-        .col-title h4{
-            color: #FFF;
-        }
-    }
-    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
-        background-color: #04111F;
-    }
-    &.mobile-version{
-        .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
-            background-color: #04111F;
-        }
-        .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--subtitle{
-            color: #CCC;
-        }
-        .chain-tools-wrapper--list .list-wrapper .select-input .q-field__control .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{
-            color: #CCC !important;
-        }
-        .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--amount{
-            color: #FFF !important;
-        }
-        .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--subtitle ul li span{
-            color: #CCC;
-        }
-        /deep/ .q-stepper{
-            &.q-dark{
-                background: #04111F;
-                .q-tab-panels{
-                    background: #04111F;
-                }
-                .q-stepper__title{
-                    color: #CCC !important;
-                }
-            }
-        }
-        &.chain-tools-wrapper{
-            background-color: #04111F;
-            .standard-content--title{
-                color: #FFF;
-                margin-bottom: 10px;
-            }
-        }
-    }
+      .chain-tools-wrapper--list .list-wrapper .select-input .q-field__control .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{
+          color: #CCC !important;
+      }
+      .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--amount{
+          color: #FFF !important;
+      }
+      .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--subtitle ul li span{
+          color: #CCC;
+      }
+      /deep/ .q-stepper{
+          &.q-dark{
+              background: #04111F;
+              .q-tab-panels{
+                  background: #04111F;
+              }
+              .q-stepper__title{
+                  color: #CCC !important;
+              }
+          }
+      }
+      &.chain-tools-wrapper{
+          background-color: #04111F;
+          .standard-content--title{
+              color: #FFF;
+              margin-bottom: 10px;
+          }
+      }
+  }
 }
 
 .desktop-card-style{

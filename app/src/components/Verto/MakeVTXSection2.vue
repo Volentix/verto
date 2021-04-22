@@ -4,11 +4,11 @@
         <div v-if="$store.state.settings.lightMode === 'true'" class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md">Staking</div>
         <div v-else class="exchange-container--head-title flex justify-between items-center q-pa-sm q-pl-md q-pr-sm q-pb-md lightmd">Staking</div>
         <div class="row items-center q-pa-md">
-            <div class="col-6 column p-desc q-pb-sm">
+            <div class="col-4 column p-desc q-pb-sm">
               <span class="text-bold stake-amount">10,000 VTX</span>
               <span class="text-grey stake-amount-required">Minimum required</span>
             </div>
-            <div class="col-6 flex justify-end">
+            <div class="col-6 flex">
                 <q-btn v-if="!canStakeVTX" unelevated class="qbtn-start" color="black" @click="goToExchange" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" label="Get VTX Now" />
                 <q-btn v-else unelevated class="qbtn-start" color="black" @click="goToStaking" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" label="Stake VTX Now" />
             </div>
@@ -499,7 +499,7 @@ export default {
       background-repeat: no-repeat !important;
       &.dark{
         background-size: auto 100% !important;
-        background-position: -10px -2px !important;
+        background-position: calc(100% + 25px) -2px !important;
         background-repeat: no-repeat !important;
       }
       @media screen and (min-height: 700px) {
