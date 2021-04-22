@@ -406,7 +406,7 @@ class Wallets2Tokens {
               privateKeyEncrypted: wallet.privateKeyEncrypted,
               amount: token.amount,
               usd: token.usd_value,
-              tokenPrice: token.price,
+              tokenPrice: token.exchanges && token.exchanges[0] ? token.exchanges[0].price : 0,
               contract: token.contract,
               precision: token.decimals,
               chain: 'eos',

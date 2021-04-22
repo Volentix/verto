@@ -4327,7 +4327,7 @@ babel-runtime@6.26.0, babel-runtime@^6.22.0, babel-runtime@^6.26.0, babel-runtim
     core-js "^2.4.0"
     regenerator-runtime "^0.11.0"
 
-babel-runtime@^5.8.20:
+babel-runtime@^5.8.0, babel-runtime@^5.8.20:
   version "5.8.38"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-5.8.38.tgz#1c0b02eb63312f5f087ff20450827b425c9d4c19"
   integrity sha1-HAsC62MxL18If/IEUIJ7QlydTBk=
@@ -18368,12 +18368,20 @@ vue-text-marquee@^1.1.0:
   dependencies:
     vue "^2.5.21"
 
+vue-videobg@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/vue-videobg/-/vue-videobg-2.0.0.tgz#58267502eda6dbe158a2d5dd924cf61bea086d0c"
+  integrity sha1-WCZ1Au2m2+FYotXdkkz2G+oIbQw=
+  dependencies:
+    babel-runtime "^5.8.0"
+    vue "^2.3.2"
+
 vue@2.6.11, vue@^2.2.4, vue@^2.6.11:
   version "2.6.11"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.11.tgz#76594d877d4b12234406e84e35275c6d514125c5"
   integrity sha512-VfPwgcGABbGAue9+sfrD4PuwFar7gPb1yl1UK1MwXoQPAw0BKSqWfoYCT/ThFrdEVWoI51dBuyCoiNU9bZDZxQ==
 
-vue@^2.5.21:
+vue@^2.3.2, vue@^2.5.21:
   version "2.6.12"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.12.tgz#f5ebd4fa6bd2869403e29a896aed4904456c9123"
   integrity sha512-uhmLFETqPPNyuLLbsKz6ioJ4q7AZHzD8ZVFNATNyICSZouqP2Sz0rotWQC8UNBF6VGSCs5abnKJoStA6JbCbfg==

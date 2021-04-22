@@ -420,7 +420,7 @@
             <div :class="{'bg-white2':$store.state.settings.lightMode === 'false'}" class="full-height">
               <!-- <q-scroll-area :visible="true" style="height: 87vh;"> -->
                 <div :key="accountOption.name"  v-if="$store.state.settings.network == 'mainnet' && chain == 'eth' && accountOption.chain == 'eth'" class="full-height">
-                  <div class="mobile-message" :class="{'text-white' : $store.state.settings.lightMode === 'true'}">For better performance, we invite you to visit the application on a larger screen</div>
+                  <div class="mobile-message" :class="{'text-white' : $store.state.settings.lightMode === 'true'}">for better user experience please visit the web application</div>
                   <LiquidityPoolsTable :chain="'eth'" :rowsPerPage="10" class="minHeight full-height" v-if="menu == 'liquidity'"/>
                   <InvestmentsTable class="minHeight2 full-height" v-else-if="menu == 'investments'"/>
                   <DebtsTable class="minHeight2 DebtsTable full-height" v-else-if="menu == 'debts'"/>
@@ -429,7 +429,7 @@
                   <Oneinch v-if="chain == 'eth'" class="q-pl-md q-pb-sm accountOptionOneinch full-height" v-show="menu == 'swap'" />
                 </div>
                 <div v-if="chain == 'eos' && accountOption.chain == 'eos'" class="full-height">
-                  <div class="mobile-message" :class="{'text-white' : $store.state.settings.lightMode === 'true'}">For better performance, we invite you to visit the application on a larger screen</div>
+                  <div class="mobile-message" :class="{'text-white' : $store.state.settings.lightMode === 'true'}">for better user experience please visit the web application</div>
                   <Swapeos class="q-pl-md q-pb-sm minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'swap' || menu == 'add_liquidity' || menu == 'liquidity'" />
                   <EosInvestmentsTable :mobile="true" :key="$store.state.investment.defaultAccount.name" class="full-height minHeight3" v-if="$store.state.settings.network == 'mainnet'" v-show="menu == 'investments'"/>
                   <TestnetPools class="minHeight3 full-height" v-if="$store.state.settings.network == 'testnet'"  v-show="menu == 'liquidity'" />

@@ -1,8 +1,6 @@
-
-   <template>
-  <div class="wrapper row q-pb-lg">
+<template>
+  <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" class="wrapper row q-pb-lg">
     <div class="left-area col-md-8">
-
       <div class="left q-ml-md q-pt-md">
         <span
          class="z-max"
@@ -13,7 +11,7 @@
             {{ asset.type.toUpperCase() }}
             <img
               style="max-width: 30px"
-              src="https://cdn.iconscout.com/icon/free/png-256/verified-badge-1-866240.png"
+              :src=" $store.state.settings.lightMode === 'true' ? 'statics/verified-badge-2-866240.png':'https://cdn.iconscout.com/icon/free/png-256/verified-badge-1-866240.png'"
               alt=""
             />
           </h2>
@@ -318,14 +316,15 @@
                           </template>
                         </q-select> -->
           <q-input
+            :dark="$store.state.settings.lightMode === 'true'"
             bottom-slots
             :label="asset.type.toUpperCase() + ' amount'"
             class="col-12 q-px-md q-pt-md"
             v-model="depositQuantity"
           >
             <template v-slot:append>
-              <q-icon size="1rem"  class="q-pl-sm" :name="`img:${asset.icon}`" />
-              <span class="text-body2 text-black ">{{ asset.type.toUpperCase() }}</span>
+              <q-icon size="1rem" class="q-pl-sm" :name="`img:${asset.icon}`" />
+              <span class="text-body2" :class="{'text-white': $store.state.settings.lightMode === 'true', 'text-black': $store.state.settings.lightMode === 'false'}">{{ asset.type.toUpperCase() }}</span>
             </template>
             <template v-slot:counter>
               <span v-if="assetBalance"></span>Balance:
@@ -333,74 +332,73 @@
             </template>
           </q-input>
           <q-select  v-if="(tab == 'swap' || tab == 'add liquidity') && destinationCoin" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input q-mt-md" use-input @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
-                            <template v-slot:option="scope">
-                                <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
-                                    <q-item-section avatar>
-                                        <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
-                                    </q-item-section>
-                                    <q-item-section dark>
-                                        <q-item-label v-html="scope.opt.label" />
-                                        <q-item-label v-if="scope.opt.value.toLowerCase() !== scope.opt.label.toLowerCase()" caption>{{ scope.opt.value }}</q-item-label>
-                                        <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
+            <template v-slot:option="scope">
+                <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
+                    <q-item-section avatar>
+                        <q-icon class="option--avatar option--avatar__custom" :name="`img:${scope.opt.image}`" />
+                    </q-item-section>
+                    <q-item-section dark>
+                        <q-item-label v-html="scope.opt.label" />
+                        <q-item-label v-if="scope.opt.value.toLowerCase() !== scope.opt.label.toLowerCase()" caption>{{ scope.opt.value }}</q-item-label>
+                        <q-item-label v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
 
-                                    </q-item-section>
-                                </q-item>
-                            </template>
-                            <template v-slot:selected>
-                                <q-item v-if="destinationCoin">
-                                    <q-item-section avatar>
-                                        <q-icon class="option--avatar option--avatar__custom" :name="`img:${destinationCoin.image}`" />
-                                    </q-item-section>
-                                    <q-item-section>
-                                        <q-item-label v-html="destinationCoin.label" />
-                                    </q-item-section>
-                                </q-item>
-                                <q-item v-else>
-                                </q-item>
-                            </template>
-                        </q-select>
+                    </q-item-section>
+                </q-item>
+            </template>
+            <template v-slot:selected>
+                <q-item v-if="destinationCoin">
+                    <q-item-section avatar>
+                        <q-icon class="option--avatar option--avatar__custom" :name="`img:${destinationCoin.image}`" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label v-html="destinationCoin.label" />
+                    </q-item-section>
+                </q-item>
+                <q-item v-else>
+                </q-item>
+            </template>
+          </q-select>
           <q-input
-           v-if=" false && tab == 'swap' && depositCoin"
+            :dark="$store.state.settings.lightMode === 'true'"
+            v-if=" false && tab == 'swap' && depositCoin"
             bottom-slots
             :label="'To '+ depositCoin.value.toUpperCase() + ' amount'"
             class="col-12 q-px-md q-pt-md"
             v-model="destinationQuantity"
           >
             <template v-slot:append>
-               <q-select style="width:60px" dense   :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'"   borderless  v-model="depositCoin"    :loading="!destinationCoinOptions" :options="destinationCoinOptions">
-                            <template v-slot:option="scope">
-                                <q-item  v-bind="scope.itemProps" v-on="scope.itemEvents">
-                                    <q-item-section size="1rem" avatar>
-                                        <q-icon class="option--avatar option--avatar__custom"  :name="`img:${scope.opt.image}`" />
-                                    </q-item-section>
-                                    <q-item-section dark>
-                                        <q-item-label v-html="scope.opt.label" />
-                                        <q-item-label v-if="scope.opt.value.toLowerCase() !== scope.opt.label.toLowerCase()" caption>{{ scope.opt.value }}</q-item-label>
+              <q-select style="width:60px" dense   :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'"   borderless  v-model="depositCoin"    :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                <template v-slot:option="scope">
+                    <q-item  v-bind="scope.itemProps" v-on="scope.itemEvents">
+                        <q-item-section size="1rem" avatar>
+                            <q-icon class="option--avatar option--avatar__custom"  :name="`img:${scope.opt.image}`" />
+                        </q-item-section>
+                        <q-item-section dark>
+                            <q-item-label v-html="scope.opt.label" />
+                            <q-item-label v-if="scope.opt.value.toLowerCase() !== scope.opt.label.toLowerCase()" caption>{{ scope.opt.value }}</q-item-label>
 
-                                    </q-item-section>
-                                </q-item>
-                            </template>
-                            <template v-slot:selected>
-                                <q-item v-if="depositCoin" >
-
-                                    <q-item-section class="row destination">
-                                      <div><q-icon class="q-pr-sm"  size="1rem" :name="`img:${depositCoin.image}`" /></div>
-                                      <div>{{depositCoin.value.toUpperCase()}}</div>
-                                    </q-item-section>
-                                </q-item>
-                            </template>
-                        </q-select>
+                        </q-item-section>
+                    </q-item>
+                </template>
+                <template v-slot:selected>
+                  <q-item v-if="depositCoin" >
+                    <q-item-section class="row destination">
+                      <div><q-icon class="q-pr-sm"  size="1rem" :name="`img:${depositCoin.image}`" /></div>
+                      <div>{{depositCoin.value.toUpperCase()}}</div>
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
             </template>
-
           </q-input>
-          <q-input  v-if="tab == 'send'" label="To" class="col-12 q-px-md" v-model="sendTo" />
+          <q-input :dark="$store.state.settings.lightMode === 'true'" v-if="tab == 'send'" label="To" class="col-12 q-px-md" v-model="sendTo" />
           <q-input
+            :dark="$store.state.settings.lightMode === 'true'"
             v-if="asset.chain == 'eos' && tab == 'send' && sendTo && sendTo.length"
             label="Memo (Optional)"
             class="col-12 q-px-md"
             v-model="memo"
           />
-
         </div>
         <form action="#" method="#" v-if="tab == 'send'">
           <div class="input-bg" v-if="false">
@@ -414,7 +412,6 @@
                   dense
                 />
               </div>
-
               <div class="select-op col">
                 <q-select
                   dense
@@ -533,8 +530,8 @@
       <AssetBalancesTable v-else-if="tokenTabOption == 'assets'" @setAsset="setAsset" :rowsPerPage="6"/>
       <liquidityPoolsTable  v-else-if="tokenTabOption == 'opportunities'"  :asset="asset" :rowsPerPage="7"   />
     </div>
-  </div>
     </div>
+  </div>
 
 </template>
 <script>
@@ -573,7 +570,7 @@ export default {
           this.sendTo.trim().length !== 0 &&
           parseFloat(this.depositQuantity) !== 0 &&
           parseFloat(this.assetBalance) !== 0
-      } else if (this.tab === 'swap') {
+      } else if (this.tab === 'swap' || this.tab === 'add liquidity') {
         valid = true
       }
       return valid
@@ -705,8 +702,7 @@ export default {
       this.getBalance()
     },
     triggerAction () {
-      console.log(99, this.tab)
-      if (this.tab === 'swap') {
+      if (this.tab === 'swap' || this.tab === 'add liquidity') {
         this.goToExchange()
       } else if (this.tab === 'send') {
         this.spinnerVisible = true
@@ -725,7 +721,8 @@ export default {
           params: {
             depositCoin: depositCoin,
             destinationCoin: destinationCoin,
-            dex: this.dex
+            dex: this.dex,
+            tab: this.tab
           }
         })
       }
@@ -764,8 +761,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 .wrapper {
-    background: #fff;
-    min-height: 78vh;
+  background: #fff;
+  min-height: 78vh;
 }
 .left.left2 {
   margin-top: 30px;
@@ -820,7 +817,7 @@ export default {
     opacity: 0;
 }
 .cropped {
-  height: 190px  !important;
+  height: 195px  !important;
 }
 
 .token-chart /deep/ canvas {
@@ -1331,6 +1328,40 @@ export default {
 
   .right {
     margin: 15px;
+  }
+}
+.dark-theme{
+  .showhistory{
+    border: 1px solid #627797 !important;
+    border-radius: 10px !important;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  .wrapper {
+    background-color: #04111F;
+    // border: 1px solid #627797;
+    .left2{
+      border: 1px solid #627797;
+    }
+    .left ul.tab-btn li a{
+    }
+    .left-area,
+    .right-area,
+    .left,
+    .text-body2,
+    .right.active-card{
+      background: transparent !important;
+    }
+    /deep/ .q-dark{
+      background-color: #04111F !important;
+    }
+    color: #FFF;
+    .left table h3,
+    .left table h5,
+    .left table p,
+    .left h2, .main h6,.main h2{
+      color: #FFF;
+    }
   }
 }
 </style>
