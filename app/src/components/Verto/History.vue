@@ -1,5 +1,5 @@
 <template>
-<div style="height: 100%;">
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100%;">
   <div class="transaction-wrapper" style="height: 100%;">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="transaction-wrapper--list open" v-if="legacyHistory.length">
@@ -24,7 +24,7 @@
       History for the {{this.$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
     </q-banner>
 
-    <div  class="q-pa-md" v-else-if="loading">
+    <div class="q-pa-md loading-table" v-else-if="loading">
       <q-markup-table flat>
         <thead>
           <tr>
@@ -50,7 +50,7 @@
         </thead>
 
         <tbody>
-          <tr v-for="n in 5" :key="n">
+          <tr v-for="n in 10" :key="n">
             <td class="text-left">
               <q-skeleton animation="blink" type="text" width="85px" />
             </td>
@@ -1017,5 +1017,22 @@ export default {
   .border-top{
     border-top: 1px solid #CCC;
   }
-
+  .dark-theme{
+    .q-table__card{
+      background-color: #04111F;
+      margin-left: -10px;
+      margin-top: 10px;
+    }
+    .loading-table{
+      .q-table thead, .q-table tr, .q-table th, .q-table td {
+        // border-color: none !important;
+        background-color: #06182c !important;
+      }
+    }
+    .transaction-wrapper{
+      &--list{
+        background-color: #04111F;
+      }
+    }
+  }
 </style>

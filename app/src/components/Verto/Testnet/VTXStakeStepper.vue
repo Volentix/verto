@@ -100,7 +100,7 @@
                         </q-select>
                       </div>
                       <div class="col-md-6 q-pl-lg">
-                        <div class="row">
+                        <div class="row current-stake-balanca">
                               <div class="">
                                 <span class="--title row text-h6"> Current Balance<br>{{ params.tokenID.toUpperCase() }} (Liquid) </span>
                                 <span class="--amount row text-h4"> {{ formatNumber(currentAccount.amount, 0) }} {{ params.tokenID.toUpperCase() }} </span>
@@ -152,7 +152,7 @@
                                 :min="2"
                                 :max="10"
                                 :step="1"
-                                color="orange"
+                                color="deep-purple-12"
                                 :label-color="progColor"
                                 dark
                                 markers
@@ -173,7 +173,7 @@
                                 :min="0"
                                 :max="100"
                                 :step="1"
-                                color="orange"
+                                color="deep-purple-12"
                                 :label-color="progColor"
                                 dark
                                 markers
@@ -202,7 +202,7 @@
                       </div>
                             </div>
                             <div  class="col-md-6 q-pa-md flex flex-center">
-                            <div class="row full-width shadow-1 q-ma-lg q-pa-lg rounded-borders" style="max-width:300px;">
+                            <div class="summary-wrapper row full-width shadow-1 q-ma-lg q-pa-lg rounded-borders" style="max-width:300px;">
                               <div class="full-width">
                                 <span class="--title row text-h6"> Amount to stake </span>
                                 <span class="--amount row text-h4"> {{  formatNumber(sendAmount, 2) }} {{ params.tokenID.toUpperCase() }}</span>
@@ -239,9 +239,13 @@
                     >
                       <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
 
-                      <div class="text-black">
-                        <div class="text-h4 --subtitle">Enter your password to sign the transaction.</div>
+                      <div class="text-black" >
+                        <div class="summary text-body1 q-pa-sm rounded-borders q-mt-sm">
+                          You are about to stake <span class="text-deep-purple-12">{{formatNumber(sendAmount, 0)}} {{ params.tokenID.toUpperCase() }}</span> for a period of <span class="text-deep-purple-12">{{stakePeriod * 30}} days</span>.<br> You will be rewarded <span class="text-deep-purple-12">{{formatNumber(estimatedReward, 0)}} {{ params.tokenID.toUpperCase() }}</span> at the end of that period.
+                        </div>
+                        <div class="text-h4 --subtitle q-pt-md">Enter your password to sign the transaction.</div>
                         <q-input
+
                           v-model="privateKeyPassword"
                           :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                           rounded
@@ -265,7 +269,7 @@
                         </q-input>
                       </div>
                       <q-stepper-navigation class="flex justify-end">
-                        <q-btn @click="sendTransaction()" color="deep-purple-14" class="--next-btn" rounded label="Submit" />
+                        <q-btn @click="sendTransaction()" color="deep-purple-14"  :disable="!privateKey.success" class="--next-btn" rounded label="Submit" />
                       </q-stepper-navigation>
                     </q-step>
                     <q-step v-else title="Confirm & Submit"
@@ -274,7 +278,9 @@
                       :done="step > 2"
                     >
                       <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
-
+                        <div class="summary text-body1 q-pa-sm rounded-borders q-mt-sm">
+                          You are about to stake <span class="text-deep-purple-12">{{formatNumber(sendAmount, 0)}} {{ params.tokenID.toUpperCase() }}</span> for a period of <span class="text-deep-purple-12">{{stakePeriod * 30}} days</span>.<br> You will be rewarded <span class="text-deep-purple-12">{{formatNumber(estimatedReward, 0)}} {{ params.tokenID.toUpperCase() }}</span> at the end of that period.
+                        </div>
                       <div class="text-black">
                         <div class="text-h4 --subtitle">Are you sure?</div>
                       </div>
@@ -672,6 +678,13 @@ export default {
 
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
+  .summary {
+    border: 1px solid #c1c0c0;
+    width: fit-content;
+  }
+  .q-stepper__step:nth-child(n+2) {
+    max-width: 600px;
+}
   .chain-tools-wrapper{
     padding: 0px 6%;
     &--list{
@@ -1046,7 +1059,7 @@ export default {
               font-weight: $regular;
               line-height: 20px;
               margin-top: 10px;
-              margin-bottom: 30px;
+              margin-bottom: 10px;
               &__success{
                 color: #00D0CA;
                 font-weight: $bold;
@@ -1115,7 +1128,61 @@ export default {
     width: 100%;
     max-width: 145px;
   }
+  .current-stake-balanca{
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 337px;
+    margin-top: 5px;
+    margin-left: 2px;
+    transform: scale(.9);
+    @media screen and (min-height: 700px) {
+      margin-left: 25px;
+    }
+    @media screen and (min-height: 760px) {
+      margin-left: 37px;
+    }
+  }
+  .summary-wrapper{
+    margin-top: -5px;
+    border-radius: 8px;
+  }
   .dark-theme{
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+      /deep/ .q-tab-panel{
+        background-color: #04111F;
+      }
+    }
+    .chain-tools-wrapper--list .list-wrapper .select-input{
+      /deep/ .q-field__control .q-field__native .q-item .q-item__section .q-item__label + .q-item__label{
+        color: #FFF !important;
+      }
+    }
+    .current-stake-balanca{
+      border: 1px solid #627797;
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 337px;
+      margin-top: 5px;
+      margin-left: 2px;
+      transform: scale(.9);
+      @media screen and (min-height: 700px) {
+        margin-left: 25px;
+      }
+      @media screen and (min-height: 760px) {
+        margin-left: 37px;
+      }
+    }
+    .summary-wrapper{
+      border: 1px solid #627797;
+      margin-top: -5px;
+      border-radius: 8px;
+    }
+    .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .--amount{
+      color: #FFF !important;
+    }
+    .slider-holder.stake-period{
+      color: #FFF !important;
+    }
     .vtx-converter-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
       background-color: #04111F;
     }
