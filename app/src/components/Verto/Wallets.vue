@@ -451,6 +451,7 @@
 
             <q-scroll-area :visible="true" ref="walletsScrollArea" class="walletsScrollArea q-mr-sm q-ml-xs" :class="{'short' : $store.state.currentwallet.wallet.empty, 'long' : !$store.state.currentwallet.wallet.empty}" :style="$store.state.currentwallet.wallet.empty ? 'height: 80%;': 'height: 90%;'">
                 <q-list bordered separator class="list-wrapper">
+
                     <div v-if="$store.state.currentwallet.wallet.empty" class="all-wallets">
                         <q-item  v-show="!hideEosSetup"  class="highlight on-top" dense>
                             <q-item-section @click="hideEOSSetup()" class="text-center  cursor-pointer q-py-sm">
@@ -1309,12 +1310,9 @@ export default {
     }
   },
   async mounted () {
-    this.hideEosSetup = localStorage.getItem('hideEosSetup')
-
-    if (!this.hideEosSetup) {
-      this.hideEosSetup = !this.$store.state.wallets.tokens.find(f => f.type === 'verto' && f.chain === 'eos' && !f.hidden && !f.disabled)
-    }
-
+    setTimeout(() => {
+      this.showSetupEos()
+    }, 5000)
     this.setChains()
     this.setVtxData()
 
@@ -1364,6 +1362,13 @@ export default {
     }
   },
   methods: {
+    showSetupEos () {
+      this.hideEosSetup = localStorage.getItem('hideEosSetup')
+
+      if (!this.hideEosSetup) {
+        this.hideEosSetup = !this.$store.state.wallets.tokens.find(f => f.type === 'verto' && f.chain === 'eos' && !f.hidden && !f.disabled)
+      }
+    },
     setVtxData () {
       this.vtxAccounts = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).filter((v) => v.type === 'vtx' && v.chain === 'eos')
       this.vtxAccounts.total = this.vtxAccounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)

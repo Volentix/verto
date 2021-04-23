@@ -12,10 +12,10 @@
             <div class="col col-md-9 q-pr-md">
                 <div class="row dashboard-ui-tokens">
                     <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet' && false" >
-                        <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if=" $store.state.settings.network == 'mainnet'"  />
+                        <ExchangeSection3  v-if=" $store.state.settings.network == 'mainnet'"  />
                     </div>
                     <div class="col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet' && false">
-                        <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  />
+                        <makeVTXSection2   />
                     </div>
                      <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
                      <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
@@ -46,11 +46,11 @@
                                 transition-next="jump-up"
                                 >
                                 <q-tab-panel name="explore">
-                                    <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="8"  v-if="$store.state.settings.network == 'mainnet'" />
+                                    <liquidityPoolsTable  :rowsPerPage="8"  v-if="$store.state.settings.network == 'mainnet'" />
                                     <TestnetPools :showAddLiquidity="true" class="bg-white" v-else />
                                 </q-tab-panel>
                                 <q-tab-panel name="asset">
-                                    <AssetBalancesTable @setAsset="setAsset" data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="8" />
+                                    <AssetBalancesTable @setAsset="setAsset" :rowsPerPage="8" />
                                 </q-tab-panel>
                             </q-tab-panels>
                         </div>
@@ -284,6 +284,9 @@ export default {
   async mounted () {
     this.$bus.$on('showHomeIntro', () => {
       this.showIntros()
+    })
+    this.$bus.$on('showDefaultDashboard', () => {
+      this.assetSelected = false
     })
     this.$bus.$on('selectedChain', () => {
       this.setChainData()
