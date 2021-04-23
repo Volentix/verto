@@ -13,13 +13,6 @@ class Wallets2Tokens {
     this.tableData = []
 
     // store.state.wallets.portfolioTotal = 0
-    /*
-    store.state.currentwallet.config.keys.push({
-      chain: 'eos',
-      type: 'eos',
-      name: 'crosschainfx'
-    })
-    */
 
     if (data) {
       walletName = walletName ? walletName.toLowerCase() : walletName
@@ -270,13 +263,13 @@ class Wallets2Tokens {
                 // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
                 // eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
 
-                eos.amount = t.amount ? t.amount : 0
+                eos.amount = t.amount ? t.amount : '0.0000'
                 eos.usd = this.eosUSD * t.amount
                 eos.contract = 'eosio.token'
                 eos.tokenPrice = this.eosUSD
                 eos.privateKey = wallet.privateKey
                 eos.privateKeyEncrypted = wallet.privateKeyEncrypted
-                eos.precision = t.amount.split('.')[1] ? t.amount.split('.')[1].length : 0
+                eos.precision = eos.amount.split('.')[1] ? eos.amount.split('.')[1].length : 0
                 eos.accountData = a
                 eos.proxy = a.voter_info ? a.voter_info.proxy : ''
                 eos.staked = a.voter_info ? a.voter_info.staked / 10000 : 0
@@ -395,8 +388,16 @@ class Wallets2Tokens {
         if (response.data && response.data.tokens) {
           response.data.tokens.forEach(token => {
             let image = token.metadata.logo.split('https:').length === 3 ? token.metadata.logo : 'https://raw.githubusercontent.com/eoscafe/eos-airdrops/master/logos/placeholder.png'
-
-            this.tableData.push({
+            let data = token
+            data.tokenPrice = token.exchanges && token.exchanges[0] ? token.exchanges[0].price : 0
+            if (token.currency.toLowerCase() === 'vtx') {
+              let vtxData = store.state.tokens.walletTokensData.find(o => o.symbol === 'vtx')
+              if (vtxData) {
+                data.tokenPrice = vtxData.current_price
+              } else if (data.tokenPrice) {
+                data.tokenPrice = token.exchanges.find(o => o.name === 'Defibox').price
+              }
+            } this.tableData.push({
               selected: false,
               disabled: false,
               type: token.currency.toLowerCase(),
@@ -405,8 +406,8 @@ class Wallets2Tokens {
               privateKey: wallet.privateKey,
               privateKeyEncrypted: wallet.privateKeyEncrypted,
               amount: token.amount,
-              usd: token.usd_value,
-              tokenPrice: token.exchanges && token.exchanges[0] ? token.exchanges[0].price : 0,
+              usd: token.amount * data.tokenPrice,
+              tokenPrice: data.tokenPrice,
               contract: token.contract,
               precision: token.decimals,
               chain: 'eos',

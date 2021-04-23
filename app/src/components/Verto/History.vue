@@ -1,5 +1,5 @@
 <template>
-<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100%;">
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" class="history-component" style="height: 100%;">
   <div class="transaction-wrapper" style="height: 100%;">
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="transaction-wrapper--list open" v-if="legacyHistory.length">
@@ -20,64 +20,64 @@
        <q-btn @click="showMore()"  v-if="false" unelevated flat class="full-width transaction-wrapper--list__hide-transaction" color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" label="See More..." />
     </div>
     <div class="transaction-wrapper--list open" v-else style="height: 100%;">
-    <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="this.$store.state.investment.defaultAccount && !['eos','eth'].includes(this.$store.state.investment.defaultAccount.chain)">
-      History for the {{this.$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
-    </q-banner>
+      <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="this.$store.state.investment.defaultAccount && !['eos','eth'].includes(this.$store.state.investment.defaultAccount.chain)">
+        History for the {{this.$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
+      </q-banner>
 
-    <div class="q-pa-md loading-table" v-else-if="loading">
-      <q-markup-table flat>
-        <thead>
-          <tr>
-            <th class="text-left" style="width: 150px">
-              <q-skeleton animation="blink" type="text" />
-            </th>
-            <th class="text-right">
-              <q-skeleton animation="blink" type="text" />
-            </th>
-            <th class="text-right">
-              <q-skeleton animation="blink" type="text" />
-            </th>
-            <th class="text-right">
-              <q-skeleton animation="blink" type="text" />
-            </th>
-            <th class="text-right">
-              <q-skeleton animation="blink" type="text" />
-            </th>
-            <th class="text-right">
-              <q-skeleton animation="blink" type="text" />
-            </th>
-          </tr>
-        </thead>
+      <div class="q-pa-md loading-table" v-else-if="loading">
+        <q-markup-table flat>
+          <thead>
+            <tr>
+              <th class="text-left" style="width: 150px">
+                <q-skeleton animation="blink" type="text" />
+              </th>
+              <th class="text-right">
+                <q-skeleton animation="blink" type="text" />
+              </th>
+              <th class="text-right">
+                <q-skeleton animation="blink" type="text" />
+              </th>
+              <th class="text-right">
+                <q-skeleton animation="blink" type="text" />
+              </th>
+              <th class="text-right">
+                <q-skeleton animation="blink" type="text" />
+              </th>
+              <th class="text-right">
+                <q-skeleton animation="blink" type="text" />
+              </th>
+            </tr>
+          </thead>
 
-        <tbody>
-          <tr v-for="n in 10" :key="n">
-            <td class="text-left">
-              <q-skeleton animation="blink" type="text" width="85px" />
-            </td>
-            <td class="text-right">
-              <q-skeleton animation="blink" type="text" width="50px" />
-            </td>
-            <td class="text-right">
-              <q-skeleton animation="blink" type="text" width="35px" />
-            </td>
-            <td class="text-right">
-              <q-skeleton animation="blink" type="text" width="65px" />
-            </td>
-            <td class="text-right">
-              <q-skeleton animation="blink" type="text" width="25px" />
-            </td>
-            <td class="text-right">
-              <q-skeleton animation="blink" type="text" width="85px" />
-            </td>
-          </tr>
-        </tbody>
-      </q-markup-table>
-    </div>
-    <div  class="q-pa-md" v-else-if="!history.length && !loading">
-      No transactions recorded yet with this account
-    </div>
+          <tbody>
+            <tr v-for="n in 10" :key="n">
+              <td class="text-left">
+                <q-skeleton animation="blink" type="text" width="85px" />
+              </td>
+              <td class="text-right">
+                <q-skeleton animation="blink" type="text" width="50px" />
+              </td>
+              <td class="text-right">
+                <q-skeleton animation="blink" type="text" width="35px" />
+              </td>
+              <td class="text-right">
+                <q-skeleton animation="blink" type="text" width="65px" />
+              </td>
+              <td class="text-right">
+                <q-skeleton animation="blink" type="text" width="25px" />
+              </td>
+              <td class="text-right">
+                <q-skeleton animation="blink" type="text" width="85px" />
+              </td>
+            </tr>
+          </tbody>
+        </q-markup-table>
+      </div>
+      <div  class="q-pa-md" v-else-if="!history.length && !loading">
+        No transactions recorded yet with this account
+      </div>
       <q-scroll-area v-else :visible="true" class="q-pr-md" style="height: 85%;">
-       <div v-for="(day,indexDay) in history" :key="indexDay">
+        <div v-for="(day,indexDay) in history" :key="indexDay">
         <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7"> {{day.friendlyDay}} </div>
         <q-list bordered dark separator class="list-wrapper"  v-for="(transaction, indexTx) in day.data" :key="indexTx">
 
@@ -108,9 +108,9 @@
                           <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">-{{transaction.amountFriendly}}</span> {{transaction.symbol}} </div>
                           <div class="text-grey" v-if="transaction.usdAmount">
                           ${{transaction.usdAmount}}
-                           <q-tooltip>
-                           Estimated USD equivalent on Day of Txn
-                         </q-tooltip>
+                            <q-tooltip>
+                            Estimated USD equivalent on Day of Txn
+                          </q-tooltip>
                         </div>
                         <div class="text-grey" v-else>
                           N/A
@@ -158,7 +158,7 @@
                 <div class="col" :class="[isMobile ? 'col-6':'col-4 q-pl-xl flex items-center']">
                   <div class="column">
                     <span class="text-bold text-grey">Transaction hash</span>  <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
-                     <q-tooltip>
+                      <q-tooltip>
                       {{transaction.hash}}
                     </q-tooltip>
                     </span>
@@ -168,7 +168,7 @@
                       <q-btn color="white" round size="sm" @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
                       <a :href="transaction.explorerLink" target="_blank">
                       <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
-                       </a>
+                        </a>
                   </div>
                 </div>
               </div>
@@ -201,9 +201,9 @@
                           <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">-{{transaction.subTransactions[0].amountFriendly}}</span> {{transaction.subTransactions[0].symbol}} </div>
                           <div class="text-grey" v-if="transaction.subTransactions[0].usdAmount">
                           ${{transaction.subTransactions[0].usdAmount}}
-                           <q-tooltip>
-                           Estimated USD equivalent on Day of Txn
-                         </q-tooltip>
+                            <q-tooltip>
+                            Estimated USD equivalent on Day of Txn
+                          </q-tooltip>
                         </div>
                         <div class="text-grey" v-else>
                           N/A
@@ -221,11 +221,11 @@
                         </div>
                         <div class="column">
                           <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">+{{transaction.subTransactions[1].amountFriendly}}</span> {{transaction.subTransactions[1].symbol}} </div>
-                         <div class="text-grey" v-if="transaction.subTransactions[1].usdAmount">
+                          <div class="text-grey" v-if="transaction.subTransactions[1].usdAmount">
                           ${{transaction.subTransactions[1].usdAmount}}
-                           <q-tooltip>
-                           Estimated USD equivalent on Day of Txn
-                         </q-tooltip>
+                            <q-tooltip>
+                            Estimated USD equivalent on Day of Txn
+                          </q-tooltip>
                         </div>
                         <div class="text-grey" v-else>
                           N/A
@@ -278,7 +278,7 @@
                   <div class="column">
                     <span class="text-bold text-grey">Transaction hash</span>
                     <span :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
-                     <q-tooltip>
+                      <q-tooltip>
                       {{transaction.hash}}
                     </q-tooltip></span>
                   </div>
@@ -316,14 +316,14 @@
                         <div class="column">
                           <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">+{{transaction.amountFriendly}}</span> {{transaction.symbol}}
                           <q-tooltip>
-                           The amount of {{transaction.symbol}} to be transferred to the recipient with the transaction
-                         </q-tooltip>
-                         </div>
+                            The amount of {{transaction.symbol}} to be transferred to the recipient with the transaction
+                          </q-tooltip>
+                          </div>
                           <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}" v-if="transaction.usdAmount">
                           ${{transaction.usdAmount}}
-                           <q-tooltip>
-                           Estimated USD equivalent on Day of Txn
-                         </q-tooltip>
+                            <q-tooltip>
+                            Estimated USD equivalent on Day of Txn
+                          </q-tooltip>
                         </div>
                         <div class="text-grey" v-else>
                           N/A
@@ -362,14 +362,16 @@
                 <div class="col" :class="[isMobile ? '':'q-mr-xl q-pl-xl']" v-else-if="transaction.chain == 'eos'">
                   <div class="text-bold text-grey">Memo</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
-                    <div class="ellipsis">{{transaction.memo}}</div>
+                    <span>
+                      <span class="ellipsis">{{transaction.memo}}</span>
+                    </span>
                   </div>
                 </div>
                 <div class="col" :class="[isMobile ? 'col-6':'col-4 q-pl-xl flex items-center']">
                   <div class="column">
                     <span class="text-bold text-grey">Transaction hash</span>
                     <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
-                     <q-tooltip>
+                      <q-tooltip>
                       {{transaction.hash}}
                     </q-tooltip>
                     </span>
@@ -378,7 +380,7 @@
                       <q-btn color="white" round size="sm" @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
                       <a :href="transaction.explorerLink" target="_blank">
                       <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
-                       </a>
+                        </a>
                   </div>
                 </div>
               </div>
@@ -386,7 +388,7 @@
           </q-item>
         </q-list>
         </div>
-         <p v-if="history.length && this.$store.state.currentwallet.wallet.chain == 'eth'" class="text-center text-body1 cursor-pointer" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" /></p>
+          <p v-if="history.length && this.$store.state.currentwallet.wallet.chain == 'eth'" class="text-center text-body1 cursor-pointer" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" /></p>
       </q-scroll-area>
     </div>
   </div>
@@ -1016,6 +1018,7 @@ export default {
   }
   .border-top{
     border-top: 1px solid #CCC;
+    height: 70px;
   }
   .dark-theme{
     .q-table__card{
