@@ -10,52 +10,51 @@
                 </div>
             </div>
             <div class="col col-md-9 q-pr-md">
-                <div class="row dashboard-ui-tokens">
-                    <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet' && false" >
-                        <ExchangeSection3  v-if=" $store.state.settings.network == 'mainnet'"  />
-                    </div>
-                    <div class="col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet' && false">
-                        <makeVTXSection2   />
-                    </div>
-                     <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
-                     <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
+              <div class="row dashboard-ui-tokens">
+                <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet' && false" >
+                  <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if=" $store.state.settings.network == 'mainnet'"  />
+                </div>
+                <div class="col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet' && false">
+                  <makeVTXSection2 data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"  />
+                </div>
+                <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
+                  <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
+                </q-breadcrumbs>
+                <NftsExplorer v-if="false && $store.state.settings.network != 'mainnet'" />
+                <AssetsExplorer v-show="!assetSelected" @setAsset="setAsset" />
+                <SingleToken  :asset="assetSelected" class="col-md-12" v-if="assetSelected" />
+                <div class="col col-md-12 full-height max-height2" v-else-if="$store.state.settings.network == 'mainnet' && false" >
 
-                    </q-breadcrumbs>
-                    <NftsExplorer v-if="false && $store.state.settings.network != 'mainnet'" />
-                    <AssetsExplorer v-show="!assetSelected" @setAsset="setAsset" />
-                    <SingleToken  :asset="assetSelected" class="col-md-12" v-if="assetSelected" />
-                    <div class="col col-md-12 full-height max-height2" v-else-if="$store.state.settings.network == 'mainnet' && false" >
-
-                        <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-                            <q-tabs
-                                v-model="tabPoolAndAssetBalances"
-                                class="tabPoolAndAssetBalances"
-                                :class="{'text-black bg-white': $store.state.settings.lightMode === 'false', 'text-white bg-myblue': $store.state.settings.lightMode === 'true'}"
+                    <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+                        <q-tabs
+                            v-model="tabPoolAndAssetBalances"
+                            class="tabPoolAndAssetBalances"
+                            :class="{'text-black bg-white': $store.state.settings.lightMode === 'false', 'text-white bg-myblue': $store.state.settings.lightMode === 'true'}"
+                        >
+                            <q-tab name="asset" class="text-capitalize" label="Asset Balances" />
+                            <q-tab name="explore" class="text-capitalize" label="Explore Opportunities" />
+                        </q-tabs>
+                        <q-tab-panels
+                            v-model="tabPoolAndAssetBalances"
+                            animated
+                            swipeable
+                            flat
+                            class="tabPoolAndAssetBalancesPanels"
+                            vertical
+                            transition-prev="jump-up"
+                            transition-next="jump-up"
                             >
-                                <q-tab name="asset" class="text-capitalize" label="Asset Balances" />
-                                <q-tab name="explore" class="text-capitalize" label="Explore Opportunities" />
-                            </q-tabs>
-                            <q-tab-panels
-                                v-model="tabPoolAndAssetBalances"
-                                animated
-                                swipeable
-                                flat
-                                class="tabPoolAndAssetBalancesPanels"
-                                vertical
-                                transition-prev="jump-up"
-                                transition-next="jump-up"
-                                >
-                                <q-tab-panel name="explore">
-                                    <liquidityPoolsTable  :rowsPerPage="8"  v-if="$store.state.settings.network == 'mainnet'" />
-                                    <TestnetPools :showAddLiquidity="true" class="bg-white" v-else />
-                                </q-tab-panel>
-                                <q-tab-panel name="asset">
-                                    <AssetBalancesTable @setAsset="setAsset" :rowsPerPage="8" />
-                                </q-tab-panel>
-                            </q-tab-panels>
-                        </div>
+                            <q-tab-panel name="explore">
+                                <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="8"  v-if="$store.state.settings.network == 'mainnet'" />
+                                <TestnetPools :showAddLiquidity="true" class="bg-white" v-else />
+                            </q-tab-panel>
+                            <q-tab-panel name="asset">
+                                <AssetBalancesTable @setAsset="setAsset" data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="8" />
+                            </q-tab-panel>
+                        </q-tab-panels>
                     </div>
                 </div>
+              </div>
             </div>
         </div>
     </div>
