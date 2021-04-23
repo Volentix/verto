@@ -285,6 +285,9 @@ export default {
     this.$bus.$on('showHomeIntro', () => {
       this.showIntros()
     })
+    this.$bus.$on('showDefaultDashboard', () => {
+      this.assetSelected = false
+    })
     this.$bus.$on('selectedChain', () => {
       this.setChainData()
     })
