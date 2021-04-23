@@ -12,7 +12,6 @@ export const getTokenMarketData = ({ commit, state }, id) => {
     commit('setWalletTokensData', result.data)
   })
 }
-axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=volentix-vtx')
 
 export const getTokensMarketsData = ({ commit, state }, tokens) => {
   if (!state.list) return
