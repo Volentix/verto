@@ -27,7 +27,7 @@
               letter-spacing: normal;
               color: #d0d0d2;
             "
-            >.{{ formatNumber(asset.rateUsd, 2).split(".")[1] }}</span
+            >.{{ formatNumber(asset.rateUsd, 3).split(".")[1] }}</span
           >
           <span class="q-pl-md text-h6" :class="asset.color">{{asset.change24hPercentage}}</span>
         </h3>
@@ -100,7 +100,7 @@
           <tr>
             <td>
               <h3><span class="text-bold q-pr-md"> Equity</span> <span class="percentage">{{ formatNumber(asset.percentage, 2)}}%</span></h3>
-              <h2>${{ formatNumber(asset.usd, 2)}}.<span>00</span></h2>
+              <h2>${{ formatNumber(asset.usd, 0)}}.<span>{{formatNumber(asset.usd, 2).split(".")[1]}}</span></h2>
               <h4>{{ formatNumber(asset.amount, 2)}} {{asset.type.toUpperCase()}}</h4>
             </td>
 
