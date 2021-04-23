@@ -10,7 +10,7 @@
                 </div>
             </div>
             <div class="col col-md-9 q-pr-md">
-                <div class="row">
+                <div class="row dashboard-ui-tokens">
                     <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet' && false" >
                         <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if=" $store.state.settings.network == 'mainnet'"  />
                     </div>
@@ -369,11 +369,11 @@ export default {
 
 <style lang="scss" scoped>
 
- .breadcrumbs {
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    margin-top: 0px;
- }
+.breadcrumbs {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  margin-top: 0px;
+}
 .exchange-container{
     min-height: 138px;
     margin: -3px;
@@ -824,6 +824,16 @@ export default {
     }
 }
 .dark-theme{
+    .dashboard-ui-tokens{
+      background-color: #04111F;
+      border: 1px solid #627797;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .breadcrumbs{
+      background-color: #04111F !important;
+      color: #FFF !important;
+    }
     .marg {
         /deep/ .profile-wrapper {
             &--header {
