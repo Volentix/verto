@@ -54,7 +54,7 @@
                 <p  class="q-py-sm text-bold" v-if="$store.state.settings.dexData.depositCoin && $store.state.settings.dexData.depositCoin"> Click go to exchange to swap {{$store.state.settings.dexData.fromAmount}}  {{$store.state.settings.dexData.depositCoin.value.toUpperCase()}} to {{$store.state.settings.dexData.destinationCoin.value.toUpperCase()}}</p>
             <div class="standard-content--body__form">
                 <div class="flex-end flex justify-end">
-                    <q-btn flat text-color="black" label="Go to Exchange" @click="dataRefresh('/verto/exchange')" /> <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Go to dashboard" @click="dataRefresh()" />
+                     <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Go to dashboard" @click="dataRefresh()" />
                 </div>
             </div>
         </div>
@@ -64,7 +64,7 @@
 
 <script>
 import HD from '@/util/hdwallet'
-import initWallet from '@/util/Wallets2Tokens'
+const localStorageKeysToDelete = ['walletPublicData', 'hideEosSetup', 'disableIntros_home', 'disableIntro_defi', 'closewizard', 'disable_freeospopup']
 // I have setup your symbols into a sandbox wallet named testwallet.
 // You can proceed with development with this as your walletName.
 // IDs will be created as foo@testwallet.crux
@@ -187,7 +187,6 @@ export default {
             currentAccount.to = `/verto/wallets/${currentAccount.chain}/${currentAccount.type}/${currentAccount.name}`
             currentAccount.icon = 'https://files.coinswitch.co/public/coins/eos.png'
             this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
-            initWallet()
           }
         }).catch((err) => {
           console.log('There was a problem getting account names', err)
@@ -198,7 +197,9 @@ export default {
       this.$store.state.wallets.tokens = []
 
       try {
-        localStorage.removeItem('walletPublicData')
+        localStorageKeysToDelete.forEach(key => {
+          localStorage.removeItem(key)
+        })
         this.associateEOSAccount()
       } catch (error) {
         console.log('initWallet error', error)

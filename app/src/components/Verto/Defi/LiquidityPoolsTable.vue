@@ -1,7 +1,6 @@
 <template>
   <div class="full-height">
-    <q-scroll-area  :visible="true"  :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}" >
-      <!-- :grid="$q.screen.xs" -->
+
       <q-table :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="!$store.state.investment.pools.length" title="Explore Opportunities" :data="chainPools" :columns="columns" row-key="index" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities full-height" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
           <q-td :props="props" class="body-table-col">
@@ -56,7 +55,7 @@
           </q-input>
         </template>
       </q-table>
-    </q-scroll-area>
+
     <q-dialog v-model="openDialog">
         <AddLiquidityDialog :notWidget="true" v-if="$store.state.investment.selectedPool && $store.state.investment.selectedPool.chain == 'eth'" />
        <q-card class="eos-popup" v-else-if="$store.state.investment.selectedPool && $store.state.investment.selectedPool.chain == 'eos'" >
@@ -69,9 +68,7 @@
 <script>
 import AddLiquidityDialog from './AddLiquidityDialog'
 import Swapeos from '@/components/Verto/Exchange/Swapeos'
-import {
-  QScrollArea
-} from 'quasar'
+
 import {
   mapState
 } from 'vuex'
@@ -79,7 +76,6 @@ import Formatter from '../../../mixins/Formatter'
 export default {
   components: {
     AddLiquidityDialog,
-    QScrollArea,
     Swapeos
   },
   props: ['rowsPerPage', 'chain', 'asset'],

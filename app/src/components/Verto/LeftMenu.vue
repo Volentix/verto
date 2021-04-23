@@ -87,7 +87,7 @@ export default {
       this.$store.state.currentwallet.wallet = {
         empty: true
       }
-
+      this.$bus.$emit('showDefaultDashboard')
       this.$router.push('/verto/dashboard')
     }
   },

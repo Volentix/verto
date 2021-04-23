@@ -103,7 +103,6 @@ export default {
       oldVersion = oldVersion.substring(4)
 
       if (+oldVersion <= 237 && +(version.substring(4)) > 327) {
-        console.log(888)
         localStorage.removeItem('walletPublicData')
       }
     }
@@ -114,6 +113,7 @@ export default {
   },
   created () {
     this.$store.dispatch('tokens/getTokenList')
+    this.$store.dispatch('tokens/getTokenMarketData', 'volentix-vtx')
   },
   methods: {
     checkPassword () {
