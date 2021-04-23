@@ -6,6 +6,13 @@ export const getTokenList = ({ commit, state }, payload) => {
   })
 }
 
+export const getTokenMarketData = ({ commit, state }, id) => {
+  state.pending = state.pending.concat(['volentix-vtx'])
+  axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=volentix-vtx&price_change_percentage=24h').then((result) => {
+    commit('setWalletTokensData', result.data)
+  })
+}
+
 export const getTokensMarketsData = ({ commit, state }, tokens) => {
   if (!state.list) return
 

@@ -123,6 +123,12 @@ export default {
       display: none !important;
     }
   } */
+  .q-dark{
+    background: #04111F !important;
+  }
+  .q-menu{
+    box-shadow: 0px 10px 20px 0px rgba(0,0,0,.6);
+  }
   .q-page-sticky {
     z-index: 1000;
     top: -10px;
