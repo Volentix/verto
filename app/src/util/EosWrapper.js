@@ -89,7 +89,7 @@ class EosWrapper {
       }
     }]
 
-    // console.log('actions', actions, { actions }, { keyProvider })
+    console.log('actions', actions, { actions }, { keyProvider })
     const tr = await this.transact({ actions }, { keyProvider })
     return tr
   }

@@ -297,12 +297,12 @@
                       <div v-if="!ErrorMessage && !transactionId" class="text-black">
                         <q-spinner />
                       </div>
-                      <div v-if="!transactionError" class="content__success">
+                      <div v-if="!transactionError && transactionId" class="content__success">
                         <img src="statics/success_icon.svg" class="success_icon" alt="">
                         <div class="text-h4 --subtitle text-center --subtitle__success">Successful completion</div>
                         <div class="text-h4 --subtitle text-center --subtitle__transLink" v-html="SuccessMessage"> {{ SuccessMessage }}</div>
                       </div>
-                      <div v-else class="content__failed text-red q-pa-md">
+                      <div v-else-if="ErrorMessage" class="content__failed text-red q-pa-md">
                         <img src="statics/fail_icon.svg" class="failed_icon" alt="">
                         <div class="text-h4 --subtitle text-center --subtitle__faild">Something's wrong!</div>
                         <div class="text-h4 --subtitle text-center full-width --subtitle__transLink"> {{ ErrorMessage }}</div>
@@ -624,7 +624,7 @@ export default {
         name: this.currentAccount.name,
         privateKey: this.privateKey.key
       }
-      this.sendFreeCPUTransaction(actions, account).then(result => {
+      this.sendFreeCPUTransaction(actions, account, null).then(result => {
         if (result.success) {
           this.transactionError = false
           this.transactionId = result.hash
