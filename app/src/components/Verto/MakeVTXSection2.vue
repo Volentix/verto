@@ -28,6 +28,7 @@ export default {
     return {
       estimatedReward: 0,
       canStakeVTX: false,
+      showTxInfoDialog: false,
       depositCoin: {
         label: 'Ethereum',
         value: 'eth',
@@ -146,6 +147,36 @@ export default {
       }
       return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol
     },
+    getVtxOpportunity () {
+      let vtxData = this.$store.state.tokens.walletTokensData.find(o => o.symbol === 'vtx')
+
+      if (vtxData) {
+        let minVtxStakingUsd = vtxData.current_price * 10000
+        let tokensOpportunities = this.$store.state.wallets.tokens.filter(o => parseFloat(o.usd) >= minVtxStakingUsd)
+
+        let eosAccount = tokensOpportunities.find(o => o.chain === 'eos')
+        // check if can be swap to vtx or eos
+
+        if (eosAccount) {
+
+        } else {
+          let ethAccount = tokensOpportunities.find(o => o.chain === 'eos')
+
+          if (ethAccount) {
+            if (ethAccount.type === 'eth') {
+              this.goToExchange()
+            } else {
+              this.depositCoin.value = ethAccount.type
+              this.depositCoin.icon = ethAccount.icon
+              this.destinationCoin.value = 'eth'
+              this.destinationCoin.icon = 'https://zapper.fi/images/ETH-icon.png'
+              this.txMessage = 'Swap ' + this.depositCoin.value + ' to ETH and Swap ETH to VTX'
+              this.showTxInfoDialog = true
+            }
+          }
+        }
+      }
+    },
     canUserStake () {
       let count = 0
       let account = null
@@ -157,10 +188,10 @@ export default {
         }
       })
 
-      if (count === 1) {
+      if (count) {
         this.vtxAccount = account
       } else {
-        this.vtxAccount = null
+        this.getVtxOpportunity()
       }
     },
     async setHighestVTXAccount () {

@@ -185,7 +185,7 @@ class Wallets2Tokens {
         }
       })
     }
-    store.state.currentwallet.config.keys.filter(w => w.name === walletName || !walletName).filter(o => store.state.settings.network === 'mainnet' && o.origin !== 'eos_testnet').map(async (wallet) => {
+    store.state.currentwallet.config.keys.filter(w => w.name.toLowerCase() === walletName || !walletName).filter(o => store.state.settings.network === 'mainnet' && o.origin !== 'eos_testnet').map(async (wallet) => {
       if (wallet.type.toLowerCase() === 'eos') {
         // If tokens are missing from this API, anyone can add them using this contract: https://bloks.io/account/customtokens?loadContract=true&tab=Actions&account=customtokens&scope=customtokens&limit=100&action=set
         let eosBalance = await this.eos.getCurrencyBalanceP(wallet.name, 'eosio.token', 'EOS')
@@ -527,6 +527,7 @@ class Wallets2Tokens {
       })
   }
   updateWallet () {
+    console.log(this.tableData, this.tableDataCache)
     let data = this.tableData.concat(this.tableDataCache)
     store.commit('wallets/updateTokens', data)
     // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)

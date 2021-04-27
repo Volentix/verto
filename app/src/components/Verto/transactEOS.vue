@@ -32,7 +32,7 @@
               </div>
             </template>
           </q-input>
-          <a v-if="transactionLink" :href="transactionLink" target="_blank" class="text-body2 q-pb-md text-black"> More infos</a>
+          <a v-if="transactionLink" :href="transactionLink" target="_blank" class="text-body2 q-pb-md text-black"> More info</a>
         </div>
   </div>
 </template>
@@ -100,7 +100,7 @@ export default {
     this.setupPlatformPath()
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
-    console.log(this.$store.state.investment.defaultAccount, 'this.$store.state.investment.defaultAccount')
+
     let account = this.$store.state.wallets.tokens.find(o => o.name.toLowerCase() === this.$store.state.investment.defaultAccount.name.toLowerCase() && o.key.toLowerCase() === this.$store.state.investment.defaultAccount.key.toLowerCase())
 
     if (account) {
@@ -141,6 +141,9 @@ export default {
       }
     },
     async process () {
+      if (this.transactionObject.multi) {
+        this.processMultipleTransaction()
+      }
       this.ErrorMessage = null
       this.transStatus = null
 
@@ -201,7 +204,7 @@ export default {
     setTxData (data) {
       this.transactionLink = false
       this.transactionObject = data
-      console.log(this.transactionObject, 9)
+
       if (this.transactionObject.send) {
         this.process()
       }

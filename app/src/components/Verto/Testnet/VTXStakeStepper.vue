@@ -410,7 +410,7 @@ export default {
     }
   },
   async created () {
-    stakingContract = this.$store.state.settings.network === 'mainnet' ? 'vtxstake1111' : 'vltxstakenow'
+    stakingContract = this.$store.state.settings.network === 'mainnet' ? 'vertostaking' : 'vltxstakenow'
     volentixContract = this.$store.state.settings.network === 'mainnet' ? 'volentixgsys' : 'volentixtsys'
     this.tableData = this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type === 'vtx').map(o => {
       o.label = o.name
@@ -438,7 +438,7 @@ export default {
     this.currentAccount.key = 'EOS8UrDjUkeVxfUzUS1hZQtmaGkdWbGLExyzKF6569kRMR5TzSnQT'
     this.currentAccount.privateKey = '5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc'
     this.currentAccount.name = 'berthonytha1'
-*/
+    */
     this.initData()
     // console.log('stakes', this.stakes)
   },

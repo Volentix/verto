@@ -93,6 +93,16 @@
         </div>
         <br><br>
     </div>
+    <q-dialog v-model="alert" v-if="false">
+      <q-card class="q-px-md" style="min-width:550px">
+        <q-card-section>
+          <div class="text-h6">Multi Transaction</div>
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+         <MultiTransaction />
+         </q-card-section>
+      </q-card>
+    </q-dialog>
 </div>
 </q-page>
 </template>
@@ -140,7 +150,7 @@ let cruxClient
 import DexInteraction from '../../mixins/DexInteraction'
 import EosWrapper from '@/util/EosWrapper'
 // import Bridge from '@/util/Bridge'
-
+import MultiTransaction from '../../components/Verto/Defi/MultiTransaction'
 const eos = new EosWrapper()
 import initWallet from '@/util/Wallets2Tokens'
 let platformTools = require('@/util/platformTools')
@@ -155,6 +165,7 @@ export default {
   components: {
     // ConvertAnyCoin,
     // QScrollArea,
+    MultiTransaction,
     NftsExplorer,
     ProfileHeader,
     Wallets,
@@ -184,6 +195,7 @@ export default {
       showAssetsExplorer: false,
       cruxKey: {},
       assetSelected: false,
+      alert: true,
       interval: null,
       osName: '',
       tabPoolAndAssetBalances: 'asset',
@@ -297,7 +309,7 @@ export default {
         let stakedAmounts = 0
 
         if (f.type === 'vtx') {
-          let stakes = await eos.getTable('vtxstake1111', f.name, 'accountstake')
+          let stakes = await eos.getTable('vertostaking', f.name, 'accountstake')
           stakes.map(s => {
             s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
             s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
