@@ -210,8 +210,6 @@ class ConfigManager {
           const encryptedData = sjcl.encrypt(privateKeyPassword, privateAddress)
           const fileName = `keys-${(new Date()).getTime()}.config`
           await platformTools.downloadFile(encryptedData, fileName)
-        } else {
-
         }
         await this.saveConfig(vertoPassword, key, config)
         return { success: true }
@@ -378,15 +376,20 @@ class ConfigManager {
           name: walletInformation.walletName.value,
           type: 'eos',
           key: walletInformation.address,
-          defaultKey: config.keys.length < 1
+          defaultKey: config.keys.length < 1,
+          origin: 'imported'
         }
+
         if (walletInformation.origin && walletInformation.origin === 'eos_testnet') {
           wallet.origin = walletInformation.origin
-          wallet.privateKey = walletInformation.addressPriv
         }
-        if (walletInformation.storeInWallet) {
+        wallet.privateKey = walletInformation.addressPriv
+
+        /*
+          // Deprecated
+       if (walletInformation.storeInWallet) {
           wallet.privateKeyEncrypted = walletInformation.addressPrivateEncrypted
-        }
+        } */
         config.keys.push(wallet)
         await this.saveConfig(walletInformation.vertoPassword, wallet, config)
         return { success: true }

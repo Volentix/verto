@@ -4,18 +4,19 @@
       <div class="left q-ml-md q-pt-md">
         <span
          class="z-max"
-          ><img :src="asset.icon" style="max-width: 30px" alt="image" />
-          {{ asset.type.toUpperCase() }}
-          <div class="row">
+          >
+
+          <div class="row q-pb-lg">
              <h2>
-            {{ asset.type.toUpperCase() }}
+           <img :src="asset.icon" style="max-width: 50px" alt="image" /> {{ asset.type.toUpperCase() }}
             <img
-              style="max-width: 30px"
+            v-if="false"
+              style="max-width: 0px"
               :src=" $store.state.settings.lightMode === 'true' ? 'statics/verified-badge-2-866240.png':'https://cdn.iconscout.com/icon/free/png-256/verified-badge-1-866240.png'"
               alt=""
             />
           </h2>
-          <h3 v-if="asset.rateUsd" class="q-pt-md q-pl-lg q-pr-md">
+          <h3 v-if="asset.rateUsd" class="q-pl-lg q-pr-md">
           ${{ formatNumber(asset.rateUsd, 0)
           }}<span
             style="
@@ -54,7 +55,7 @@
         </div>
 
         <ul class="tab-btn">
-          <li class="q-pr-md">Interval:</li>
+
           <li @click="getHistoriclPrice(1)">
             <a
               href="javascript:void(0)"
@@ -909,7 +910,7 @@ export default {
   font-weight: 600;
   letter-spacing: normal;
   color: #000;
-  margin-top: 20px;
+  margin-top: 0px;
 }
 
 .left h3 {
@@ -918,7 +919,7 @@ export default {
   font-weight: 500;
   letter-spacing: normal;
   color: #000;
-  margin-top: 12px;
+  margin-top: 0px;
 }
 
 .left table h3 {
