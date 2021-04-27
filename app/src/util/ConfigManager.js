@@ -77,7 +77,7 @@ class ConfigManager {
     async saveConfig (password, currentWallet, config) {
       let filePath = await platformTools.filePath()
       await platformTools.writeFile(filePath, sjcl.encrypt(password, JSON.stringify(config)), 'utf-8')
-      store.commit('currentwallet/updateCurrentWallet', currentWallet)
+      if (currentWallet) { store.commit('currentwallet/updateCurrentWallet', currentWallet) }
       store.commit('currentwallet/updateConfig', config)
       return { success: true }
     }
@@ -256,7 +256,29 @@ class ConfigManager {
         return e
       }
     }
+    async deleteAccount (password, walletName) {
+      try {
+        const configInfo = await this.getConfig(password)
 
+        if (!configInfo.success) {
+          return configInfo
+        }
+
+        const keys = configInfo.config.keys.filter(function (value, index, arr) {
+          return value.name.toLowerCase() !== walletName.toLowerCase()
+        })
+
+        let cacheData = JSON.parse(localStorage.getItem('walletPublicData'))
+        localStorage.setItem('walletPublicData', JSON.stringify(cacheData.filter(o => o.name.toLowerCase() !== walletName.toLowerCase())))
+
+        configInfo.config.keys = keys
+
+        return this.saveConfig(password, null, configInfo.config)
+        // return {success: true}
+      } catch (e) {
+        return { error: e.message }
+      }
+    }
     async deleteWallet (password, wallet) {
       try {
         const configInfo = await this.getConfig(password)
