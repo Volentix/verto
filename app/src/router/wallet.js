@@ -153,14 +153,6 @@ export default [
         }
       },
       {
-        name: 'eos-account-name',
-        path: '/verto/eos-account/:accountName',
-        component: () => import('pages/Verto/EOSAccount.vue'),
-        meta: {
-          authRequired: true
-        }
-      },
-      {
         name: 'buycpu',
         path: '/verto/buycpu',
         component: () => import('pages/Verto/BuyCPU.vue'),
