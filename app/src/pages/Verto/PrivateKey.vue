@@ -32,11 +32,12 @@
                                       </div>
                                     </template>
                                   </q-input>
+
                                   <br>
                                 </div>
                             </q-step>
                           </q-stepper>
-                          <q-stepper v-else :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
+                          <q-stepper class="q-mb-md" v-else :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
                               <!--
                               1. Paid to
                               -->
@@ -121,6 +122,43 @@
                                   </q-stepper-navigation>
                               </q-step>
                           </q-stepper>
+                           <q-dialog v-model="deletAccountDialog" >
+                            <q-card style="width:450px">
+                              <q-card-section class="">
+
+                                <div class="text-bold text-body1 q-pb-sm">Enter Verto password</div>
+                                  <span class="text-body2 text-red">After deleting this account ({{this.currentWallet.name}}), you will need to import it using the private to be able to use it inside Verto again.</span>
+                                    <q-input
+                                    v-model="vertoPassword"
+                                    :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
+                                    debounce="500"
+                                    class="q-pt-sm"
+                                    rounded outlined color="purple"
+                                    label="Verto Password"
+                                    @input="vertoPassordValid = false"
+                                    :type="isPwd ? 'password' : 'text'"
+                                >
+                                    <template v-slot:append>
+                                    <q-icon
+                                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                                        class="cursor-pointer"
+                                        @click="isPwd = !isPwd"
+                                    />
+                                    </template>
+                                </q-input>
+
+                            <div v-show="vertoPassordValid" class="text-uppercase text-red q-pa-md ">
+                                Password Incorrect
+                            </div>
+                            </q-card-section>
+
+                              <q-card-actions align="right">
+                                <q-btn flat label="Cancel" @click="deletAccountDialog = false" color="primary" v-close-popup />
+                                <q-btn flat label="Delete" @click="deleteAccount(currentWallet.name)" color="primary"  />
+                              </q-card-actions>
+                            </q-card>
+                          </q-dialog>
+                            <div class="q-pl-md cursor-pointer delete-account"> <q-btn @click="deletAccountDialog = true" size="sm" icon="delete" label="Delete account" flat /></div>
                         </div>
                         <br><br><br>
                     </div>
@@ -142,7 +180,7 @@
           <div class="chain-tools-wrapper--list open">
               <div class="list-wrapper">
                   <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                    <q-stepper v-if="currentWallet.privateKey" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step2" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
+                    <q-stepper  v-if="currentWallet.privateKey" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step2" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
                       <q-step title="Private key" :name="1" icon="fas fa-check-double" :done="step2 > 1">
                           <div class="text-black" style="margin-left: -35px">
                             <br>
@@ -157,7 +195,7 @@
                           </div>
                       </q-step>
                     </q-stepper>
-                    <q-stepper v-else :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
+                    <q-stepper class="q-pb-md" v-else :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
                         <!--
                         1. Paid to
                         -->
@@ -242,6 +280,7 @@
                             </q-stepper-navigation>
                         </q-step>
                     </q-stepper>
+
                   </div>
                   <br><br><br>
               </div>
@@ -257,7 +296,7 @@ import sjcl from 'sjcl'
 import FileSelect from '@/components/FileSelect.vue'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import Wallets from '../../components/Verto/Wallets'
-
+import initWallet from '@/util/Wallets2Tokens'
 export default {
   components: {
     FileSelect,
@@ -271,6 +310,7 @@ export default {
       currentWallet: {
         privatekey: ''
       },
+      deletAccountDialog: false,
       goBack: '',
       file: null,
       isPwd: true,
@@ -389,6 +429,16 @@ export default {
         this.privateKeyPasswordValid = true
       }
     },
+    async deleteAccount (name) {
+      let result = await this.$configManager.deleteAccount(this.vertoPassword, name)
+
+      if (!result.success) {
+        this.vertoPassordValid = true
+      } else {
+        initWallet()
+        this.$router.push('/verto/dashboard')
+      }
+    },
     checksFile () {
       this.passwordFileError = false
       this.gotfile = false
@@ -404,6 +454,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
+.delete-account {
+  margin-top:-20px
+}
   @import "~@/assets/styles/variables.scss";
 
   /deep/ .profile-wrapper--header{
