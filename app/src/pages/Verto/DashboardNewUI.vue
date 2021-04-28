@@ -309,17 +309,20 @@ export default {
 
         if (f.type === 'vtx') {
           let stakes = await eos.getTable('vertostaking', f.name, 'accountstake')
-          stakes.map(s => {
-            s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
-            s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
-            stakedAmounts += +s.stake_amount
-          })
-          f.staked = stakedAmounts
-          // console.log('f.staked', f.staked)
-          if (!manualSelectCurrentWallet && this.screenSize <= 1024) {
-            manualSelectCurrentWallet = true
-            this.$store.state.currentwallet.wallet = f
+          console.log(stakes, 'stakes')
+          if (stakes.length) {
+            stakes.map(s => {
+              s.stake_amount = Math.round(+s.amount.split(' ')[0] * 10000) / 10000
+              s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+              stakedAmounts += +s.stake_amount
+            })
+            f.staked = stakedAmounts
+            // console.log('f.staked', f.staked)
+            if (!manualSelectCurrentWallet && this.screenSize <= 1024) {
+              manualSelectCurrentWallet = true
+              this.$store.state.currentwallet.wallet = f
             // console.log('this.$store.state.currentwallet.wallet = f', this.$store.state.currentwallet.wallet)
+            }
           }
         }
       })

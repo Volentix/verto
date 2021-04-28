@@ -95,7 +95,7 @@ export default {
       transStatus: null
     }
   },
-  mounted () {
+  async mounted () {
     this.version = version
     this.setupPlatformPath()
     this.getWindowWidth()
@@ -107,6 +107,8 @@ export default {
       this.currentwallet = account
       this.privateKey.key = account.privateKey
     }
+
+    await eos.freePowerUp(this.currentwallet.name)
   },
   watch: {
 

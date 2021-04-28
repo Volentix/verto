@@ -49,6 +49,7 @@
     "@chenfengyuan/vue-qrcode": "^1.0.0",
     "@cruxpay/js-sdk": "^0.1.8",
     "@dashevo/dashcore-lib": "^0.18.0",
+    "@greymass/eosio-resources": "^0.6.3",
     "@ledgerhq/hw-transport-u2f": "^5.2.0",
     "@polkadot/api": "^3.8.1",
     "@quasar/extras": "^1.9.10",
