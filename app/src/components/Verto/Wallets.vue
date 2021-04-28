@@ -1318,12 +1318,12 @@ export default {
     }, 5000)
     this.setChains()
     this.setVtxData()
-
+    /*
     setTimeout(() => {
       this.$store.state.wallets.tokens.map(async (f) => {
         let stakedAmounts = 0
         if (f.type === 'vtx') {
-          let stakes = await eos.getTable('vtxstake1111', f.name, 'accountstake')
+          let stakes = await eos.getTable('vertostaking', f.name, 'accountstake')
           stakes.map(s => {
             s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
             s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
@@ -1333,7 +1333,7 @@ export default {
         }
       })
     }, 6000)
-
+     */
     this.setRessourcesInfos()
   },
   async updated () {

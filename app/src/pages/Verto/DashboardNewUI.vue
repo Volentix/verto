@@ -299,9 +299,7 @@ export default {
     this.$bus.$on('showDefaultDashboard', () => {
       this.assetSelected = false
     })
-    this.$bus.$on('selectedChain', () => {
-      this.setChainData()
-    })
+
     /*
     setTimeout(async () => {
       let manualSelectCurrentWallet = false
@@ -337,22 +335,6 @@ export default {
     }
   },
   methods: {
-    setChainData () {
-      let chain = localStorage.getItem('selectedChain')
-      if (chain && chain === 'vtx') {
-        let asset = this.$store.state.wallets.tokens.find(o => o.type === 'vtx' && o.amount > 0)
-
-        if (!asset) {
-          asset = {
-            type: 'vtx',
-            chain: 'eos',
-            icon: 'statics/icons/favicon-32x32.png'
-          }
-        }
-        this.tabPoolAndAssetBalances = 'explore'
-        this.setAsset(asset)
-      }
-    },
     setAsset (asset) {
       this.assetSelected = asset
     },
