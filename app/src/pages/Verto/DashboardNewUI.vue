@@ -5,7 +5,7 @@
         <div class="row full-height">
             <div class="col col-md-3">
                 <div class="wallets-container" style="height: 100%">
-                    <profile-header :isMobile="false" class="marg" version="type2222" />
+                    <profile-header @setAsset="setAsset"  :isMobile="false" class="marg" version="type2222" />
                     <wallets data-title="Interact with your account" class="full-height max-height" data-intro="Click on an account/token to see all actions you can perform. Click SETUP to associate EOS account(s) to account names" :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                 </div>
             </div>
@@ -221,9 +221,11 @@ export default {
         initWallet()
       }, 500)
     } else if (this.$route.params.walletToRefresh) {
-      setTimeout(() => {
-        initWallet(this.$route.params.walletToRefresh)
-      }, 500)
+      if (this.$route.params.walletToRefresh === 'init') {
+        setTimeout(() => {
+          initWallet(this.$route.params.walletToRefresh)
+        }, 500)
+      }
     }
 
     window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : true)
