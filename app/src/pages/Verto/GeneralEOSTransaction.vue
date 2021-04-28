@@ -176,6 +176,7 @@ export default {
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
     this.privateKey.key = this.$store.state.currentwallet.wallet.privateKey
+    eos.freePowerUp(this.$store.state.currentwallet.wallet.name)
   },
   watch: {
 
