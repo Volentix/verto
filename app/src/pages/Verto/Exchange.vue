@@ -16,7 +16,9 @@
                         <!-- <q-scroll-area :visible="true" style="height: 80vh;"> -->
                         <div class="chain-tools-wrapper">
                             <div class="standard-content">
-                                <h2 class="standard-content--title flex justify-start">vDex</h2>
+                            <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs cursor-pointer">
+                              <q-breadcrumbs-el  class="cursor-pointer" @click="$router.push('/verto/dashboard')" label="Back"  icon="keyboard_backspace" />
+                            </q-breadcrumbs>
                                 <!-- <div class="exchange_picto flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div> -->
                             </div>
                             <div class="chain-tools-wrapper--list chain-tools-wrapper--list___2 open">
