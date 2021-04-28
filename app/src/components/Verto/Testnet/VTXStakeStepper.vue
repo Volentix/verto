@@ -148,7 +148,7 @@
                               </q-badge>
                               <q-slider
                                 v-model="stakePeriod"
-                                :label-value="`${stakePeriod * 30}` + ' days'"
+                                :label-value="`${stakePeriod * period_duration}` + ' days'"
                                 :min="2"
                                 :max="10"
                                 :step="1"
@@ -241,7 +241,7 @@
 
                       <div class="text-black" >
                         <div class="summary text-body1 q-pa-sm rounded-borders q-mt-sm">
-                          You are about to stake <span class="text-deep-purple-12">{{formatNumber(sendAmount, 0)}} {{ params.tokenID.toUpperCase() }}</span> for a period of <span class="text-deep-purple-12">{{stakePeriod * 30}} days</span>.<br> You will be rewarded <span class="text-deep-purple-12">{{formatNumber(estimatedReward, 0)}} {{ params.tokenID.toUpperCase() }}</span> at the end of that period.
+                          You are about to stake <span class="text-deep-purple-12">{{formatNumber(sendAmount, 0)}} {{ params.tokenID.toUpperCase() }}</span> for a period of <span class="text-deep-purple-12">{{stakePeriod * period_duration}} days</span>.<br> You will be rewarded <span class="text-deep-purple-12">{{formatNumber(estimatedReward, 0)}} {{ params.tokenID.toUpperCase() }}</span> at the end of that period.
                         </div>
                         <div class="text-h4 --subtitle q-pt-md">Enter your password to sign the transaction.</div>
                         <q-input
@@ -279,7 +279,7 @@
                     >
                       <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
                         <div class="summary text-body1 q-pa-sm rounded-borders q-mt-sm">
-                          You are about to stake <span class="text-deep-purple-12">{{formatNumber(sendAmount, 0)}} {{ params.tokenID.toUpperCase() }}</span> for a period of <span class="text-deep-purple-12">{{stakePeriod * 30}} days</span>.<br> You will be rewarded <span class="text-deep-purple-12">{{formatNumber(estimatedReward, 0)}} {{ params.tokenID.toUpperCase() }}</span> at the end of that period.
+                          You are about to stake <span class="text-deep-purple-12">{{formatNumber(sendAmount, 0)}} {{ params.tokenID.toUpperCase() }}</span> for a period of <span class="text-deep-purple-12">{{stakePeriod * period_duration}} days</span>.<br> You will be rewarded <span class="text-deep-purple-12">{{formatNumber(estimatedReward, 0)}} {{ params.tokenID.toUpperCase() }}</span> at the end of that period.
                         </div>
                       <div class="text-black">
                         <div class="text-h4 --subtitle">Are you sure?</div>
@@ -361,7 +361,6 @@ import Formatter from '@/mixins/Formatter'
 const eos = new EosWrapper()
 
 let stakingContract, volentixContract
-const period_duration = 0.00347222
 
 export default {
   name: 'VTXConverter',
@@ -369,7 +368,7 @@ export default {
     return {
       tab: 'stake',
       step: 1,
-      period_duration: 0.00347222,
+      period_duration: 30,
       condition: 3,
       currentAccount: {},
       stakePeriod: 10,
@@ -411,6 +410,9 @@ export default {
     }
   },
   async created () {
+    if (this.$store.state.settings.globalSettings.stakingPeriod) {
+      this.period_duration = parseFloat(this.$store.state.settings.globalSettings.stakingPeriod)
+    }
     stakingContract = this.$store.state.settings.network === 'mainnet' ? 'vertostaking' : 'vltxstakenow'
     volentixContract = this.$store.state.settings.network === 'mainnet' ? 'volentixgsys' : 'volentixtsys'
     this.tableData = this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type === 'vtx').map(o => {
@@ -494,7 +496,7 @@ export default {
         this.stakes.map(s => {
           s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
           s.stake_amount = Math.round(+s.amount.split(' ')[0] * 10000) / 10000
-          s.stake_period = Math.round((((s.subsidy / s.stake_amount) * 100) - 1) * 10) * period_duration
+          s.stake_period = Math.round((((s.subsidy / s.stake_amount) * 100) - 1) * 10) * this.period_duration
           s.stake_date = new Date((s.unlock_timestamp - s.stake_period * 24 * 60 * 60) * 1000)
           s.stake_done = new Date(s.unlock_timestamp * 1000)
           s.time_left = date.getDateDiff(s.stake_done, Date.now(), 'minutes')
@@ -537,6 +539,10 @@ export default {
         this.slider = Math.round(Math.pow(10, this.currentAccount.precision) * this.stakedAmount * (this.slider / 100)) / Math.pow(10, this.currentAccount.precision)
       }
       this.checkAmount()
+    },
+    getPeriod (reward, amount) {
+
+      // Get period from reward and amount
     },
     checkAmount () {
       let stake_per = (1 + this.stakePeriod / 10.0) / 100
