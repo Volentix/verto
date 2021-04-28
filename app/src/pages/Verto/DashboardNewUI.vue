@@ -147,10 +147,10 @@ import {
 let cruxClient
 */
 import DexInteraction from '../../mixins/DexInteraction'
-import EosWrapper from '@/util/EosWrapper'
+// import EosWrapper from '@/util/EosWrapper'
 // import Bridge from '@/util/Bridge'
 import MultiTransaction from '../../components/Verto/Defi/MultiTransaction'
-const eos = new EosWrapper()
+// const eos = new EosWrapper()
 import initWallet from '@/util/Wallets2Tokens'
 let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
@@ -302,6 +302,7 @@ export default {
     this.$bus.$on('selectedChain', () => {
       this.setChainData()
     })
+    /*
     setTimeout(async () => {
       let manualSelectCurrentWallet = false
       await store.state.wallets.tokens.map(async (f) => {
@@ -309,7 +310,6 @@ export default {
 
         if (f.type === 'vtx') {
           let stakes = await eos.getTable('vertostaking', f.name, 'accountstake')
-          console.log(stakes, 'stakes')
           if (stakes.length) {
             stakes.map(s => {
               s.stake_amount = Math.round(+s.amount.split(' ')[0] * 10000) / 10000
@@ -327,7 +327,7 @@ export default {
         }
       })
     }, 6000)
-
+   */
     if (!this.$store.state.settings.coins.defibox.length) {
       setTimeout(() => {
         this.getCoinswitchCoins()
