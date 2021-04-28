@@ -1576,6 +1576,7 @@ export default {
     },
     async setRessourcesInfos () {
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.chain === 'eos' && this.$store.state.currentwallet.wallet.chain !== 'verto') {
+        eos.freePowerUp(this.$store.state.currentwallet.wallet.name)
         if (!this.$store.state.currentwallet.wallet.accountData) {
           this.$store.state.currentwallet.wallet.accountData = await eos.getAccount(this.$store.state.currentwallet.wallet.name)
         }

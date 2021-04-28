@@ -548,6 +548,8 @@ import EOSContract from '../../../mixins/EOSContract'
 import vpoolsComponent from '../../../components/Verto/Defi/vpoolsComponent.vue'
 import { computeForward } from '@/util/VolentixPools'
 import { number_to_asset, asset } from 'eos-common'
+import EosWrapper from '@/util/EosWrapper'
+const eos = new EosWrapper()
 export default {
   components: {
     vpoolsComponent,
@@ -1188,8 +1190,6 @@ export default {
       }
     },
     '$store.state.investment.accountTokens': function (val) {
-      console.log(this.depositCoin, this.destinationCoin, 11)
-
       this.coins = this.crossChain ? this.getAllCoins() : this.getCoinsByAccount('defibox', this.defaultAccount.label)
       this.coins = this.coins.filter((o, i, list) => list.findIndex(a => a.contract === o.contract && a.type === o.type && a.name === o.name) === i)
       this.depositCoinOptions = this.coins.filter(t => val.find(o => o.type === t.value && ((o.name && t.name && o.name.toLowerCase() === t.name.toLowerCase()) || this.$store.state.investment.defaultAccount.chain === 'eth'))).map(o => {
@@ -1227,6 +1227,7 @@ export default {
       this.getPairData()
 
       this.hideSlippage = true
+      eos.freePowerUp(this.$store.state.investment.defaultAccount.name)
     },
     '$store.state.settings.defiMenu': function (val) {
       this.tab = val === 'add_liquidity' ? 'liquidity' : val
