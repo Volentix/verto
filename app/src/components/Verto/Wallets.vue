@@ -453,7 +453,7 @@
                 <q-list bordered separator class="list-wrapper">
 
                     <div v-if="$store.state.currentwallet.wallet.empty" class="all-wallets">
-                        <q-item  v-show="!hideEosSetup"  class="highlight on-top" dense>
+                        <q-item  v-show="!hideEosSetup && !loadingIndicator"  class="highlight on-top" dense>
                             <q-item-section @click="hideEOSSetup()" class="text-center  cursor-pointer q-py-sm">
                             <q-item-label class="text-center">Setup later<q-icon flat label="Yes" name="close" size="sm" /> </q-item-label>
                             </q-item-section>
@@ -801,6 +801,9 @@
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
                                          <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Buy/Sell Ram' clickable v-ripple class="p-relative" to="/verto/ram-market">Buy / Sell Ram
+                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                        </q-item>
+                                         <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Power up' clickable v-ripple class="p-relative" to="/verto/wallet/powerup">Power up
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
 
@@ -1500,7 +1503,6 @@ export default {
     hideEOSSetup () {
       localStorage.setItem('hideEosSetup', 'true')
       this.hideEosSetup = true
-      console.log(this.hideEosSetup)
     },
     hideModalFun: function () {
       this.openModal = false

@@ -54,7 +54,8 @@
               <div class="standard-content--body" style="height: 100%">
                 <div class="row">
                   <div class="col-md-12 q-pl-md">
-                    <BuySellEosRam @setTxData="setTxData" />
+                    <PowerUp v-if="$route.params.action == 'powerup'" @setTxData="setTxData" />
+                    <BuySellEosRam @setTxData="setTxData" v-else />
 
                        <p class="text-h6 text-bold" v-if="transactionObject && !decryptPrivateKey && !transactionLink">Click button below to process</p>
                        <p class="text-red text-body2">{{ErrorMessage}}</p>
@@ -108,6 +109,7 @@ import ProfileHeader from '../../components/Verto/ProfileHeader'
 import configManager from '@/util/ConfigManager'
 import AccountSelector from '../../components/Verto/Exchange/AccountSelector'
 import BuySellEosRam from '../../components/Verto/BuySellEosRam'
+import PowerUp from '../../components/Verto/EOS/PowerUp'
 import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 import { version } from '../../../package.json'
@@ -120,7 +122,8 @@ export default {
     ProfileHeader,
     Wallets,
     AccountSelector,
-    BuySellEosRam
+    BuySellEosRam,
+    PowerUp
   },
   data () {
     return {
@@ -219,7 +222,7 @@ export default {
       try {
         this.spinnervisible = true
 
-        let result = await eos.transact(transactionObject, { keyProvider: this.privateKey.key })
+        let result = await eos.transact(transactionObject, { keyProvider: this.privateKey.key }, 300)
 
         this.transactionLink = process.env[this.$store.state.settings.network].EOS_TRANSACTION_EXPLORER + result.transaction_id
         this.spinnervisible = false

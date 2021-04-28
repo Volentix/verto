@@ -179,6 +179,15 @@ export default [
         }
       },
       {
+        name: 'powerup',
+        path: '/verto/wallet/:action',
+        component: () => import('pages/Verto/GeneralEOSTransaction.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+
+      {
         name: 'stake',
         path: '/verto/stake',
         component: () => import('pages/Verto/Stake.vue'),

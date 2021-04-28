@@ -220,7 +220,7 @@
                                 <span class="--title row text-h6 text-indigo-6" :class="{'q-pt-md' : sendAmount < 10000}"> Estimated stake reward </span>
                                 <span class="--amount row text-h4"> {{ formatNumber(estimatedReward, 2) }} {{ params.tokenID.toUpperCase() }} </span>
                                 <span class="--title row text-h6 text-indigo-6 q-pt-lg"> Staking period </span>
-                                <span class="--amount row text-h4">{{ `${stakePeriod * 30}` + ' days'}}</span>
+                                <span class="--amount row text-h4">{{ `${stakePeriod * period_duration}` + ' days'}}</span>
 
                             </div>
                             </div>
@@ -361,7 +361,7 @@ import Formatter from '@/mixins/Formatter'
 const eos = new EosWrapper()
 
 let stakingContract, volentixContract
-const period_duration = 30
+const period_duration = 0.00347222
 
 export default {
   name: 'VTXConverter',
@@ -369,6 +369,7 @@ export default {
     return {
       tab: 'stake',
       step: 1,
+      period_duration: 0.00347222,
       condition: 3,
       currentAccount: {},
       stakePeriod: 10,
@@ -441,6 +442,7 @@ export default {
     */
     this.initData()
     // console.log('stakes', this.stakes)
+    eos.freePowerUp(this.currentAccount.name)
   },
   async mounted () {
   },
@@ -543,7 +545,7 @@ export default {
         if (this.sendAmount >= 10000) {
           this.progColor = 'green'
           // let sep = ' , '
-          console.log(this.sendAmount, stake_per, this.stakePeriod)
+
           this.estimatedReward = (Math.round(this.sendAmount * stake_per * 100) / 100) * this.stakePeriod
           // console.log('mul', stake_per)
         } else {
