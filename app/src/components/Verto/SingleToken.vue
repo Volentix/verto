@@ -568,6 +568,9 @@ export default {
   watch: {
     '$store.state.investment.accountTokens': function () {
       this.setPaymentOptions()
+    },
+    '$store.state.currentwallet.wallet': function (val) {
+
     }
   },
   mounted () {
