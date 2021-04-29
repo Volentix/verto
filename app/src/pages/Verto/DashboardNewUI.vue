@@ -5,7 +5,7 @@
         <div class="row full-height">
             <div class="col col-md-3">
                 <div class="wallets-container" style="height: 100%">
-                    <profile-header :isMobile="false" class="marg" version="type2222" />
+                    <profile-header @setAsset="setAsset"  :isMobile="false" class="marg" version="type2222" />
                     <wallets data-title="Interact with your account" class="full-height max-height" data-intro="Click on an account/token to see all actions you can perform. Click SETUP to associate EOS account(s) to account names" :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                 </div>
             </div>
@@ -92,6 +92,16 @@
         </div>
         <br><br>
     </div>
+    <q-dialog v-model="alert" v-if="false">
+      <q-card class="q-px-md" style="min-width:550px">
+        <q-card-section>
+          <div class="text-h6">Multi Transaction</div>
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+         <MultiTransaction />
+         </q-card-section>
+      </q-card>
+    </q-dialog>
 </div>
 </q-page>
 </template>
@@ -137,10 +147,10 @@ import {
 let cruxClient
 */
 import DexInteraction from '../../mixins/DexInteraction'
-import EosWrapper from '@/util/EosWrapper'
+// import EosWrapper from '@/util/EosWrapper'
 // import Bridge from '@/util/Bridge'
-
-const eos = new EosWrapper()
+import MultiTransaction from '../../components/Verto/Defi/MultiTransaction'
+// const eos = new EosWrapper()
 import initWallet from '@/util/Wallets2Tokens'
 let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
@@ -154,6 +164,7 @@ export default {
   components: {
     // ConvertAnyCoin,
     // QScrollArea,
+    MultiTransaction,
     NftsExplorer,
     ProfileHeader,
     Wallets,
@@ -183,6 +194,7 @@ export default {
       showAssetsExplorer: false,
       cruxKey: {},
       assetSelected: false,
+      alert: true,
       interval: null,
       osName: '',
       tabPoolAndAssetBalances: 'asset',
@@ -209,9 +221,11 @@ export default {
         initWallet()
       }, 500)
     } else if (this.$route.params.walletToRefresh) {
-      setTimeout(() => {
-        initWallet(this.$route.params.walletToRefresh)
-      }, 500)
+      if (this.$route.params.walletToRefresh === 'init') {
+        setTimeout(() => {
+          initWallet(this.$route.params.walletToRefresh)
+        }, 500)
+      }
     }
 
     window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : true)
@@ -287,32 +301,33 @@ export default {
     this.$bus.$on('showDefaultDashboard', () => {
       this.assetSelected = false
     })
-    this.$bus.$on('selectedChain', () => {
-      this.setChainData()
-    })
+
+    /*
     setTimeout(async () => {
       let manualSelectCurrentWallet = false
       await store.state.wallets.tokens.map(async (f) => {
         let stakedAmounts = 0
 
         if (f.type === 'vtx') {
-          let stakes = await eos.getTable('vtxstake1111', f.name, 'accountstake')
-          stakes.map(s => {
-            s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
-            s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
-            stakedAmounts += +s.stake_amount
-          })
-          f.staked = stakedAmounts
-          // console.log('f.staked', f.staked)
-          if (!manualSelectCurrentWallet && this.screenSize <= 1024) {
-            manualSelectCurrentWallet = true
-            this.$store.state.currentwallet.wallet = f
+          let stakes = await eos.getTable('vertostaking', f.name, 'accountstake')
+          if (stakes.length) {
+            stakes.map(s => {
+              s.stake_amount = Math.round(+s.amount.split(' ')[0] * 10000) / 10000
+              s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+              stakedAmounts += +s.stake_amount
+            })
+            f.staked = stakedAmounts
+            // console.log('f.staked', f.staked)
+            if (!manualSelectCurrentWallet && this.screenSize <= 1024) {
+              manualSelectCurrentWallet = true
+              this.$store.state.currentwallet.wallet = f
             // console.log('this.$store.state.currentwallet.wallet = f', this.$store.state.currentwallet.wallet)
+            }
           }
         }
       })
     }, 6000)
-
+   */
     if (!this.$store.state.settings.coins.defibox.length) {
       setTimeout(() => {
         this.getCoinswitchCoins()
@@ -322,22 +337,6 @@ export default {
     }
   },
   methods: {
-    setChainData () {
-      let chain = localStorage.getItem('selectedChain')
-      if (chain && chain === 'vtx') {
-        let asset = this.$store.state.wallets.tokens.find(o => o.type === 'vtx' && o.amount > 0)
-
-        if (!asset) {
-          asset = {
-            type: 'vtx',
-            chain: 'eos',
-            icon: 'statics/icons/favicon-32x32.png'
-          }
-        }
-        this.tabPoolAndAssetBalances = 'explore'
-        this.setAsset(asset)
-      }
-    },
     setAsset (asset) {
       this.assetSelected = asset
     },

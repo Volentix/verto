@@ -3,6 +3,7 @@
     <q-page-container>
       <router-view />
       <q-toggle
+      v-if="false"
         v-model="lightMode"
         checked-icon="wb_sunny"
         @input="toggleLightDarkMode"
@@ -48,5 +49,10 @@ export default {
     position: absolute;
     right: 0px;
     top: 0px;
+  }
+</style>
+<style>
+  body .text-negative{
+    color: #7900FF !important;
   }
 </style>
