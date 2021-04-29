@@ -4,6 +4,7 @@ const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig')
 import { userError } from '@/util/errorHandler'
 import { userResult } from '@/util/resultHandler'
 import store from '@/store'
+import axios from 'axios'
 
 // const floatRegex = /[^\d.-]/g
 const ecc = require('eosjs-ecc')
@@ -32,7 +33,9 @@ class EosWrapper {
     let names = await this.rpc.history_get_key_accounts(pubKey)
     return names
   }
-
+  async freePowerUp (name) {
+    (await axios.get('https://api.eospowerup.io/freePowerup/' + name))
+  }
   async getActions (accountName) {
     const actions = (await this.rpc.getActions(accountName)).actions
     return actions
@@ -89,12 +92,11 @@ class EosWrapper {
       }
     }]
 
-    // console.log('actions', actions, { actions }, { keyProvider })
     const tr = await this.transact({ actions }, { keyProvider })
     return tr
   }
 
-  async transact (actions, keyProvider) {
+  async transact (actions, keyProvider, expireSeconds = 30) {
     const signatureProvider = new JsSignatureProvider([keyProvider.keyProvider])
 
     let api = new Api({
@@ -109,7 +111,7 @@ class EosWrapper {
       actions,
       {
         blocksBehind: 3,
-        expireSeconds: 30
+        expireSeconds: expireSeconds
       }
     )
 

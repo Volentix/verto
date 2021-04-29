@@ -545,7 +545,7 @@ export default {
         this.resetErrors()
         const result = await this.$configManager.createEosWallet(this.addWallet)
         if (result.success) {
-          this.$router.push('/verto/dashboard/' + this.addWallet.walletName)
+          this.$router.push('/verto/dashboard/' + this.addWallet.walletName.value)
         } else {
           this.submitKey = false
           if (result.message === 'bad_password') {

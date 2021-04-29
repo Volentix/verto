@@ -13,9 +13,8 @@
           <div class="col col-md-9">
             <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
               <div class="standard-content">
-                <h2 class="standard-content--title flex justify-start">Create EOS Account</h2>
-                <CreateEOSAccount  v-if="$store.state.settings.network == 'mainnet' && $route.params.action == 'create'"/>
-                <EOSAccountStepper  v-else-if="$store.state.settings.network == 'mainnet'"/>
+
+                <CreateEOSAccount  v-if="$store.state.settings.network == 'mainnet' "/>
                 <CreateTesnetEOSAccount v-else />
               </div>
             </div>

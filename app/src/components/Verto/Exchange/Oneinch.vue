@@ -55,7 +55,7 @@
                                                                 <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
                                                             </div>
                                                             <template v-slot:hint>
-                                                                <div v-if="swapData.marketData.length">{{convertETHToUSD(swapData.fromAmount)}}</div>
+                                                                <div v-if="swapData.marketData.length && depositCoin.value.toLowerCase() == 'eth'">{{convertETHToUSD(swapData.fromAmount)}}</div>
                                                             </template>
                                                         </q-input>
                                                     </div>
@@ -1049,7 +1049,7 @@ export default {
       let depositQuantityVar = this.depositQuantity
       this.depositQuantity = this.destinationQuantity
       this.destinationQuantity = depositQuantityVar
-      this.getRate()
+      this.checkToGetRate()
     },
     getCoins () {
       this.depositCoinOptions = this.$store.state.settings.coins.oneinch

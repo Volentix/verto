@@ -18,7 +18,7 @@
                   animated
                 >
                   <q-step
-                    title="Create/Import wallet"
+                    :title="$route.params.action == 'create'  ? 'Create EOS account' : 'Import EOS account'"
                     :name="1"
                     prefix="2"
                     :done="step > 1"
@@ -30,7 +30,7 @@
                           >We need a public key for that account
                         </q-item-label>
 
-                        <q-item tag="label" v-ripple>
+                        <q-item tag="label" v-ripple @click="publicKey = currentToken.value ; privateKey.key =  currentToken.privateKey ">
                           <q-item-section side top>
                             <q-radio
                               v-model="source"
@@ -49,6 +49,7 @@
                             </q-item-label>
                             <q-select
                               @input="publicKey = currentToken.value ; privateKey.key =  currentToken.privateKey "
+
                               v-if="source == 'accounts'"
                               :dark="$store.state.settings.lightMode === 'true'"
                               :light="
@@ -120,7 +121,7 @@
                           </q-item-section>
                         </q-item>
 
-                        <q-item @click="generateKeyPair()" tag="label" v-ripple>
+                        <q-item v-if="$route.params.action == 'create'" @click="generateKeyPair()" tag="label" v-ripple>
                           <q-item-section side top>
                             <q-radio
                               v-model="source"
@@ -130,7 +131,7 @@
                             />
                           </q-item-section>
 
-                          <q-item-section>
+                          <q-item-section  >
                             <q-item-label>Generate new key pair</q-item-label>
                             <q-item-label caption>
                               Get a new set of Public/Private key.
@@ -190,6 +191,7 @@
                             publicKey = '';
                             privateKey = { success: null, key: null };
                           "
+
                           v-ripple
                         >
                           <q-item-section side top>
@@ -246,6 +248,7 @@
                             publicKey = '';
                             privateKey = { success: null, key: null };
                           "
+                          v-if="$route.params.action == 'create'"
                           v-ripple
                         >
                           <q-item-section side top>
@@ -257,7 +260,7 @@
                             />
                           </q-item-section>
 
-                          <q-item-section>
+                          <q-item-section v-if="$route.params.action == 'create'" >
                             <q-item-label>Paste a Public key</q-item-label>
                             <q-item-label caption>
                               The public key will be used to create your account
@@ -322,7 +325,7 @@
                     <q-tabs
                       v-model="tab"
                       inline-label
-                       v-if="privateKey.key"
+                       v-if="privateKey.key && $route.params.action == 'create'"
                       class="bg-grey-3 optionTab q-mt-md"
                     >
                       <q-tab name="new" icon="add" label="New account" />
@@ -418,6 +421,7 @@
                         :loading="!accountNames"
                         @input="validAccountName"
                       />
+
                       <q-input
                         v-if="accountNames.length"
                         v-model="vertoPassword"
@@ -457,7 +461,7 @@
                         color="deep-purple-14"
                         class="--next-btn"
                         rounded
-                        :disable="!vertoPassordValid && !accountName"
+                        :disable="!vertoPassword || !vertoPassordValid || !accountName"
                         label="Import new account"
                       />
                       <q-btn
@@ -813,6 +817,7 @@ export default {
     }
   },
   async created () {
+    this.tab = this.$route.params.action === 'create' ? 'new' : 'import'
     this.params = this.$store.state.currentwallet.params
     this.tableData = await this.$store.state.wallets.tokens
     let self = this
@@ -857,7 +862,7 @@ export default {
 
         })
       })
-
+    console.log(self.tokensOption)
     if (self.tokensOption.length === 1) {
       this.currentToken = self.tokensOption[0]
       this.publicKey = this.currentToken.value
@@ -1190,6 +1195,7 @@ export default {
 
       let currentType = this.currentAccount.type
       this.currentAccount.key = this.publicKey
+      this.currentAccount.privateKey = this.privateKey.key
       this.currentAccount.chain = 'eos'
       this.currentAccount.type = 'eos'
       this.currentAccount.name = importing ? this.accountName.value : this.accountNew
