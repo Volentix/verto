@@ -148,7 +148,7 @@
                               </q-badge>
                               <q-slider
                                 v-model="stakePeriod"
-                                :label-value="`${stakePeriod * 30}` + ' days'"
+                                :label-value="`${stakePeriod * period_duration}` + ' days'"
                                 :min="2"
                                 :max="10"
                                 :step="1"
@@ -220,7 +220,7 @@
                                 <span class="--title row text-h6 text-indigo-6" :class="{'q-pt-md' : sendAmount < 10000}"> Estimated stake reward </span>
                                 <span class="--amount row text-h4"> {{ formatNumber(estimatedReward, 2) }} {{ params.tokenID.toUpperCase() }} </span>
                                 <span class="--title row text-h6 text-indigo-6 q-pt-lg"> Staking period </span>
-                                <span class="--amount row text-h4">{{ `${stakePeriod * 30}` + ' days'}}</span>
+                                <span class="--amount row text-h4">{{ `${stakePeriod * period_duration}` + ' days'}}</span>
 
                             </div>
                             </div>
@@ -241,7 +241,7 @@
 
                       <div class="text-black" >
                         <div class="summary text-body1 q-pa-sm rounded-borders q-mt-sm">
-                          You are about to stake <span class="text-deep-purple-12">{{formatNumber(sendAmount, 0)}} {{ params.tokenID.toUpperCase() }}</span> for a period of <span class="text-deep-purple-12">{{stakePeriod * 30}} days</span>.<br> You will be rewarded <span class="text-deep-purple-12">{{formatNumber(estimatedReward, 0)}} {{ params.tokenID.toUpperCase() }}</span> at the end of that period.
+                          You are about to stake <span class="text-deep-purple-12">{{formatNumber(sendAmount, 0)}} {{ params.tokenID.toUpperCase() }}</span> for a period of <span class="text-deep-purple-12">{{stakePeriod * period_duration}} days</span>.<br> You will be rewarded <span class="text-deep-purple-12">{{formatNumber(estimatedReward, 0)}} {{ params.tokenID.toUpperCase() }}</span> at the end of that period.
                         </div>
                         <div class="text-h4 --subtitle q-pt-md">Enter your password to sign the transaction.</div>
                         <q-input
@@ -279,7 +279,7 @@
                     >
                       <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
                         <div class="summary text-body1 q-pa-sm rounded-borders q-mt-sm">
-                          You are about to stake <span class="text-deep-purple-12">{{formatNumber(sendAmount, 0)}} {{ params.tokenID.toUpperCase() }}</span> for a period of <span class="text-deep-purple-12">{{stakePeriod * 30}} days</span>.<br> You will be rewarded <span class="text-deep-purple-12">{{formatNumber(estimatedReward, 0)}} {{ params.tokenID.toUpperCase() }}</span> at the end of that period.
+                          You are about to stake <span class="text-deep-purple-12">{{formatNumber(sendAmount, 0)}} {{ params.tokenID.toUpperCase() }}</span> for a period of <span class="text-deep-purple-12">{{stakePeriod * period_duration}} days</span>.<br> You will be rewarded <span class="text-deep-purple-12">{{formatNumber(estimatedReward, 0)}} {{ params.tokenID.toUpperCase() }}</span> at the end of that period.
                         </div>
                       <div class="text-black">
                         <div class="text-h4 --subtitle">Are you sure?</div>
@@ -297,12 +297,12 @@
                       <div v-if="!ErrorMessage && !transactionId" class="text-black">
                         <q-spinner />
                       </div>
-                      <div v-if="!transactionError" class="content__success">
+                      <div v-if="!transactionError && transactionId" class="content__success">
                         <img src="statics/success_icon.svg" class="success_icon" alt="">
                         <div class="text-h4 --subtitle text-center --subtitle__success">Successful completion</div>
                         <div class="text-h4 --subtitle text-center --subtitle__transLink" v-html="SuccessMessage"> {{ SuccessMessage }}</div>
                       </div>
-                      <div v-else class="content__failed text-red q-pa-md">
+                      <div v-else-if="ErrorMessage" class="content__failed text-red q-pa-md">
                         <img src="statics/fail_icon.svg" class="failed_icon" alt="">
                         <div class="text-h4 --subtitle text-center --subtitle__faild">Something's wrong!</div>
                         <div class="text-h4 --subtitle text-center full-width --subtitle__transLink"> {{ ErrorMessage }}</div>
@@ -361,7 +361,6 @@ import Formatter from '@/mixins/Formatter'
 const eos = new EosWrapper()
 
 let stakingContract, volentixContract
-const period_duration = 30
 
 export default {
   name: 'VTXConverter',
@@ -369,6 +368,7 @@ export default {
     return {
       tab: 'stake',
       step: 1,
+      period_duration: 30,
       condition: 3,
       currentAccount: {},
       stakePeriod: 10,
@@ -410,7 +410,10 @@ export default {
     }
   },
   async created () {
-    stakingContract = this.$store.state.settings.network === 'mainnet' ? 'vtxstake1111' : 'vltxstakenow'
+    if (this.$store.state.settings.globalSettings.stakingPeriod) {
+      this.period_duration = parseFloat(this.$store.state.settings.globalSettings.stakingPeriod)
+    }
+    stakingContract = this.$store.state.settings.network === 'mainnet' ? 'vertostaking' : 'vltxstakenow'
     volentixContract = this.$store.state.settings.network === 'mainnet' ? 'volentixgsys' : 'volentixtsys'
     this.tableData = this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type === 'vtx').map(o => {
       o.label = o.name
@@ -438,9 +441,10 @@ export default {
     this.currentAccount.key = 'EOS8UrDjUkeVxfUzUS1hZQtmaGkdWbGLExyzKF6569kRMR5TzSnQT'
     this.currentAccount.privateKey = '5JDCvBSasZRiyHXCkGNQC7EXdTNjima4MXKoYCbs9asRiNvDukc'
     this.currentAccount.name = 'berthonytha1'
-*/
+    */
     this.initData()
     // console.log('stakes', this.stakes)
+    eos.freePowerUp(this.currentAccount.name)
   },
   async mounted () {
   },
@@ -492,7 +496,7 @@ export default {
         this.stakes.map(s => {
           s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
           s.stake_amount = Math.round(+s.amount.split(' ')[0] * 10000) / 10000
-          s.stake_period = Math.round((((s.subsidy / s.stake_amount) * 100) - 1) * 10) * period_duration
+          s.stake_period = Math.round((((s.subsidy / s.stake_amount) * 100) - 1) * 10) * this.period_duration
           s.stake_date = new Date((s.unlock_timestamp - s.stake_period * 24 * 60 * 60) * 1000)
           s.stake_done = new Date(s.unlock_timestamp * 1000)
           s.time_left = date.getDateDiff(s.stake_done, Date.now(), 'minutes')
@@ -536,6 +540,10 @@ export default {
       }
       this.checkAmount()
     },
+    getPeriod (reward, amount) {
+
+      // Get period from reward and amount
+    },
     checkAmount () {
       let stake_per = (1 + this.stakePeriod / 10.0) / 100
       if (+this.sendAmount > 0.0 && +this.sendAmount <= +this.currentAccount.amount) {
@@ -543,7 +551,7 @@ export default {
         if (this.sendAmount >= 10000) {
           this.progColor = 'green'
           // let sep = ' , '
-          console.log(this.sendAmount, stake_per, this.stakePeriod)
+
           this.estimatedReward = (Math.round(this.sendAmount * stake_per * 100) / 100) * this.stakePeriod
           // console.log('mul', stake_per)
         } else {
@@ -624,7 +632,7 @@ export default {
         name: this.currentAccount.name,
         privateKey: this.privateKey.key
       }
-      this.sendFreeCPUTransaction(actions, account).then(result => {
+      this.sendFreeCPUTransaction(actions, account, null).then(result => {
         if (result.success) {
           this.transactionError = false
           this.transactionId = result.hash

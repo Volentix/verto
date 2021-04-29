@@ -62,7 +62,7 @@ export default {
 
       return value
     },
-    async sendFreeCPUTransaction (actions, account = false) {
+    async sendFreeCPUTransaction (actions, account = false, step = 2) {
       let rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
 
       let signatureProvider = new JsSignatureProvider([account ? account.privateKey : this.eosAccount.privateKey])
@@ -123,7 +123,7 @@ export default {
       return new Promise(async (resolve, reject) => {
         eosApi.pushSignedTransaction(pushTransactionArgs).then((result) => {
           this.transactionStatus = 'Success'
-          this.step = 2
+          if (step) { this.step = step }
           this.spinnervisible = false
           this.transactionHash = result.transaction_id
           resolve({
@@ -134,7 +134,7 @@ export default {
           })
           initWallet()
         }).catch((error) => {
-          this.step = 1
+          if (step) { this.step = 1 }
           this.error = error
           this.transactionStatus = null
           this.spinnervisible = false

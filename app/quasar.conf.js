@@ -100,7 +100,9 @@ module.exports = function (ctx) {
         'QSkeleton',
         'QMarkupTable',
         'QRadio',
-        'QSpinnerDots'
+        'QSpinnerDots',
+        'QTimeline',
+        'QTimelineEntry'
       ],
 
       directives: [

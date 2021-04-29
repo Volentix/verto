@@ -153,14 +153,6 @@ export default [
         }
       },
       {
-        name: 'eos-account-name',
-        path: '/verto/eos-account/:accountName',
-        component: () => import('pages/Verto/EOSAccount.vue'),
-        meta: {
-          authRequired: true
-        }
-      },
-      {
         name: 'buycpu',
         path: '/verto/buycpu',
         component: () => import('pages/Verto/BuyCPU.vue'),
@@ -186,6 +178,15 @@ export default [
           authRequired: true
         }
       },
+      {
+        name: 'powerup',
+        path: '/verto/wallet/:action',
+        component: () => import('pages/Verto/GeneralEOSTransaction.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+
       {
         name: 'stake',
         path: '/verto/stake',
