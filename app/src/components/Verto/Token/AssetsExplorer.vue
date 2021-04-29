@@ -405,9 +405,10 @@ export default {
       if (chain !== 'vtx') {
         this.currentChain = chain
         this.uniqueKey++
+        this.initTable(chain)
+      } else {
+        this.setVtxData()
       }
-
-      this.initTable(chain)
     })
     this.getVTXHistoriclPrice()
   },
@@ -438,6 +439,23 @@ export default {
   methods: {
     showTokenPage (asset) {
       this.$emit('setAsset', asset)
+    },
+    setVtxData () {
+      let chain = localStorage.getItem('selectedChain')
+      if (chain && chain === 'vtx') {
+        let asset = this.assets.find(o => o.type === 'vtx')
+
+        if (!asset) {
+          asset = {
+            type: 'vtx',
+            chain: 'eos',
+            icon: 'statics/icons/favicon-32x32.png'
+          }
+        }
+        this.tabPoolAndAssetBalances = 'explore'
+
+        this.$emit('setAsset', asset)
+      }
     },
     getInvestedEosTokens (investments) {
       let assets = []

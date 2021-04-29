@@ -113,6 +113,7 @@ export default {
   },
   created () {
     this.$store.dispatch('tokens/getTokenList')
+    this.$store.dispatch('settings/getSettings')
     this.$store.dispatch('tokens/getTokenMarketData', 'volentix-vtx')
   },
   methods: {

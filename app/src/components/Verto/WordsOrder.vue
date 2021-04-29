@@ -3,13 +3,13 @@
   <div class="words-order-wrapper">
     <div class="words-order-wrapper--list">
       <div class="words-order-wrapper--list__empty">
-        <p class="text-body1">Choose the first and the last word from the precedent list. We just want to make sure you didn't forget to save it</p>
-        <q-select rounded :set="valid = isChoiceInvalid(0, first)" :error="!valid.success && valid.message != null" :error-message="valid.message"  outlined class="q-pb-lg" v-model="first" :options="arrayAlphabericallyOrdered" label="Select the first word" />
-        <q-select rounded :set="valid = isChoiceInvalid(arrayMnemonic.length - 1, last)" :error="!valid.success && valid.message != null"  :error-message="valid.message"  outlined v-model="last" :options="arrayAlphabericallyOrdered" label="Select the last word" />
-        <ul  v-if="false">
+        <p class="text-body1 text-white">Choose the first and the last word from the precedent list. We just want to make sure you didn't forget to save it</p>
+        <q-select dark rounded :set="valid = isChoiceInvalid(0, first)" :error="!valid.success && valid.message != null" :error-message="valid.message"  outlined class="q-pb-lg" v-model="first" :options="arrayAlphabericallyOrdered" label="Select the first word" />
+        <q-select dark rounded :set="valid = isChoiceInvalid(arrayMnemonic.length - 1, last)" :error="!valid.success && valid.message != null"  :error-message="valid.message"  outlined v-model="last" :options="arrayAlphabericallyOrdered" label="Select the last word" />
+        <ul v-if="false">
         <li v-for="(word, index) in arrayOrdered" :key="index">
           <q-input
-            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
+            dark
             v-show="arrayOrdered[index]"
             @click="chooseMe(word, index, false)"
             :class="{'qfilled': arrayTest3[index] !== undefined }"
@@ -25,7 +25,7 @@
         <ul>
         <li v-for="(word, index) in arrayShuffled" :key="index">
           <q-input
-            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
+            dark
             v-show="!arrayShuffleShow[index]"
             @click="chooseMe(word, index, true)"
             outlined round readonly

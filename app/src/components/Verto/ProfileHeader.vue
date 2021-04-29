@@ -264,7 +264,7 @@ export default {
       */
     },
     resetSelectedWallet () {
-      // console.log('resetSelectedWallet called')
+      this.$emit('setAsset', false)
 
       this.$store.state.currentwallet.wallet = { empty: true }
       this.$store.state.wallets.tokens.map(token => {
