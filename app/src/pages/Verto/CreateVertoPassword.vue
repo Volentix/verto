@@ -1,122 +1,120 @@
 <template>
   <q-page :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-white': $store.state.settings.lightMode === 'false'}">
-    <div class="row">
-      <div class="col col-md-4 app-logo flex q-pa-md items-center">
-        <!-- <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;"> -->
-        <svg
-          class="svg_logo q-mr-sm"
-          width="20"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 16 20.58"
-        >
-          <path
-            d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z"
-            transform="translate(-183 -18.21)"
-          ></path>
-        </svg>
+    <div class="row app-logo-row">
+      <div class="col col-md-12 app-logo flex q-pl-lg q-ml-sm q-mt-lg items-center justify-start">
+        <img src="statics/icons/vtx-logo-1024x1024.png" class="q-mr-sm" width="40" alt="logo"/>
         <router-link to="/verto/dashboard">VERTO</router-link>
       </div>
     </div>
-    <div v-if="step===1" class="standard-content">
-      <h2 class="standard-content--title">Create your Verto Password</h2>
-      <h2 class="standard-content--desc q-pb-md" :class="{'gt-xs' : passwordsMatch}" >
-        Please write down your password and store it somewhere safe.
-        Only you know your password.
-        There is no way to recover a Verto password.
-      </h2>
-      <!-- The seed phrase will now be added to your config after confirming the password. -->
-      <div class="standard-content--body">
-        <div class="standard-content--body__img column flex-center gt-xs" v-if="!passwordsMatch">
-          <img src="statics/password_bg.svg" alt="">
-        </div>
-        <div class="standard-content--body__form">
-          <q-input
-            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
-            ref="psswrd"
-            v-show="!passwordsMatch"
-            v-model="password"
-            @input="passwordCheck"
-            @keyup.enter="gotoSecondScreen"
-            rounded outlined :color="passwordsMatch ? 'green' : 'deep-purple-14'"
-            :type="isPwd ? 'password' : 'text'"
-            :label="passwordsMatch ? 'Password confirmed' : 'Create Verto Password'"
-            hint="*Minimum of 8 characters">
-            <template v-slot:append>
-              <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-          </q-input>
-           <q-input
-             v-if="passwordApproved"
-             v-show="!passwordsMatch"
-            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
-            ref="psswrdConfirm"
-            v-model="confirmPassword"
-            @input="confirmPasswordCheck"
-            @keyup.enter="submit"
-            rounded outlined :color="passwordsMatch ? 'green' : 'deep-purple-14'"
-            :type="isPwd ? 'password' : 'text'"
-            :label="passwordsMatch ? 'Password confirmed' : 'Confirm password'"
-            :hint="confirmPassword.trim().length ? (passwordsMatch ? 'Matched ' : 'Do not match') : ''"
-            class="q-mt-sm">
-            <template v-slot:append>
-              <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-               </template>
-          </q-input>
-        </div>
-      </div>
-      <p class="text-red q-pt-sm" v-if="passwordsMatch">Reminder: If you lose your password you will be locked out of Verto. No one will be able to help you recover a lost Verto password.</p>
+    <video-bg :sources="[sourceVideo]" img="">
+      <div class="video-page-wrapper q-pt-md q-pb-md">
+        <!-- <h1>Discover<br>the crypto space</h1> -->
+        <div v-if="step===1" class="standard-content">
+          <h2 class="standard-content--title text-white">Create your Verto Password</h2>
+          <h2 class="standard-content--desc q-pb-md" :class="{'gt-xs' : passwordsMatch}" >
+            Please write down your password and store it somewhere safe.
+            Only you know your password.
+            There is no way to recover a Verto password yet,
+            we are working on an exciting new solution for you that's coming soon.
+          </h2>
+          <!-- The seed phrase will now be added to your config after confirming the password. -->
+          <div class="standard-content--body">
+            <!-- <div class="standard-content--body__img column flex-center gt-xs" v-if="!passwordsMatch"> -->
+              <!-- <img src="statics/password_bg.svg" alt=""> -->
+            <!-- </div> -->
+            <div class="standard-content--body__form">
+              <q-input
+                dark
+                ref="psswrd"
+                v-show="!passwordsMatch"
+                v-model="password"
+                @input="passwordCheck"
+                @keyup.enter="gotoSecondScreen"
+                rounded outlined :color="passwordsMatch ? 'green' : 'deep-purple-14'"
+                :type="isPwd ? 'password' : 'text'"
+                :label="passwordsMatch ? 'Password confirmed' : passLabel"
+                @focus="passLabel = 'Write it down somewhere safe for the love of crypto!'"
+                @blur="passLabel = 'Type your password here'"
+                hint="*Minimum of 8 characters">
+                <template v-slot:append>
+                  <q-icon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwd = !isPwd"
+                  />
+                </template>
+              </q-input>
+              <q-input
+                v-if="passwordApproved"
+                v-show="!passwordsMatch"
+                dark
+                ref="psswrdConfirm"
+                v-model="confirmPassword"
+                @input="confirmPasswordCheck"
+                @keyup.enter="submit"
+                rounded outlined :color="passwordsMatch ? 'green' : 'deep-purple-14'"
+                :type="isPwd ? 'password' : 'text'"
+                :label="passwordsMatch ? 'Password confirmed' : 'Confirm password'"
+                :hint="confirmPassword.trim().length ? (passwordsMatch ? 'Matched ' : 'Does not match') : ''"
+                class="q-mt-sm">
+                <template v-slot:append>
+                  <q-icon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwd = !isPwd"
+                  />
+                  </template>
+              </q-input>
+            </div>
+          </div>
+          <p class="text-white perpleGlow q-pt-sm" v-if="passwordsMatch">Reminder: If you lose your password you will be locked out of Verto. No one will be able to help you recover a lost Verto password.</p>
 
-      <div class="next-step q-pa-md" v-if="passwordsMatch">
-        <div class="text-h6 q-pt-md text-bold">Password set ! Next ?</div>
-         <p class="text-body1">Do you want to create or restore your 24 word mnemonic secret seed phrase?</p>
-          <div class="standard-content--footer q-pb-md" v-if="passwordsMatch">
-            <q-btn class="action-link back" color="grey" text-color="white" label="Restore" @click="submit(4)" />
-            <q-btn class="action-link next" rounded color="deep-purple-14" text-color="white" label="Create" @click="submit(2)" :disable="!passwordsMatch"/>
+          <div class="next-step" v-if="passwordsMatch">
+            <div class="text-h6 q-pt-md text-white text-bold">Password set ! Next ?</div>
+            <p class="text-body1 text-white q-pb-lg">Do you want to create or restore your 24 word mnemonic secret seed phrase?</p>
+              <div class="standard-content--footer flex flex-center items-center" v-if="passwordsMatch">
+                <q-btn class="action-link back" rounded flat outline text-color="white" label="Restore" @click="submit(4)" />
+                <span class="text-h6 text-white or-text">or</span>
+                <q-btn class="action-link next" rounded flat outline text-color="white" label="Create" @click="submit(2)" :disable="!passwordsMatch"/>
+              </div>
+            </div>
+        </div>
+        <div v-if="false" class="standard-content">
+          <h2 class="standard-content--title">Confirm your password to setup your HD wallet</h2>
+          <h2 class="standard-content--desc"></h2>
+          <div class="standard-content--body">
+            <div class="standard-content--body__img column flex-center">
+              <img src="statics/password_bg.svg" alt="">
+            </div>
+            <br>
+            <div class="standard-content--body__form">
+              <q-input
+                :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
+                ref="psswrdConfirm"
+
+                v-model="confirmPassword"
+                @input="confirmPasswordCheck"
+                @keyup.enter="submit"
+                rounded outlined color="deep-purple-14"
+                :type="isPwd ? 'password' : 'text'"
+                label="Confirm"
+                hint="*Minimum of 8 characters">
+                <template v-slot:append>
+                  <q-icon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwd = !isPwd"
+                  />
+                </template>
+              </q-input>
+            </div>
+          </div>
+          <div class="standard-content--footer">
+            <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="submit" :disable="!passwordsMatch" />
           </div>
         </div>
-    </div>
-    <div v-if="false" class="standard-content">
-      <h2 class="standard-content--title">Confirm your password to setup your HD wallet</h2>
-      <h2 class="standard-content--desc"></h2>
-      <div class="standard-content--body">
-        <div class="standard-content--body__img column flex-center">
-          <img src="statics/password_bg.svg" alt="">
-        </div>
-        <br>
-        <div class="standard-content--body__form">
-          <q-input
-            :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
-            ref="psswrdConfirm"
-
-            v-model="confirmPassword"
-            @input="confirmPasswordCheck"
-            @keyup.enter="submit"
-            rounded outlined color="deep-purple-14"
-            :type="isPwd ? 'password' : 'text'"
-            label="Confirm"
-            hint="*Minimum of 8 characters">
-            <template v-slot:append>
-              <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-          </q-input>
-        </div>
       </div>
-      <div class="standard-content--footer">
-         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="submit" :disable="!passwordsMatch" />
-      </div>
-    </div>
+    </video-bg>
   </q-page>
 </template>
 
@@ -124,6 +122,10 @@
 // app/src/pages/Intro/CreatePassword.vue
 import configManager from '@/util/ConfigManager'
 // import FileSelect from '@/components/FileSelect.vue'
+import Vue from 'vue'
+import VideoBg from 'vue-videobg'
+
+Vue.component('video-bg', VideoBg)
 
 export default {
   name: 'CreatePassword',
@@ -133,7 +135,9 @@ export default {
   data () {
     return {
       isPwd: true,
+      sourceVideo: 'statics/mp4/create-password.mp4',
       step: 1,
+      passLabel: 'Type your password here',
       password: '',
       passwordError: '',
       confirmPassword: '',
@@ -147,6 +151,15 @@ export default {
       passwordsMatch: false,
       file: null,
       contractable: true
+    }
+  },
+  watch: {
+    passwordsMatch (newVal) {
+      if (!newVal) {
+        this.sourceVideo = 'statics/mp4/create-password.mp4'
+      } else {
+        this.sourceVideo = 'statics/mp4/create-password2.mp4'
+      }
     }
   },
   created () {
@@ -216,8 +229,39 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
+.app-logo-row{
+  position: relative;
+  width: 60%;
+  .app-logo{
+    position: absolute !important;
+    left: 0px;
+    z-index: 9;
+  }
+}
+/deep/ .video-page-wrapper{
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+  background-color: rgba(black, .5);
+  border-radius: 20px;
+}
+/deep/ .VideoBg__content{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  img{}
+  h1{
+    font-family: $Franklin;
+    color: #FFF;
+    font-weight: 100;
+    font-size: 45px;
+    text-align: center;
+    line-height: 55px;
+  }
+}
 .next-step {
-    background: #f7f7f7;
+    // background: #f7f7f7;
     border-radius: 12px;
 }
 .row {
@@ -239,15 +283,12 @@ export default {
       }
 
       &.app-logo {
-        svg {
-          fill: #000;
-        }
         a {
-          font-weight: $bold;
+          font-weight: $lighter;
           text-transform: uppercase;
           font-family: $Titillium;
-          font-size: 20px;
-          color: #333;
+          font-size: 25px;
+          color: #FFF;
           text-decoration: none;
         }
       }
@@ -257,7 +298,7 @@ export default {
     }
   }
 .standard-content{
-  padding: 5% 10%;
+  padding: 5%;
   display: flex;
   flex-direction: column;
   max-width: 800px;
@@ -268,11 +309,12 @@ export default {
   // justify-content: space-between;
   // height: 100vh !important;
   &--title{
-    font-size: 27px;
+    font-size: 20px;
     font-weight: $bold;
     position: relative;
     line-height: 40px;
     font-family: $Titillium;
+    letter-spacing: 1px;
     margin-top: 20px;
     margin-bottom: 30px;
   }
@@ -284,7 +326,7 @@ export default {
     position: relative;
     line-height: 26px;
     font-family: $Titillium;
-    color: $mainColor;
+    color: rgba(white, 1);
   }
   &--body{
     &__img{
@@ -302,24 +344,24 @@ export default {
       }
       /deep/ .q-field__label{
         font-family: $Titillium;
-        font-weight: $bold;
-        font-size: 18px;
+        font-weight: $regular;
+        font-size: 14px;
         padding-left: 10px;
       }
     }
   }
   &--footer{
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: flex-end;
+    // display: flex;
+    // flex-direction: row;
+    // justify-content: flex-center;
+    // align-items: flex-center;
     min-height: 0px;
     margin-bottom: 0px;
     margin-top: auto;
     .action-link{
-      height: 50px;
+      height: 40px;
       text-transform: initial !important;
-      font-size: 16px;
+      font-size: 15px;
       line-height: 15px;
       letter-spacing: .5px;
       border-radius: 40px;
@@ -327,8 +369,9 @@ export default {
       padding-left: 20px;
       padding-right: 20px;
       margin-left: 10px;
+      border: 1px solid #B0B0B0 !important;
       &.back{
-        background-color: #B0B0B0 !important;
+        // background-color: #B0B0B0 !important;
       }
     }
 
@@ -338,6 +381,35 @@ export default {
   background: #04111F !important;
   .standard-content--title{
     color: #FFF;
+  }
+}
+.video-page-wrapper{
+  .or-text{
+    margin-left: 10px;
+    font-size: 16px;
+    // margin-top: -10px;
+    // margin-bottom: 10px;
+  }
+  /deep/ .q-field--focused .q-field__label{
+    color: #FFF !important;
+  }
+  .next {
+    box-shadow: 0px 0px 10px 0px #6200ea;
+  }
+  .back {
+    box-shadow: 0px 0px 10px 0px #4caf50;
+  }
+  /deep/ .q-field--outlined.q-field--focused .q-field__control:after{
+    border: 1px solid #FFF;
+    box-shadow: 0px 0px 10px 0px #6200ea;
+  }
+  /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
+  /deep/ .q-field--dark .q-field__marginal,
+  /deep/ .q-field--dark .q-field__bottom{
+    color: #FFF !important;
+  }
+  .perpleGlow{
+    text-shadow: 2px 2px 2px #6200ea;
   }
 }
 </style>
