@@ -193,11 +193,13 @@ class Wallets2Tokens {
             '/' +
             wallet.key
           wallet.chain = wallet.type
+
           wallet.disabled =
             wallet.type !== 'eth' &&
             wallet.type !== 'dot' &&
             wallet.type !== 'ksm' &&
-            wallet.type !== 'bnb'
+            wallet.type !== 'bnb' && 
+            wallet.type !== 'sol'
 
           if (wallet.type === 'ksm') {
             wallet.icon =
@@ -205,6 +207,9 @@ class Wallets2Tokens {
           } else if (wallet.type === 'avax') {
             wallet.icon =
               'https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png'
+          } else if (wallet.type === 'sol') {
+            wallet.icon = 
+              'https://assets.coingecko.com/coins/images/4128/small/coinmarketcap-solana-200.png'
           } else {
             wallet.icon =
               'https://files.coinswitch.co/public/coins/' +
@@ -221,7 +226,8 @@ class Wallets2Tokens {
           wallet.type === 'bnb' ||
           wallet.type === 'dash' ||
           wallet.type === 'dot' ||
-          wallet.type === 'ksm'
+          wallet.type === 'ksm' || 
+          wallet.type === 'sol'
         ) {
           Lib.balance(wallet.type, wallet.key).then(result => {
             // console.log('libwallet', result)

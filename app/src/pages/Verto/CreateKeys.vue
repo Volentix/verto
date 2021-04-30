@@ -123,6 +123,11 @@ export default {
         'label': 'Kusama'
       },
       {
+        'icon': 'https://assets.coingecko.com/coins/images/4128/small/coinmarketcap-solana-200.png',
+        'value': 'sol',
+        'label': 'Solana'
+      },
+      {
         'value': 'xlm',
         'label': 'Stellar Lumens'
       },
