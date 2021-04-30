@@ -365,7 +365,7 @@ export default {
       line-height: 15px;
       letter-spacing: .5px;
       border-radius: 40px;
-      min-width: 100px;
+      min-width: 140px;
       padding-left: 20px;
       padding-right: 20px;
       margin-left: 10px;
