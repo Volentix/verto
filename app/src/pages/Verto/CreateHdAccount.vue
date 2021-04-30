@@ -97,6 +97,10 @@ const keys = [{
   'label': 'Kusama'
 },
 {
+  'value': 'sol',
+  'label': 'Solana'
+},
+{
   'value': 'xlm',
   'label': 'Stellar Lumens'
 },
