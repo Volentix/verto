@@ -161,10 +161,12 @@ class Wallets2Tokens {
         } else {
           wallet.to = '/verto/wallets/' + wallet.type + '/' + wallet.type + '/' + wallet.key
           wallet.chain = wallet.type
-          wallet.disabled = wallet.type !== 'eth' && wallet.type !== 'dot' && wallet.type !== 'ksm' && wallet.type !== 'bnb'
+          wallet.disabled = wallet.type !== 'eth' && wallet.type !== 'dot' && wallet.type !== 'ksm' && wallet.type !== 'bnb' && wallet.type !== 'sol'
 
           if (wallet.type === 'ksm') {
             wallet.icon = 'https://assets.coingecko.com/coins/images/9568/small/m4zRhP5e_400x400.jpg'
+          } else if (wallet.type === 'sol') {
+            wallet.icon = 'https://assets.coingecko.com/coins/images/4128/small/coinmarketcap-solana-200.png'
           } else if (wallet.type === 'avax') {
             wallet.icon = 'https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png'
           } else {
@@ -174,7 +176,7 @@ class Wallets2Tokens {
         }
         wallet.disabled = false
 
-        if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'bnb' || wallet.type === 'dash' || wallet.type === 'dot' || wallet.type === 'ksm') {
+        if (wallet.type === 'btc' || wallet.type === 'ltc' || wallet.type === 'bnb' || wallet.type === 'dash' || wallet.type === 'dot' || wallet.type === 'ksm' || wallet.type === 'sol') {
           Lib.balance(wallet.type, wallet.key).then(result => {
           // console.log('libwallet', result)
           // static value for recording video purpos
