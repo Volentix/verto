@@ -1,4 +1,5 @@
 <template>
+<div>
   <q-select
     :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
     separator
@@ -13,6 +14,7 @@
       }"
     @input="setAccount()"
     v-model="accountOption"
+    v-if="accountOptions.length"
     :options="accountOptions">
     <template v-slot:selected>
       <q-item
@@ -54,6 +56,8 @@
         </q-avatar>
     </template> -->
   </q-select>
+  <div class="text-center" v-else>No {{chain}} account found</div>
+  </div>
 </template>
 <script>
 const palette = ['cyan', 'teal', 'light-blue', 'blue-1', 'pink', 'purple']
