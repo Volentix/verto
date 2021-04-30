@@ -1,6 +1,6 @@
 {
   "name": "verto",
-  "version": "0.9.241",
+  "version": "0.9.248",
   "description": "A multi-currency crypto wallet with initial support for EOS & VTX",
   "productName": "Verto",
   "cordovaId": "org.cordova.verto",
@@ -54,6 +54,7 @@
     "@polkadot/api": "^3.8.1",
     "@quasar/extras": "^1.9.10",
     "@quasar/quasar-app-extension-qenv": "^1.0.3",
+    "@solana/web3.js": "^1.7.1",
     "@uniswap/sdk": "^2.0.5",
     "apexcharts": "^3.8.6",
     "avalanche": "^3.2.0",
@@ -93,6 +94,7 @@
     "sjcl": "^1.0.8",
     "steemjs-lib": "^0.3.7",
     "stellar-sdk": "^3.3.0",
+    "tweetnacl": "^1.0.3",
     "ual-ledger": "^0.1.3",
     "v-markdown-editor": "^1.2.5",
     "volentix-ledger": "^0.2.71",
