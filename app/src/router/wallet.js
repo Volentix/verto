@@ -180,7 +180,7 @@ export default [
       },
       {
         name: 'powerup',
-        path: '/verto/wallet/:action',
+        path: '/verto/wallet/eos/:action',
         component: () => import('pages/Verto/GeneralEOSTransaction.vue'),
         meta: {
           authRequired: true
