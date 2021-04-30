@@ -19,7 +19,7 @@ class Lib {
 
     let nonce = await localWeb3.eth.getTransactionCount(from)
 
-    let web3Value = localWeb3.utils.toHex(localWeb3.utils.toWei(!value ? '1' : value.toString()))
+    let web3Value = localWeb3.utils.toHex(localWeb3.utils.toWei(!value ? '0' : value.toString()))
 
     let sendTo = to
     let data = null

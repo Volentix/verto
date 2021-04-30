@@ -94,7 +94,7 @@
     </q-dialog>
     <div class="desktop-version" v-if="screenSize > 1024">
       <div class="text-h6 row flex flex-center" v-if="!accountOption">
-        NO EOS or ETH wallet available
+        NO wallet found for the {{chain}} chain
       </div>
       <div class="row" v-else>
         <q-splitter
