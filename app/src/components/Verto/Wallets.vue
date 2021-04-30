@@ -803,7 +803,7 @@
                                          <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Buy/Sell Ram' clickable v-ripple class="p-relative" to="/verto/ram-market">Buy / Sell Ram
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
-                                         <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Power up' clickable v-ripple class="p-relative" to="/verto/wallet/powerup">Power up
+                                         <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Power up' clickable v-ripple class="p-relative" to="/verto/wallet/eos/powerup">Power up
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
 
