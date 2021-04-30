@@ -14,7 +14,7 @@
           </h2>
           <div class="standard-content--body full-width">
               <div class="standard-content--body__form">
-                  <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="psswrd" v-model="password" @keyup.enter="login" @input="checkPassword" :error="passHasError" rounded outlined color="deep-purple-14" :type="isPwd ? 'password' : 'text'" label="Verto Password" hint="*Minimum of 8 characters">
+                  <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="psswrd" v-model="password" @keyup.enter="login" @input="checkPassword" :error="passHasError" rounded outlined color="deep-purple-14" :type="isPwd ? 'password' : 'text'" label="Type your password" hint="*Minimum of 8 characters">
                       <template v-slot:append>
                           <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                       </template>
@@ -28,7 +28,7 @@
           </div>
           <div class="standard-content--footer auto full-width justify-center">
               <span></span>
-              <q-btn flat v-show="passHasError" rounded @click="restoreFromWords = true" outline class="back q-mb-lg" text-color="deep-purple-14" label="Restore from 24 Words" />
+              <q-btn flat v-show="passHasError" rounded @click="restoreFromWords = true" outline class="q-mb-lg" no-caps text-color="white" label="Restore from 24 Words" />
               <span></span>
           </div>
         </div>
@@ -325,13 +325,15 @@ export default {
 
     @media screen and (min-width: 768px) {
         &--title {
-            margin-left: 8%;
+            margin-left: 0%;
+            padding-left: 0%;
+            text-align: center;
         }
     }
 }
 
 .standard-content {
-    padding: 5% 10%;
+    padding: 5%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -344,6 +346,8 @@ export default {
             margin-top: 5%;
             margin-bottom: 0%;
             max-width: 400px;
+            margin-left: auto !important;
+            margin-right: auto !important;
         }
     }
 
@@ -360,6 +364,8 @@ export default {
 
         @media screen and (min-width: 768px) {
             max-width: 400px;
+            margin-left: auto !important;
+            margin-right: auto !important;
         }
 
         .action-link {
