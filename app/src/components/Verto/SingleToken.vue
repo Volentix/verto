@@ -501,7 +501,7 @@
             <table>
               <tr>
                 <td>
-                  <h3><span class="text-bold q-pr-md"> Equity</span> <span class="percentage">{{ formatNumber(asset.percentage, 2)}}%</span></h3>
+                  <h3><span class="text-bold q-pr-md"> Equity</span> <span class="percentage">{{ formatNumber(asset.percentage, 2)}}% of tradeable assets</span></h3>
                   <h2>${{ formatNumber(asset.usd, 0)}}.<span>{{formatNumber(asset.usd, 2).split(".")[1]}}</span></h2>
                   <h4>{{ formatNumber(asset.amount, 2)}} {{asset.type.toUpperCase()}}</h4>
                 </td>
@@ -671,6 +671,10 @@ export default {
             days
         )
         this.chartData = response.data
+
+        if (response.data.prices && !this.asset.rateUsd) {
+          this.asset.rateUsd = response.data.prices[response.data.prices.length - 1][1]
+        }
       }
     },
     setSuccessData (status) {
@@ -947,11 +951,11 @@ export default {
 }
 
 .left table h3 span.percentage {
-  font-size: 11px;
+  font-size: 14px;
   line-height: 12px;
   font-weight: 500;
   color: #000;
-  padding: 4px;
+  padding: 6px;
   border-radius: 3px;
   background: #f4f3f5;
 }
