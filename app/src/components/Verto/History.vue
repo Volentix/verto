@@ -504,7 +504,7 @@ export default {
 
         data = data.history
 
-        if (data && data[0].transID) {
+        if (data && data[0] && data[0].transID) {
           this.legacyHistory = data
           this.loading = false
           return
@@ -574,8 +574,6 @@ export default {
           cacheData.forEach((e) => {
             this.offset += e.data.length
           })
-
-          console.log(this.offset, 'this.offset', cacheData)
 
           let data = txList.slice(this.offset, this.offset + 10).map(o => this.normalize(o, 'eth'))
 
@@ -647,10 +645,9 @@ export default {
     refreshHistory () {
       let account = this.$store.state.investment.defaultAccount
 
-      console.log(account.key, 'account.key')
       Lib.deleteWalletHistoryData(account.chain === 'eos' ? account.name : account.key)
       this.loading = true
-      console.log(7)
+
       setTimeout(() => {
         this.getHistory()
       }, 500)

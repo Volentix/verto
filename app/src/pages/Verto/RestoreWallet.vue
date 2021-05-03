@@ -1,12 +1,23 @@
 <template>
-  <q-page class="column restore-wallet" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-white': $store.state.settings.lightMode === 'false'}">
-        <div class="chain-tools-wrapper">
+  <q-page class="column restore-wallet dark-theme">
+    <div class="row app-logo-row">
+      <div class="col col-md-12 app-logo flex q-pl-lg q-ml-sm q-mt-lg items-center justify-start">
+        <img src="statics/icons/vtx-logo-1024x1024.png" class="q-mr-sm" width="40" alt="logo"/>
+        <router-link to="/verto/dashboard">VERTO</router-link>
+      </div>
+    </div>
+    <video-bg :sources="['statics/mp4/restore.mp4']" img="">
+      <div class="video-page-wrapper q-pt-md q-pb-md">
+        <!-- <div class="standard-content" style="padding-bottom: 0px"> -->
+          <div class="chain-tools-wrapper">
             <div class="standard-content">
                 <h2 class="standard-content--title flex justify-center">
-                    <q-btn flat unelevated class="btn-align-left" :to="returnto === 'profile' ? '/verto/profile' : '/login'" :text-color="$store.state.settings.lightMode === 'false' ? 'black' : 'white'" icon="keyboard_backspace" />
-                     {{$t('SettingsView.restore_config')}}
+                  <q-btn flat unelevated class="btn-align-left" :to="returnto === 'profile' ? '/verto/profile' : '/login'" text-color="white" icon="keyboard_backspace" />
+                  <span class="text-white">{{$t('SettingsView.restore_config')}}</span>
                 </h2>
-                <div class="privatekey_bg flex flex-center"><img src="statics/restore_config.svg" alt=""></div>
+                <div class="privatekey_bg flex flex-center" v-if="false">
+                  <img src="statics/restore_config.svg" alt="">
+                </div>
             </div>
             <div class="chain-tools-wrapper--list open">
                 <div class="list-wrapper">
@@ -18,7 +29,7 @@
                               <q-icon name="cloud_upload" class="icon-upload" />
                             </div>
                           <q-stepper-navigation v-show="showNextButtonToPassword" class="flex justify-end">
-                            <q-btn @click="showThePasswordScreen" color="deep-purple-14" class="--next-btn" rounded label="Next" />
+                            <q-btn @click="showThePasswordScreen" flat text-color="white" color="transparent" class="--next-btn next" rounded label="Next" />
                           </q-stepper-navigation>
                         </q-step>
                         <q-step title="Verto Password" :name="2" prefix="1" :done="step > 2">
@@ -53,7 +64,7 @@
                               Unknown Error
                             </div>
                             <q-stepper-navigation v-show="submitKey" class="flex justify-end">
-                              <q-btn @click="restoreConfig" color="deep-purple-14" class="--next-btn" rounded label="Next" />
+                              <q-btn @click="restoreConfig" flat color="transparent" class="--next-btn next" rounded label="Next" />
                             </q-stepper-navigation>
                           </q-card-section>
                         </q-step>
@@ -62,15 +73,20 @@
                     <br><br><br>
                 </div>
             </div>
-        </div>
-    </q-page>
+          </div>
+        <!-- </div> -->
+      </div>
+    </video-bg>
+  </q-page>
 </template>
 
 <script>
 import FileSelect from '@/components/FileSelect.vue'
 import configManager from '@/util/ConfigManager'
 import { userError } from '@/util/errorHandler'
-
+import Vue from 'vue'
+import VideoBg from 'vue-videobg'
+Vue.component('video-bg', VideoBg)
 export default {
   name: 'RestoreConfig',
   components: {
@@ -177,8 +193,8 @@ export default {
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
   .restore-wallet{
-    padding-bottom: 50px;
-    background: #f3f3f3 !important
+    padding-bottom: 0px;
+    // background: #f3f3f3 !important
   }
   .chain-tools-wrapper{
     // padding: 0px 6%;
@@ -268,9 +284,9 @@ export default {
           }
           &__eos-to-vtx-convertor{
             background-color: #fff;
-            margin-bottom: 10px;
+            margin-bottom: 0px;
             border-radius: 10px;
-            padding: 1% 2%;
+            padding: 0px;
             box-shadow: 0px 4px 16px 0px rgba(black, .09);
             &--title{
               font-size: 22px;
@@ -296,9 +312,9 @@ export default {
             }
             /deep/ .q-stepper__tab{
               .q-stepper__title{
-                font-size: 20px;
+                font-size: 16px;
                 font-family: $Titillium;
-                font-weight: $bold;
+                font-weight: $regular;
                 color: #2A2A2A;
               }
               &.q-stepper__tab--active,&.q-stepper__tab--done{
@@ -354,6 +370,14 @@ export default {
             .--next-btn{
               width: 100px;
               text-transform: initial !important;
+              box-shadow: 0px 0px 10px 0px #6200ea;
+              border: 1px solid #B0B0B0 !important;
+              height: 40px;
+              text-transform: initial !important;
+              font-size: 15px;
+              letter-spacing: .5px;
+              border-radius: 40px;
+              margin-left: 0px;
             }
             .--progress{
               height: 20px;
@@ -444,7 +468,7 @@ export default {
     }
   }
   .standard-content{
-    padding: 5% 10%;
+    padding: 5%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -468,8 +492,8 @@ export default {
       z-index: 2;
       .btn-align-left{
         position: absolute;
-        left: -35px;
-        top: 10px;
+        left: -5px;
+        top: 5px;
       }
     }
   }
@@ -504,12 +528,18 @@ export default {
     }
   }
 .dark-theme{
-  background: #04111F !important;
+  .svg_logo{
+    fill: #FFF;
+  }
+  background: transparent !important;
   .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
-    background-color: #04111F;
+    background-color: transparent;
   }
   .standard-content--title{
     color: #FFF;
+    font-size: 20px;
+    margin-top: 8px;
+    font-weight: $regular;
   }
   /deep/ .file-select-wrapper {
     .file-select > .select-button span{
@@ -523,10 +553,87 @@ export default {
 }
 /deep/ .q-stepper{
   &.q-dark{
-    background: #04111F;
+    background: transparent !important;
     .q-stepper__title{
       color: #CCC !important;
     }
+  }
+}
+.app-logo-row{
+  position: relative;
+  width: 97%;
+  .app-logo{
+    position: absolute !important;
+    left: 0px;
+    z-index: 9;
+    a {
+      font-weight: $lighter;
+      text-transform: uppercase;
+      font-family: $Titillium;
+      font-size: 25px;
+      color: #FFF;
+      text-decoration: none;
+    }
+  }
+}
+
+/deep/ .video-page-wrapper{
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+  background-color: rgba(black, .5);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+}
+/deep/ .VideoBg {
+    overflow: hidden;
+    width: 100vw !important;
+    height: 100vh !important;
+}
+/deep/ .VideoBg__content{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  img{}
+  h1{
+    font-family: $Franklin;
+    color: #FFF;
+    font-weight: 100;
+    font-size: 45px;
+    text-align: center;
+    line-height: 55px;
+  }
+}
+.video-page-wrapper{
+  .or-text{
+    margin-left: 10px;
+    font-size: 16px;
+    // margin-top: -10px;
+    // margin-bottom: 10px;
+  }
+  /deep/ .q-field--focused .q-field__label{
+    color: #FFF !important;
+  }
+  .next {
+    box-shadow: 0px 0px 10px 0px #6200ea;
+    border: 1px solid #B0B0B0 !important;
+  }
+  .back {
+    box-shadow: 0px 0px 10px 0px #4caf50;
+  }
+  /deep/ .q-field--outlined.q-field--focused .q-field__control:after{
+    border: 1px solid #FFF;
+    box-shadow: 0px 0px 10px 0px #6200ea;
+  }
+  /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
+  /deep/ .q-field--dark .q-field__marginal,
+  /deep/ .q-field--dark .q-field__bottom{
+    color: #FFF !important;
+  }
+  .perpleGlow{
+    text-shadow: 2px 2px 2px #6200ea;
   }
 }
 </style>
