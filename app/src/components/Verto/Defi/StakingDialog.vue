@@ -122,7 +122,7 @@
 import {
   mapState
 } from 'vuex'
-import contract from '../../../mixins/contract'
+import contract from '../../../mixins/EthContract'
 export default {
   name: 'AddLiquidityDialog',
   data () {

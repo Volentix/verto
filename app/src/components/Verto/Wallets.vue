@@ -1303,7 +1303,7 @@ export default {
         cpu: 0,
         net: 0
       },
-      hideEosSetup: null,
+      hideEosSetup: true,
       loadingIndicator: false,
       history: [],
       rekey: 98813538,
@@ -1348,6 +1348,7 @@ export default {
     }
   },
   async mounted () {
+    this.showSetupEos()
     setTimeout(() => {
       this.showSetupEos()
     }, 5000)
@@ -1401,10 +1402,11 @@ export default {
   },
   methods: {
     showSetupEos () {
-      this.hideEosSetup = localStorage.getItem('hideEosSetup')
+      this.hideEosSetup = !this.$store.state.wallets.tokens.find(f => f.type === 'verto' && f.chain === 'eos' && !f.hidden && !f.disabled)
+      let check = localStorage.getItem('hideEosSetup')
 
-      if (!this.hideEosSetup) {
-        this.hideEosSetup = !this.$store.state.wallets.tokens.find(f => f.type === 'verto' && f.chain === 'eos' && !f.hidden && !f.disabled)
+      if (check) {
+        this.hideEosSetup = true
       }
     },
     setVtxData () {

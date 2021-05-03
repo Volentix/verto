@@ -382,7 +382,7 @@ import { osName } from 'mobile-device-detect'
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EOSContract from '../../mixins/EOSContract'
-import ETHContract from '../../mixins/contract'
+import ETHContract from '../../mixins/EthContract'
 import {
   mapState
 } from 'vuex'
