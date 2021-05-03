@@ -1603,6 +1603,12 @@ export default {
         menu.selected = false
         this.$store.state.currentwallet.wallet = undefined
       }
+      if (this.selectedCoin.chain === 'eos' && this.selectedCoin.type === 'verto') {
+        let result = await eos.getAccountNamesFromPubKeyP(this.selectedCoin.key)
+        if (result && result.account_names.length) {
+          to = '/verto/eos-account/import'
+        }
+      }
 
       if (to) this.$router.push(to)
     },
