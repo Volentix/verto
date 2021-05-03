@@ -146,7 +146,7 @@ export default [
       } */
       {
         name: 'eos-account',
-        path: '/verto/eos-account/:action?',
+        path: '/verto/eos-account/:action',
         component: () => import('pages/Verto/EOSAccount.vue'),
         meta: {
           authRequired: true

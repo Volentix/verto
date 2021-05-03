@@ -208,6 +208,10 @@ class Wallets2Tokens {
             wallet.icon =
               'https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png'
           } else if (wallet.type === 'sol') {
+            // Making sure .key is a String
+            if (typeof wallet.key === 'object' && wallet.key._bn) {
+              wallet.key = wallet.key._bn
+            }
             wallet.icon =
               'https://assets.coingecko.com/coins/images/4128/small/coinmarketcap-solana-200.png'
           } else {
@@ -754,7 +758,6 @@ class Wallets2Tokens {
     })
   }
   updateWallet () {
-    console.log(this.tableData, this.tableDataCache)
     let data = this.tableData.concat(this.tableDataCache)
     store.commit('wallets/updateTokens', data)
     // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)

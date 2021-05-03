@@ -25,7 +25,7 @@
                   >
 
                     <div class="text-black">
-                      <q-list padding>
+                      <q-list padding :dark="$store.state.settings.lightMode === 'true'">
                         <q-item-label header
                           >We need a public key for that account
                         </q-item-label>
@@ -305,7 +305,7 @@
                   </q-step>
                   <q-step
                     :name="2"
-                    title="Chooe account name"
+                    title="Chooze account name"
                     icon="settings"
                     :done="step > 2"
                     style="max-width: 600px"
@@ -322,11 +322,13 @@
                       "
                       class="--back-btn"
                     />
+
+                    <span v-if="tab == 'new'">Click import if you want to import an existing account</span>
                     <q-tabs
                       v-model="tab"
                       inline-label
                        v-if="privateKey.key && $route.params.action == 'create'"
-                      class="bg-grey-3 optionTab q-mt-md"
+                      class=" optionTab q-mt-md"
                     >
                       <q-tab name="new" icon="add" label="New account" />
                       <q-tab
@@ -370,7 +372,7 @@
                         @input="checkName"
                         @keyup.enter="step = 2"
                       />
-                      <p class="text-body1">
+                      <p class="text-body1" :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" >
                         The way EOS works is that new accounts can only be
                         created by someone with an existing account. Creating an
                         account also requires to stake a certain amount of EOS
@@ -381,6 +383,7 @@
                       <p
                         v-if="accountsInVerto.length && !accountNames.length"
                         class="q-pt-md"
+                        :class="{ 'text-white': $store.state.settings.lightMode === 'true'}"
                       >
                         All
                         {{
@@ -390,7 +393,8 @@
                         }}
                         accounts associated with this key are already in Verto
                       </p>
-                      <p></p>
+                      <p  class="q-pt-md" :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" v-if="accountsInVerto.length == 0 &&  accountNames.length == 0"> No EOS accounts found</p>
+                      <q-btn class="float-right" :color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" :loading="spinnervisible" dense label="Refetch accounts" icon="refresh"  @click="getAccountNames()"  flat/>
                       <div
                         class="text-h4 --subtitle"
                         v-if="accountNames.length"
@@ -400,8 +404,8 @@
                         </ul>
                       </div>
 
-                      <p v-if="accountsInVerto.length && accountNames.length">
-                        {{ accountsInVerto.length }} are already added in Verto.
+                      <p :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" v-if="accountsInVerto.length && accountNames.length">
+                        {{ accountsInVerto.length }}  already added in Verto.
                         You can add {{ accountNames.length }} more.
                       </p>
 
@@ -455,7 +459,7 @@
 
                     >
                       <q-btn
-                         v-if="tab == 'import'"
+                         v-if="tab == 'import' &&  (accountsInVerto.length != 0 ||  accountNames.length != 0)"
                         @click="upgradeAccountName(true)"
                         unelevated
                         color="deep-purple-14"
@@ -482,6 +486,7 @@
                     icon="attach_money"
                     :done="step > 3"
                   >
+
                     <q-btn
                       flat
                       @click="step--"
@@ -494,7 +499,42 @@
                       "
                       class="--back-btn"
                     />
-                    <div class="row">
+                    <div v-if="!$store.state.wallets.tokens.filter(f => f.type == 'eos').length">
+                        <div class="text-black">
+                            <div class="text-h4 --subtitle">
+                                <ul>
+                                    <li><span>Send 0.35 EOS to Create the Account</span></li>
+                                    <!-- <li><span>0.35 EOS is required to be transferred to the new account</span></li> -->
+                                </ul>
+                            </div>
+                            <q-input v-model="accountAmount" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" color="green" label="Minimum Amount:" readonly>
+                                <template v-slot:append>
+                                    <q-icon name="file_copy" @click="copyToClipboard(accountAmount, 'Amount')" />
+                                </template>
+                            </q-input>
+                            <q-input v-model="accountTo" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" color="green" label="Send To:" readonly>
+                                <template v-slot:append>
+                                    <q-icon name="file_copy" @click="copyToClipboard(accountTo, 'To Account')" />
+                                </template>
+                            </q-input>
+                            <q-input v-model="accountMemo" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" color="green" label="Mandatory Memo:" readonly>
+                                <template v-slot:append>
+                                    <q-icon name="file_copy" @click="copyToClipboard(accountMemo, 'Memo')" />
+                                </template>
+                            </q-input>
+                            <div class="text-body1 q-mt-md" :class="{ 'text-white': $store.state.settings.lightMode === 'true'}">After completing this payment, you will need to import the account so it can be ready inside Verto.</div>
+                            <div class="text-body1 q-mt-md" :class="{ 'text-white': $store.state.settings.lightMode === 'true'}">Have you completed the payment ? </div>
+                            <q-btn
+                            unelevated
+                            @click="step = 2 ; tab = 'import' ; "
+                            color="deep-purple-14"
+                            class="--next-btn q-mt-sm"
+                            rounded
+                            label="Click here to import"
+                          />
+                        </div>
+                    </div>
+                    <div class="row"  v-else>
                       <q-list separator class="col-md-6 q-pa-md">
                         <q-item>
                           <q-item-section>
@@ -564,6 +604,7 @@
                         <p class="text-body1">Select account and token</p>
                         <AccountSelector :chain="'eos'" />
                         <q-select
+                          v-if="paymentOptions.length"
                           :dark="$store.state.settings.lightMode === 'true'"
                           :light="$store.state.settings.lightMode === 'false'"
                           separator
@@ -862,7 +903,7 @@ export default {
 
         })
       })
-    console.log(self.tokensOption)
+
     if (self.tokensOption.length === 1) {
       this.currentToken = self.tokensOption[0]
       this.publicKey = this.currentToken.value
@@ -885,6 +926,12 @@ export default {
   },
   updated () {},
   watch: {
+    $route (to, from) {
+      if (to !== from) {
+        this.step = 1
+        this.tab = this.$route.params.action === 'create' ? 'new' : 'import'
+      }
+    },
     '$store.state.investment.accountTokens': function () {
       this.paymentOptions = this.$store.state.investment.accountTokens.map(
         (o, i, all) => {
@@ -914,8 +961,7 @@ export default {
       this.triggerTxData()
     },
     step (newVal, old) {
-      console.log(newVal, old, 99)
-      if (newVal === 2 && old === 1) {
+      if (newVal === 2) {
         this.getAccountNames()
       }
     }
@@ -1074,12 +1120,13 @@ export default {
     },
     getAccountNames () {
       const self = this
-
+      this.spinnervisible = true
       eos
         .getAccountNamesFromPubKeyP(this.publicKey)
         .then(function (result) {
           self.accountNames = []
           self.accountsInVerto = []
+          self.spinnervisible = false
           for (var i = 0; i < result.account_names.length; i++) {
             let account = self.$store.state.wallets.tokens.find(
               (o) =>
@@ -1098,6 +1145,7 @@ export default {
           self.walletName = result.account_names[0]
         })
         .catch((err) => {
+          self.spinnervisible = false
           userError('There was a problem getting account names', err)
         })
       this.prompt = true
@@ -1216,7 +1264,7 @@ export default {
       } else {
         this.$configManager.saveWalletAndKey(this.currentAccount.name, this.vertoPassword, this.privateKeyPassword, this.currentAccount.key, this.currentAccount.privateKey, 'eos', origin)
       }
-      console.log(this.currentAccount, 'this.currentAccount.')
+
       // reset form variables
       this.vertoPassword = null
       this.privateKeyPassword = null

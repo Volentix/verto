@@ -113,7 +113,7 @@
           </q-list>
         </q-btn-dropdown>
         <router-link
-          to="/verto/eos-account"
+          to="/verto/eos-account/create"
           v-if="$store.state.settings.network == 'testnet'"
           class="q-pr-md"
           >Create Test Account</router-link
