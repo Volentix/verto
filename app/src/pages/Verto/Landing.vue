@@ -14,7 +14,7 @@
           </h2>
           <div class="standard-content--body full-width">
               <div class="standard-content--body__form">
-                  <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="psswrd" v-model="password" @keyup.enter="login" @input="checkPassword" :error="passHasError" rounded outlined color="deep-purple-14" :type="isPwd ? 'password' : 'text'" label="Type your password" hint="*Minimum of 8 characters">
+                  <q-input dark ref="psswrd" v-model="password" @keyup.enter="login" @input="checkPassword" :error="passHasError" rounded outlined color="deep-purple-14" :type="isPwd ? 'password' : 'text'" label="Type your password" hint="*Minimum of 8 characters">
                       <template v-slot:append>
                           <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                       </template>
@@ -42,7 +42,7 @@
       <span class="landing--bottom-bar"></span>
     </video-bg>
     <q-dialog v-model="restoreFromWords">
-        <q-card class="q-pa-lg" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+        <q-card class="q-pa-lg" dark :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
             <q-toolbar>
                 <q-avatar><img src="statics/icon.png"></q-avatar>
                 <q-toolbar-title><span class="text-weight-bold">Restore from</span> 24 Words</q-toolbar-title>

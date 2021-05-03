@@ -468,7 +468,7 @@
                                             <span :class="[$store.state.settings.lightMode === 'true' ? 'text-black' : '', 'item-name--name']">{{item.name.replace('- HD', '')}}</span>
                                         </q-item-section>
                                         <q-item-section class="item-info" v-if="!item.disabled">
-                                            <span class="item-info--amount"> <q-btn label="Setup" text-color="white" class="highlight-btn" /></span>
+                                            <span class="item-info--amount"> <q-btn label="Setup" text-color="white" no-caps class="highlight-btn" /></span>
                                         </q-item-section>
                                         <q-item-section class="item-info" v-else>
                                             <span class="item-info--amount">in progress</span>
@@ -1730,7 +1730,17 @@ span.accountInfos {
     background: #ffe9fb;
 }
 .highlight-btn {
-    background: #a991fb !important;
+    // background: #a991fb !important;
+    text-transform: initial !important;
+    background: transparent !important;
+    border: 1px solid rgba(0, 0, 0, 0.7);
+    font-size: 12px !important;
+    color: #000 !important;
+    border-radius: 40px;
+    font-weight: 700;
+    min-height: 20px;
+    margin-bottom: 5px;
+    min-width: fit-content;
 }
 .header-wallet {
     &.disable-coin {
@@ -2629,6 +2639,27 @@ span.accountInfos {
     }
 }
 .dark-theme{
+    .highlight {
+      background: #071e36;
+      color: #FFF;
+      /deep/ .item-name--name{
+        color: #FFF !important;
+      }
+    }
+    .highlight-btn {
+      text-transform: initial !important;
+      background: transparent !important;
+      border: 1px solid rgba(204, 204, 204, 0.7);
+      font-size: 12px !important;
+      border-radius: 40px;
+      font-weight: 700;
+      color: #FFF !important;
+      min-height: 20px;
+      margin-bottom: 5px;
+      min-width: -webkit-fit-content;
+      min-width: -moz-fit-content;
+      min-width: fit-content;
+    }
     .q-expansion-item--expanded *,
     .q-expansion-item--expanded{
         background: #071e36;
