@@ -1,3 +1,10 @@
+/*
+let apiUrlV3 = {
+  eth: 'https://api.1inch.exchange/v3.0/1/',
+  bsc: 'https://api.1inch.exchange/v3.0/56/'
+}
+*/
+
 export default {
   data () {
     return {
@@ -23,16 +30,28 @@ export default {
 
       return abi
     },
+    getSpender1Inchv3 (chain = 'eth') {
+      let response = this.$axios.get('https://api.1inch.exchange/v3.0/1/approve/spender')
+      return response
+    },
+    getApprovalDataV3 (tokenAddress, chain = 'eth') {
+      let response = this.$axios.get('https://api.1inch.exchange/v3.0/1/approve/calldata?tokenAddress=' + tokenAddress)
+      return response
+    },
     async isApprovalRequired (fromTokenAddress, toAddress, amountToSend, setGas = false, nonce = false) {
-      let tx = null, transactionObject = {}
+      let transactionObject = {}
       let account = Array.isArray(this.ethAccount) ? this.ethAccount.find(o => o.type === 'eth') : this.ethAccount
       let tokenABI = await this.getContractABI('default', true)
       this.approvalRequired = false
       const tokenContract = new this.web3.eth.Contract(tokenABI, fromTokenAddress)
 
+      let spenderData = await this.getSpender1Inchv3(fromTokenAddress)
+
+      if (spenderData.data && spenderData.data.address) toAddress = spenderData.data.address
+
       const allowance = await tokenContract.methods.allowance(account.key, toAddress).call()
 
-      if (allowance === 0 || allowance < amountToSend) {
+      if (parseFloat(allowance) === 0 || parseFloat(allowance) < parseFloat(amountToSend)) {
         nonce = !nonce ? await this.web3.eth.getTransactionCount(account.key, 'latest') : nonce
 
         transactionObject = {
@@ -41,24 +60,34 @@ export default {
         }
         this.approvalRequired = true
 
-        let value = this.web3.utils.toWei(amountToSend.toString(), 'ether')
+        // let value = this.web3.utils.toWei(amountToSend.toString(), 'ether')
 
+        let approvalData = await this.getApprovalDataV3(fromTokenAddress)
+
+        if (approvalData.data && approvalData.data.data) {
+          transactionObject.data = approvalData.data.data
+          transactionObject.value = this.web3.utils.toHex(approvalData.data.value)
+          transactionObject.gasPrice = this.web3.utils.toHex(approvalData.data.gasPrice)
+        }
+        /*
         tx = tokenContract.methods.approve(
           toAddress,
           this.web3.utils.toHex(value)
         )
+         */
         transactionObject.to = fromTokenAddress
-        transactionObject.data = tx.encodeABI()
+        // transactionObject.data = tx.encodeABI()
 
         if (setGas) {
           transactionObject.gas = this.web3.utils.toHex(this.gasSelected.gas)
-          transactionObject.gasPrice = this.web3.utils.toHex(this.gasSelected.gasPrice)
+          // transactionObject.gasPrice = this.web3.utils.toHex(this.gasSelected.gasPrice)
         } else {
           this.getGasOptions(transactionObject)
         }
       } else {
         this.approvalRequired = false
       }
+
       return this.approvalRequired ? transactionObject : this.approvalRequired
     },
     async getGasOptions (transactionObject, customGas = false) {
@@ -101,8 +130,7 @@ export default {
         self.invalidTransaction = false
       })
         .catch((error) => {
-          this.error = 'gas'
-          console.log(error)
+          this.error = error.toString().includes('insufficient funds') ? 'Insufficient funds insufficient funds for transfer (gas + amount)' : error
           self.invalidTransaction = true
         })
     },

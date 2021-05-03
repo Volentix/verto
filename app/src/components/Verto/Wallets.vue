@@ -87,7 +87,10 @@
                                             <q-item data-name='Trade' v-if="item.disabled" clickable v-ripple class="p-relative" to="/verto/exchange">Trade
                                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                             </q-item>
-                                            <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
+                                            <q-item data-name='Create EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">Create EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item data-name='Import EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative bold-btn">Import EOS account
                                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                             </q-item>
                                             <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
@@ -171,7 +174,10 @@
                                             <q-item data-name='Trade' v-if="item.disabled" clickable v-ripple class="p-relative" to="/verto/exchange">Trade
                                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                             </q-item>
-                                            <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
+                                           <q-item data-name='Create EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">Create EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item data-name='Import EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative bold-btn">Import EOS account
                                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                             </q-item>
                                             <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
@@ -230,9 +236,12 @@
                                     <q-item data-name='Trade' v-if="item.disabled" clickable v-ripple class="p-relative" to="/verto/exchange">Trade
                                         <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                     </q-item>
-                                    <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
-                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                    </q-item>
+                                    <q-item data-name='Create EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">Create EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item data-name='Import EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative bold-btn">Import EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
                                     <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
                                         <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                     </q-item>
@@ -322,9 +331,12 @@
                                         <q-item data-name='Transaction History' clickable v-ripple class="p-relative" to="/verto/wallet/coinHistory">Transaction History
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
-                                        <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative">Associate with EOS
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
+                                        <q-item data-name='Create EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">Create EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item data-name='Import EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative bold-btn">Import EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
                                         <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
@@ -453,14 +465,14 @@
                 <q-list bordered separator class="list-wrapper">
 
                     <div v-if="$store.state.currentwallet.wallet.empty" class="all-wallets">
-                        <q-item  v-show="!hideEosSetup && !loadingIndicator"  class="highlight on-top" dense>
+                        <q-item  v-if="$store.state.wallets.tokens.filter(f => f.type == 'verto' && f.chain == 'eos' && !f.hidden && !f.disabled).length" v-show="!hideEosSetup && !loadingIndicator"  class="highlight on-top" dense>
                             <q-item-section @click="hideEOSSetup()" class="text-center  cursor-pointer q-py-sm">
                             <q-item-label class="text-center">Setup later<q-icon flat label="Yes" name="close" size="sm" /> </q-item-label>
                             </q-item-section>
                         </q-item>
                         <q-item v-show="!hideEosSetup" class="on-top" v-for="(item) in $store.state.wallets.tokens.filter(f => f.type == 'verto' && f.chain == 'eos' && !f.hidden && !f.disabled)" :class="[item.selected ? 'selected' : '', 'highlight']" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                                 <div class="header-wallet-wrapper culumn full-width">
-                                    <div @click="showMenu(item, '/verto/eos-account')" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
+                                    <div @click="showMenu(item, '/verto/eos-account/create')" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
                                             <img class="coin-icon" width="35px" :src="item.icon" alt="">
                                         </q-item-section>
@@ -531,7 +543,10 @@
                                             <q-item data-name='Trade' v-if="item.disabled" clickable v-ripple class="p-relative" to="/verto/exchange">Trade
                                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                             </q-item>
-                                            <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
+                                           <q-item data-name='Create EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">Create EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item data-name='Import EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative bold-btn">Import EOS account
                                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                             </q-item>
                                             <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
@@ -615,7 +630,10 @@
                                             <q-item data-name='Trade' v-if="item.disabled" clickable v-ripple class="p-relative" to="/verto/exchange">Trade
                                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                             </q-item>
-                                            <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
+                                            <q-item data-name='Create EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">Create EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item data-name='Import EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative bold-btn">Import EOS account
                                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                             </q-item>
                                             <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
@@ -676,9 +694,12 @@
                                         <q-item data-name='Trade' v-if="item.disabled" clickable v-ripple class="p-relative" to="/verto/exchange">Trade
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
-                                        <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
+                                        <q-item data-name='Create EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">Create EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item data-name='Import EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative bold-btn">Import EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
                                         <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
@@ -704,9 +725,13 @@
                                 <div class="menu-wallet">
                                     <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
                                         <!-- <q-separator style="margin-top: -20px" /> -->
-                                        <q-item data-name='Associate with EOS' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
+
+                                        <q-item data-name='Create EOS account' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">Create EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item data-name='Import EOS account' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative bold-btn">Import EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
                                         <!-- <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item> -->
@@ -810,10 +835,10 @@
                                         <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Stake Proxy EOS
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
-                                        <q-item data-name='Associate with EOS' v-if="$store.state.currentwallet.wallet.type !== 'verto' && $store.state.currentwallet.wallet.chain === 'eos'" to="/verto/eos-account/create" clickable v-ripple class="p-relative ">Create account
+                                        <q-item data-name='Create new account' v-if="$store.state.currentwallet.wallet.type !== 'verto' && $store.state.currentwallet.wallet.chain === 'eos'" to="/verto/eos-account/create" clickable v-ripple class="p-relative ">Create account
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
-                                        <q-item data-name='Associate with EOS' v-if="$store.state.currentwallet.wallet.type !== 'verto' && $store.state.currentwallet.wallet.chain === 'eos'" to="/verto/eos-account" clickable v-ripple class="p-relative">Import another account
+                                        <q-item data-name='Import  account' v-if="$store.state.currentwallet.wallet.type !== 'verto' && $store.state.currentwallet.wallet.chain === 'eos'" to="/verto/eos-account/import" clickable v-ripple class="p-relative">Import another account
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                         </q-item>
                                         <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Custom Transaction' clickable v-ripple class="p-relative" to="/verto/custom-transactions">Custom Transaction
@@ -937,7 +962,10 @@
                                             <q-item data-name='Transaction History' clickable v-ripple class="p-relative" to="/verto/wallet/coinHistory">Transaction History
                                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                             </q-item>
-                                            <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative">Associate with EOS
+                                            <q-item data-name='Create new EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative">Create EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item data-name='Import EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative">Import EOS account
                                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                             </q-item>
                                             <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
@@ -1021,7 +1049,10 @@
                                             <q-item data-name='Trade' v-if="item.disabled" clickable v-ripple class="p-relative" to="/verto/exchange">Trade
                                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                             </q-item>
-                                            <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
+                                            <q-item data-name='Create EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">Create EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item data-name='Import EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative bold-btn">Import EOS account
                                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                             </q-item>
                                             <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
@@ -1139,9 +1170,13 @@
                                     <q-item data-name='Trade' v-if="item.disabled" clickable v-ripple class="p-relative" to="/verto/exchange">Trade
                                         <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                     </q-item>
-                                    <q-item data-name='Associate with EOS' v-if="item.type === 'verto'" to="/verto/eos-account" clickable v-ripple class="p-relative bold-btn">Associate with EOS
-                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                    </q-item>
+                                    <q-item data-name='Create EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">Create EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+                                            <q-item data-name='Import EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">Import EOS account
+                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                            </q-item>
+
                                     <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
                                         <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                                     </q-item>

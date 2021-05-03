@@ -404,7 +404,6 @@ export default {
       }
     },
     filterAccount (type = false, chain = false, name = false) {
-      console.log(type, chain, name, this.accounts)
       this.accounts = this.$store.state.wallets.tokens
         .filter(
           (a) =>
@@ -417,8 +416,6 @@ export default {
           token.value = token.key
           return token
         })
-
-      console.log(this.accounts)
     },
     getAccount () {
       this.accountDropdown = false
