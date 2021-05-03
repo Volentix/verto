@@ -732,10 +732,17 @@ export default {
     },
     '$store.state.currentwallet.wallet': function (val) {
       let assets = this.initAssetTable()
-      console.log(assets, '5')
-      this.asset = assets.find(
+
+      let item = assets.find(
         (o) => o.chain === this.asset.chain && o.type === this.asset.type
       )
+
+      if (item) {
+        this.asset = item
+      } else {
+        this.asset.usd = 0
+        this.asset.amount = 0
+      }
     }
   },
   mounted () {

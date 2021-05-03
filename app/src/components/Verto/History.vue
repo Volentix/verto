@@ -504,7 +504,7 @@ export default {
 
         data = data.history
 
-        if (data && data[0].transID) {
+        if (data && data[0] && data[0].transID) {
           this.legacyHistory = data
           this.loading = false
           return
