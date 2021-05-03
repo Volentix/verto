@@ -184,7 +184,7 @@
                                         <div v-if="step === 2 || transactionHash" class="prototype">
                                             <div class="head">
                                                 <q-btn v-if="step != 1" flat @click="getSwapQuote(); step = 1" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back"  class="--next-btn q-mr-md" />
-                                                Order in progress
+                                                Order status : {{transactionStatus}}
                                             </div>
                                             <div class="standard-content--body">
                                                 <div class="standard-content--body__form q-pa-xl">
@@ -194,7 +194,10 @@
                                                         </svg>
                                                         <span class="title">{{transactionStatus}}</span>
                                                     </div>
-                                                    <div >
+                                                    <div style="max-width:300px; margin: 0 auto" >
+                                                        <q-linear-progress v-if="transactionStatus != 'Success' && transactionStatus != 'Failed'" :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" :value="progress" indeterminate class="q-mt-lg" />
+                                                        <p class="text-center q-pt-md" v-if="!approvalRequired">Swaping {{depositQuantity}} {{depositCoin.value.toUpperCase()}} to {{destinationCoin.value}}</p>
+                                                        <p class="text-center q-pt-md" v-else>Approval transaction</p>
                                                         <div class="text-h4 --subtitle">{{''}}</div>
                                                         <q-input  :dark="$store.state.settings.lightMode === 'true'"  v-if="transactionHash" bottom-slots v-model="transactionHash" readonly rounded outlined type="text">
                                                             <template v-slot:append>
@@ -645,15 +648,15 @@ export default {
           self.swapData.gas = result.data.tx.gas
           self.swapData.gasPrice = result.data.tx.gasPrice
           self.approvalRequired = false
-          this.approvedRequired = false
+          this.approvalRequired = false
           let isERC2O = self.depositCoin.value.toLowerCase() !== 'eth',
-            approvedRequired = false
+            approvalRequired = false
 
           if (isERC2O) {
-            approvedRequired = await self.isApprovalRequired(self.depositCoin.address, _1inchApprovalAddress, self.swapData.fromAmount, false, nonce)
+            approvalRequired = await self.isApprovalRequired(self.depositCoin.address, _1inchApprovalAddress, self.swapData.fromAmount, false, nonce)
           }
           let value = isERC2O ? 0 : self.swapData.fromAmount
-          if (!approvedRequired) {
+          if (!approvalRequired) {
             let transactionObject = {
               from: self.ethAccount.key,
               to: result.data.tx.to,
