@@ -1,6 +1,6 @@
 <template>
   <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" class="wrapper">
-    <q-scroll-area :visible="true" class="q-mr-sm" style="height: 75vh">
+    <q-scroll-area :visible="true" class="q-mr-sm" style="height: 75vh" v-if="asset.type">
       <div class="row">
         <div class="left-area col-md-8">
           <div class="left q-ml-md q-pt-md">
@@ -551,6 +551,7 @@ import DexInteraction from '../../mixins/DexInteraction'
 import AccountSelector from './Exchange/AccountSelector.vue'
 import AssetBalancesTable from '../../components/Verto/AssetBalancesTable'
 import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
+
 import {
   QScrollArea
 } from 'quasar'
@@ -570,7 +571,9 @@ export default {
       this.setPaymentOptions()
     },
     '$store.state.currentwallet.wallet': function (val) {
-
+      let assets = this.initAssetTable()
+      console.log(assets, '5')
+      this.asset = assets.find(o => o.chain === this.asset.chain && o.type === this.asset.type)
     }
   },
   mounted () {
@@ -592,6 +595,8 @@ export default {
     }
   },
   created () {
+    this.asset = this.assetData
+
     this.depositCoin = {
       label: this.asset.type.toUpperCase(),
       value: this.asset.type,
@@ -750,6 +755,7 @@ export default {
   data () {
     return {
       tab: 'send',
+      asset: {},
       assetBalance: null,
       chartData: false,
       tokenTabOption: 'history',
@@ -774,7 +780,7 @@ export default {
 
     }
   },
-  props: ['asset'],
+  props: ['assetData'],
   mixins: [Formatter, DexInteraction]
 }
 </script>
@@ -1029,11 +1035,11 @@ export default {
 }
 
 .left tr td {
-  width: 33.33%;
+  width: 37.33%;
 }
 
 .m-left {
-  padding-left: 12%;
+  padding-left: 4%;
 }
 
 .left3 {
