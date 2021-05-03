@@ -754,7 +754,6 @@ class Wallets2Tokens {
     })
   }
   updateWallet () {
-    console.log(this.tableData, this.tableDataCache)
     let data = this.tableData.concat(this.tableDataCache)
     store.commit('wallets/updateTokens', data)
     // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)

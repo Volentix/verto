@@ -93,8 +93,8 @@
       </q-card>
     </q-dialog>
     <div class="desktop-version" v-if="screenSize > 1024">
-      <div class="text-h6 row flex flex-center" v-if="!accountOption">
-        NO wallet found for the {{chain}} chain
+      <div class="text-h6 row flex flex-center" v-if="!accountOption || accountOptions.length == 0">
+        NO wallet found  {{chain ? 'for the '+chain+' chain' : ''}}
       </div>
       <div class="row" v-else>
         <q-splitter
@@ -111,11 +111,11 @@
             >
                 <div>
                   <q-list class="text-center flex" data-title="Switch between chains"  data-intro="Each chain have their own related and associated features">
-                    <q-item v-if="$store.state.settings.network == 'mainnet'" clickable @click="chain = 'eth';  switchChain() " :class="[chain == 'eth' ? 'bg-white' :'']">
+                    <q-item v-if="$store.state.settings.network == 'mainnet' && accountOptions.find( o => o.chain == 'eth')" clickable @click="chain = 'eth';  switchChain() " :class="[chain == 'eth' ? 'bg-white' :'']">
                     <q-img src="https://files.coinswitch.co/public/coins/eth.png" style="width:20px;"/>
                       <q-item-section class="q-pl-sm">Ethereum</q-item-section>
                     </q-item>
-                    <q-item clickable class="col" @click="chain = 'eos'; switchChain() " :class="[chain == 'eos' ? 'bg-white' :'']">
+                    <q-item v-if="accountOptions.find( o => o.chain == 'eos')" clickable class="col" @click="chain = 'eos'; switchChain() " :class="[chain == 'eos' ? 'bg-white' :'']">
                       <q-img src="https://files.coinswitch.co/public/coins/eos.png" style="width:20px;"/>
                     <q-item-section class="q-pl-sm">EOS</q-item-section>
                     </q-item>

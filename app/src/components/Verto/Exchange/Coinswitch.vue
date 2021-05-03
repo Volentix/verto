@@ -1418,7 +1418,7 @@ import DexInteraction from '../../../mixins/DexInteraction'
 import Lib from '@/util/walletlib'
 import EosWrapper from '@/util/EosWrapper'
 import EOSContract from '@/mixins/EOSContract'
-import ETHContract from '@/mixins/contract'
+import ETHContract from '@/mixins/EthContract'
 import Send from '@/pages/Verto/Send'
 let metamask = new ExternalWallets('metamask')
 const eos = new EosWrapper()

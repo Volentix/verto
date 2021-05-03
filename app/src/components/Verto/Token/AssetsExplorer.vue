@@ -108,6 +108,7 @@
               <a href="javascript:void(0)">Trade</a>
 
             </h2>
+            <q-item-label :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" class="q-pt-sm" caption>Amount: <span class="text-grey q-pl-xs">{{formatNumber(asset.amount,4)}}</span></q-item-label>
             <div class="q-pt-sm">Price: <span class="text-grey q-pl-xs">${{formatNumber(asset.rateUsd,4)}}</span></div>
             <div class="q-py-sm" v-if="asset.protocol"><q-icon class="q-pr-sm" size="1.2rem" :name="'img:'+asset.protocolIcon" />{{asset.protocol}}:
             </div>

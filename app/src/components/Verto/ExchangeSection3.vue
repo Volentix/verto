@@ -7,7 +7,7 @@
                 <div class="col q-pr-sm col-3">
                     <i class="step-2-lab step-1-lab flex ">Buy</i>
                     <div class="call-action">
-                        <q-select :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input" use-input @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
+                        <q-select v-if="destinationCoinOptions" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input" use-input @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="!destinationCoinOptions" :options="destinationCoinOptions">
                             <template v-slot:option="scope">
                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                     <q-item-section avatar>
@@ -42,7 +42,7 @@
                     <!-- <i class="step-1-lab flex">Send</i> -->
                     <i class="step-3-lab step-1-lab flex ">With</i>
                     <div class="call-action">
-                        <q-select :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
+                        <q-select v-if="depositCoinOptions" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" separator rounded outlined class="select-input" v-model="depositCoin" use-input @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                             <template v-slot:option="scope">
                                 <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                     <q-item-section avatar>
@@ -68,7 +68,7 @@
                             </template>
                         </q-select>
                     </div>
-                    <div class="text-red" v-if="error">{{error}}</div>
+                    <div class="text-red" v-if="error && false">{{error}}</div>
                 </div>
                 <div class="col-5 flex q-pt-xs">
                     <q-btn unelevated class="qbtn-start" color="black" @click="goToExchange" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" label="Go" />
