@@ -24,7 +24,24 @@
         <div v-if="step===2" class="standard-content">
           <div>
             <h2 class="standard-content--title text-white">24 - word recovery seed phrase.</h2>
-            <p class="text-body1 text-white">This list of words is used to generate all your HD wallets. You can use them to restore and access your wallet at any time</p>
+            <p class="text-body1 text-white">This list of words is used to generate all your HD wallets.
+              <span class="chain-icons-wrapper">
+                <img src="https://files.coinswitch.co/public/coins/eos.png" :class="{'active': chainCoin === 1}" width="20" alt="">
+                <img src="statics/icons/icon-128x128.png" :class="{'active': chainCoin === 2}" width="20" alt="">
+                <img src="https://files.coinswitch.co/public/coins/dot.png" :class="{'active': chainCoin === 3}" width="20" alt="">
+                <img src="https://assets.coingecko.com/coins/images/9568/small/m4zRhP5e_400x400.jpg" :class="{'active': chainCoin === 4}" class="radius" width="20" alt="">
+                <img src="https://files.coinswitch.co/public/coins/bnb.png" :class="{'active': chainCoin === 5}" width="20" alt="">
+                <img src="https://assets.coingecko.com/coins/images/4128/small/coinmarketcap-solana-200.png?1616489452" :class="{'active': chainCoin === 6}" width="20" alt="">
+                <img src="https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png" :class="{'active': chainCoin === 7}" width="20" alt="">
+                <img src="https://zapper.fi/images/ETH-icon.png" :class="{'active': chainCoin === 8}" width="20" alt="">
+                <img src="https://files.coinswitch.co/public/coins/btc.png" :class="{'active': chainCoin === 9}" width="20" alt="">
+                <img src="https://files.coinswitch.co/public/coins/dash.png" :class="{'active': chainCoin === 10}" width="20" alt="">
+                <img src="https://files.coinswitch.co/public/coins/ltc.png" :class="{'active': chainCoin === 11}" width="20" alt="">
+                <img src="https://files.coinswitch.co/public/coins/xrp.png" :class="{'active': chainCoin === 12}" width="20" alt="">
+                <img src="https://files.coinswitch.co/public/coins/xlm.png" :class="{'active': chainCoin === 13}" width="20" alt="">
+                <img src="https://files.coinswitch.co/public/coins/xtz.png" :class="{'active': chainCoin === 14}" width="20" alt="">
+              </span>
+              <br>You can use them to restore and access your wallet at any time</p>
             <h2 class="standard-content--desc text-white perpleGlow q-pt-sm">Save these words in the right order in a secure location. Nobody will be able to help if you lose them !</h2>
           </div>
           <div class="standard-content--body">
@@ -143,6 +160,7 @@ export default {
   data () {
     return {
       step: 2,
+      chainCoin: 1,
       isPwd: true,
       words: 24,
       downloaded: false,
@@ -179,6 +197,13 @@ export default {
       this.step = parseInt(this.$route.params.step)
       if (this.step === 2) { this.createMnemonic() }
     }
+    setInterval(() => {
+      if (this.chainCoin < 14) {
+        this.chainCoin++
+      } else {
+        this.chainCoin = 1
+      }
+    }, 500)
   },
   async mounted () {
     // console.log('mnemonic', this.mnemonic, 'config', this.config, 'verto password', this.vertoPassword)
@@ -480,6 +505,19 @@ export default {
   }
   .perpleGlow{
     text-shadow: 2px 2px 2px #6200ea;
+  }
+}
+.chain-icons-wrapper{
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  position: relative;
+  img{
+    position: absolute;
+    visibility: hidden;
+    &.active{
+      visibility: visible;
+    }
   }
 }
 </style>
