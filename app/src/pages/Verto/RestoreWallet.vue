@@ -22,7 +22,7 @@
             <div class="chain-tools-wrapper--list open">
                 <div class="list-wrapper">
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                      <q-stepper :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
+                      <q-stepper dark v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
                         <q-step title="Select Config File" :name="1" prefix="1" :done="step > 1">
                             <div class="flex full-width file-select-wrapper flex-center q-pa-sm">
                               <FileSelect @input="checks" @keyup.enter="showThePasswordScreen" v-model="file" />
@@ -37,7 +37,7 @@
                           <q-card-section class="text-white text-center"  >
                             <div>
                                 <q-input
-                                  :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
+                                  dark
                                   v-model="addWallet.vertoPassword"
                                   @input="showSubmitKey"
                                   @keyup.enter="restoreConfig"
