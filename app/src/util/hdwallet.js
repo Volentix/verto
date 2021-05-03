@@ -1,6 +1,7 @@
 import store from '@/store'
 import { Keyring } from '@polkadot/api'
 import nacl from 'tweetnacl'
+import { derivePath } from 'ed25519-hd-key'
 
 // import AvaHDWallet from 'ava-hd-wallet'
 
@@ -60,7 +61,7 @@ class HD {
   }
 
   Wallet = async (walletType, addressIndex = 0) => {
-    const bip32 = require('bip32')
+    // const bip32 = require('bip32')
     // const util = require('ethereumjs-util')
     // const createHash = require('create-hash')
     // const bs58check = require('bs58check')
@@ -94,12 +95,11 @@ class HD {
       },
       sol () {
         const solanaWeb3 = require('@solana/web3.js')
-        const derivedSeed = bip32
-          .fromSeed(seed)
-          .derivePath(`m/501'/0'/0/0`).privateKey
+        const path = "m/44'/501'/0'"
+        const derivedSeed = derivePath(path, seed).key
         const account = new solanaWeb3.Account(nacl.sign.keyPair.fromSeed(derivedSeed).secretKey)
-        const publicKey = account.publicKey
-        const privateKey = account.privateKey
+        const publicKey = account.publicKey.toString()
+        const privateKey = JSON.stringify(account.secretKey) // or .data ?
 
         return { publicKey, privateKey }
       },
