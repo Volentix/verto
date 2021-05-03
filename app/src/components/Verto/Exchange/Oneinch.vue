@@ -98,7 +98,7 @@
                                                 </div>
                                                 <div class="you-receive-body row items-center">
                                                     <div class="col col-3 choose-coin"><span class="cursor">
-                                                            <q-select class="select-input" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator use-input rounded borderless @input="swapData.error = false; getSwapQuote()" @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="false" :options="destinationCoinOptions">
+                                                            <q-select v-if="destinationCoinOptions" class="select-input" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator use-input rounded borderless @input="swapData.error = false; getSwapQuote()" @filter="filterDestinationCoin" v-model="destinationCoin" :disabled="!destinationCoinOptions" :loading="false" :options="destinationCoinOptions.filter(o => o.value != depositCoin.value)">
                                                                 <template v-slot:option="scope">
                                                                     <q-item class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
                                                                         <q-item-section avatar>
@@ -135,14 +135,14 @@
                                                         {{error}}
                                                     </span>
                                                 </div>
-                                                <div class="text-body2 text-red q-pa-md" v-if="approvalRequired  && !error">
 
+                                                <div class="text-body2 text-red q-pa-md" v-if="approvalRequired  == true && !error">
                                                     <span>
                                                         Before swaping {{depositCoin.value}} with {{destinationCoin.value}}, you need to process an approval transaction
                                                     </span>
                                                 </div>
                                                 <q-list class="gasfield q-mt-md" v-if="gasOptions.length" separator>
-                                                    <span class="text-body1 q-pl-md q-mb-md">Select gas price option</span>
+                                                    <span class="text-body1 q-pl-md q-mb-md">Select gas price option </span>
                                                     <q-item dense class="gasSelector q-pt-sm">
                                                         <q-item-section v-for="(gas, index) in gasOptions" :key="index">
                                                             <q-item :class="[gasSelected.label == gas.label ? 'selected bg-black ' : 'bg-white' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
@@ -745,7 +745,7 @@ export default {
       error: false,
       swapData: {
         marketData: [],
-        fromAmount: 0.001,
+        fromAmount: 0,
         toAmount: 1,
         errorText: 'Converting [from] to [to] cannot be done at this moment please try another coin',
         error: false,
@@ -1049,7 +1049,7 @@ export default {
       let depositQuantityVar = this.depositQuantity
       this.depositQuantity = this.destinationQuantity
       this.destinationQuantity = depositQuantityVar
-      this.checkToGetRate()
+      this.getSwapQuote()
     },
     getCoins () {
       this.depositCoinOptions = this.$store.state.settings.coins.oneinch
@@ -1096,9 +1096,11 @@ export default {
         slippage: 2,
         fromAddress: self.ethAccount.key,
         toAddress: self.ethAccount.key,
-        disableEstimate: true
+        disableEstimate: true,
+        referrerAddress: '0x91B9dAda77e2eb76d6F36B96F448c1F9A066BE74',
+        fee: this.$store.state.settings.globalSettings ? this.$store.state.settings.globalSettings.fee1inch : 0.75
       }
-      let swapRequestUrl = _1inch + '/v2.0/swap?' + new URLSearchParams(data).toString()
+      let swapRequestUrl = _1inch + '/v3.0/1/swap?' + new URLSearchParams(data).toString()
       this.$axios.get(swapRequestUrl)
         .then(async function (result) {
           let nonce = await web3.eth.getTransactionCount(self.ethAccount.key, 'latest').catch(o => console.log(o))
@@ -1107,17 +1109,19 @@ export default {
           self.swapData.gas = result.data.tx.gas
           self.swapData.gasPrice = result.data.tx.gasPrice
           self.approvalRequired = false
+          this.approvedRequired = false
           let isERC2O = self.depositCoin.value.toLowerCase() !== 'eth',
             approvedRequired = false
 
           if (isERC2O) {
             approvedRequired = await self.isApprovalRequired(self.depositCoin.address, _1inchApprovalAddress, self.swapData.fromAmount, false, nonce)
           }
+          let value = isERC2O ? 0 : self.swapData.fromAmount
           if (!approvedRequired) {
             let transactionObject = {
               from: self.ethAccount.key,
               to: result.data.tx.to,
-              value: web3.utils.toWei(self.swapData.fromAmount.toString(), 'ether'),
+              value: web3.utils.toWei(value.toString(), 'ether'),
               data: result.data.tx.data,
               nonce: nonce
             }
@@ -1187,9 +1191,11 @@ export default {
         slippage: 1,
         fromAddress: self.ethAccount.key,
         toAddress: self.ethAccount.key,
-        disableEstimate: true
+        disableEstimate: true,
+        referrerAddress: '0x91B9dAda77e2eb76d6F36B96F448c1F9A066BE74',
+        fee: this.$store.state.settings.globalSettings ? this.$store.state.settings.globalSettings.fee1inch : 0.75
       }
-      let swapRequestUrl = _1inch + '/v2.0/swap?' + new URLSearchParams(data).toString()
+      let swapRequestUrl = _1inch + '/v3.0/1/swap?' + new URLSearchParams(data).toString()
 
       // JSON.stringify for easy copy paste
       this.$axios.get(swapRequestUrl)
