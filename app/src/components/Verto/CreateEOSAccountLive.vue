@@ -522,8 +522,8 @@
                                     <q-icon name="file_copy" @click="copyToClipboard(accountMemo, 'Memo')" />
                                 </template>
                             </q-input>
-                            <div class="text-body1 q-mt-md">After completing this payment, you will need to import the account so it can be ready inside Verto.</div>
-                            <div class="text-body1 q-mt-md">Have you completed the payment ? </div>
+                            <div class="text-body1 q-mt-md" :class="{ 'text-white': $store.state.settings.lightMode === 'true' ? 'white' : 'black'}">After completing this payment, you will need to import the account so it can be ready inside Verto.</div>
+                            <div class="text-body1 q-mt-md" :class="{ 'text-white': $store.state.settings.lightMode === 'true' ? 'white' : 'black'}">Have you completed the payment ? </div>
                             <q-btn
                             unelevated
                             @click="step = 2 ; tab = 'import' ; "
