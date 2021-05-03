@@ -483,7 +483,7 @@ export default {
           let tx = await localWeb3.eth.sendTransaction(transactionObject)
           tx.on('confirmation', (confirmationNumber, receipt) => {
             if (confirmationNumber > 2) {
-              this.transactionSTatus = 'Confirmed'
+              this.transactionStatus = 'Confirmed'
             }
           })
 
@@ -520,7 +520,7 @@ export default {
 
         tx.on('confirmation', (confirmationNumber, receipt) => {
           if (confirmationNumber > 2) {
-            this.transactionSTatus = 'Successfull'
+            this.transactionStatus = 'Successfull'
           }
         })
 
