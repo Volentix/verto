@@ -622,7 +622,7 @@ export default {
     getSwapQuote () {
       const self = this
       this.error = false
-
+      let trial = false
       this.getCoinsData()
       if (!self.depositCoin.address || !self.destinationCoin.address) return
       if (self.swapData.fromAmount <= 0) return
@@ -642,6 +642,10 @@ export default {
       let swapRequestUrl = _1inch + '/v3.0/1/swap?' + new URLSearchParams(data).toString()
       this.$axios.get(swapRequestUrl)
         .then(async function (result) {
+          if (!result.data && !trial) {
+            trial = true
+            this.getSwapQuote()
+          }
           let nonce = await web3.eth.getTransactionCount(self.ethAccount.key, 'latest').catch(o => console.log(o))
           self.swapData.toAmount = parseFloat(web3.utils.fromWei(result.data.toTokenAmount.toString(), 'ether'))
           self.spinnervisible = false
@@ -670,7 +674,9 @@ export default {
           // Calculate total gas price and convert it to USD
           //   self.swapData.gasUsd = self.convertETHToUSD(web3.utils.fromWei((result.data.estimatedGas * self.$store.state.investment.gasPrice.fast * 1000000000).toString()))
         }).catch(error => {
-          console.log(error, 'error')
+          if (error.toString().includes('Cannot read property')) {
+            error = 'Exchange service currently unavailable for this pair'
+          }
           self.approvalRequired = false
           self.spinnervisible = false
           self.swapData.toAmount = null
