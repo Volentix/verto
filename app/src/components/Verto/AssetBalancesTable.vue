@@ -81,7 +81,7 @@
 </template>
 
 <script>
-
+import DexInteraction from '@/mixins/DexInteraction'
 import Formatter from '@/mixins/Formatter'
 export default {
   props: ['rowsPerPage', 'tableData'],
@@ -157,23 +157,23 @@ export default {
   created () {
     this.getWindowWidth()
 
-    this.initTable()
+    this.initAssetTable()
 
     this.$bus.$on('selectedChain', () => {
       let chain = localStorage.getItem('selectedChain')
 
-      this.initTable(chain)
+      this.initAssetTable(chain)
     })
   },
   watch: {
     '$store.state.wallets.tokens': function () {
-      this.initTable()
+      this.initAssetTable()
     },
     '$store.state.tokens.walletTokensData': function () {
-      this.initTable()
+      this.initAssetTable()
     },
     '$store.state.currentwallet.wallet': function (val) {
-      this.initTable()
+      this.initAssetTable()
     }
   },
   methods: {
@@ -200,61 +200,6 @@ export default {
           console.log(res)
         })
     },
-    initTable (chain) {
-      this.assets = []
-
-      if (this.tableData) {
-        console.log(this.tableData, 'this.data')
-        this.assets = this.tableData
-        this.loaded = false
-        return
-      }
-      let account = null
-
-      if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.name) {
-        account = this.$store.state.currentwallet.wallet
-      }
-
-      JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter(o => (!account && !chain) || (chain && o.chain === chain) || (account && o.chain === account.chain && o.name === account.name)))).forEach((token, i) => {
-        token.amount = parseFloat(token.amount)
-        token.usd = parseFloat(token.usd)
-
-        if (!isNaN(token.amount) && token.amount !== 0) {
-          if (this.assets.find(o => o.type === token.type && (token.chain !== 'eos' || o.contract === token.contract))) {
-            let index = this.assets.findIndex(o => o.type === token.type)
-
-            this.assets[index].amount += token.amount
-            this.assets[index].usd += isNaN(token.usd) ? 0 : token.usd
-            this.assets[index].rateUsd = isNaN(token.usd) ? 0 : (token.usd / token.amount)
-            this.assets[index].percentage = this.assets[index].usd / parseFloat(this.$store.state.wallets.portfolioTotal) * 100
-            this.assets[index] = this.getHistoricalValue(this.assets[index])
-          } else {
-            token.percentage = token.usd / parseFloat(this.$store.state.wallets.portfolioTotal) * 100
-            token.index = this.assets.length
-            token.rateUsd = isNaN(token.usd) ? 0 : (token.usd / token.amount)
-            token.friendlyType = token.type.length > 6 ? token.type.substring(0, 6) + '...' : token.type
-            token = this.getHistoricalValue(token)
-
-            this.assets.push(token)
-          }
-          this.assets.sort((a, b) => (isNaN(parseFloat(b.usd)) ? 0 : parseFloat(b.usd)) - (isNaN(parseFloat(a.usd)) ? 0 : parseFloat(a.usd)))
-        }
-
-        this.loaded = false
-      })
-    },
-    getHistoricalValue (token) {
-      let tokenData = this.$store.state.tokens.walletTokensData.find(a => a.symbol === token.type)
-
-      if (tokenData) {
-        let change = tokenData.price_change_24h * token.amount
-        token.change24h = (change > 0 ? '+' : '-') + '$' + this.formatNumber(Math.abs(change), 2)
-        token.change24hValue = (change > 0 ? '' : '-') + this.formatNumber(Math.abs(change), 2)
-        token.change24hPercentage = (change > 0 ? '+' : '-') + this.formatNumber(Math.abs(tokenData.price_change_percentage_24h), 2) + '%'
-        token.color = change > 0 ? 'text-green-6' : 'text-pink-12'
-      }
-      return token
-    },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
       console.log('this.screenSize', this.screenSize)
@@ -266,7 +211,7 @@ export default {
       )
     }
   },
-  mixins: [Formatter]
+  mixins: [Formatter, DexInteraction]
 }
 
 </script>

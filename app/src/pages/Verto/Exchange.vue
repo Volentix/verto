@@ -16,7 +16,7 @@
                         <!-- <q-scroll-area :visible="true" style="height: 80vh;"> -->
                         <div class="chain-tools-wrapper">
                             <div class="standard-content">
-                            <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs cursor-pointer">
+                            <q-breadcrumbs class="col-12 q-pt-md q-pl-md  breadcrumbs cursor-pointer">
                               <q-breadcrumbs-el  class="cursor-pointer" @click="$router.push('/verto/dashboard')" label="Back"  icon="keyboard_backspace" />
                             </q-breadcrumbs>
                                 <!-- <div class="exchange_picto flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div> -->
