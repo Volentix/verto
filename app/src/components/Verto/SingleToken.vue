@@ -736,7 +736,6 @@ export default {
       let item = assets.find(
         (o) => o.chain === this.asset.chain && o.type === this.asset.type
       )
-
       if (item) {
         this.asset = item
       } else {

@@ -90,6 +90,21 @@ export default {
 
       return this.approvalRequired ? transactionObject : this.approvalRequired
     },
+    async getTxStatus (transactonHash) {
+      const expectedBlockTime = 5000
+      const Web3 = require('web3')
+      this.web3 = this.web3 ? this.web3 : new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
+      const sleep = (milliseconds) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+      }
+
+      let transactionReceipt = null
+      while (transactionReceipt == null) {
+        transactionReceipt = await this.web3.eth.getTransactionReceipt(transactonHash)
+        await sleep(expectedBlockTime)
+      }
+      this.transactionStatus = transactionReceipt.status ? 'Success' : 'Failed'
+    },
     async getGasOptions (transactionObject, customGas = false) {
       const self = this
       const Web3 = require('web3')
@@ -150,7 +165,7 @@ export default {
           let tx = await localWeb3.eth.sendTransaction(transactionObject)
           tx.on('confirmation', (confirmationNumber, receipt) => {
             if (confirmationNumber > 2) {
-              this.transactionSTatus = 'Confirmed'
+              this.transactionStatus = 'Confirmed'
             }
           })
 
@@ -185,7 +200,7 @@ export default {
 
         tx.on('confirmation', (confirmationNumber, receipt) => {
           if (confirmationNumber > 2) {
-            this.transactionSTatus = 'Successfull'
+            this.transactionStatus = 'Successfull'
           }
           console.log(receipt)
         })
