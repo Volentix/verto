@@ -168,13 +168,14 @@
               <p v-if="currentToken && currentToken.autoSelect">
                 {{ "Use your " + (currentActionItem.type ?  currentActionItem.type.toUpperCase() : currentAction.chain.toUpperCase() )+ " account" }}
               </p>
-              <p v-else>{{ "Select " + currentAction.chain.toUpperCase() + " account" }}</p>
+              <p v-else-if="accounts.length">{{ "Select " + currentAction.chain.toUpperCase() + " account" }}</p>
               <q-select
                 :dark="$store.state.settings.lightMode === 'true'"
                 :light="$store.state.settings.lightMode === 'false'"
                 separator
                 rounded
                 outlined
+                v-if="accounts.length"
                 style="min-width: 300px"
                 class="select-input accountDropdown"
                 @input="selectWallet()"
@@ -215,6 +216,7 @@
                   <q-item v-else> </q-item>
                 </template>
               </q-select>
+              <p v-if="!accounts.length">No accounts found</p>
               <div class="flex justify-end">
                 <q-btn
                   rounded
@@ -268,7 +270,7 @@ const actions = [
       {
         label: 'Import EOS account',
         icon: 'img:https://files.coinswitch.co/public/coins/eos.png',
-        to: '/verto/import-private-key/eos'
+        to: '/verto/eos-account/import'
       },
       {
         label: 'Invest',
