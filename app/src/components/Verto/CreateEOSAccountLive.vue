@@ -372,7 +372,7 @@
                         @input="checkName"
                         @keyup.enter="step = 2"
                       />
-                      <p class="text-body1" :class="{ 'text-white': $store.state.settings.lightMode === 'true' ? 'white' : 'black'}" >
+                      <p class="text-body1" :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" >
                         The way EOS works is that new accounts can only be
                         created by someone with an existing account. Creating an
                         account also requires to stake a certain amount of EOS
@@ -383,7 +383,7 @@
                       <p
                         v-if="accountsInVerto.length && !accountNames.length"
                         class="q-pt-md"
-                        :class="{ 'text-white': $store.state.settings.lightMode === 'true' ? 'white' : 'black'}"
+                        :class="{ 'text-white': $store.state.settings.lightMode === 'true'}"
                       >
                         All
                         {{
@@ -393,7 +393,7 @@
                         }}
                         accounts associated with this key are already in Verto
                       </p>
-                      <p  class="q-pt-md" :class="{ 'text-white': $store.state.settings.lightMode === 'true' ? 'white' : 'black'}" v-if="accountsInVerto.length == 0 &&  accountNames.length == 0"> No EOS accounts found</p>
+                      <p  class="q-pt-md" :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" v-if="accountsInVerto.length == 0 &&  accountNames.length == 0"> No EOS accounts found</p>
                       <q-btn class="float-right" :color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" :loading="spinnervisible" dense label="Refetch accounts" icon="refresh"  @click="getAccountNames()"  flat/>
                       <div
                         class="text-h4 --subtitle"
@@ -404,7 +404,7 @@
                         </ul>
                       </div>
 
-                      <p :class="{ 'text-white': $store.state.settings.lightMode === 'true' ? 'white' : 'black'}" v-if="accountsInVerto.length && accountNames.length">
+                      <p :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" v-if="accountsInVerto.length && accountNames.length">
                         {{ accountsInVerto.length }}  already added in Verto.
                         You can add {{ accountNames.length }} more.
                       </p>
@@ -522,8 +522,8 @@
                                     <q-icon name="file_copy" @click="copyToClipboard(accountMemo, 'Memo')" />
                                 </template>
                             </q-input>
-                            <div class="text-body1 q-mt-md" :class="{ 'text-white': $store.state.settings.lightMode === 'true' ? 'white' : 'black'}">After completing this payment, you will need to import the account so it can be ready inside Verto.</div>
-                            <div class="text-body1 q-mt-md" :class="{ 'text-white': $store.state.settings.lightMode === 'true' ? 'white' : 'black'}">Have you completed the payment ? </div>
+                            <div class="text-body1 q-mt-md" :class="{ 'text-white': $store.state.settings.lightMode === 'true'}">After completing this payment, you will need to import the account so it can be ready inside Verto.</div>
+                            <div class="text-body1 q-mt-md" :class="{ 'text-white': $store.state.settings.lightMode === 'true'}">Have you completed the payment ? </div>
                             <q-btn
                             unelevated
                             @click="step = 2 ; tab = 'import' ; "
