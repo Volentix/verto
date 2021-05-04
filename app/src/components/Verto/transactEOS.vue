@@ -6,20 +6,20 @@
           <p class="text-green text-body2">{{SuccessMessage}}</p>
           <div v-if="decryptPrivateKey" >
             <q-card-section>
-              <div class="text-uppercase">
+              <div class="">
                 <q-item-section>
                   <q-item-label>Enter your private key password to sign the transaction</q-item-label>
                 </q-item-section>
 
                 <div >
-                  <q-input v-model="privateKeyPassword" color="deep-purple-14" label="Private Key Password" debounce="500" :error="invalidPrivateKeyPassword" error-message="The password is incorrect" @input="checkPrivateKeyPassword" :type="isPwd ? 'password' : 'text'">
+                  <q-input :dark="$store.state.settings.lightMode === 'true'" v-model="privateKeyPassword" color="deep-purple-14" label="Private Key Password" debounce="500" :error="invalidPrivateKeyPassword" error-message="The password is incorrect" @input="checkPrivateKeyPassword" :type="isPwd ? 'password' : 'text'">
                     <template v-slot:append>
                       <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                     </template>
                   </q-input>
                 </div>
 
-                  <q-btn  :disable="!privateKey.success" :loading="spinnervisible"  label="Submit" outline @click="process" />
+                  <q-btn :disable="!privateKey.success" :loading="spinnervisible" rounded no-caps label="Submit" outline @click="process" />
 
               </div>
             </q-card-section>
