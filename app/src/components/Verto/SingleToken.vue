@@ -11,9 +11,9 @@
     >
       <div class="row">
         <div class="left-area col-md-8">
-          <div class="left q-ml-md q-pt-md">
+          <div class="left q-ml-md q-pt-xs">
             <span class="z-max">
-              <div class="row q-pb-lg">
+              <div class="row q-pb-xl flex items-center">
                 <h2>
                   <img :src="asset.icon" style="max-width: 40px" alt="image" />
                   {{ asset.type.toUpperCase() }}
@@ -31,12 +31,12 @@
                 <h3 v-if="asset.rateUsd" class="q-pl-lg q-pr-md">
                   ${{ formatNumber(asset.rateUsd, 0)
                   }}<span
+                  class="g-txt"
                     style="
-                      font-size: 40px;
-                      line-height: 48px;
+                      font-size: 35px;
+                      line-height: 45px;
                       font-weight: 600;
                       letter-spacing: normal;
-                      color: #d0d0d2;
                     "
                     >.{{ formatNumber(asset.rateUsd, 2).split(".")[1] }}</span
                   >
@@ -1110,21 +1110,27 @@ export default {
 }
 
 .left h2 {
-  font-size: 40px;
-  line-height: 48px;
+  font-size: 35px;
+  line-height: 45px;
   font-weight: 600;
   letter-spacing: normal;
   color: #000;
   margin-top: 0px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .left h3 {
-  font-size: 40px;
-  line-height: 48px;
+  font-size: 35px;
+  line-height: 45px;
   font-weight: 500;
   letter-spacing: normal;
   color: #000;
-  margin-top: 0px;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .left table h3 {
@@ -1143,7 +1149,8 @@ export default {
   color: #000;
   padding: 6px;
   border-radius: 3px;
-  background: #f4f3f5;
+  background: transparent;
+  opacity: .5;
 }
 
 .left2 {
@@ -1168,7 +1175,7 @@ export default {
   font-size: 28px;
   line-height: 32px;
   font-weight: 500;
-  color: #d3d4d7;
+  color: #363636;
 }
 
 .left table h4 {
@@ -1569,7 +1576,29 @@ export default {
     margin: 15px;
   }
 }
+.token-chart {
+  position: relative;
+  &:before {
+    content: "";
+    width: 30px;
+    height: 100%;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    z-index: 9;
+    background-color: #FFF;
+  }
+}
 .dark-theme {
+  .left table h3 span.percentage {
+    color: #FFF;
+  }
+  .left table h2 span{
+    color: rgb(240, 240, 240);
+  }
+  .g-txt {
+    color: rgb(240, 240, 240);
+  }
   .left h3 {
     color: #fff;
   }
@@ -1653,6 +1682,13 @@ export default {
       color: #fff;
     }
   }
+}
+.g-txt {
+  color: #363636;
+  margin-left: -1px;
+}
+/deep/ .q-card__section--vert {
+  padding: 0px !important;
 }
 /deep/ .q-scrollarea {
   height: 81.6vh !important;

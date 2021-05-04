@@ -512,6 +512,8 @@ export default {
   height: 20px;
   display: inline-flex;
   position: relative;
+  background: #FFF;
+  border-radius: 30px;
   img{
     position: absolute;
     visibility: hidden;
