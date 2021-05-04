@@ -64,7 +64,7 @@
                               Unknown Error
                             </div>
                             <q-stepper-navigation v-show="submitKey" class="flex justify-end">
-                              <q-btn @click="restoreConfig" flat color="transparent" class="--next-btn next" rounded label="Next" />
+                              <q-btn @click="restoreConfig" flat color="white" class="--next-btn next" rounded label="Next" />
                             </q-stepper-navigation>
                           </q-card-section>
                         </q-step>
