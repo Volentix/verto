@@ -120,7 +120,7 @@ export default {
           color: palette[this.accountOptions.length]
         }))
       }
-
+      this.accountOptions = this.accountOptions.filter(o => o && o.name)
       if (this.$store.state.wallets.metamask.accounts.length) {
         this.accountOptions.push(this.$store.state.wallets.metamask.accounts.find(o => o.type === 'eth' && o.chain === 'eth'))
       }
@@ -128,9 +128,11 @@ export default {
       this.accountOptions.sort((a, b) => (isNaN(parseFloat(b.total)) ? 0 : parseFloat(b.total)) - (isNaN(parseFloat(a.total)) ? 0 : parseFloat(a.total)))
 
       if (!updateDefaultAccount) return
+
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.type) {
         this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain && a.name.toLowerCase() === this.$store.state.currentwallet.wallet.name.toLowerCase())
-      } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount !== undefined && (!this.chain || this.$store.state.investment.defaultAccount.chain === this.chain)) {
+      } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount !== undefined && this.$store.state.investment.defaultAccount.name && (!this.chain || (this.$store.state.investment.defaultAccount.chain === this.chain && this.$store.state.investment.defaultAccount.origin !== 'metamask'))) {
+        console.log(this.$store.state.investment.defaultAccount, 'this.$store.state.investment.defaultAccount f')
         this.accountOption = this.accountOptions.find(f => f.type === this.$store.state.investment.defaultAccount.type && f.chain === this.$store.state.investment.defaultAccount.chain && f.name.toLowerCase() === this.$store.state.investment.defaultAccount.name.toLowerCase())
       } else {
         let item = this.accountOptions.find(o => (this.autoSelectChain && o.chain === this.autoSelectChain) || (this.chain && o.chain === this.chain) || o.chain === 'eos')
@@ -176,7 +178,7 @@ export default {
     },
     '$store.state.investment.defaultAccount': function (val) {
       if (!val || val.origin !== 'defi') return
-      console.log(val, 'origin')
+
       let w = this.$store.state.investment.defaultAccount
 
       this.accountOption = {
@@ -197,6 +199,7 @@ export default {
     '$store.state.wallets.metamask': {
       deep: true,
       handler (val) {
+        if (this.chain) return
         let w = val.tokens.find(a => a.type === 'eth' && a.chain === 'eth')
 
         if (w) {
@@ -214,7 +217,7 @@ export default {
             label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
             color: palette[this.accountOptions.length]
           }
-          let item = this.accountOptions.find(a => a.key === this.accountOption.key)
+          let item = this.accountOptions.find(a => a && a.key === this.accountOption.key)
           if (!item) { this.accountOptions.push(this.accountOption) }
           this.setAccount()
         }

@@ -193,6 +193,9 @@ export default {
     }
   },
   async created () {
+    if (!this.vertoPassword) {
+      this.$router.push({ path: '/' })
+    }
     if (this.$route.params.step) {
       this.step = parseInt(this.$route.params.step)
       if (this.step === 2) { this.createMnemonic() }
