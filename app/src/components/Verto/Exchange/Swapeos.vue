@@ -159,6 +159,7 @@
                         <!-- <img src="statics/theme1/Screenshot_208.png" alt="" style="opacity: .1"> -->
                         <div v-if="step === 1" class="prototype">
                           <q-tabs
+                           v-if="!crossChain"
                             @click="
                               getPairData();
                               checkBalance();
@@ -629,6 +630,9 @@ export default {
   },
   async created () {
     this.setTokensFromPool()
+    if (this.tab) {
+      this.tab = 'swap'
+    }
     let tableData = await this.$store.state.wallets.tokens
     this.eosAccounts = tableData.filter((w) => w.chain === 'eos')
     rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')

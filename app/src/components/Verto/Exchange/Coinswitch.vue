@@ -11,6 +11,7 @@
                                 <div class="row">
                                     <div class="col col-12">
                                         <div class="trade-component">
+
                                             <div v-show="pStep === 1" class="prototype">
                                                 <div class="head">Market Order <span class="float-right cursor-pointer " @click="offer=true"><q-img style="width:25px;" src="https://www.joypixels.com/images/jp-home/fire.gif" /> Get a FREE EOS account</span></div>
                                                   <q-dialog
@@ -475,6 +476,7 @@
                                                         </div>
                                                         <div class="col col-12">
                                                             <!-- :rules="[ val => val.length >= 3 || 'Destination Address Cannot less than 3 characters' ]" -->
+
                                                             <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-show="toCoin && toCoin.type === 'new_public_key'" ref="destinationAddressAddress" :label="destinationAddressLabel" v-model="destinationAddress.address" @input="verifyAddress()" class="input-input destinationAddressAddress" outlined color="purple" type="text">
                                                                 <template v-slot:append>
                                                                     <div class="flex justify-end">
@@ -510,11 +512,11 @@
                                                          <div class="you-receive-head row items-center ">
                                                           <div class="col col-6">Select gas option: </div>
                                                        </div>
-                                                        <q-item dense class="gasSelector">
+                                                        <q-item :dark="$store.state.settings.lightMode === 'true'" dense class="gasSelector">
                                                             <q-item-section v-for="(gas, index) in gasOptions" :key="index">
                                                                 <q-item :class="[gasSelected.label == gas.label ? 'selected bg-black text-white' : '' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
                                                                     <q-item-section>
-                                                                        <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 text-black']">${{gas.value }}</q-item-label>
+                                                                        <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1']">${{gas.value }}</q-item-label>
                                                                         <q-item-label class="text-body1 text-grey"> {{gas.label }}</q-item-label>
                                                                     </q-item-section>
                                                                     <q-item-section avatar>
@@ -1182,11 +1184,11 @@
                                                          <div class="you-receive-head row items-center ">
                                                           <div class="col col-6">Select gas option: </div>
                                                        </div>
-                                                        <q-item dense class="gasSelector">
+                                                        <q-item :dark="$store.state.settings.lightMode === 'true'" dense class="gasSelector">
                                                             <q-item-section v-for="(gas, index) in gasOptions" :key="index">
                                                                 <q-item :class="[gasSelected.label == gas.label ? 'selected bg-black text-white' : '' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
                                                                     <q-item-section>
-                                                                        <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 text-black']">${{gas.value }}</q-item-label>
+                                                                        <q-item-label :class="[gasSelected.label == gas.label ? '' : 'text-body1 ']">${{gas.value }}</q-item-label>
                                                                         <q-item-label class="text-body1 text-grey"> {{gas.label }}</q-item-label>
                                                                     </q-item-section>
                                                                     <q-item-section avatar>
@@ -1566,8 +1568,9 @@ export default {
   },
   updated () {},
   watch: {
-    pStep () {
+    pStep (newVal, oldVal) {
       if (this.pStep === 2) {
+        this.checkGas()
         if (this.eThToVTX && this.accountToBeCreated && this.freeEOS.qualified) {
           this.toCoin = this.toCoinTemp
         } else {
@@ -1845,7 +1848,7 @@ export default {
     },
     destinationAddressLabel () {
       if (this.destinationCoin != null) {
-        return 'Address/account to receive new ' + typeUpper(this.destinationCoin.value)
+        return 'Account to receive new ' + typeUpper(this.destinationCoin.value)
       } else {
         return 'Address to receive new coin'
       }
@@ -1880,6 +1883,9 @@ export default {
 
     this.initMetamask()
     this.$store.dispatch('investment/getMarketDataVsUSD')
+    if (this.$store.state.wallets.metamask.accounts.length) {
+      this.connectWallet('metamask')
+    }
   },
   methods: {
     disconnectMetamask () {
@@ -2149,7 +2155,14 @@ export default {
           return
         }
         let account = this.fromKey
-
+        if (this.toCoin && this.toCoin.type === 'new_public_key') {
+          if ((!this.destinationAddress || this.destinationAddress.address) && this.destinationAddress.address.trim().length !== 12) {
+            return this.$q.notify('Account name should be 12 characters')
+          }
+          this.toCoin.value = this.destinationAddress.address
+        } else if (this.toCoin && !this.toCoin.value && this.toCoin.type !== 'new_public_key') {
+          return this.$q.notify('Please set the receiving account ')
+        }
         let data = {
           gasData: this.gasSelected,
           txData: this.toCoin.value + (this.accountToBeCreated ? account.key : ''),
