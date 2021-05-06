@@ -307,7 +307,7 @@
                 <q-input
                   :dark="$store.state.settings.lightMode === 'true'"
                   bottom-slots
-                  :label="asset.type.toUpperCase() + ' amount'"
+                  :label="asset.type.toUpperCase() + ' amount to buy'"
                   class="col-12 q-px-md q-pt-md"
                   v-model="depositQuantity"
                 >
@@ -342,6 +342,7 @@
                   :dark="$store.state.settings.lightMode === 'true'"
                   separator
                   rounded
+                  label="Pay with"
                   outlined
                   class="select-input q-mt-md"
                   use-input
@@ -586,7 +587,7 @@
                 <a
                   href="javascript:void(0)"
                   @click="isTxValid && triggerAction()"
-                  >{{ tab }}</a
+                  >{{ tab === 'send' ? 'Preview order':tab }}</a
                 >
               </div>
             </div>
@@ -678,7 +679,7 @@
                   <p>-</p>
 
                   <h5 class="text-bold">
-                    Paid Fees
+                    Fees
                     <span><i class="far fa-question-circle"></i></span>
                   </h5>
                   <p>-</p>
@@ -1150,7 +1151,7 @@ export default {
   padding: 6px;
   border-radius: 3px;
   background: transparent;
-  opacity: .5;
+  opacity: .8;
 }
 
 .left2 {
@@ -1490,6 +1491,16 @@ export default {
   text-align: center;
   transition: all 0.3s ease;
   text-decoration: none;
+  text-transform: capitalize !important;
+  background: transparent !important;
+  border: 1px solid rgba(0, 0, 0, 0.7);
+  font-size: 16px !important;
+  color: #000 !important;
+  border-radius: 40px;
+  font-weight: 700;
+  min-height: 20px;
+  margin-bottom: 5px;
+  min-width: fit-content;
 }
 
 .buy a:hover {
@@ -1590,6 +1601,13 @@ export default {
   }
 }
 .dark-theme {
+  .left table h4{
+    color: rgb(221, 221, 221);
+  }
+  .buy a {
+    border: 1px solid rgba(204, 204, 204, 0.7);
+    color: #FFF !important;
+  }
   .left table h3 span.percentage {
     color: #FFF;
   }
