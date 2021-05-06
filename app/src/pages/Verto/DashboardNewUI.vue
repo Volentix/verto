@@ -249,7 +249,10 @@ export default {
     // console.log('this.osName', this.osName)
     // console.log('store.state.currentwallet.config', store.state.currentwallet.config)
     if (!store.state.currentwallet.config.mnemonic) {
-      this.$router.push('recovery-seed')
+      this.$router.push({
+        name: 'recovery-seed',
+        params: { step: 2 }
+      })
     }
 
     // Adds the eos account name when it is found to the cruxID
