@@ -1,8 +1,8 @@
 <template>
-<div class="column text-black bg-grey-12" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+<div class="column text-black bg-grey-12" :class="{'mobile-pad': screenSize < 1024 , 'desktop-marg': screenSize > 1024,'dark-theme': $store.state.settings.lightMode === 'true'}">
     <!-- padding-bottom: 100px;background: #f3f3f3 !important -->
     <div v-if="screenSize > 1024">
-        <div class="row" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+        <div class="row">
             <div class="col col-md-12">
                 <div class="desktop-card-style apps-section q-mb-sm">
                     <div class="chain-tools-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
@@ -29,7 +29,7 @@
                                                             <q-card-section class="q-pt-none">
                                                              <q-stepper
                                                         v-model="freeEOSAccountStepper"
-
+                                                        class="freeEOSAccountStepper"
                                                         :dark="$store.state.settings.lightMode === 'true'"
                                                         flat
                                                         >
@@ -116,7 +116,7 @@
 
                                                        <q-stepper
                                                         v-model="freeEOSAccountStepper"
-                                                        class="flex flex-center full-width"
+                                                        class="flex flex-center full-width freeEOSAccountStepper"
                                                         :dark="$store.state.settings.lightMode === 'true'"
                                                         color="primary"
                                                         flat
@@ -337,11 +337,11 @@
                                                             </q-input>
                                                         </div>
                                                     </div>
-                                                    <div class="text-body1 text-red q-py-md" v-if="ErrorMessage">{{ ErrorMessage }}</div>
+                                                    <div class="text-body1 text-red q-py-md insuficient-text" v-if="ErrorMessage">{{ ErrorMessage }}</div>
 
                                                     <q-btn :disable=" ErrorMessage.length != 0 || depositQuantity == 0 || depositQuantity < rateData.limitMinDepositCoin || destinationQuantity > rateData.limitMaxDestinationCoin" unelevated  @click="checkToGetRate() ; pStep = 2" color="light-grey" text-color="black" :label="accountToBeCreated ? 'Continue': 'Choose Accounts'" class="text-capitalize chose_accounts full-width" />
                                                 </div>
-                                                <p v-if="accountToBeCreated" class="text-body1 q-pt-sm q-pl-md cursor-pointer" @click="accountToBeCreated = false ; freeeAccountName = null">Reject offer</p>
+                                                <p v-if="accountToBeCreated" class="text-body1 q-pt-sm q-pl-md cursor-pointer reject_offer" @click="accountToBeCreated = false ; freeeAccountName = null">Reject offer</p>
                                             </div>
                                             <div v-if="pStep === 2" class="prototype">
                                                 <div class="head">
@@ -701,7 +701,7 @@
                                                             <q-card-section class="q-pt-none">
                                                              <q-stepper
                                                         v-model="freeEOSAccountStepper"
-
+                                                        class="freeEOSAccountStepper"
                                                         :dark="$store.state.settings.lightMode === 'true'"
                                                         flat
                                                         >
@@ -788,7 +788,7 @@
 
                                                        <q-stepper
                                                         v-model="freeEOSAccountStepper"
-                                                        class="flex flex-center full-width"
+                                                        class="flex flex-center full-width freeEOSAccountStepper"
                                                         :dark="$store.state.settings.lightMode === 'true'"
                                                         color="primary"
                                                         flat
@@ -1009,7 +1009,7 @@
                                                             </q-input>
                                                         </div>
                                                     </div>
-                                                    <div class="text-body1 text-red q-py-md" v-if="ErrorMessage">{{ ErrorMessage }}</div>
+                                                    <div class="text-body1 text-red q-py-md insuficient-text" v-if="ErrorMessage">{{ ErrorMessage }}</div>
 
                                                     <q-btn :disable=" ErrorMessage.length != 0 || depositQuantity == 0 || depositQuantity < rateData.limitMinDepositCoin || destinationQuantity > rateData.limitMaxDestinationCoin" unelevated  @click="checkToGetRate() ; pStep = 2" color="light-grey" text-color="black" :label="accountToBeCreated ? 'Continue': 'Choose Accounts'" class="text-capitalize chose_accounts full-width" />
                                                 </div>
@@ -3569,7 +3569,9 @@ export default {
                             .q-stepper__title {
                                 color: #7272FA;
                             }
-
+                            .q-stepper__title {
+                                color: #7272FA;
+                            }
                             .q-stepper__dot {
                                 background: #7272FA;
                             }
@@ -4207,7 +4209,48 @@ export default {
         }
     }
 }
+.insuficient-text{
+  color: #6200ea !important;
+  padding-left: 15px;
+}
+.reject_offer{
+  border: 1px solid #CCC;
+  border-radius: 40px;
+  width: fit-content;
+  transform: translate(30px, 23px);
+  height: 42px;
+  padding-right: 15px;
+  padding-left: 15px;
+  text-align: center;
+}
+.freeEOSAccountStepper{
+  /deep/ .q-stepper__title,
+  /deep/ .q-stepper__caption{
+    color: #333 !important;
+  }
+  /deep/ .q-stepper__dot span{
+    color: #FFF !important;
+  }
+}
+.freeEOSAccountStepper{
+  &.q-dark{
+    /deep/ .q-stepper__title,
+    /deep/ .q-stepper__caption{
+      color: #FFF !important;
+    }
+    /deep/ .q-stepper__dot span{
+      color: #333 !important;
+    }
+  }
+}
 .dark-theme{
+  .insuficient-text{
+    color: #fff !important;
+    text-shadow: 2px 2px 2px #6200ea;
+  }
+  .reject_offer{
+    color: #FFF !important;
+  }
     .desktop-card-style{
         background-color: #04111F;
         border-radius: 0px;
@@ -4259,5 +4302,16 @@ export default {
 
 .q-field__messages {
     margin-top: 5px;
+}
+</style>
+<style>
+.q-field--dark.q-field--focused .q-field__label{
+  color: #FFF !important;
+}
+.q-stepper--dark.q-dark .q-stepper__tab--active, .q-stepper__tab--done{
+  color: #FFF !important;
+}
+.dark-theme .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .q-stepper__tab .q-stepper__title{
+  color: #FFF !important;
 }
 </style>

@@ -117,7 +117,7 @@ export default {
     align-items: center;
   }
 </style>
-<style>
+<style lang="scss">
   /* @media screen and (min-width: 1024px) {
     .tabs-menu-component{
       display: none !important;
@@ -125,6 +125,9 @@ export default {
   } */
   .q-dark{
     background: #04111F !important;
+    .q-item.q-router-link--active, .q-item--active{
+      color: #FFF;
+    }
   }
   .q-menu{
     box-shadow: 0px 10px 20px 0px rgba(0,0,0,.6);
