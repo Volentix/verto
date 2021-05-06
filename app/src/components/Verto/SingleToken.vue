@@ -13,7 +13,6 @@
         <div class="left-area col-md-8">
           <div class="left q-ml-md q-py-md">
 
-    
             <span class="z-max">
               <div class="row q-pb-xl flex items-center">
                 <h2>
@@ -1760,7 +1759,7 @@ export default {
     .left,
     .text-body2,
     .right.active-card {
-      background: transparent !important<;
+      background: transparent !important;
     }
     .left {
       .token-chart {
