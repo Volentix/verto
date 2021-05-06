@@ -345,7 +345,7 @@
                                 </q-input>
                               </div>
                             </div>
-                            <div class="text-red text-body1 q-mt-sm" v-if="error">
+                            <div class="text-red text-body1 q-mt-sm insuficient-text" v-if="error">
                               <span v-if="error == 'gas'">
                                 {{ swapData.errorText.replace("[from]", depositCoin.value).replace("[to]", destinationCoin.value) }}
                               </span>
@@ -356,8 +356,8 @@
                             <div  :class="{ 'text-red' :  slippage >= 5 , 'text-orange' : slippage >= 2 && slippage < 5, 'text-green' : slippage < 2, 'slippage-wrapper': true }" v-if="tab == 'swap' && !hideSlippage && false">
                                 <span @click="slippageDialog = true" class="flex items-center pointer">Slippage: {{slippage}}: % <q-icon name="o_info" class="q-ml-sm" size="xs" /></span> <span v-if="pairData && pairData.price && false">{{this.pairData.price}}</span>
                               <p v-if="($store.state.settings.eos.swapSlippage < slippage && tab == 'swap')" class="q-mt-sm" :class="{'text-black' : $store.state.settings.lightMode === 'false', 'text-white' : $store.state.settings.lightMode === 'true'}"><span @click="slippageProtectionDialog = true" class="text-deep-purple-12 cursor-pointer"><q-icon name="settings" /> Edit</span> slippage settings to proceed</p></div>
-                            <q-btn v-if="error" unelevated :disable="true" color="grey-4" text-color="black" :label="error" class="text-capitalize invalid_btn full-width" />
-
+                            <!-- <q-btn v-if="error" unelevated :disable="true" color="grey-4" text-color="black" :label="error" class="text-capitalize invalid_btn full-width" /> -->
+                            <span v-if="error"></span>
                             <q-btn
                               v-else
                               unelevated

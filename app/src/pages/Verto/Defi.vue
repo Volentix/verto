@@ -943,7 +943,7 @@ export default {
     }
     .q-tab{
       // color: #FFF;
-      opacity: .2;
+      opacity: .7;
       box-shadow: none !important;
       background: transparent;
       &.q-tab--active{
@@ -1016,8 +1016,23 @@ export default {
     padding-top: 8px;
     margin-right: 0px;
   }
-
+  /deep/ .insuficient-text{
+    color: #6200ea !important;
+    margin-left: 15px;
+    // text-shadow: 2px 2px 2px #6200ea;
+  }
 .dark-theme{
+  /deep/ .select-input {
+    .q-field__native {
+      .q-item__label{
+        color: #FFF !important;
+      }
+    }
+  }
+  /deep/ .insuficient-text{
+    color: #fff !important;
+    text-shadow: 2px 2px 2px #6200ea;
+  }
   .desktop-version{
     background: #04111F;
     padding-bottom: 8px;
@@ -1139,7 +1154,7 @@ export default {
     }
     .q-tab{
       color: #FFF;
-      opacity: .2;
+      opacity: .7;
       background: transparent;
       &.q-tab--active{
         opacity: 1;

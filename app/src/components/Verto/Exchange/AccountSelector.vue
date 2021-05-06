@@ -230,7 +230,7 @@ export default {
 <style lang="scss" scoped>
   .select-input{
     border-radius: 100px !important;
-    $height: 50px;
+    $height: 60px;
     height: $height;
     /deep/ .q-field__marginal{
       height: $height;
