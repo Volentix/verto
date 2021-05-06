@@ -426,6 +426,40 @@ export default {
         data: coins
       })
     },
+    getEosPairData (paymentOption, buyingOption = 'eos', pairs, amount) {
+      let pairData = false
+
+      if (
+        paymentOption !== buyingOption
+      ) {
+        pairData = pairs.find(
+          (w) =>
+            (w.token1.symbol.split(',')[1].toLowerCase() === buyingOption &&
+              paymentOption.toLowerCase() ===
+                w.token0.symbol.split(',')[1].toLowerCase()) ||
+            (w.token0.symbol.split(',')[1].toLowerCase() === buyingOption &&
+              paymentOption.toLowerCase() ===
+                w.token1.symbol.split(',')[1].toLowerCase())
+        )
+
+        if (pairData && parseFloat(pairData.liquidity_token) !== 0) {
+          let multiplier = parseFloat(pairData.price1_last)
+          let contract = pairData.token0.contract
+          let precision = pairData.token0.symbol.split(',')[0]
+          if (
+            pairData.token0.symbol.split(',')[1].toLowerCase() === buyingOption
+          ) {
+            multiplier = parseFloat(pairData.price0_last)
+            contract = pairData.token1.contract
+            precision = pairData.token1.symbol.split(',')[0]
+          }
+
+          pairData.contract = contract
+          pairData.toEquivalent = parseFloat(amount * multiplier).toFixed(precision)
+        }
+      }
+      return pairData
+    },
     addCoinToGlobalList (value, key, data) {
       let infosArray = value[key].symbol.split(',')
       let item = data.find(o => o.value.toLowerCase() === infosArray[1].toLowerCase())

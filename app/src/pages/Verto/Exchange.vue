@@ -30,7 +30,7 @@
                                         <VolentixLiquidity v-if="vpoolsTestMode" />
                                         <Oneinch class="oneinch-wrapper" :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
                                         <Swapeos :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'defibox'"></Swapeos>
-                                        <Coinswitch class="coinswitch-wrapper" :crossChain="true" v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
+                                        <Coinswitch class="coinswitch-wrapper" :crossChain="true" v-else></Coinswitch>
                                     </div>
                                     <br><br><br>
                                 </div>

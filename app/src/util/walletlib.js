@@ -337,10 +337,12 @@ class Lib {
         // balance.toNumber()
         let { data: { free: amount } } = await api.query.system.account(key)
         amount = amount / 10000000000
-        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=polkadot&vs_currencies=usd')).data.polkadot.usd
+        let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=polkadot&vs_currencies=usd')).data.polkadot.usd
+        const usd = amount * tokenPrice
         return {
           amount,
-          usd
+          usd,
+          tokenPrice
         }
       },
       async ksm (key, token) {
@@ -350,10 +352,12 @@ class Lib {
 
         let { data: { free: amount } } = await api.query.system.account(key)
         amount = amount / 1000000000000
-        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=kusama&vs_currencies=usd')).data.kusama.usd
+        let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=kusama&vs_currencies=usd')).data.kusama.usd
+        const usd = amount * tokenPrice
         return {
           amount,
-          usd
+          usd,
+          tokenPrice
         }
       },
       async eth (key, token) {
@@ -367,18 +371,22 @@ class Lib {
         const amount = (await axios.get('https://blockchain.info/q/addressbalance/' + key, {
           'cors': 'true'
         })).data / 100000000
-        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')).data.bitcoin.usd
+        let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')).data.bitcoin.usd
+        const usd = amount * tokenPrice
         return {
           amount,
-          usd
+          usd,
+          tokenPrice
         }
       },
       async ltc (key) {
         const amount = (await axios.get('https://chainz.cryptoid.info/ltc/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
-        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd')).data.litecoin.usd
+        let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd')).data.litecoin.usd
+        const usd = amount * tokenPrice
         return {
           amount,
-          usd
+          usd,
+          tokenPrice
         }
       },
       async bnb (key, token) {
@@ -394,10 +402,12 @@ class Lib {
         } catch (err) {
           /// /console.log('', err)
         }
-        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')).data.binancecoin.usd
+        let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')).data.binancecoin.usd
+        const usd = amount * tokenPrice
         return {
           amount,
-          usd
+          usd,
+          tokenPrice
         }
       },
       async ada (key, token) {
@@ -413,18 +423,22 @@ class Lib {
         } catch (err) {
           console.log('ada catch', err)
         }
-        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd')).data.cardano.usd
+        let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd')).data.cardano.usd
+        const usd = amount * tokenPrice
         return {
           amount,
-          usd
+          usd,
+          tokenPrice
         }
       },
       async dash (key) {
         const amount = (await axios.get('https://chainz.cryptoid.info/dash/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
-        const usd = amount * (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=dash&vs_currencies=usd')).data.dash.usd
+        let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=dash&vs_currencies=usd')).data.dash.usd
+        const usd = amount * tokenPrice
         return {
           amount,
-          usd
+          usd,
+          tokenPrice
         }
       }
     }[walletType]
