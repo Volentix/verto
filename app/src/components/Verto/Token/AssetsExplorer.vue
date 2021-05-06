@@ -74,17 +74,17 @@
           </div>
 
           <div  class="see-text col flex  justify-end" v-else>
-      <span v-if="item.id == 'assets'" class="flex flex-center">
-      <span class="text-body2 q-pr-sm ">List view</span>
-      <q-icon name="table_rows" @click="listViewMode = 'list'" size="1.2rem" :color="listViewMode == 'list' ? 'deep-purple-3': 'grey'" class="q-pr-xs " />
-      <q-icon name="dashboard_customize"  @click="listViewMode = 'card'" size="1.2rem" :color="listViewMode == 'card' ? 'deep-purple-3': 'grey'" class="q-pr-sm"  />
-      </span>
-          <q-input :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol"  >
-            <template v-slot:append>
-              <q-icon v-if="tokenSearchVal !== ''" name="close" @click="tokenSearchVal = ''" class="cursor-pointer" />
-              <q-icon name="search" />
-            </template>
-          </q-input>
+            <span v-if="item.id == 'assets'" class="flex flex-center">
+            <span class="text-body2 q-pr-sm ">List view</span>
+            <q-icon name="table_rows" @click="listViewMode = 'list'" size="1.2rem" :color="listViewMode == 'list' ? 'deep-purple-3': 'grey'" class="q-pr-xs " />
+            <q-icon name="dashboard_customize"  @click="listViewMode = 'card'" size="1.2rem" :color="listViewMode == 'card' ? 'deep-purple-3': 'grey'" class="q-pr-sm"  />
+            </span>
+            <q-input :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol"  >
+              <template v-slot:append>
+                <q-icon v-if="tokenSearchVal !== ''" name="close" @click="tokenSearchVal = ''" class="cursor-pointer" />
+                <q-icon name="search" />
+              </template>
+            </q-input>
           </div>
 
         </div>
@@ -92,28 +92,27 @@
 
           <div class=" col-md-3 " v-show="!allAssets || item.id == 'investments' || listViewMode == 'card' " @click="showTokenPage(asset)" v-for="(asset, i) in filterTokens(item).slice(0,(!allAssets ? ($q.screen.height > 1100 ? 8 : 4) : allAssets.length))" :key="i">
             <div class="main cursor-pointer">
-            <div class="main-top">
-              <div class="mt-img">
-                <img :src="asset.icon"  />
-              </div>
-
-              <div>
-                <h6>
-                  {{asset.type.toUpperCase()}}<svg v-if="false" class="q-ml-md" viewBox="0 0 32 32" fill="none" style="width: 20px; height: 20px; vertical-align: middle; margin-left: 0px;"><path d="M15.705 4.215a.5.5 0 01.59 0l2.725 1.988a.5.5 0 00.296.096l3.373-.007a.5.5 0 01.477.347l1.036 3.21a.5.5 0 00.182.251l2.733 1.978a.5.5 0 01.182.56l-1.048 3.207a.5.5 0 000 .31l1.048 3.206a.5.5 0 01-.182.561L24.384 21.9a.5.5 0 00-.182.251l-1.037 3.21a.5.5 0 01-.476.346l-3.373-.006a.5.5 0 00-.296.096l-2.725 1.988a.5.5 0 01-.59 0l-2.725-1.988a.5.5 0 00-.296-.096l-3.373.006a.5.5 0 01-.476-.346l-1.037-3.21a.5.5 0 00-.182-.251l-2.733-1.978a.5.5 0 01-.182-.56l1.048-3.207a.5.5 0 000-.31l-1.048-3.207a.5.5 0 01.182-.56L7.616 10.1a.5.5 0 00.182-.251l1.037-3.21a.5.5 0 01.476-.347l3.373.007a.5.5 0 00.296-.096l2.725-1.988z" fill="url(#verified_svg__paint0_linear)"></path><path opacity="0.5" d="M16 4.619l2.725 1.988a1 1 0 00.591.192l3.374-.007 1.036 3.21a1 1 0 00.365.503l2.733 1.978-1.048 3.206a.999.999 0 000 .622l1.048 3.206-2.733 1.977a1 1 0 00-.365.503l-1.036 3.21-3.374-.006a1 1 0 00-.59.192L16 27.381l-2.725-1.988a1 1 0 00-.591-.192l-3.374.006-1.036-3.21a1 1 0 00-.365-.503l-2.733-1.977 1.048-3.206a1 1 0 000-.622l-1.048-3.206 2.733-1.978-.293-.405.293.405a1 1 0 00.365-.502l1.036-3.21 3.374.006a1 1 0 00.59-.192L16 4.619z" stroke="url(#verified_svg__paint1_linear)"></path><g filter="url(#verified_svg__filter0_d)"><path d="M21.506 11.464a.677.677 0 00-.948.001l-6.745 6.636-2.378-2.334a.675.675 0 00-.946.963L13.813 20l7.695-7.57a.677.677 0 00-.002-.966z" fill="#fff"></path><path d="M21.506 11.464a.677.677 0 00-.948.001l-6.745 6.636-2.378-2.334a.675.675 0 00-.946.963L13.813 20l7.695-7.57a.677.677 0 00-.002-.966z" stroke="#fff" stroke-width="0.5"></path></g><defs><linearGradient id="verified_svg__paint0_linear" x1="6.4" y1="5.2" x2="25.6" y2="26.2" gradientUnits="userSpaceOnUse"><stop stop-color="#376DF3"></stop><stop offset="1" stop-color="#1E56E0"></stop></linearGradient><linearGradient id="verified_svg__paint1_linear" x1="7" y1="4" x2="24.4" y2="26.8" gradientUnits="userSpaceOnUse"><stop stop-color="#2D61E1"></stop><stop offset="1" stop-color="#1549CA"></stop></linearGradient><filter id="verified_svg__filter0_d" x="8.037" y="10.021" width="15.922" height="13.33" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"></feColorMatrix><feOffset dy="1"></feOffset><feGaussianBlur stdDeviation="1"></feGaussianBlur><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0"></feColorMatrix><feBlend in2="BackgroundImageFix" result="effect1_dropShadow"></feBlend><feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape"></feBlend></filter></defs></svg>
-                </h6>
-              </div>
+              <div class="main-top">
+                <div class="mt-img">
+                  <img :src="asset.icon"  />
+                </div>
+                <div>
+                  <h6>
+                    {{asset.type.toUpperCase()}}<svg v-if="false" class="q-ml-md" viewBox="0 0 32 32" fill="none" style="width: 20px; height: 20px; vertical-align: middle; margin-left: 0px;"><path d="M15.705 4.215a.5.5 0 01.59 0l2.725 1.988a.5.5 0 00.296.096l3.373-.007a.5.5 0 01.477.347l1.036 3.21a.5.5 0 00.182.251l2.733 1.978a.5.5 0 01.182.56l-1.048 3.207a.5.5 0 000 .31l1.048 3.206a.5.5 0 01-.182.561L24.384 21.9a.5.5 0 00-.182.251l-1.037 3.21a.5.5 0 01-.476.346l-3.373-.006a.5.5 0 00-.296.096l-2.725 1.988a.5.5 0 01-.59 0l-2.725-1.988a.5.5 0 00-.296-.096l-3.373.006a.5.5 0 01-.476-.346l-1.037-3.21a.5.5 0 00-.182-.251l-2.733-1.978a.5.5 0 01-.182-.56l1.048-3.207a.5.5 0 000-.31l-1.048-3.207a.5.5 0 01.182-.56L7.616 10.1a.5.5 0 00.182-.251l1.037-3.21a.5.5 0 01.476-.347l3.373.007a.5.5 0 00.296-.096l2.725-1.988z" fill="url(#verified_svg__paint0_linear)"></path><path opacity="0.5" d="M16 4.619l2.725 1.988a1 1 0 00.591.192l3.374-.007 1.036 3.21a1 1 0 00.365.503l2.733 1.978-1.048 3.206a.999.999 0 000 .622l1.048 3.206-2.733 1.977a1 1 0 00-.365.503l-1.036 3.21-3.374-.006a1 1 0 00-.59.192L16 27.381l-2.725-1.988a1 1 0 00-.591-.192l-3.374.006-1.036-3.21a1 1 0 00-.365-.503l-2.733-1.977 1.048-3.206a1 1 0 000-.622l-1.048-3.206 2.733-1.978-.293-.405.293.405a1 1 0 00.365-.502l1.036-3.21 3.374.006a1 1 0 00.59-.192L16 4.619z" stroke="url(#verified_svg__paint1_linear)"></path><g filter="url(#verified_svg__filter0_d)"><path d="M21.506 11.464a.677.677 0 00-.948.001l-6.745 6.636-2.378-2.334a.675.675 0 00-.946.963L13.813 20l7.695-7.57a.677.677 0 00-.002-.966z" fill="#fff"></path><path d="M21.506 11.464a.677.677 0 00-.948.001l-6.745 6.636-2.378-2.334a.675.675 0 00-.946.963L13.813 20l7.695-7.57a.677.677 0 00-.002-.966z" stroke="#fff" stroke-width="0.5"></path></g><defs><linearGradient id="verified_svg__paint0_linear" x1="6.4" y1="5.2" x2="25.6" y2="26.2" gradientUnits="userSpaceOnUse"><stop stop-color="#376DF3"></stop><stop offset="1" stop-color="#1E56E0"></stop></linearGradient><linearGradient id="verified_svg__paint1_linear" x1="7" y1="4" x2="24.4" y2="26.8" gradientUnits="userSpaceOnUse"><stop stop-color="#2D61E1"></stop><stop offset="1" stop-color="#1549CA"></stop></linearGradient><filter id="verified_svg__filter0_d" x="8.037" y="10.021" width="15.922" height="13.33" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"></feColorMatrix><feOffset dy="1"></feOffset><feGaussianBlur stdDeviation="1"></feGaussianBlur><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0"></feColorMatrix><feBlend in2="BackgroundImageFix" result="effect1_dropShadow"></feBlend><feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape"></feBlend></filter></defs></svg>
+                  </h6>
+                </div>
               </div>
               <h2 class="q-my-none">
-              ${{formatNumber(asset.usd,0)}} <span  v-if="parseInt(asset.usd).toString().length <= 5" class="g-txt">.{{formatNumber(asset.usd,2).split('.')[1]}}</span> <span v-if="asset.change24hPercentage" :class="'sr-txt absolute-top-right '+ asset.color">↓ {{asset.change24hPercentage.substring(1)}}</span>
-              <a href="javascript:void(0)">Trade</a>
-
-            </h2>
-            <q-item-label :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" class="q-pt-sm" caption>Amount: <span class="text-grey q-pl-xs">{{formatNumber(asset.amount,4)}}</span></q-item-label>
-            <div class="q-pt-sm">Price: <span class="text-grey q-pl-xs">${{formatNumber(asset.rateUsd,4)}}</span></div>
-            <div class="q-py-sm" v-if="asset.protocol"><q-icon class="q-pr-sm" size="1.2rem" :name="'img:'+asset.protocolIcon" />{{asset.protocol}}:
-            </div>
-            <span class="text-grey" v-if="asset.poolsCount == 1">{{asset.poolName}} pool</span>
-            <span class="text-grey" v-else-if="asset.poolsCount">{{asset.poolsCount}} pools</span>
+                ${{formatNumber(asset.usd,0)}}
+                <span v-if="parseInt(asset.usd).toString().length <= 5" class="g-txt">.{{formatNumber(asset.usd,2).split('.')[1]}}</span>
+                <span v-if="asset.change24hPercentage" :class="'sr-txt absolute-top-right ' + asset.color">{{asset.color === 'text-green-6'? '↑':'↓'}} {{asset.change24hPercentage.substring(1)}}</span>
+                <a href="javascript:void(0)">Trade</a>
+              </h2>
+              <q-item-label :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" class="q-pt-sm" caption>Amount: <span class="text-grey q-pl-xs">{{formatNumber(asset.amount,4)}}</span></q-item-label>
+              <div class="q-pt-sm">Price: <span class="text-grey q-pl-xs">${{formatNumber(asset.rateUsd,4)}}</span></div>
+              <div class="q-py-sm" v-if="asset.protocol"><q-icon class="q-pr-sm" size="1.2rem" :name="'img:'+asset.protocolIcon" />{{asset.protocol}}:</div>
+              <span class="text-grey" v-if="asset.poolsCount == 1">{{asset.poolName}} pool</span>
+              <span class="text-grey" v-else-if="asset.poolsCount">{{asset.poolsCount}} pools</span>
             </div>
 
           </div>
@@ -975,7 +974,8 @@ export default {
 }
 
 .main .g-txt {
-  color: #d0d0d2;
+  color: #363636;
+  margin-left: -5px;
 }
 
 .main .sr-txt {
@@ -1002,12 +1002,10 @@ export default {
   font-weight: 500;
   letter-spacing: normal;
   height: 36px;
-  padding: 1px 24px;
+  padding: 0px 10px;
   border-radius: 99999px;
   border: none;
   outline: none;
-  background-color: #7979f9;
-  color: #fff;
   position: absolute;
   right: 0px;
   margin-top: -3px;
@@ -1015,6 +1013,15 @@ export default {
   opacity: 0;
   transition: all 0.2s ease-in-out;
   text-decoration: none;
+  text-transform: initial !important;
+  background: #FFF !important;
+  border: 1px solid rgba(204, 204, 204, 0.7);
+  color: #071e36 !important;
+  font-size: 12px !important;
+  border-radius: 40px;
+  font-weight: 700;
+  height: 34px;
+  min-width: fit-content;
 }
 
 .main h2 a::before {
@@ -1023,7 +1030,9 @@ export default {
   width: 20px;
   height: 40px;
   position: absolute;
-  left: -21px;
+  left: unset;
+  right: 55px;
+  z-index: -2222;
   background-image: linear-gradient(
     270deg,
     rgb(255, 255, 255) 54.69%,
@@ -1092,6 +1101,9 @@ export default {
   }
 }
 .dark-theme{
+  .main .g-txt {
+    color: rgb(240, 240, 240);
+  }
   .wrapper {
     background-color: #04111F;
     // border: 1px solid #627797;
@@ -1103,12 +1115,16 @@ export default {
       color: #FFF;
     }
     .main h2 a{
+      background: #071e36 !important;
+      border: 1px solid rgba(204, 204, 204, 0.7);
+      color: #FFF !important;
       &:before{
-        width: 40px;
-        right: 85px;
+        width: 30px;
+        right: 55px;
         left: unset;
         top: 0px;
         background-image: linear-gradient(270deg, #04111f 54.69%, rgba(4,17,31,0) 100%);
+        opacity: .5;
       }
     }
   }
