@@ -272,6 +272,10 @@ export const getInvestments = (context, payload) => {
 
   axios.get(transactionEndpoint, config)
     .then(function (result) {
+      result.data[payload.value.toLowerCase()] = result.data[payload.value.toLowerCase()].map(o => {
+        o.owner = payload.value.toLowerCase()
+        return o
+      })
       context.commit('setInvestments', result.data[payload.value.toLowerCase()])
     }).catch(error => {
       console.log(error, 'Cannot get market Investments')
