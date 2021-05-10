@@ -641,7 +641,7 @@ export default {
     getPeriod (reward, amount, period) {
       let stake_per = (1 + period / 10.0) / 100
       let checkReward = (Math.round(amount * stake_per * 100) / 100) * period
-      console.log(checkReward, reward, period)
+
       return (checkReward === reward) ? period : false
     },
     checkAmount () {

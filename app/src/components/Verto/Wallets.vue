@@ -489,7 +489,7 @@
 
                                 </div>
                         </q-item>
-                     <q-expansion-item   :style="setPosition(99999999)" @click="vtxAccounts.length == 1 ? showMenu(vtxAccounts[0]) : showChainAccounts('', 'vtx')"  :key="Math.random()" clickable  >
+                     <q-expansion-item    :style="setPosition(99999999)" @click="vtxAccounts.length == 1 ? showMenu(vtxAccounts[0]) : showChainAccounts('', 'vtx')"  :key="Math.random()" clickable  >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" src="statics/icons/favicon-32x32.png"  />
@@ -994,7 +994,7 @@
                 <div class="wallet-list q-pa-sm text-body1 q-mt-md text-grey-9" v-if="$store.state.currentwallet.wallet.chain" >
                    <q-icon name="add" /> More wallets and accounts
                 </div>
-                   <q-expansion-item   :style="setPosition(99999999)" @click="vtxAccounts.length == 1 ? showMenu(vtxAccounts[0]) : showChainAccounts('', 'vtx')"  :key="Math.random()" clickable  >
+                   <q-expansion-item   v-if="$store.state.currentwallet.wallet.chain"  :style="setPosition(99999999)" @click="vtxAccounts.length == 1 ? showMenu(vtxAccounts[0]) : showChainAccounts('', 'vtx')"  :key="Math.random()" clickable  >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" src="statics/icons/favicon-32x32.png"  />
