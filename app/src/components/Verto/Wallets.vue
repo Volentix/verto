@@ -1195,9 +1195,9 @@
                         <div class="col col-6 q-pl-sm " :class="{'active' : directionAccount}">
                             <span class="sort">Account name</span>
                         </div>
-                        <div class="col col-6 flex justify-end q-pr-sm items-center pointer" @click="sortBy('balance')" >
-                            <span class="sort">Balance</span>
-                            <q-icon :name="!direction ? 'north' : 'south'" class="text-grey" />
+                        <div class="col col-6 flex justify-end q-pr-sm items-center pointer" >
+                           <q-icon @click="refreshWallet()" name="autorenew" class="text-grey q-px-sm" size="sm" />  <span class="sort">Balance</span>
+
                         </div>
                     </div>
                 </div>
