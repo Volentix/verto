@@ -320,7 +320,7 @@
                         <div class="text-h4 --subtitle">Are you sure?</div>
                       </div>
                       <q-stepper-navigation class="flex justify-end">
-                        <q-btn @click="sendTransaction()" color="deep-purple-14" class="--next-btn" rounded label="Submit" />
+                        <q-btn @click="spinnerVisible = true ; sendTransaction()" color="deep-purple-14" class="--next-btn" :loading="spinnerVisible" rounded label="Submit" />
                       </q-stepper-navigation>
                     </q-step>
                     <q-step title="Result"
@@ -436,7 +436,7 @@ export default {
       },
       transactionId: null,
       transactionError: '',
-      spinnervisible: false,
+      spinnerVisible: false,
       isPwd: true,
       isPrivateKeyEncrypted: false,
       account: null,
@@ -687,6 +687,7 @@ export default {
         this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '" target="_blank">block explorer</a>'
         this.step = 4
         this.initData()
+        this.spinnerVisible = true
         initWallet(this.currentAccount.name)
       } catch (error) {
         this.step = 4
@@ -709,10 +710,11 @@ export default {
 
         this.displayError(error, true, actions)
       }
+      this.spinnerVisible = false
     },
     displayError (error, freeCpu = false, actions, message = null) {
       if (error.message.includes('stake amount is too low')) {
-        this.transactionError = true
+        this.transactionError = false
         this.ErrorMessage = 'Your VTX stake amount is too low, you need at least 1000 VTX to stake.'
       } else if (error.message.includes('maximum billable CPU time')) {
         if (freeCpu) {
