@@ -978,7 +978,7 @@ export default {
                 font-weight: $regular;
                 strong{
                   font-weight: $bold;
-                  color: #2A2A2A;
+
                 }
               }
               .border{
