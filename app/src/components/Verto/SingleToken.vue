@@ -902,7 +902,6 @@ export default {
       return transactionObject
     },
     async getHistoriclPrice (days = 30) {
-      this.intervalHistory = days
       let token = this.$store.state.tokens.list.find(
         (t) =>
           t.symbol === this.asset.type &&
@@ -924,7 +923,7 @@ export default {
         )
 
         this.chartData = response.data
-
+        this.intervalHistory = days
         if (response.data.prices && !this.asset.rateUsd) {
           this.asset.rateUsd =
             response.data.prices[response.data.prices.length - 1][1]
