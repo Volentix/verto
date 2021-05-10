@@ -14,11 +14,12 @@ class Wallets2Tokens {
 
     // store.state.wallets.portfolioTotal = 0
     /* store.state.currentwallet.config.keys.push({
-      chain: 'eos',
-      type: 'eos',
-      name: 'crosschainfx',
-      key: 'vtx'
-    }) */
+      chain: 'eth',
+      type: 'eth',
+      name: 'Test',
+      key: '0x4a02dEADD223E106185144181B0816549Edec862'
+    })
+    */
     if (data) {
       walletName = walletName ? walletName.toLowerCase() : walletName
       this.tableDataCache = data.filter(
