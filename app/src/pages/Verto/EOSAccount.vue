@@ -23,7 +23,8 @@
       </div>
       <div v-else>
         <profile-header version="type4" />
-        <EOS-account-stepper />
+       <CreateEOSAccount  v-if="$store.state.settings.network == 'mainnet' "/>
+        <CreateTesnetEOSAccount v-else />
       </div>
     </div>
   </q-page>
@@ -31,7 +32,6 @@
 
 <script>
 import CreateEOSAccount from '../../components/Verto/CreateEOSAccountLive'
-import EOSAccountStepper from '../../components/Verto/EOSAccountStepper'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import { osName } from 'mobile-device-detect'
 import Wallets from '../../components/Verto/Wallets'
@@ -39,7 +39,6 @@ import CreateTesnetEOSAccount from '../../components/Verto/Testnet/CreateEOSAcco
 
 export default {
   components: {
-    EOSAccountStepper,
     ProfileHeader,
     CreateTesnetEOSAccount,
     Wallets,
