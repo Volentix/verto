@@ -684,6 +684,7 @@
                   <h5 class="text-bold">
                     Profit/Loss
                     <span><i class="far fa-question-circle"></i></span>
+
                   </h5>
                   <p>-</p>
 

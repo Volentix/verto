@@ -433,7 +433,7 @@ export default {
   },
   computed: {
     allInvestments () {
-      return Object.keys(this.assetsOptions[1].data).reduce((all, chain) => this.assetsOptions[1].data[chain] && this.assetsOptions[1].data[chain].length ? all.concat(this.assetsOptions[1].data[chain]) : [], [])
+      return Object.keys(this.assetsOptions[1].data).reduce((all, chain) => this.assetsOptions[1].data[chain] && this.assetsOptions[1].data[chain].length ? all.concat(this.assetsOptions[1].data[chain].filter(o => this.$store.state.currentwallet.wallet.chain ? (chain === 'eos' && o.owner === this.$store.state.currentwallet.wallet.name) || (chain === 'eth' && o.owner === this.$store.state.currentwallet.wallet.name) : true)) : [], [])
     }
   },
   methods: {
@@ -499,7 +499,7 @@ export default {
     },
     getInvestedTokens (investments) {
       let assets = []
-
+      console.log(investments, 'investments eth')
       investments.forEach(t => {
         t.tokens.forEach(a => {
           let protocolData = this.platformOptions.find(o => o.label.toLowerCase() === t.protocolDisplay.toLowerCase())
