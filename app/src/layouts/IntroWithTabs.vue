@@ -123,10 +123,17 @@ export default {
       display: none !important;
     }
   } */
+  .q-field--error .q-field__bottom {
+    color: #6200ea !important;
+  }
   .q-dark{
     background: #04111F !important;
     .q-item.q-router-link--active, .q-item--active{
       color: #FFF;
+    }
+    .q-field--error .q-field__bottom {
+      color: #fff !important;
+      text-shadow: 2px 2px 2px #6200ea;
     }
   }
   .q-menu{

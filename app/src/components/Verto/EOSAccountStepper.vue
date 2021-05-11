@@ -798,7 +798,7 @@ export default {
         }
 
         &.open {
-            margin-bottom: -100px;
+            // margin-bottom: -100px;
 
             .list-wrapper {
                 visibility: visible;
@@ -873,6 +873,9 @@ export default {
     padding-right: 0px;
 }
 .dark-theme{
+    .chain-tools-wrapper{
+      background-color: #04111F;
+    }
     .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
       background-color: #04111F;
     }
