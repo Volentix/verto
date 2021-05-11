@@ -11,7 +11,8 @@
     >
       <div class="row">
         <div class="left-area col-md-8">
-          <div class="left q-ml-md q-pt-xs">
+          <div class="left q-ml-md q-py-md">
+
             <span class="z-max">
               <div class="row q-pb-xl flex items-center">
                 <h2>
@@ -59,11 +60,13 @@
                 class="q-mt-sm"
                 v-if="!chartData"
               />
+
               <PriceChart
                 :key="intervalHistory"
                 :dataType="'price'"
-                v-else
+                class="q-mt-md"
                 :data="chartData"
+                v-else
               />
               <PriceChart :dataType="'volume'" v-if="false" />
             </div>
@@ -241,7 +244,12 @@
                   <a href="javascript:void(0)">Send</a>
                 </li>
               </ul>
-              <q-tabs v-model="tab" inline-label mobile-arrows>
+              <q-tabs
+                v-model="tab"
+                @click="error = false"
+                inline-label
+                mobile-arrows
+              >
                 <q-tab name="send" label="Send" v-if="asset.chain == 'eos'" />
                 <q-tab name="buy" label="Buy" />
                 <q-tab name="sell" label="Sell" />
@@ -336,7 +344,8 @@
                 </q-input>
                 <q-select
                   v-if="
-                    (tab == 'sell' || tab == 'buy' || tab == 'add liquidity') && destinationCoin
+                    (tab == 'sell' || tab == 'buy' || tab == 'add liquidity') &&
+                    destinationCoin
                   "
                   :light="$store.state.settings.lightMode === 'false'"
                   :dark="$store.state.settings.lightMode === 'true'"
@@ -346,11 +355,18 @@
                   outlined
                   class="select-input q-mt-md"
                   use-input
+                  @input="error = false"
                   @filter="filterDestinationCoin"
                   v-model="destinationCoin"
                   :disabled="!destinationCoinOptions"
                   :loading="!destinationCoinOptions"
-                  :options="destinationCoinOptions"
+                  :options="
+                    destinationCoinOptions.filter(
+                      (o) =>
+                        ['eos', 'usdt'].includes(o.value.toLowerCase()) ||
+                        asset.type != 'vtx'
+                    )
+                  "
                 >
                   <template v-slot:option="scope">
                     <q-item
@@ -389,7 +405,7 @@
                         />
                       </q-item-section>
                       <q-item-section>
-                        <q-item-label v-html="destinationCoin.label" />
+                        <q-item-label v-html="destinationCoin.value" />
                       </q-item-section>
                     </q-item>
                     <q-item v-else> </q-item>
@@ -580,6 +596,20 @@
                   >Reset</span
                 >
               </form>
+              <p
+                class="text-red q-pt-md q-py-none q-my-none"
+                v-if="error == 'unswappable' && tab == 'buy'"
+              >
+                Cannot swap {{ destinationCoin.value.toUpperCase() }} to
+                {{ asset.type.toUpperCase() }}
+              </p>
+              <p
+                class="text-red q-pt-md q-py-none q-my-none"
+                v-else-if="error == 'unswappable'"
+              >
+                Cannot swap {{ asset.type.toUpperCase() }} to
+                {{ destinationCoin.value.toUpperCase() }}
+              </p>
               <div
                 class="buy text-capitalize q-pt-md"
                 v-if="!spinnerVisible && !success"
@@ -714,7 +744,7 @@ import DexInteraction from '../../mixins/DexInteraction'
 import AccountSelector from './Exchange/AccountSelector.vue'
 import AssetBalancesTable from '../../components/Verto/AssetBalancesTable'
 import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
-
+import { JsonRpc } from 'eosjs'
 import { QScrollArea } from 'quasar'
 
 export default {
@@ -757,13 +787,17 @@ export default {
           this.sendTo.trim().length !== 0 &&
           parseFloat(this.depositQuantity) !== 0 &&
           parseFloat(this.assetBalance) !== 0
-      } else if (this.tab === 'sell' || this.tab === 'buy' || this.tab === 'add liquidity') {
+      } else if (
+        this.tab === 'sell' ||
+        this.tab === 'buy' ||
+        this.tab === 'add liquidity'
+      ) {
         valid = true
       }
       return valid
     }
   },
-  created () {
+  async created () {
     this.asset = this.assetData
 
     this.depositCoin = {
@@ -772,16 +806,43 @@ export default {
       icon: this.asset.icon
     }
 
-    this.destinationCoinOptions = this.$store.state.settings.coins[this.asset.chain === 'eos' ? 'defibox' : 'oneinch']
+    this.destinationCoinOptions = this.$store.state.settings.coins[this.asset.chain === 'eos' ? 'defibox' : 'oneinch'].filter(
+      (o) =>
+        ['eos', 'usdt'].includes(o.value.toLowerCase()) ||
+        this.asset.type !== 'vtx'
+    )
 
     this.destinationCoinUnfilter = this.destinationCoinOptions
-
+    if (this.asset.chain === 'eth' || this.asset.chain === 'eos') {
+      let pref = {
+        eth: ['usdt', 'link'],
+        eos: ['eos', 'vtx', 'uni']
+      }
+      if (pref[this.asset.chain]) {
+        let preferredToken = pref[this.asset.chain].filter(
+          (o) => o !== this.asset.type
+        )[0]
+        this.destinationCoin = this.destinationCoinOptions.find(
+          (o) => preferredToken === o.value.toLowerCase()
+        )
+      }
+    }
     if (this.asset.chain !== 'eos') {
       this.tab = 'sell'
     } else {
-      this.destinationCoin = this.destinationCoinOptions.find(
-        (o) => o.value.toLowerCase() !== this.depositCoin.value
+      let rpc = new JsonRpc(
+        process.env[this.$store.state.settings.network].CACHE +
+          'https://eos.greymass.com:443'
       )
+      this.pairs = (
+        await rpc.get_table_rows({
+          json: true,
+          code: 'swap.defi',
+          scope: 'swap.defi',
+          table: 'pairs',
+          limit: -1
+        })
+      ).rows
     }
 
     if (this.depositCoin.value === this.destinationCoin.value) {
@@ -792,6 +853,22 @@ export default {
     this.setPaymentOptions()
   },
   methods: {
+    getEchangeData () {
+      const self = this
+      let exchange = {
+        eos () {
+          let from = this.tab === 'buy' ? this.asset.type : this.destinationCoin.value.toLowerCase()
+          let to = this.tab === 'sell' ? this.destinationCoin.value.toLowerCase() : this.asset.type
+          return self.getEosPairData(
+            from,
+            to,
+            this.pairs,
+            1
+          )
+        }
+      }
+      console.log(exchange[this.asset.chain]())
+    },
     getTxData () {
       let transactionObject = {
         actions: [],
@@ -844,6 +921,7 @@ export default {
             '/market_chart?vs_currency=usd&days=' +
             days
         )
+
         this.chartData = response.data
 
         if (response.data.prices && !this.asset.rateUsd) {
@@ -869,7 +947,7 @@ export default {
     getBalance () {
       let item = this.paymentOptions.find(
         (o) =>
-          o.name.toLowerCase() ===
+          this.$store.state.investment.defaultAccount.name && o.name.toLowerCase() ===
             this.$store.state.investment.defaultAccount.name.toLowerCase() &&
           o.type === this.asset.type
       )
@@ -900,7 +978,12 @@ export default {
       this.getBalance()
     },
     triggerAction () {
-      if (this.tab === 'sell' || this.tab === 'buy' || this.tab === 'add liquidity') {
+      this.error = false
+      if (
+        this.tab === 'sell' ||
+        this.tab === 'buy' ||
+        this.tab === 'add liquidity'
+      ) {
         this.goToExchange()
       } else if (this.tab === 'send') {
         this.spinnerVisible = true
@@ -930,6 +1013,8 @@ export default {
             tab: this.tab
           }
         })
+      } else {
+        this.error = 'unswappable'
       }
     }
   },
@@ -939,16 +1024,20 @@ export default {
       asset: {},
       assetBalance: null,
       chartData: false,
+      pairData: false,
       tokenTabOption: 'history',
       depositCoinUnfilter: [],
       destinationCoinOptions: [],
       paymentOption: null,
       intervalHistory: 30,
       sendTo: '',
+      pairs: [],
       extrasInfos: false,
       success: false,
       spinnerVisible: false,
       memo: '',
+      error: false,
+      dex: null,
       paymentOptions: [],
       depositQuantity: 0,
       destinationQuantity: 'Click the Buy button',

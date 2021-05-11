@@ -231,6 +231,41 @@
 
                         </div>
                       </div>
+
+                      <div class="staked-wrapper">
+
+                  <div v-for="(stake, i) in stakes" :key="i" class="item-wrapper row flex">
+                    <div class="col col-9 q-pr-sm">
+                      <div class="border column justify-between">
+                        <span ><span class="text-bold" >Staked date:</span> {{stake.stake_date.toDateString()}}</span>
+                        <div class="row flex item-wrapper--row justify-between items-end">
+                          <div class="col">Amount: <br> <strong>{{stake.stake_amount}} VTX <q-icon class="q-mb-xs" :name="'img:' + currentAccount.icon" />
+                          </strong></div>
+                          <div class="col">Period: <br> <strong>{{stake.stake_period}} Days</strong></div>
+                          <div class="col mobile-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br> <strong>{{stake.time_left}} {{(( ((stake.stake_period * 24 * 60)   - stake.time_left) / (stake.stake_period * 24 * 60) ))}}</strong></div>
+                          <div v-if="stake.time_left > 0" class="col desktop-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br>
+                            <q-linear-progress dark rounded stripe size="25px" :value="parseFloat(stake.time_left_percentage) / 100" color="deep-purple-14">
+                              <div class="absolute-full flex flex-center">
+                                <q-badge color="white" text-color="black" :label="(stake.time_left_percentage) + ' %'" />
+                              </div>
+                               <q-tooltip content-class="text-body1" v-if="stake && stake.timer" >
+                              {{stake.timer.text}}
+                            </q-tooltip>
+                            </q-linear-progress>
+                          </div>
+                          <div v-else class="col desktop-only">
+                            <q-btn @click="unStakeVTX()" outline  label="Unstake" />
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col col-3 column justify-end">
+                      <div  class="border total column justify-end">Total Earning: <br> <strong>{{stake.subsidy}} VTX</strong></div>
+                    </div>
+                  </div>
+                </div>
+
                     </q-step>
                     <q-step v-if="isPrivateKeyEncrypted" title="Sign & Submit"
                       :name="2"
@@ -313,35 +348,7 @@
                 </div>
               </q-tab-panel>
               <q-tab-panel name="staked">
-                <div class="staked-wrapper">
-                  <div v-for="(stake, i) in stakes" :key="i" class="item-wrapper row flex">
-                    <div class="col col-9 q-pr-sm">
-                      <div class="border column justify-between">
-                        <span class="date">Staked date: {{stake.stake_date.toDateString()}}</span>
-                        <div class="row flex item-wrapper--row justify-between items-end">
-                          <div class="col">Amount: <br> <strong>{{stake.stake_amount}} VTX <q-icon class="q-mb-xs" :name="'img:' + currentAccount.icon" />
-                          </strong></div>
-                          <div class="col">Period: <br> <strong>{{stake.stake_period}} Days</strong></div>
-                          <div class="col mobile-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br> <strong>{{stake.time_left}} {{(( ((stake.stake_period * 24 * 60)   - stake.time_left) / (stake.stake_period * 24 * 60) ))}}</strong></div>
-                          <div v-if="stake.time_left > 0" class="col desktop-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br>
-                            <q-linear-progress rounded stripe size="25px" :value="(( ((stake.stake_period * 24 * 60)   - stake.time_left) / (stake.stake_period * 24 * 60) ))" color="deep-purple-14">
-                              <div class="absolute-full flex flex-center">
-                                <q-badge color="white" text-color="black" :label="(stake.time_left) + ' minutes'" />
-                              </div>
-                            </q-linear-progress>
-                          </div>
-                          <div v-else class="col desktop-only">
-                            <q-btn @click="unStakeVTX()" outline  label="Unstake" />
-                          </div>
 
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col col-3 column justify-end">
-                      <div  class="border total column justify-end">Total Earning: <br> <strong>{{stake.subsidy}} VTX</strong></div>
-                    </div>
-                  </div>
-                </div>
               </q-tab-panel>
             </q-tab-panels>
           </div>
@@ -354,12 +361,11 @@
 
 <script>
 import { date } from 'quasar'
-import { userError } from '@/util/errorHandler'
 import EosWrapper from '@/util/EosWrapper'
 import EOSContract from '@/mixins/EOSContract'
 import Formatter from '@/mixins/Formatter'
 const eos = new EosWrapper()
-
+import initWallet from '@/util/Wallets2Tokens'
 let stakingContract, volentixContract
 
 export default {
@@ -369,6 +375,7 @@ export default {
       tab: 'stake',
       step: 1,
       period_duration: 30,
+      timers: [],
       condition: 3,
       currentAccount: {},
       stakePeriod: 10,
@@ -408,6 +415,12 @@ export default {
     wallet () {
       return this.$store.state.currentwallet.wallet || {}
     }
+  },
+  destroyed () {
+    this.timers.forEach(timerObject => {
+      clearInterval(timerObject)
+    }
+    )
   },
   async created () {
     if (this.$store.state.settings.globalSettings.stakingPeriod) {
@@ -492,19 +505,68 @@ export default {
         let totalSubsidy = globalAmnts.cumulative_subsidy.split(' ')[0]
         this.allocatable = +totalBalance - (+totalStake + +totalSubsidy)
         // console.log('allocatable', this.allocatable)
+        this.stakes = []
         this.stakes = await eos.getTable(stakingContract, this.params.accountName, 'accountstake')
         this.stakes.map(s => {
           s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
           s.stake_amount = Math.round(+s.amount.split(' ')[0] * 10000) / 10000
-          s.stake_period = Math.round((((s.subsidy / s.stake_amount) * 100) - 1) * 10) * this.period_duration
-          s.stake_date = new Date((s.unlock_timestamp - s.stake_period * 24 * 60 * 60) * 1000)
-          s.stake_done = new Date(s.unlock_timestamp * 1000)
-          s.time_left = date.getDateDiff(s.stake_done, Date.now(), 'minutes')
 
+          s.stake_done = new Date(s.unlock_timestamp * 1000)
+          s.time_left = date.getDateDiff(s.stake_done, Date.now(), 'days')
+
+          let counter = 1
+          /*
+          Any better solution
+          this.estimatedReward  /  this.sendAmount * 100 =  (1 + this.stakePeriod / 10.0) x this.stakePeriod
+          x = this.stakePeriod
+          Solution: d/dx((0.1 x + 1) x) = 0.2 x + 1
+          this.estimatedReward  /  this.sendAmount * 100  = 0.1 (x^2 + 10 x)
+          */
+          while (counter <= 10) {
+            let period = this.getPeriod(s.subsidy, s.stake_amount, counter)
+            if (period) {
+              s.stake_period = period * this.period_duration
+              break
+            }
+            counter++
+          }
+          s.stake_date = new Date((s.unlock_timestamp - s.stake_period * 24 * 60 * 60) * 1000)
+          s.time_left_percentage = ((date.getDateDiff(s.stake_done, Date.now(), 'days') / s.stake_period) * 100).toFixed(2)
           stakedAmounts += +s.stake_amount
         })
+
+        this.setTimers()
         this.currentAccount.staked = stakedAmounts
       }
+    },
+    setTimers () {
+      this.timers.forEach(timerObject => {
+        clearInterval(timerObject)
+      }
+      )
+      const self = this
+      this.timers = []
+      this.stakes.map((stake, i) => {
+        let totalSeconds = date.getDateDiff(stake.stake_done, Date.now(), 'seconds')
+        const setTimer = () => {
+          let days = --totalSeconds / 86400
+          let hours = (days - parseInt(days)) * 24
+          let minutes = (hours - parseInt(hours)) * 60
+          let seconds = Math.round((minutes - parseInt(minutes)) * 60)
+          self.stakes[i].timer = {
+            text: parseInt(days) + 'd ' + parseInt(hours) + 'h ' + parseInt(minutes) + 'm ' + seconds + 's'
+          }
+
+          self.$set(self.stakes, i, self.stakes[i])
+        }
+        setTimer()
+        this.timers.push(setInterval(setTimer,
+          1000
+        ))
+        return stake
+      }
+
+      )
     },
     sliderToPercent (percent) {
       this.slider = percent
@@ -540,9 +602,11 @@ export default {
       }
       this.checkAmount()
     },
-    getPeriod (reward, amount) {
-
-      // Get period from reward and amount
+    getPeriod (reward, amount, period) {
+      let stake_per = (1 + period / 10.0) / 100
+      let checkReward = (Math.round(amount * stake_per * 100) / 100) * period
+      console.log(checkReward, reward, period)
+      return (checkReward === reward) ? period : false
     },
     checkAmount () {
       let stake_per = (1 + this.stakePeriod / 10.0) / 100
@@ -587,18 +651,36 @@ export default {
         this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '" target="_blank">block explorer</a>'
         this.step = 4
         this.initData()
+        initWallet(this.currentAccount.name)
       } catch (error) {
         this.step = 4
-        this.displayError(error, true)
+
+        const actions = [{
+          account: volentixContract,
+          name: 'transfer',
+          authorization: [{
+            actor: this.currentAccount.name,
+            permission: 'active'
+          }
+          ],
+          data: {
+            from: this.currentAccount.name.toLowerCase(),
+            to: stakingContract,
+            quantity: this.formatAmountString(),
+            memo: this.stakePeriod.toString()
+          }
+        }]
+
+        this.displayError(error, true, actions)
       }
     },
-    displayError (error, freeCpu = false) {
+    displayError (error, freeCpu = false, actions, message = null) {
       if (error.message.includes('stake amount is too low')) {
         this.transactionError = true
         this.ErrorMessage = 'Your VTX stake amount is too low, you need at least 1000 VTX to stake.'
       } else if (error.message.includes('maximum billable CPU time')) {
         if (freeCpu) {
-          this.payForUserCPU()
+          this.payForUserCPU(actions, message)
         } else {
           this.ErrorMessage = 'Your EOS account does not have enough CPU staked to process the transaction.'
           this.transactionError = true
@@ -611,58 +693,49 @@ export default {
         this.ErrorMessage = 'Unknown Error: ' + error
       }
     },
-    payForUserCPU () {
-      const actions = [{
-        account: volentixContract,
-        name: 'transfer',
-        authorization: [{
-          actor: this.currentAccount.name,
-          permission: 'active'
-        }
-        ],
-        data: {
-          from: this.currentAccount.name.toLowerCase(),
-          to: stakingContract,
-          quantity: this.formatAmountString(),
-          memo: this.stakePeriod.toString()
-        }
-      }]
-
+    payForUserCPU (actions, message = null) {
       let account = {
         name: this.currentAccount.name,
         privateKey: this.privateKey.key
       }
+
       this.sendFreeCPUTransaction(actions, account, null).then(result => {
         if (result.success) {
           this.transactionError = false
           this.transactionId = result.hash
           this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '" target="_blank">block explorer</a>'
-          this.initData()
+          if (message) this.$q.notify(message)
         } else {
           this.displayError(result.message)
         }
+        this.initData()
+        initWallet(this.currentAccount.name)
       }).catch((error) => {
         this.displayError({ message: error })
       })
     },
     async unStakeVTX () {
+      const actions = [{
+        account: stakingContract,
+        name: 'unstake',
+        authorization: [{
+          actor: this.currentAccount.name,
+          permission: 'active'
+        }],
+        data: {
+          owner: this.currentAccount.name
+        }
+      }]
+      let message = 'Successfully unstaked'
       try {
         await eos.transact({
-          actions: [{
-            account: stakingContract,
-            name: 'unstake',
-            authorization: [{
-              actor: this.currentAccount.name,
-              permission: 'active'
-            }],
-            data: {
-              owner: this.currentAccount.name
-            }
-          }]
+          actions: actions
         }, { keyProvider: this.privateKey.key })
         this.initData()
+        this.$q.notify(message)
+        initWallet(this.currentAccount.name)
       } catch (error) {
-        userError(error.message)
+        this.displayError(error, true, actions, message)
       }
     },
     formatAmountString () {
@@ -686,6 +759,9 @@ export default {
 
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
+   .q-tabs {
+    display: none;
+}
   .summary {
     border: 1px solid #c1c0c0;
     width: fit-content;

@@ -198,6 +198,7 @@
                                                         <q-linear-progress v-if="transactionStatus != 'Success' && transactionStatus != 'Failed'" :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" :value="progress" indeterminate class="q-mt-lg" />
                                                         <p class="text-center q-pt-md" v-if="!approvalRequired">Swaping {{depositQuantity}} {{depositCoin.value.toUpperCase()}} to {{destinationCoin.value}}</p>
                                                         <p class="text-center q-pt-md" v-else>Approval transaction</p>
+                                                        <p class="text-center q-pt-md" v-if="approvalRequired && transactionStatus == 'Success'">Approval succeeded. <q-btn @click="getSwapQuote()" label="Click here" /> to go back and process the actual swap</p>
                                                         <div class="text-h4 --subtitle">{{''}}</div>
                                                         <q-input  :dark="$store.state.settings.lightMode === 'true'"  v-if="transactionHash" bottom-slots v-model="transactionHash" readonly rounded outlined type="text">
                                                             <template v-slot:append>
@@ -644,7 +645,7 @@ export default {
         .then(async function (result) {
           if (!result.data && !trial) {
             trial = true
-            this.getSwapQuote()
+            return this.getSwapQuote()
           }
           let nonce = await web3.eth.getTransactionCount(self.ethAccount.key, 'latest').catch(o => console.log(o))
           self.swapData.toAmount = parseFloat(web3.utils.fromWei(result.data.toTokenAmount.toString(), 'ether'))

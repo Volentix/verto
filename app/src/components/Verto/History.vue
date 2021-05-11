@@ -485,7 +485,9 @@ export default {
       this.history = []
 
       let account = this.$store.state.investment.defaultAccount
-
+      if (account.origin === 'metamask') {
+        account = this.$store.state.wallets.tokens.find(o => o.type === 'eth' && o.origin !== 'metamask')
+      }
       if (account.chain === 'eth') {
         // Clear local data because of updated logic
         let item = localStorage.getItem('tx_list_' + account.key)
@@ -494,7 +496,7 @@ export default {
           localStorage.removeItem('history_' + account.key)
         }
 
-        this.getEthWalletHistory(this.$store.state.investment.defaultAccount)
+        this.getEthWalletHistory(account)
       } else {
         if (!account.chain) {
           account = this.$store.state.wallets.tokens.find(w => w.chain === 'eos' && w.type === 'eos')
@@ -559,7 +561,7 @@ export default {
 
       setTimeout(() => {
         let account = this.$store.state.investment.defaultAccount
-
+        console.log(account, 'account')
         if (account.chain === 'eth') {
           let cacheData = localStorage.getItem('history_' + account.key)
 
