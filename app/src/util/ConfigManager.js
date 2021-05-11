@@ -77,7 +77,7 @@ class ConfigManager {
     async saveConfig (password, currentWallet, config) {
       let filePath = await platformTools.filePath()
       await platformTools.writeFile(filePath, sjcl.encrypt(password, JSON.stringify(config)), 'utf-8')
-      if (currentWallet) { store.commit('currentwallet/updateCurrentWallet', currentWallet) }
+      // if (currentWallet) { store.commit('currentwallet/updateCurrentWallet', currentWallet) }
       store.commit('currentwallet/updateConfig', config)
       return { success: true }
     }

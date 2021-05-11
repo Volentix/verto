@@ -57,7 +57,7 @@
                             separator
                             rounded
                             outlined
-                            @input="$store.state.currentwallet.wallet = currentAccount ; initData()"
+                            @input="$store.state.currentwallet.wallet = currentAccount ; initAccount(); initData()"
                             class="select-input q-pt-sm"
                             v-model="currentAccount"
                             use-input
@@ -272,9 +272,9 @@
                       prefix="2"
                       :done="step > 2"
                     >
-                      <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+                      <q-btn :dark="$store.state.settings.lightMode === 'true'"  flat @click="step = 1" unelevated icon="keyboard_arrow_up" class="--back-btn"/>
 
-                      <div class="text-black" >
+                      <div >
                         <div class="summary text-body1 q-pa-sm rounded-borders q-mt-sm">
                           You are about to stake <span class="text-deep-purple-12">{{formatNumber(sendAmount, 0)}} {{ params.tokenID.toUpperCase() }}</span> for a period of <span class="text-deep-purple-12">{{stakePeriod * period_duration}} days</span>.<br> You will be rewarded <span class="text-deep-purple-12">{{formatNumber(estimatedReward, 0)}} {{ params.tokenID.toUpperCase() }}</span> at the end of that period.
                         </div>
@@ -312,7 +312,7 @@
                       prefix="2"
                       :done="step > 2"
                     >
-                      <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+                      <q-btn flat @click="step = 1" unelevated icon="keyboard_arrow_up" :dark="$store.state.settings.lightMode === 'true'" class="--back-btn"/>
                         <div class="summary text-body1 q-pa-sm rounded-borders q-mt-sm">
                           You are about to stake <span class="text-deep-purple-12">{{formatNumber(sendAmount, 0)}} {{ params.tokenID.toUpperCase() }}</span> for a period of <span class="text-deep-purple-12">{{stakePeriod * period_duration}} days</span>.<br> You will be rewarded <span class="text-deep-purple-12">{{formatNumber(estimatedReward, 0)}} {{ params.tokenID.toUpperCase() }}</span> at the end of that period.
                         </div>
@@ -320,14 +320,14 @@
                         <div class="text-h4 --subtitle">Are you sure?</div>
                       </div>
                       <q-stepper-navigation class="flex justify-end">
-                        <q-btn @click="sendTransaction()" color="deep-purple-14" class="--next-btn" rounded label="Submit" />
+                        <q-btn @click="spinnerVisible = true ; sendTransaction()" color="deep-purple-14" class="--next-btn" :loading="spinnerVisible" rounded label="Submit" />
                       </q-stepper-navigation>
                     </q-step>
                     <q-step title="Result"
                       :name="4"
                       prefix="3"
                     >
-                      <q-btn flat @click="step = 2" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
+                      <q-btn flat @click="step = 2" unelevated icon="keyboard_arrow_up" :dark="$store.state.settings.lightMode === 'true'"  class="--back-btn"/>
 
                       <div v-if="!ErrorMessage && !transactionId" class="text-black">
                         <q-spinner />
@@ -345,6 +345,39 @@
 
                     </q-step>
                   </q-stepper>
+                  <div class="staked-wrapper full-width" v-if="step == 4">
+
+                  <div v-for="(stake, i) in stakes" :key="i" class="item-wrapper row flex">
+                    <div class="col col-9 q-pr-sm">
+                      <div class="border column justify-between">
+                        <span ><span class="text-bold" >Staked date:</span> {{stake.stake_date.toDateString()}}</span>
+                        <div class="row flex item-wrapper--row justify-between items-end">
+                          <div class="col">Amount: <br> <strong>{{stake.stake_amount}} VTX <q-icon class="q-mb-xs" :name="'img:' + currentAccount.icon" />
+                          </strong></div>
+                          <div class="col">Period: <br> <strong>{{stake.stake_period}} Days</strong></div>
+                          <div class="col mobile-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br> <strong>{{stake.time_left}} {{(( ((stake.stake_period * 24 * 60)   - stake.time_left) / (stake.stake_period * 24 * 60) ))}}</strong></div>
+                          <div v-if="stake.time_left > 0" class="col desktop-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br>
+                            <q-linear-progress dark rounded stripe size="25px" :value="parseFloat(stake.time_left_percentage) / 100" color="deep-purple-14">
+                              <div class="absolute-full flex flex-center">
+                                <q-badge color="white" text-color="black" :label="(stake.time_left_percentage) + ' %'" />
+                              </div>
+                               <q-tooltip content-class="text-body1" v-if="stake && stake.timer" >
+                              {{stake.timer.text}}
+                            </q-tooltip>
+                            </q-linear-progress>
+                          </div>
+                          <div v-else class="col desktop-only">
+                            <q-btn @click="unStakeVTX()" outline  label="Unstake" />
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col col-3 column justify-end">
+                      <div  class="border total column justify-end">Total Earning: <br> <strong>{{stake.subsidy}} VTX</strong></div>
+                    </div>
+                  </div>
+                </div>
                 </div>
               </q-tab-panel>
               <q-tab-panel name="staked">
@@ -403,7 +436,7 @@ export default {
       },
       transactionId: null,
       transactionError: '',
-      spinnervisible: false,
+      spinnerVisible: false,
       isPwd: true,
       isPrivateKeyEncrypted: false,
       account: null,
@@ -423,32 +456,7 @@ export default {
     )
   },
   async created () {
-    if (this.$store.state.settings.globalSettings.stakingPeriod) {
-      this.period_duration = parseFloat(this.$store.state.settings.globalSettings.stakingPeriod)
-    }
-    stakingContract = this.$store.state.settings.network === 'mainnet' ? 'vertostaking' : 'vltxstakenow'
-    volentixContract = this.$store.state.settings.network === 'mainnet' ? 'volentixgsys' : 'volentixtsys'
-    this.tableData = this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type === 'vtx').map(o => {
-      o.label = o.name
-      o.value = o.name
-      return o
-    })
-    let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
-    // console.log('---this.wallet---', this.wallet)
-
-    if (this.wallet) {
-      this.currentAccount = this.wallet
-      this.params = {
-        chainID: this.currentAccount.chain,
-        tokenID: this.currentAccount.type,
-        accountName: this.currentAccount.name
-      }
-    } else {
-      this.params = this.$store.state.currentwallet.params
-      this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
-        w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
-      )
-    }
+    this.initAccount()
     /*
     this.params.accountName = 'berthonytha1'
     this.currentAccount.key = 'EOS8UrDjUkeVxfUzUS1hZQtmaGkdWbGLExyzKF6569kRMR5TzSnQT'
@@ -462,6 +470,34 @@ export default {
   async mounted () {
   },
   methods: {
+    initAccount () {
+      if (this.$store.state.settings.globalSettings.stakingPeriod) {
+        this.period_duration = parseFloat(this.$store.state.settings.globalSettings.stakingPeriod)
+      }
+      stakingContract = this.$store.state.settings.network === 'mainnet' ? 'vertostaking' : 'vltxstakenow'
+      volentixContract = this.$store.state.settings.network === 'mainnet' ? 'volentixgsys' : 'volentixtsys'
+      this.tableData = this.$store.state.wallets.tokens.filter(o => o.chain === 'eos' && o.type === 'vtx').map(o => {
+        o.label = o.name
+        o.value = o.name
+        return o
+      })
+      let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
+      // console.log('---this.wallet---', this.wallet)
+
+      if (this.wallet) {
+        this.currentAccount = this.wallet
+        this.params = {
+          chainID: this.currentAccount.chain,
+          tokenID: this.currentAccount.type,
+          accountName: this.currentAccount.name
+        }
+      } else {
+        this.params = this.$store.state.currentwallet.params
+        this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+          w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
+        )
+      }
+    },
     async initData () {
       this.currentAccount.amount = (await eos.getCurrencyBalanceP(this.currentAccount.name, volentixContract, 'VTX')).toString().split(' ')[0]
       this.currentAccount.amount = this.currentAccount.amount ? this.currentAccount.amount : 0
@@ -605,7 +641,7 @@ export default {
     getPeriod (reward, amount, period) {
       let stake_per = (1 + period / 10.0) / 100
       let checkReward = (Math.round(amount * stake_per * 100) / 100) * period
-      console.log(checkReward, reward, period)
+
       return (checkReward === reward) ? period : false
     },
     checkAmount () {
@@ -651,6 +687,7 @@ export default {
         this.SuccessMessage = 'Congratulations, your transactions have been recorded on the blockchain. You can check it on this <a href="https://bloks.io/transaction/' + this.transactionId + '" target="_blank">block explorer</a>'
         this.step = 4
         this.initData()
+        this.spinnerVisible = true
         initWallet(this.currentAccount.name)
       } catch (error) {
         this.step = 4
@@ -673,10 +710,11 @@ export default {
 
         this.displayError(error, true, actions)
       }
+      this.spinnerVisible = false
     },
     displayError (error, freeCpu = false, actions, message = null) {
       if (error.message.includes('stake amount is too low')) {
-        this.transactionError = true
+        this.transactionError = false
         this.ErrorMessage = 'Your VTX stake amount is too low, you need at least 1000 VTX to stake.'
       } else if (error.message.includes('maximum billable CPU time')) {
         if (freeCpu) {
@@ -942,7 +980,7 @@ export default {
                 font-weight: $regular;
                 strong{
                   font-weight: $bold;
-                  color: #2A2A2A;
+
                 }
               }
               .border{
@@ -1138,7 +1176,7 @@ export default {
           }
             .--subtitle{
               font-size: 17px;
-              color: #000;
+
               font-family: $Titillium;
               font-weight: $regular;
               line-height: 20px;
