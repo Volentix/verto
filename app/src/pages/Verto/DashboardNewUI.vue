@@ -20,7 +20,7 @@
                 <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
                   <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
                 </q-breadcrumbs>
-                <NftsExplorer v-if="false && $store.state.settings.network != 'mainnet'" />
+               <!-- <NftsExplorer v-if=" && $store.state.settings.network != 'mainnet'" /> -->
                 <AssetsExplorer v-show="!assetSelected" @setAsset="setAsset" />
                 <SingleToken  :assetData="assetSelected" class="col-md-12" v-if="assetSelected" />
                 <div class="col col-md-12 full-height max-height2" v-else-if="$store.state.settings.network == 'mainnet' && false" >
@@ -64,9 +64,10 @@
         <!-- <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" /> -->
         <div class="wallets-container" style="height: 100%">
             <profile-header class="marg" version="type2222" />
+             <AssetsExplorer v-show="!assetSelected" @setAsset="setAsset" v-if="false" />
             <wallets :showWallets="true" :isWalletsPage="false" :isWalletDetail="false" />
         </div>
-        <div class="cards-wrapper--content q-pl-md q-pr-md">
+        <div class="cards-wrapper--content q-pl-md q-pr-md" v-if="$store.state.currentwallet.wallet.empty" >
             <!-- <startNodeSection :banner="1" /> -->
             <!-- <hr style="height:0px;opacity:0" /> -->
             <!-- <ExchangeSection3 data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" v-if="true && $store.state.settings.network == 'mainnet'"  /> -->
@@ -159,13 +160,13 @@ import 'intro.js/minified/introjs.min.css'
 import {
   osName
 } from 'mobile-device-detect'
-import NftsExplorer from '../../components/Verto/Token/NftsExplorer.vue'
+// import NftsExplorer from '../../components/Verto/Token/NftsExplorer.vue'
 export default {
   components: {
     // ConvertAnyCoin,
     // QScrollArea,
     MultiTransaction,
-    NftsExplorer,
+    // NftsExplorer,
     ProfileHeader,
     Wallets,
     // AppsSection,

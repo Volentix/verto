@@ -200,6 +200,7 @@
                               val="private"
                               label=""
                               color="red"
+
                             />
                           </q-item-section>
 
@@ -1067,7 +1068,10 @@ export default {
     },
     getPublicKeyFromPrivate () {
       this.publicKey = false
-      if (eos.isPrivKeyValid(this.privateKey.key)) {
+
+      if (!this.privateKey.key) return
+
+      if (eos.isPrivKeyValid(this.privateKey.key.trim())) {
         this.publicKey = ecc.privateToPublic(this.privateKey.key)
       } else {
         this.publicKey = null
@@ -1416,6 +1420,9 @@ export default {
 }
 /deep/ .q-menu.q-position-engine.scroll {
     height:220px
+}
+ .dark-theme /deep/ svg {
+  color:white  !important
 }
 .chain-tools-wrapper {
   &--list {

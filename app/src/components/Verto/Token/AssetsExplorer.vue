@@ -27,11 +27,11 @@
     </div>
     <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
       <div v-show="!allAssets">
-        <div class="sub-top row">
-          <div class="subt-text col-md-7" >
+        <div class="sub-top row gt-sm">
+          <div class="subt-text col-md-7 col-12" >
             <p class="q-ma-none text-bold text-body1"><q-icon name="img:statics/icons/favicon-96x96.png" style="font-size: 24px" class="q-mr-sm"/>Trade & Earn VTX  </p>
           </div>
-          <div class="see-text col">
+          <div class="see-text col col-12 " >
           <q-input :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol"  >
             <template v-slot:append>
               <q-icon v-if="tokenSearchVal !== ''" name="close" @click="tokenSearchVal = ''" class="cursor-pointer" />
@@ -41,10 +41,10 @@
           </div>
         </div>
         <div class="row q-col-gutter-md q-pr-lg" v-show="!tokenSearchVal.length">
-          <div class="col-md-6">
+          <div class="col-md-6 col-12">
             <ExchangeSection data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" />
           </div>
-          <div class="col-md-6">
+          <div class="col-md-6  col-12">
           <makeVTXSection data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"   />
           </div>
           <PriceChart
@@ -57,8 +57,8 @@
       </div>
       <div class="q-pt-md" v-show="filterTokens(item).length || tokenSearchVal.length" v-for="(item, index) in assetsOptions.filter(o =>  !allAssets || o.title == allAssets.title)" :key="index+uniqueKey">
         <div class="sub-top sub-top-chart">
-          <div class="subt-text" v-if="!allAssets" >
-            <p class="q-ma-none text-bold text-body1">{{item.title}} <span class="text-body2">| {{item.subtitle}}</span></p>
+          <div class="subt-text " v-if="!allAssets" >
+            <p class="q-ma-none text-bold text-body1">{{item.title}} <span class="text-body2 gt-sm">| {{item.subtitle}}</span></p>
           </div>
           <div class="subt-text" v-else>
             <p>
@@ -88,7 +88,7 @@
           </div>
 
         </div>
-        <div class="row q-col-gutter-md q-pr-lg">
+        <div class="row q-col-gutter-md" :class="{'q-pr-lg': $q.screen.width > 500}">
 
           <div class=" col-md-3 " v-show="!allAssets || item.id == 'investments' || listViewMode == 'card' " @click="showTokenPage(asset)" v-for="(asset, i) in filterTokens(item).slice(0,(!allAssets ? ($q.screen.height > 1100 ? 8 : 4) : allAssets.length))" :key="i">
             <div class="main cursor-pointer">
