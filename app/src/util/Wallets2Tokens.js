@@ -12,6 +12,32 @@ class Wallets2Tokens {
     this.tableDataCache = []
     this.tableData = []
 
+    let evms = [{
+      name: 'Binance Smart Chain',
+      chain: 'bsc',
+      network_id: 56
+    }, {
+      name: 'Polygon',
+      chain: 'plg',
+      network_id: 137
+    }, {
+      name: 'Avalanche C-Chain',
+      chain: 'acc',
+      network_id: 43114
+    }, {
+      name: 'Fantom',
+      chain: 'ftm',
+      network_id: 250
+    }, {
+      name: 'Moonbeam Polkadot',
+      chain: 'mbp',
+      network_id: 1284
+    }, {
+      name: 'Moonriver Kusama',
+      chain: 'mrk',
+      network_id: 1285
+    }]
+
     // store.state.wallets.portfolioTotal = 0
     /*
     store.state.currentwallet.config.keys.push({
@@ -293,8 +319,46 @@ class Wallets2Tokens {
 
           this.updateWallet()
         } else if (wallet.type === 'eth') {
-          // Getting balance using zapper
+          evms.map(e => {
+            axios
+              .get(
+                process.env[store.state.settings.network].CACHE +
+                  'https://api.covalenthq.com/v1/' + e.network_id + '/address/' +
+                  '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' + // wallet.key +
+                  '/balances_v2/'
+              )
+              .then(res => {
+                console.log('res', res)
+                res.data.data.items.map(t => {
+                  let amount = (t.balance / 10 ** t.contract_decimals) * t.quote_rate
 
+                  self.tableData.push({
+                    selected: false,
+                    disabled: false,
+                    type: t.contract_ticker_symbol
+                      ? t.contract_ticker_symbol.toLowerCase()
+                      : '',
+                    name: t.contract_name,
+                    tokenPrice: t.quote_rate,
+                    key: wallet.key.toLowerCase(),
+                    privateKey: wallet.privateKey,
+                    amount: t.balance / 10 ** t.contract_decimals,
+                    usd: amount,
+                    contract: t.contract_address,
+                    chain: e.chain,
+                    to:
+                      '/verto/wallets/' + e.chain + '/' +
+                      t.contract_ticker_symbol.toLowerCase() +
+                      '/' +
+                      wallet.key,
+                    icon: t.logo_url
+                  })
+                })
+                this.updateWallet()
+              })
+          })
+
+          // Getting balance using zapper
           axios
             .get(
               process.env[store.state.settings.network].CACHE +
