@@ -323,15 +323,13 @@ class Wallets2Tokens {
             axios
               .get(
                 process.env[store.state.settings.network].CACHE +
-                  'https://api.covalenthq.com/v1/' + e.network_id + '/address/' +
-                  '0x3aA6B43DC5e1fAAeAae6347ad01d0713Cf64A929' + // wallet.key +
-                  '/balances_v2/'
+                  'https://api.covalenthq.com/v1/' + e.network_id +
+                  '/address/' + wallet.key + '/balances_v2/'
               )
               .then(res => {
                 console.log('res', res)
                 res.data.data.items.map(t => {
                   let amount = (t.balance / 10 ** t.contract_decimals) * t.quote_rate
-
                   self.tableData.push({
                     selected: false,
                     disabled: false,
