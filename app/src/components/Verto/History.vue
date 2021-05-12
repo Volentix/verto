@@ -81,7 +81,7 @@
         <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7"> {{day.friendlyDay}} </div>
         <q-list bordered dark separator class="list-wrapper"  v-for="(transaction, indexTx) in day.data" :key="indexTx">
 
-          <q-item v-if="transaction.direction == 'outgoing'" clickable class="column history-item-wrapper send-component" >
+          <q-item v-if="transaction.direction == 'outgoing'" clickable class="column history-item-wrapper send-component" :class="{'dark-bg': $store.state.settings.lightMode === 'true'}">
             <q-item-section class="history-item flex justify-between">
               <div class="row" :class="[isMobile ? 'items-start':'items-center']">
                 <div class="col col-4">
@@ -151,7 +151,7 @@
                   <div class="text-bold text-grey">Memo</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
-                      <span class="ellipsis">{{transaction.memo}}</span>
+                      <span class="">{{transaction.memo}}</span>
                     </span>
                   </div>
                 </div>
@@ -363,7 +363,7 @@
                   <div class="text-bold text-grey">Memo</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
-                      <span class="ellipsis">{{transaction.memo}}</span>
+                      <span class="">{{transaction.memo}}</span>
                     </span>
                   </div>
                 </div>
@@ -756,6 +756,21 @@ export default {
 
 .actors.q-pl-sm.column {
     width: 110px;
+}
+ .dark-bg:hover  /deep/ *:after ,  .dark-bg:hover  /deep/  *:before{
+      background: #04111F !important ;
+      opacity: 1 !important;
+}
+.dark-theme /deep/ .q-hoverable:hover > .q-focus-helper:before {
+    opacity: 1 !important
+}
+.dark-theme /deep/ .q-hoverable:hover > .q-focus-helper:after {
+    opacity: 0 !important
+}
+.dark-theme .history-item-wrapper:hover {
+
+    background: initial !important
+
 }
   .title-date {
     text-transform: capitalize;

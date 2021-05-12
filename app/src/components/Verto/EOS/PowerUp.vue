@@ -47,7 +47,7 @@
 
 </div>
 <div class="col-md-4">
-  <q-list>
+  <q-list :dark="$store.state.settings.lightMode === 'true'">
       <q-item>
         <q-item-section>
           <q-item-label>CPU Fee</q-item-label>

@@ -30,7 +30,8 @@
       </div>
       <div v-else class="mobile-version">
         <profile-header version="type2" :fetchCurrentWalletFromState="true" />
-        <stake-stepper />
+        <VTXStakeStepper v-if="$store.state.currentwallet.params.tokenID == 'vtx'" />
+        <EosStakeStepper v-else-if="$store.state.currentwallet.params.tokenID == 'eos'"/>
       </div>
     </div>
   </q-page>
@@ -38,7 +39,7 @@
 
 <script>
 import EosStakeStepper from '../../components/Verto/EOSStakeStepper'
-import StakeStepper from '../../components/Verto/StakeStepper'
+// import StakeStepper from '../../components/Verto/StakeStepper'
 import VTXStakeStepper from '../../components/Verto/Testnet/VTXStakeStepper'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import { osName } from 'mobile-device-detect'
@@ -47,7 +48,7 @@ import { QScrollArea } from 'quasar'
 
 export default {
   components: {
-    StakeStepper,
+  //  StakeStepper,
     ProfileHeader,
     Wallets,
     EosStakeStepper,
