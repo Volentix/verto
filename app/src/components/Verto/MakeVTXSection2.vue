@@ -550,13 +550,13 @@ export default {
         background-position: -10px -10px !important;
       }
       @media screen and (max-width: 768px) {
-        background-size: calc(100% + 40px) auto !important;
-        background-position: -100px bottom !important;
-        background-repeat-x: repeat !important;
+        background-size: auto 100% !important;
+        background-position: calc(100% + 75px) -2px !important;
+        background-repeat-x: no-repeat !important;
         &.dark{
-          background-size: calc(100% + 40px) auto !important;
-          background-position: -100px bottom !important;
-          background-repeat-x: repeat !important;
+          background-size: auto 100% !important;
+          background-position: calc(100% + 75px) -2px !important;
+          background-repeat-x: no-repeat !important;
         }
       }
       &--head-title{
