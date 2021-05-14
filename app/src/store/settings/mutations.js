@@ -38,3 +38,6 @@ export const setDex = (state, data) => {
   if (data.fromAmount) { state.dexData.fromAmount = data.fromAmount }
   if (state.selectedDex !== data.dex) { state.selectedDex = data.dex }
 }
+export const updateState = (state, payload) => {
+  state[payload.key] = payload.value
+}
