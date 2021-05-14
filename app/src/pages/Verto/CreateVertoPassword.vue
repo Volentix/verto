@@ -24,7 +24,7 @@
         <!-- <h1>Discover<br>the crypto space</h1> -->
         <div class="row max-width">
 
-          <div v-if="step === 1" class="standard-content" :class="[$route.params.showConfigStep ? 'col-md-7' : 'col-md-12']">
+          <div v-if="step === 1" class="standard-content" :class="[$route.params.showConfigStep || !hasConfig ? 'col-md-7' : 'col-md-12']">
 
             <h2 class="standard-content--title text-white">
               Create your Verto Password
@@ -149,7 +149,7 @@
           </div>
           <div
             class="col-md-4 standard-content"
-            v-if="$route.params.showConfigStep"
+            v-if="$route.params.showConfigStep || !hasConfig "
             :class="{ 'config-restore': $q.screen.gt.sm }"
           >
             <h2 class="text-h6 text-white q-pb-md">
