@@ -346,7 +346,7 @@ class Lib {
         }
         /*
 
-        Unsolved mistery
+        Unsolved mystery
 
         let test = await api.query.system.account(key)
         // let account = await api.query.system.account(key)
