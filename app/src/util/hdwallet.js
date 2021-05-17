@@ -15,11 +15,19 @@ class HD {
     },
     {
       'value': 'eth',
-      'label': 'Ethereum'
+      'label': 'Ethereum Chain'
+    },
+    {
+      'value': 'plg',
+      'label': 'Polygon Chain'
     },
     {
       'value': 'bnb',
-      'label': 'Binance Coin'
+      'label': 'Binance Chain'
+    },
+    {
+      'value': 'bsc',
+      'label': 'Binance Smart Chain'
     },
     {
       'value': 'ltc',
@@ -31,7 +39,15 @@ class HD {
     },
     {
       'value': 'avax',
-      'label': 'Avalanche'
+      'label': 'Avalanche X-Chain'
+    },
+    {
+      'value': 'acc',
+      'label': 'Avalanche C-Chain'
+    },
+    {
+      'value': 'ftm',
+      'label': 'Fantom Chain'
     },
     {
       'value': 'dot',
