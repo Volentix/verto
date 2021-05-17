@@ -66,8 +66,6 @@
                 :dataType="'price'"
                 class="q-mt-md"
                 :data="chartData"
-                @changePrice="changePrice"
-
                 v-else
               />
               <PriceChart :dataType="'volume'" v-if="false" />
@@ -856,9 +854,6 @@ export default {
     this.setPaymentOptions()
   },
   methods: {
-    changePrice () {
-
-    },
     getEchangeData () {
       const self = this
       let exchange = {
@@ -1026,7 +1021,6 @@ export default {
   data () {
     return {
       tab: 'send',
-      histricalPrice: null,
       asset: {},
       assetBalance: null,
       chartData: false,
