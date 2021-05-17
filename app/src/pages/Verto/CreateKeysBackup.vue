@@ -98,7 +98,7 @@ export default {
       },
       {
         'value': 'bnb',
-        'label': 'Binance Coin'
+        'label': 'Binance Chain'
       },
       {
         'value': 'ltc',

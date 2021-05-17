@@ -12,32 +12,6 @@ class Wallets2Tokens {
     this.tableDataCache = []
     this.tableData = []
 
-    let evms = [{
-      name: 'Binance Smart Chain',
-      chain: 'bsc',
-      network_id: 56
-    }, {
-      name: 'Polygon',
-      chain: 'plg',
-      network_id: 137
-    }, {
-      name: 'Avalanche C-Chain',
-      chain: 'acc',
-      network_id: 43114
-    }, {
-      name: 'Fantom',
-      chain: 'ftm',
-      network_id: 250
-    }, {
-      name: 'Moonbeam Polkadot',
-      chain: 'mbp',
-      network_id: 1284
-    }, {
-      name: 'Moonriver Kusama',
-      chain: 'mrk',
-      network_id: 1285
-    }]
-
     // store.state.wallets.portfolioTotal = 0
     /*
     store.state.currentwallet.config.keys.push({
@@ -320,7 +294,9 @@ class Wallets2Tokens {
 
           this.updateWallet()
         } else if (wallet.type === 'eth') {
-          evms.map(e => {
+          Lib.evms.filter(m =>
+            m.network_id !== 1 // Until eth is integrated into covalent api
+          ).map(e => {
             axios
               .get(
                 process.env[store.state.settings.network].CACHE +
