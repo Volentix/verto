@@ -10,7 +10,7 @@
       <div class="video-page-wrapper q-pt-md q-pb-md">
         <div class="standard-content" style="padding-bottom: 0px">
           <h2 class="landing--title text-white">
-            <span class="text-white">Multi-Currency wallet manager</span>
+            <span class="text-white">Multi-chain wallet manager</span>
           </h2>
           <div class="standard-content--body full-width">
               <div class="standard-content--body__form">
@@ -89,7 +89,10 @@ export default {
     this.hasConfig = !!await configManager.hasVertoConfig()
     if (!this.hasConfig) {
       this.$router.push({
-        name: 'create-password'
+        name: 'create-password',
+        params: {
+          showConfigStep: true
+        }
       })
     }
     this.$q.notify.registerType('my-notif', {
@@ -126,6 +129,14 @@ export default {
     this.$store.dispatch('tokens/getTokenMarketData', 'volentix-vtx')
   },
   methods: {
+    /*
+    getTitle () {
+      let messages = {
+        default: 'Multi-chain wallet manager',
+        messages: ['Login to get access', '']
+      }
+    },
+    */
     checkPassword () {
       if (this.password.length > 1) {
         this.showSubmit = true

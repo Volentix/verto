@@ -26,11 +26,11 @@
 
                     <div class="text-black">
                       <q-list padding :dark="$store.state.settings.lightMode === 'true'">
-                        <q-item-label header
-                          >We need a public key for that account
+                        <q-item-label  v-if="$route.params.action == 'create'" header
+                          >The account will be associated with a private key
                         </q-item-label>
 
-                        <q-item tag="label" v-ripple @click="publicKey = currentToken.value ; privateKey.key =  currentToken.privateKey ">
+                        <q-item v-if="tokensOption.length" tag="label" v-ripple @click="publicKey = currentToken.value ; privateKey.key =  currentToken.privateKey ">
                           <q-item-section side top>
                             <q-radio
                               v-model="source"
@@ -50,7 +50,7 @@
                             <q-select
                               @input="publicKey = currentToken.value ; privateKey.key =  currentToken.privateKey "
 
-                              v-if="source == 'accounts'"
+                              v-if="source == 'accounts' && tokensOption.length"
                               :dark="$store.state.settings.lightMode === 'true'"
                               :light="
                                 $store.state.settings.lightMode === 'false'
@@ -200,6 +200,7 @@
                               val="private"
                               label=""
                               color="red"
+
                             />
                           </q-item-section>
 
@@ -380,6 +381,7 @@
                       </p>
                     </div>
                     <div class="text-black text-body1" v-if="tab == 'import'">
+
                       <p
                         v-if="accountsInVerto.length && !accountNames.length"
                         class="q-pt-md"
@@ -400,6 +402,7 @@
                         v-if="accountNames.length"
                       >
                         <ul>
+
                           <li><span>Choose EOS account</span></li>
                         </ul>
                       </div>
@@ -421,7 +424,7 @@
                         v-model="accountName"
                         :options="accountNames"
                         :error="accountNameError"
-                        error-message="This account name is already in your wallet, upgrade the other one instead if you have not done so yet."
+                        error-message="This account  is already in your wallet"
                         :loading="!accountNames"
                         @input="validAccountName"
                       />
@@ -435,6 +438,7 @@
                         outlined
                         label="Enter Verto Password"
                         debounce="500"
+                        :class="{'q-pt-sm':accountNameError}"
                         :error="vertoPasswordWrong"
                         error-message="The password is incorrect"
                         @input="checkVertoPassword"
@@ -465,7 +469,7 @@
                         color="deep-purple-14"
                         class="--next-btn"
                         rounded
-                        :disable="!vertoPassword || !vertoPassordValid || !accountName"
+                        :disable="!vertoPassword || !vertoPassordValid || !accountName || accountNameError"
                         label="Import new account"
                       />
                       <q-btn
@@ -888,6 +892,10 @@ export default {
         })
       })
 
+    if (!self.tokensOption.length) {
+      this.source = 'private'
+    }
+
     this.tableData
       .filter(
         (o) =>
@@ -1060,7 +1068,10 @@ export default {
     },
     getPublicKeyFromPrivate () {
       this.publicKey = false
-      if (eos.isPrivKeyValid(this.privateKey.key)) {
+
+      if (!this.privateKey.key) return
+
+      if (eos.isPrivKeyValid(this.privateKey.key.trim())) {
         this.publicKey = ecc.privateToPublic(this.privateKey.key)
       } else {
         this.publicKey = null
@@ -1259,10 +1270,10 @@ export default {
           w.type = 'eos'
         })
 
-        this.$configManager.updateCurrentWallet(this.currentAccount)
-        this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
+        // this.$configManager.updateCurrentWallet(this.currentAccount)
+        await this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
       } else {
-        this.$configManager.saveWalletAndKey(this.currentAccount.name, this.vertoPassword, this.privateKeyPassword, this.currentAccount.key, this.currentAccount.privateKey, 'eos', origin)
+        await this.$configManager.saveWalletAndKey(this.currentAccount.name, this.vertoPassword, this.privateKeyPassword, this.currentAccount.key, this.currentAccount.privateKey, 'eos', origin)
       }
 
       // reset form variables
@@ -1409,6 +1420,9 @@ export default {
 }
 /deep/ .q-menu.q-position-engine.scroll {
     height:220px
+}
+ .dark-theme /deep/ svg {
+  color:white  !important
 }
 .chain-tools-wrapper {
   &--list {

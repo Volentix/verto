@@ -223,7 +223,7 @@ export default {
     // console.log('this.$store.state.wallets.portfolioTotal', this.$store.state.wallets.portfolioTotal)
 
     this.$bus.$on('selectedChain', () => {
-      this.setChainData()
+      // this.setChainData()
     })
   },
   computed: {
