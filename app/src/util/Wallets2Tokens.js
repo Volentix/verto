@@ -294,8 +294,46 @@ class Wallets2Tokens {
 
           this.updateWallet()
         } else if (wallet.type === 'eth') {
-          // Getting balance using zapper
+          Lib.evms.filter(m =>
+            m.network_id !== 1 // Until eth is integrated into covalent api
+          ).map(e => {
+            axios
+              .get(
+                process.env[store.state.settings.network].CACHE +
+                  'https://api.covalenthq.com/v1/' + e.network_id +
+                  '/address/' + wallet.key + '/balances_v2/'
+              )
+              .then(res => {
+                console.log('res', res)
+                res.data.data.items.map(t => {
+                  let amount = (t.balance / 10 ** t.contract_decimals) * t.quote_rate
+                  self.tableData.push({
+                    selected: false,
+                    disabled: false,
+                    type: t.contract_ticker_symbol
+                      ? t.contract_ticker_symbol.toLowerCase()
+                      : '',
+                    name: t.contract_name,
+                    tokenPrice: t.quote_rate,
+                    key: wallet.key.toLowerCase(),
+                    privateKey: wallet.privateKey,
+                    amount: t.balance / 10 ** t.contract_decimals,
+                    usd: amount,
+                    contract: t.contract_address,
+                    chain: e.chain,
+                    to:
+                      '/verto/wallets/' + e.chain + '/' +
+                      t.contract_ticker_symbol.toLowerCase() +
+                      '/' +
+                      wallet.key,
+                    icon: t.logo_url
+                  })
+                })
+                this.updateWallet()
+              })
+          })
 
+          // Getting balance using zapper
           axios
             .get(
               process.env[store.state.settings.network].CACHE +

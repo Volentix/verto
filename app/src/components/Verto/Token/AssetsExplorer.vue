@@ -295,7 +295,7 @@ export default {
         {
           title: 'Active assets',
           id: 'assets',
-          subtitle: 'Send, swap & invest',
+          subtitle: 'Send, Swap & Invest',
           data: []
         },
         {
