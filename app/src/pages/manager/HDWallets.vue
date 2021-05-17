@@ -107,7 +107,7 @@ export default {
         { 'value': 'eos', 'label': 'EOS' },
         { 'value': 'btc', 'label': 'Bitcoin' },
         { 'value': 'eth', 'label': 'Ethereum' },
-        { 'value': 'bnb', 'label': 'Binance Coin' },
+        { 'value': 'bnb', 'label': 'Binance Chain' },
         { 'value': 'ltc', 'label': 'Litecoin' },
         { 'value': 'dash', 'label': 'DASH' },
         { 'value': 'xrp', 'label': 'Ripple' },

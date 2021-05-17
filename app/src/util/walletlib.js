@@ -10,9 +10,51 @@ import {
 import abiArray from '@/statics/abi/erc20.json'
 
 class Lib {
-  async getRawETHTransaction (token, from, to, value, key, contract, origin = 'mnemonic') {
+  constructor (evms) {
+    this.evms = [{
+      name: 'Ethereum Chain',
+      chain: 'eth',
+      provider: 'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63',
+      explorer: 'https://etherscan.io/tx/',
+      network_id: 1
+    }, {
+      name: 'Binance Smart Chain',
+      chain: 'bsc',
+      provider: 'https://bsc-dataseed1.binance.org:443',
+      explorer: 'https://bscscan.com/tx/',
+      network_id: 56
+    }, {
+      name: 'Polygon Chain',
+      chain: 'plg',
+      provider: 'https://rpc-mainnet.maticvigil.com/v1/08e234538a11a966248fd358b3b135c4aeb6924b',
+      explorer: 'https://explorer-mainnet.maticvigil.com/tx/',
+      network_id: 137
+    }, {
+      name: 'Avalanche C-Chain',
+      chain: 'acc',
+      provider: 'https://api.avax.network/ext/bc/C/rpc',
+      explorer: 'https://cchain.explorer.avax.network/tx/',
+      network_id: 43114
+    }, {
+      name: 'Fantom Chain',
+      chain: 'ftm',
+      provider: 'https://rpcapi.fantom.network/',
+      explorer: 'https://ftmscan.com/tx/',
+      network_id: 250
+    // }, { // Commented until they go live
+    //   name: 'Moonbeam Polkadot',
+    //   chain: 'mbp',
+    //   network_id: 1284
+    // }, {
+    //   name: 'Moonriver Kusama',
+    //   chain: 'mrk',
+    //   network_id: 1285
+    }]
+  }
+
+  async getRawETHTransaction (token, from, to, value, key, contract, origin = 'mnemonic', evm = 'eth') {
     const Web3 = require('web3')
-    let localWeb3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
+    let localWeb3 = new Web3(new Web3.providers.HttpProvider(this.evms[evm].provider))
     if (origin === 'metamask' && window.web3 && window.web3.currentProvider.isMetaMask) {
       localWeb3 = new Web3(window.web3.currentProvider)
     }
@@ -758,12 +800,24 @@ class Lib {
           return stringAmount + ' ' + token.toUpperCase()
         }
       },
-      async eth (token, from, to, value, info, key, contract) {
+      async bsc (token, from, to, value, info, key, contract, evm = 'bsc') {
+        await this.eth(token, from, to, value, info, key, contract, evm)
+      },
+      async plg (token, from, to, value, info, key, contract, evm = 'plg') {
+        await this.eth(token, from, to, value, info, key, contract, evm)
+      },
+      async acc (token, from, to, value, info, key, contract, evm = 'acc') {
+        await this.eth(token, from, to, value, info, key, contract, evm)
+      },
+      async ftm (token, from, to, value, info, key, contract, evm = 'ftm') {
+        await this.eth(token, from, to, value, info, key, contract, evm)
+      },
+      async eth (token, from, to, value, info, key, contract, evm = 'eth') {
         // console.log('(token, from, to, value, gas, key, contract, info)', token, from, to, value, info, key, contract)
 
         const Web3 = require('web3')
         const EthereumTx = require('ethereumjs-tx').Transaction
-        const web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
+        const web3 = new Web3(new Web3.providers.HttpProvider(this.evms[evm].provider))
 
         let nonce = await web3.eth.getTransactionCount(from)
 
@@ -862,7 +916,7 @@ class Lib {
         }
 
         function sendSingleTransaction (serializedTransaction) {
-          let infuraEndpoint = 'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'
+          let infuraEndpoint = this.evms[evm].provider
 
           let data = createParams('eth_sendRawTransaction', serializedTransaction)
 
@@ -883,7 +937,7 @@ class Lib {
               let hash = response.data.result
 
               resolve({
-                message: process.env[store.state.settings.network].ETH_TRANSACTION_EXPLORER + hash,
+                message: this.evms[evm].explorer + hash,
                 success: true,
                 transaction_id: hash,
                 status: 'pending'
