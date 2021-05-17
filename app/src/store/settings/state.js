@@ -8,6 +8,7 @@ export default {
     oneinch: [],
     defibox: []
   },
+  backupConfig: false,
   defiMenu: 'swap',
   selectedDex: 'defibox',
   dexData: {

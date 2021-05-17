@@ -202,16 +202,16 @@
 </template>
 
 <script>
-import { version } from '../../../package.json'
+// import { version } from '../../../package.json'
 
 import configManager from '@/util/ConfigManager'
 import Vue from 'vue'
 var SocialSharing = require('vue-social-sharing')
 Vue.use(SocialSharing)
 
-import { CruxPay } from '@cruxpay/js-sdk'
-import HD from '@/util/hdwallet'
-let cruxClient
+// import { CruxPay } from '@cruxpay/js-sdk'
+// import HD from '@/util/hdwallet'
+// let cruxClient
 
 export default {
   name: 'Profile',
@@ -229,7 +229,7 @@ export default {
     }
   },
   async mounted () {
-    let cruxKey = await HD.Wallet('crux')
+  /*  let cruxKey = await HD.Wallet('crux')
     this.version = version
     cruxClient = new CruxPay.CruxClient({
       walletClientName: 'verto',
@@ -241,6 +241,7 @@ export default {
     if (this.existingCruxID) {
       // console.log('existingCruxID', this.existingCruxID)
     }
+    */
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
