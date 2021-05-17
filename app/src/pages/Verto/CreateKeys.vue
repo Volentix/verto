@@ -36,11 +36,20 @@
                 <br>
                 <p class="diclaimer text-white">
                     <strong class="perpleGlow">Disclaimer</strong>
+                    <span v-if="$store.state.settings.backupConfig">
+                      Download your new config. <br>
+                      It contains your old config accounts and your newly created accounts.
+                      Save your 24 words and your new config. If you restore your wallet without using this new config, it will not include the newly created accounts.
+                      <br>
+                      <q-btn @click="backupConfig" label="Click to Download" icon="file_download" class="q-mt-md" color="red" flat/>
+                    </span>
+                     <span v-else>
                     Your 24 words are very important! <br>
                     Keep them stored somewhere safe. <br>
                     The position of each word is critical and should be stored in the correct sequence.<br><br>
                     Anyone with access to these 24 words will be able to recover this Verto app and the private keys it is associated with,
                     so keep in a safe place that only you have access to.
+                    </span>
                 </p>
                 <p  class="q-py-sm text-bold" v-if="$store.state.settings.dexData.depositCoin && $store.state.settings.dexData.depositCoin"> Click go to exchange to swap {{$store.state.settings.dexData.fromAmount}}  {{$store.state.settings.dexData.depositCoin.value.toUpperCase()}} to {{$store.state.settings.dexData.destinationCoin.value.toUpperCase()}}</p>
                 <div class="standard-content--body__form">
@@ -146,6 +155,17 @@ export default {
   },
   computed: {},
   methods: {
+
+    async backupConfig () {
+      try {
+        await this.$configManager.backupConfig()
+        if (this.$q.platform.is.android) {
+          this.$q.notify({ color: 'positive', message: 'Config Saved' })
+        }
+      } catch (e) {
+        // TODO: Exception handling
+      }
+    },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({

@@ -329,16 +329,44 @@ class Lib {
         }
       },
       async dot (key, token) {
-        const { ApiPromise, WsProvider } = require('@polkadot/api')
+      /*  const { ApiPromise, WsProvider } = require('@polkadot/api')
         const provider = new WsProvider('wss://rpc.polkadot.io/')
         const api = await ApiPromise.create({ provider })
 
+        */
+
         // let balance = await substrate.query.balances.freeBalance("EGVQCe73TpFyAZx5uKfE1222XfkT3BSKozjgcqzLBnc5eYo")
         // balance.toNumber()
-        let { data: { free: amount } } = await api.query.system.account(key)
-        amount = amount / 10000000000
-        let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=polkadot&vs_currencies=usd')).data.polkadot.usd
+        //  let { data: { free: amount } } = await api.query.system.account(key)
+
+        let res = await axios.get(process.env[store.state.settings.network].CACHE + 'https://explorer-32.polkascan.io/api/v1/polkadot/account/' + key)
+        let amount = 0
+        if (res && res.data && res.data.data) {
+          amount = res.data.data.attributes.balance_free / 1000000000000
+        }
+        /*
+
+        Unsolved mystery
+
+        let test = await api.query.system.account(key)
+        // let account = await api.query.system.account(key)
+        const BN = require('bn.js')
+        let number = new BN(test.data.free.toBigInt(), 'u128')
+        let number2 = new BN(test.data.feeFrozen.toBigInt(), 'u128')
+        let number3 = new BN(test.data.reserved.toBigInt(), 'u128')
+        let number4 = new BN(test.data.miscFrozen.toBigInt(), 'u128')
+        console.log(number.toString(10), number2.toString(10), number3.toString(10), number4.toString(10))
+
+        api.query.system.account(key, ({ data: { free: currentFree }, nonce: currentNonce }) => {
+          console.log(`New balance  ${currentFree}, nonce ${currentNonce}`)
+        })
+         let amount = account.data.free.toNumber() / 10000000000
+
+        */
+
+        let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=polkadot&vs_currencies=usd')).data.polkadot.usd
         const usd = amount * tokenPrice
+
         return {
           amount,
           usd,
@@ -346,12 +374,21 @@ class Lib {
         }
       },
       async ksm (key, token) {
+        /*
         const { ApiPromise, WsProvider } = require('@polkadot/api')
         const provider = new WsProvider('wss://kusama-rpc.polkadot.io/')
         const api = await ApiPromise.create({ provider })
-
+        console.log(key, 'ksm key')
         let { data: { free: amount } } = await api.query.system.account(key)
         amount = amount / 1000000000000
+
+        */
+
+        let res = await axios.get('https://explorer-32.polkascan.io/api/v1/kusama/account/' + key)
+        let amount = 0
+        if (res && res.data && res.data.data) {
+          amount = res.data.data.attributes.balance_free / 1000000000000
+        }
         let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=kusama&vs_currencies=usd')).data.kusama.usd
         const usd = amount * tokenPrice
         return {

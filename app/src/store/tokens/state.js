@@ -2,6 +2,7 @@ export default function () {
   return {
     list: [],
     walletTokensData: [],
-    pending: []
+    pending: [],
+    historicalPrice: null
   }
 }

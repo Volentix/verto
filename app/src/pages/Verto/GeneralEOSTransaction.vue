@@ -9,9 +9,9 @@
     }"
   >
     <div :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }" style="height: 100vh;">
-      <div class="desktop-version full-height" v-if="screenSize > 1024">
+      <div class="full-height" :class="{'desktop-version': screenSize > 1024 }">
         <div class="row full-height">
-          <div class="col col-md-3">
+          <div class="col col-md-3"  v-if="screenSize > 1024">
             <div class="wallets-container" style="height: 100%">
               <profile-header
                 :isMobile="false"

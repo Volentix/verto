@@ -9,15 +9,15 @@
       style="height: 75vh"
       v-if="asset.type"
     >
-      <div class="row">
+      <div class="row" >
         <div class="left-area col-md-8">
           <div class="left q-ml-md q-py-md">
 
             <span class="z-max">
               <div class="row q-pb-xl flex items-center">
                 <h2>
+
                   <img :src="asset.icon" style="max-width: 40px" alt="image" />
-                  {{ asset.type.toUpperCase() }}
                   <img
                     v-if="false"
                     style="max-width: 0px"
@@ -30,7 +30,7 @@
                   />
                 </h2>
                 <h3 v-if="asset.rateUsd" class="q-pl-lg q-pr-md">
-                  ${{ formatNumber(asset.rateUsd, 0)
+                  ${{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice, 0) : formatNumber(asset.rateUsd, 0)
                   }}<span
                   class="g-txt"
                     style="
@@ -39,16 +39,16 @@
                       font-weight: 600;
                       letter-spacing: normal;
                     "
-                    >.{{ formatNumber(asset.rateUsd, 2).split(".")[1] }}</span
+                    >.{{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice, 2).split(".")[1] : formatNumber(asset.rateUsd, 2).split(".")[1] }}</span
                   >
-                  <span class="q-pl-md text-h6" :class="asset.color">{{
+                  <span class="q-pl-md text-h6" v-if="!$store.state.tokens.historicalPrice" :class="asset.color">{{
                     asset.change24hPercentage
                   }}</span>
                 </h3>
               </div>
             </span>
 
-            <div class="token-chart q-mt-lg">
+            <div class="token-chart q-mt-lg" @mouseleave="$store.commit('tokens/updateState', { key: 'historicalPrice', value: null })">
               <!--  <q-spinner-dots color="deep-purple-12" v-if="!chartData" /> -->
               <span class="text-caption" v-if="!chartData">
                 Loading historical price (1 month period)</span
@@ -66,6 +66,8 @@
                 :dataType="'price'"
                 class="q-mt-md"
                 :data="chartData"
+                @changePrice="changePrice"
+
                 v-else
               />
               <PriceChart :dataType="'volume'" v-if="false" />
@@ -315,7 +317,7 @@
                 <q-input
                   :dark="$store.state.settings.lightMode === 'true'"
                   bottom-slots
-                  :label="asset.type.toUpperCase() + ' amount to buy'"
+                  :label="asset.type.toUpperCase() + ' amount to '+tab"
                   class="col-12 q-px-md q-pt-md"
                   v-model="depositQuantity"
                 >
@@ -351,7 +353,7 @@
                   :dark="$store.state.settings.lightMode === 'true'"
                   separator
                   rounded
-                  label="Pay with"
+                  :label="tab == 'buy' ? 'Pay with' : ' You receive'"
                   outlined
                   class="select-input q-mt-md"
                   use-input
@@ -684,6 +686,7 @@
                   <h5 class="text-bold">
                     Profit/Loss
                     <span><i class="far fa-question-circle"></i></span>
+
                   </h5>
                   <p>-</p>
 
@@ -853,6 +856,9 @@ export default {
     this.setPaymentOptions()
   },
   methods: {
+    changePrice () {
+
+    },
     getEchangeData () {
       const self = this
       let exchange = {
@@ -901,7 +907,6 @@ export default {
       return transactionObject
     },
     async getHistoriclPrice (days = 30) {
-      this.intervalHistory = days
       let token = this.$store.state.tokens.list.find(
         (t) =>
           t.symbol === this.asset.type &&
@@ -923,7 +928,7 @@ export default {
         )
 
         this.chartData = response.data
-
+        this.intervalHistory = days
         if (response.data.prices && !this.asset.rateUsd) {
           this.asset.rateUsd =
             response.data.prices[response.data.prices.length - 1][1]
@@ -1021,6 +1026,7 @@ export default {
   data () {
     return {
       tab: 'send',
+      histricalPrice: null,
       asset: {},
       assetBalance: null,
       chartData: false,

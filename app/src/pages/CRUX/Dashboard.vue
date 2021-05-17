@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { CruxPay } from '@cruxpay/js-sdk'
+//import { CruxPay } from '@cruxpay/js-sdk'
 import HD from '@/util/hdwallet'
 let cruxClient
 
@@ -85,10 +85,10 @@ export default {
   async created () {
   },
   async mounted () {
-    let cruxKey = await HD.Wallet('crux')
+  /*  let cruxKey = await HD.Wallet('crux')
     // console.log('crux privateKey', cruxKey.privateKey, 'menonic', this.$store.state.currentwallet.config.mnemonic)
     Promise.all(cruxKey)
-
+   
     cruxClient = new CruxPay.CruxClient({
       walletClientName: 'verto'
       // privateKey: cruxKey.privateKey
@@ -107,6 +107,7 @@ export default {
       this.showMap = !!this.addressMap
       // console.log('addressMap', this.addressMap, 'show?', this.showMap)
     }
+    */
   },
   computed: {
   },

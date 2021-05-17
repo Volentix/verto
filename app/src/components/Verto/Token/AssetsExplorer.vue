@@ -27,11 +27,11 @@
     </div>
     <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
       <div v-show="!allAssets">
-        <div class="sub-top row">
-          <div class="subt-text col-md-7" >
+        <div class="sub-top row gt-sm">
+          <div class="subt-text col-md-7 col-12" >
             <p class="q-ma-none text-bold text-body1"><q-icon name="img:statics/icons/favicon-96x96.png" style="font-size: 24px" class="q-mr-sm"/>Trade & Earn VTX  </p>
           </div>
-          <div class="see-text col">
+          <div class="see-text col col-12 " >
           <q-input :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol"  >
             <template v-slot:append>
               <q-icon v-if="tokenSearchVal !== ''" name="close" @click="tokenSearchVal = ''" class="cursor-pointer" />
@@ -41,10 +41,10 @@
           </div>
         </div>
         <div class="row q-col-gutter-md q-pr-lg" v-show="!tokenSearchVal.length">
-          <div class="col-md-6">
+          <div class="col-md-6 col-12">
             <ExchangeSection data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" />
           </div>
-          <div class="col-md-6">
+          <div class="col-md-6  col-12">
           <makeVTXSection data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"   />
           </div>
           <PriceChart
@@ -57,8 +57,8 @@
       </div>
       <div class="q-pt-md" v-show="filterTokens(item).length || tokenSearchVal.length" v-for="(item, index) in assetsOptions.filter(o =>  !allAssets || o.title == allAssets.title)" :key="index+uniqueKey">
         <div class="sub-top sub-top-chart">
-          <div class="subt-text" v-if="!allAssets" >
-            <p class="q-ma-none text-bold text-body1">{{item.title}} <span class="text-body2">| {{item.subtitle}}</span></p>
+          <div class="subt-text " v-if="!allAssets" >
+            <p class="q-ma-none text-bold text-body1">{{item.title}} <span class="text-body2 gt-sm">| {{item.subtitle}}</span></p>
           </div>
           <div class="subt-text" v-else>
             <p>
@@ -88,7 +88,7 @@
           </div>
 
         </div>
-        <div class="row q-col-gutter-md q-pr-lg">
+        <div class="row q-col-gutter-md" :class="{'q-pr-lg': $q.screen.width > 500}">
 
           <div class=" col-md-3 " v-show="!allAssets || item.id == 'investments' || listViewMode == 'card' " @click="showTokenPage(asset)" v-for="(asset, i) in filterTokens(item).slice(0,(!allAssets ? ($q.screen.height > 1100 ? 8 : 4) : allAssets.length))" :key="i">
             <div class="main cursor-pointer">
@@ -433,7 +433,7 @@ export default {
   },
   computed: {
     allInvestments () {
-      return Object.keys(this.assetsOptions[1].data).reduce((all, chain) => this.assetsOptions[1].data[chain] && this.assetsOptions[1].data[chain].length ? all.concat(this.assetsOptions[1].data[chain]) : [], [])
+      return Object.keys(this.assetsOptions[1].data).reduce((all, chain) => this.assetsOptions[1].data[chain] && this.assetsOptions[1].data[chain].length ? all.concat(this.assetsOptions[1].data[chain].filter(o => this.$store.state.currentwallet.wallet.chain ? (chain === 'eos' && o.owner === this.$store.state.currentwallet.wallet.name) || (chain === 'eth' && o.owner === this.$store.state.currentwallet.wallet.name) : true)) : [], [])
     }
   },
   methods: {
@@ -499,7 +499,7 @@ export default {
     },
     getInvestedTokens (investments) {
       let assets = []
-
+      console.log(investments, 'investments eth')
       investments.forEach(t => {
         t.tokens.forEach(a => {
           let protocolData = this.platformOptions.find(o => o.label.toLowerCase() === t.protocolDisplay.toLowerCase())
@@ -598,7 +598,7 @@ export default {
         token.usd = parseFloat(token.usd)
 
         if (!isNaN(token.amount) && token.amount !== 0) {
-          if (this.assets.find(o => o.type === token.type && (token.chain !== 'eos' || o.contract === token.contract))) {
+          if (this.assets.find(o => o.type === token.type && o.chain === token.chain && (token.chain !== 'eos' || o.contract === token.contract))) {
             let index = this.assets.findIndex(o => o.type === token.type)
 
             this.assets[index].amount += token.amount
