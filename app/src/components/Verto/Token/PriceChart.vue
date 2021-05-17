@@ -2,6 +2,8 @@
 
 import { Line } from 'vue-chartjs'
 import Formatter from '@/mixins/Formatter'
+import store from '@/store'
+
 export default {
   extends: Line,
   props: ['dataType', 'data'],
@@ -20,13 +22,20 @@ export default {
       ]
     },
     options: {
+
       tooltips: {
         mode: 'index',
         intersect: false
       },
       hover: {
         mode: 'index',
-        intersect: false
+        intersect: false,
+        onHover: (e, item) => {
+          if (item.length) {
+            const data = item[0]._chart.config.data.datasets[0].data[item[0]._index]
+            store.commit('tokens/updateState', { key: 'historicalPrice', value: data })
+          }
+        }
       },
       responsive: true,
       maintainAspectRatio: false,
@@ -52,6 +61,9 @@ export default {
       }
     }
   }),
+  destroyed () {
+    store.commit('tokens/updateState', { key: 'historicalPrice', value: null })
+  },
   async mounted () {
     this.chartdata.labels = this.data.prices.map(o => o[0])
     if (this.dataType === 'price') {

@@ -598,7 +598,7 @@ export default {
         token.usd = parseFloat(token.usd)
 
         if (!isNaN(token.amount) && token.amount !== 0) {
-          if (this.assets.find(o => o.type === token.type && (token.chain !== 'eos' || o.contract === token.contract))) {
+          if (this.assets.find(o => o.type === token.type && o.chain === token.chain && (token.chain !== 'eos' || o.contract === token.contract))) {
             let index = this.assets.findIndex(o => o.type === token.type)
 
             this.assets[index].amount += token.amount
