@@ -98,6 +98,57 @@
           </div>
         </div>
       </div>
+      <div v-else class="mobile-version full-height">
+        <div class="row full-height">
+          <div class="col col-md-12">
+            <div
+              class="desktop-card-style apps-section history-card"
+              :class="{
+                'dark-theme': $store.state.settings.lightMode === 'true',
+              }"
+              style="height: 100%"
+            >
+              <div class="standard-content--body" style="height: 100%">
+                <div class="row">
+                  <div class="col-md-12">
+                    <PowerUp v-if="$route.params.action == 'powerup'" @setTxData="setTxData" />
+                    <BuySellEosRam @setTxData="setTxData" v-else />
+                    <p class="text-h6 text-bold" v-if="transactionObject && !decryptPrivateKey && !transactionLink">Click button below to process</p>
+                    <p class="text-red text-body2">{{ErrorMessage}}</p>
+                    <p class="text-green text-body2">{{SuccessMessage}}</p>
+                    <div v-if="decryptPrivateKey">
+                      <q-card-section :dark="$store.state.settings.lightMode === 'true'">
+                        <div class="text-uppercase">
+                          <q-item-section>
+                            <q-item-label>Enter your private key password to sign the transaction</q-item-label>
+                          </q-item-section>
+                          <div>
+                            <q-input dark v-model="privateKeyPassword" color="deep-purple-14" label="Private Key Password" debounce="500" :error="invalidPrivateKeyPassword" error-message="The password is incorrect" @input="checkPrivateKeyPassword" :type="isPwd ? 'password' : 'text'">
+                              <template v-slot:append>
+                                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+                              </template>
+                            </q-input>
+                          </div>
+                          <q-btn :disable="!privateKey.success" :loading="spinnervisible"  label="Submit" outline @click="process" />
+                        </div>
+                      </q-card-section>
+                    </div>
+                    <q-btn label="Process" :disable="!transactionObject" :loading="spinnervisible" @click="process()"  v-if="transactionObject && !decryptPrivateKey && !transactionLink" outline />
+                    <q-input v-if="transactionLink" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" readonly class="input-input" rounded outlined color="purple" v-model="transactionLink">
+                      <template v-slot:append>
+                      <div class="flex justify-end">
+                        <q-btn flat unelevated @click="copyToClipboard(transactionLink , 'Transaction link')" text-color="grey" round class="btn-copy" icon="o_file_copy" />
+                      </div>
+                      </template>
+                    </q-input>
+                    <a v-if="transactionLink" :href="transactionLink" target="_blank" class="text-body2 text-black"> More infos</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </q-page>
 </template>
