@@ -89,7 +89,10 @@ export default {
     this.hasConfig = !!await configManager.hasVertoConfig()
     if (!this.hasConfig) {
       this.$router.push({
-        name: 'create-password'
+        name: 'create-password',
+        params: {
+          showConfigStep: true
+        }
       })
     }
     this.$q.notify.registerType('my-notif', {

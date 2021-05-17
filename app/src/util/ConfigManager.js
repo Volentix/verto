@@ -2,6 +2,7 @@
 import { devError } from '@/util/errorHandler'
 import sjcl from 'sjcl'
 import store from '../store'
+
 let platformTools = require('./platformTools')
 if (platformTools.default) platformTools = platformTools.default
 
@@ -25,7 +26,7 @@ class ConfigManager {
     }
 
     async backupConfig () {
-      const fileName = `verto-${(new Date()).getTime()}.config`
+      const fileName = (store.state.settings.backupConfig ? 'new-' : '') + `verto-${(new Date()).getTime()}.config`
       const { configData } = await this.getRawConfig()
       return platformTools.downloadFile(configData, fileName)
     }

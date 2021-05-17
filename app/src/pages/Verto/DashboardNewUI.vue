@@ -254,6 +254,7 @@ export default {
         name: 'recovery-seed',
         params: { step: 2 }
       })
+      this.$store.commit('settings/updateState', { key: 'backupConfig', value: true })
     }
 
     // Adds the eos account name when it is found to the cruxID
@@ -330,6 +331,12 @@ export default {
       })
     }, 6000)
    */
+
+    if (this.$q.screen.width < 1024) {
+      window.localStorage.setItem('skin', 'false')
+      this.$store.state.settings.lightMode = window.localStorage.getItem('skin')
+    }
+
     if (!this.$store.state.settings.coins.defibox.length) {
       setTimeout(() => {
         this.getCoinswitchCoins()

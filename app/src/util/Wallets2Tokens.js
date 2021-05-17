@@ -267,6 +267,7 @@ class Wallets2Tokens {
             // static value for recording video purpos
             // wallet.amount = wallet.type === 'btc' ? '0.23000000' : result.amount
             wallet.amount = result.amount
+            wallet.tokenPrice = result.tokenPrice || 0
             wallet.usd = result.usd
           })
         }
