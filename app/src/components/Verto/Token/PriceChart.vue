@@ -37,7 +37,17 @@ export default {
 
           tooltip.displayColors = false
           tooltip.y = 12
-          tooltip.backgroundColor = 'rgba(4,18,31,1)'
+
+          if (store.state.settings.lightMode === 'true') {
+            tooltip.backgroundColor = 'rgba(4,18,31,1)'
+            tooltip.bodyFontColor = '#fff'
+            tooltip.titleFontColor = '#fff'
+          } else {
+            tooltip.backgroundColor = 'rgba(255,255,255,1)'
+            tooltip.bodyFontColor = '#000'
+            tooltip.titleFontColor = '#000'
+            tooltip.labelTextColors[0] = '#000'
+          }
         }
       },
       hover: {
