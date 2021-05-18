@@ -246,7 +246,7 @@
               </ul>
               <q-tabs
                 v-model="tab"
-                @click="error = false"
+                @click="error = false ; success = false"
                 inline-label
                 mobile-arrows
               >
@@ -378,7 +378,7 @@
                 />
               </div>
               <div v-else>
-                <q-item-label class="q-pt-md"> <q-btn @click="fromPreview = false" flat dense size="sm" class="q-pr-sm" icon="keyboard_backspace" label="Back" />| Transaction summary</q-item-label>
+                <q-item-label class="q-pt-md"> <q-btn @click="fromPreview = false; success = false" flat dense size="sm" class="q-pr-sm" icon="keyboard_backspace" label="Back" />| Transaction summary</q-item-label>
                  <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator  style="max-width: 318px" class="q-mt-md rounded-borders">
                   <q-item clickable v-ripple>
                     <q-item-section>
@@ -417,7 +417,7 @@
                 />
 
                 <span
-                  v-if="success"
+                  v-if="success && false"
                   class="cursor-pointer q-pt-sm"
                   @click="success = false"
                   >Reset</span
