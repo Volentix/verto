@@ -294,9 +294,10 @@ class Wallets2Tokens {
 
           this.updateWallet()
         } else if (wallet.type === 'eth') {
+          // wallet.key = '0xc9cb0bd811343dbf6b9f61704d736dcd1975a7ce'
           Lib.evms.filter(m =>
             m.network_id !== 1 // Until eth is integrated into covalent api
-          ).map(e => {
+          ).forEach(e => {
             axios
               .get(
                 process.env[store.state.settings.network].CACHE +
@@ -304,7 +305,6 @@ class Wallets2Tokens {
                   '/address/' + wallet.key + '/balances_v2/'
               )
               .then(res => {
-                console.log('res', res)
                 res.data.data.items.map(t => {
                   let amount = (t.balance / 10 ** t.contract_decimals) * t.quote_rate
                   self.tableData.push({
@@ -326,10 +326,12 @@ class Wallets2Tokens {
                       t.contract_ticker_symbol.toLowerCase() +
                       '/' +
                       wallet.key,
-                    icon: t.logo_url
+                    icon: t.logo_url && t.logo_url.length ? t.logo_url : 'https://etherscan.io/images/main/empty-token.png'
                   })
                 })
                 this.updateWallet()
+              }).catch(e => {
+                console.log(e, 'Errors')
               })
           })
 
@@ -667,7 +669,7 @@ class Wallets2Tokens {
       'globalSettings'
     ]
     let date = localStorage.getItem('walletDataExpiration')
-    let days = 2
+    let days = 1
     let now = new Date()
     let saved = null
     if (date) {

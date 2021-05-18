@@ -12,7 +12,7 @@
       'text-black': $store.state.settings.lightMode === 'false',
       'dark-input': $store.state.settings.lightMode === 'true'
       }"
-    @input="setAccount()"
+    @input="setAccount(300)"
     v-model="accountOption"
     v-if="accountOptions.length"
     :options="accountOptions">
@@ -132,7 +132,6 @@ export default {
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.type) {
         this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain && a.name.toLowerCase() === this.$store.state.currentwallet.wallet.name.toLowerCase())
       } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount !== undefined && this.$store.state.investment.defaultAccount.name && (!this.chain || (this.$store.state.investment.defaultAccount.chain === this.chain && this.$store.state.investment.defaultAccount.origin !== 'metamask'))) {
-        console.log(this.$store.state.investment.defaultAccount, 'this.$store.state.investment.defaultAccount f')
         this.accountOption = this.accountOptions.find(f => f.type === this.$store.state.investment.defaultAccount.type && f.chain === this.$store.state.investment.defaultAccount.chain && f.name.toLowerCase() === this.$store.state.investment.defaultAccount.name.toLowerCase())
       } else {
         let item = this.accountOptions.find(o => (this.autoSelectChain && o.chain === this.autoSelectChain) || (this.chain && o.chain === this.chain) || o.chain === 'eos')
@@ -143,19 +142,36 @@ export default {
 
         this.accountOption = item
       }
-      this.setAccount()
-    },
-    setAccount () {
-      if (this.accountOption) {
-        this.$store.commit('investment/setDefaultAccount', this.accountOption)
-        if (this.accountOption && this.accountOption.origin === 'metamask') {
-          this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.metamask.tokens)
-        } else {
-          let tokens = this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key && (this.accountOption.chain !== 'eos' || w.name.toLowerCase() === this.accountOption.name.toLowerCase()))
 
-          this.$store.commit('investment/setAccountTokens', tokens)
-        }
+      if (!this.accountOption && this.accountOptions.length) {
+        this.accountOption = this.accountOptions[0]
       }
+
+      this.setAccount()
+      console.log(this.accountOption, this.$store.state.currentwallet.wallet)
+    },
+    setAccount (time = 0) {
+      setTimeout(() => {
+        if (this.accountOption) {
+          this.$store.commit('investment/setDefaultAccount', this.accountOption)
+          if (this.accountOption && this.accountOption.origin === 'metamask') {
+            this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.metamask.tokens)
+          } else {
+            let tokens = this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key && (this.accountOption.chain !== 'eos' || w.name.toLowerCase() === this.accountOption.name.toLowerCase()))
+
+            this.$store.commit('investment/setAccountTokens', tokens)
+            console.log(this.$store.state.currentwallet.wallet, 'this.$store.state.currentwallet.wallet.chain')
+            if (this.$store.state.currentwallet.wallet.chain && this.$store.state.currentwallet.wallet.name !== this.accountOption.name && this.$store.state.currentwallet.wallet.key !== this.accountOption.key) {
+              this.$store.commit('currentwallet/updateParams', {
+                chainID: this.accountOption.chain,
+                tokenID: this.accountOption.type,
+                accountName: this.accountOption.name
+              })
+              this.$store.state.currentwallet.wallet = this.$store.state.wallets.tokens.find(w => w.chain === this.accountOption.chain && w.type === this.accountOption.type && w.name.toLowerCase() === this.accountOption.name.toLowerCase())
+            }
+          }
+        }
+      }, time)
     }
   },
   watch: {
