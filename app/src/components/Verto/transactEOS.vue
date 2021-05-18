@@ -2,8 +2,8 @@
   <div class="row">
     <div class="col-md-12 q-pl-md">
           <p class="text-h6 text-bold" v-if="transactionObject && !decryptPrivateKey && !transactionLink && !hideLabels">Click button below to process</p>
-          <p class="text-red text-body2">{{ErrorMessage}}</p>
-          <p class="text-green text-body2">{{SuccessMessage}}</p>
+          <p class="text-red text-body2" v-if="ErrorMessage">{{ErrorMessage}}</p>
+          <p class="text-green text-body2" v-if="SuccessMessage">{{SuccessMessage}}</p>
           <div v-if="decryptPrivateKey" >
             <q-card-section>
               <div class="">
@@ -57,6 +57,7 @@ export default {
       transaction: [],
       privateKeyPassword: '',
       SuccessMessage: '',
+      currentwallet: null,
       transactionLink: null,
       transactionObject: false,
       invalidPrivateKeyPassword: false,
@@ -144,6 +145,10 @@ export default {
       }
     },
     async process () {
+      if (!this.currentwallet) {
+        this.ErrorMessage = 'Account not set'
+        return
+      }
       if (this.transactionObject.multi) {
         this.processMultipleTransaction()
       }
