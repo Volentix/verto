@@ -33,7 +33,7 @@
               </div>
             </template>
           </q-input>
-          <a v-if="transactionLink" :href="transactionLink" target="_blank" class="text-body2 q-pb-md text-black"> More info</a>
+          <a v-if="transactionLink" :href="transactionLink" target="_blank" :class="{'text-white': $store.state.settings.lightMode === 'true', 'text-black': $store.state.settings.lightMode === 'false'}"  class="text-body2 q-pb-md "> More info</a>
         </div>
   </div>
 </template>

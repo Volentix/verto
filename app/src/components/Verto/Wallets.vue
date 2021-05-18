@@ -1049,7 +1049,7 @@ export default {
           let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
           o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
           o.count = Lib.evms.find(a => a.chain === o.chain) ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key === a.key)) === i).length : accounts.filter(a => a.type === o.chain).length
-          console.log(o.count, o.chain)
+
           let chain = HD.names.find(a => a.value === o.chain)
 
           o.label = chain ? chain.label : o.chain
