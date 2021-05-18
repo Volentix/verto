@@ -388,7 +388,8 @@
           </q-item>
         </q-list>
         </div>
-          <p v-if="history.length && this.$store.state.currentwallet.wallet.chain == 'eth'" class="text-center text-body1 cursor-pointer" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" /></p>
+
+          <p v-if="history.length && $store.state.investment.defaultAccount.chain == 'eth'" class="text-center text-body1 cursor-pointer" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" /></p>
       </q-scroll-area>
     </div>
   </div>
@@ -612,12 +613,14 @@ export default {
           tx.dateFormatted = date.toISOString().split('T')[0]
           self.getHistoricalData(transaction)
           tx.amountFriendly = parseFloat(tx.amount).toFixed(6)
+
           tx.subTransactions.map(o => {
             o.image = self.getTokenImage(o.symbol)
             o.amountFriendly = parseFloat(o.amount).toFixed(6)
           })
-          if (tx.subTransactions.length > 1) {
-            tx.subTransactions.reverse()
+
+          if (tx.subTransactions.length === 2) {
+            tx.subTransactions = [tx.subTransactions.find(o => o.type === 'outgoing'), tx.subTransactions.find(o => o.type === 'incoming')]
           }
 
           return tx
