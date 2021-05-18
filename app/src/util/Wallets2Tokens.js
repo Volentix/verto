@@ -294,7 +294,6 @@ class Wallets2Tokens {
 
           this.updateWallet()
         } else if (wallet.type === 'eth') {
-          // wallet.key = '0xc9cb0bd811343dbf6b9f61704d736dcd1975a7ce'
           Lib.evms.filter(m =>
             m.network_id !== 1 // Until eth is integrated into covalent api
           ).forEach(e => {
@@ -326,7 +325,7 @@ class Wallets2Tokens {
                       t.contract_ticker_symbol.toLowerCase() +
                       '/' +
                       wallet.key,
-                    icon: t.logo_url && t.logo_url.length ? t.logo_url : 'https://etherscan.io/images/main/empty-token.png'
+                    icon: t.logo_url && t.logo_url.length ? t.logo_url : 'https://i.ibb.co/hYhjV1j/empty-token.png'
                   })
                 })
                 this.updateWallet()

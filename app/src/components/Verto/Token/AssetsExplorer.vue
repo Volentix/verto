@@ -113,6 +113,7 @@
               <div class="q-py-sm" v-if="asset.protocol"><q-icon class="q-pr-sm" size="1.2rem" :name="'img:'+asset.protocolIcon" />{{asset.protocol}}:</div>
               <span class="text-grey" v-if="asset.poolsCount == 1">{{asset.poolName}} pool</span>
               <span class="text-grey" v-else-if="asset.poolsCount">{{asset.poolsCount}} pools</span>
+                <q-item-label class="text-caption chain-label q-py-sm"  v-if="asset.chainLabel" :class="{'text-white':$store.state.settings.lightMode === 'true'}" >Chain: <span  class="text-grey">{{asset.chainLabel.replace('Chain', '')}}</span></q-item-label>
             </div>
 
           </div>
