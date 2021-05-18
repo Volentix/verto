@@ -417,6 +417,7 @@ export default {
   watch: {
     '$store.state.wallets.tokens': function () {
       this.initTable()
+      this.$emit('assetsChanged', this.assetsOptions[0].data)
     },
     '$store.state.investment.investments': function (investments) {
       this.getInvestedTokens(investments)
