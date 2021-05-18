@@ -9,7 +9,8 @@
                 <img :src="props.row.icon" alt="">
               </span>
               <span class="flex items-center pairs thicker">
-                <span class="pair q-pr-xs">{{props.row.friendlyType.toUpperCase()}}<q-tooltip>{{props.row.type.toUpperCase()}}</q-tooltip></span> <span class="text-grey"></span>
+                <span class="pair q-pr-xs">{{props.row.friendlyType.toUpperCase()}}<q-tooltip>{{props.row.type.toUpperCase()}}</q-tooltip></span> <span class="text-grey"></span><br/>
+                <q-item-label class="text-caption chain-label" :class="{'text-white':$store.state.settings.lightMode === 'true'}" >{{props.row.chainLabel.replace('Chain', '')}}</q-item-label>
               </span>
             </div>
           </q-td>
@@ -137,14 +138,14 @@ export default {
           sortable: true,
           format: val => `${this.formatNumber(val, 2)}`
         },
-        {
+        /*  {
           name: 'average_cost',
           align: 'left',
           label: 'Average Cost',
           field: 'average_cost',
           format: val => `${val}`,
           sortable: true
-        },
+        } , */
         {
           name: 'action',
           label: '',
@@ -217,7 +218,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.chain-label {
+      font-size: 0.6rem;
+}
 .desktop-size{
   height: 360px;
 }
