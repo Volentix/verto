@@ -251,6 +251,8 @@ import {
   QScrollArea
 } from 'quasar'
 import Formatter from '@/mixins/Formatter'
+import HD from '@/util/hdwallet'
+import Lib from '@/util/walletlib'
 import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
 import ExchangeSection from '@/components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '@/components/Verto/Defi/LiquidityPoolsTable'
@@ -611,6 +613,8 @@ export default {
             token.index = this.assets.length
             token.rateUsd = isNaN(token.tokenPrice) ? 0 : token.tokenPrice
             token.friendlyType = token.type.length > 6 ? token.type.substring(0, 6) + '...' : token.type
+            let isEvm = Lib.evms.find(a => a.chain === token.chain)
+            token.chainLabel = isEvm ? isEvm.name : HD.names.find(a => a.value === token.chain).label
             token = this.getHistoricalValue(token)
             this.assets.push(token)
           }
