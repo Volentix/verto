@@ -67,9 +67,6 @@ export default {
             margin-right: 5px;
           }
         }
-        &.dropdown{
-
-        }
       }
     }
     .select-input{

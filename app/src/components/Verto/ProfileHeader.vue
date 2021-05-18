@@ -515,7 +515,6 @@ export default {
           font-family: $Titillium;
         }
       }
-      &.eos-account{}
       &__title{
         margin: 0px;
         font-size: 18px;
