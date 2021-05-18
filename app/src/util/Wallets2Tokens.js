@@ -301,7 +301,8 @@ class Wallets2Tokens {
               .get(
                 process.env[store.state.settings.network].CACHE +
                   'https://api.covalenthq.com/v1/' + e.network_id +
-                  '/address/' + wallet.key + '/balances_v2/'
+                  '/address/' + wallet.key + '/balances_v2/',
+                { auth: { username: 'ckey_a9e6f6ab90584877b86b151eef3' } }
               )
               .then(res => {
                 console.log('res', res)
