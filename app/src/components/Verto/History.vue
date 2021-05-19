@@ -142,7 +142,7 @@
                   <div class="text-bold text-grey">Fee</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
-                      <span class="">{{transaction.gasTotal}}</span>&nbsp;
+                      <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
                       <span class="">ETH</span>
                     </span> (${{transaction.usdFees}})
                   </div>
@@ -189,7 +189,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col col-5">
+                <div class="col col-5" :class="{'col-7' : !transaction.details}">
                   <div class="row items-center">
                     <div class="col col-6 flex items-center">
                       <div class="flex items-center">
@@ -236,7 +236,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col col-3 flex justify-end">
+                <div class="col col-3 flex justify-end" v-if="transaction.details">
                       <div class="column">
                         <div class="">
                           <div class="flex items-center" v-if="transaction.details" style="cursor: pointer;">
@@ -258,7 +258,7 @@
                     <div class="text-bold text-grey">Fee</div>
                     <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                       <span>
-                        <span class="">{{transaction.gasTotal}}</span>&nbsp;
+                        <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
                         <span class="">ETH</span>
                       </span> (${{transaction.usdFees}})
                     </div>
@@ -354,7 +354,7 @@
                   <div class="text-bold text-grey">Fee</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
-                      <span class="">{{transaction.gasTotal}}</span>&nbsp;
+                      <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
                       <span class="">ETH</span>
                     </span> (${{transaction.usdFees}})
                   </div>
@@ -388,7 +388,8 @@
           </q-item>
         </q-list>
         </div>
-          <p v-if="history.length && this.$store.state.currentwallet.wallet.chain == 'eth'" class="text-center text-body1 cursor-pointer" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" /></p>
+
+          <p v-if="history.length && $store.state.investment.defaultAccount.chain == 'eth'" class="text-center text-body1 cursor-pointer" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" /></p>
       </q-scroll-area>
     </div>
   </div>
@@ -453,7 +454,7 @@ export default {
   },
   watch: {
     '$store.state.investment.defaultAccount': function (val) {
-      if (!this.$store.state.currentwallet.wallet || !this.$store.state.currentwallet.wallet.chain) { this.$store.state.currentwallet.wallet = val }
+      // if (!this.$store.state.currentwallet.wallet || !this.$store.state.currentwallet.wallet.chain) { this.$store.state.currentwallet.wallet = val }
 
       this.loading = true
 
@@ -478,7 +479,9 @@ export default {
     if (this.refresh) {
       this.refreshHistory()
     }
-    this.getHistory()
+    setTimeout(() => {
+      this.getHistory()
+    }, 1000)
   },
   methods: {
     async getHistory () {
@@ -502,19 +505,19 @@ export default {
           account = this.$store.state.wallets.tokens.find(w => w.chain === 'eos' && w.type === 'eos')
         }
 
-        let data = (await Lib.history(account.chain, account.name, account.type, this.pagination))
+        Lib.history(account.chain, account.name, account.type, this.pagination).then(data => {
+          data = data.history
 
-        data = data.history
+          if (data && data[0] && data[0].transID) {
+            this.legacyHistory = data
+            this.loading = false
+            return
+          }
 
-        if (data && data[0] && data[0].transID) {
-          this.legacyHistory = data
-          this.loading = false
-          return
-        }
-
-        if (data && Array.isArray(data)) {
-          this.groupByDay(data)
-        }
+          if (data && Array.isArray(data)) {
+            this.groupByDay(data)
+          }
+        })
       }
     },
     async getEthWalletHistory (account) {
@@ -610,10 +613,15 @@ export default {
           tx.dateFormatted = date.toISOString().split('T')[0]
           self.getHistoricalData(transaction)
           tx.amountFriendly = parseFloat(tx.amount).toFixed(6)
+
           tx.subTransactions.map(o => {
             o.image = self.getTokenImage(o.symbol)
             o.amountFriendly = parseFloat(o.amount).toFixed(6)
           })
+
+          if (tx.subTransactions.length === 2) {
+            tx.subTransactions = [tx.subTransactions.find(o => o.type === 'outgoing'), tx.subTransactions.find(o => o.type === 'incoming')]
+          }
 
           return tx
         },
