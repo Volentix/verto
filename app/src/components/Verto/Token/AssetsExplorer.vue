@@ -113,6 +113,7 @@
               <div class="q-py-sm" v-if="asset.protocol"><q-icon class="q-pr-sm" size="1.2rem" :name="'img:'+asset.protocolIcon" />{{asset.protocol}}:</div>
               <span class="text-grey" v-if="asset.poolsCount == 1">{{asset.poolName}} pool</span>
               <span class="text-grey" v-else-if="asset.poolsCount">{{asset.poolsCount}} pools</span>
+                <q-item-label class="text-caption chain-label q-py-sm"  v-if="asset.chainLabel" :class="{'text-white':$store.state.settings.lightMode === 'true'}" >Chain: <span  class="text-grey">{{asset.chainLabel.replace('Chain', '')}}</span></q-item-label>
             </div>
 
           </div>
@@ -251,6 +252,8 @@ import {
   QScrollArea
 } from 'quasar'
 import Formatter from '@/mixins/Formatter'
+import HD from '@/util/hdwallet'
+import Lib from '@/util/walletlib'
 import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
 import ExchangeSection from '@/components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '@/components/Verto/Defi/LiquidityPoolsTable'
@@ -415,6 +418,7 @@ export default {
   watch: {
     '$store.state.wallets.tokens': function () {
       this.initTable()
+      this.$emit('assetsChanged', this.assetsOptions[0].data)
     },
     '$store.state.investment.investments': function (investments) {
       this.getInvestedTokens(investments)
@@ -611,6 +615,8 @@ export default {
             token.index = this.assets.length
             token.rateUsd = isNaN(token.tokenPrice) ? 0 : token.tokenPrice
             token.friendlyType = token.type.length > 6 ? token.type.substring(0, 6) + '...' : token.type
+            let isEvm = Lib.evms.find(a => a.chain === token.chain)
+            token.chainLabel = isEvm ? isEvm.name : HD.names.find(a => a.value === token.chain).label
             token = this.getHistoricalValue(token)
             this.assets.push(token)
           }

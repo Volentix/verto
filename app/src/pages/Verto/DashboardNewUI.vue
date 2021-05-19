@@ -21,8 +21,8 @@
                   <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
                 </q-breadcrumbs>
                <!-- <NftsExplorer v-if=" && $store.state.settings.network != 'mainnet'" /> -->
-                <AssetsExplorer v-show="!assetSelected" @setAsset="setAsset" />
-                <SingleToken  :assetData="assetSelected" class="col-md-12" v-if="assetSelected" />
+                <AssetsExplorer @assetsChanged="assetsChanged" ref="assetsComponent" v-show="!assetSelected" @setAsset="setAsset" />
+                <SingleToken   ref="singleTokenComponent" :assetData="assetSelected" class="col-md-12" v-if="assetSelected" />
                 <div class="col col-md-12 full-height max-height2" v-else-if="$store.state.settings.network == 'mainnet' && false" >
 
                     <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
@@ -346,6 +346,16 @@ export default {
     }
   },
   methods: {
+    assetsChanged (assets) {
+      if (this.assetSelected) {
+        let asset = assets.find(o => o.type === this.assetSelected.type && o.chain === this.assetSelected.chain && (this.assetSelected.chain !== 'eos' || o.contract === this.assetSelected.contract))
+        console.log(asset, 'asset')
+        if (asset) {
+          this.$refs.singleTokenComponent.asset.usd = asset.usd
+          this.$refs.singleTokenComponent.asset.amount = asset.amount
+        }
+      }
+    },
     setAsset (asset) {
       this.assetSelected = asset
     },
