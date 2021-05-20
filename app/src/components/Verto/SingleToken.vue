@@ -592,7 +592,10 @@ export default {
     },
     '$store.state.currentwallet.wallet': function (val) {
       let assets = this.initAssetTable()
-
+      if (val.chain !== this.asset.chain) {
+        this.$emit('setAsset', null)
+        return
+      }
       let item = assets.find(
         (o) => o.chain === this.asset.chain && o.type === this.asset.type
       )
