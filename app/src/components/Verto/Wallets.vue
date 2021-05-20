@@ -135,15 +135,16 @@
                             </q-card>
 
                         </q-expansion-item>
-                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="$store.state.wallets.tokens.filter(f => f.type == chain.chain).length == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type == chain.chain)) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="chain.count == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type === chain.chain ||(!['eos', 'eth'].includes(f.chain) && f.chain == chain.chain)), false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" :src="chain.icon"  />
                             </q-item-section>
                             <q-item-section  class="item-name" :set="tokensCount = $store.state.wallets.tokens.filter(f => f.chain == chain.chain)">
                             <span class="item-name--name"> {{chain.label}}</span>
-                            <span  class="item-name--staked" v-if="chain.count > 1">{{chain.count}} accounts</span>
-                            <span   class="item-name--staked" v-else-if="chain.count == 1 &&  tokensCount.length > 1">{{tokensCount.length}} tokens</span>
+                            <span  class="item-name--staked" v-if="loadingIndex == index + 1 "> <q-spinner-dots color="primary" size="2em" /> </span>
+                            <span  class="item-name--staked" v-else-if="chain.count > 1">{{chain.count}} accounts</span>
+                            <span   class="item-name--staked" v-else-if="chain.count == 1 &&  tokensCount.length > 1">{{tokensCount.length}} tokenss</span>
 
                             </q-item-section>
 
@@ -500,14 +501,16 @@
                             </q-card>
 
                         </q-expansion-item>
-                <q-expansion-item  v-show="$store.state.currentwallet.wallet.chain" :ref="'chain'+index" :style="setPosition(chain.total)" @click="$store.state.wallets.tokens.filter(f => f.type == chain.chain).length == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type == chain.chain)) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+
+                      <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="chain.count == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type === chain.chain ||(!['eos', 'eth'].includes(f.chain) && f.chain == chain.chain)), false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" :src="chain.icon"  />
                             </q-item-section>
                             <q-item-section  class="item-name" :set="tokensCount = $store.state.wallets.tokens.filter(f => f.chain == chain.chain)">
                             <span class="item-name--name"> {{chain.label}}</span>
-                            <span  class="item-name--staked" v-if="chain.count > 1">{{chain.count}} accounts</span>
+                            <span  class="item-name--staked" v-if="loadingIndex == index + 1 "> <q-spinner-dots color="primary" size="2em" /> </span>
+                            <span  class="item-name--staked" v-else-if="chain.count > 1">{{chain.count}} accounts</span>
                             <span   class="item-name--staked" v-else-if="chain.count == 1 &&  tokensCount.length > 1">{{tokensCount.length}} tokens</span>
 
                             </q-item-section>
@@ -775,14 +778,15 @@
                             </q-card>
 
                         </q-expansion-item>
-                <q-expansion-item :ref="'chain'+index" :style="setPosition(chain.total)" @click="$store.state.wallets.tokens.filter(f => f.chain == chain.chain).length == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.chain == chain.chain)) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable>
-                  <template v-slot:header>
-                      <q-item-section avatar>
-                          <img class="coin-icon" width="35px" :src="chain.icon"  />
-                      </q-item-section>
-                      <q-item-section  class="item-name" :set="tokensCount = $store.state.wallets.tokens.filter(f => f.chain == chain.chain)">
+                 <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="chain.count == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type === chain.chain ||(!['eos', 'eth'].includes(f.chain) && f.chain == chain.chain)), false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                        <template v-slot:header>
+                            <q-item-section avatar>
+                                <img class="coin-icon" width="35px" :src="chain.icon"  />
+                            </q-item-section>
+                            <q-item-section  class="item-name" :set="tokensCount = $store.state.wallets.tokens.filter(f => f.chain == chain.chain)">
                             <span class="item-name--name"> {{chain.label}}</span>
-                            <span  class="item-name--staked" v-if="chain.count > 1">{{chain.count}} accounts</span>
+                            <span  class="item-name--staked" v-if="loadingIndex == index + 1 "> <q-spinner-dots color="primary" size="2em" /> </span>
+                            <span  class="item-name--staked" v-else-if="chain.count > 1">{{chain.count}} accounts</span>
                             <span   class="item-name--staked" v-else-if="chain.count == 1 &&  tokensCount.length > 1">{{tokensCount.length}} tokens</span>
 
                             </q-item-section>
@@ -924,6 +928,7 @@ export default {
     return {
       selectedChain: null,
       vtxAccounts: [],
+      loadingIndex: false,
       chainSwitcher: '',
       searchAccount: '',
       chains: [],
@@ -1048,8 +1053,9 @@ export default {
         .map(o => {
           let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
           o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
-          o.count = Lib.evms.find(a => a.chain === o.chain) ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key === a.key)) === i).length : accounts.filter(a => a.type === o.chain).length
-
+          let evmChain = Lib.evms.find(a => a.chain === o.chain)
+          o.count = evmChain ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key === a.key)) === i).length : accounts.filter(a => a.type === o.chain).length
+          if (evmChain) o.icon = evmChain.icon
           let chain = HD.names.find(a => a.value === o.chain)
 
           o.label = chain ? chain.label : o.chain
@@ -1173,48 +1179,50 @@ export default {
     openModalFun: function (item) {
       this.openModal = true
     },
-    async showMenu (menu, to) {
-      if (!menu.selected) {
-        setTimeout(() => {
-          if (this.$refs.walletsScrollArea) { this.$refs.walletsScrollArea.setScrollPosition(0, 50) }
-        }, 500)
-        this.removeClassSelected()
-        menu.selected = true
-        console.log(menu, 'menu', 99)
-        this.selectedCoin = menu
-        if (this.selectedCoin.hidden === undefined) {
-          this.selectedCoin.hidden = false
-        }
-
-        // this.$store.commit('currentwallet/updateParams', {
-        //   chainID: this.selectedCoin.chain,
-        //   tokenID: this.selectedCoin.type,
-        //   accountName: this.selectedCoin.name
-        // })
-
-        this.$store.commit('currentwallet/updateParams', {
-          chainID: this.$route.params.chainID || this.selectedCoin.chain,
-          tokenID: this.$route.params.tokenID || this.selectedCoin.type,
-          accountName: this.$route.params.accountName || this.selectedCoin.name.toLowerCase()
-        })
-        // let stakedAmounts = 0
-        // if (this.selectedCoin.type === 'vtx') {
-        //   let stakes = await eos.getTable('vtxstake1111', this.selectedCoin.name, 'accounts')
-        //   stakes.map(s => {
-        //     s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
-        //     s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
-        //     stakedAmounts += +s.stake_amount
-        //   })
-        //   this.selectedCoin.staked = stakedAmounts
-        // }
-        // this.$store.state.currentwallet.wallet = this.currentAccount
-
+    async showMenu (menu, to, loadingIndex) {
+      this.loadingIndex = loadingIndex
+      this.$store.state.currentwallet.wallet = menu
+      setTimeout(() => {
         this.$store.state.currentwallet.wallet = this.selectedCoin
-        this.$store.commit('investment/setDefaultAccount', this.selectedCoin)
-        this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.selectedCoin.chain && w.key === this.selectedCoin.key))
+        this.loadingIndex = false
+        if (this.$refs.walletsScrollArea) { this.$refs.walletsScrollArea.setScrollPosition(0, 50) }
+      }, 200)
+      this.removeClassSelected()
+      menu.selected = true
 
-        this.setRessourcesInfos()
-        /* //console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
+      this.selectedCoin = menu
+      if (this.selectedCoin.hidden === undefined) {
+        this.selectedCoin.hidden = false
+      }
+
+      // this.$store.commit('currentwallet/updateParams', {
+      //   chainID: this.selectedCoin.chain,
+      //   tokenID: this.selectedCoin.type,
+      //   accountName: this.selectedCoin.name
+      // })
+
+      this.$store.commit('currentwallet/updateParams', {
+        chainID: this.$route.params.chainID || this.selectedCoin.chain,
+        tokenID: this.$route.params.tokenID || this.selectedCoin.type,
+        accountName: this.$route.params.accountName || this.selectedCoin.name.toLowerCase()
+      })
+      // let stakedAmounts = 0
+      // if (this.selectedCoin.type === 'vtx') {
+      //   let stakes = await eos.getTable('vtxstake1111', this.selectedCoin.name, 'accounts')
+      //   stakes.map(s => {
+      //     s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
+      //     s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+      //     stakedAmounts += +s.stake_amount
+      //   })
+      //   this.selectedCoin.staked = stakedAmounts
+      // }
+      // this.$store.state.currentwallet.wallet = this.currentAccount
+
+      this.$store.commit('investment/setDefaultAccount', this.selectedCoin)
+      this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.selectedCoin.chain && w.key === this.selectedCoin.key))
+
+      this.setRessourcesInfos()
+      /* //console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
 
         if (this.selectedCoin.chain !== 'eos' && this.selectedCoin.chain !== 'eth') {
           this.history = []
@@ -1227,10 +1235,7 @@ export default {
           this.history = (await Lib.history(this.selectedCoin.chain, this.selectedCoin.type, nameOrKey, pagination)).history
         }
         */
-      } else {
-        menu.selected = false
-        this.$store.state.currentwallet.wallet = undefined
-      }
+
       if (this.selectedCoin.chain === 'eos' && this.selectedCoin.type === 'verto') {
         let result = await eos.getAccountNamesFromPubKeyP(this.selectedCoin.key)
         if (result && result.account_names.length) {
@@ -1342,6 +1347,13 @@ export default {
 a {
     text-decoration: none;
     color: inherit;
+}
+.all-wallets > div:hover {
+   background:#f9fcfe
+}
+
+.dark-theme .all-wallets > div:hover {
+   background:#11284c
 }
 .chain-tools /deep/ .q-item__section--side {
     min-width: 0px  !important
