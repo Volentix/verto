@@ -144,7 +144,7 @@
                             <span class="item-name--name"> {{chain.label}}</span>
                             <span  class="item-name--staked" v-if="loadingIndex == index + 1 "> <q-spinner-dots color="primary" size="2em" /> </span>
                             <span  class="item-name--staked" v-else-if="chain.count > 1">{{chain.count}} accounts</span>
-                            <span   class="item-name--staked" v-else-if="chain.count == 1 &&  tokensCount.length > 1">{{tokensCount.length}} tokenss</span>
+                            <span   class="item-name--staked" v-else-if="chain.count == 1 &&  tokensCount.length > 1">{{tokensCount.length}} tokens</span>
 
                             </q-item-section>
 
@@ -158,7 +158,7 @@
 
                             <q-card :dark="$store.state.settings.lightMode === 'true'">
                             <q-card-section>
-                                <q-item :set="chainTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && f.name.toLowerCase() == item.name.toLowerCase())" :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.type == chain.chain && f.chain == chain.chain && !f.hidden && !f.disabled).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                                <q-item :set="chainTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && f.name.toLowerCase() == item.name.toLowerCase())" :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter((f, i, c) =>  f.type === chain.chain ||((!['eos', 'eth'].includes(f.chain) && f.chain == chain.chain) && c.findIndex(t => (t.key.toLowerCase() === f.key.toLowerCase())) === i)).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                                 <div class="header-wallet-wrapper culumn full-width">
                                     <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
@@ -1054,7 +1054,8 @@ export default {
           let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
           o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
           let evmChain = Lib.evms.find(a => a.chain === o.chain)
-          o.count = evmChain ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key === a.key)) === i).length : accounts.filter(a => a.type === o.chain).length
+          o.accounts = evmChain ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : accounts.filter(a => a.type === o.chain)
+          o.count = o.accounts.length
           if (evmChain) o.icon = evmChain.icon
           let chain = HD.names.find(a => a.value === o.chain)
 
