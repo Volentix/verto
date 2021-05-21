@@ -17,27 +17,31 @@ class Lib {
       icon: 'https://zapper.fi/images/ETH-icon.png',
       provider: 'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63',
       explorer: 'https://etherscan.io/tx/',
+      gas: 'https://data-api.defipulse.com/api/v1/egs/api/ethgasAPI.json?api-key=61cb5f87d40937069b831354a3d9e8a5c1f1e69ebb755140b79e555249a8',
       network_id: 1
     }, {
       name: 'Binance Smart Chain',
-      chain: 'bsc',
+      chain: 'bnb',
       icon: 'https://nownodes.io/images/binance-smart-chain/bsc-logo.png',
       provider: 'https://bsc-dataseed1.binance.org:443',
       explorer: 'https://bscscan.com/tx/',
+      gas: 'https://api.bscscan.com/api?module=proxy&action=eth_gasPrice&apikey=JK2Z5XQYR1FMCAQFQDBFNS5FJM6XC7ETTB',
       network_id: 56
     }, {
       name: 'Polygon Chain',
-      chain: 'plg',
+      chain: 'matic',
       icon: 'https://polygon.technology/wp-content/uploads/2021/02/cropped-polygon-ico-180x180.png',
       provider: 'https://rpc-mainnet.maticvigil.com/v1/08e234538a11a966248fd358b3b135c4aeb6924b',
       explorer: 'https://explorer-mainnet.maticvigil.com/tx/',
+      gas: 'https://gasstation-mainnet.matic.network/',
       network_id: 137
     }, {
       name: 'Avalanche C-Chain',
-      chain: 'acc',
+      chain: 'avax',
       icon: 'https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png',
       provider: 'https://api.avax.network/ext/bc/C/rpc',
       explorer: 'https://cchain.explorer.avax.network/tx/',
+      gas: '', // The C-Chain gas price is 225 nAVAX (225 GWei). The C-Chain gas limit is 8 * 10e6 (8,000,000).
       network_id: 43114
     }, {
       name: 'Fantom Chain',
@@ -45,6 +49,7 @@ class Lib {
       icon: 'https://assets.coingecko.com/coins/images/4001/large/Fantom.png?1558015016',
       provider: 'https://rpcapi.fantom.network/',
       explorer: 'https://ftmscan.com/tx/',
+      gas: '', // FTM tokens are required to pay gas fees. The Covalent API response returns gas_* fields in fiat units
       network_id: 250
     // }, { // Commented until they go live
     //   name: 'Moonbeam Polkadot',
