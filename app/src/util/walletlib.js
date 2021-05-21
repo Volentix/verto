@@ -14,30 +14,35 @@ class Lib {
     this.evms = [{
       name: 'Ethereum Chain',
       chain: 'eth',
+      icon: 'https://zapper.fi/images/ETH-icon.png',
       provider: 'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63',
       explorer: 'https://etherscan.io/tx/',
       network_id: 1
     }, {
       name: 'Binance Smart Chain',
       chain: 'bsc',
+      icon: 'https://nownodes.io/images/binance-smart-chain/bsc-logo.png',
       provider: 'https://bsc-dataseed1.binance.org:443',
       explorer: 'https://bscscan.com/tx/',
       network_id: 56
     }, {
       name: 'Polygon Chain',
       chain: 'plg',
+      icon: 'https://polygon.technology/wp-content/uploads/2021/02/cropped-polygon-ico-180x180.png',
       provider: 'https://rpc-mainnet.maticvigil.com/v1/08e234538a11a966248fd358b3b135c4aeb6924b',
       explorer: 'https://explorer-mainnet.maticvigil.com/tx/',
       network_id: 137
     }, {
       name: 'Avalanche C-Chain',
       chain: 'acc',
+      icon: 'https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png',
       provider: 'https://api.avax.network/ext/bc/C/rpc',
       explorer: 'https://cchain.explorer.avax.network/tx/',
       network_id: 43114
     }, {
       name: 'Fantom Chain',
       chain: 'ftm',
+      icon: 'https://assets.coingecko.com/coins/images/4001/large/Fantom.png?1558015016',
       provider: 'https://rpcapi.fantom.network/',
       explorer: 'https://ftmscan.com/tx/',
       network_id: 250
@@ -54,7 +59,7 @@ class Lib {
 
   async getRawETHTransaction (token, from, to, value, key, contract, origin = 'mnemonic', evm = 'eth') {
     const Web3 = require('web3')
-    let localWeb3 = new Web3(new Web3.providers.HttpProvider(this.evms[evm].provider))
+    let localWeb3 = new Web3(new Web3.providers.HttpProvider(this.evms.find(o => o.chain === evm).provider))
     if (origin === 'metamask' && window.web3 && window.web3.currentProvider.isMetaMask) {
       localWeb3 = new Web3(window.web3.currentProvider)
     }
@@ -817,7 +822,7 @@ class Lib {
 
         const Web3 = require('web3')
         const EthereumTx = require('ethereumjs-tx').Transaction
-        const web3 = new Web3(new Web3.providers.HttpProvider(this.evms[evm].provider))
+        const web3 = new Web3(new Web3.providers.HttpProvider(this.evms.find(o => o.chain === evm).provider))
 
         let nonce = await web3.eth.getTransactionCount(from)
 
@@ -916,7 +921,7 @@ class Lib {
         }
 
         function sendSingleTransaction (serializedTransaction) {
-          let infuraEndpoint = this.evms[evm].provider
+          let infuraEndpoint = this.evms.find(o => o.chain === evm).provider
 
           let data = createParams('eth_sendRawTransaction', serializedTransaction)
 
