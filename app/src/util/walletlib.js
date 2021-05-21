@@ -59,7 +59,7 @@ class Lib {
 
   async getRawETHTransaction (token, from, to, value, key, contract, origin = 'mnemonic', evm = 'eth') {
     const Web3 = require('web3')
-    let localWeb3 = new Web3(new Web3.providers.HttpProvider(this.evms[evm].provider))
+    let localWeb3 = new Web3(new Web3.providers.HttpProvider(this.evms.find(o => o.chain === evm).provider))
     if (origin === 'metamask' && window.web3 && window.web3.currentProvider.isMetaMask) {
       localWeb3 = new Web3(window.web3.currentProvider)
     }
@@ -822,7 +822,7 @@ class Lib {
 
         const Web3 = require('web3')
         const EthereumTx = require('ethereumjs-tx').Transaction
-        const web3 = new Web3(new Web3.providers.HttpProvider(this.evms[evm].provider))
+        const web3 = new Web3(new Web3.providers.HttpProvider(this.evms.find(o => o.chain === evm).provider))
 
         let nonce = await web3.eth.getTransactionCount(from)
 
@@ -921,7 +921,7 @@ class Lib {
         }
 
         function sendSingleTransaction (serializedTransaction) {
-          let infuraEndpoint = this.evms[evm].provider
+          let infuraEndpoint = this.evms.find(o => o.chain === evm).provider
 
           let data = createParams('eth_sendRawTransaction', serializedTransaction)
 
