@@ -294,6 +294,7 @@ class Wallets2Tokens {
 
           this.updateWallet()
         } else if (wallet.type === 'eth') {
+          // wallet.key = '0x508f51c6fe10E5117caaEF3306fd2126A161825a'
           Lib.evms.filter(m =>
             m.network_id !== 1 // Until eth is integrated into covalent api
           ).forEach(e => {
