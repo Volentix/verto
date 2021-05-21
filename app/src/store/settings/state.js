@@ -2,6 +2,7 @@ export default {
   newSettingsPage: false,
   rightOrder: false,
   network: 'mainnet',
+  devMode: false,
   globalSettings: {},
   coins: {
     coinswitch: [],
