@@ -21,7 +21,7 @@
     <div v-if="version === 'type1'" class="p-relative column flex-center profile-wrapper--header wallets" style="background: url('statics/header_bg3.png');">
       <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="white" icon="keyboard_backspace" />
       <h3 class="profile-wrapper--header__title text-white">Total Balance</h3>
-      <h2 class="profile-wrapper--header__balance text-white">${{ new Number(totalBalance).toFixed(2) }} USD</h2>
+      <h2 class="profile-wrapper--header__balance text-white">${{ new Number( $store.state.wallets.portfolioTotal ).toFixed(2) }} USD</h2>
       <div class="profile-wrapper--header__action">
         <q-btn unelevated to="/verto/wallets/send" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Send" />
         <q-btn unelevated to="/verto/wallets/receive" class="profile-wrapper--header__action-btn" color="indigo-12" text-color="white" label="Receive" />
@@ -68,42 +68,42 @@
     <div v-else-if="version === 'type6'" class="profile-wrapper--header static" style="background: url(statics/refer_friend_bg.png) center bottom / cover no-repeat rgb(255, 255, 255) !important; min-height: 390px; box-shadow: none !important; border-radius: 0px;" />
     <div v-else
     class="column flex-center profile-wrapper--header"
-    :class="{'desktop-ui' : !isMobile, 'selected-wallet':  !isMobile && !$store.state.currentwallet.wallet.empty}"
+    :class="{'desktop-ui' : !isMobile, 'selected-wallet':  !isMobile && !$store.getters['currentwallet/getWallet'].empty}"
     :style="$store.state.settings.lightMode === 'true' ? `background: url('statics/header_bg3.png')` : `background: url('statics/header_bg3light.png')`"
     >
-      <q-btn v-if="!isMobile && !$store.state.currentwallet.wallet.empty" flat round @click="resetSelectedWallet()" to="/verto/dashboard" color="transparent" class="reset-btn" text-color="white" size="md" icon="close" />
+      <q-btn v-if="!isMobile && !$store.getters['currentwallet/getWallet'].empty" flat round @click="resetSelectedWallet()" to="/verto/dashboard" color="transparent" class="reset-btn" text-color="white" size="md" icon="close" />
       <h3 class="profile-wrapper--header__title" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
-      v-if="!isMobile && !$store.state.currentwallet.wallet.empty">{{$store.state.currentwallet.wallet.name.replace('- HD', '')}}</h3>
+      v-if="!isMobile && !$store.getters['currentwallet/getWallet'].empty">{{$store.getters['currentwallet/getWallet'].name.replace('- HD', '')}}</h3>
       <h3 class="profile-wrapper--header__title" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-else>{{ chainData ?  chainData.label : 'Main Portfolio' }}</h3>
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
-      v-if="!isMobile && !$store.state.currentwallet.wallet.empty && balance.equivType">${{ balance.usd }} USD <span class="profile-wrapper--header__equivalent" v-if="!isNaN(balance.equivAmount) ">Equivalent to <b>{{ isNaN(balance.equivAmount) ? 0 : nFormatter2(+balance.equivAmount,3) + ' ' + balance.equivType.toUpperCase() }}</b></span></h2>
+      v-if="!isMobile && !$store.getters['currentwallet/getWallet'].empty && balance.equivType">${{ balance.usd }} USD <span class="profile-wrapper--header__equivalent" v-if="!isNaN(balance.equivAmount) ">Equivalent to <b>{{ isNaN(balance.equivAmount) ? 0 : nFormatter2(+balance.equivAmount,3) + ' ' + balance.equivType.toUpperCase() }}</b></span></h2>
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-else>${{ nFormatter2( chainData ?  chainData.total : $store.state.wallets.portfolioTotal , 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <!-- {{$store.state.wallets.portfolioTotal}} -->
       <div class="profile-wrapper--header__action">
 
         <q-btn unelevated v-if="screenSize <= 1024"
-          :disable="$store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.state.currentwallet.wallet.chain))"
+          :disable="$store.getters['currentwallet/getWallet'].type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.getters['currentwallet/getWallet'].chain))"
           to="/verto/wallets/send" outline
           class="profile-wrapper--header__action-btn --send"
           :class="{'--dark':$store.state.settings.lightMode === 'true'}"
           color="white" text-color="white" label="Send" />
         <q-btn unelevated v-if="screenSize > 1024"
-          :disable="!$store.state.settings.devMode && ($store.state.settings.devMode && ($store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','btc','dot', 'ksm','bnb','avax'].includes($store.state.currentwallet.wallet.chain))))"
-          @click="!$store.state.currentwallet.wallet.empty ? goToSendPage() : notifSelectWallet()"
+          :disable="!$store.state.settings.devMode && ($store.state.settings.devMode && ($store.getters['currentwallet/getWallet'].type === 'verto' || !(['eos','eth','btc','dot', 'ksm','bnb','avax'].includes($store.getters['currentwallet/getWallet'].chain))))"
+          @click="!$store.getters['currentwallet/getWallet'].empty ? goToSendPage() : notifSelectWallet()"
           class="profile-wrapper--header__action-btn --send" outline
           :class="{'--dark':$store.state.settings.lightMode === 'true'}"
           color="white" text-color="white" label="Send" />
         <q-btn unelevated v-if="screenSize <= 1024"
           to="/verto/wallets/receive"
-          :disable="!$store.state.settings.devMode && ($store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.state.currentwallet.wallet.chain)))"
+          :disable="!$store.state.settings.devMode && ($store.getters['currentwallet/getWallet'].type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.getters['currentwallet/getWallet'].chain)))"
           class="profile-wrapper--header__action-btn --receive" outline
           :class="{'--dark':$store.state.settings.lightMode === 'true'}"
           color="indigo-12" text-color="white" label="Receive" />
         <q-btn unelevated v-if="screenSize > 1024"
-          :disable="!$store.state.settings.devMode && ( $store.state.currentwallet.wallet.type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.state.currentwallet.wallet.chain)))"
-          @click="!$store.state.currentwallet.wallet.empty ? goToReceivePage() : notifSelectWallet()"
+          :disable="!$store.state.settings.devMode && ( $store.getters['currentwallet/getWallet'].type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.getters['currentwallet/getWallet'].chain)))"
+          @click="!$store.getters['currentwallet/getWallet'].empty ? goToReceivePage() : notifSelectWallet()"
           :class="{'--dark':$store.state.settings.lightMode === 'true'}"
           class="profile-wrapper--header__action-btn --receive" outline
           color="indigo-12" text-color="white" label="Receive" />
@@ -180,12 +180,12 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   updated () {
-    // this.selectedCoin = this.$store.state.currentwallet.wallet
+    // this.selectedCoin = this.$store.getters['currentwallet/getWallet']
     // console.log('this.selectedCoin updated()', this.selectedCoin)
   },
   // computed: {
   //   selectedCoin () {
-  //     return this.$store.state.currentwallet.wallet || undefined
+  //     return this.$store.getters['currentwallet/getWallet'] || undefined
   //   }
   // },
   async created () {
@@ -198,12 +198,12 @@ export default {
       w.chain === 'eos' ? w.name.toLowerCase() === params.accountName : w.key === params.accountName)
     )
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${params.chainID}/${params.tokenID}/${params.accountName}` : '/verto/wallets'
-
+    /*
     this.tableData.map(token => {
       this.totalBalance = this.totalBalance + (token.usd ? token.usd : 0)
     })
     // console.log('this.currentAccount from ProfileHeader****************', this.currentAccount, params)
-
+   */
     if (this.currentAccount === undefined) {
       this.currentAccount = {
         selected: false,
@@ -230,21 +230,22 @@ export default {
     balance () {
       let total = {
         usd: 0,
-        equivType: this.$store.state.currentwallet.wallet.chain,
+        equivType: this.$store.getters['currentwallet/getWallet'].chain,
         equivAmount: 0
       }
 
-      if (['eos', 'eth'].includes(this.$store.state.currentwallet.wallet.chain)) {
-        let account = this.$store.state.wallets.tokens.find(o => ['eos', 'eth'].includes(this.$store.state.currentwallet.wallet.chain) && o.name.toLowerCase() === this.$store.state.currentwallet.wallet.name.toLowerCase())
-        total.usd = this.nFormatter2(account.total, 3)
-        total.equivType = this.$store.state.currentwallet.wallet.type
-        total.equivAmount = account.total / +this.$store.state.currentwallet.wallet.tokenPrice
-      } else if (!isNaN(this.$store.state.currentwallet.wallet.usd)) {
-        total.usd = this.nFormatter2(this.$store.state.currentwallet.wallet.usd, 3)
-        total.equivType = this.$store.state.currentwallet.wallet.type
-        total.equivAmount = this.$store.state.currentwallet.wallet.usd / +this.$store.state.currentwallet.wallet.tokenPrice
+      if (this.$store.getters['currentwallet/getWallet'].chain) {
+        if (['eos', 'eth'].includes(this.$store.getters['currentwallet/getWallet'].chain)) {
+          let account = this.$store.state.wallets.tokens.find(o => ['eos', 'eth'].includes(this.$store.getters['currentwallet/getWallet'].chain) && o.name.toLowerCase() === this.$store.getters['currentwallet/getWallet'].name.toLowerCase())
+          total.usd = this.nFormatter2(account.total, 3)
+          total.equivType = this.$store.getters['currentwallet/getWallet'].type
+          total.equivAmount = account.total / +this.$store.getters['currentwallet/getWallet'].tokenPrice
+        } else if (!isNaN(this.$store.getters['currentwallet/getWallet'].usd)) {
+          total.usd = this.nFormatter2(this.$store.getters['currentwallet/getWallet'].usd, 3)
+          total.equivType = this.$store.getters['currentwallet/getWallet'].type
+          total.equivAmount = this.$store.getters['currentwallet/getWallet'].usd / +this.$store.getters['currentwallet/getWallet'].tokenPrice
+        }
       }
-
       return total
     }
   },
@@ -271,7 +272,7 @@ export default {
         token.selected = false
       })
 
-      // console.log('this.$store.state.currentwallet.wallet = { empty: true } called')
+      // console.log('this.$store.getters['currentwallet/getWallet'] = { empty: true } called')
     },
     notifSelectWallet () {
       this.$q.notify.registerType('my-notif', {
