@@ -787,6 +787,7 @@ class Wallets2Tokens {
           .map(eth => {
             eth.amount = ethBalance.ammount
             eth.usd = ethBalance.usd
+            eth.isEvm = true
             eth.icon = 'https://zapper.fi/images/ETH-icon.png'
           })
 
@@ -795,6 +796,7 @@ class Wallets2Tokens {
           .forEach(t => {
             this.tableData.push({
               disabled: false,
+              isEvm: true,
               type: t.symbol ? t.symbol.toLowerCase() : '',
               name: wallet.name,
               key: wallet.key,
