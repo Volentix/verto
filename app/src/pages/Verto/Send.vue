@@ -103,8 +103,10 @@
       </q-card>
     </q-dialog>
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+
       <div class="desktop-version full-height" v-if="screenSize > 1024">
         <div class="row full-height">
+
           <div class="col col-md-3" v-if="!embedded">
             <div class="wallets-container" style="height: 100%">
               <profile-header :isMobile="false" class="marg" version="type2222" />
@@ -119,16 +121,18 @@
                 <div class="standard-content--body">
                   <div class="standard-content--body__form">
                     <div class="row">
-                      <div class="col col-8 q-pr-lg" v-if="['eth','eos'].includes(selectedCoin.chain)">
+                      <div class="col col-8 q-pr-lg" v-if="selectedCoin.chain == 'eos' || selectedCoin.isEvm">
                         <span class="lab-input">Select token </span>
+
                         <q-select
                             :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                             separator
                             rounded
                             outlined
                             class="select-input"
+                            @input="checkGas()"
                             v-model="currentToken"
-                            :options="options.filter( o => o.chainID == selectedCoin.chain && o.label.toLowerCase() == selectedCoin.name.toLowerCase())"
+                            :options="options.filter( o => o.chainID == selectedCoin.chain && ((selectedCoin.isEvm && o.key.toLowerCase() == selectedCoin.key.toLowerCase()) || (o.label.toLowerCase() == selectedCoin.name.toLowerCase())))"
                         >
                           <template v-slot:option="scope">
                             <q-item
@@ -226,7 +230,7 @@
                       </div>
                       <div class="col col-4">
                         <span class="lab-input">Amount</span>
-                        <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentToken.amount) ? parseFloat(currentToken.amount) : parseFloat(sendAmount) ; checkGas();" :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
+                        <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentToken.amount) ? parseFloat(currentToken.amount) : parseFloat(sendAmount) ; checkGas(); " :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                           <template v-slot:append>
                             <div class="flex justify-end">
                               <span class="tokenID">{{ currentToken.type }}</span>
@@ -260,14 +264,14 @@
                         </q-input>
                       </div>
                       <div class="col col-12">
-                        <span v-if="currentToken.chainID && currentToken.chainID.toLowerCase() != 'eth'" class="lab-input">Memo</span>
-                        <q-input :disable="disableMemoEdit" v-if="currentToken.chainID && currentToken.chainID.toLowerCase() != 'eth'" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+                        <span v-if="currentToken.chainID && !currentAccount.isEvm" class="lab-input">Memo</span>
+                        <q-input :disable="disableMemoEdit" v-if="currentToken.chainID && !currentAccount.isEvm" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
                       </div>
                     </div>
                   </div>
                   <br>
                 </div>
-                <q-list v-if="gasOptions.length && currentAccount.chain == 'eth' " class="gasfield q-mb-md"  separator>
+                <q-list v-if="gasOptions.length && currentAccount.isEvm" class="gasfield q-mb-md"  separator>
                     <q-item dense class="gasSelector">
                         <q-item-section v-for="(gas, index) in gasOptions" :key="index">
                             <q-item :class="[gasSelected.label == gas.label && !customGas ? 'selected bg-black text-white' : '' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
@@ -295,11 +299,11 @@
                     </q-item>
                 </q-list>
 
-                <div class="row q-col-gutter-md" style="max-width:300px" v-if="showGasOptions &&  currentAccount.chain == 'eth'">
+                <div class="row q-col-gutter-md" style="max-width:300px" v-if="showGasOptions &&  currentAccount.isEvm">
                  <q-input outlined label="Gas Price (GWEI)"  @input="isBalanceEnough(); setCustomGas()" v-model="gasPriceGwei" dense   class="col-6"/>
                  <q-input outlined label="Gas limit" @input="isBalanceEnough(); setCustomGas()"  v-model="gasLimit" dense  class="col-6" />
                 </div>
-                <span v-if="gasOptions.length && currentAccount.chain == 'eth' ">
+                <span v-if="gasOptions.length && currentAccount.isEvm">
                 <span class="q-pl-md cursor-pointer" @click="showGasOptions = true" v-if="!showGasOptions"><q-icon name="add" /> Advanced options</span>
                 <span class="cursor-pointer q-pt-xs" @click="showGasOptions = false" v-else>Hide </span>
                 </span>
@@ -383,11 +387,12 @@ import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EOSContract from '../../mixins/EOSContract'
 import ETHContract from '../../mixins/EthContract'
+import initWallet from '@/util/Wallets2Tokens'
 import {
   mapState
 } from 'vuex'
 let cruxClient
-
+const Web3 = require('web3')
 export default {
   components: {
     // desktop components
@@ -477,6 +482,10 @@ export default {
     gasPrice: function (newVal) {
       this.checkGas()
     },
+    '$store.state.wallets.tokens': function (tokens) {
+      console.log(tokens, 'tokens')
+      this.setOptions()
+    },
     gasSelected (val) {
       this.gasPriceGwei = val.gasPrice / 1000000000
       this.gasLimit = val.gas
@@ -490,6 +499,7 @@ export default {
       this.isBalanceEnough()
     },
     currentToken: function (newVal) {
+      console.log(newVal, 'newVal')
       if (newVal) {
         /*
         this.from = newVal.label
@@ -533,43 +543,10 @@ export default {
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
 
-    let self = this
-    this.tableData.map(token => {
-      if (!token.disabled && token.type.toLowerCase() !== 'verto' && parseFloat(token.amount) > 0) {
-        self.options.push({
-          label: token.name.toLowerCase(),
-          value: !['eos', 'eth'].includes(token.chain) ? token.key : token.key + ' - ' + token.type.toUpperCase(),
-          image: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
-          type: token.type,
-          contract: token.contract,
-          key: token.key,
-          name: token.name,
-          precision: token.precision,
-          amount: token.amount,
-          chainID: token.chain
-        })
-      }
-    })
-
-    if (this.selectedCoin) {
-      this.currentAccount = this.selectedCoin
-      this.currentToken = {
-        label: this.selectedCoin.name,
-        value: this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.key + ' - ' + this.selectedCoin.type.toUpperCase(),
-        image: this.selectedCoin.type !== 'usdt' ? this.selectedCoin.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
-        type: this.selectedCoin.type,
-        contract: this.selectedCoin.contract,
-        precision: this.selectedCoin.precision,
-        chainID: this.selectedCoin.chain,
-        key: this.selectedCoin.key,
-        name: this.selectedCoin.name,
-        amount: this.selectedCoin.amount
-      }
-    } else {
-      this.currentAccount = this.getCurrentWallet()
-    }
+    this.setOptions()
 
     this.currentAccount = this.currentAccount || this.currentToken
+
     if (this.params.chainID === undefined) {
       this.params = {
         chainID: this.currentAccount.chain,
@@ -589,23 +566,51 @@ export default {
     } else {
       this.isPrivateKeyEncrypted = true
     }
-    /*
-    this.cruxKey = await HD.Wallet('crux')
-
-    cruxClient = new CruxPay.CruxClient({
-      walletClientName: this.walletClientName,
-      privateKey: this.cruxKey.privateKey
-    })
-    await cruxClient.init()
-
-    */
 
     this.$store.dispatch('investment/getGasPrice')
 
     this.checkGas()
   },
   methods: {
+    refresh () {
+      initWallet(this.currentAccount.name)
+    },
+    setOptions () {
+      this.tableData.map(token => {
+        if (!token.disabled && token.type.toLowerCase() !== 'verto' && parseFloat(token.amount) > 0) {
+          this.options.push({
+            label: token.name.toLowerCase(),
+            value: token.key + ' - ' + token.type.toUpperCase(),
+            image: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+            type: token.type,
+            contract: token.contract,
+            key: token.key,
+            name: token.name,
+            precision: token.precision,
+            amount: token.amount,
+            chainID: token.chain
+          })
+        }
+      })
 
+      if (this.selectedCoin) {
+        this.currentAccount = this.selectedCoin
+        this.currentToken = {
+          label: this.selectedCoin.name,
+          value: this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.key + ' - ' + this.selectedCoin.type.toUpperCase(),
+          image: this.selectedCoin.type !== 'usdt' ? this.selectedCoin.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+          type: this.selectedCoin.type,
+          contract: this.selectedCoin.contract,
+          precision: this.selectedCoin.precision,
+          chainID: this.selectedCoin.chain,
+          key: this.selectedCoin.key,
+          name: this.selectedCoin.name,
+          amount: this.selectedCoin.amount
+        }
+      } else {
+        this.currentAccount = this.getCurrentWallet()
+      }
+    },
     setCustomGas () {
       this.customGas = {
         value: this.converGasPriceToUSD(+this.gasPriceGwei, +this.gasLimit).toFixed(2),
@@ -623,10 +628,9 @@ export default {
     },
     isBalanceEnough () {
       if (!this.gasSelected || this.currentToken.chainID !== 'eth') return
-      const Web3 = require('web3')
 
       let ethValue = Web3.utils.fromWei(Math.round(((+this.gasPriceGwei) * 1000000000 * (+this.gasLimit))).toString(), 'ether')
-      console.log(ethValue, 'this.gasLimit)')
+
       this.sendAmount = parseFloat(this.sendAmount) === 0 && parseFloat(this.currentToken.amount) !== 0 ? this.currentToken.amount : this.sendAmount
       if ((parseFloat(this.sendAmount) + parseFloat(ethValue)) > parseFloat(this.currentToken.amount)) {
         this.sendAmount = parseFloat(this.currentToken.amount) - parseFloat(ethValue).toFixed(8)
@@ -699,7 +703,7 @@ export default {
         }
       }
 
-      if (this.currentAccount.chain === 'eth') {
+      if (this.currentAccount.isEvm) {
         this.checkGas()
       }
     },
@@ -730,20 +734,28 @@ export default {
       }
     },
     checkGas () {
-      if (this.currentAccount.chain !== 'eth') return
-
       try {
         if (this.sendAmount && this.sendToResolved) {
           Lib.getRawETHTransaction(
-            this.currentAccount.type,
+            this.currentToken.type,
             this.currentAccount.key,
             this.sendToResolved,
             this.sendAmount,
             this.privateKey.key,
-            this.currentAccount.contract
+            this.currentToken.contract,
+            'mnemonic',
+            this.currentAccount.chain
           ).then((tx) => {
-            console.log(tx, 'tx')
-            this.getGasOptions(tx, this.gasLimit)
+            if (this.currentAccount.chain !== 'eth') {
+              console.log(this.currentAccount, this.currentToken, 77)
+              Lib.gas(this.currentAccount.chain, tx, this.currentToken.type).then(res => {
+                res.value = Web3.utils.fromWei(res.gasPrice.toString(), 'ether') * this.$store.state.currentwallet.wallet.tokenPrice * res.gas
+                this.gasOptions = [res]
+                this.gasSelected = res
+              })
+            } else {
+              this.getGasOptions(tx, this.gasLimit, this.currentAccount.chain)
+            }
           })
         }
       } catch (error) {
@@ -756,7 +768,8 @@ export default {
       this.transStatus = 'Transaction in progress'
 
       // Pass gas details in memo
-      if (this.currentAccount.chain === 'eth') {
+      console.log(this.currentAccount, 'this.currentAccount')
+      if (this.currentAccount.isEvm) {
         this.sendMemo = {
           gasData: this.customGas ? this.customGas : this.gasSelected,
           txData: null
@@ -772,6 +785,7 @@ export default {
         this.sendMemo,
         this.privateKey.key,
         this.currentToken.contract
+
       ).then(result => {
         if (result.success) {
           this.getPassword = false
@@ -781,6 +795,7 @@ export default {
           this.transSuccessDialog = true
           this.transactionLink = result.message
           this.transStatus = !result.status ? 'Sent Successfully' : result.status
+          initWallet(this.currentAccount.name)
         } else {
           if (result.message.toString().includes('is greater than the maximum billable CPU time for the transaction') || result.message.toString().includes('the current CPU usage limit imposed on the transaction')) {
             this.payForUserCPU()
@@ -835,6 +850,7 @@ export default {
           this.transSuccessDialog = true
           this.transactionLink = result.message
           this.transStatus = !result.status ? 'Sent Successfully' : result.status
+          initWallet(this.currentAccount.name)
         } else {
           this.unknownError = true
           this.ErrorMessage = result.message
