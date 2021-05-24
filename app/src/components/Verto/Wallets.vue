@@ -158,18 +158,19 @@
 
                             <q-card :dark="$store.state.settings.lightMode === 'true'">
                             <q-card-section>
-                                <q-item :set="chainTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && f.name.toLowerCase() == item.name.toLowerCase())" :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter((f, i, c) =>  f.type === chain.chain ||((!['eos', 'eth'].includes(f.chain) && f.chain == chain.chain) && c.findIndex(t => (t.key.toLowerCase() === f.key.toLowerCase())) === i)).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                                <q-item :set="chainTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && ((f.isEvm  && f.key.toLowerCase() == item.key.toLowerCase() )|| ( !f.isEvm && item.chain == f.chain && f.name.toLowerCase() == item.name.toLowerCase())))" :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter((f, i, c) =>  ((f.type === chain.chain && ['eos', 'eth'].includes(f.chain)) && f.chain == chain.chain) ||  ( c.findIndex(t => (chain.evmChain && f.key == t.key && chain.chain == t.chain && t.isEvm)) === i) ).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                                 <div class="header-wallet-wrapper culumn full-width">
                                     <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
-                                            <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
+                                           <q-icon name="fiber_manual_record" :color="getRandomColor()"/>
                                         </q-item-section>
                                         <q-item-section class="item-name">
-                                            <span class="item-name--name">{{item.name}}</span>
+                                            <span class="item-name--name" v-if="item.isEvm"> {{item.key.substr(item.key.length - 6)}}</span>
+                                            <span class="item-name--name" v-else> {{item.name}}</span>
                                             <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
 
                                             <span  class="item-name--staked" >{{chainTokens.length}} token{{ chainTokens.length > 1 ? 's' : '' }}</span>
-
+                                            <span  class="item-name--staked" ></span>
                                         </q-item-section>
                                         <q-item-section class="item-info" v-if="!item.disabled">
                                             <span class="item-info--amount">{{formatNumber(item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(4) : new Number(item.amount).toFixed(4).toString()) : 0, 2) }} {{item.type.toUpperCase()}}</span>
@@ -502,7 +503,7 @@
 
                         </q-expansion-item>
 
-                      <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="chain.count == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type === chain.chain ||(!['eos', 'eth'].includes(f.chain) && f.chain == chain.chain)), false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                                          <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="chain.count == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type === chain.chain ||(!['eos', 'eth'].includes(f.chain) && f.chain == chain.chain)), false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" :src="chain.icon"  />
@@ -512,6 +513,7 @@
                             <span  class="item-name--staked" v-if="loadingIndex == index + 1 "> <q-spinner-dots color="primary" size="2em" /> </span>
                             <span  class="item-name--staked" v-else-if="chain.count > 1">{{chain.count}} accounts</span>
                             <span   class="item-name--staked" v-else-if="chain.count == 1 &&  tokensCount.length > 1">{{tokensCount.length}} tokens</span>
+
                             </q-item-section>
 
                             <q-item-section class="item-info col" side>
@@ -524,18 +526,19 @@
 
                             <q-card :dark="$store.state.settings.lightMode === 'true'">
                             <q-card-section>
-                                <q-item  :set="chainTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && f.name.toLowerCase() == item.name.toLowerCase())"  :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.type == chain.chain && f.chain == chain.chain && !f.hidden && !f.disabled).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                                <q-item :set="chainTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && ((f.isEvm  && f.key.toLowerCase() == item.key.toLowerCase() )|| ( !f.isEvm && item.chain == f.chain && f.name.toLowerCase() == item.name.toLowerCase())))" :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter((f, i, c) =>  ((f.type === chain.chain && ['eos', 'eth'].includes(f.chain)) && f.chain == chain.chain) ||  ( c.findIndex(t => (chain.evmChain && f.key == t.key && chain.chain == t.chain && t.isEvm)) === i) ).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                                 <div class="header-wallet-wrapper culumn full-width">
                                     <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
-                                            <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
+                                           <q-icon name="fiber_manual_record" :color="getRandomColor()"/>
                                         </q-item-section>
                                         <q-item-section class="item-name">
-                                            <span class="item-name--name">{{item.name}}</span>
+                                            <span class="item-name--name" v-if="item.isEvm"> {{item.key.substr(item.key.length - 6)}}</span>
+                                            <span class="item-name--name" v-else> {{item.name}}</span>
                                             <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
 
                                             <span  class="item-name--staked" >{{chainTokens.length}} token{{ chainTokens.length > 1 ? 's' : '' }}</span>
-
+                                            <span  class="item-name--staked" ></span>
                                         </q-item-section>
                                         <q-item-section class="item-info" v-if="!item.disabled">
                                             <span class="item-info--amount">{{formatNumber(item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(4) : new Number(item.amount).toFixed(4).toString()) : 0, 2) }} {{item.type.toUpperCase()}}</span>
@@ -778,7 +781,7 @@
                             </q-card>
 
                         </q-expansion-item>
-                 <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="chain.count == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type === chain.chain ||(!['eos', 'eth'].includes(f.chain) && f.chain == chain.chain)), false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                                      <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="chain.count == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type === chain.chain ||(!['eos', 'eth'].includes(f.chain) && f.chain == chain.chain)), false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" :src="chain.icon"  />
@@ -791,28 +794,30 @@
 
                             </q-item-section>
 
-                      <q-item-section class="item-info col" side>
-                      <div class="row items-center text-bold">
+                            <q-item-section class="item-info col" side>
+                            <div class="row items-center text-bold">
 
-                      <span> ${{formatNumber(chain.chainTotal ? chain.chainTotal.toFixed(0) : 0 , 0)}}</span>
-                          </div>
-                      </q-item-section>
-                  </template>
-                  <q-card :dark="$store.state.settings.lightMode === 'true'">
-                    <q-card-section>
-                        <q-item :set="chainTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && f.name.toLowerCase() == item.name.toLowerCase())" :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.type == chain.chain && f.chain == chain.chain && !f.hidden && !f.disabled).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
-                        <div class="header-wallet-wrapper culumn full-width">
-                            <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
-                                <q-item-section avatar>
-                                    <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
-                                </q-item-section>
-                                <q-item-section class="item-name">
-                                    <span class="item-name--name">{{item.name}}</span>
-                                    <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
+                            <span> ${{formatNumber(chain.chainTotal ? chain.chainTotal.toFixed(0) : 0 , 0)}}</span>
+                                </div>
+                            </q-item-section>
+                            </template>
 
-                                    <span  class="item-name--staked" >{{chainTokens.length}} token{{ chainTokens.length > 1 ? 's' : '' }}</span>
+                            <q-card :dark="$store.state.settings.lightMode === 'true'">
+                            <q-card-section>
+                                <q-item :set="chainTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && ((f.isEvm  && f.key.toLowerCase() == item.key.toLowerCase() )|| ( !f.isEvm && item.chain == f.chain && f.name.toLowerCase() == item.name.toLowerCase())))" :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter((f, i, c) =>  ((f.type === chain.chain && ['eos', 'eth'].includes(f.chain)) && f.chain == chain.chain) ||  ( c.findIndex(t => (chain.evmChain && f.key == t.key && chain.chain == t.chain && t.isEvm)) === i) ).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                                <div class="header-wallet-wrapper culumn full-width">
+                                    <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
+                                        <q-item-section avatar>
+                                           <q-icon name="fiber_manual_record" :color="getRandomColor()"/>
+                                        </q-item-section>
+                                        <q-item-section class="item-name">
+                                            <span class="item-name--name" v-if="item.isEvm"> {{item.key.substr(item.key.length - 6)}}</span>
+                                            <span class="item-name--name" v-else> {{item.name}}</span>
+                                            <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
 
-                                </q-item-section>
+                                            <span  class="item-name--staked" >{{chainTokens.length}} token{{ chainTokens.length > 1 ? 's' : '' }}</span>
+                                            <span  class="item-name--staked" ></span>
+                                        </q-item-section>
                                 <q-item-section class="item-info" v-if="!item.disabled">
                                     <span class="item-info--amount">{{formatNumber(item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(4) : new Number(item.amount).toFixed(4).toString()) : 0, 2) }} {{item.type.toUpperCase()}}</span>
                                     <span class="item-info--amountUSD" v-if="item.total">${{formatNumber(new Number(isNaN(item.total) ? 0 : item.total).toFixed(2),0)}}</span>
@@ -1035,6 +1040,14 @@ export default {
     }
   },
   methods: {
+    getRandomColor () {
+      const randomNumber = (min, max) => {
+        return Math.floor(Math.random() * max) + min
+      }
+      let colors = 'red pink purple deep-purple indigo blue cyan teal yellow amber blue-grey'
+      let arrayColors = colors.split(' ')
+      return arrayColors[randomNumber(0, arrayColors.length - 1)] + '-' + randomNumber(0, 14)
+    },
     showSetupEos () {
       this.hideEosSetup = !this.$store.state.wallets.tokens.find(f => f.type === 'verto' && f.chain === 'eos' && !f.hidden && !f.disabled)
       let check = localStorage.getItem('hideEosSetup')
@@ -1058,6 +1071,7 @@ export default {
           o.count = o.accounts.length
           if (evmChain) o.icon = evmChain.icon
           let chain = HD.names.find(a => a.value === o.chain)
+          o.evmChain = evmChain
 
           o.label = chain ? chain.label : o.chain
 
