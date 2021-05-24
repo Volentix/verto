@@ -601,7 +601,7 @@ export default {
         token.amount = parseFloat(token.amount)
         token.usd = parseFloat(token.usd)
 
-        if (!isNaN(token.amount) && token.amount !== 0) {
+        if ((!isNaN(token.amount) && token.amount !== 0) || token.isEvm) {
           if (this.assets.find(o => o.type === token.type && o.chain === token.chain && (token.chain !== 'eos' || o.contract === token.contract))) {
             let index = this.assets.findIndex(o => o.type === token.type)
 

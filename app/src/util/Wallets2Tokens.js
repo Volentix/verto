@@ -15,10 +15,10 @@ class Wallets2Tokens {
     // store.state.wallets.portfolioTotal = 0
     /*
     store.state.currentwallet.config.keys.push({
-      chain: 'eos',
-      type: 'eos',
-      name: 'operationtoz',
-      key: '0x4a02dEADD223E106185144181B0816549Edec862'
+      chain: 'eth',
+      type: 'eth',
+      name: 'test',
+      key: '0x508f51c6fe10E5117caaEF3306fd2126A161825a'
     })
 */
     if (data) {
@@ -359,7 +359,7 @@ class Wallets2Tokens {
               if (!ethplorer || !ethplorer.ETH) { return this.getEthBalanceFromZapper(wallet) }
 
               self.tableData
-                .filter(w => w.key === wallet.key)
+                .filter(w => w.key === wallet.key && w.type === 'eth' && w.chain === 'eth')
                 .map(eth => {
                   eth.amount = ethplorer.ETH.balance
                   eth.isEvm = true
@@ -783,7 +783,7 @@ class Wallets2Tokens {
         }
 
         this.tableData
-          .filter(w => w.key.toLowerCase() === wallet.key.toLowerCase())
+          .filter(w => w.key.toLowerCase() === wallet.key.toLowerCase() && w.type === 'eth' && w.chain === 'eth')
           .map(eth => {
             eth.amount = ethBalance.ammount
             eth.usd = ethBalance.usd

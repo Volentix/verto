@@ -737,65 +737,6 @@ class Lib {
           message
         }
       },
-      async bsc2 (token, from, to, value, memo, key, contract) {
-        /* const avgGasPrice = await this.web3.eth.getGasPrice()
-
-        const createTransaction = await this.web3.eth.accounts.signTransaction(
-          {
-            from: from,
-            to: to,
-            value: this.web3.utils.toWei(amount.toString(), 'ether'),
-            gas: 21000,
-            gasPrice: avgGasPrice
-          },
-          key
-        )
-
-        console.log(createTransaction)
-
-        // Deploy transaction
-        const createReceipt = await this.web3.eth.sendSignedTransaction(
-          createTransaction.rawTransaction
-        )
-
-        let message, success
-        try {
-          const res = await httpClient.get(sequenceURL)
-          const sequence = res.data.sequence || 0
-          const result = await bnbClient.transfer(
-            from,
-            to,
-            value,
-            token.toUpperCase(),
-            memo,
-            sequence
-          )
-
-          console.log(result)
-          if (result.status === 200) {
-            console.log('success', result.result[0].hash)
-
-            message = 'https://explorer.binance.org/tx/' + result.result[0].hash
-            success = true
-          } else {
-            console.error('error else', result.message)
-
-            message = result.message
-            success = false
-          }
-        } catch (error) {
-          console.error('error catch', error)
-
-          message = error
-          success = false
-        }
-
-        return {
-          message,
-          success
-        }
-        */
-      },
       async bnb (token, from, to, value, memo, key, contract) {
         const { BncClient } = require('@binance-chain/javascript-sdk')
         const api = 'https://dex.binance.org/'
