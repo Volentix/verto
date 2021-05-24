@@ -446,11 +446,11 @@
                         </q-item>
                     </div>
                 </q-list>
-
-                <div class="wallet-list q-pa-sm text-body1 q-mt-md text-grey-9" v-if="$store.state.currentwallet.wallet.chain" >
+               <div v-if="$store.state.currentwallet.wallet.chain"  >
+                <div class="wallet-list q-pa-sm text-body1 q-mt-md text-grey-9" >
                    <q-icon name="add" /> More wallets and accounts
                 </div>
-                   <q-expansion-item   v-if="$store.state.currentwallet.wallet.chain"  :style="setPosition(99999999)" @click="vtxAccounts.length == 1 ? showMenu(vtxAccounts[0]) : showChainAccounts('', 'vtx')"  :key="Math.random()" clickable  >
+                   <q-expansion-item    :style="setPosition(99999999)" @click="vtxAccounts.length == 1 ? showMenu(vtxAccounts[0]) : showChainAccounts('', 'vtx')"  :key="Math.random()" clickable  >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" src="statics/icons/favicon-32x32.png"  />
@@ -512,7 +512,6 @@
                             <span  class="item-name--staked" v-if="loadingIndex == index + 1 "> <q-spinner-dots color="primary" size="2em" /> </span>
                             <span  class="item-name--staked" v-else-if="chain.count > 1">{{chain.count}} accounts</span>
                             <span   class="item-name--staked" v-else-if="chain.count == 1 &&  tokensCount.length > 1">{{tokensCount.length}} tokens</span>
-
                             </q-item-section>
 
                             <q-item-section class="item-info col" side>
@@ -557,6 +556,7 @@
                             </q-card>
 
                         </q-expansion-item>
+                        </div>
             </q-scroll-area>
             <!-- <div v-if="$store.state.currentwallet.wallet.empty" class="add-remove-wrapper flex column flex-center item-center content-center">
                 <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Hide Currencies' : 'Show Currencies'" :class="showText ? 'open': 'hide'" />
