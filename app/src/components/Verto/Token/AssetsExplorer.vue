@@ -58,7 +58,7 @@
       <div class="q-pt-md" v-show="filterTokens(item).length || tokenSearchVal.length" v-for="(item, index) in assetsOptions.filter(o =>  !allAssets || o.title == allAssets.title)" :key="index+uniqueKey">
         <div class="sub-top sub-top-chart">
           <div class="subt-text " v-if="!allAssets" >
-            <p class="q-ma-none text-bold text-body1">{{item.title}} <span class="text-body2 gt-sm">| {{item.subtitle}}</span></p>
+            <p class="q-ma-none text-bold text-body1">{{getSectionTitle(item)}} <span class="text-body2 gt-sm">| {{item.subtitle}}</span></p>
           </div>
           <div class="subt-text" v-else>
             <p>
@@ -273,6 +273,7 @@ export default {
     return {
       chartData: false,
       listViewMode: 'card',
+      chainSelected: false,
       uniqueKey: 1235878,
       allAssets: null,
       currentChain: false,
@@ -503,7 +504,7 @@ export default {
     },
     getInvestedTokens (investments) {
       let assets = []
-      console.log(investments, 'investments eth')
+
       investments.forEach(t => {
         t.tokens.forEach(a => {
           let protocolData = this.platformOptions.find(o => o.label.toLowerCase() === t.protocolDisplay.toLowerCase())
@@ -589,11 +590,17 @@ export default {
       }
       return tokens
     },
+    getSectionTitle (item) {
+      return this.chainSelected && item.id === 'assets' ? item.title.replace(' ', ' ' + this.chainSelected + ' ') : item.title
+    },
     initTable (chain) {
       let account = null
 
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.name) {
         account = this.$store.state.currentwallet.wallet
+        this.getChainLabel(account.chain)
+      } else {
+        this.chainSelected = chain && chain !== 'vtx' ? this.getChainLabel(chain) : false
       }
       this.assets = []
 
@@ -615,8 +622,7 @@ export default {
             token.index = this.assets.length
             token.rateUsd = isNaN(token.tokenPrice) ? 0 : token.tokenPrice
             token.friendlyType = token.type.length > 6 ? token.type.substring(0, 6) + '...' : token.type
-            let isEvm = Lib.evms.find(a => a.chain === token.chain)
-            token.chainLabel = isEvm ? isEvm.name : HD.names.find(a => a.value === token.chain).label
+            token.chainLabel = this.getChainLabel(token.chain)
             token = this.getHistoricalValue(token)
             this.assets.push(token)
           }
@@ -639,6 +645,11 @@ export default {
         token.color = change > 0 ? 'text-green-6' : 'text-pink-12'
       }
       return token
+    },
+    getChainLabel (chain) {
+      let isEvm = Lib.evms.find(a => a.chain === chain)
+
+      return isEvm ? isEvm.name : HD.names.find(a => a.value === chain)?.label
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
