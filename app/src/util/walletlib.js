@@ -1,6 +1,7 @@
 import EosWrapper from '@/util/EosWrapper'
 import axios from 'axios'
 import store from '@/store'
+
 import {
   userError
 } from '@/util/errorHandler'
@@ -14,14 +15,16 @@ class Lib {
     this.evms = [{
       name: 'Ethereum Chain',
       chain: 'eth',
+      nativeToken: 'eth',
       icon: 'https://zapper.fi/images/ETH-icon.png',
-      provider: 'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63',
+      provider: 'https://mainnet.infura.io/v3/a66f85635aef42758bc4aeed2f295645',
       explorer: 'https://etherscan.io/tx/',
       gas: 'https://data-api.defipulse.com/api/v1/egs/api/ethgasAPI.json?api-key=61cb5f87d40937069b831354a3d9e8a5c1f1e69ebb755140b79e555249a8',
       network_id: 1
     }, {
       name: 'Binance Smart Chain',
-      chain: 'bnb',
+      chain: 'bsc',
+      nativeToken: 'bnb',
       icon: 'https://nownodes.io/images/binance-smart-chain/bsc-logo.png',
       provider: 'https://bsc-dataseed1.binance.org:443',
       explorer: 'https://bscscan.com/tx/',
@@ -60,11 +63,13 @@ class Lib {
     //   chain: 'mrk',
     //   network_id: 1285
     }]
+    // instance = this
   }
 
   async getRawETHTransaction (token, from, to, value, key, contract, origin = 'mnemonic', evm = 'eth') {
     const Web3 = require('web3')
-    let localWeb3 = new Web3(new Web3.providers.HttpProvider(this.evms.find(o => o.chain === evm).provider))
+    let evmData = this.evms.find(o => o.chain === evm)
+    let localWeb3 = new Web3(new Web3.providers.HttpProvider(evmData.provider))
     if (origin === 'metamask' && window.web3 && window.web3.currentProvider.isMetaMask) {
       localWeb3 = new Web3(window.web3.currentProvider)
     }
@@ -76,13 +81,13 @@ class Lib {
     let sendTo = to
     let data = null
 
-    if (token !== 'eth') {
+    if (token !== evmData.nativeToken) {
       let web3Contract = new localWeb3.eth.Contract(abiArray, contract)
       data = web3Contract.methods.transfer(to, web3Value).encodeABI()
 
-      web3Contract.methods.transfer(to, web3Value).estimateGas(function (error, gasAmount) {
+      /* web3Contract.methods.transfer(to, web3Value).estimateGas(function (error, gasAmount) {
         console.log(error, gasAmount, 'error, gasAmount)')
-      })
+      }) */
       sendTo = contract
       web3Value = '0x00'
     }
@@ -92,7 +97,7 @@ class Lib {
       to: sendTo,
       nonce,
       value: web3Value,
-      chainId: 1
+      chainId: evmData.network_id
     }
     if (data) {
       rawTx.data = data
@@ -342,7 +347,7 @@ class Lib {
     let historyData = {}
     let h = JSON.parse(cachedData)
     if (!cachedData || !h.history) {
-      historyData = await wallet(token, key, data)
+      historyData = wallet ? await wallet(token, key, data) : []
 
       this.cacheWalletHistoryData(historyData, key)
     }
@@ -534,8 +539,62 @@ class Lib {
 
     return wallet ? wallet(key, token) : {}
   }
+  getEvmData (chain) {
+    return this.evms.find(o => o.chain === chain)
+  }
+  getWeb3Instance (chain) {
+    const Web3 = require('web3')
+    return (new Web3(new Web3.providers.HttpProvider(this.getEvmData(chain).provider)))
+  }
+  gas = async (chain, transaction, type) => {
+    /*
+        {
+          gas: Number,
+          gasPrice: Number,
+          gasLabel: String,
+          usd: String,
+        }
+      */
+    let evmData = this.getEvmData(chain)
+    const web3 = this.getWeb3Instance(chain)
+    // const self = this
+    const wallet = {
+
+      async bsc (chain) {
+        let gasData = {
+          gas: 21000,
+          gasPrice: null,
+          label: 'Fee',
+          value: 0 // USD Price
+        }
+        /*
+          The difference between Binance Chain and Ethereum is that there is no notion of gas.
+          As a result, fees for the rest transactions are fixed.
+          https://docs.binance.org/guides/concepts/fees.html
+          */
+
+        let response = await axios.get(evmData.gas)
+        console.log(type, evmData.nativeToken)
+        if (type !== evmData.nativeToken) {
+          let gas = await web3.eth.estimateGas(transaction)
+          gasData.gas = gas
+          console.log(gas, 'gas')
+        }
+
+        if (response.data.result) {
+          gasData.gasPrice = web3.utils.hexToNumber(response.data.result)
+        }
+        return gasData
+      }
+
+    }
+
+    let value = await wallet[chain]()
+    return value
+  }
 
   send = async (walletType, token, from, to, value, memo, key, contract, data) => {
+    const self = this
     // console.log(walletType, token, from, to, value, memo, key, contract, data, 'walletType, token, from, to, value, memo, key, contract, data')
     const wallet = {
       async btc (token, from, to, value, memo, key) {
@@ -811,7 +870,7 @@ class Lib {
         }
       },
       async bsc (token, from, to, value, info, key, contract, evm = 'bsc') {
-        await this.eth(token, from, to, value, info, key, contract, evm)
+        return chainsWallets.eth(token, from, to, value, info, key, contract, evm)
       },
       async plg (token, from, to, value, info, key, contract, evm = 'plg') {
         await this.eth(token, from, to, value, info, key, contract, evm)
@@ -826,8 +885,9 @@ class Lib {
         // console.log('(token, from, to, value, gas, key, contract, info)', token, from, to, value, info, key, contract)
 
         const Web3 = require('web3')
+        let evmData = self.evms.find(o => o.chain === evm)
         const EthereumTx = require('ethereumjs-tx').Transaction
-        const web3 = new Web3(new Web3.providers.HttpProvider(this.evms.find(o => o.chain === evm).provider))
+        const web3 = new Web3(new Web3.providers.HttpProvider(evmData.provider))
 
         let nonce = await web3.eth.getTransactionCount(from)
 
@@ -836,7 +896,7 @@ class Lib {
         // let transactionHash = ''
         let sendTo = to
 
-        if (token !== 'eth') {
+        if (token !== evmData.nativeToken) {
           let web3Contract = new web3.eth.Contract(abiArray, contract)
           data = web3Contract.methods.transfer(to, web3Value).encodeABI()
 
@@ -852,28 +912,35 @@ class Lib {
           value: web3Value,
           data,
           nonce,
-          chainId: 1
+          chainId: evmData.network_id
         }
-        console.log(info, 'info', rawTx)
+
         if (info && (typeof info === 'object') && info.gasData) {
-          console.log(57777)
           rawTx.gas = info.gasData.gas
           rawTx.gasPrice = info.gasData.gasPrice
           if (info.gasLimit) {
             rawTx.gasLimit = info.gasLimit
           }
-        } else {
+        } else if (evmData.nativeToken === 'eth') {
+          // Gas Price for non-eth tokens should be paased as params (-> Calculation in gas class property)
           let gasPrices = await getCurrentGasPrices()
           rawTx.gasPrice = gasPrices.high * 1000000000
           let gas = await web3.eth.estimateGas(rawTx)
           rawTx.gas = gas
         }
-        console.log(rawTx, 'rawTx')
-        const transaction = new EthereumTx(rawTx)
-        transaction.sign(Buffer.from(key.substring(0, 2) === '0x' ? key.substring(2) : key, 'hex'))
-        const serializedTransaction = transaction.serialize()
+        let serializedTransaction = null
+        if (evmData.nativeToken !== 'eth') {
+          let raw = await web3.eth.accounts.signTransaction(rawTx, key)
+          serializedTransaction = raw.rawTransaction
+        } else {
+          // EthereumTx currently works with ETH only
+          const transaction = new EthereumTx(rawTx)
+          transaction.sign(Buffer.from(key.substring(0, 2) === '0x' ? key.substring(2) : key, 'hex'))
+          serializedTransaction = transaction.serialize()
+          serializedTransaction = '0x' + serializedTransaction.toString('hex')
+        }
 
-        return sendSingleTransaction('0x' + serializedTransaction.toString('hex'))
+        return sendSingleTransaction(serializedTransaction)
 
         // web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, id) => {
         //   if (err) {
@@ -926,12 +993,12 @@ class Lib {
         }
 
         function sendSingleTransaction (serializedTransaction) {
-          let infuraEndpoint = this.evms.find(o => o.chain === evm).provider
+          let jsonRpc = evmData.provider
 
           let data = createParams('eth_sendRawTransaction', serializedTransaction)
 
           return new Promise(async (resolve, reject) => {
-            const response = await axios.post(infuraEndpoint, data).catch(error => {
+            const response = await axios.post(jsonRpc, data).catch(error => {
               reject({
                 message: error,
                 success: false
@@ -944,10 +1011,11 @@ class Lib {
                 success: false
               })
             } else if (response.data.result) {
+              console.log(777)
               let hash = response.data.result
 
               resolve({
-                message: this.evms[evm].explorer + hash,
+                message: evmData.explorer + hash,
                 success: true,
                 transaction_id: hash,
                 status: 'pending'
@@ -993,9 +1061,10 @@ class Lib {
       },
       async ltc (key) {},
       async dash (key) {}
-    }[walletType]
+    }
+    let chainsWallets = wallet
 
-    return wallet ? wallet(token, from, to, value, memo, key, contract) : {}
+    return wallet[walletType] ? wallet[walletType](token, from, to, value, memo, key, contract) : {}
   }
 }
 window.Lib = new Lib()
