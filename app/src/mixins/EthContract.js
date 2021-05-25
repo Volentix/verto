@@ -4,7 +4,7 @@ let apiUrlV3 = {
   bsc: 'https://api.1inch.exchange/v3.0/56/'
 }
 */
-
+import Lib from '@/util/walletlib'
 export default {
   data () {
     return {
@@ -105,11 +105,12 @@ export default {
       }
       this.transactionStatus = transactionReceipt.status ? 'Success' : 'Failed'
     },
-    async getGasOptions (transactionObject, customGas = false) {
+    async getGasOptions (transactionObject, customGas = false, evm = 'eth') {
       const self = this
+      let evmData = Lib.evms.find(o => o.chain === evm)
       const Web3 = require('web3')
 
-      this.web3 = this.web3 ? this.web3 : new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'))
+      this.web3 = this.web3 ? this.web3 : new Web3(new Web3.providers.HttpProvider(evmData.provider))
 
       // let gasPrice = await this.web3.eth.getGasPrice()
 
