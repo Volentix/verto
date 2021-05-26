@@ -1073,7 +1073,7 @@ export default {
           let chain = HD.names.find(a => a.value === o.chain)
           o.evmChain = evmChain
 
-          o.label = chain ? chain.label : o.chain
+          o.label = evmChain ? evmChain.name : chain.label
 
           return o
         })

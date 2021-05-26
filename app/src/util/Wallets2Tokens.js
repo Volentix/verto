@@ -317,6 +317,7 @@ class Wallets2Tokens {
               .then(res => {
                 res.data.data.items.map(t => {
                   let amount = (t.balance / 10 ** t.contract_decimals) * t.quote_rate
+
                   self.tableData.push({
                     isEvm: true,
                     disabled: false,

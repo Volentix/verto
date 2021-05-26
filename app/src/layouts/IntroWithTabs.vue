@@ -65,7 +65,7 @@ export default {
         }
       } else {
         let wallet = this.$store.state.currentwallet.wallet
-        this.$store.state.currentwallet.wallet.index = this.$store.state.wallets.tokens.findIndex(o => o.key === wallet.key && o.name === wallet.name && o.chain === wallet.chain && o.type === wallet.type)
+        this.$store.state.currentwallet.wallet.index = this.$store.state.wallets.tokens.findIndex(o => o.key === wallet.key && o.name.toLowerCase() === wallet.name.toLowerCase() && o.chain === wallet.chain && o.type === wallet.type)
       }
     }
   },
