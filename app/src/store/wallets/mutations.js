@@ -18,7 +18,9 @@ export const updateTokens = (state, updatedtokens) => {
     }
     return o
   })
-  updatedtokens = updatedtokens.map(o => {
+  updatedtokens = updatedtokens.map((o, index) => {
+    o.index = index
+
     if (o.type === 'eos') {
       // console.log(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name), o.name, updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(b => b.usd), parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, b) => a + b, 0)), 'total')
       o.total = parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(v => isNaN(v.usd) ? 0 : +v.usd).reduce((a, b) => a + b, 0))

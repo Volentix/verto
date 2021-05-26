@@ -158,7 +158,7 @@
                               </q-item-section>
                               <q-item-section>
                                 <q-item-label v-html="currentToken.type.toUpperCase()" />
-                                <q-item-label class="q-pt-sm" v-html="currentToken.amount" caption/>
+                                <q-item-label class="q-pt-xs" v-html="currentToken.amount" caption/>
                               </q-item-section>
                             </q-item>
                             <q-item
@@ -277,7 +277,7 @@
                             <q-item :class="[gasSelected.label == gas.label && !customGas ? 'selected bg-black text-white' : '' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
                                 <q-item-section>
                                     <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 text-black']">{{gas.isUsd ? '$'+gas.value : gas.nativeToken.toUpperCase()+ ' '+gas.value  }}</q-item-label>
-                                    <q-item-label class="text-body1 text-grey"> {{gas.label }}</q-item-label>
+                                    <q-item-label class="text-body1 text-grey text-capitalize"> {{gas.label }}</q-item-label>
                                 </q-item-section>
                                 <q-item-section avatar>
                                     <q-icon color="primary" name="local_gas_station" />
@@ -387,7 +387,7 @@ import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EOSContract from '../../mixins/EOSContract'
 import ETHContract from '../../mixins/EthContract'
-import initWallet from '@/util/Wallets2Tokens'
+// import initWallet from '@/util/Wallets2Tokens'
 import {
   mapState
 } from 'vuex'
@@ -567,13 +567,13 @@ export default {
       this.isPrivateKeyEncrypted = true
     }
 
-    this.$store.dispatch('investment/getGasPrice')
+    // this.$store.dispatch('investment/getGasPrice')
 
     this.checkGas()
   },
   methods: {
     refresh () {
-      initWallet(this.currentAccount.name)
+    //  initWallet(this.currentAccount.name)
     },
     setOptions () {
       this.tableData.map(token => {
@@ -735,7 +735,7 @@ export default {
     },
     checkGas () {
       try {
-        if (this.sendAmount && this.sendToResolved) {
+        if (this.sendAmount && this.sendToResolved && this.currentAccount.isEvm) {
           Lib.getRawETHTransaction(
             this.currentToken.type,
             this.currentAccount.key,
@@ -746,17 +746,11 @@ export default {
             'mnemonic',
             this.currentAccount.chain
           ).then((tx) => {
-            if (this.currentAccount.chain !== 'eth') {
-              Lib.gas(this.currentAccount.chain, tx, this.currentToken.type).then(res => {
-                console.log(res, 'res')
-                res.isUsd = !isNaN(this.$store.state.currentwallet.wallet.tokenPrice) && this.$store.state.currentwallet.wallet.tokenPrice !== 0
-                res.value = Web3.utils.fromWei(res.gasPrice.toString(), 'ether') * res.gas * (res.isUsd ? this.$store.state.currentwallet.wallet.tokenPrice : 1)
-                this.gasOptions = [res]
-                this.gasSelected = res
-              })
-            } else {
-              this.getGasOptions(tx, this.gasLimit, this.currentAccount.chain)
-            }
+            Lib.gas(this.currentAccount.chain, tx, this.currentToken.type, this.$store.state.currentwallet.wallet.tokenPrice).then(res => {
+              console.log(res, 'res')
+              this.gasOptions = res
+              this.gasSelected = res[0]
+            })
           })
         }
       } catch (error) {
@@ -796,7 +790,7 @@ export default {
           this.transSuccessDialog = true
           this.transactionLink = result.message
           this.transStatus = !result.status ? 'Sent Successfully' : result.status
-          initWallet(this.currentAccount.name)
+          // initWallet(this.currentAccount.name)
         } else {
           if (result.message.toString().includes('is greater than the maximum billable CPU time for the transaction') || result.message.toString().includes('the current CPU usage limit imposed on the transaction')) {
             this.payForUserCPU()
@@ -851,7 +845,7 @@ export default {
           this.transSuccessDialog = true
           this.transactionLink = result.message
           this.transStatus = !result.status ? 'Sent Successfully' : result.status
-          initWallet(this.currentAccount.name)
+          // initWallet(this.currentAccount.name)
         } else {
           this.unknownError = true
           this.ErrorMessage = result.message
