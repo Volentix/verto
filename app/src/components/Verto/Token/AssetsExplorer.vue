@@ -103,8 +103,8 @@
                 </div>
               </div>
               <h2 class="q-my-none">
-                ${{formatNumber(asset.usd,0)}}
-                <span v-if="parseInt(asset.usd).toString().length <= 5" class="g-txt">.{{formatNumber(asset.usd,2).split('.')[1]}}</span>
+                ${{formatNumber(asset.usd, (5 - parseInt(asset.usd).toString().length) % 5 )}}
+               <!-- <span v-if="parseInt(asset.usd).toString().length <= 5" class="g-txt">.{{formatNumber(asset.usd,2).split('.')[1]}}</span> -->
                 <span v-if="asset.change24hPercentage" :class="'sr-txt absolute-top-right ' + asset.color">{{asset.color === 'text-green-6'? '↑':'↓'}} {{asset.change24hPercentage.substring(1)}}</span>
                 <a href="javascript:void(0)">Trade</a>
               </h2>
