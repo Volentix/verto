@@ -132,7 +132,7 @@
                             class="select-input"
                             @input="checkGas()"
                             v-model="currentToken"
-                            :options="options.filter( o => o.chainID == selectedCoin.chain && ((selectedCoin.isEvm && o.key.toLowerCase() == selectedCoin.key.toLowerCase()) || (o.label.toLowerCase() == selectedCoin.name.toLowerCase())))"
+                            :options="options.filter( o => o.chainID == selectedCoin.chain && ((selectedCoin.isEvm && o.key.toLowerCase() == currentAccount.key.toLowerCase()) || (!selectedCoin.isEvm && o.label.toLowerCase() == selectedCoin.name.toLowerCase())))"
                         >
                           <template v-slot:option="scope">
                             <q-item
