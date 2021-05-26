@@ -6,9 +6,9 @@ export const getTokenList = ({ commit, state }, payload) => {
   })
 }
 
-export const getTokenMarketData = ({ commit, state }, id) => {
-  state.pending = state.pending.concat(['volentix-vtx'])
-  axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=volentix-vtx&price_change_percentage=24h').then((result) => {
+export const getTokenMarketData = ({ commit, state }, ids) => {
+  state.pending = state.pending.concat(ids)
+  axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=' + ids.join(',') + '&price_change_percentage=24h').then((result) => {
     commit('setWalletTokensData', result.data)
   })
 }
@@ -16,7 +16,7 @@ export const getTokenMarketData = ({ commit, state }, id) => {
 export const getTokensMarketsData = ({ commit, state }, tokens) => {
   if (!state.list) return
 
-  let list = state.list.filter(t => !state.pending.find(o => o === t.id) && tokens.find(o => t.symbol === o.type && ((!t.platforms.hasOwnProperty('eos') && !t.platforms.hasOwnProperty('ethereum')) || o.chain === (t.platforms.hasOwnProperty('eos') ? 'eos' : (t.platforms.hasOwnProperty('ethereum') ? 'eth' : o.chain)))) && !state.walletTokensData.find(a => a.id === t.id))
+  let list = state.list.filter(t => !state.pending.find(o => o === t.id) && tokens.find(o => t.symbol.toLowerCase() === o.type && (o.isEvm || (!t.platforms.hasOwnProperty('eos') && !t.platforms.hasOwnProperty('ethereum')) || o.chain === (t.platforms.hasOwnProperty('eos') ? 'eos' : (t.platforms.hasOwnProperty('ethereum') ? 'eth' : o.chain)))) && !state.walletTokensData.find(a => a.id === t.id))
 
   if (list.length) {
     list = list.map(l => l.id)
