@@ -40,7 +40,7 @@ class Lib {
       network_id: 137
     }, {
       name: 'Avalanche C-Chain',
-      chain: 'avax',
+      chain: 'avaxc',
       icon: 'https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png',
       provider: 'https://api.avax.network/ext/bc/C/rpc',
       explorer: 'https://cchain.explorer.avax.network/tx/',
@@ -49,6 +49,7 @@ class Lib {
     }, {
       name: 'Fantom Chain',
       chain: 'ftm',
+      nativeToken: 'ftm',
       icon: 'https://assets.coingecko.com/coins/images/4001/large/Fantom.png?1558015016',
       provider: 'https://rpcapi.fantom.network/',
       explorer: 'https://ftmscan.com/tx/',
@@ -180,7 +181,7 @@ class Lib {
   }
   */
 
-  history = async (walletType, key, token, data = null) => {
+  history = async (chain, key, token, data = null) => {
     const self = this
     const wallet = {
       async eos (token, key, data) {
@@ -341,7 +342,7 @@ class Lib {
           history: actions
         }
       }
-    }[walletType]
+    }[chain]
 
     let cachedData = localStorage.getItem('history_' + key)
     let historyData = {}
@@ -352,12 +353,12 @@ class Lib {
       this.cacheWalletHistoryData(historyData, key)
     }
 
-    console.log(walletType, key, token, 'walletType, key, token')
+    console.log(chain, key, token, 'chain, key, token')
 
     return cachedData ? JSON.parse(cachedData) : historyData
   }
 
-  balance = async (walletType, key, token) => {
+  balance = async (chain, key, token) => {
     const wallet = {
       async eos (key, token) {
         let float = 0
@@ -535,7 +536,7 @@ class Lib {
           tokenPrice
         }
       }
-    }[walletType]
+    }[chain]
 
     return wallet ? wallet(key, token) : {}
   }
@@ -547,38 +548,40 @@ class Lib {
     return (new Web3(new Web3.providers.HttpProvider(this.getEvmData(chain).provider)))
   }
   gas = async (chain, transaction, type) => {
-    /*
-        {
-          gas: Number,
-          gasPrice: Number,
-          gasLabel: String,
-          usd: String,
-        }
-      */
     let evmData = this.getEvmData(chain)
+    let response = null
     const web3 = this.getWeb3Instance(chain)
     // const self = this
-    const wallet = {
+    if (evmData.gas && evmData.gas.length) { response = await axios.get(evmData.gas) }
 
-      async bsc (chain) {
-        let gasData = {
-          gas: 21000,
-          gasPrice: null,
-          label: 'Fee',
-          value: 0 // USD Price
+    let gasData = {
+      gas: 21000,
+      gasPrice: null,
+      label: 'Fee',
+      value: 0, // USD Price
+      nativeToken: evmData.nativeToken
+    }
+
+    const wallet = {
+      async ftm () {
+        gasData.gasPrice = await web3.eth.getGasPrice()
+
+        if (type !== evmData.nativeToken) {
+          let gas = await web3.eth.estimateGas(transaction)
+          gasData.gas = gas
         }
+        return gasData
+      },
+      async bsc () {
         /*
           The difference between Binance Chain and Ethereum is that there is no notion of gas.
           As a result, fees for the rest transactions are fixed.
           https://docs.binance.org/guides/concepts/fees.html
           */
 
-        let response = await axios.get(evmData.gas)
-        console.log(type, evmData.nativeToken)
         if (type !== evmData.nativeToken) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
-          console.log(gas, 'gas')
         }
 
         if (response.data.result) {
@@ -593,9 +596,9 @@ class Lib {
     return value
   }
 
-  send = async (walletType, token, from, to, value, memo, key, contract, data) => {
+  send = async (chain, token, from, to, value, memo, key, contract, data) => {
     const self = this
-    // console.log(walletType, token, from, to, value, memo, key, contract, data, 'walletType, token, from, to, value, memo, key, contract, data')
+    // console.log(chain, token, from, to, value, memo, key, contract, data, 'chain, token, from, to, value, memo, key, contract, data')
     const wallet = {
       async btc (token, from, to, value, memo, key) {
         // const bitcore = require('bitcore-lib')
@@ -879,7 +882,7 @@ class Lib {
         await this.eth(token, from, to, value, info, key, contract, evm)
       },
       async ftm (token, from, to, value, info, key, contract, evm = 'ftm') {
-        await this.eth(token, from, to, value, info, key, contract, evm)
+        return chainsWallets.eth(token, from, to, value, info, key, contract, evm)
       },
       async eth (token, from, to, value, info, key, contract, evm = 'eth') {
         // console.log('(token, from, to, value, gas, key, contract, info)', token, from, to, value, info, key, contract)
@@ -1064,7 +1067,7 @@ class Lib {
     }
     let chainsWallets = wallet
 
-    return wallet[walletType] ? wallet[walletType](token, from, to, value, memo, key, contract) : {}
+    return wallet[chain] ? wallet[chain](token, from, to, value, memo, key, contract) : {}
   }
 }
 window.Lib = new Lib()

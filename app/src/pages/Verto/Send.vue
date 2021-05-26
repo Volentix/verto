@@ -276,7 +276,7 @@
                         <q-item-section v-for="(gas, index) in gasOptions" :key="index">
                             <q-item :class="[gasSelected.label == gas.label && !customGas ? 'selected bg-black text-white' : '' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
                                 <q-item-section>
-                                    <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 text-black']">${{gas.value }}</q-item-label>
+                                    <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 text-black']">{{gas.isUsd ? '$'+gas.value : gas.nativeToken.toUpperCase()+ ' '+gas.value  }}</q-item-label>
                                     <q-item-label class="text-body1 text-grey"> {{gas.label }}</q-item-label>
                                 </q-item-section>
                                 <q-item-section avatar>
@@ -747,9 +747,10 @@ export default {
             this.currentAccount.chain
           ).then((tx) => {
             if (this.currentAccount.chain !== 'eth') {
-              console.log(this.currentAccount, this.currentToken, 77)
               Lib.gas(this.currentAccount.chain, tx, this.currentToken.type).then(res => {
-                res.value = Web3.utils.fromWei(res.gasPrice.toString(), 'ether') * this.$store.state.currentwallet.wallet.tokenPrice * res.gas
+                console.log(res, 'res')
+                res.isUsd = !isNaN(this.$store.state.currentwallet.wallet.tokenPrice) && this.$store.state.currentwallet.wallet.tokenPrice !== 0
+                res.value = Web3.utils.fromWei(res.gasPrice.toString(), 'ether') * res.gas * (res.isUsd ? this.$store.state.currentwallet.wallet.tokenPrice : 1)
                 this.gasOptions = [res]
                 this.gasSelected = res
               })
