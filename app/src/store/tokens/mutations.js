@@ -5,7 +5,6 @@ export const setTokenList = (state, data) => {
 }
 export const setWalletTokensData = (state, data) => {
   state.walletTokensData = state.walletTokensData.concat(data)
-
   store.state.wallets.tokens.forEach((token, i) => {
     let tokenData = state.walletTokensData.find(o => o.symbol.toLowerCase() === token.type)
     if (tokenData) {
