@@ -33,7 +33,8 @@ class Lib {
     }, {
       name: 'Polygon Chain',
       chain: 'matic',
-      icon: 'https://polygon.technology/wp-content/uploads/2021/02/cropped-polygon-ico-180x180.png',
+      nativeToken: 'matic',
+      icon: 'https://seeklogo.com/images/P/polygon-matic-logo-86F4D6D773-seeklogo.com.png',
       provider: 'https://rpc-mainnet.maticvigil.com/v1/08e234538a11a966248fd358b3b135c4aeb6924b',
       explorer: 'https://explorer-mainnet.maticvigil.com/tx/',
       gas: 'https://gasstation-mainnet.matic.network/',
@@ -41,6 +42,7 @@ class Lib {
     }, {
       name: 'Avalanche C-Chain',
       chain: 'avaxc',
+      nativeToken: 'avax',
       icon: 'https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png',
       provider: 'https://api.avax.network/ext/bc/C/rpc',
       explorer: 'https://cchain.explorer.avax.network/tx/',
@@ -547,7 +549,7 @@ class Lib {
     const Web3 = require('web3')
     return (new Web3(new Web3.providers.HttpProvider(this.getEvmData(chain).provider)))
   }
-  gas = async (chain, transaction, type) => {
+  gas = async (chain, transaction, type, tokenPrice) => {
     let evmData = this.getEvmData(chain)
     let response = null
     const web3 = this.getWeb3Instance(chain)
@@ -562,6 +564,13 @@ class Lib {
       nativeToken: evmData.nativeToken
     }
 
+    const convertGasPrice = (gasObj) => {
+      // Return gas price in USD if tokenPrice is valid, otherwise return the value in native token unit
+      gasObj.isUsd = !isNaN(tokenPrice) && tokenPrice !== 0
+      gasObj.value = web3.utils.fromWei(gasObj.gasPrice.toString(), 'ether') * gasObj.gas * (gasObj.isUsd ? tokenPrice : 1)
+      return gasObj
+    }
+
     const wallet = {
       async ftm () {
         gasData.gasPrice = await web3.eth.getGasPrice()
@@ -570,7 +579,62 @@ class Lib {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
         }
-        return gasData
+        gasData = convertGasPrice(gasData)
+        return [gasData]
+      },
+      async matic () {
+        let gasOptions = []
+        if (type !== evmData.nativeToken) {
+          let gas = await web3.eth.estimateGas(transaction)
+          gasData.gas = gas
+        }
+
+        if (!response.data) {
+          gasData.gasPrice = await web3.eth.getGasPrice()
+          gasData.label = 'Fee'
+          gasOptions.push(gasData)
+        } else {
+          ['standard', 'fast', 'fastest'].forEach((option) => {
+            let gasOption = Object.assign({}, gasData)
+            gasOption.gasPrice = response.data[option] * 1000000000 // To wei
+            gasOption.label = option
+            gasOption = convertGasPrice(gasOption)
+            gasOptions.push(gasOption)
+          })
+        }
+        return gasOptions
+      },
+      async eth () {
+        let gasOptions = []
+        if (type !== evmData.nativeToken) {
+          let gas = await web3.eth.estimateGas(transaction)
+          gasData.gas = gas
+        }
+
+        if (!response.data) {
+          gasData.gasPrice = await web3.eth.getGasPrice()
+          gasData.label = 'Fee'
+          gasOptions.push(gasData)
+        } else {
+          ['average', 'fast', 'fastest'].forEach((option) => {
+            let gasOption = Object.assign({}, gasData)
+            gasOption.gasPrice = response.data[option] / 10 * 1000000000 // To wei
+            gasOption.label = option
+            gasOption = convertGasPrice(gasOption)
+            gasOptions.push(gasOption)
+          })
+        }
+        return gasOptions
+      },
+      async avaxc () {
+        gasData.gasPrice = await web3.eth.getGasPrice()
+
+        if (type !== evmData.nativeToken) {
+          let gas = await web3.eth.estimateGas(transaction)
+          gasData.gas = gas
+        }
+        gasData = convertGasPrice(gasData)
+        return [gasData]
       },
       async bsc () {
         /*
@@ -587,7 +651,8 @@ class Lib {
         if (response.data.result) {
           gasData.gasPrice = web3.utils.hexToNumber(response.data.result)
         }
-        return gasData
+        gasData = convertGasPrice(gasData)
+        return [gasData]
       }
 
     }
@@ -875,6 +940,12 @@ class Lib {
       async bsc (token, from, to, value, info, key, contract, evm = 'bsc') {
         return chainsWallets.eth(token, from, to, value, info, key, contract, evm)
       },
+      async avaxc (token, from, to, value, info, key, contract, evm = 'avaxc') {
+        return chainsWallets.eth(token, from, to, value, info, key, contract, evm)
+      },
+      async matic (token, from, to, value, info, key, contract, evm = 'matic') {
+        return chainsWallets.eth(token, from, to, value, info, key, contract, evm)
+      },
       async plg (token, from, to, value, info, key, contract, evm = 'plg') {
         await this.eth(token, from, to, value, info, key, contract, evm)
       },
@@ -1007,10 +1078,19 @@ class Lib {
                 success: false
               })
             })
-            console.log(response, 'response')
+            // Solution take in count number of pending transaction in nonce
+            const erroMessages = [
+              {
+                code: -32000,
+                text: 'You have a pending transaction. Please wait and try again.'
+              }
+            ]
+
             if (response.data.error) {
+              let message = erroMessages.find(o => o.code === response.data.error.code)
+
               reject({
-                message: response.data.error.message,
+                message: message ? message.text : response.data.error.message,
                 success: false
               })
             } else if (response.data.result) {
