@@ -1081,13 +1081,13 @@ class Lib {
             // Solution take in count number of pending transaction in nonce
             const erroMessages = [
               {
-                code: -32000,
+                string: 'insufficient funds for gas',
                 text: 'You have a pending transaction. Please wait and try again.'
               }
             ]
 
             if (response.data.error) {
-              let message = erroMessages.find(o => o.code === response.data.error.code)
+              let message = erroMessages.find(o => response.data.error.message.includes(o.string))
 
               reject({
                 message: message ? message.text : response.data.error.message,
