@@ -880,6 +880,7 @@ const eos = new EosWrapper()
 import {
   mapState
 } from 'vuex'
+
 export default {
   components: {
     QScrollArea,
@@ -1163,6 +1164,8 @@ export default {
     },
     refreshWallet (name = null) {
       if (!name) {
+        this.$store.state.tokens.walletTokensData = []
+        this.$store.state.tokens.pending = []
         this.singleWalletRefresh = null
         localStorage.removeItem('walletPublicData')
       } else {
