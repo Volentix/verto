@@ -108,7 +108,7 @@
                 <span v-if="asset.change24hPercentage" :class="'sr-txt absolute-top-right ' + asset.color">{{asset.color === 'text-green-6'? '↑':'↓'}} {{asset.change24hPercentage.substring(1)}}</span>
                 <a href="javascript:void(0)">Trade</a>
               </h2>
-              <q-item-label :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" class="q-pt-sm" caption>Amount: <span class="text-grey q-pl-xs">{{formatNumber(asset.amount,4)}}</span></q-item-label>
+              <q-item-label :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" class="q-pt-sm" caption>Amount: <span class="text-grey q-pl-xs">{{formatNumber(asset.amount,6)}}</span></q-item-label>
               <div class="q-pt-sm">Price: <span class="text-grey q-pl-xs">${{formatNumber(asset.rateUsd,4)}}</span></div>
               <div class="q-py-sm" v-if="asset.protocol"><q-icon class="q-pr-sm" size="1.2rem" :name="'img:'+asset.protocolIcon" />{{asset.protocol}}:</div>
               <span class="text-grey" v-if="asset.poolsCount == 1">{{asset.poolName}} pool</span>
