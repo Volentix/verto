@@ -11,7 +11,7 @@
                         <q-icon name="o_account_balance_wallet" />
                         {{$store.state.currentwallet.wallet.empty ? 'Wallets' : $store.state.currentwallet.wallet.name.toUpperCase().replace('- HD', '')}}
                     </span>
-                    <span>
+                    <span v-if="false">
                         <q-btn  :disable="loadingIndicator"  v-if="!$store.state.currentwallet.wallet.empty" dense flat icon-right="cached" color="grey" @click="refreshWallet($store.state.currentwallet.wallet.name.toLowerCase())">
                         <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
                             <strong>Refresh</strong>
@@ -880,6 +880,7 @@ const eos = new EosWrapper()
 import {
   mapState
 } from 'vuex'
+
 export default {
   components: {
     QScrollArea,
@@ -1073,7 +1074,7 @@ export default {
           let chain = HD.names.find(a => a.value === o.chain)
           o.evmChain = evmChain
 
-          o.label = chain ? chain.label : o.chain
+          o.label = evmChain ? evmChain.name : chain.label
 
           return o
         })
@@ -1163,6 +1164,8 @@ export default {
     },
     refreshWallet (name = null) {
       if (!name) {
+        this.$store.state.tokens.walletTokensData = []
+        this.$store.state.tokens.pending = []
         this.singleWalletRefresh = null
         localStorage.removeItem('walletPublicData')
       } else {

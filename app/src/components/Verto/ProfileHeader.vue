@@ -77,7 +77,12 @@
       <h3 class="profile-wrapper--header__title" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-else>{{ chainData ?  chainData.label : 'Main Portfolio' }}</h3>
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
-      v-if="!isMobile && !$store.getters['currentwallet/getWallet'].empty && balance.equivType">${{ balance.usd }} USD <span class="profile-wrapper--header__equivalent" v-if="!isNaN(balance.equivAmount) ">Equivalent to <b>{{ isNaN(balance.equivAmount) ? 0 : nFormatter2(+balance.equivAmount,3) + ' ' + balance.equivType.toUpperCase() }}</b></span></h2>
+      v-if="!isMobile && !$store.getters['currentwallet/getWallet'].empty && balance.equivType">
+
+     <span v-if="parseFloat($store.getters['currentwallet/getWallet'].amount) && (isNaN($store.getters['currentwallet/getWallet'].tokenPrice) || $store.getters['currentwallet/getWallet'].tokenPrice == 0)"> {{$store.getters['currentwallet/getWallet'].amount}} {{$store.getters['currentwallet/getWallet'].type.toUpperCase()}}</span>
+     <span v-else>${{ balance.usd }} USD </span>
+
+      <span class="profile-wrapper--header__equivalent" v-if="!isNaN(balance.equivAmount) ">Equivalent to <b>{{ isNaN(balance.equivAmount) ? 0 : nFormatter2(+balance.equivAmount,3) + ' ' + balance.equivType.toUpperCase() }}</b></span></h2>
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-else>${{ nFormatter2( chainData ?  chainData.total : $store.state.wallets.portfolioTotal , 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <!-- {{$store.state.wallets.portfolioTotal}} -->
