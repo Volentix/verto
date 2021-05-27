@@ -33,14 +33,16 @@ class Lib {
     }, {
       name: 'Polygon Chain',
       chain: 'matic',
-      icon: 'https://polygon.technology/wp-content/uploads/2021/02/cropped-polygon-ico-180x180.png',
+      nativeToken: 'matic',
+      icon: 'https://seeklogo.com/images/P/polygon-matic-logo-86F4D6D773-seeklogo.com.png',
       provider: 'https://rpc-mainnet.maticvigil.com/v1/08e234538a11a966248fd358b3b135c4aeb6924b',
       explorer: 'https://explorer-mainnet.maticvigil.com/tx/',
       gas: 'https://gasstation-mainnet.matic.network/',
       network_id: 137
     }, {
       name: 'Avalanche C-Chain',
-      chain: 'avax',
+      chain: 'avaxc',
+      nativeToken: 'avax',
       icon: 'https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png',
       provider: 'https://api.avax.network/ext/bc/C/rpc',
       explorer: 'https://cchain.explorer.avax.network/tx/',
@@ -49,6 +51,7 @@ class Lib {
     }, {
       name: 'Fantom Chain',
       chain: 'ftm',
+      nativeToken: 'ftm',
       icon: 'https://assets.coingecko.com/coins/images/4001/large/Fantom.png?1558015016',
       provider: 'https://rpcapi.fantom.network/',
       explorer: 'https://ftmscan.com/tx/',
@@ -180,7 +183,7 @@ class Lib {
   }
   */
 
-  history = async (walletType, key, token, data = null) => {
+  history = async (chain, key, token, data = null) => {
     const self = this
     const wallet = {
       async eos (token, key, data) {
@@ -341,7 +344,7 @@ class Lib {
           history: actions
         }
       }
-    }[walletType]
+    }[chain]
 
     let cachedData = localStorage.getItem('history_' + key)
     let historyData = {}
@@ -352,12 +355,12 @@ class Lib {
       this.cacheWalletHistoryData(historyData, key)
     }
 
-    console.log(walletType, key, token, 'walletType, key, token')
+    console.log(chain, key, token, 'chain, key, token')
 
     return cachedData ? JSON.parse(cachedData) : historyData
   }
 
-  balance = async (walletType, key, token) => {
+  balance = async (chain, key, token) => {
     const wallet = {
       async eos (key, token) {
         let float = 0
@@ -535,7 +538,7 @@ class Lib {
           tokenPrice
         }
       }
-    }[walletType]
+    }[chain]
 
     return wallet ? wallet(key, token) : {}
   }
@@ -546,45 +549,110 @@ class Lib {
     const Web3 = require('web3')
     return (new Web3(new Web3.providers.HttpProvider(this.getEvmData(chain).provider)))
   }
-  gas = async (chain, transaction, type) => {
-    /*
-        {
-          gas: Number,
-          gasPrice: Number,
-          gasLabel: String,
-          usd: String,
-        }
-      */
+  gas = async (chain, transaction, type, tokenPrice) => {
     let evmData = this.getEvmData(chain)
+    let response = null
     const web3 = this.getWeb3Instance(chain)
     // const self = this
-    const wallet = {
+    if (evmData.gas && evmData.gas.length) { response = await axios.get(evmData.gas) }
 
-      async bsc (chain) {
-        let gasData = {
-          gas: 21000,
-          gasPrice: null,
-          label: 'Fee',
-          value: 0 // USD Price
+    let gasData = {
+      gas: 21000,
+      gasPrice: null,
+      label: 'Fee',
+      value: 0, // USD Price
+      nativeToken: evmData.nativeToken
+    }
+
+    const convertGasPrice = (gasObj) => {
+      // Return gas price in USD if tokenPrice is valid, otherwise return the value in native token unit
+      gasObj.isUsd = !isNaN(tokenPrice) && tokenPrice !== 0
+      gasObj.value = web3.utils.fromWei(gasObj.gasPrice.toString(), 'ether') * gasObj.gas * (gasObj.isUsd ? tokenPrice : 1)
+      return gasObj
+    }
+
+    const wallet = {
+      async ftm () {
+        gasData.gasPrice = await web3.eth.getGasPrice()
+
+        if (type !== evmData.nativeToken) {
+          let gas = await web3.eth.estimateGas(transaction)
+          gasData.gas = gas
         }
+        gasData = convertGasPrice(gasData)
+        return [gasData]
+      },
+      async matic () {
+        let gasOptions = []
+        if (type !== evmData.nativeToken) {
+          let gas = await web3.eth.estimateGas(transaction)
+          gasData.gas = gas
+        }
+
+        if (!response.data) {
+          gasData.gasPrice = await web3.eth.getGasPrice()
+          gasData.label = 'Fee'
+          gasOptions.push(gasData)
+        } else {
+          ['standard', 'fast', 'fastest'].forEach((option) => {
+            let gasOption = Object.assign({}, gasData)
+            gasOption.gasPrice = response.data[option] * 1000000000 // To wei
+            gasOption.label = option
+            gasOption = convertGasPrice(gasOption)
+            gasOptions.push(gasOption)
+          })
+        }
+        return gasOptions
+      },
+      async eth () {
+        let gasOptions = []
+        if (type !== evmData.nativeToken) {
+          let gas = await web3.eth.estimateGas(transaction)
+          gasData.gas = gas
+        }
+
+        if (!response.data) {
+          gasData.gasPrice = await web3.eth.getGasPrice()
+          gasData.label = 'Fee'
+          gasOptions.push(gasData)
+        } else {
+          ['average', 'fast', 'fastest'].forEach((option) => {
+            let gasOption = Object.assign({}, gasData)
+            gasOption.gasPrice = response.data[option] / 10 * 1000000000 // To wei
+            gasOption.label = option
+            gasOption = convertGasPrice(gasOption)
+            gasOptions.push(gasOption)
+          })
+        }
+        return gasOptions
+      },
+      async avaxc () {
+        gasData.gasPrice = await web3.eth.getGasPrice()
+
+        if (type !== evmData.nativeToken) {
+          let gas = await web3.eth.estimateGas(transaction)
+          gasData.gas = gas
+        }
+        gasData = convertGasPrice(gasData)
+        return [gasData]
+      },
+      async bsc () {
         /*
           The difference between Binance Chain and Ethereum is that there is no notion of gas.
           As a result, fees for the rest transactions are fixed.
           https://docs.binance.org/guides/concepts/fees.html
           */
 
-        let response = await axios.get(evmData.gas)
-        console.log(type, evmData.nativeToken)
         if (type !== evmData.nativeToken) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
-          console.log(gas, 'gas')
         }
 
         if (response.data.result) {
           gasData.gasPrice = web3.utils.hexToNumber(response.data.result)
         }
-        return gasData
+        gasData = convertGasPrice(gasData)
+        return [gasData]
       }
 
     }
@@ -593,9 +661,9 @@ class Lib {
     return value
   }
 
-  send = async (walletType, token, from, to, value, memo, key, contract, data) => {
+  send = async (chain, token, from, to, value, memo, key, contract, data) => {
     const self = this
-    // console.log(walletType, token, from, to, value, memo, key, contract, data, 'walletType, token, from, to, value, memo, key, contract, data')
+    // console.log(chain, token, from, to, value, memo, key, contract, data, 'chain, token, from, to, value, memo, key, contract, data')
     const wallet = {
       async btc (token, from, to, value, memo, key) {
         // const bitcore = require('bitcore-lib')
@@ -872,6 +940,12 @@ class Lib {
       async bsc (token, from, to, value, info, key, contract, evm = 'bsc') {
         return chainsWallets.eth(token, from, to, value, info, key, contract, evm)
       },
+      async avaxc (token, from, to, value, info, key, contract, evm = 'avaxc') {
+        return chainsWallets.eth(token, from, to, value, info, key, contract, evm)
+      },
+      async matic (token, from, to, value, info, key, contract, evm = 'matic') {
+        return chainsWallets.eth(token, from, to, value, info, key, contract, evm)
+      },
       async plg (token, from, to, value, info, key, contract, evm = 'plg') {
         await this.eth(token, from, to, value, info, key, contract, evm)
       },
@@ -879,7 +953,7 @@ class Lib {
         await this.eth(token, from, to, value, info, key, contract, evm)
       },
       async ftm (token, from, to, value, info, key, contract, evm = 'ftm') {
-        await this.eth(token, from, to, value, info, key, contract, evm)
+        return chainsWallets.eth(token, from, to, value, info, key, contract, evm)
       },
       async eth (token, from, to, value, info, key, contract, evm = 'eth') {
         // console.log('(token, from, to, value, gas, key, contract, info)', token, from, to, value, info, key, contract)
@@ -1004,10 +1078,19 @@ class Lib {
                 success: false
               })
             })
-            console.log(response, 'response')
+            // Solution take in count number of pending transaction in nonce
+            const erroMessages = [
+              {
+                string: 'insufficient funds for gas',
+                text: 'You have a pending transaction. Please wait and try again.'
+              }
+            ]
+
             if (response.data.error) {
+              let message = erroMessages.find(o => response.data.error.message.includes(o.string))
+
               reject({
-                message: response.data.error.message,
+                message: message ? message.text : response.data.error.message,
                 success: false
               })
             } else if (response.data.result) {
@@ -1064,7 +1147,7 @@ class Lib {
     }
     let chainsWallets = wallet
 
-    return wallet[walletType] ? wallet[walletType](token, from, to, value, memo, key, contract) : {}
+    return wallet[chain] ? wallet[chain](token, from, to, value, memo, key, contract) : {}
   }
 }
 window.Lib = new Lib()
