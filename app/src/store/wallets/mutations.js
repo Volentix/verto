@@ -10,7 +10,11 @@ const removePrivateData = (data) => {
     return o
   })
 }
-
+// Create index for Easy Access
+const getWalletIndex = (wallet) => {
+  let index = wallet.key + '-' + wallet.chain + (wallet.chain === 'eos' ? '-' + wallet.name : '')
+  return index
+}
 export const updateTokens = (state, updatedtokens) => {
   updatedtokens = updatedtokens.map(o => {
     if (o.type === 'eth') {
@@ -19,7 +23,7 @@ export const updateTokens = (state, updatedtokens) => {
     return o
   })
   updatedtokens = updatedtokens.map((o, index) => {
-    o.index = index
+    o.index = getWalletIndex(o)
 
     if (o.type === 'eos') {
       // console.log(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name), o.name, updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(b => b.usd), parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, b) => a + b, 0)), 'total')

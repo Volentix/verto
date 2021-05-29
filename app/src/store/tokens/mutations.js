@@ -19,3 +19,7 @@ export const setWalletTokensData = (state, data) => {
 export const updateState = (state, payload) => {
   state[payload.key] = payload.value
 }
+
+export const setEvmsTokensData = (state, payload) => {
+  state.evmTokens[payload.chain] = payload.tokens
+}

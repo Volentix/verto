@@ -26,16 +26,14 @@ class Wallets2Tokens {
 
       existingWallet = store.state.wallets.tokens.find(w => w.name.toLowerCase() === walletName)
       // Refresh ETh wallet if refresh is requested for an evm wallet
-      if (existingWallet && Lib.evms.find(o => o.chain === existingWallet.chain)) {
-        // Remove wallets data from cache
-        this.tableDataCache = data.filter(
-          w => (w.key.toLowerCase() !== existingWallet.key.toLowerCase())
-        )
-      } else {
-        this.tableDataCache = data.filter(
-          w => (w.name.toLowerCase() !== walletName || !walletName)
-        )
+      if (existingWallet && existingWallet.isEvm) {
+        let ethWallet = store.state.wallets.tokens.find(w => w.key.toLowerCase() === existingWallet.key.toLowerCase() && w.chain === 'eth' && w.type === 'eth')
+        if (ethWallet) walletName = ethWallet.name.toLowerCase()
       }
+
+      this.tableDataCache = data.filter(
+        w => (!walletName || w.name.toLowerCase() !== walletName)
+      )
 
       if (!walletName) {
         this.updateWallet()
@@ -49,7 +47,7 @@ class Wallets2Tokens {
     this.getEosUSD()
 
     this.tableData = [...store.state.currentwallet.config.keys].filter(
-      w => w.name.toLowerCase() === walletName || !walletName
+      w => !walletName || w.name.toLowerCase() === walletName.toLowerCase()
     )
 
     if (store.state.settings.network === 'testnet') {
@@ -257,7 +255,7 @@ class Wallets2Tokens {
       })
     }
     store.state.currentwallet.config.keys
-      .filter(w => (w.name.toLowerCase() === walletName || !walletName))
+      .filter(w => (!walletName || w.name.toLowerCase() === walletName.toLowerCase()))
       .filter(
         o =>
           store.state.settings.network === 'mainnet' &&
@@ -502,6 +500,7 @@ class Wallets2Tokens {
     }
     return image
   }
+
   async getEOSTokensV2 (wallet, balances, fetchTokens) {
     const self = this
 
