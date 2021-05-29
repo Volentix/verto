@@ -1,5 +1,4 @@
 import store from '@/store'
-import Lib from '@/util/walletlib'
 
 const removePrivateData = data => {
   return JSON.parse(JSON.stringify(data)).map(o => {
@@ -26,20 +25,18 @@ export const updateTokens = (state, updatedtokens) => {
   })
 
   // Get all Evm chains main accounts and set the total
-  Lib.evms
-    .forEach((evm) => {
-      updatedtokens.filter((o, idx, all) => o.chain === evm.chain && all.findIndex(t => t.chain === evm.chain) === idx)
-        .forEach(account => {
-          let accountIndex = updatedtokens.findIndex(
-            o => o.index === account.index
-          )
-          updatedtokens[accountIndex].total = parseFloat(
-            updatedtokens
-              .filter(f => f.key === account.key && f.chain === evm.chain)
-              .map(v => (isNaN(v.usd) ? 0 : +v.usd))
-              .reduce((a, b) => a + b, 0)
-          )
-        })
+
+  updatedtokens.filter((o, idx, all) => o.isEvm && all.findIndex(t => t.chain === o.chain && t.key === o.key && t.isEvm) === idx)
+    .forEach(account => {
+      let accountIndex = updatedtokens.findIndex(
+        o => o.index === account.index
+      )
+      updatedtokens[accountIndex].total = parseFloat(
+        updatedtokens
+          .filter(f => f.key === account.key && f.chain === account.chain)
+          .map(v => (isNaN(v.usd) ? 0 : +v.usd))
+          .reduce((a, b) => a + b, 0)
+      )
     })
 
   updatedtokens = updatedtokens.map((o, index) => {
