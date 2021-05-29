@@ -128,6 +128,7 @@ export default {
     this.$store.dispatch('settings/getSettings')
     let ids = ['volentix-vtx']
     this.$store.dispatch('tokens/getTokenMarketData', ids)
+    this.$store.dispatch('tokens/getEvmsTokensData')
   },
   methods: {
     /*

@@ -9,7 +9,7 @@ import {
   date
 } from 'quasar'
 import abiArray from '@/statics/abi/erc20.json'
-
+const Web3 = require('web3')
 class Lib {
   constructor (evms) {
     this.evms = [{
@@ -167,12 +167,12 @@ class Lib {
     return token ? (type.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : token.image) : 'https://etherscan.io/images/main/empty-token.png'
   }
 
-  cacheWalletHistoryData (data, key) {
-    if (data && data.hasOwnProperty('history') && key) { localStorage.setItem('history_' + key, JSON.stringify(data)) }
+  cacheWalletHistoryData (data, key, chain) {
+    if (data && data.hasOwnProperty('history') && key) { localStorage.setItem(chain + '_history_' + key, JSON.stringify(data)) }
   }
 
-  deleteWalletHistoryData (key) {
-    localStorage.removeItem('history_' + key)
+  deleteWalletHistoryData (key, chain) {
+    localStorage.removeItem(chain + '_history_' + key)
   }
 
   /*
@@ -252,7 +252,96 @@ class Lib {
           history: actions
         }
       },
-      async eth (token, key) {
+      async bsc (token, key) {
+        let data = chainsWallets.eth(chain, key)
+        return data
+      },
+      async matic (token, key) {
+        let data = chainsWallets.eth(chain, key)
+        return data
+      },
+      async ftm (token, key) {
+        let data = chainsWallets.eth(chain, key)
+        return data
+      },
+      async avaxc (token, key) {
+        let data = chainsWallets.eth(chain, key)
+        return data
+      },
+      async eth (token, key, evm) {
+        return new Promise(async (resolve, reject) => {
+          let evmData = self.getEvmData(token)
+          axios
+            .get(
+              process.env[store.state.settings.network].CACHE +
+          'https://api.covalenthq.com/v1/' + evmData.network_id +
+          '/address/' + key + '/transactions_v2/',
+              { auth: { username: 'ckey_a9e6f6ab90584877b86b151eef3' } }
+            )
+            .then(res => {
+              if (res.data.data.items) {
+                let transactions = []
+                res.data.data.items.filter(o => o.successful).forEach((a, index) => {
+                  let tx = {}
+
+                  let date = new Date(a.block_signed_at)
+                  tx.timeStamp = date.getTime() / 1000
+                  tx.chain = token
+                  tx.friendlyHash = a.tx_hash.substring(0, 6) + '...' + a.tx_hash.substr(a.tx_hash.length - 5)
+                  let decodedBlock = null
+                  if (a.log_events && a.value === '0') {
+                    decodedBlock = a.log_events.find(o => o.decoded && o.decoded.name === 'Transfer')
+                    if (decodedBlock) {
+                      tx.to = decodedBlock.decoded.params.find(o => o.name === 'to').value
+                      tx.amount = decodedBlock.decoded.params.find(o => o.name === 'value').value
+                      tx.amount = Web3.utils.fromWei(tx.amount.toString(), 'ether')
+                      tx.symbol = 'N/A'
+                      if (store.state.tokens.evmTokens[chain]) {
+                        let foundToken = store.state.tokens.evmTokens[chain].find(o => o.contract_address === a.to_address)
+                        tx.symbol = foundToken ? foundToken.contract_ticker_symbol : tx.symbol
+                      }
+                    }
+                  }
+                  if (!decodedBlock) {
+                    tx.to = a.to_address
+                    tx.amount = Web3.utils.fromWei(a.value.toString(), 'ether')
+                    tx.symbol = evmData.nativeToken.toUpperCase()
+                  }
+                  tx.hash = a.tx_hash
+                  tx.explorerLink = evmData.explorer + '/' + tx.hash
+                  tx.from = a.from_address
+                  tx.friendlyTo = tx.to.length ? tx.to.substring(0, 6) + '...' + tx.to.substr(tx.to.length - 5) : ''
+                  tx.friendlyFrom = tx.from.substring(0, 6) + '...' + tx.from.substr(tx.from.length - 5)
+                  tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+                  tx.image = ''// self.getTokenImage(amount.split(' ')[1])
+
+                  // tx.memo = a.action_trace.act.data.memo
+
+                  tx.direction = self.getTransactionDirection(tx.from, tx.to, key)
+                  tx.dateFormatted = date.toISOString().split('T')[0]
+                  tx.amountFriendly = parseFloat(Math.abs(tx.amount)).toFixed(6)
+                  tx.active = false
+                  tx.gasTotal = tx.gas_spent
+                  tx.dateFormatted = date.toISOString().split('T')[0]
+                  tx.amountFriendly = parseFloat(tx.amount).toFixed(6)
+
+                  transactions.push(tx)
+
+                  if (index === res.data.data.items.length - 1) {
+                    resolve({
+                      history: transactions
+                    })
+                  }
+                })
+              }
+            }).catch(error => {
+              reject({
+                error: error
+              })
+            })
+        })
+
+        /*
         // console.log('history eth!', key)
         let actions = []
         await axios.get('http://api.etherscan.io/api?module=account&action=txlist&startblock=0&endblock=99999999&sort=desc&address=' + key)
@@ -281,6 +370,7 @@ class Lib {
         return {
           history: actions
         }
+        */
       },
       async dot (token, key) {
         let actions = []
@@ -344,18 +434,16 @@ class Lib {
           history: actions
         }
       }
-    }[chain]
-
-    let cachedData = localStorage.getItem('history_' + key)
+    }
+    let chainsWallets = wallet
+    let cachedData = localStorage.getItem(chain + '_history_' + key)
     let historyData = {}
     let h = JSON.parse(cachedData)
     if (!cachedData || !h.history) {
-      historyData = wallet ? await wallet(token, key, data) : []
+      historyData = wallet[chain] ? await wallet[chain](token, key, data) : []
 
-      this.cacheWalletHistoryData(historyData, key)
+      this.cacheWalletHistoryData(historyData, key, chain)
     }
-
-    console.log(chain, key, token, 'chain, key, token')
 
     return cachedData ? JSON.parse(cachedData) : historyData
   }
@@ -546,7 +634,6 @@ class Lib {
     return this.evms.find(o => o.chain === chain)
   }
   getWeb3Instance (chain) {
-    const Web3 = require('web3')
     return (new Web3(new Web3.providers.HttpProvider(this.getEvmData(chain).provider)))
   }
   gas = async (chain, transaction, type, tokenPrice) => {
