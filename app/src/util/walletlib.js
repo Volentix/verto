@@ -296,9 +296,11 @@ class Lib {
                       tx.amount = decodedBlock.decoded.params.find(o => o.name === 'value').value
                       tx.amount = Web3.utils.fromWei(tx.amount.toString(), 'ether')
                       tx.symbol = 'N/A'
+                      tx.image = ''
                       if (store.state.tokens.evmTokens[chain]) {
                         let foundToken = store.state.tokens.evmTokens[chain].find(o => o.contract_address === a.to_address)
                         tx.symbol = foundToken ? foundToken.contract_ticker_symbol : tx.symbol
+                        tx.image = foundToken ? foundToken.logo_url : tx.image
                       }
                     }
                   }
@@ -306,6 +308,7 @@ class Lib {
                     tx.to = a.to_address
                     tx.amount = Web3.utils.fromWei(a.value.toString(), 'ether')
                     tx.symbol = evmData.nativeToken.toUpperCase()
+                    tx.image = evmData.icon
                   }
                   tx.hash = a.tx_hash
                   tx.explorerLink = evmData.explorer + '/' + tx.hash
@@ -313,7 +316,6 @@ class Lib {
                   tx.friendlyTo = tx.to.length ? tx.to.substring(0, 6) + '...' + tx.to.substr(tx.to.length - 5) : ''
                   tx.friendlyFrom = tx.from.substring(0, 6) + '...' + tx.from.substr(tx.from.length - 5)
                   tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
-                  tx.image = ''// self.getTokenImage(amount.split(' ')[1])
 
                   // tx.memo = a.action_trace.act.data.memo
 
