@@ -96,6 +96,7 @@ export default {
         name: w.name,
         key: w.key,
         chain: 'eth',
+        isEvm: w.isEvm,
         type: w.type,
         usd: w.usd,
         total: w.total,
@@ -107,8 +108,9 @@ export default {
 
       if (this.showAllWallets) {
         tableData.filter(w => w.chain !== 'eth' && w.chain !== 'eos' && this.accountOptions.push({
-          value: w.key,
+          value: w.key + '-' + w.chain,
           key: w.key,
+          isEvm: w.isEvm,
           chain: w.chain,
           type: w.type,
           usd: w.usd,
