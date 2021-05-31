@@ -21,7 +21,7 @@
     </div>
     <div class="transaction-wrapper--list open" v-else style="height: 100%;">
       <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! ('eos' === $store.state.investment.defaultAccount.chain || $store.state.investment.defaultAccount.isEvm)">
-        History for the {{this.$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
+        History for the {{$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
       </q-banner>
 
       <div class="q-pa-md loading-table" v-else-if="loading">
