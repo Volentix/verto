@@ -3,6 +3,7 @@ export default function () {
     list: [],
     walletTokensData: [],
     pending: [],
-    historicalPrice: null
+    historicalPrice: null,
+    evmTokens: {}
   }
 }

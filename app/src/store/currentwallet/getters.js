@@ -1,7 +1,12 @@
 import store from '@/store'
 
 export function getWallet (state) {
-  return state.wallet && state.wallet.chain ? store.state.wallets.tokens[state.wallet.index] : {
+  let wallet = {
     empty: true
   }
+  if (state.wallet && state.wallet.chain) {
+    wallet = store.state.wallets.tokens.find(o => o.index === state.wallet.index)
+    wallet = !wallet ? state.wallet : wallet
+  }
+  return wallet
 }
