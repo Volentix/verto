@@ -11,7 +11,7 @@
                         <q-icon name="o_account_balance_wallet" />
                         {{$store.state.currentwallet.wallet.empty ? 'Wallets' : $store.state.currentwallet.wallet.name.toUpperCase().replace('- HD', '')}}
                     </span>
-                    <span v-if="false">
+                    <span>
                         <q-btn  :disable="loadingIndicator"  v-if="!$store.state.currentwallet.wallet.empty" dense flat icon-right="cached" color="grey" @click="refreshWallet($store.state.currentwallet.wallet.name.toLowerCase())">
                         <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
                             <strong>Refresh</strong>

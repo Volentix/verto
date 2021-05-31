@@ -120,9 +120,10 @@
                 <h2 class="standard-content--title flex justify-start items-center">Send <img :src="currentToken.image" class="max40 q-ml-sm" alt=""></h2>
                 <div class="standard-content--body">
                   <div class="standard-content--body__form">
+
                     <div class="row">
                       <div class="col col-8 q-pr-lg" v-if="selectedCoin.chain == 'eos' || selectedCoin.isEvm">
-                        <span class="lab-input">Select token </span>
+                        <span class="lab-input" @click="setOptions">Select token </span>
 
                         <q-select
                             :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
@@ -145,7 +146,7 @@
                               </q-item-section>
                               <q-item-section dark>
                                 <q-item-label v-html="scope.opt.type.toUpperCase()" />
-                                <q-item-label v-html="scope.opt.amount"  caption/>
+                                <q-item-label v-html="scope.opt.amount ? scope.opt.amount : 0"  caption/>
                               </q-item-section>
                             </q-item>
                           </template>
@@ -158,7 +159,7 @@
                               </q-item-section>
                               <q-item-section>
                                 <q-item-label v-html="currentToken.type.toUpperCase()" />
-                                <q-item-label class="q-pt-xs" v-html="currentToken.amount" caption/>
+                                <q-item-label class="q-pt-xs" v-html="currentToken.amount ? currentToken.amount : 0" caption/>
                               </q-item-section>
                             </q-item>
                             <q-item
@@ -229,7 +230,7 @@
 
                       </div>
                       <div class="col col-4">
-                        <span class="lab-input">Amount</span>
+                        <span class="lab-input" @click="refresh">Amount</span>
                         <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentToken.amount) ? parseFloat(currentToken.amount) : parseFloat(sendAmount) ; checkGas(); " :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                           <template v-slot:append>
                             <div class="flex justify-end">
@@ -308,7 +309,7 @@
                 <span class="cursor-pointer q-pt-xs" @click="showGasOptions = false" v-else>Hide </span>
                 </span>
                 <div class="standard-content--footer">
-                  <q-btn flat :loading="openModalProgress" class="action-link next" :disable="currentAccount.chain == 'eth' &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="openModalFun()" text-color="white"  label="Transfer" />
+                  <q-btn flat :loading="openModalProgress" class="action-link next" :disable="!currentToken.amount || currentAccount.chain == 'eth' &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="openModalFun()" text-color="white"  label="Transfer" />
                 </div>
               </div>
             </div>
@@ -387,7 +388,7 @@ import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EOSContract from '../../mixins/EOSContract'
 import ETHContract from '../../mixins/EthContract'
-// import initWallet from '@/util/Wallets2Tokens'
+import initWallet from '@/util/Wallets2Tokens'
 import {
   mapState
 } from 'vuex'
@@ -573,11 +574,12 @@ export default {
   },
   methods: {
     refresh () {
-    //  initWallet(this.currentAccount.name)
+      initWallet(this.currentAccount.name)
     },
     setOptions () {
-      this.tableData.map(token => {
-        if (!token.disabled && token.type.toLowerCase() !== 'verto' && parseFloat(token.amount) > 0) {
+      this.options = []
+      this.$store.state.wallets.tokens.forEach(token => {
+        if (!token.disabled && token.type.toLowerCase() !== 'verto') {
           this.options.push({
             label: token.name.toLowerCase(),
             value: token.key + ' - ' + token.type.toUpperCase(),
@@ -593,22 +595,27 @@ export default {
         }
       })
 
-      if (this.selectedCoin) {
-        this.currentAccount = this.selectedCoin
-        this.currentToken = {
-          label: this.selectedCoin.name,
-          value: this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.key + ' - ' + this.selectedCoin.type.toUpperCase(),
-          image: this.selectedCoin.type !== 'usdt' ? this.selectedCoin.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
-          type: this.selectedCoin.type,
-          contract: this.selectedCoin.contract,
-          precision: this.selectedCoin.precision,
-          chainID: this.selectedCoin.chain,
-          key: this.selectedCoin.key,
-          name: this.selectedCoin.name,
-          amount: this.selectedCoin.amount
+      if (!this.currentToken.key) {
+        if (this.selectedCoin) {
+          this.currentAccount = this.selectedCoin
+          this.currentToken = {
+            label: this.selectedCoin.name,
+            value: this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.key + ' - ' + this.selectedCoin.type.toUpperCase(),
+            image: this.selectedCoin.type !== 'usdt' ? this.selectedCoin.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+            type: this.selectedCoin.type,
+            contract: this.selectedCoin.contract,
+            precision: this.selectedCoin.precision,
+            chainID: this.selectedCoin.chain,
+            key: this.selectedCoin.key,
+            name: this.selectedCoin.name,
+            amount: this.selectedCoin.amount
+          }
+        } else {
+          this.currentAccount = this.getCurrentWallet()
         }
       } else {
-        this.currentAccount = this.getCurrentWallet()
+        let updatedToken = this.options.find(o => o.type.toLowerCase() === this.currentToken.type.toLowerCase() && o.key.toLowerCase() === this.currentToken.key.toLowerCase() && o.name.toLowerCase() === this.currentToken.name.toLowerCase() && o.chainID === this.currentToken.chainID)
+        if (updatedToken) this.currentToken = updatedToken
       }
     },
     setCustomGas () {
@@ -790,7 +797,7 @@ export default {
           this.transSuccessDialog = true
           this.transactionLink = result.message
           this.transStatus = !result.status ? 'Sent Successfully' : result.status
-          // initWallet(this.currentAccount.name)
+          initWallet(this.currentAccount.name)
         } else {
           if (result.message.toString().includes('is greater than the maximum billable CPU time for the transaction') || result.message.toString().includes('the current CPU usage limit imposed on the transaction')) {
             this.payForUserCPU()
@@ -845,7 +852,7 @@ export default {
           this.transSuccessDialog = true
           this.transactionLink = result.message
           this.transStatus = !result.status ? 'Sent Successfully' : result.status
-          // initWallet(this.currentAccount.name)
+          initWallet(this.currentAccount.name)
         } else {
           this.unknownError = true
           this.ErrorMessage = result.message

@@ -1,35 +1,11 @@
 <template>
   <div :class="{'q-pt-lg': !allAssets, 'dark-theme': $store.state.settings.lightMode === 'true'}" class="wrapper q-px-lg full-width">
-    <div class="top-part-all"  v-if="false">>
-      <div class="text-h6">Invest</div>
-      <div class="top-4part">
-        <a href="#">
-          <div class="top-part top-part1">
-            <h4>Top Gainers</h4>
-          </div>
-        </a>
 
-        <a href="#">
-          <div class="top-part top-part2">
-            <h4>Top Losers</h4>
-          </div> </a
-        ><a href="#">
-          <div class="top-part top-part3">
-            <h4>Market</h4>
-          </div>
-        </a>
-        <a href="#">
-          <div class="top-part top-part4">
-            <h4>Pools</h4>
-          </div>
-        </a>
-      </div>
-    </div>
     <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
       <div v-show="!allAssets">
         <div class="sub-top row gt-sm">
           <div class="subt-text col-md-7 col-12" >
-            <p class="q-ma-none text-bold text-body1"><q-icon name="img:statics/icons/favicon-96x96.png" style="font-size: 24px" class="q-mr-sm"/>Trade & Earn VTX  </p>
+            <p class="q-ma-none text-bold text-body1" v-show="!$store.state.currentwallet.wallet.chain"><q-icon name="img:statics/icons/favicon-96x96.png" style="font-size: 24px" class="q-mr-sm"/>Trade & Earn VTX  </p>
           </div>
           <div class="see-text col col-12 " >
           <q-input :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol"  >
@@ -40,13 +16,13 @@
           </q-input>
           </div>
         </div>
-        <div class="row q-col-gutter-md q-pr-lg" v-show="!tokenSearchVal.length">
+        <div class="row q-col-gutter-md q-pr-lg"  v-show="!tokenSearchVal.length && !$store.state.currentwallet.wallet.chain">
           <div class="col-md-6 col-12">
             <ExchangeSection data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" />
           </div>
           <div class="col-md-6  col-12">
           <makeVTXSection data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"   />
-          </div>
+        </div>
           <PriceChart
               :dataType="'price'"
               class="col-md-12"
@@ -55,8 +31,9 @@
             />
         </div>
       </div>
-      <div class="q-pt-md" v-show="filterTokens(item).length || tokenSearchVal.length" v-for="(item, index) in assetsOptions.filter(o =>  !allAssets || o.title == allAssets.title)" :key="index+uniqueKey">
-        <div class="sub-top sub-top-chart">
+
+      <div class="q-pt-md" v-show="filterTokens(item).length ||  tokenSearchVal.length" v-for="(item, index) in assetsOptions.filter(o =>  !allAssets || o.title == allAssets.title)" :key="index+uniqueKey">
+      <div class="sub-top sub-top-chart">
           <div class="subt-text " v-if="!allAssets" >
             <p class="q-ma-none text-bold text-body1">{{getSectionTitle(item)}} <span class="text-body2 gt-sm">| {{item.subtitle}}</span></p>
           </div>
@@ -466,13 +443,14 @@ export default {
       let assets = []
       const setValue = (t, index) => {
         let tkData = this.$store.state.tokens.walletTokensData.find(a => a.symbol.toLowerCase() === t['symbol' + index].toLowerCase())
-
+        console.log(investments, 'investments')
         return {
           usd: tkData ? tkData.current_price * t['count' + index] : '',
           rateUsd: tkData ? tkData.current_price : '',
           type: t['symbol' + index].toLowerCase(),
           chain: 'eos',
           poolsCount: 1,
+          owner: t.owner,
           poolName: t.symbol0 + ' / ' + t.symbol1,
           amount: t['count' + index],
           icon: 'https://ndi.340wan.com/eos/' + t['contract' + index] + '-' + t['symbol' + index].toLowerCase() + '.png',

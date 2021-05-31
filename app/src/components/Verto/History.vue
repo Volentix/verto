@@ -20,8 +20,8 @@
        <q-btn @click="showMore()"  v-if="false" unelevated flat class="full-width transaction-wrapper--list__hide-transaction" color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" label="See More..." />
     </div>
     <div class="transaction-wrapper--list open" v-else style="height: 100%;">
-      <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="this.$store.state.investment.defaultAccount && !['eos','eth'].includes(this.$store.state.investment.defaultAccount.chain)">
-        History for the {{this.$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
+      <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! ('eos' === $store.state.investment.defaultAccount.chain || $store.state.investment.defaultAccount.isEvm)">
+        History for the {{$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
       </q-banner>
 
       <div class="q-pa-md loading-table" v-else-if="loading">
@@ -505,7 +505,8 @@ export default {
           account = this.$store.state.wallets.tokens.find(w => w.chain === 'eos' && w.type === 'eos')
         }
 
-        Lib.history(account.chain, account.name, account.type, this.pagination).then(data => {
+        Lib.history(account.chain, account.chain === 'eos' ? account.name : account.key, account.type, this.pagination).then(data => {
+          console.log(data, 'data')
           data = data.history
 
           if (data && data[0] && data[0].transID) {
@@ -655,7 +656,7 @@ export default {
     refreshHistory () {
       let account = this.$store.state.investment.defaultAccount
 
-      Lib.deleteWalletHistoryData(account.chain === 'eos' ? account.name : account.key)
+      Lib.deleteWalletHistoryData(account.chain === 'eos' ? account.name : account.key, account.chain)
       this.loading = true
 
       setTimeout(() => {
