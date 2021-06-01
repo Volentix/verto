@@ -1074,7 +1074,10 @@ export default {
           let chain = HD.names.find(a => a.value === o.chain)
           o.evmChain = evmChain
 
-          o.label = evmChain ? evmChain.name : chain.label
+          if (!evmChain && !chain) {
+            console.log('o, evmChain, chain', o, evmChain, chain)
+          }
+          o.label = evmChain ? evmChain.name : (chain ? chain.label : o.chain.toUpperCase())
 
           return o
         })
