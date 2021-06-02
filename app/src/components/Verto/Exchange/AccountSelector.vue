@@ -211,7 +211,7 @@ export default {
       if (this.showAllWallets) {
         tableData.filter(
           (w, i, a) =>
-            w.chain !== 'eth' &&
+            (w.chain !== 'eth' || w.isEvm) &&
             w.chain !== 'eos' &&
             a.findIndex((t) => t.key === w.key && t.chain === w.chain) === i &&
             this.accountOptions.push({
