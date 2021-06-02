@@ -298,9 +298,9 @@ class Lib {
                       tx.symbol = 'N/A'
                       tx.image = ''
                       if (store.state.tokens.evmTokens[chain]) {
-                        let foundToken = store.state.tokens.evmTokens[chain].find(o => o.contract_address === a.to_address)
-                        tx.symbol = foundToken ? foundToken.contract_ticker_symbol : tx.symbol
-                        tx.image = foundToken ? foundToken.logo_url : tx.image
+                        let foundToken = store.state.tokens.evmTokens[chain].find(o => o.address === a.to_address)
+                        tx.symbol = foundToken ? foundToken.symbol : tx.symbol
+                        tx.image = foundToken ? foundToken.logoURI : tx.image
                       }
                     }
                   }
