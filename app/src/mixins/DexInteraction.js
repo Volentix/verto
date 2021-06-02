@@ -302,9 +302,9 @@ export default {
 
       return coins
     },
-    get1inchCoins () {
+    get1inchCoins (chain = 1) {
       const _1inch = 'https://api.1inch.exchange'
-      this.$axios.get(_1inch + '/v3.0/1/tokens').then((result) => {
+      this.$axios.get(_1inch + '/v3.0/' + chain + '/tokens').then((result) => {
         // will be using this coins array later with the destination select
         let coins = result.data.tokens
 
