@@ -865,11 +865,8 @@
 </template>
 
 <script>
-// import Lib from '@/util/walletlib'
 import initWallet from '@/util/Wallets2Tokens'
 import mobileAssets from '@/components/Verto/Mobile/Wallets'
-import HD from '@/util/hdwallet'
-import Lib from '@/util/walletlib'
 import {
   QScrollArea,
   openURL
@@ -924,7 +921,7 @@ export default {
     tokens: {
       deep: true,
       handler (val, old) {
-        this.setChains()
+        this.chains = this.setChains()
         this.setVtxData()
         this.rekey++
       }
@@ -992,24 +989,27 @@ export default {
     setTimeout(() => {
       this.showSetupEos()
     }, 5000)
-    this.setChains()
+    this.chains = this.setChains()
     this.setVtxData()
-    /*
+
     setTimeout(() => {
       this.$store.state.wallets.tokens.map(async (f) => {
         let stakedAmounts = 0
         if (f.type === 'vtx') {
-          let stakes = await eos.getTable('vertostaking', f.name, 'accountstake')
-          stakes.map(s => {
-            s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
-            s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
-            stakedAmounts += +s.stake_amount
+          eos.getTable('vertostaking', f.name, 'accountstake').then(stakes => {
+            console.log(stakes, 'stakes')
+            stakes.map(s => {
+              s.amount = Math.round(+s.amount.split(' ')[0] * 10000) / 10000
+              s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+              stakedAmounts += +s.amount
+            })
+            f.staked = stakedAmounts
+            console.log(f.staked, 'f.staked')
           })
-          f.staked = stakedAmounts
         }
       })
     }, 6000)
-     */
+
     this.setRessourcesInfos()
   },
   async updated () {
@@ -1041,14 +1041,6 @@ export default {
     }
   },
   methods: {
-    getRandomColor () {
-      const randomNumber = (min, max) => {
-        return Math.floor(Math.random() * max) + min
-      }
-      let colors = 'red pink purple deep-purple indigo blue cyan teal yellow amber blue-grey'
-      let arrayColors = colors.split(' ')
-      return arrayColors[randomNumber(0, arrayColors.length - 1)] + '-' + randomNumber(0, 14)
-    },
     showSetupEos () {
       this.hideEosSetup = !this.$store.state.wallets.tokens.find(f => f.type === 'verto' && f.chain === 'eos' && !f.hidden && !f.disabled)
       let check = localStorage.getItem('hideEosSetup')
@@ -1060,25 +1052,8 @@ export default {
     setVtxData () {
       this.vtxAccounts = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).filter((v) => v.type === 'vtx' && v.chain === 'eos')
       this.vtxAccounts.total = this.vtxAccounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
+      this.vtxAccounts.totalStaked = this.vtxAccounts.reduce((a, b) => +a + (isNaN(b.staked) ? 0 : +b.staked), 0)
       this.vtxAccounts.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
-    },
-    setChains () {
-      this.chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).filter((v, i, a) => (v.type === v.chain || !['eos', 'eth'].includes(v.chain)) && a.findIndex(t => (t.chain === v.chain)) === i)
-        .map(o => {
-          let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
-          o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
-          let evmChain = Lib.evms.find(a => a.chain === o.chain)
-          o.accounts = evmChain ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : accounts.filter(a => a.type === o.chain)
-          o.count = o.accounts.length
-          if (evmChain) o.icon = evmChain.icon
-          let chain = HD.names.find(a => a.value === o.chain)
-          o.evmChain = evmChain
-
-          o.label = evmChain ? evmChain.name : chain.label
-
-          return o
-        })
-      this.chains.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
     },
     showChainAccounts (index, chain) {
       // let nodeList = document.querySelectorAll('.all-wallets .q-expansion-item__toggle-icon')
