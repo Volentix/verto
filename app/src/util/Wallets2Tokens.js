@@ -21,7 +21,14 @@ class Wallets2Tokens {
       name: 'test',
       key: '0x508f51c6fe10E5117caaEF3306fd2126A161825a'
     })
-*/
+    store.state.currentwallet.config.keys.push({
+      chain: 'eth',
+      type: 'eth 2',
+      name: 'test',
+      key: '0xf4dcb9ca53b74e039f5fcfccd4f0548547a25772'
+    })
+    */
+
     if (data) {
       walletName = walletName ? walletName.toLowerCase() : walletName
 
@@ -292,14 +299,7 @@ class Wallets2Tokens {
             wallet.privateKey = privateKeysAttrs.privateKey
             wallet.privateKeyEncrypted = privateKeysAttrs.privateKeyEncrypted
           }
-          let result = this.getEOSTokens(wallet, balances)
-          if (result) {
-            result.catch(e => {
-              this.getEOSTokensV2(wallet, balances, true)
-            })
-          }
-
-          this.updateWallet()
+          this.getEOSTokens(wallet, balances)
         } else if (wallet.type === 'eth') {
           // wallet.key = '0x508f51c6fe10E5117caaEF3306fd2126A161825a'
           Lib.evms.filter(m =>
@@ -493,10 +493,10 @@ class Wallets2Tokens {
     let image = 'https://i.ibb.co/hYhjV1j/empty-token.png'
 
     if (Lib.evms.find(o => o.chain === chain)) {
-      let token = store.state.settings.coins.oneinch.find(t => t.value.toLowerCase() === type)
-      if (token) image = token.image
+      let token = store.state.tokens.evmTokens[chain].find(o => o.symbol.toLowerCase() === type.toLowerCase())
+      if (token) image = token.logoURI
       // Set bnb token image temp
-      if (type === 'bnb') image = 'https://nownodes.io/images/binance-smart-chain/bsc-logo.png'
+    //  if (type === 'bnb') image = 'https://nownodes.io/images/binance-smart-chain/bsc-logo.png'
     }
     return image
   }
@@ -626,6 +626,7 @@ class Wallets2Tokens {
       )
       .then(response => {
         if (response && response.data && response.data.tokens) {
+          console.log(response.data.tokens, 77)
           response.data.tokens.forEach(token => {
             let image =
               token.metadata.logo.split('https:').length === 3
@@ -644,7 +645,7 @@ class Wallets2Tokens {
                 data.tokenPrice = vtxData.current_price
               } else if (data.tokenPrice) {
                 data.tokenPrice = token.exchanges.find(
-                  o => o.name === 'Defibox'
+                  o => o.name.toLowerCase() === 'defibox'
                 ).price
               }
             }
@@ -674,8 +675,8 @@ class Wallets2Tokens {
           this.getEOSTokensV2(wallet, balances, true)
         }
       }).catch(e => {
-        const errorMessage = { code: 403, message: 'Failed fetch from bloks.io' }
-        throw errorMessage
+        console.log(e, 'e')
+        this.getEOSTokensV2(wallet, balances, true)
       })
   }
   checkForExpiredData () {
