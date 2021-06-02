@@ -254,7 +254,7 @@
                 <q-tab name="buy" label="Buy" />
                 <q-tab name="sell" label="Sell" />
               </q-tabs>
-              <AccountSelector v-show="!fromPreview" :chain="asset.chain" class="q-pt-lg" />
+              <AccountSelector :showAllWallets="true" v-show="!fromPreview" :chain="asset.chain" class="q-pt-lg" />
               <div class="row" v-if="!fromPreview">
               .
                 <q-input
