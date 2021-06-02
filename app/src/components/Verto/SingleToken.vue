@@ -735,7 +735,7 @@ export default {
     async getHistoriclPrice (days = 30) {
       let token = this.$store.state.tokens.list.find(
         (t) =>
-          t.symbol === this.asset.type &&
+          t.symbol.toLowerCase() === this.asset.type &&
           ((!t.platforms.hasOwnProperty('eos') &&
             !t.platforms.hasOwnProperty('ethereum')) ||
             this.asset.chain ===
