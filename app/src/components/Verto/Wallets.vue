@@ -135,17 +135,18 @@
                             </q-card>
 
                         </q-expansion-item>
-                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="chain.count == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type === chain.chain ||(!['eos', 'eth'].includes(f.chain) && f.chain == chain.chain)), false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
-                        <template v-slot:header>
+                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                    <template v-slot:header>
+
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" :src="chain.icon"  />
                             </q-item-section>
-                            <q-item-section  class="item-name" :set="tokensCount = $store.state.wallets.tokens.filter(f => f.chain == chain.chain)">
+                            <q-item-section  class="item-name" >
+
                             <span class="item-name--name"> {{chain.label}}</span>
                             <span  class="item-name--staked" v-if="loadingIndex == index + 1 "> <q-spinner-dots color="primary" size="2em" /> </span>
-                            <span  class="item-name--staked" v-else-if="chain.count > 1">{{chain.count}} accounts</span>
-                            <span   class="item-name--staked" v-else-if="chain.count == 1 &&  tokensCount.length > 1">{{tokensCount.length}} tokens</span>
-
+                            <span  class="item-name--staked" v-else-if="chain.accounts.length > 1">{{chain.accounts.length}} accounts</span>
+                            <span   class="item-name--staked" v-else-if="chain.accounts.length == 1 && chain.accounts[0].tokenList && chain.accounts[0].tokenList.length > 1">{{chain.accounts[0].tokenList.length}} tokens</span>
                             </q-item-section>
 
                             <q-item-section class="item-info col" side>
@@ -158,9 +159,9 @@
 
                             <q-card :dark="$store.state.settings.lightMode === 'true'">
                             <q-card-section>
-                                <q-item :set="chainTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && ((f.isEvm  && f.key.toLowerCase() == item.key.toLowerCase() )|| ( !f.isEvm && item.chain == f.chain && f.name.toLowerCase() == item.name.toLowerCase())))" :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter((f, i, c) =>  ((f.type === chain.chain && ['eos', 'eth'].includes(f.chain)) && f.chain == chain.chain) ||  ( c.findIndex(t => (chain.evmChain && f.key == t.key && chain.chain == t.chain && t.isEvm)) === i) ).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                                <q-item  :key="Math.random()+index"  v-for="(item, index) in chain.accounts"   clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                                 <div class="header-wallet-wrapper culumn full-width">
-                                    <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
+                                    <div @click="!item.disabled ? showMenu(item) : ''" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
                                            <q-icon name="fiber_manual_record" :color="getRandomColor()"/>
                                         </q-item-section>
@@ -169,7 +170,8 @@
                                             <span class="item-name--name" v-else> {{item.name}}</span>
                                             <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
 
-                                            <span  class="item-name--staked" >{{chainTokens.length}} token{{ chainTokens.length > 1 ? 's' : '' }}</span>
+                                            <span  class="item-name--staked" v-if="item.tokenList">{{item.tokenList.length}} token{{ item.tokenList.length > 1 ? 's' : '' }}</span>
+
                                             <span  class="item-name--staked" ></span>
                                         </q-item-section>
                                         <q-item-section class="item-info" v-if="!item.disabled">
@@ -1050,7 +1052,7 @@ export default {
       }
     },
     setVtxData () {
-      this.vtxAccounts = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).filter((v) => v.type === 'vtx' && v.chain === 'eos')
+      this.vtxAccounts = this.$store.state.wallets.tokens.filter((v) => v.type === 'vtx' && v.chain === 'eos')
       this.vtxAccounts.total = this.vtxAccounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
       this.vtxAccounts.totalStaked = this.vtxAccounts.reduce((a, b) => +a + (isNaN(b.staked) ? 0 : +b.staked), 0)
       this.vtxAccounts.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
