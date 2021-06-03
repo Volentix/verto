@@ -67,7 +67,7 @@
 <script>
 import Vue from 'vue'
 import VideoBg from 'vue-videobg'
-
+import Lib from '@/util/walletlib'
 Vue.component('video-bg', VideoBg)
 import HD from '@/util/hdwallet'
 const localStorageKeysToDelete = ['walletPublicData', 'hideEosSetup', 'disableIntros_home', 'disableIntro_defi', 'closewizard', 'disable_freeospopup']
@@ -235,6 +235,7 @@ export default {
       this.$store.state.currentwallet.wallet = {
         empty: true
       }
+      Lib.removeExpiredData()
       setTimeout(function () {
         self.$router.push({
           path: to

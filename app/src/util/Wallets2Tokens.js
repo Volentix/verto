@@ -679,38 +679,7 @@ class Wallets2Tokens {
         this.getEOSTokensV2(wallet, balances, true)
       })
   }
-  checkForExpiredData () {
-    const keepData = [
-      'skin',
-      'hideEosSetup',
-      'disableIntro_defi',
-      'closewizard',
-      'disable_freeospopup',
-      'globalSettings'
-    ]
-    let date = localStorage.getItem('walletDataExpiration')
-    let days = 1
-    let now = new Date()
-    let saved = null
-    if (date) {
-      saved = new Date(date)
-      saved.setDate(saved.getDate() + days)
-    }
-
-    if (!date || now.getTime() > saved.getTime()) {
-      let keys = Object.keys(localStorage),
-        i = keys.length
-
-      while (i--) {
-        if (!keepData.includes(keys[i])) {
-          localStorage.removeItem(keys[i])
-        }
-      }
-    }
-    localStorage.setItem('walletDataExpiration', now)
-  }
   getWalletFromCache () {
-    this.checkForExpiredData()
     let data = localStorage.getItem('walletPublicData')
 
     if (data) {

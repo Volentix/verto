@@ -162,6 +162,37 @@ class Lib {
     return direction
   }
 
+  removeExpiredData () {
+    const keepData = [
+      'skin',
+      'hideEosSetup',
+      'disableIntro_defi',
+      'closewizard',
+      'disable_freeospopup',
+      'globalSettings',
+      'version'
+    ]
+    let date = localStorage.getItem('walletDataExpiration')
+    let days = 1
+    let now = new Date()
+    let saved = null
+    if (date) {
+      saved = new Date(date)
+      saved.setDate(saved.getDate() + days)
+    }
+    console.log(date, now, saved)
+    if (!date || now.getTime() > saved.getTime()) {
+      let keys = Object.keys(localStorage),
+        i = keys.length
+
+      while (i--) {
+        if (!keepData.includes(keys[i])) {
+          localStorage.removeItem(keys[i])
+        }
+      }
+    }
+    localStorage.setItem('walletDataExpiration', now)
+  }
   getTokenImage (type) {
     let token = this.getAllCoins().find((o) => o.value.toLowerCase() === type.toLowerCase())
     return token ? (type.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : token.image) : 'https://etherscan.io/images/main/empty-token.png'
