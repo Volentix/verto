@@ -512,7 +512,7 @@ export default {
     this.$store.commit('settings/setDex', {
       dex: 'oneinch'
     })
-
+    console.log(this.get1inchCoinsByChain('bsc'), 'get1inchCoinsByChain')
     if (this.$store.state.settings.dexData.depositCoin && this.crossChain) {
       this.depositCoin = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
     }
@@ -534,6 +534,9 @@ export default {
     this.$store.dispatch('investment/getGasPrice')
     this.getMarketDataVsUSD()
     this.getCoins()
+    setTimeout(() => {
+      this.checkBalance()
+    }, 300)
   },
   watch: {
     step (newVal, oldVal) {
@@ -577,7 +580,9 @@ export default {
           this.checkPair()
         }
       }
-      this.checkBalance()
+      setTimeout(() => {
+        this.checkBalance()
+      }, 300)
     }
   },
   methods: {

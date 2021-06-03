@@ -64,6 +64,7 @@ export default {
   },
   methods: {
     checkBalance () {
+      this.error = ''
       if ((this.depositCoin && (!this.depositCoin.amount || parseFloat(this.depositCoin.amount) === 0))) {
         this.error = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance'
       } else if ((this.tab === 'liquidity' && (!this.destinationCoin.amount || parseFloat(this.depositCoin.amount) === 0))) {
