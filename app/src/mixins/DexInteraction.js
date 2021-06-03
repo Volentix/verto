@@ -64,6 +64,7 @@ export default {
   },
   methods: {
     checkBalance () {
+      this.error = ''
       if ((this.depositCoin && (!this.depositCoin.amount || parseFloat(this.depositCoin.amount) === 0))) {
         this.error = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance'
       } else if ((this.tab === 'liquidity' && (!this.destinationCoin.amount || parseFloat(this.depositCoin.amount) === 0))) {
@@ -123,6 +124,7 @@ export default {
         return a.name ? -1 : 1
       })
     },
+
     getAllCoins (dex = false) {
       let coins = this.$store.state.settings.coins.coinswitch.concat(this.$store.state.settings.coins.oneinch).concat(this.$store.state.settings.coins.defibox)
 
@@ -302,9 +304,39 @@ export default {
 
       return coins
     },
-    get1inchCoins () {
+    get1inchCoinsByChain (chain) {
+      let coins = this.$store.state.tokens.evmTokens[chain]
+      if (coins) {
+        coins = Object.keys(coins).map((key, index) => {
+          let item = this.$store.state.wallets.tokens.find(o => o.type.toLowerCase() === coins[key].symbol.toLowerCase())
+          let row = {
+            'label': coins[key].name.toUpperCase(),
+            'value': coins[key].symbol,
+            'image': coins[key].logoURI,
+            'address': coins[key].address,
+            'price': coins[key].current_price,
+            'dex': 'oneinch',
+            'amount': item ? item.amount : 0,
+            'contract': item ? item.address : null,
+            'amountUSD': item ? item.usd : 0
+          }
+
+          return row
+        })
+        coins = coins.filter(function (el) {
+          return el != null
+        }).sort(function (a, b) {
+          if (a.label && b.label && a.label.toLowerCase() < b.label.toLowerCase()) {
+            return -1
+          }
+          return 1
+        })
+      }
+      return coins || []
+    },
+    get1inchCoins (chain = 1) {
       const _1inch = 'https://api.1inch.exchange'
-      this.$axios.get(_1inch + '/v3.0/1/tokens').then((result) => {
+      this.$axios.get(_1inch + '/v3.0/' + chain + '/tokens').then((result) => {
         // will be using this coins array later with the destination select
         let coins = result.data.tokens
 

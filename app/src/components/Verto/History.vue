@@ -453,9 +453,8 @@ export default {
     }
   },
   watch: {
-    '$store.state.investment.defaultAccount': function (val) {
+    '$store.state.investment.defaultAccount': function (val, old) {
       // if (!this.$store.state.currentwallet.wallet || !this.$store.state.currentwallet.wallet.chain) { this.$store.state.currentwallet.wallet = val }
-
       this.loading = true
 
       setTimeout(() => {
@@ -479,14 +478,10 @@ export default {
     if (this.refresh) {
       this.refreshHistory()
     }
-    setTimeout(() => {
-      this.getHistory()
-    }, 1000)
   },
   methods: {
     async getHistory () {
       this.history = []
-
       let account = this.$store.state.investment.defaultAccount
       if (account.origin === 'metamask') {
         account = this.$store.state.wallets.tokens.find(o => o.type === 'eth' && o.origin !== 'metamask')
@@ -506,7 +501,6 @@ export default {
         }
 
         Lib.history(account.chain, account.chain === 'eos' ? account.name : account.key, account.type, this.pagination).then(data => {
-          console.log(data, 'data')
           data = data.history
 
           if (data && data[0] && data[0].transID) {
@@ -541,7 +535,7 @@ export default {
       } else {
         let data = await this.$store.dispatch('investment/getETHTransactions', element.key)
         localStorage.setItem('tx_list_' + element.key, JSON.stringify(data))
-        data = data.slice(this.offset, 10).map(o => this.normalize(o, 'eth'))
+        data = data.slice(this.offset, 10).map((o) => this.normalize(o, 'eth'))
 
         if (data && Array.isArray(data)) {
           this.history = []
@@ -563,7 +557,7 @@ export default {
     loadMore () {
       this.loadMoreLoading = true
 
-      setTimeout(() => {
+      setTimeout(async () => {
         let account = this.$store.state.investment.defaultAccount
         console.log(account, 'account')
         if (account.chain === 'eth') {
@@ -612,7 +606,7 @@ export default {
 
           tx.gasTotal = tx.gas
           tx.dateFormatted = date.toISOString().split('T')[0]
-          self.getHistoricalData(transaction)
+          // self.getHistoricalData(transaction)
           tx.amountFriendly = parseFloat(tx.amount).toFixed(6)
 
           tx.subTransactions.map(o => {
@@ -660,7 +654,7 @@ export default {
       this.loading = true
 
       setTimeout(() => {
-        this.getHistory()
+        this.getHistory(6)
       }, 500)
     },
     getTransactionDirection (from) {
@@ -678,7 +672,7 @@ export default {
 
       return direction
     },
-    groupByDay (allHistoryData) {
+    async groupByDay (allHistoryData) {
       allHistoryData.forEach((element) => {
         let dateObj = new Date(parseInt(element.timeStamp) * 1000)
         let month = dateObj.getUTCMonth() + 1
