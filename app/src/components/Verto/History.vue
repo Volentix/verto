@@ -458,7 +458,7 @@ export default {
       this.loading = true
 
       setTimeout(() => {
-        this.getHistory(5)
+        this.getHistory()
       }, 500)
     }
   },
@@ -480,7 +480,7 @@ export default {
     }
   },
   methods: {
-    async getHistory (test) {
+    async getHistory () {
       this.history = []
       let account = this.$store.state.investment.defaultAccount
       if (account.origin === 'metamask') {

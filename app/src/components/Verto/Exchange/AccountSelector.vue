@@ -140,7 +140,14 @@
         </q-avatar>
     </template> -->
     </q-select>
+  <div class="text-center" v-else>
+     <span>No {{ chain }} account found</span>
+     <div class="q-mt-md"   v-if="$store.state.wallets.tokens.find( o => o.chain == 'eos' && o.type == 'verto')">
+     You need to setup your EOS account.<br/>
+       <q-btn class="q-mt-md" outline label="Setup EOS account" @click="$router.push('/verto/eos-account/create')"/>
+     </div>
 
+     </div>
   </div>
 </template>
 <script>
