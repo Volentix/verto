@@ -64,6 +64,7 @@ import configManager from '@/util/ConfigManager'
 import {
   version
 } from '../../../package.json'
+import Lib from '@/util/walletlib'
 import initWallet from '@/util/Wallets2Tokens'
 import DexInteraction from '../../mixins/DexInteraction'
 import Vue from 'vue'
@@ -124,6 +125,7 @@ export default {
     this.$refs.psswrd.focus()
   },
   created () {
+    Lib.removeExpiredData()
     this.$store.dispatch('tokens/getTokenList')
     this.$store.dispatch('settings/getSettings')
     let ids = ['volentix-vtx']

@@ -23,7 +23,7 @@
                                             <div class="you-pay">
                                                 <div class="you-pay-head row items-center">
                                                     <div class="col col-4">You Pay</div>
-                                                    <div class="col col-8 flex-end red text-right float-right text-body1" ><AccountSelector class="float-right"  /></div>
+                                                    <div class="col col-8 flex-end red text-right float-right text-body1" ><AccountSelector  :showAllWallets="true" class="float-right"  /></div>
                                                     <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
                                                 </div>
                                                 <div class="you-pay-body row items-center">
@@ -267,6 +267,7 @@ export default {
   data () {
     return {
       tableData: null,
+      swapChainID: 1,
       fromCoinType: '',
       gasOptions: [],
       invalidTransaction: false,
@@ -511,7 +512,7 @@ export default {
     this.$store.commit('settings/setDex', {
       dex: 'oneinch'
     })
-
+    console.log(this.get1inchCoinsByChain('bsc'), 'get1inchCoinsByChain')
     if (this.$store.state.settings.dexData.depositCoin && this.crossChain) {
       this.depositCoin = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
     }
@@ -533,6 +534,9 @@ export default {
     this.$store.dispatch('investment/getGasPrice')
     this.getMarketDataVsUSD()
     this.getCoins()
+    setTimeout(() => {
+      this.checkBalance()
+    }, 300)
   },
   watch: {
     step (newVal, oldVal) {
@@ -576,6 +580,9 @@ export default {
           this.checkPair()
         }
       }
+      setTimeout(() => {
+        this.checkBalance()
+      }, 300)
     }
   },
   methods: {

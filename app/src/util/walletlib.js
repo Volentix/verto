@@ -162,13 +162,46 @@ class Lib {
     return direction
   }
 
+  removeExpiredData () {
+    const keepData = [
+      'skin',
+      'hideEosSetup',
+      'disableIntro_defi',
+      'closewizard',
+      'disable_freeospopup',
+      'globalSettings',
+      'version'
+    ]
+    let date = localStorage.getItem('walletDataExpiration')
+    let days = 1
+    let now = new Date()
+    let saved = null
+    if (date) {
+      saved = new Date(date)
+      saved.setDate(saved.getDate() + days)
+    }
+    console.log(date, now, saved)
+    if (!date || now.getTime() > saved.getTime()) {
+      let keys = Object.keys(localStorage),
+        i = keys.length
+
+      while (i--) {
+        if (!keepData.includes(keys[i])) {
+          localStorage.removeItem(keys[i])
+        }
+      }
+    }
+    localStorage.setItem('walletDataExpiration', now)
+  }
   getTokenImage (type) {
     let token = this.getAllCoins().find((o) => o.value.toLowerCase() === type.toLowerCase())
     return token ? (type.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : token.image) : 'https://etherscan.io/images/main/empty-token.png'
   }
 
   cacheWalletHistoryData (data, key, chain) {
-    if (data && data.hasOwnProperty('history') && key) { localStorage.setItem(chain + '_history_' + key, JSON.stringify(data)) }
+    data.then(o => {
+      if (o && o.hasOwnProperty('history') && key) { localStorage.setItem(chain + '_history_' + key, JSON.stringify(o)) }
+    })
   }
 
   deleteWalletHistoryData (key, chain) {
@@ -187,70 +220,67 @@ class Lib {
     const self = this
     const wallet = {
       async eos (token, key, data) {
-        let actions = []
-        await axios.post(process.env[store.state.settings.network].CACHE + process.env[store.state.settings.network].EOS_HISTORYAPI + '/v1/history/get_actions', {
-          'account_name': key,
-          pos: data.position,
-          offset: data.offset
-        })
-          .then(function (result) {
-            if (result.length !== 0) {
-              result.data.actions.reverse().map(a => {
+        return new Promise(async (resolve, reject) => {
+          let actions = []
+          axios.post(process.env[store.state.settings.network].CACHE + process.env[store.state.settings.network].EOS_HISTORYAPI + '/v1/history/get_actions', {
+            'account_name': key,
+            pos: data.position,
+            offset: data.offset
+          })
+            .then(function (result) {
+              if (result.length !== 0) {
+                result.data.actions.reverse().map(a => {
                 // console.log('split', a.action_trace.act.name === 'transfer' ? a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() : 'not transfer')
-                if (token === 'eos' && (
-                  a.action_trace.act.name === 'transfer' &&
+                  if (token === 'eos' && (
+                    a.action_trace.act.name === 'transfer' &&
                     a.action_trace.receiver === key && typeof a.action_trace.act.data.from !== 'undefined' && typeof a.action_trace.act.data.to !== 'undefined')) {
                   // console.log('walletlib history actions', a)
 
-                  let amount = ''
-                  switch (a.action_trace.act.name) {
-                    case 'transfer':
-                      amount = a.action_trace.act.data.to !== key ? '-' + a.action_trace.act.data.quantity : a.action_trace.act.data.quantity
-                      break
-                    case 'deposit':
-                      amount = a.action_trace.act.data.to !== key ? '-' + a.action_trace.act.data.amount : a.action_trace.act.data.amount
-                      break
-                    case 'rentcpu':
-                      amount = a.action_trace.act.data.to !== key ? '-' + a.action_trace.act.data.loan_payment : a.action_trace.act.data.loan_payment
-                      break
+                    let amount = ''
+                    switch (a.action_trace.act.name) {
+                      case 'transfer':
+                        amount = a.action_trace.act.data.to !== key ? '-' + a.action_trace.act.data.quantity : a.action_trace.act.data.quantity
+                        break
+                      case 'deposit':
+                        amount = a.action_trace.act.data.to !== key ? '-' + a.action_trace.act.data.amount : a.action_trace.act.data.amount
+                        break
+                      case 'rentcpu':
+                        amount = a.action_trace.act.data.to !== key ? '-' + a.action_trace.act.data.loan_payment : a.action_trace.act.data.loan_payment
+                        break
+                    }
+
+                    let tx = {}
+
+                    let date = new Date(a.block_time)
+                    tx.timeStamp = date.getTime() / 1000
+                    tx.chain = token
+                    tx.friendlyHash = a.action_trace.trx_id.substring(0, 6) + '...' + a.action_trace.trx_id.substr(a.action_trace.trx_id.length - 5)
+                    tx.to = tx.friendlyTo = a.action_trace.act.data.to
+                    tx.hash = a.action_trace.trx_id
+                    tx.explorerLink = 'https://bloks.io/transaction/' + tx.hash
+                    tx.from = tx.friendlyFrom = a.action_trace.act.data.from
+                    tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+                    tx.image = self.getTokenImage(amount.split(' ')[1])
+                    tx.amount = amount.split(' ')[0]
+                    tx.memo = a.action_trace.act.data.memo
+                    tx.symbol = amount.split(' ')[1]
+                    tx.direction = self.getTransactionDirection(tx.from, tx.to, key)
+                    tx.dateFormatted = date.toISOString().split('T')[0]
+                    tx.amountFriendly = parseFloat(Math.abs(tx.amount)).toFixed(6)
+
+                    actions.push(tx)
                   }
-
-                  let tx = {}
-
-                  let date = new Date(a.block_time)
-                  tx.timeStamp = date.getTime() / 1000
-                  tx.chain = token
-                  tx.friendlyHash = a.action_trace.trx_id.substring(0, 6) + '...' + a.action_trace.trx_id.substr(a.action_trace.trx_id.length - 5)
-                  tx.to = tx.friendlyTo = a.action_trace.act.data.to
-                  tx.hash = a.action_trace.trx_id
-                  tx.explorerLink = 'https://bloks.io/transaction/' + tx.hash
-                  tx.from = tx.friendlyFrom = a.action_trace.act.data.from
-                  tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
-                  tx.image = self.getTokenImage(amount.split(' ')[1])
-                  tx.amount = amount.split(' ')[0]
-                  tx.memo = a.action_trace.act.data.memo
-                  tx.symbol = amount.split(' ')[1]
-                  tx.direction = self.getTransactionDirection(tx.from, tx.to, key)
-                  tx.dateFormatted = date.toISOString().split('T')[0]
-                  tx.amountFriendly = parseFloat(Math.abs(tx.amount)).toFixed(6)
-
-                  actions.push(tx)
-                }
+                })
+                resolve({
+                  history: actions
+                })
+              }
+            }).catch(function (error) {
+              reject({
+                error: error
               })
-
-              return actions // self.removeDuplicateTransactions(actions)
-            }
-          }).catch(function (error) {
-            // TODO: Exception handling
-            console.log('history error', error)
-            // userError(error)
-            return false
-          })
-
-        // Promise.all(balProm)
-        return {
-          history: actions
-        }
+            })
+        })
       },
       async bsc (token, key) {
         let data = chainsWallets.eth(chain, key)
@@ -298,9 +328,9 @@ class Lib {
                       tx.symbol = 'N/A'
                       tx.image = ''
                       if (store.state.tokens.evmTokens[chain]) {
-                        let foundToken = store.state.tokens.evmTokens[chain].find(o => o.contract_address === a.to_address)
-                        tx.symbol = foundToken ? foundToken.contract_ticker_symbol : tx.symbol
-                        tx.image = foundToken ? foundToken.logo_url : tx.image
+                        let foundToken = store.state.tokens.evmTokens[chain].find(o => o.address === a.to_address)
+                        tx.symbol = foundToken ? foundToken.symbol : tx.symbol
+                        tx.image = foundToken ? foundToken.logoURI : tx.image
                       }
                     }
                   }
@@ -328,12 +358,9 @@ class Lib {
                   tx.amountFriendly = parseFloat(tx.amount).toFixed(6)
 
                   transactions.push(tx)
-
-                  if (index === res.data.data.items.length - 1) {
-                    resolve({
-                      history: transactions
-                    })
-                  }
+                })
+                resolve({
+                  history: transactions
                 })
               }
             }).catch(error => {
@@ -441,9 +468,9 @@ class Lib {
     let cachedData = localStorage.getItem(chain + '_history_' + key)
     let historyData = {}
     let h = JSON.parse(cachedData)
-    if (!cachedData || !h.history) {
-      historyData = wallet[chain] ? await wallet[chain](token, key, data) : []
 
+    if (!cachedData || !h.history) {
+      historyData = wallet[chain] ? wallet[chain](token, key, data) : []
       this.cacheWalletHistoryData(historyData, key, chain)
     }
 

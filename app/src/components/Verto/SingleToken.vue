@@ -254,7 +254,7 @@
                 <q-tab name="buy" label="Buy" />
                 <q-tab name="sell" label="Sell" />
               </q-tabs>
-              <AccountSelector v-show="!fromPreview" :chain="asset.chain" class="q-pt-lg" />
+              <AccountSelector :showAllWallets="true" v-show="!fromPreview" :chain="asset.chain" class="q-pt-lg" />
               <div class="row" v-if="!fromPreview">
               .
                 <q-input
@@ -735,7 +735,7 @@ export default {
     async getHistoriclPrice (days = 30) {
       let token = this.$store.state.tokens.list.find(
         (t) =>
-          t.symbol === this.asset.type &&
+          t.symbol.toLowerCase() === this.asset.type &&
           ((!t.platforms.hasOwnProperty('eos') &&
             !t.platforms.hasOwnProperty('ethereum')) ||
             this.asset.chain ===

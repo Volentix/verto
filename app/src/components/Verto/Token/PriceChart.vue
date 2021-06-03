@@ -46,7 +46,7 @@ export default {
             tooltip.backgroundColor = 'rgba(255,255,255,1)'
             tooltip.bodyFontColor = '#000'
             tooltip.titleFontColor = '#000'
-            if (tooltip.labelTextColors[0]) { tooltip.labelTextColors[0] = '#000' }
+            if (tooltip.labelTextColors && tooltip.labelTextColors[0]) { tooltip.labelTextColors[0] = '#000' }
           }
         }
       },
