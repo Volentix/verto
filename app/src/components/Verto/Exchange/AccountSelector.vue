@@ -9,11 +9,11 @@
                             <q-item-section avatar>
                                 <img class="coin-icon" width="25px" :src="tokChain.icon"  />
                             </q-item-section>
-                            <q-item-section  class="item-name" :set="tokensCount = $store.state.wallets.tokens.filter(f => f.chain == tokChain.chain)">
+                            <q-item-section  class="item-name" >
                             <span class="item-name--name"> {{tokChain.label}}</span>
                             <q-item-label caption>
                             <span  class="item-name--staked" v-if="tokChain.count > 1">{{tokChain.count}} accounts</span>
-                            <span   class="item-name--staked" v-else-if="tokChain.count == 1 &&  tokensCount.length > 1">{{getAccountLabel(tokChain)}}</span>
+                            <span   class="item-name--staked" v-else-if="tokChain.count == 1">{{getAccountLabel(tokChain)}}</span>
                             </q-item-label>
 
                             </q-item-section>
@@ -28,7 +28,7 @@
 
                             <q-card class="accounts" :dark="$store.state.settings.lightMode === 'true'" dense>
                             <q-card-section>
-                                <q-item  @click="accountOption = item ; setAccount(300) ;" :set="chainTokens = accountOptions.filter(f => f.chain == item.chain && ((f.isEvm  && f.key.toLowerCase() == item.key.toLowerCase() )|| ( !f.isEvm && item.chain == f.chain && f.name.toLowerCase() == item.name.toLowerCase())))" :key="Math.random()+index"  v-for="(item, index) in accountOptions.filter((f, i, c) =>  ((f.type === tokChain.chain && ['eos'].includes(f.chain)) && f.chain == tokChain.chain) ||  ( c.findIndex(t => (tokChain.evmChain && f.key == t.key && tokChain.chain == t.chain && t.isEvm)) === i) ).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                                <q-item  @click="accountOption = item ; setAccount(300) ;" :key="Math.random()+index"  v-for="(item, index) in tokChain.accounts"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                                 <div class="header-wallet-wrapper culumn full-width">
                                     <div   class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
@@ -38,9 +38,7 @@
                                             <span class="item-name--name" v-if="item.isEvm"> {{getAccountLabel(item)}}</span>
                                             <span class="item-name--name" v-else> {{item.name}}</span>
                                             <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
-
-                                            <span  class="item-name--staked" >{{chainTokens.length}} token{{ chainTokens.length > 1 ? 's' : '' }}</span>
-                                            <span  class="item-name--staked" ></span>
+                                            <span  class="item-name--staked" v-if="item.tokenList">{{item.tokenList.length}} token{{ item.tokenList.length > 1 ? 's' : '' }}</span>
                                         </q-item-section>
                                         <q-item-section   side>
                                              <span class="item-info--amountUSD" v-if="item.total">${{nFormatter2(new Number(isNaN(item.total) ? 0 : item.total).toFixed(2),0)}}</span>
@@ -146,7 +144,6 @@
   </div>
 </template>
 <script>
-const palette = ['cyan', 'teal', 'light-blue', 'blue-1', 'pink', 'purple']
 import Formatter from '@/mixins/Formatter'
 export default {
   props: ['chain', 'showAllWallets', 'autoSelect'],
@@ -164,6 +161,9 @@ export default {
           o.chain === this.chain))
   },
   methods: {
+    getAccount (item) {
+
+    },
     init (updateDefaultAccount = true) {
       let tableData = this.$store.state.wallets.tokens
 
@@ -176,6 +176,7 @@ export default {
             value: w.name,
             name: w.name,
             key: w.key,
+            index: w.index,
             usd: w.usd,
             chain: 'eos',
             total: w.total,
@@ -197,6 +198,7 @@ export default {
             name: w.name,
             key: w.key,
             chain: 'eth',
+            index: w.index,
             isEvm: w.isEvm,
             type: w.type,
             usd: w.usd,
@@ -220,6 +222,7 @@ export default {
               isEvm: w.isEvm,
               chain: w.chain,
               type: w.type,
+              index: w.index,
               usd: w.usd,
               total: w.total,
               icon: w.icon,
@@ -298,7 +301,6 @@ export default {
       }
 
       this.setAccount()
-      console.log(this.chain, 'this.chain', this.accountOptions)
     },
     setAccount (time = 0) {
       setTimeout(() => {
@@ -323,10 +325,7 @@ export default {
             )
 
             this.$store.commit('investment/setAccountTokens', tokens)
-            console.log(
-              this.$store.state.currentwallet.wallet,
-              'this.$store.state.currentwallet.wallet.chain'
-            )
+
             if (
               this.$store.state.currentwallet.wallet.chain &&
               this.$store.state.currentwallet.wallet.name !==
@@ -387,6 +386,7 @@ export default {
 
       this.accountOption = {
         value: w.key,
+        isEvm: w.isEvm,
         key: w.key,
         chain: w.chain,
         usd: w.usd,
@@ -395,8 +395,8 @@ export default {
         total: w.total,
         icon: w.icon,
         image: w.icon,
-        label: w.label,
-        color: palette[this.accountOptions.length]
+        label: this.getAccountLabel(w),
+        color: this.getRandomColor()
       }
       this.$store.commit(
         'investment/setAccountTokens',
@@ -419,6 +419,7 @@ export default {
             value: w.key,
             key: w.key,
             chain: 'eth',
+            isEvm: w.isEvm,
             usd: w.usd,
             type: w.type,
             total: w.total,
@@ -426,9 +427,8 @@ export default {
             name: w.name,
             icon: w.icon,
             origin: 'metamask',
-            label:
-              w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
-            color: palette[this.accountOptions.length]
+            label: this.getAccountLabel(w),
+            color: this.getRandomColor()
           }
           let item = this.accountOptions.find(
             (a) => a && a.key === this.accountOption.key
