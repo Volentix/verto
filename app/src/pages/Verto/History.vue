@@ -19,13 +19,13 @@
               </div>
 
               <div class="standard-content--body" style="height: 100%;">
-                <History :refresh="refresh" :key="refresh" :isMobile="false" />
+                <History  :key="refresh" :isMobile="false" />
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="mobile-version full-height" v-else>
+       <div class="mobile-version full-height" v-else>
         <div class="desktop-card-style apps-section history-card" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100%;">
           <q-banner inline-actions class="text-white bg-red q-my-md " v-if="false">
             Section currently in development: currently showing ETH wallets history
@@ -44,6 +44,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </q-page>
 </template>
