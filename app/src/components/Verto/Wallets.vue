@@ -163,7 +163,7 @@
                                 <div class="header-wallet-wrapper culumn full-width">
                                     <div @click="!item.disabled ? showMenu(item) : ''" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
-                                           <q-icon name="fiber_manual_record" :color="getRandomColor()"/>
+                                           <q-icon name="fiber_manual_record" :color="item.color"/>
                                         </q-item-section>
                                         <q-item-section class="item-name">
                                             <span class="item-name--name" v-if="item.isEvm"> {{item.key.substr(item.key.length - 6)}}</span>
@@ -533,7 +533,7 @@
                                 <div class="header-wallet-wrapper culumn full-width">
                                     <div @click="!item.disabled ? showMenu(item) : ''" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
-                                           <q-icon name="fiber_manual_record" :color="getRandomColor()"/>
+                                           <q-icon name="fiber_manual_record" :color="item.color"/>
                                         </q-item-section>
                                         <q-item-section class="item-name">
                                             <span class="item-name--name" v-if="item.isEvm"> {{item.key.substr(item.key.length - 6)}}</span>
@@ -812,7 +812,7 @@
                                 <div class="header-wallet-wrapper culumn full-width">
                                     <div @click="!item.disabled ? showMenu(item) : ''" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
-                                           <q-icon name="fiber_manual_record" :color="getRandomColor()"/>
+                                           <q-icon name="fiber_manual_record" :color="item.color"/>
                                         </q-item-section>
                                         <q-item-section class="item-name">
                                             <span class="item-name--name" v-if="item.isEvm"> {{item.key.substr(item.key.length - 6)}}</span>

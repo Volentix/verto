@@ -43,6 +43,29 @@ export default {
       return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol
     },
     setChains () {
+      /*
+        Hierarchy chains[]->accounts[]->tokenList[]
+        chains: [
+          {
+           ...
+           chain:'eth',
+           accounts:[
+             {
+               tokenList:[]
+             }
+           ]
+           ....
+          },
+           ...
+           chain:'eos',
+           accounts:[
+             {
+               tokenList:[]
+             }
+           ]
+           ....,
+        ]
+      */
       let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || !['eos', 'eth'].includes(v.chain)) && a.findIndex(t => (t.chain === v.chain)) === i)))
         .map(o => {
           let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
@@ -51,6 +74,7 @@ export default {
           o.accounts = evmChain ? accounts.filter((a, i, c) => a.chain === o.chain && c.findIndex(t => (t.key.toLowerCase() === a.key.toLowerCase())) === i) : accounts.filter(a => a.type === o.chain)
           o.accounts = JSON.parse(JSON.stringify(o.accounts)).map(q => {
             q.tokenList = this.$store.state.wallets.tokens.filter((f, i, c) => f.chain === q.chain && ((f.isEvm && f.key.toLowerCase() === q.key.toLowerCase() && c.findIndex(t => t.isEvm && t.key.toLowerCase() === q.key.toLowerCase() && f.type === t.type) === i) || (!f.isEvm && q.chain === f.chain && f.name.toLowerCase() === q.name.toLowerCase())))
+            q.color = this.getRandomColor()
             return q
           })
           o.count = o.accounts.length
