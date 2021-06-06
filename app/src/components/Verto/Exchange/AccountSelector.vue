@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div v-if="!chain" >
-      <q-btn v-if="accountOptions.length" :color="accountOption.color"  text-color="black" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" >
+    <div v-if="!chain || chains" >
+      <q-btn  :color="accountOption.color"  text-color="black" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" >
             <q-menu>
               <q-list bordered separator>
-                <q-expansion-item  style="width:308px;"  dense-toggle class="chains" default-opened v-for="(tokChain, index) in chains"  :key="Math.random()+index" clickable  >
+                <q-expansion-item  style="width:308px;"  dense-toggle class="chains" default-opened v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index" clickable  >
                               <template v-slot:header>
                                   <q-item-section avatar>
                                       <img class="coin-icon" width="25px" :src="tokChain.icon"  />
@@ -59,7 +59,7 @@
               </q-list>
             </q-menu>
           </q-btn>
-    <div class="text-center" v-else>No {{ chain }} account found</div>
+
   </div>
     <q-select
       :dark="$store.state.settings.lightMode === 'true'"
@@ -152,27 +152,32 @@
 </template>
 <script>
 import Formatter from '@/mixins/Formatter'
+import DexInteraction from '@/mixins/DexInteraction'
 export default {
-  props: ['chain', 'showAllWallets', 'autoSelect'],
+  props: ['chain', 'showAllWallets', 'autoSelectChain', 'chains'],
   data () {
     return {
       accountOptions: [],
       accountOption: null,
-      chains: []
+      chainsData: []
     }
   },
   created () {
     this.init()
-    this.chains = this.setChains()
-    this.chains = this.chains.filter(o => (!this.chain ||
-          o.chain === this.chain))
+    this.chainsData = this.setChains()
+    this.chainsData = this.chainsData.filter(o => this.checkChain(o))
+    console.log(this.chainsData, 'this.chainsData ')
   },
   methods: {
     getAccount (item) {
-      let w = this.accountOptions.find(o => o.index === item.index)
+      let w = this.formatAccoountOption(this.$store.state.wallets.tokens.find(a => a.index === item.index))
+
       if (w) {
         this.accountOption = w
       }
+    },
+    checkChain (o) {
+      return (!this.chains && (o.chain === this.chain || !this.chain)) || (this.chains && this.chains.includes(o.chain)) || (!this.chain && !this.chains)
     },
     init (updateDefaultAccount = true) {
       let tableData = this.$store.state.wallets.tokens
@@ -181,7 +186,7 @@ export default {
         (w) =>
           w.chain === 'eos' &&
           w.type === 'eos' &&
-          (this.chain === w.chain || !this.chain) &&
+          this.checkChain(w) &&
           this.accountOptions.push({
             value: w.name,
             name: w.name,
@@ -201,7 +206,7 @@ export default {
       tableData.filter(
         (w) =>
           w.chain === 'eth' &&
-          (this.chain === w.chain || !this.chain) &&
+          this.checkChain(w) &&
           w.type === 'eth' &&
           this.accountOptions.push({
             value: w.key,
@@ -223,24 +228,10 @@ export default {
       if (this.showAllWallets) {
         tableData.filter(
           (w, i, a) =>
-            (w.chain !== 'eth' || w.isEvm) &&
-            w.chain !== 'eos' &&
+            ((w.chain !== 'eth' && w.chain !== 'eos')) &&
+             this.checkChain(w) &&
             a.findIndex((t) => t.key === w.key && t.chain === w.chain) === i &&
-            this.accountOptions.push({
-              value: w.key + '-' + w.chain,
-              key: w.key,
-              isEvm: w.isEvm,
-              chain: w.chain,
-              type: w.type,
-              index: w.index,
-              usd: w.usd,
-              total: w.total,
-              icon: w.icon,
-              image: w.icon,
-              name: w.name,
-              label: this.getAccountLabel(w),
-              color: this.getRandomColor()
-            })
+            this.accountOptions.push(this.formatAccoountOption(w))
         )
       }
       this.accountOptions = this.accountOptions.filter((o) => o && o.name)
@@ -309,7 +300,10 @@ export default {
       if (!this.accountOption && this.accountOptions.length) {
         this.accountOption = this.accountOptions[0]
       }
-
+      if (this.autoSelectChain && this.accountOptions.length) {
+        this.accountOption = this.accountOptions.find(o => o.chain === this.autoSelectChain)
+      }
+      console.log(this.autoSelectChain, 'this.autoSelectChain')
       this.setAccount()
     },
     setAccount (time = 0) {
@@ -367,9 +361,8 @@ export default {
         if (newVal.length !== old.length) {
           this.accountOptions = []
           this.init(false)
-          this.chains = this.setChains()
-          this.chains = this.chains.filter(o => (!this.chain ||
-          o.chain === this.chain))
+          this.chainsData = this.setChains()
+          this.chainsData = this.chainsData.filter(o => this.checkChain(o))
         }
       }
     },
@@ -385,8 +378,8 @@ export default {
       )
 
       if (item) {
-        this.setAccount()
         this.accountOption = item
+        this.setAccount()
       }
     },
     '$store.state.investment.defaultAccount': function (val) {
@@ -452,7 +445,7 @@ export default {
       }
     }
   },
-  mixins: [Formatter]
+  mixins: [Formatter, DexInteraction]
 }
 </script>
 <style lang="scss" scoped>
