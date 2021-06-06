@@ -5,6 +5,7 @@ let apiUrlV3 = {
 }
 */
 import Lib from '@/util/walletlib'
+import abiArray from '@/statics/abi/erc20.json'
 export default {
   data () {
     return {
@@ -16,7 +17,7 @@ export default {
   methods: {
     async getContractABI (address, isERC20 = false) {
       let abi = this.poolContractABIS[address]
-      let abiCall = isERC20 ? 'https://gist.githubusercontent.com/veox/8800debbf56e24718f9f483e1e40c35c/raw/f853187315486225002ba56e5283c1dba0556e6f/erc20.abi.json' : 'https://api.etherscan.io/api?apikey=YBABRIF5FBIVNZZK3R8USGI94444WQHHBN&module=contract&action=getabi&address=' + address + ''
+      let abiCall = isERC20 ? abiArray : 'https://api.etherscan.io/api?apikey=YBABRIF5FBIVNZZK3R8USGI94444WQHHBN&module=contract&action=getabi&address=' + address + ''
 
       if (!abi) {
         try {
@@ -31,19 +32,21 @@ export default {
       return abi
     },
     getSpender1Inchv3 (chain = 'eth') {
-      let response = this.$axios.get('https://api.1inch.exchange/v3.0/1/approve/spender')
+      let response = this.$axios.get('https://api.1inch.exchange/v3.0/' + this.evmData.network_id + '/approve/spender')
       return response
     },
     getApprovalDataV3 (tokenAddress, chain = 'eth') {
-      let response = this.$axios.get('https://api.1inch.exchange/v3.0/1/approve/calldata?tokenAddress=' + tokenAddress)
+      let response = this.$axios.get('https://api.1inch.exchange/v3.0/' + this.evmData.network_id + '/approve/calldata?tokenAddress=' + tokenAddress)
       return response
     },
-    async isApprovalRequired (fromTokenAddress, toAddress, amountToSend, setGas = false, nonce = false) {
+    async isApprovalRequired (fromTokenAddress, toAddress, amountToSend, setGas = false, nonce = false, account, calculateGas = true) {
       let transactionObject = {}
-      let account = Array.isArray(this.ethAccount) ? this.ethAccount.find(o => o.type === 'eth') : this.ethAccount
-      let tokenABI = await this.getContractABI('default', true)
+      if (!account) {
+        account = Array.isArray(this.ethAccount) ? this.ethAccount.find(o => o.type === 'eth') : this.ethAccount
+      }
+
       this.approvalRequired = false
-      const tokenContract = new this.web3.eth.Contract(tokenABI, fromTokenAddress)
+      const tokenContract = new this.web3.eth.Contract(abiArray, fromTokenAddress)
 
       let spenderData = await this.getSpender1Inchv3(fromTokenAddress)
 
@@ -81,7 +84,7 @@ export default {
         if (setGas) {
           transactionObject.gas = this.web3.utils.toHex(this.gasSelected.gas)
           // transactionObject.gasPrice = this.web3.utils.toHex(this.gasSelected.gasPrice)
-        } else {
+        } else if (calculateGas) {
           this.getGasOptions(transactionObject)
         }
       } else {
@@ -150,13 +153,11 @@ export default {
           self.invalidTransaction = true
         })
     },
-    async sendSignedTransaction (transactionObject, metamask = false, key = false) {
+    async sendSignedTransaction (transactionObject, metamask = false, key = false, account = null) {
       this.transactionStatus = 'Pending'
-      let account = Array.isArray(this.ethAccount) ? this.ethAccount.find(o => o.type === 'eth') : this.ethAccount
-      if (key) {
-        account = this.$store.state.wallets.tokens.find(a => a.key === key)
-      }
 
+      account = this.$store.state.wallets.tokens.find(a => a.isEvm && ((key && a.key.toLowerCase() === key.toLowerCase()) || (account && account.key.toLowerCase() && a.key.toLowerCase())))
+      console.log(account, 'account', key, account, transactionObject)
       if (metamask) {
         /* global web3 */
         const Web3 = require('web3')
