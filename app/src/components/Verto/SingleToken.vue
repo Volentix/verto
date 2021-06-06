@@ -249,12 +249,17 @@
                 @click="error = false ; success = false"
                 inline-label
                 mobile-arrows
+                :set="show1inch = ['bsc','matic','eth'].includes(asset.chain)"
               >
                 <q-tab name="send" label="Send" v-if="asset.chain == 'eos'" />
                 <q-tab name="buy" label="Buy" />
                 <q-tab name="sell" label="Sell" />
               </q-tabs>
-              <AccountSelector :showAllWallets="true" v-show="!fromPreview" :chain="asset.chain" class="q-pt-lg" />
+              <Oneinch :miniMode="true" :chain="asset.chain" class="oneinch-wrapper" v-if="show1inch"></Oneinch>
+
+              <div v-else class="q-pa-md">
+              <AccountSelector  :showAllWallets="true" v-show="!fromPreview" :chain="asset.chain" class="q-pt-lg" />
+
               <div class="row" v-if="!fromPreview">
               .
                 <q-input
@@ -440,7 +445,7 @@
               <div
                :class="{'q-pt-md' : !fromPreview}"
                 class="buy text-capitalize"
-                v-if="!spinnerVisible && !success"
+                v-if="!spinnerVisible && !success && !asset.isEvm"
               >
                 <a
                   href="javascript:void(0)"
@@ -448,6 +453,7 @@
                   >{{ tab === 'send' ? (!fromPreview ? 'Preview' : 'Send') :tab }}</a
                 >
               </div>
+            </div>
             </div>
           </transition>
           <div
@@ -566,6 +572,7 @@
 </template>
 <script>
 import transactEOS from './transactEOS'
+import Oneinch from '../../components/Verto/Exchange/Oneinch'
 import Formatter from '@/mixins/Formatter'
 import History from '../../components/Verto/History'
 import PriceChart from '../../components/Verto/Token/PriceChart'
@@ -579,6 +586,7 @@ import { QScrollArea } from 'quasar'
 export default {
   components: {
     QScrollArea,
+    Oneinch,
     AccountSelector,
     AssetBalancesTable,
     History,
@@ -1296,7 +1304,6 @@ export default {
 
 .right {
   background: #fff;
-  padding: 0px 20px 20px;
   border: 1px solid #e9e9ea;
   border-radius: 12px;
   margin-top: 8px;
