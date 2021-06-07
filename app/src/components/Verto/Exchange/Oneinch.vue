@@ -11,7 +11,7 @@
                 <!-- Vdex component -->
                 <div class="">
                     <!-- <div class="standard-content"></div> -->
-                    <div class="chain-tools-wrapper--list open">
+                    <div class="chain-tools-wrapper--list open" :class="{'minimode': miniMode}">
                         <div class="list-wrapper">
                             <div class="row">
                                 <div class="col col-12">
@@ -28,6 +28,7 @@
                                                 </div>
                                                 <div class="you-pay-body row items-center">
                                                     <div class="col col-3 choose-coin">
+                                                     <div class="col col-4 text-body2" v-if="miniMode" >You Pay</div>
                                                         <span class="cursor">
                                                             <q-select class="select-input" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator use-input borderless rounded v-model="depositCoin" @input="swapData.error = false; getSwapQuote()" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                                                 <template v-slot:option="scope">
@@ -36,7 +37,7 @@
                                                                             <q-icon :name="`img:${scope.opt.image}`" />
                                                                         </q-item-section>
                                                                         <q-item-section>
-                                                                            <q-item-label v-html="scope.opt.label.toUpperCase()" />
+                                                                            <q-item-label   v-html="scope.opt.label.toUpperCase()" />
                                                                             <q-item-label  v-if="scope.opt.amount" caption>{{ formatNumber(scope.opt.amount, 7) }}</q-item-label>
                                                                         </q-item-section>
                                                                     </q-item>
@@ -54,9 +55,6 @@
                                                             <div class="flex justify-end items-center" style="width: 60px">
                                                                 <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
                                                             </div>
-                                                            <template v-slot:hint>
-                                                                <div v-if="swapData.marketData.length && depositCoin.value.toLowerCase() == 'eth'">{{convertETHToUSD(swapData.fromAmount)}}</div>
-                                                            </template>
                                                         </q-input>
                                                     </div>
                                                 </div>
@@ -183,8 +181,8 @@
 
                                         <div v-if="step === 2 || transactionHash" class="prototype">
                                             <div class="head">
-                                                <q-btn v-if="step != 1" flat @click="getSwapQuote(); step = 1" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back"  class="--next-btn q-mr-md" />
-                                                Order status : {{transactionStatus}}
+                                                <q-btn v-if="step != 1" flat @click=" step = 1 ; getSwapQuote();" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back"  class="--next-btn q-mr-md" />
+                                               <span v-if="!miniMode">Order status : {{transactionStatus}}</span>
                                             </div>
                                             <div class="standard-content--body">
                                                 <div class="standard-content--body__form q-pa-xl">
@@ -198,7 +196,7 @@
                                                         <q-linear-progress v-if="transactionStatus != 'Success' && transactionStatus != 'Failed'" :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" :value="progress" indeterminate class="q-mt-lg" />
                                                         <p class="text-center q-pt-md" v-if="!approvalRequired">Swaping {{swapData.fromAmount}} {{depositCoin.value.toUpperCase()}} to {{destinationCoin.value}}</p>
                                                         <p class="text-center q-pt-md" v-else>Approval transaction</p>
-                                                        <p class="text-center q-pt-md" v-if="approvalRequired && transactionStatus == 'Success'">Approval succeeded. <q-btn flat @click="getSwapQuote()" label="Click here" /> to go back and process the actual swap</p>
+                                                        <p class="text-center q-pt-md" v-if="approvalRequired && transactionStatus == 'Success'">Approval succeeded. <q-btn flat @click="step = 1 ; getSwapQuote()" label="Click here" /> to go back and select gas fee for the swap</p>
                                                         <div class="text-h4 --subtitle">{{''}}</div>
                                                         <q-input  :dark="$store.state.settings.lightMode === 'true'"  v-if="transactionHash" bottom-slots v-model="transactionHash" readonly rounded outlined type="text">
                                                             <template v-slot:append>
@@ -265,7 +263,7 @@ import initWallet from '@/util/Wallets2Tokens'
 export default {
   name: 'Oneinch',
   components: { AccountSelector },
-  props: ['disableDestinationCoin', 'crossChain', 'miniMode', 'chain'],
+  props: ['disableDestinationCoin', 'crossChain', 'miniMode', 'chain', 'tokenType'],
   data () {
     return {
       tableData: null,
@@ -574,6 +572,11 @@ export default {
       this.getSwapQuote()
     },
     getCoins () {
+      let defaultToken = {
+        bsc: ['bnb', 'dai'],
+        eth: ['eth', 'dai'],
+        matic: ['matic', 'quick']
+      }
       if (!this.$store.state.investment.defaultAccount || !this.$store.state.investment.defaultAccount.chain) return
       let val = this.$store.state.investment.accountTokens
       let chain = this.$store.state.investment.defaultAccount.chain
@@ -602,7 +605,15 @@ export default {
       this.getSwapQuote()
 
       if (this.depositCoinOptions.length) {
-        this.depositCoin = this.depositCoinOptions[0]
+        let token = this.depositCoinOptions.find(o => !this.tokenType || this.tokenType === o.value.toLowerCase())
+        let defaultFrom = this.depositCoinOptions.find((o, i) => defaultToken[chain].includes(o.value.toLowerCase()))
+
+        this.depositCoin = this.tokenType && token ? token : (defaultFrom || this.depositCoinOptions[0])
+
+        let defaultTo = coins.find((o, i) => defaultToken[chain].includes(o.value.toLowerCase()) && o.value.toLowerCase() !== this.depositCoin.value.toLowerCase())
+        let tokenToBuy = coins.find(o => !token && this.tokenType === o.value.toLowerCase())
+        this.destinationCoin = tokenToBuy && this.tokenType ? tokenToBuy : (defaultTo || coins.find(o => o.value.toLowerCase() !== this.depositCoin.value.toLowerCase()))
+        console.log(defaultTo, 'defaultTo', tokenToBuy, 'tokenToBuy', defaultFrom, 'defaultFrom', this.destinationCoin)
         this.getSwapQuote()
         this.checkBalance()
       }

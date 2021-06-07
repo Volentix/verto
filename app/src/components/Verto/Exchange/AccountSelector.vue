@@ -350,6 +350,11 @@ export default {
               )
             }
           }
+          if (['matic', 'bsc'].includes(this.accountOption.chain)) {
+            this.$store.commit('settings/setDex', {
+              dex: 'oneinch'
+            })
+          }
         }
       }, time)
     }
