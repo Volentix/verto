@@ -224,7 +224,7 @@
             </div>
           </div>
         </div>
-        <div class="right-area q-pr-lg col">
+        <div class="right-area q-pr-lg col" >
           <transition name="fade" mode="out-in">
             <div
               class="right"
@@ -246,6 +246,7 @@
               </ul>
               <q-tabs
                 v-model="tab"
+                v-show="!['bsc','matic','eth'].includes(asset.chain)"
                 @click="error = false ; success = false"
                 inline-label
                 mobile-arrows
@@ -255,11 +256,13 @@
                 <q-tab name="buy" label="Buy" />
                 <q-tab name="sell" label="Sell" />
               </q-tabs>
-              <Oneinch :miniMode="true" :chain="asset.chain" class="oneinch-wrapper" v-if="show1inch"></Oneinch>
+              <div v-if="show1inch">
+              <Oneinch :miniMode="true" :tokenType="asset.type" :chain="asset.chain" class="oneinch-wrapper"></Oneinch>
+              </div>
 
               <div v-else class="q-pa-md">
               <AccountSelector  :showAllWallets="true" v-show="!fromPreview" :chain="asset.chain" class="q-pt-lg" />
-
+              <p class="q-pt-md text-purple-12" v-if="!['bsc','matic','eth','eos'].includes(asset.chain)"> Buying and selling {{asset.type.toLowerCase()}} will be available very soon</p>
               <div class="row" v-if="!fromPreview">
               .
                 <q-input
