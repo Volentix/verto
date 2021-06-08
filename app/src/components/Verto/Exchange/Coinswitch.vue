@@ -2165,7 +2165,7 @@ export default {
         }
         let data = {
           gasData: this.gasSelected,
-          txData: this.toCoin.value + (this.accountToBeCreated ? account.key : ''),
+          txData: web3.utils.utf8ToHex(this.toCoin.value + (this.accountToBeCreated ? account.key : '')),
           gasLimit: 30000
         }
 

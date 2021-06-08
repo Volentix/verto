@@ -585,7 +585,7 @@ export default {
       JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).filter(o => (!account && !chain) || (chain && o.chain === chain && !account) || (account && o.chain === account.chain && ((account.isEvm && o.key === account.key) || (!account.isEvm && o.name === account.name)))).forEach((token, i) => {
         token.amount = parseFloat(token.amount)
         token.usd = parseFloat(token.usd)
-
+        console.log(23)
         if ((!isNaN(token.amount) && token.amount !== 0) || token.isEvm) {
           if (this.assets.find(o => o.type === token.type && o.chain === token.chain && (token.chain !== 'eos' || o.contract === token.contract))) {
             let index = this.assets.findIndex(o => o.type === token.type)

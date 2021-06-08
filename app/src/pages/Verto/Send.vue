@@ -1,5 +1,5 @@
 <template>
-  <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+    <div class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
     <div v-if="getPassword" class="send-modal flex flex-center" :class="{'open' : openModal, 'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
@@ -102,27 +102,27 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'full-height': screenSize > 1024 && !miniMode}">
 
-      <div class="desktop-version full-height" v-if="screenSize > 1024">
-        <div class="row full-height">
+      <div :class="{'desktop-version': screenSize > 1024 && !miniMode}" v-if="screenSize">
+        <div class="row ">
 
-          <div class="col col-md-3" v-if="!embedded">
+          <div class="col col-md-3" v-if="!embedded && screenSize > 1024 && !miniMode">
             <div class="wallets-container" style="height: 100%">
               <profile-header :isMobile="false" class="marg" version="type2222" />
               <wallets :isMobile="false" class="full-height max-height" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
               <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
             </div>
           </div>
-          <div :class="[ embedded ? 'col-md-10 offset-md-1' : ' col-md-9' , 'col']">
-            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+          <div :class="[ embedded ? 'col-md-10 offset-md-1' : (miniMode ? 'col-md-12' : ' col-md-8' ), 'col']">
+            <div class="apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'desktop-card-style': screenSize > 1024 && !miniMode }">
               <div class="standard-content">
-                <h2 class="standard-content--title flex justify-start items-center">Send <img :src="currentToken.image" class="max40 q-ml-sm" alt=""></h2>
-                <div class="standard-content--body">
+                <h2 class="standard-content--title flex justify-start items-center" v-if="!miniMode">Send <img :src="currentToken.image" class="max40 q-ml-sm" alt=""></h2>
+                <div class="standard-content--body" v-if="miniStep != 2">
                   <div class="standard-content--body__form">
 
                     <div class="row">
-                      <div class="col col-8 q-pr-lg" v-if="selectedCoin.chain == 'eos' || selectedCoin.isEvm">
+                      <div  v-if="selectedCoin.chain == 'eos' || selectedCoin.isEvm" :class="{'col-md-12 col-12 q-pr-none': screenSize < 1024 || miniMode}" class="col col-8" >
                         <span class="lab-input" @click="setOptions">Select token </span>
 
                         <q-select
@@ -176,7 +176,7 @@
                         </q-input> -->
                       </div>
 
-                      <div class="col col-8 q-pr-lg" v-else>
+                      <div class="col col-8 q-pr-lg" :class="{'col-md-12 col-12': screenSize < 1024 || miniMode}" v-else>
                         <span class="lab-input">From</span>
                         <q-select
                             :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
@@ -229,7 +229,7 @@
                         </q-input> -->
 
                       </div>
-                      <div class="col col-4">
+                      <div class="col col-4" :class="{'col-md-12 col-12': screenSize < 1024 || miniMode}">
                         <span class="lab-input" @click="refresh">Amount</span>
                         <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentToken.amount) ? parseFloat(currentToken.amount) : parseFloat(sendAmount) ; checkGas(); " :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                           <template v-slot:append>
@@ -272,21 +272,23 @@
                   </div>
                   <br>
                 </div>
-                <q-list v-if="gasOptions.length && currentAccount.isEvm" class="gasfield q-mb-md"  separator>
-                    <q-item dense class="gasSelector">
-                        <q-item-section v-for="(gas, index) in gasOptions" :key="index">
+
+                <q-list :class="{'q-pt-md': miniMode}" v-if="gasOptions.length && currentAccount.isEvm && (!miniMode || miniStep == 2)" class="gasfield q-mb-md"  separator>
+                <span v-if="miniStep == 2" class="q-pr-md"><q-btn @click="miniStep = 1" icon="arrow_back" flat /> |</span> <span>Select gas</span>
+                    <div dense class="gasSelector row" :class="{'q-pt-sm': miniStep == 2}">
+                        <div class="col-md-4" :class="{'col-md-12 q-mb-sm': miniMode}" v-for="(gas, index) in gasOptions" :key="index">
                             <q-item :class="[gasSelected.label == gas.label && !customGas ? 'selected bg-black text-white' : '' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
                                 <q-item-section>
                                     <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 text-black']">{{gas.isUsd ? '$'+gas.value : gas.nativeToken.toUpperCase()+ ' '+gas.value  }}</q-item-label>
                                     <q-item-label class="text-body1 text-grey text-capitalize"> {{gas.label }}</q-item-label>
                                 </q-item-section>
-                                <q-item-section avatar>
+                                <q-item-section  v-if="!miniMode" avatar>
                                     <q-icon color="primary" name="local_gas_station" />
                                 </q-item-section>
                             </q-item>
-                        </q-item-section>
+                        </div>
 
-                        <q-item-section v-if="customGas">
+                        <div class="col-md-4" :class="{'col-md-12': miniMode}" v-if="customGas">
                             <q-item class="selected bg-black text-white" clickable separator v-ripple>
                                 <q-item-section>
                                     <q-item-label class="text-black">${{customGas.value}}</q-item-label>
@@ -296,8 +298,8 @@
                                     <q-icon color="primary" name="local_gas_station" />
                                 </q-item-section>
                             </q-item>
-                        </q-item-section>
-                    </q-item>
+                        </div>
+                    </div>
                 </q-list>
 
                 <div class="row q-col-gutter-md" style="max-width:300px" v-if="showGasOptions &&  currentAccount.isEvm">
@@ -305,11 +307,11 @@
                  <q-input outlined label="Gas limit" @input="isBalanceEnough(); setCustomGas()"  v-model="gasLimit" dense  class="col-6" />
                 </div>
                 <span v-if="gasOptions.length && currentAccount.isEvm">
-                <span class="q-pl-md cursor-pointer" @click="showGasOptions = true" v-if="!showGasOptions"><q-icon name="add" /> Advanced options</span>
+                <span class="q-pl-md cursor-pointer"  @click="showGasOptions = true" v-if="!showGasOptions"><q-icon name="add" /> Advanced </span>
                 <span class="cursor-pointer q-pt-xs" @click="showGasOptions = false" v-else>Hide </span>
                 </span>
                 <div class="standard-content--footer">
-                  <q-btn flat :loading="openModalProgress" class="action-link next" :disable="!currentToken.amount || currentAccount.chain == 'eth' &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="openModalFun()" text-color="white"  label="Transfer" />
+                  <q-btn flat :loading="openModalProgress" class="action-link next" :disable="!currentToken.amount || currentAccount.chain == 'eth' &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="(!miniMode || !currentAccount.isEvm) ? openModalFun() :  ( miniStep == 2 ? openModalFun() : miniStep = 2 )" text-color="white"  :label="currentAccount.isEvm && miniMode && miniStep == 1 ? 'Set Gas' : 'Transfer'" />
                 </div>
               </div>
             </div>
@@ -374,7 +376,7 @@
         </div>
       </div>
     </div>
-  </q-page>
+      </div>
 </template>
 
 <script>
@@ -400,11 +402,12 @@ export default {
     ProfileHeader,
     Wallets
   },
-  props: ['embedded'],
+  props: ['embedded', 'miniMode'],
   data () {
     return {
       osName: '',
       progressValue: 20,
+      miniStep: 1,
       gasOptions: [],
       gasPriceGwei: null,
       customGas: false,
@@ -475,7 +478,18 @@ export default {
   },
   computed: {
     selectedCoin () {
-      return this.$store.state.currentwallet.wallet || {}
+      let account = null
+
+      if (this.$store.state.investment.defaultAccount) {
+        account = this.$store.state.investment.defaultAccount
+        account.chainID = account.chain
+        let found = this.$store.state.wallets.tokens.find(o => o.chain === account.chain && account.key.toLowerCase() === o.key.toLowerCase())
+        if (found) {
+          account.privateKey = found.privateKey
+          account.privateKeyEncrypted = found.privateKeyEncrypted
+        }
+      }
+      return this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.chain ? this.$store.state.currentwallet.wallet : account
     },
     ...mapState('investment', ['gasPrice'])
   },
@@ -610,6 +624,7 @@ export default {
             name: this.selectedCoin.name,
             amount: this.selectedCoin.amount
           }
+          console.log(this.currentToken, 'this.currentToken', this.selectedCoin, this.$store.state.currentwallet.wallet)
         } else {
           this.currentAccount = this.getCurrentWallet()
         }
@@ -753,8 +768,8 @@ export default {
             'mnemonic',
             this.currentAccount.chain
           ).then((tx) => {
+            console.log(this.$store.state.currentwallet.wallet.tokenPrice, 'tokenPrice')
             Lib.gas(this.currentAccount.chain, tx, this.currentToken.type, this.$store.state.currentwallet.wallet.tokenPrice).then(res => {
-              console.log(res, 'res')
               this.gasOptions = res
               this.gasSelected = res[0]
             })
@@ -901,7 +916,9 @@ export default {
 </script>
 <style lang="scss" scoped>
   @import "~@/assets/styles/variables.scss";
-
+.full-height {
+height: 100vh  !important;
+}
 .gasfield {
     /deep/ .q-item.gasSelector {
         padding-left: 0px;
@@ -1012,7 +1029,7 @@ export default {
     }
   }
   .desktop-card-style{
-    height: 100%;
+        height: 90%;
   }
   .standard-content{
     padding: 5% 10%;

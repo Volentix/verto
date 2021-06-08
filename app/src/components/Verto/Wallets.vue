@@ -928,9 +928,12 @@ export default {
     tokens: {
       deep: true,
       handler (val, old) {
-        this.chains = this.setChains()
-        this.setVtxData()
-        this.rekey++
+        if (old && val && val.length !== old.length) {
+          this.chains = this.setChains()
+          this.setVtxData()
+          console.log(this.rekey)
+          this.rekey++
+        }
       }
     }
   },

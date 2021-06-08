@@ -11,17 +11,19 @@
             </div>
             <div class="col col-md-9 q-pr-md">
               <div class="row dashboard-ui-tokens">
-                <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet' && false" >
+               <!-- <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet' && false" >
                   <ExchangeSection3  v-if=" $store.state.settings.network == 'mainnet'"  />
                 </div>
                 <div class="col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet' && false">
                   <makeVTXSection2   />
                 </div>
+                ->-->
                 <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
                   <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
                 </q-breadcrumbs>
-               <!-- <NftsExplorer v-if=" && $store.state.settings.network != 'mainnet'" /> -->
+               <NftsExplorer v-if="false && $store.state.settings.network != 'mainnet'" />
                 <AssetsExplorer @assetsChanged="assetsChanged" ref="assetsComponent" v-show="!assetSelected" @setAsset="setAsset" />
+
                 <SingleToken   ref="singleTokenComponent" @setAsset="setAsset"  :assetData="assetSelected" class="col-md-12" v-if="assetSelected" />
                 <div class="col col-md-12 full-height max-height2" v-else-if="$store.state.settings.network == 'mainnet' && false" >
 
@@ -126,7 +128,7 @@ import Wallets from '../../components/Verto/Wallets'
 // import MakeVTXSection from '../../components/Verto/MakeVTXSection'
 import MakeVTXSection2 from '../../components/Verto/MakeVTXSection2'
 // import ExchangeSection from '../../components/Verto/ExchangeSection'
-import ExchangeSection3 from '../../components/Verto/ExchangeSection3'
+// import ExchangeSection3 from '../../components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 import SingleToken from '../../components/Verto/SingleToken'
 import AssetBalancesTable from '../../components/Verto/AssetBalancesTable'
@@ -182,9 +184,9 @@ export default {
     liquidityPoolsTable,
     AssetBalancesTable,
     // MakeVTXSection,
-    MakeVTXSection2,
+    MakeVTXSection2
     // ExchangeSection,
-    ExchangeSection3
+    // ExchangeSection3
     // VespucciRatingSection
 
   },

@@ -29,7 +29,7 @@ export default {
     '$store.state.settings.coins': function () {
       this.checkPair()
     },
-
+    /*
     '$store.state.investment.accountTokens': function (val) {
       this.coins = this.$store.state.settings.coins.oneinch
       this.depositCoinOptions = this.getUniqueTokens(this.coins).filter(t => val.find(o => o.type === t.value)).map(o => {
@@ -48,6 +48,7 @@ export default {
         this.depositCoin = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())
       }
     },
+    */
     '$store.state.wallets.tokens': function (val) {
       if (val && !this.$store.state.settings.coins.coinswitch.length) {
         this.getCoinswitchCoins()
@@ -65,7 +66,8 @@ export default {
   methods: {
     checkBalance () {
       this.error = ''
-      if ((this.depositCoin && (!this.depositCoin.amount || parseFloat(this.depositCoin.amount) === 0))) {
+
+      if (((!this.swapData || this.swapData.fromAmount !== 0) && this.depositCoin && (!this.depositCoin.amount || parseFloat(this.depositCoin.amount) === 0))) {
         this.error = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance'
       } else if ((this.tab === 'liquidity' && (!this.destinationCoin.amount || parseFloat(this.depositCoin.amount) === 0))) {
         this.error = 'Insuficient ' + this.destinationCoin.value.toUpperCase() + ' balance'
@@ -151,6 +153,25 @@ export default {
         return a.name ? -1 : 1
       })
     },
+    formatAccoountOption (w) {
+      let account = {
+        value: w.key + '-' + w.chain,
+        key: w.key,
+        isEvm: w.isEvm,
+        chain: w.chain,
+        amount: w.amount,
+        type: w.type,
+        index: w.index,
+        usd: w.usd,
+        total: w.total,
+        icon: w.icon,
+        image: w.icon,
+        name: w.name,
+        label: this.getAccountLabel(w),
+        color: this.getRandomColor()
+      }
+      return account
+    },
     setDefaultWallet (chain) {
       if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain) {
         if (chain === this.$store.state.investment.defaultAccount.chain) return
@@ -158,29 +179,10 @@ export default {
 
       let w = this.$store.state.wallets.tokens.find(x => x.chain === chain && x.type === chain)
 
-      this.$store.commit('investment/setDefaultAccount', chain === 'eth' ? {
-        value: w.key,
-        key: w.key,
-        chain: 'eth',
-        type: 'eth',
-        name: w.name,
-        usd: w.usd,
-        total: w.total,
-        image: w.icon,
-        label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
-        color: 'green'
-      } : {
-        value: w.name,
-        name: w.name,
-        key: w.key,
-        usd: w.usd,
-        chain: 'eos',
-        type: 'eos',
-        total: w.total,
-        image: w.icon,
-        label: w.name,
-        color: 'green'
-      })
+      this.$store.commit('investment/setDefaultAccount', this.formatAccoountOption(w))
+    },
+    sleep (milliseconds) {
+      return new Promise(resolve => setTimeout(resolve, milliseconds))
     },
     checkPair () {
       this.dex = null
@@ -188,6 +190,8 @@ export default {
       let crosschain = ['eth', 'btc']
 
       if (!this.destinationCoin || !this.depositCoin) return
+
+      console.log(this.destinationCoin, this.depositCoin, this.$store.state.investment.defaultAccount, '76')
 
       // let from = this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
       // let to = this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())
@@ -205,6 +209,8 @@ export default {
       }
       if (this.destinationCoin.value === 'vtx' && this.depositCoin.value === 'eth') {
         this.dex = 'coinswitch'
+      } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.isEvm) {
+        this.dex = 'oneinch'
       }
       if (!this.dex) {
         if (this.$store.state.settings.coins.oneinch.length && this.destinationCoin && this.depositCoin) { this.error = 'Cannot swap ' + this.depositCoin.value.toUpperCase() + ' to ' + this.destinationCoin.value.toUpperCase() }
@@ -308,13 +314,13 @@ export default {
       let coins = this.$store.state.tokens.evmTokens[chain]
       if (coins) {
         coins = Object.keys(coins).map((key, index) => {
-          let item = this.$store.state.wallets.tokens.find(o => o.type.toLowerCase() === coins[key].symbol.toLowerCase())
+          let item = this.$store.state.wallets.tokens.find(o => o.type.toLowerCase() === coins[key].symbol.toLowerCase() && o.chain === chain)
           let row = {
             'label': coins[key].name.toUpperCase(),
             'value': coins[key].symbol,
             'image': coins[key].logoURI,
             'address': coins[key].address,
-            'price': coins[key].current_price,
+            'price': item ? item.tokenPrice : 0,
             'dex': 'oneinch',
             'amount': item ? item.amount : 0,
             'contract': item ? item.address : null,

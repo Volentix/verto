@@ -10,6 +10,9 @@ import {
 } from 'quasar'
 import abiArray from '@/statics/abi/erc20.json'
 const Web3 = require('web3')
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
 class Lib {
   constructor (evms) {
     this.evms = [{
@@ -662,6 +665,18 @@ class Lib {
   getEvmData (chain) {
     return this.evms.find(o => o.chain === chain)
   }
+  async checkEvmTxStatus (transactonHash, chain) {
+    let web3 = this.getWeb3Instance(chain)
+    const expectedBlockTime = 5000
+
+    let transactionReceipt = null
+    while (transactionReceipt == null) {
+      transactionReceipt = await web3.eth.getTransactionReceipt(transactonHash)
+
+      await sleep(expectedBlockTime)
+    }
+    return transactionReceipt.status
+  }
   getWeb3Instance (chain) {
     return (new Web3(new Web3.providers.HttpProvider(this.getEvmData(chain).provider)))
   }
@@ -682,7 +697,7 @@ class Lib {
 
     const convertGasPrice = (gasObj) => {
       // Return gas price in USD if tokenPrice is valid, otherwise return the value in native token unit
-      gasObj.isUsd = !isNaN(tokenPrice) && tokenPrice !== 0
+      gasObj.isUsd = tokenPrice
       gasObj.value = web3.utils.fromWei(gasObj.gasPrice.toString(), 'ether') * gasObj.gas * (gasObj.isUsd ? tokenPrice : 1)
       return gasObj
     }
@@ -700,7 +715,7 @@ class Lib {
       },
       async matic () {
         let gasOptions = []
-        if (type !== evmData.nativeToken) {
+        if (type !== evmData.nativeToken || transaction.data) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
         }
@@ -722,9 +737,10 @@ class Lib {
       },
       async eth () {
         let gasOptions = []
-        if (type !== evmData.nativeToken) {
+        if (type !== evmData.nativeToken || transaction.data) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
+          console.log('gas', gas, response.data)
         }
 
         if (!response.data) {
@@ -745,7 +761,7 @@ class Lib {
       async avaxc () {
         gasData.gasPrice = await web3.eth.getGasPrice()
 
-        if (type !== evmData.nativeToken) {
+        if (type !== evmData.nativeToken || transaction.data) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
         }
@@ -759,7 +775,7 @@ class Lib {
           https://docs.binance.org/guides/concepts/fees.html
           */
 
-        if (type !== evmData.nativeToken) {
+        if (type !== evmData.nativeToken || transaction.data) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
         }
@@ -1082,18 +1098,18 @@ class Lib {
         let nonce = await web3.eth.getTransactionCount(from)
 
         let data = '0x'
-        let web3Value = web3.utils.toHex(web3.utils.toWei(value.toString()))
+        let web3Value = !value.toString().includes('0x') ? web3.utils.toHex(web3.utils.toWei(value.toString())) : value
         // let transactionHash = ''
         let sendTo = to
 
-        if (token !== evmData.nativeToken) {
+        if (token !== evmData.nativeToken && !(info && info.txData)) {
           let web3Contract = new web3.eth.Contract(abiArray, contract)
           data = web3Contract.methods.transfer(to, web3Value).encodeABI()
 
           sendTo = contract
           web3Value = '0x00'
         } else if (info && info.txData) {
-          data = web3.utils.utf8ToHex(info.txData)
+          data = info.txData
         }
 
         let rawTx = {
@@ -1210,7 +1226,6 @@ class Lib {
                 success: false
               })
             } else if (response.data.result) {
-              console.log(777)
               let hash = response.data.result
 
               resolve({

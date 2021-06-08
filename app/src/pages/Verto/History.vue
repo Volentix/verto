@@ -19,7 +19,7 @@
               </div>
 
               <div class="standard-content--body" style="height: 100%;">
-                <History  :key="refresh" :isMobile="false" />
+                <History :refresh="refresh" :key="refresh" :isMobile="false" />
               </div>
             </div>
           </div>
