@@ -159,6 +159,7 @@ export default {
         key: w.key,
         isEvm: w.isEvm,
         chain: w.chain,
+        amount: w.amount,
         type: w.type,
         index: w.index,
         usd: w.usd,
