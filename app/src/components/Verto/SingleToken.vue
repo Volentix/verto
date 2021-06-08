@@ -224,7 +224,7 @@
             </div>
           </div>
         </div>
-        <div class="right-area q-pr-lg col">
+        <div class="right-area q-pr-lg col" >
           <transition name="fade" mode="out-in">
             <div
               class="right"
@@ -249,19 +249,35 @@
                 @click="error = false ; success = false"
                 inline-label
                 mobile-arrows
+                :set="show1inch = ['bsc','matic','eth'].includes(asset.chain)"
               >
-                <q-tab name="send" label="Send" v-if="asset.chain == 'eos'" />
-                <q-tab name="buy" label="Buy" />
-                <q-tab name="sell" label="Sell" />
+                <q-tab name="send" label="Send" />
+                <q-tab name="swap" v-if="asset.chain != 'eos'  && show1inch" label="Swap" />
+                <q-tab name="buy" v-if="asset.chain == 'eos'" label="Buy" />
+                <q-tab name="sell" v-if="asset.chain == 'eos'" label="Sell" />
               </q-tabs>
-              <AccountSelector :showAllWallets="true" v-show="!fromPreview" :chain="asset.chain" class="q-pt-lg" />
-              <div class="row" v-if="!fromPreview">
+              <div class="text-center">
+                   <AccountSelector :chains="asset.isEvm ? ['bsc','matic','eth'] : [asset.chain]"  v-show="tab != 'swap' && !fromPreview" :showAllWallets="true"  :chain="asset.chain" class="q-pt-lg" />
+              </div>
+
+              <div v-if="tab == 'send' && asset.chain != 'eos'" class="q-px-md">
+                <SendComponent :miniMode="true" :key="$store.state.investment.defaultAccount.key+$store.state.investment.defaultAccount.name" v-if="$store.state.investment.defaultAccount" />
+              </div>
+
+              <div v-if="show1inch && tab == 'swap'" >
+               <Oneinch :miniMode="true" :tokenType="asset.type"  :chain="asset.chain" class="oneinch-wrapper"></Oneinch>
+              </div>
+
+              <div v-else class="q-pa-md">
+              <p class="q-pt-md text-purple-12" v-if="!['bsc','matic','eth','eos'].includes(asset.chain)"> Buying and selling {{asset.type.toLowerCase()}} will be available very soon</p>
+              <div class="row" v-if="!fromPreview ">
               .
                 <q-input
                   :dark="$store.state.settings.lightMode === 'true'"
                   bottom-slots
                   :label="asset.type.toUpperCase() + ' amount to '+tab"
                   class="col-12 q-px-md q-pt-md"
+                  v-show="asset.chain == 'eos'"
                   v-model="depositQuantity"
                 >
                   <template v-slot:append>
@@ -361,6 +377,7 @@
                   :dark="$store.state.settings.lightMode === 'true'"
                   v-if="tab == 'send'"
                   label="To"
+                  v-show="asset.chain == 'eos'"
                   class="col-12 q-px-md"
                   v-model="sendTo"
                 />
@@ -440,7 +457,7 @@
               <div
                :class="{'q-pt-md' : !fromPreview}"
                 class="buy text-capitalize"
-                v-if="!spinnerVisible && !success"
+                v-if="!spinnerVisible && !success && !asset.isEvm"
               >
                 <a
                   href="javascript:void(0)"
@@ -448,6 +465,7 @@
                   >{{ tab === 'send' ? (!fromPreview ? 'Preview' : 'Send') :tab }}</a
                 >
               </div>
+            </div>
             </div>
           </transition>
           <div
@@ -566,8 +584,10 @@
 </template>
 <script>
 import transactEOS from './transactEOS'
+import Oneinch from '../../components/Verto/Exchange/Oneinch'
 import Formatter from '@/mixins/Formatter'
 import History from '../../components/Verto/History'
+import SendComponent from '../../pages/Verto/Send'
 import PriceChart from '../../components/Verto/Token/PriceChart'
 import DexInteraction from '../../mixins/DexInteraction'
 import AccountSelector from './Exchange/AccountSelector.vue'
@@ -579,12 +599,14 @@ import { QScrollArea } from 'quasar'
 export default {
   components: {
     QScrollArea,
+    Oneinch,
     AccountSelector,
     AssetBalancesTable,
     History,
     PriceChart,
     transactEOS,
-    liquidityPoolsTable
+    liquidityPoolsTable,
+    SendComponent
   },
   watch: {
     '$store.state.investment.accountTokens': function () {
@@ -660,7 +682,7 @@ export default {
       }
     }
     if (this.asset.chain !== 'eos') {
-      this.tab = 'sell'
+      this.tab = 'send'
     } else {
       let rpc = new JsonRpc(
         process.env[this.$store.state.settings.network].CACHE +
@@ -1296,7 +1318,6 @@ export default {
 
 .right {
   background: #fff;
-  padding: 0px 20px 20px;
   border: 1px solid #e9e9ea;
   border-radius: 12px;
   margin-top: 8px;

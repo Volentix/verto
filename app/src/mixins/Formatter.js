@@ -89,8 +89,8 @@ export default {
       return chains.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
     },
     formatNumber (num, decimals = 4) {
+      decimals = decimals < 0 ? 0 : decimals
       let value = parseFloat(num ? num.toString().split(',').join('') : num).toFixed(decimals)
-
       const formatter = new Intl.NumberFormat('en-US', {
         minimumFractionDigits: decimals
       })

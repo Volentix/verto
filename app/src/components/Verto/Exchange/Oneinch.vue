@@ -1,5 +1,5 @@
 <template>
-<div class="" v-if="depositCoin && depositCoin.value && destinationCoin" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+<div class="" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
     <!-- $q.screen.width > 1024 && -->
     <div class="row">
         <div class="col col-md-12">
@@ -11,7 +11,7 @@
                 <!-- Vdex component -->
                 <div class="">
                     <!-- <div class="standard-content"></div> -->
-                    <div class="chain-tools-wrapper--list open">
+                    <div class="chain-tools-wrapper--list open" :class="{'minimode': miniMode}">
                         <div class="list-wrapper">
                             <div class="row">
                                 <div class="col col-12">
@@ -19,15 +19,16 @@
 
                                         <!-- <img src="statics/theme1/Screenshot_208.png" alt="" style="opacity: .1"> -->
                                         <div v-if="step === 1" class="prototype">
-                                            <div class="head">Token swap</div>
+                                            <div class="head" v-if="!miniMode">Token swap</div>
                                             <div class="you-pay">
                                                 <div class="you-pay-head row items-center">
-                                                    <div class="col col-4">You Pay</div>
-                                                    <div class="col col-8 flex-end red text-right float-right text-body1" ><AccountSelector  :showAllWallets="true" class="float-right"  /></div>
+                                                    <div class="col col-4" v-if="!miniMode">You Pay</div>
+                                                    <div :class="{'flex-end col-8': !miniMode, 'flex-center col-12 q-pt-md': miniMode}" class="col red text-right float-right text-body1" ><AccountSelector :autoSelectChain="chain" :chains="['eth','matic', 'bsc']"   :showAllWallets="true" class="float-right"  /></div>
                                                     <!-- <div class="col col-6 red text-right text-red">Max 0 USDT</div> -->
                                                 </div>
                                                 <div class="you-pay-body row items-center">
                                                     <div class="col col-3 choose-coin">
+                                                     <div class="col col-4 text-body2" v-if="miniMode" >You Pay</div>
                                                         <span class="cursor">
                                                             <q-select class="select-input" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" separator use-input borderless rounded v-model="depositCoin" @input="swapData.error = false; getSwapQuote()" @filter="filterDepositCoin" :disabled="!depositCoinOptions" :loading="!depositCoinOptions" :options="depositCoinOptions">
                                                                 <template v-slot:option="scope">
@@ -36,14 +37,14 @@
                                                                             <q-icon :name="`img:${scope.opt.image}`" />
                                                                         </q-item-section>
                                                                         <q-item-section>
-                                                                            <q-item-label v-html="scope.opt.label.toUpperCase()" />
-                                                                            <q-item-label  v-if="scope.opt.amount" caption>{{ scope.opt.amount }}</q-item-label>
+                                                                            <q-item-label   v-html="scope.opt.label.toUpperCase()" />
+                                                                            <q-item-label  v-if="scope.opt.amount" caption>{{ formatNumber(scope.opt.amount, 7) }}</q-item-label>
                                                                         </q-item-section>
                                                                     </q-item>
                                                                 </template>
                                                                 <template v-slot:selected>
                                                                     <span class="text-h5">{{depositCoin.value.toUpperCase()}}</span>
-                                                                    <q-item-label  v-if="depositCoin.amount" caption>{{ depositCoin.amount }}</q-item-label>
+                                                                    <q-item-label   caption>{{ formatNumber(depositCoin.amount, 5) }}</q-item-label>
 
                                                                 </template>
                                                             </q-select>
@@ -54,9 +55,6 @@
                                                             <div class="flex justify-end items-center" style="width: 60px">
                                                                 <q-icon v-if="depositCoin" class="option--avatar" :name="`img:${depositCoin.image}`" />
                                                             </div>
-                                                            <template v-slot:hint>
-                                                                <div v-if="swapData.marketData.length && depositCoin.value.toLowerCase() == 'eth'">{{convertETHToUSD(swapData.fromAmount)}}</div>
-                                                            </template>
                                                         </q-input>
                                                     </div>
                                                 </div>
@@ -144,13 +142,13 @@
                                                 <q-list class="gasfield q-mt-md" v-if="gasOptions.length" separator>
                                                     <span class="text-body1 q-pl-md q-mb-md">Select gas price option </span>
                                                     <q-item dense class="gasSelector q-pt-sm">
-                                                        <q-item-section v-for="(gas, index) in gasOptions" :key="index">
-                                                            <q-item :class="[gasSelected.label == gas.label ? 'selected bg-black ' : 'bg-white' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
+                                                          <q-item-section v-for="(gas, index) in gasOptions" :key="index">
+                                                            <q-item :class="[gasSelected.label == gas.label  ? 'selected bg-black text-white' : '' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
                                                                 <q-item-section>
-                                                                    <q-item-label>${{gas.value }}</q-item-label>
-                                                                    <q-item-label class="text-body1 text-grey"> {{gas.label }}</q-item-label>
+                                                                    <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 text-black']">{{gas.isUsd ? '$'+formatNumber(gas.value,4) : gas.nativeToken.toUpperCase()+ ' '+gas.value  }}</q-item-label>
+                                                                    <q-item-label class="text-body1 text-grey text-capitalize"> {{gas.label }}</q-item-label>
                                                                 </q-item-section>
-                                                                <q-item-section avatar>
+                                                                <q-item-section v-if="!miniMode" avatar>
                                                                     <q-icon color="primary" name="local_gas_station" />
                                                                 </q-item-section>
                                                             </q-item>
@@ -161,7 +159,7 @@
                                                 v-if="approvalRequired"
                                                 unelevated @click="processERC20Approval()"
                                                 :loading="spinnervisible"
-                                                :disable="error !== false || spinnervisible || gasOptions.length == 0"
+                                                :disable=" spinnervisible || gasOptions.length == 0"
                                                 outline
                                                 rounded
                                                 color="purple"
@@ -183,8 +181,8 @@
 
                                         <div v-if="step === 2 || transactionHash" class="prototype">
                                             <div class="head">
-                                                <q-btn v-if="step != 1" flat @click="getSwapQuote(); step = 1" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back"  class="--next-btn q-mr-md" />
-                                                Order status : {{transactionStatus}}
+                                                <q-btn v-if="step != 1" flat @click=" step = 1 ; getSwapQuote();" unelevated icon="keyboard_arrow_left" rounded color="grey" label="Back"  class="--next-btn q-mr-md" />
+                                               <span v-if="!miniMode">Order status : {{transactionStatus}}</span>
                                             </div>
                                             <div class="standard-content--body">
                                                 <div class="standard-content--body__form q-pa-xl">
@@ -196,9 +194,9 @@
                                                     </div>
                                                     <div style="max-width:300px; margin: 0 auto" >
                                                         <q-linear-progress v-if="transactionStatus != 'Success' && transactionStatus != 'Failed'" :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" :value="progress" indeterminate class="q-mt-lg" />
-                                                        <p class="text-center q-pt-md" v-if="!approvalRequired">Swaping {{depositQuantity}} {{depositCoin.value.toUpperCase()}} to {{destinationCoin.value}}</p>
+                                                        <p class="text-center q-pt-md" v-if="!approvalRequired">Swaping {{swapData.fromAmount}} {{depositCoin.value.toUpperCase()}} to {{destinationCoin.value}}</p>
                                                         <p class="text-center q-pt-md" v-else>Approval transaction</p>
-                                                        <p class="text-center q-pt-md" v-if="approvalRequired && transactionStatus == 'Success'">Approval succeeded. <q-btn @click="getSwapQuote()" label="Click here" /> to go back and process the actual swap</p>
+                                                        <p class="text-center q-pt-md" v-if="approvalRequired && transactionStatus == 'Success'">Approval succeeded. <q-btn flat @click="step = 1 ; getSwapQuote()" label="Click here" /> to go back and select gas fee for the swap</p>
                                                         <div class="text-h4 --subtitle">{{''}}</div>
                                                         <q-input  :dark="$store.state.settings.lightMode === 'true'"  v-if="transactionHash" bottom-slots v-model="transactionHash" readonly rounded outlined type="text">
                                                             <template v-slot:append>
@@ -212,8 +210,8 @@
                                                                 </div>
                                                             </template>
                                                             <template v-slot:counter>
-                                                                <a :href="'https://etherscan.io/tx/'+transactionHash" class="text-body2 text-black " target="_blank">
-                                                                    <img width="80" src="https://etherscan.io/images/logo-ether.png?v=0.0.2" />
+                                                                <a  :href="evmData.explorer+transactionHash" class="text-body2 text-black text-body2" target="_blank">
+                                                                   Details
                                                                 </a>
                                                             </template>
                                                         </q-input>
@@ -243,6 +241,7 @@
 // import store from '@/store'
 // import { userError } from '@/util/errorHandler'
 const _1inch = 'https://api.1inch.exchange'
+import Lib from '@/util/walletlib'
 // const url = 'https://api.coinswitch.co'
 // let headers = {
 //   'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
@@ -259,15 +258,16 @@ import AccountSelector from './AccountSelector.vue'
 const _1inchApprovalAddress = '0xe4c9194962532feb467dce8b3d42419641c6ed2e'
 import contract from '../../../mixins/EthContract'
 const Web3 = require('web3')
-let web3 = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
+let web3
+import initWallet from '@/util/Wallets2Tokens'
 export default {
   name: 'Oneinch',
   components: { AccountSelector },
-  props: ['disableDestinationCoin', 'crossChain'],
+  props: ['disableDestinationCoin', 'crossChain', 'miniMode', 'chain', 'tokenType'],
   data () {
     return {
       tableData: null,
-      swapChainID: 1,
+      evmData: {},
       fromCoinType: '',
       gasOptions: [],
       invalidTransaction: false,
@@ -288,7 +288,7 @@ export default {
       swapData: {
         marketData: [],
         fromAmount: 0,
-        toAmount: 1,
+        toAmount: 0,
         errorText: 'Converting [from] to [to] cannot be done at this moment please try another coin',
         error: false,
         customPriceSlipage: null,
@@ -310,6 +310,7 @@ export default {
       spinnervisible: false,
       lastChangedValue: 'deposit',
       coins: [],
+      transactionObject: null,
       depositCoin: {
         value: 'eth'
       },
@@ -376,7 +377,6 @@ export default {
         field: 'difference'
       }
       ],
-      ethAccount: null,
       data: [{
         name: '1inch',
         rate: '47.4328584311 AAPL/aDAI',
@@ -507,18 +507,18 @@ export default {
     }
   },
   async created () {
-    this.web3 = web3
-
     this.$store.commit('settings/setDex', {
       dex: 'oneinch'
     })
-    console.log(this.get1inchCoinsByChain('bsc'), 'get1inchCoinsByChain')
+
+    let tokens = this.get1inchCoinsByChain('eth')
+
     if (this.$store.state.settings.dexData.depositCoin && this.crossChain) {
-      this.depositCoin = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
+      this.depositCoin = tokens.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
     }
 
     if (this.$store.state.settings.dexData.destinationCoin && this.crossChain) {
-      this.destinationCoin = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
+      this.destinationCoin = tokens.find(o => o.value.toLowerCase() === this.$store.state.settings.dexData.destinationCoin.value.toLowerCase())
     }
 
     if (this.$store.state.settings.dexData.depositCoin && this.$store.state.settings.dexData.fromAmount) {
@@ -527,10 +527,6 @@ export default {
     }
   },
   async mounted () {
-    let tableData = this.$store.state.wallets.tokens
-    this.ethAccount = tableData.find(w => w.chain === 'eth' && w.type === 'eth')
-    this.ethTokens = tableData.filter(w => w.chain === 'eth')
-
     this.$store.dispatch('investment/getGasPrice')
     this.getMarketDataVsUSD()
     this.getCoins()
@@ -547,29 +543,88 @@ export default {
     },
     'swapData.toAmount': function (newVal, oldVal) {
       if (newVal != null && this.step === 2) {
-        this.$refs.stepper.next()
+        // this.$refs.stepper.next()
       }
     },
     '$store.state.investment.accountTokens': function (val) {
-      let coins = this.$store.state.settings.coins.oneinch
-      coins = this.getUniqueTokens(coins)
+      this.getCoins()
+    }
+  },
+  methods: {
+    getChainData () {
+      this.evmData = Lib.evms.find(o => o.chain === this.$store.state.investment.defaultAccount.chain)
+      if (this.evmData) {
+        web3 = new Web3(this.evmData.provider)
+        this.web3 = web3
+      }
+    },
+    switchAmounts () {
+      /* let depositCoinVar = this.depositCoin
+      this.depositCoin = this.destinationCoin
+      this.destinationCoin = depositCoinVar
+      let fromCoinTypeVar = this.fromCoinType
+      this.fromCoinType = this.toCoinType
+      this.toCoinType = fromCoinTypeVar
+      */
+      let depositQuantityVar = this.swapData.fromAmount
+      this.swapData.fromAmount = this.swapData.toAmount
+      this.swapData.toAmount = depositQuantityVar
+      this.getSwapQuote()
+    },
+    getCoins () {
+      let defaultToken = {
+        bsc: ['bnb', 'dai'],
+        eth: ['eth', 'dai'],
+        matic: ['matic', 'quick']
+      }
+      if (!this.$store.state.investment.defaultAccount || !this.$store.state.investment.defaultAccount.chain) return
+      let val = this.$store.state.investment.accountTokens
+      let chain = this.$store.state.investment.defaultAccount.chain
+      chain = chain || 'eth'
+      this.getChainData()
+      let coins = this.get1inchCoinsByChain(chain)
+      this.gasOptions = []
+      // coins = this.getUniqueTokens(coins)
 
-      this.depositCoinOptions = coins.filter(t => val.find(o => o.type.toLowerCase() === t.value.toLowerCase())).map(o => {
+      if (coins.length) {
+        this.destinationCoin = coins[0]
+        this.destinationCoinUnfilter = coins
+        this.destinationCoinOptions = coins
+      }
+      this.depositCoinOptions = coins.filter(t => val.find(o => o.type.toLowerCase() === t.value.toLowerCase()))
+      this.depositCoinOptions.map(o => {
         o.amount = val.find(t => t.type.toLowerCase() === o.value.toLowerCase()).amount
 
-        if (this.crossChain) { o.address = this.$store.state.settings.coins.oneinch.find(t => t.value.toLowerCase() === o.value.toLowerCase()).address }
+        if (this.crossChain) { o.address = coins.find(t => t.value.toLowerCase() === o.value.toLowerCase()).address }
 
         return o
       })
 
       this.depositCoinUnfilter = this.depositCoinOptions
 
+      this.getSwapQuote()
+
+      if (this.depositCoinOptions.length) {
+        let token = this.depositCoinOptions.find(o => !this.tokenType || this.tokenType === o.value.toLowerCase())
+        let defaultFrom = this.depositCoinOptions.find((o, i) => defaultToken[chain].includes(o.value.toLowerCase()))
+
+        this.depositCoin = this.tokenType && token ? token : (defaultFrom || this.depositCoinOptions[0])
+
+        let defaultTo = coins.find((o, i) => defaultToken[chain].includes(o.value.toLowerCase()) && o.value.toLowerCase() !== this.depositCoin.value.toLowerCase())
+        let tokenToBuy = coins.find(o => !token && this.tokenType === o.value.toLowerCase())
+        this.destinationCoin = tokenToBuy && this.tokenType ? tokenToBuy : (defaultTo || coins.find(o => o.value.toLowerCase() !== this.depositCoin.value.toLowerCase()))
+        console.log(defaultTo, 'defaultTo', tokenToBuy, 'tokenToBuy', defaultFrom, 'defaultFrom', this.destinationCoin)
+        this.getSwapQuote()
+        this.checkBalance()
+      }
+      /*
       if (!this.depositCoin || !this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())) {
         let item = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.$store.state.investment.defaultAccount.chain)
         if (item) {
           this.depositCoin = item
           this.getSwapQuote()
         } else {
+          this.depositCoin = this.depositCoinOptions[0]
           this.checkPair()
         }
       } else if (this.depositCoin && this.depositCoin.value) {
@@ -577,36 +632,31 @@ export default {
         if (item) {
           this.depositCoin = item
         } else {
+          this.depositCoin = this.depositCoinOptions[0]
           this.checkPair()
         }
       }
+      */
       setTimeout(() => {
         this.checkBalance()
       }, 300)
-    }
-  },
-  methods: {
-    switchAmounts () {
-      let depositCoinVar = this.depositCoin
-      this.depositCoin = this.destinationCoin
-      this.destinationCoin = depositCoinVar
-      let fromCoinTypeVar = this.fromCoinType
-      this.fromCoinType = this.toCoinType
-      this.toCoinType = fromCoinTypeVar
-      let depositQuantityVar = this.depositQuantity
-      this.depositQuantity = this.destinationQuantity
-      this.destinationQuantity = depositQuantityVar
-      this.getSwapQuote()
-    },
-    getCoins () {
-      this.depositCoinOptions = this.$store.state.settings.coins.oneinch
 
-      this.destinationCoin = !this.destinationCoin || !this.destinationCoin.value.length ? this.$store.state.settings.coins.oneinch[this.$store.state.settings.coins.oneinch.length - 1] : this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())
+      /* let chain = this.$store.state.investment.defaultAccount.chain
+      chain = chain || 'eth'
+      this.getChainData()
+      let coins = this.get1inchCoinsByChain(chain)
+
+      //  this.depositCoinOptions = coins
+      if (coins.length) {
+        this.destinationCoin = coins[coins.length - 1]
+      }
+
       this.depositCoinUnfilter = this.depositCoinOptions
-      this.destinationCoinUnfilter = this.depositCoinOptions
-      this.depositCoin = !this.depositCoin ? this.$store.state.settings.coins.oneinch[0] : this.depositCoinUnfilter.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
-
-      this.getSwapQuote()
+      this.destinationCoinUnfilter = coins
+      if (setDeposit) { this.depositCoin = !this.depositCoin ? coins[0] : this.depositCoinUnfilter.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) }
+      if (this.depositCoin) {
+        this.getSwapQuote()
+      } */
     },
     getExchanges () {
       const self = this
@@ -631,8 +681,12 @@ export default {
       const self = this
       this.error = false
       let trial = false
-      this.getCoinsData()
-      if (!self.depositCoin.address || !self.destinationCoin.address) return
+      self.gasOptions = []
+      self.error = null
+      self.transactionObject = null
+      // this.getCoinsData()
+
+      if (!self.depositCoin || !self.destinationCoin || !self.depositCoin.address || !self.destinationCoin.address) return
       if (self.swapData.fromAmount <= 0) return
       self.spinnervisible = true
 
@@ -641,50 +695,57 @@ export default {
         toTokenAddress: self.destinationCoin.address,
         amount: web3.utils.toWei(self.swapData.fromAmount.toString(), 'ether'),
         slippage: 2,
-        fromAddress: self.ethAccount.key,
-        toAddress: self.ethAccount.key,
+        fromAddress: self.$store.state.investment.defaultAccount.key,
         disableEstimate: true,
         referrerAddress: '0x91B9dAda77e2eb76d6F36B96F448c1F9A066BE74',
         fee: this.$store.state.settings.globalSettings ? this.$store.state.settings.globalSettings.fee1inch : 0.75
       }
-      let swapRequestUrl = _1inch + '/v3.0/1/swap?' + new URLSearchParams(data).toString()
+      let swapRequestUrl = _1inch + '/v3.0/' + this.evmData.network_id + '/swap?' + new URLSearchParams(data).toString()
       this.$axios.get(swapRequestUrl)
         .then(async function (result) {
           if (!result.data && !trial) {
             trial = true
             return this.getSwapQuote()
           }
-          let nonce = await web3.eth.getTransactionCount(self.ethAccount.key, 'latest').catch(o => console.log(o))
+          let nonce = await web3.eth.getTransactionCount(self.$store.state.investment.defaultAccount.key, 'latest').catch(o => console.log(o))
           self.swapData.toAmount = parseFloat(web3.utils.fromWei(result.data.toTokenAmount.toString(), 'ether'))
           self.spinnervisible = false
           self.swapData.gas = result.data.tx.gas
           self.swapData.gasPrice = result.data.tx.gasPrice
           self.approvalRequired = false
-          this.approvalRequired = false
-          let isERC2O = self.depositCoin.value.toLowerCase() !== 'eth',
-            approvalRequired = false
+          self.approvalRequired = false
+          let isERC2O = self.depositCoin.value.toLowerCase() !== self.evmData.nativeToken
 
           if (isERC2O) {
-            approvalRequired = await self.isApprovalRequired(self.depositCoin.address, _1inchApprovalAddress, self.swapData.fromAmount, false, nonce)
+            self.transactionObject = await self.isApprovalRequired(self.depositCoin.address, _1inchApprovalAddress, self.swapData.fromAmount, false, nonce, self.$store.state.investment.defaultAccount, false)
           }
+
+          // if (!approvalRequired) return
+
           let value = isERC2O ? 0 : self.swapData.fromAmount
-          if (!approvalRequired) {
-            let transactionObject = {
-              from: self.ethAccount.key,
+          if (!self.transactionObject) {
+            self.transactionObject = {
+              from: self.$store.state.investment.defaultAccount.key,
               to: result.data.tx.to,
               value: web3.utils.toWei(value.toString(), 'ether'),
               data: result.data.tx.data,
               nonce: nonce
             }
-
-            await self.getGasOptions(transactionObject, result.data.tx.gas)
           }
+          let nativeTokenData = self.$store.state.wallets.tokens.find(a => a.type === self.evmData.nativeToken && a.chain === self.evmData.chain)
+          Lib.gas(self.evmData.chain, self.transactionObject, self.depositCoin.value.toLowerCase(), nativeTokenData?.tokenPrice).then(res => {
+            self.gasOptions = res
+            self.gasSelected = res[0]
+          })
+
           // Calculate total gas price and convert it to USD
           //   self.swapData.gasUsd = self.convertETHToUSD(web3.utils.fromWei((result.data.estimatedGas * self.$store.state.investment.gasPrice.fast * 1000000000).toString()))
         }).catch(error => {
+          console.log(error, 'error')
           if (error.toString().includes('Cannot read property')) {
             error = 'Exchange service currently unavailable for this pair'
           }
+
           self.approvalRequired = false
           self.spinnervisible = false
           self.swapData.toAmount = null
@@ -692,9 +753,46 @@ export default {
         })
     },
     async processERC20Approval () {
-      if (this.depositCoin.value.toLowerCase() !== 'eth') {
+      if (this.depositCoin.value.toLowerCase() !== this.evmData.nativeToken) {
         this.step = 2
-        this.sendSignedTransaction(await this.isApprovalRequired(this.depositCoin.address, _1inchApprovalAddress, this.swapData.fromAmount, true), false, this.$store.state.investment.defaultAccount.key)
+        const self = this
+        let data = {
+          gasData: this.gasSelected,
+          txData: this.transactionObject.data
+        }
+
+        let account = self.$store.state.wallets.tokens.find(a => a.chain === self.evmData.chain && a.isEvm && ((a.key.toLowerCase() === self.$store.state.investment.defaultAccount.key.toLowerCase())))
+
+        Lib.send(
+          self.evmData.chain,
+          self.destinationCoin.value.toLowerCase(),
+          self.transactionObject.from,
+          self.transactionObject.to,
+          self.transactionObject.value,
+          data,
+          account.privateKey,
+          ''
+        ).then(async (result) => {
+          console.log(result, 'result')
+          if (result.success) {
+            self.transactionHash = result.transaction_id
+            self.transactionStatus = 'Submitted'
+            let status = await Lib.checkEvmTxStatus(self.transactionHash, self.evmData.chain)
+            if (status) {
+              self.transactionStatus = 'Success'
+            } else {
+              self.transactionStatus = 'Failed'
+            }
+            initWallet(account.name)
+          } else {
+            self.error = result.message
+            self.step = 1
+          }
+        }).catch((error) => {
+          console.log(error, 'error')
+          self.step = 1
+          self.error = error
+        })
       }
     },
     triggerPayCoinSelect () {
@@ -736,27 +834,29 @@ export default {
     },
     doSwap () {
       const self = this
+      this.step = 2
       this.spinnervisible = true
+      this.transactionStatus = 'Pending'
       let data = {
         fromTokenAddress: self.depositCoin.address,
         toTokenAddress: self.destinationCoin.address,
         amount: web3.utils.toWei(this.swapData.fromAmount.toString(), 'ether'),
         slippage: 1,
-        fromAddress: self.ethAccount.key,
-        toAddress: self.ethAccount.key,
+        fromAddress: self.$store.state.investment.defaultAccount.key,
         disableEstimate: true,
         referrerAddress: '0x91B9dAda77e2eb76d6F36B96F448c1F9A066BE74',
         fee: this.$store.state.settings.globalSettings ? this.$store.state.settings.globalSettings.fee1inch : 0.75
       }
-      let swapRequestUrl = _1inch + '/v3.0/1/swap?' + new URLSearchParams(data).toString()
+
+      let swapRequestUrl = _1inch + '/v3.0/' + this.evmData.network_id + '/swap?' + new URLSearchParams(data).toString()
 
       // JSON.stringify for easy copy paste
       this.$axios.get(swapRequestUrl)
         .then(async function (result) {
           self.spinnervisible = false
-          let nonce = await web3.eth.getTransactionCount(self.ethAccount.key, 'latest')
+          let nonce = await self.web3.eth.getTransactionCount(self.$store.state.investment.defaultAccount.key, 'latest')
           let transactionObject = {
-            from: self.ethAccount.key,
+            from: self.$store.state.investment.defaultAccount.key,
             to: result.data.tx.to,
             value: parseInt(result.data.tx.value),
             gas: web3.utils.toHex(self.gasSelected.gas),
@@ -765,9 +865,43 @@ export default {
             nonce: nonce
           }
 
-          self.sendSignedTransaction(transactionObject)
-          self.step = 2
+          let data = {
+            gasData: self.gasSelected,
+            txData: transactionObject.data
+          }
+          console.log(data, 'data 3')
+          let account = self.$store.state.wallets.tokens.find(a => a.chain === self.evmData.chain && a.isEvm && ((a.key.toLowerCase() === self.$store.state.investment.defaultAccount.key.toLowerCase())))
+
+          Lib.send(
+            self.evmData.chain,
+            self.destinationCoin.value.toLowerCase(),
+            transactionObject.from,
+            transactionObject.to,
+            transactionObject.value,
+            data,
+            account.privateKey,
+            ''
+          ).then(async (result) => {
+            if (result.success) {
+              self.transactionHash = result.transaction_id
+              self.transactionStatus = 'Submitted'
+              let status = await Lib.checkEvmTxStatus(self.transactionHash, self.evmData.chain)
+              if (status) {
+                self.transactionStatus = 'Success'
+              } else {
+                self.transactionStatus = 'Failed'
+              }
+              // initWallet(account.name)
+            } else {
+              self.error = result.message
+              self.step = 1
+            }
+          }).catch((error) => {
+            self.step = 1
+            self.error = error
+          })
         }).catch(error => {
+          self.step = 1
           self.spinnervisible = false
           self.error = error
         })
