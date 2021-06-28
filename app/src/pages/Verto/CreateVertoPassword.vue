@@ -152,12 +152,12 @@
             v-if="$route.params.showConfigStep || !hasConfig "
             :class="{ 'config-restore': $q.screen.gt.sm }"
           >
-            <h2 class="text-h6 text-white q-pb-md">
-              Do you have a config file ?
-            </h2>
 
             <div class="standard-content--body">
               <div class="standard-content--body__form">
+              <div class="text-h6 text-white q-pb-md">
+              Restore from  config
+            </div>
                 <q-btn
                   flat
                   class="action-link back"
@@ -173,8 +173,21 @@
                     })
                   "
                 />
+               <div class="text-h6 text-white q-py-lg">
+              Demo Mode
+            </div>
+                <q-btn
+                rounded
+                @click="setDemoMode()"
+                outline
+                no-caps
+                flat
+                  class="action-link back q-mb-lg"
+                  color="grey"
+                  text-color="white"
+                  label="Demo Mode" />
               </div>
-              <p class="q-pt-md text-body1 text-white">
+              <p class="q-pt-md text-body1 text-white" v-if="false">
                 A config file is a private file that contains all your accounts
                 information and can be used at anytime to restore your wallet
               </p>
@@ -192,7 +205,8 @@ import configManager from '@/util/ConfigManager'
 // import FileSelect from '@/components/FileSelect.vue'
 import Vue from 'vue'
 import VideoBg from 'vue-videobg'
-
+import Lib from '@/util/walletlib'
+import store from '@/store'
 Vue.component('video-bg', VideoBg)
 
 export default {
@@ -236,6 +250,48 @@ export default {
     this.hasConfig = !!await configManager.hasVertoConfig()
   },
   methods: {
+    setDemoMode () {
+      Lib.removeExpiredData(0)
+      store.state.currentwallet.config = {
+        mnemonic: 'xxx',
+        keys: [
+          {
+            chain: 'eth',
+            key: '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1',
+            name: 'ETH Wallet',
+            type: 'eth'
+          },
+          {
+            chain: 'eth',
+            key: '0xaCd398c95D7fb6fb4071C2892eADdaD12778dfDb',
+            name: 'ETH Wallet 2',
+            type: 'eth'
+          },
+          {
+            chain: 'btc',
+            key: '15urYnyeJe3gwbGJ74wcX89Tz7ZtsFDVew',
+            name: 'BTC Wallet',
+            type: 'btc'
+          },
+          {
+            chain: 'eos',
+            key: 'xxxx',
+            name: 'crosschainfx',
+            type: 'eos'
+          },
+          {
+            chain: 'eos',
+            key: 'xxxx2',
+            name: 'berthonythe2',
+            type: 'eos'
+          }
+        ]
+      }
+      store.state.currentwallet.loggedIn = true
+      this.$router.push({
+        path: '/verto/dashboard'
+      })
+    },
     gotoSecondScreen () {
       if (this.passwordApproved) {
         this.step = 2

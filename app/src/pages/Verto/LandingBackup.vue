@@ -91,7 +91,7 @@ export default {
       position: 'top'
     })
     this.triggerCustomRegisteredType1()
-    this.getCoinswitchCoins()
+    this.getGodexCoins()
     this.get1inchCoins()
     this.getDefiboxCoins()
 

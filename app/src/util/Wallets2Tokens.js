@@ -579,44 +579,33 @@ class Wallets2Tokens {
             })
           }
         } else {
-          this.eos.getAccount(wallet.name).then(async a => {
-            if (this.eosUSD === 0) {
-              await this.getEosUSD()
-            }
-
-            self.tableData
-              .filter(
-                w =>
-                  w.key === wallet.key &&
-                w.type === 'eos' &&
-                w.name === wallet.name
-              )
-              .map(async eos => {
-              // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
-              // eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
-
-                eos.amount = t.amount ? t.amount : '0.0000'
-                eos.usd = this.eosUSD * t.amount
-                eos.contract = 'eosio.token'
-                eos.tokenPrice = this.eosUSD
-                eos.privateKey = wallet.privateKey
-                eos.privateKeyEncrypted = wallet.privateKeyEncrypted
-                eos.precision = eos.amount.toString().split('.')[1]
-                  ? eos.amount.toString().split('.')[1].length
-                  : 0
-                eos.accountData = a
-                eos.proxy = a.voter_info ? a.voter_info.proxy : ''
-                eos.staked = a.voter_info
-                  ? a.voter_info.staked / 10000
-                  : 0
-              // console.log('eos eos eos  ', eos)
-              // store.state.wallets.portfolioTotal += this.eosUSD * t.amount
-              })
-          })
-
-          this.updateWallet()
+          this.getEosMainBalance(wallet, t.amount)
         }
       })
+  }
+  getEosMainBalance (wallet, amount) {
+    this.eos.getAccount(wallet.name).then(async a => {
+      if (this.eosUSD === 0) {
+        await this.getEosUSD()
+      }
+      let eos = {}
+      eos.key = wallet.key
+      eos.type = 'eos'
+      eos.type = wallet.name
+      eos.amount = amount || '0.0000'
+      eos.usd = this.eosUSD * amount
+      eos.contract = 'eosio.token'
+      eos.tokenPrice = this.eosUSD
+      eos.privateKey = wallet.privateKey
+      eos.privateKeyEncrypted = wallet.privateKeyEncrypted
+      eos.precision = 4
+      eos.accountData = a
+      eos.proxy = a.voter_info ? a.voter_info.proxy : ''
+      eos.staked = a.voter_info
+        ? a.voter_info.staked / 10000
+        : 0
+    })
+    this.updateWallet()
   }
   getEOSTokens (wallet, balances) {
     axios
@@ -626,8 +615,7 @@ class Wallets2Tokens {
       )
       .then(response => {
         if (response && response.data && response.data.tokens) {
-          console.log(response.data.tokens, 77)
-          response.data.tokens.forEach(token => {
+          response.data.tokens.forEach((token, i) => {
             let image =
               token.metadata.logo.split('https:').length === 3
                 ? token.metadata.logo
@@ -669,13 +657,15 @@ class Wallets2Tokens {
                 wallet.name,
               icon: image
             })
+            if (i === response.data.tokens.length - 1) {
+              this.getEosMainBalance(wallet, balances.find(o => o.symbol === 'EOS').amount)
+            }
           })
           this.updateWallet()
         } else {
           this.getEOSTokensV2(wallet, balances, true)
         }
       }).catch(e => {
-        console.log(e, 'e')
         this.getEOSTokensV2(wallet, balances, true)
       })
   }

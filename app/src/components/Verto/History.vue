@@ -1,26 +1,8 @@
 <template>
 <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" class="history-component" style="height: 100%;">
   <div class="transaction-wrapper" style="height: 100%;">
-    <!-- <q-toggle v-model="active" label="Active" /> -->
-    <div class="transaction-wrapper--list open" v-if="legacyHistory.length">
-      <q-list bordered separator class="list-wrapper">
-        <q-item v-for="(item, index) in legacyHistory" :key="index" clickable v-ripple :active="active" :to="item.to">
-          <q-item-section class="item-date">
-            <span class="item-date--value" v-html="item.time" />
-          </q-item-section>
-          <q-item-section class="item-trans">
-            <span class="item-trans--transID">{{item.transID}}</span>
-            <span class="item-trans--desc">{{item.desc}}</span>
-          </q-item-section>
-          <q-item-section class="item-amount">
-            <span class="item-amount--value">{{item.amountFriendly}}</span>
-          </q-item-section>
-        </q-item>
-      </q-list>
-       <q-btn @click="showMore()"  v-if="false" unelevated flat class="full-width transaction-wrapper--list__hide-transaction" color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" label="See More..." />
-    </div>
-    <div class="transaction-wrapper--list open" v-else style="height: 100%;">
-      <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! ('eos' === $store.state.investment.defaultAccount.chain || $store.state.investment.defaultAccount.isEvm)">
+    <div class="transaction-wrapper--list open"  style="height: 100%;">
+      <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! (['eos','btc'].includes($store.state.investment.defaultAccount.chain) || $store.state.investment.defaultAccount.isEvm)">
         History for the {{$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
       </q-banner>
 

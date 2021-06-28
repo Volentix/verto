@@ -1,5 +1,5 @@
 <template>
-    <div class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+    <div :class="{'bg-white text-black': $store.state.settings.lightMode === 'false'}">
     <div v-if="getPassword" class="send-modal flex flex-center" :class="{'open' : openModal, 'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
@@ -274,12 +274,12 @@
                 </div>
 
                 <q-list :class="{'q-pt-md': miniMode}" v-if="gasOptions.length && currentAccount.isEvm && (!miniMode || miniStep == 2)" class="gasfield q-mb-md"  separator>
-                <span v-if="miniStep == 2" class="q-pr-md"><q-btn @click="miniStep = 1" icon="arrow_back" flat /> |</span> <span>Select gas</span>
+               <span v-if="!disableMemoEdit"> <span v-if="miniStep == 2" class="q-pr-md"><q-btn @click="miniStep = 1" icon="arrow_back" flat /> |</span> <span>Select gas</span></span>
                     <div dense class="gasSelector row" :class="{'q-pt-sm': miniStep == 2}">
                         <div class="col-md-4" :class="{'col-md-12 q-mb-sm': miniMode}" v-for="(gas, index) in gasOptions" :key="index">
                             <q-item :class="[gasSelected.label == gas.label && !customGas ? 'selected bg-black text-white' : '' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
                                 <q-item-section>
-                                    <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 text-black']">{{gas.isUsd ? '$'+gas.value : gas.nativeToken.toUpperCase()+ ' '+gas.value  }}</q-item-label>
+                                    <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 ']">{{gas.isUsd ? '$'+gas.value : gas.nativeToken.toUpperCase()+ ' '+gas.value  }}</q-item-label>
                                     <q-item-label class="text-body1 text-grey text-capitalize"> {{gas.label }}</q-item-label>
                                 </q-item-section>
                                 <q-item-section  v-if="!miniMode" avatar>
@@ -514,7 +514,6 @@ export default {
       this.isBalanceEnough()
     },
     currentToken: function (newVal) {
-      console.log(newVal, 'newVal')
       if (newVal) {
         /*
         this.from = newVal.label
@@ -539,7 +538,10 @@ export default {
       if (this.params.to) {
         this.sendTo = this.params.to
         this.sendMemo = this.params.memo
-        this.disableMemoEdit = this.params.disableMemoEdit
+        if (this.params.disableMemoEdit) {
+          this.disableMemoEdit = this.params.disableMemoEdit
+          this.miniStep = 2
+        }
         this.checkTo()
       }
     } else if (this.$route.params.chainID && this.$route.params.chainID) {
@@ -812,7 +814,10 @@ export default {
           this.transSuccessDialog = true
           this.transactionLink = result.message
           this.transStatus = !result.status ? 'Sent Successfully' : result.status
-          initWallet(this.currentAccount.name)
+          setTimeout(() => {
+            initWallet(this.currentAccount.name)
+          }, 1000)
+          this.$emit('setTab', 'wait')
         } else {
           if (result.message.toString().includes('is greater than the maximum billable CPU time for the transaction') || result.message.toString().includes('the current CPU usage limit imposed on the transaction')) {
             this.payForUserCPU()
