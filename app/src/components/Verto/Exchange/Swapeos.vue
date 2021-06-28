@@ -844,13 +844,14 @@ export default {
 
       // let amount = parseFloat(this.swapData.fromAmount).toFixed(8)
       // this.swapData.fromAmount = isNaN(amount) ? 0 : amount
+
       this.pairData = this.pairs.find(
         (w) =>
           (w.token1.contract === this.destinationCoin.contract && w.token1.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token0.symbol.split(',')[1].toLowerCase() && this.depositCoin.contract === w.token0.contract) ||
           (w.token0.contract === this.destinationCoin.contract && w.token0.symbol.split(',')[1].toLowerCase() === this.destinationCoin.value.toLowerCase() && this.depositCoin.value.toLowerCase() === w.token1.symbol.split(',')[1].toLowerCase() && this.depositCoin.contract === w.token1.contract)
       )
 
-      console.log(this.pairData, this.destinationCoin.contract, this.depositCoin.contract)
+      console.log(this.pairData, this.destinationCoin, this.depositCoin, 'jizy', this.pairs)
 
       this.getLiquidityMultiplier()
       if (!this.pairData || this.pairData.liquidity_token === 0) {
@@ -935,8 +936,10 @@ export default {
       }
     },
     async getPools () {
+    //  this.coins = this.getCoinsByAccount('defibox', this.defaultAccount.label)
       this.coins = this.crossChain ? this.getUniqueTokens(this.getAllCoins()) : this.getCoinsByAccount('defibox', this.defaultAccount.label)
       this.coins = this.coins.filter((o, i, list) => list.findIndex(a => a.contract === o.contract && a.type === o.type && a.name === o.name) === i)
+
       this.depositCoinOptions = this.coins.filter(t => this.$store.state.investment.accountTokens.find(o => o.type.toLowerCase() === t.value.toLowerCase() && ((o.name && o.name.toLowerCase() === t.name.toLowerCase()) || this.$store.state.investment.defaultAccount.chain === 'eth'))).map(o => {
         let token = this.$store.state.investment.accountTokens.find(t => t.type.toLowerCase() === o.value.toLowerCase() && t.contract === o.contract)
         o.usd = token.usd

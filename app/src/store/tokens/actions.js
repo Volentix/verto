@@ -4,7 +4,7 @@ import store from '@/store'
 
 export const getTokenList = ({ commit, state }, payload) => {
   axios
-    .get('https://api.coingecko.com/api/v3/coins/list?include_platform=true')
+    .get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/list?include_platform=true')
     .then(result => {
       commit('setTokenList', result.data)
     })
@@ -14,7 +14,7 @@ export const getTokenMarketData = ({ commit, state }, ids) => {
   state.pending = state.pending.concat(ids)
   axios
     .get(
-      'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=' +
+      process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=' +
         ids.join(',') +
         '&price_change_percentage=24h'
     )
@@ -53,7 +53,7 @@ export const getTokensMarketsData = ({ commit, state }, tokens) => {
 
     axios
       .get(
-        'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=' +
+        process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=' +
           list +
           '&price_change_percentage=24h'
       )

@@ -772,7 +772,7 @@ export default {
       )
       if (token) {
         let response = await this.$axios.get(
-          'https://api.coingecko.com/api/v3/coins/' +
+          process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/' +
             token.id +
             '/market_chart?vs_currency=usd&days=' +
             days

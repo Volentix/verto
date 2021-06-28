@@ -4,13 +4,47 @@ import Lib from '@/util/walletlib'
 export default {
   methods: {
     getAccountLabel (w) {
-      let label = w.key.substring(0, 6).toLowerCase() +
-                '...' +
-                w.key.substr(w.key.length - 5).toLowerCase()
+      let label = this.getKeyFormat(w.key)
       if (w.chain === 'eos') {
         label = w.name
       }
       return label
+    },
+    getKeyFormat (key) {
+      return key.substring(0, 6).toLowerCase() +
+      '...' +
+      key.substr(key.length - 5).toLowerCase()
+    },
+
+    formatAccoountOption (w) {
+      let account = {
+        value: w.key + '-' + w.chain,
+        key: w.key,
+        isEvm: w.isEvm,
+        chain: w.chain,
+        amount: w.amount,
+        type: w.type,
+        index: w.index,
+        usd: w.usd,
+        total: w.total,
+        icon: w.icon,
+        image: w.icon,
+        name: w.name,
+        label: this.getAccountLabel(w),
+        color: this.getRandomColor()
+      }
+      return account
+    },
+    copyToClipboard (key, copied) {
+      this.$clipboardWrite(key)
+      this.$q.notify({
+        message: copied ? copied + ' Copied' : 'Key Copied',
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
     },
     getRandomColor () {
       const randomNumber = (min, max) => {
@@ -41,6 +75,14 @@ export default {
         }
       }
       return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol
+    },
+    setDefaultWallet (chain) {
+      if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain) {
+        if (chain === this.$store.state.investment.defaultAccount.chain) return
+      }
+
+      let w = this.setChains().find(o => o.chain === chain)
+      if (w && w.accounts && w.accounts.length) { this.$store.commit('investment/setDefaultAccount', this.formatAccoountOption(w.accounts[0])) }
     },
     setChains () {
       /*
@@ -75,6 +117,8 @@ export default {
           o.accounts = JSON.parse(JSON.stringify(o.accounts)).map(q => {
             q.tokenList = this.$store.state.wallets.tokens.filter((f, i, c) => f.chain === q.chain && ((f.isEvm && f.key.toLowerCase() === q.key.toLowerCase() && c.findIndex(t => t.isEvm && t.key.toLowerCase() === q.key.toLowerCase() && f.type === t.type) === i) || (!f.isEvm && q.chain === f.chain && f.name.toLowerCase() === q.name.toLowerCase())))
             q.color = this.getRandomColor()
+            q.value = o.chain === 'eos' ? q.name : q.key
+            q.label = o.chain === 'eos' ? q.name : q.key
             return q
           })
           o.count = o.accounts.length
@@ -98,7 +142,7 @@ export default {
       return isNaN(value) ? '0.00' : formatter.format(value)
     },
     convertTimestamp (timestamp) {
-      let d = new Date(timestamp * 1000),
+      let d = isNaN(timestamp) ? new Date(timestamp) : new Date(timestamp * 1000),
         yyyy = d.getFullYear(),
         mm = ('0' + (d.getMonth() + 1)).slice(-2),
         dd = ('0' + d.getDate()).slice(-2),
