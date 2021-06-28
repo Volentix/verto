@@ -7,8 +7,10 @@ export default {
   coins: {
     coinswitch: [],
     oneinch: [],
-    defibox: []
+    defibox: [],
+    godex: []
   },
+  chainsSendEnabled: ['eos', 'eth', 'dot', 'ksm', 'bsc', 'avax', 'avaxc', 'matic', 'ftm'],
   backupConfig: false,
   defiMenu: 'swap',
   selectedDex: 'defibox',

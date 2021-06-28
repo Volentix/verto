@@ -262,7 +262,7 @@ export default {
       })
     }, 5000)
     setTimeout(() => {
-      this.getCoinswitchCoins()
+      this.getGodexCoins()
       this.get1inchCoins()
       this.getDefiboxCoins()
     }, 3000)
