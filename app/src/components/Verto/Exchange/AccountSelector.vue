@@ -1,6 +1,6 @@
 <template>
-    <div v-if="!chain || chains" >
-      <q-btn  :color="accountOption.color"  text-color="black" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" >
+    <div v-if="!chain || chains" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+      <q-btn :dark="$store.state.settings.lightMode === 'true'" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" >
             <q-menu>
               <q-list bordered separator>
                 <q-expansion-item  style="width:308px;"  dense-toggle class="chains" default-opened v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index" clickable  >

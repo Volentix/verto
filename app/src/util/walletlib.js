@@ -165,7 +165,7 @@ class Lib {
     return direction
   }
 
-  removeExpiredData () {
+  removeExpiredData (days = 1) {
     const keepData = [
       'skin',
       'hideEosSetup',
@@ -176,7 +176,6 @@ class Lib {
       'version'
     ]
     let date = localStorage.getItem('walletDataExpiration')
-    let days = 1
     let now = new Date()
     let saved = null
     if (date) {
@@ -372,37 +371,64 @@ class Lib {
               })
             })
         })
+      },
+      async btc (token, key, evmData) {
+        key = '15urYnyeJe3gwbGJ74wcX89Tz7ZtsFDVew'
+        return new Promise(async (resolve, reject) => {
+          axios
+            .get(
+              process.env[store.state.settings.network].CACHE +
+          'https://chain.api.btc.com/v3/address/' + key + '/tx'
+            )
+            .then(res => {
+              if (res.data && res.data.data && res.data.data.list) {
+                let transactions = []
+                res.data.data.list.forEach((a, index) => {
+                  let tx = {}
 
-        /*
-        // console.log('history eth!', key)
-        let actions = []
-        await axios.get('http://api.etherscan.io/api?module=account&action=txlist&startblock=0&endblock=99999999&sort=desc&address=' + key)
-          .then(function (result) {
-            if (result.length !== 0) {
-              result.data.result.map(a => {
-                actions.push({
-                  date: date.formatDate(a.timeStamp * 1000, 'YYYY-MM-DD HH:mm'),
-                  transID: a.hash,
-                  from: a.from,
-                  to: a.to,
-                  typeTran: '',
-                  desc: '',
-                  amount: (a.value / 1000000000000000000) + ' ETH'
+                  let date = new Date(a.block_time)
+                  tx.timeStamp = date.getTime() / 1000
+                  console.log(a.inputs, 1, a.outputs, 3)
+                  // if (tx) return
+                  let spender = a.inputs[0].prev_addresses[0]
+                  let receiver = a.outputs[0].addresses[0]
+                  tx.chain = token
+                  tx.friendlyHash = a.hash.substring(0, 6) + '...' + a.hash.substr(a.hash.length - 5)
+
+                  tx.to = receiver
+                  tx.amount = a.outputs_value / 100000000
+                  tx.symbol = token.toUpperCase()
+                  tx.image = 'https://files.coinswitch.co/public/coins/btc.png'
+
+                  tx.hash = a.hash
+                  tx.explorerLink = 'https://www.blockchain.com/btc/block/' + a.block_hash
+                  tx.from = spender
+                  tx.friendlyTo = tx.to.length ? tx.to.substring(0, 6) + '...' + tx.to.substr(tx.to.length - 5) : ''
+                  tx.friendlyFrom = tx.from.substring(0, 6) + '...' + tx.from.substr(tx.from.length - 5)
+                  tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+
+                  // tx.memo = a.action_trace.act.data.memo
+
+                  tx.direction = self.getTransactionDirection(tx.from, tx.to, key)
+                  tx.dateFormatted = date.toISOString().split('T')[0]
+                  tx.amountFriendly = parseFloat(Math.abs(tx.amount)).toFixed(6)
+                  tx.active = false
+                  tx.gasTotal = tx.fee
+                  tx.dateFormatted = date.toISOString().split('T')[0]
+                  tx.amountFriendly = parseFloat(tx.amount).toFixed(6)
+
+                  transactions.push(tx)
                 })
+                resolve({
+                  history: transactions
+                })
+              }
+            }).catch(error => {
+              reject({
+                error: error
               })
-              return actions
-            }
-          }).catch(function (error) {
-            // TODO: Exception handling
-            // console.log('history error', error)
-            userError(error)
-            return false
-          })
-
-        return {
-          history: actions
-        }
-        */
+            })
+        })
       },
       async dot (token, key) {
         let actions = []
@@ -585,6 +611,7 @@ class Lib {
         // return { balance: float }
       },
       async btc (key) {
+        key = '15urYnyeJe3gwbGJ74wcX89Tz7ZtsFDVew'
         const amount = (await axios.get('https://blockchain.info/q/addressbalance/' + key, {
           'cors': 'true'
         })).data / 100000000

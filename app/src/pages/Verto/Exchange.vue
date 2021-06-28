@@ -1,10 +1,10 @@
 <template>
-<q-page class="column" :class="{'desktop-marg':screenSize > 1024, 'mobile-pad': screenSize < 1024 , 'text-black bg-grey-12': $store.state.settings.lightMode === 'false'}">
+<q-page class="column" :class="{'desktop-marg':screenSize > 1024, 'miniMode': miniMode, 'mobile-pad': screenSize < 1024 , 'text-black bg-grey-12': $store.state.settings.lightMode === 'false'}">
     <!-- padding-bottom: 100px;background: #f3f3f3 !important -->
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
         <div class="desktop-version full-height" v-if="screenSize > 1024">
             <div class="row full-height">
-                <div class="col col-md-3">
+                <div class="col col-md-3" v-if="!miniMode">
                     <div class="wallets-container" style="height: 100%">
                         <profile-header :isMobile="false" class="marg" version="type2222" />
                         <wallets :isMobile="false" class="full-height max-height" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
@@ -17,7 +17,7 @@
                         <div class="chain-tools-wrapper">
                             <div class="standard-content">
                             <q-breadcrumbs class="col-12 q-pt-md q-pl-md  breadcrumbs cursor-pointer">
-                              <q-breadcrumbs-el  class="cursor-pointer" @click="$router.push('/verto/dashboard')" label="Back"  icon="keyboard_backspace" />
+                              <q-breadcrumbs-el  class="cursor-pointer" @click="miniMode ? $emit('setStep', 0) : $router.push('/verto/dashboard')" label="Back"  icon="keyboard_backspace" />
                             </q-breadcrumbs>
                                 <!-- <div class="exchange_picto flex flex-center"><img src="statics/exchange_picto.svg" alt=""></div> -->
                             </div>
@@ -118,6 +118,7 @@ import EosWrapper from '@/util/EosWrapper'
 const eos = new EosWrapper()
 
 export default {
+  props: ['miniMode'],
   components: {
     // desktop components
     // QScrollArea,
@@ -781,7 +782,13 @@ export default {
         }
     }
 }
+.miniMode .desktop-version.full-height {
+    padding: 0;
 
+}
+.miniMode  .desktop-card-style {
+  border:none
+}
 .mobile-pad {
     padding-bottom: 60px;
     background: #f3f3f3 !important;
