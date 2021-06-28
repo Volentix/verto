@@ -595,7 +595,7 @@ class Lib {
         if (res && res.data && res.data.data) {
           amount = res.data.data.attributes.balance_free / 1000000000000
         }
-        let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=kusama&vs_currencies=usd')).data.kusama.usd
+        let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=kusama&vs_currencies=usd')).data.kusama.usd
         const usd = amount * tokenPrice
         return {
           amount,
@@ -615,7 +615,7 @@ class Lib {
         const amount = (await axios.get('https://blockchain.info/q/addressbalance/' + key, {
           'cors': 'true'
         })).data / 100000000
-        let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')).data.bitcoin.usd
+        let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')).data.bitcoin.usd
         const usd = amount * tokenPrice
         return {
           amount,
@@ -625,7 +625,7 @@ class Lib {
       },
       async ltc (key) {
         const amount = (await axios.get('https://chainz.cryptoid.info/ltc/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
-        let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd')).data.litecoin.usd
+        let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd')).data.litecoin.usd
         const usd = amount * tokenPrice
         return {
           amount,
@@ -646,7 +646,7 @@ class Lib {
         } catch (err) {
           /// /console.log('', err)
         }
-        let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')).data.binancecoin.usd
+        let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')).data.binancecoin.usd
         const usd = amount * tokenPrice
         return {
           amount,
@@ -667,7 +667,7 @@ class Lib {
         } catch (err) {
           console.log('ada catch', err)
         }
-        let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd')).data.cardano.usd
+        let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd')).data.cardano.usd
         const usd = amount * tokenPrice
         return {
           amount,
@@ -677,7 +677,7 @@ class Lib {
       },
       async dash (key) {
         const amount = (await axios.get('https://chainz.cryptoid.info/dash/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
-        let tokenPrice = (await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=dash&vs_currencies=usd')).data.dash.usd
+        let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=dash&vs_currencies=usd')).data.dash.usd
         const usd = amount * tokenPrice
         return {
           amount,
