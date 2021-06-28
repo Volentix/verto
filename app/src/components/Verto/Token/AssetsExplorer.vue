@@ -475,7 +475,7 @@ export default {
     },
     async getVTXHistoriclPrice (days = 30) {
       let response = await this.$axios.get(
-        'https://api.coingecko.com/api/v3/coins/volentix-vtx/market_chart?vs_currency=usd&days=' +
+        process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/volentix-vtx/market_chart?vs_currency=usd&days=' +
             days
       )
       this.chartData = response.data
