@@ -994,7 +994,6 @@ export default {
     }
   },
   async created () {
-    console.log(this.$store.state.settings.globalSettings, 'this.$store.state.settings.globalSettings.godexTokens', this.$store.state.settings.coins.godex)
     if ((!this.$store.state.settings.coins.godex || !this.$store.state.settings.coins.godex.length) && this.$store.state.settings.globalSettings.godexTokens) {
       this.$store.state.settings.coins.godex = this.$store.state.settings.globalSettings.godexTokens.map(el => {
         return {
@@ -1005,7 +1004,7 @@ export default {
         }
       })
     }
-    console.log(this.$store.state.settings.globalSettings, 'this.$store.state.settings.globalSettings.godexTokens', this.$store.state.settings.coins.godex)
+
     this.getOngoingTx()
     let coins = CrosschainDex.getAllCoins()
     this.chains = this.setChains()
@@ -1125,7 +1124,7 @@ export default {
         this.depositCoin.value.toLowerCase(),
         this.destinationCoin.value.toLowerCase()
       )
-      console.log(this.dex, 'this.dex 5 ', this.depositCoin, this.destinationCoin)
+
       if (
         this.depositCoin.value.toLowerCase() === 'eth' &&
         this.destinationCoin.value.toLowerCase() === 'vtx'
@@ -1162,7 +1161,7 @@ export default {
               if (data && data.pair && data.pair.amount) {
                 CrosschainDex.setDex('defibox')
                 let pairData = await CrosschainDex.getPair('eos', this.destinationCoin.value.toLowerCase(), data.pair.amount)
-                console.log(data, 'data 14w', 2)
+
                 if (!pairData || !pairData.pair) return
                 this.swapData.eosProxy = true
                 this.swapData.eosPairId = pairData.pair.pair_id
@@ -1200,7 +1199,6 @@ export default {
           )
         }
       } else if (this.dex.length) {
-        console.log(24)
         this.currentDex = this.dex[0]
       }
 
@@ -1213,7 +1211,6 @@ export default {
           this.swapData.fromAmount
         )
           .then((data) => {
-            console.log(data, 'data 123')
             this.spinner.amount = false
             this.checkChangeMinimum(data)
             if (data && data.pair) {
@@ -1262,7 +1259,7 @@ export default {
         ],
         send: true
       }
-      console.log(tx, 'tx')
+
       return tx
     },
 
@@ -1380,8 +1377,6 @@ export default {
               this.tab = 'tosend'
 
               // this.$refs.transact.setTxData(data.tx.txObj)
-
-              console.log(data.tx.txObj, 'data.tx.txObj')
             } else {
               this.tab = 'waiting'
             }
@@ -1431,7 +1426,7 @@ export default {
               clearInterval(intvObj.interval)
             }
           }
-          console.log(data, 'data')
+
           let oldTx = JSON.parse(
             localStorage.getItem('vexchange_crosschain_' + order_id)
           )
