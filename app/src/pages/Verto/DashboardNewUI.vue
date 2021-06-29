@@ -23,9 +23,9 @@
         <q-tab name="tokens" icon="search" label="Explore tokens" />
       </q-tabs>
 
-              <GodexV2  v-if="tab == 'dashboard'" />
-              <VTXStakeState   v-if="$store.state.settings.network == 'testnet'" />
-              <TokenPrices class="full-width" v-show="tab == 'tokens'" />
+              <GodexV2  v-if="tab == 'dashboard' && false" />
+              <VTXStakeState  v-if="false"  />
+              <TokenPrices class="full-width"   />
                 <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
                   <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
                 </q-breadcrumbs>

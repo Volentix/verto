@@ -35,6 +35,34 @@ export default {
       }
       return account
     },
+    groupday (values, key) {
+      let days = {}
+      values.forEach(o => {
+        let d = new Date(o[key])
+        d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24))
+        if (!days[d]) {
+          days[d] = []
+        }
+        days[d].push(o)
+      })
+      return days
+    },
+    groupweek (value, index, array) {
+      let byweek = {}
+      let d = new Date(value.timestamp)
+      d = Math.floor(d.getTime() / (1000 * 60 * 60 * 24 * 7))
+      byweek[d] = byweek[d] || []
+      byweek[d].push(value)
+      return byweek
+    },
+    groupmonth (value, index, array) {
+      let bymonth = {}
+      let d = new Date(value.timestamp)
+      d = (d.getFullYear() - 1970) * 12 + d.getMonth()
+      bymonth[d] = bymonth[d] || []
+      bymonth[d].push(value)
+      return bymonth
+    },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({

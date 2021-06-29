@@ -145,7 +145,6 @@ class Crosschaindex {
     return dex
   }
    getPair = (from, to, amount) => {
-     console.log(from, to, amount, 'from, to, amount)')
      const self = this
      let list = {
        oneinch () {
@@ -161,8 +160,8 @@ class Crosschaindex {
              .get(self.base.oneinch + '1/quote?' + new URLSearchParams(data).toString())
              .then(res => {
                data.amount = parseFloat(Web3.utils.fromWei(res.data.toTokenAmount.toString(), 'ether'))
-               data.fromChains = ['eth', 'matic']
-               data.toChains = ['eth', 'matic']
+               data.fromChains = ['eth', 'matic', 'bsc']
+               data.toChains = ['eth', 'matic', 'bsc']
                data.isCrosschain = false
                data.limitMaxDepositCoin = 0
                data.limitMinDepositCoin = 0
@@ -183,7 +182,7 @@ class Crosschaindex {
            let pairData = await self.getDefiboxPairData(to, from)
            let poolOne, poolTwo, toAmount
            let input = 'pool1'
-           console.log(pairData, 'pairData')
+
            pairData.pool1 = asset(pairData.reserve0)
            pairData.pool2 = asset(pairData.reserve1)
            // let mul = 0.0001

@@ -4,7 +4,7 @@
 THE STATE OF VTX
 </div>
 <div class="row">
-<div class="col-md-4">
+<div class="col-md-12">
 
 <Chart :stakingData="chartData"   :key="chartKey" />
 </div>
@@ -68,7 +68,7 @@ THE STATE OF VTX
 </template>
 <script>
 
-import Chart from './PieChart'
+import Chart from './BarChart'
 import Formatter from '@/mixins/Formatter'
 
 export default {
@@ -78,13 +78,23 @@ export default {
   data: () => ({
     state: [],
     chartData: [],
-    chartKey: 1
+    chartKey: 1,
+    monthGroup: {
+
+    }
   }),
   async mounted () {
     this.getHistoryData()
   },
   methods: {
     getHistoryData () {
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ]
+
+      const d = new Date()
+      document.write('The current month is ' + monthNames[d.getMonth()])
+
       this.state = []
       let contract = 'vertostaking'
       this.$axios.get('https://eos.hyperion.eosrio.io/v2/history/get_actions?account=' + contract + '&skip=0&limit=1000&sort=desc').then((response) => {
@@ -105,22 +115,45 @@ export default {
                 item.action = 'unstake'
                 item.staker = a.act.data.to
               }
-              console.log(a, item, 'item', 123, stakingMemo)
+
               if (item.action) {
                 item.amount = parseFloat(a.act.data.quantity)
                 item.timestamp = a.timestamp
+                let month = monthNames[(new Date(item.timestamp)).getMonth()]
+                if (!this.monthGroup[month]) {
+                  this.monthGroup[month] = [item]
+                } else {
+                  this.monthGroup[month].push(item)
+                }
                 this.state.push(item)
               }
             }
           }
           )
         }
-        this.chartKey++
-        this.chartData = [this.state.filter(o => o.action === 'stake').map(o => o.amount).reduce((a, b) => a + b, 0), this.state.filter(o => o.action === 'unstake').map(o => o.amount).reduce((a, b) => a + b, 0)]
+        /* const formatForChartv1 = (data, i) => {
+          let days = this.groupday(data, 'timestamp')
+          console.log(days, i, 77)
+          return Object.keys(days).map(o => {
+            o = days[o]
+            return o && o.length ? o.map(a => a.amount).reduce((a, b) => a + b, 0) : 0
+          }).filter(o => o)
+        } */
 
-        console.log(this.state, this.chartData, this.chartKey)
-      }).catch(e => {
+        const formatForChartV2 = (dataset, action) => {
+          let data = []
+          dataset.forEach(o => {
+            if (o.action === action) {
+              data.push(o.amount)
+            } else {
+              data.push(0)
+            }
+          })
+          return data
+        }
 
+        this.chartData = [formatForChartV2(this.state, 'stake'), formatForChartV2(this.state, 'unstake')]
+        console.log(this.chartData, ' this.chartData 8')
       })
     }
   },
