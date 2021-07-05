@@ -1,5 +1,6 @@
 import HD from '@/util/hdwallet'
 import Lib from '@/util/walletlib'
+import { scroll } from 'quasar'
 
 export default {
   methods: {
@@ -15,7 +16,24 @@ export default {
       '...' +
       key.substr(key.length - 5).toLowerCase()
     },
+    scrollToElement (id) {
+      const { getScrollTarget, setScrollPosition } = scroll
+      let el = document.getElementById(id)
 
+      const target = getScrollTarget(el)
+      const offset = el.offsetTop
+      const duration = 300
+      setScrollPosition(target, offset, duration)
+    },
+    getChainLabel (chain) {
+      let isEvm = Lib.evms.find(a => a.chain === chain)
+      let chainLabel = HD.names.find(a => a.value === chain)
+
+      if (chain === 'bsc') {
+        isEvm.name = 'BSC'
+      }
+      return isEvm ? isEvm.name : (chainLabel ? chainLabel.label : chain.toUpperCase())
+    },
     formatAccoountOption (w) {
       let account = {
         value: w.key + '-' + w.chain,

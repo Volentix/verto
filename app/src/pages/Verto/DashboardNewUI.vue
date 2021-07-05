@@ -22,16 +22,16 @@
         <q-tab name="opportunities" icon="trending_up" label="Opportunities" />
         <q-tab name="tokens" icon="search" label="Explore tokens" />
       </q-tabs>
-
-              <GodexV2  v-if="tab == 'dashboard' && false" />
+  <q-scroll-area :visible="true" class="full-width full-height-desktop" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
+              <GodexV2   />
               <VTXStakeState  v-if="false"  />
-              <TokenPrices class="full-width"   />
+              <TokenPrices class="full-width" v-if="false"   />
                 <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
                   <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
                 </q-breadcrumbs>
                <NftsExplorer v-if="false && $store.state.settings.network != 'mainnet'" />
                 <AssetsExplorer @assetsChanged="assetsChanged" ref="assetsComponent" v-show="!assetSelected" @setAsset="setAsset" />
-
+  </q-scroll-area>
                 <SingleToken   ref="singleTokenComponent" @setAsset="setAsset"  :assetData="assetSelected" class="col-md-12" v-if="assetSelected" />
 
               </div>
@@ -117,9 +117,9 @@ import {
   mapState
 } from 'vuex'
 // import VespucciRatingSection from '../../components/Verto/VespucciRatingSection'
-// import {
-//   QScrollArea
-// } from 'quasar'
+import {
+  QScrollArea
+} from 'quasar'
 
 // import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
 // import HD from '@/util/hdwallet'
@@ -147,7 +147,7 @@ import {
 export default {
   components: {
     // ConvertAnyCoin,
-    // QScrollArea,
+    QScrollArea,
     VTXStakeState,
     MultiTransaction,
     // NftsExplorer,
@@ -970,5 +970,8 @@ export default {
 
 .exchange-notif button {
     opacity: 0;
+}
+.full-height-desktop {
+      height: 100vh !important;
 }
 </style>

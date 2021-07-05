@@ -82,32 +82,32 @@
      <span v-if="parseFloat($store.getters['currentwallet/getWallet'].amount) && (isNaN($store.getters['currentwallet/getWallet'].tokenPrice) || $store.getters['currentwallet/getWallet'].tokenPrice == 0)"> {{$store.getters['currentwallet/getWallet'].amount}} {{$store.getters['currentwallet/getWallet'].type.toUpperCase()}}</span>
      <span v-else>${{ balance.usd }} USD </span>
 
-      <span class="profile-wrapper--header__equivalent" v-if="!isNaN(balance.equivAmount) ">Equivalent to <b>{{ isNaN(balance.equivAmount) ? 0 : nFormatter2(+balance.equivAmount,3) + ' ' + balance.equivType.toUpperCase() }}</b></span></h2>
+      <span  class="profile-wrapper--header__equivalent" v-if="!isNaN(balance.equivAmount) ">Equivalent to <b>{{ isNaN(balance.equivAmount) ? 0 : nFormatter2(+balance.equivAmount,5) + ' ' + balance.equivType.toUpperCase() }}</b></span></h2>
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-else>${{ nFormatter2( chainData ?  chainData.total : $store.state.wallets.portfolioTotal , 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <!-- {{$store.state.wallets.portfolioTotal}} -->
       <div class="profile-wrapper--header__action">
 
         <q-btn unelevated v-if="screenSize <= 1024"
-          :disable="$store.getters['currentwallet/getWallet'].type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.getters['currentwallet/getWallet'].chain))"
+          :disable="$store.getters['currentwallet/getWallet'].type === 'verto' || !($store.state.settings.chainsSendEnabled.includes($store.getters['currentwallet/getWallet'].chain))"
           to="/verto/wallets/send" outline
           class="profile-wrapper--header__action-btn --send"
           :class="{'--dark':$store.state.settings.lightMode === 'true'}"
           color="white" text-color="white" label="Send" />
         <q-btn unelevated v-if="screenSize > 1024"
-          :disable="!$store.state.settings.devMode && ($store.state.settings.devMode && ($store.getters['currentwallet/getWallet'].type === 'verto' || !(['eos','eth','btc','dot', 'ksm','bnb','avax'].includes($store.getters['currentwallet/getWallet'].chain))))"
+          :disable="!$store.state.settings.devMode && ($store.state.settings.devMode && ($store.getters['currentwallet/getWallet'].type === 'verto' || !($store.state.settings.chainsSendEnabled.includes($store.getters['currentwallet/getWallet'].chain))))"
           @click="!$store.getters['currentwallet/getWallet'].empty ? goToSendPage() : notifSelectWallet()"
           class="profile-wrapper--header__action-btn --send" outline
           :class="{'--dark':$store.state.settings.lightMode === 'true'}"
           color="white" text-color="white" label="Send" />
         <q-btn unelevated v-if="screenSize <= 1024"
           to="/verto/wallets/receive"
-          :disable="!$store.state.settings.devMode && ($store.getters['currentwallet/getWallet'].type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.getters['currentwallet/getWallet'].chain)))"
+          :disable="!$store.state.settings.devMode && ($store.getters['currentwallet/getWallet'].type === 'verto' || !($store.state.settings.chainsSendEnabled.includes($store.getters['currentwallet/getWallet'].chain)))"
           class="profile-wrapper--header__action-btn --receive" outline
           :class="{'--dark':$store.state.settings.lightMode === 'true'}"
           color="indigo-12" text-color="white" label="Receive" />
         <q-btn unelevated v-if="screenSize > 1024"
-          :disable="!$store.state.settings.devMode && ( $store.getters['currentwallet/getWallet'].type === 'verto' || !(['eos','eth','dot','ksm','bnb','avax'].includes($store.getters['currentwallet/getWallet'].chain)))"
+          :disable="!$store.state.settings.devMode && ( $store.getters['currentwallet/getWallet'].type === 'verto' || !($store.state.settings.chainsSendEnabled.includes($store.getters['currentwallet/getWallet'].chain)))"
           @click="!$store.getters['currentwallet/getWallet'].empty ? goToReceivePage() : notifSelectWallet()"
           :class="{'--dark':$store.state.settings.lightMode === 'true'}"
           class="profile-wrapper--header__action-btn --receive" outline

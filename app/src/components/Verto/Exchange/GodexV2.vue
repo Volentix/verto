@@ -1,12 +1,16 @@
 <template>
   <div
-    :class="{ 'dark-theme text-white ': $store.state.settings.lightMode === 'true' ,  'light-mode bg-white': $store.state.settings.lightMode === 'false' }"
-    class=" full-width "
+    :class="{
+      'dark-theme text-white ': $store.state.settings.lightMode === 'true',
+      'light-mode bg-white': $store.state.settings.lightMode === 'false',
+    }"
+    class="full-width"
   >
+  <q-btn label="test" @click="getPathForToken()" v-if="false" />
     <div class="gdx-exchange-form q-px-md" v-show="step != 2">
-     <div class="text-h6 full-width q-py-md">Exchange any to any</div>
+      <div class="text-h6 full-width q-py-md">Exchange any to any</div>
       <div class="coins">
-        <div class="gdx-exchange-coin">
+        <div class="gdx-exchange-coin" id="tx-tab">
           <div
             dir="auto"
             blockedvalue="BTC,ETH"
@@ -142,7 +146,12 @@
               >You Send</label
             >
             <span
-              v-if="depositCoin && depositCoin.minimum"
+              v-if="
+                depositCoin &&
+                depositCoin.minimum &&
+                currentDex &&
+                currentDex.dex == 'godex'
+              "
               class="gdx-input-error absolute-top-right text-body2"
               >Min: {{ depositCoin.minimum }}
             </span>
@@ -304,20 +313,17 @@
           type="default"
           class="gdx-replace-button gdx-button"
           @click="switchAmounts()"
-
         >
-          <div class="box" >
+          <div class="box">
             <img
               src="https://godex.io/.nuxt_next/80dfd238ff9fbd794aae9ada0f9fcb5f.svg"
               alt="arrow-blue"
               class="gdx-image"
-
             />
             <img
               src="https://godex.io/.nuxt_next/d184a0be7e04a5c7f6b4bb9468fc8c0c.svg"
               alt="arrow-white"
               class="gdx-image"
-
             />
           </div>
         </button>
@@ -325,6 +331,7 @@
 
       <a
         href="javascript:void(0)"
+
         :class="{
           'mask-section': step != 0,
           'inactive-btn': !swapData.toAmount || spinner.tx || spinner.amount,
@@ -333,33 +340,23 @@
           swapData.toAmount && !spinner.amount && !spinner.tx ? showSteps() : ''
         "
         class="gdx-link theme-2"
-
         >Exchange</a
       >
       <p @click="getDepositTxData()" v-if="false">Test</p>
 
       <q-splitter
         v-model="splitterModel"
-
         class="full-width"
+
         v-if="step == 1"
-        style="height: 1050px"
+
       >
         <template v-slot:before>
-          <q-tabs
-            v-model="tab"
-            align="left"
-
-            vertical
-            class="text-teal"
-          >
+          <q-tabs v-model="tab" align="left" vertical class="text-teal">
             <q-tab
               name="deposit"
-
               label="Deposit"
-              v-if="
-                swapData.fromChains.length != 1
-              "
+              v-if="swapData.fromChains.length != 1"
             />
             <q-tab name="destination" label="Destination" />
             <q-tab name="tosend" label="Sending" />
@@ -394,42 +391,50 @@
           >
             <q-tab-panel name="deposit">
               <q-item-label
-                v-if="swapData.fromChains.length > 1 && innerStep.deposit == 1"
+                v-if="path.length > 1 && innerStep.deposit == 1"
                 header
                 >Choose the network you are sending
                 {{ depositCoin.value.toUpperCase() }} from</q-item-label
               >
+
               <q-list separator>
                 <q-item
-                  v-show="swapData.fromChains.length > 1 && innerStep.deposit == 1"
-                  v-for="chain in swapData.fromChains"
-                  :key="chain"
+                  v-show="
+                    swapData.fromChains.length > 1 && innerStep.deposit == 1
+                  "
+                  v-for="(path, index) in paths"
+                  :key="index"
                   :dark="$store.state.settings.lightMode === 'true'"
                   tag="label"
                   v-ripple
-                  @click="changeInnerStep()"
+                  @click="setPathData(path)"
                 >
                   <q-item-section
                     v-if="swapData.fromChains.length != 1"
                     side
                     top
-
                   >
                     <q-radio
-
                       v-model="swapData.fromChosenChain"
-                      :val="chain"
+                      :val="path.fromChain"
                       label=""
                     />
                   </q-item-section>
 
                   <q-item-section>
                     <q-item-label
-                      >Send from {{ chain.toUpperCase() }} network</q-item-label
+                      >Send from {{ path.fromChain.toUpperCase() }} {{ path.fromChain == path.toChain ? '' : ' to '+path.toChain}} network</q-item-label
                     >
                   </q-item-section>
                 </q-item>
-               <q-btn v-if="innerStep.deposit == 2" icon="arrow_back"  label="Back"  class="q-mb-md" flat @click="innerStep.deposit = 1"/>
+                <q-btn
+                  v-if="innerStep.deposit == 2"
+                  icon="arrow_back"
+                  label="Back"
+                  class="q-mb-md"
+                  flat
+                  @click="innerStep.deposit = 1"
+                />
                 <div
                   v-if="
                     swapData.fromChosenChain &&
@@ -454,9 +459,7 @@
                     style="max-width: 300px"
                     class="select-input accountDropdown q-my-md"
                     v-model="fromAccountSelected[swapData.fromChosenChain]"
-                    :options="
-                      chainData.accounts
-                    "
+                    :options="chainData.accounts"
                   >
                     <template v-slot:option="scope">
                       <q-item
@@ -470,7 +473,9 @@
                             :name="`img:${scope.opt.icon}`"
                           />
                         </q-item-section>
-                        <q-item-section :dark="$store.state.settings.lightMode === 'true'">
+                        <q-item-section
+                          :dark="$store.state.settings.lightMode === 'true'"
+                        >
                           <q-item-label v-html="scope.opt.name" />
                           <q-item-label caption class="ellipsis mw200">{{
                             scope.opt.key
@@ -500,27 +505,33 @@
                               fromAccountSelected[swapData.fromChosenChain].name
                             "
                           />
-                          <q-item-label caption class="ellipsis mw200" :class="{'text-white' : $store.state.settings.lightMode === 'true'}">{{
-                            getKeyFormat(
-                              fromAccountSelected[swapData.fromChosenChain].key
-                            )
-                          }}</q-item-label>
+                          <q-item-label
+                            caption
+                            class="ellipsis mw200"
+                            :class="{
+                              'text-white':
+                                $store.state.settings.lightMode === 'true',
+                            }"
+                            >{{
+                              getKeyFormat(
+                                fromAccountSelected[swapData.fromChosenChain]
+                                  .key
+                              )
+                            }}</q-item-label
+                          >
                         </q-item-section>
                       </q-item>
                     </template>
                   </q-select>
                   <p
-                        v-if="fromAccountSelected[swapData.fromChosenChain]"
-                        class="text-body2 q-my-sm"
-                      >
-                        We set this address as the return address in case the
-                        transaction <br />needs to be refunded.
-                      </p>
+                    v-if="fromAccountSelected[swapData.fromChosenChain]"
+                    class="text-body2 q-my-sm"
+                  >
+                    We set this address as the return address in case the
+                    transaction <br />needs to be refunded.
+                  </p>
                 </div>
-                <div
-
-                  v-else-if="chainData"
-                >
+                <div v-else-if="chainData">
                   <p
                     v-if="
                       $store.state.settings.chainsSendEnabled.includes(
@@ -557,14 +568,205 @@
 
                 <q-btn
                   :loading="spinner.tx"
-                  v-if="swapData.fromChosenChain
-                  && (!chainData
-                   || !$store.state.settings.chainsSendEnabled.includes(
+                  v-if="
+                    (swapData.fromChosenChain &&
+                      (!chainData ||
+                        !$store.state.settings.chainsSendEnabled.includes(
+                          swapData.fromChosenChain.toLowerCase()
+                        ) ||
+                        !chainData.accounts ||
+                        !chainData.accounts.length)) ||
+                    fromAccountSelected[swapData.fromChosenChain]
+                  "
+                  :disable="!swapData.fromChosenChain"
+                  label="Next"
+                  outline
+                  @click="tab = 'destination'"
+                  rounded
+                  class="q-mt-sm"
+                />
+              </q-list>
+              <q-list separator>
+                <q-item
+                  v-show="
+                    swapData.fromChains.length > 1 && innerStep.deposit == 1
+                  "
+                  v-for="chain in swapData.fromChains"
+                  :key="chain"
+                  :dark="$store.state.settings.lightMode === 'true'"
+                  tag="label"
+                  v-ripple
+                  @click="changeInnerStep()"
+                >
+                  <q-item-section
+                    v-if="swapData.fromChains.length != 1"
+                    side
+                    top
+                  >
+                    <q-radio
+                      v-model="swapData.fromChosenChain"
+                      :val="chain"
+                      label=""
+                    />
+                  </q-item-section>
+
+                  <q-item-section>
+                    <q-item-label
+                      >Send from {{ chain.toUpperCase() }} network</q-item-label
+                    >
+                  </q-item-section>
+                </q-item>
+                <q-btn
+                  v-if="innerStep.deposit == 2"
+                  icon="arrow_back"
+                  label="Back"
+                  class="q-mb-md"
+                  flat
+                  @click="innerStep.deposit = 1"
+                />
+                <div
+                  v-if="
+                    swapData.fromChosenChain &&
+                    chainData &&
+                    chainData.accounts.length &&
+                    innerStep.deposit == 2
+                  "
+                >
+                  Select {{ swapData.fromChosenChain.toUpperCase() }}
+                  {{
+                    swapData.fromChosenChain == "eos" ? "account" : "address"
+                  }}
+                  to send
+                  {{ swapData.fromAmount }}
+                  {{ depositCoin.value.toUpperCase() }}
+                  <q-select
+                    :dark="$store.state.settings.lightMode === 'true'"
+                    :light="$store.state.settings.lightMode === 'false'"
+                    separator
+                    rounded
+                    outlined
+                    style="max-width: 300px"
+                    class="select-input accountDropdown q-my-md"
+                    v-model="fromAccountSelected[swapData.fromChosenChain]"
+                    :options="chainData.accounts"
+                  >
+                    <template v-slot:option="scope">
+                      <q-item
+                        class="custom-menu"
+                        v-bind="scope.itemProps"
+                        v-on="scope.itemEvents"
+                      >
+                        <q-item-section avatar>
+                          <q-icon
+                            class="option--avatar"
+                            :name="`img:${scope.opt.icon}`"
+                          />
+                        </q-item-section>
+                        <q-item-section
+                          :dark="$store.state.settings.lightMode === 'true'"
+                        >
+                          <q-item-label v-html="scope.opt.name" />
+                          <q-item-label caption class="ellipsis mw200">{{
+                            scope.opt.key
+                          }}</q-item-label>
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                    <template
+                      v-if="
+                        fromAccountSelected[swapData.fromChosenChain] &&
+                        fromAccountSelected[swapData.fromChosenChain].icon
+                      "
+                      v-slot:selected
+                    >
+                      <q-item>
+                        <q-item-section avatar>
+                          <q-icon
+                            class="option--avatar"
+                            :name="`img:${
+                              fromAccountSelected[swapData.fromChosenChain].icon
+                            }`"
+                          />
+                        </q-item-section>
+                        <q-item-section>
+                          <q-item-label
+                            v-html="
+                              fromAccountSelected[swapData.fromChosenChain].name
+                            "
+                          />
+                          <q-item-label
+                            caption
+                            class="ellipsis mw200"
+                            :class="{
+                              'text-white':
+                                $store.state.settings.lightMode === 'true',
+                            }"
+                            >{{
+                              getKeyFormat(
+                                fromAccountSelected[swapData.fromChosenChain]
+                                  .key
+                              )
+                            }}</q-item-label
+                          >
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                  <p
+                    v-if="fromAccountSelected[swapData.fromChosenChain]"
+                    class="text-body2 q-my-sm"
+                  >
+                    We set this address as the return address in case the
+                    transaction <br />needs to be refunded.
+                  </p>
+                </div>
+                <div v-else-if="chainData">
+                  <p
+                    v-if="
+                      $store.state.settings.chainsSendEnabled.includes(
+                        swapData.fromChosenChain.toLowerCase()
+                      ) &&
+                      chainData &&
+                      (!chainData.accounts || !chainData.accounts.length)
+                    "
+                  >
+                    No {{ swapData.fromChosenChain.toUpperCase() }} wallet
+                    found. Import this wallet and start using it inside Verto.
+                    If you decide to continue with this exchange without having
+                    your wallet in Verto, you will need an external wallet to
+                    make the deposit
+                  </p>
+
+                  <div
+                    v-else-if="
+                      chainData &&
+                      !$store.state.settings.chainsSendEnabled.includes(
                         swapData.fromChosenChain.toLowerCase()
                       )
-                   || !chainData.accounts
-                   || !chainData.accounts.length)
-                   || fromAccountSelected[swapData.fromChosenChain]"
+                    "
+                  >
+                    Verto will support asset transfer for this chain Very soon.
+                    You will need an external wallet to make the deposit to
+                    finalize this exchange
+                  </div>
+                </div>
+                <div v-else-if="swapData.fromChosenChain">
+                  Verto will support this chain very soon. You will need an
+                  external wallet to make the deposit to finalize this exchange
+                </div>
+
+                <q-btn
+                  :loading="spinner.tx"
+                  v-if="
+                    (swapData.fromChosenChain &&
+                      (!chainData ||
+                        !$store.state.settings.chainsSendEnabled.includes(
+                          swapData.fromChosenChain.toLowerCase()
+                        ) ||
+                        !chainData.accounts ||
+                        !chainData.accounts.length)) ||
+                    fromAccountSelected[swapData.fromChosenChain]
+                  "
                   :disable="!swapData.fromChosenChain"
                   label="Next"
                   outline
@@ -575,7 +777,7 @@
               </q-list>
             </q-tab-panel>
             <q-tab-panel name="destination">
-             <q-item-label v-if="swapData.toChains.length > 1" header
+              <q-item-label v-if="swapData.toChains.length > 1" header
                 >Choose a network to receive your coins</q-item-label
               >
               <q-list separator>
@@ -624,11 +826,12 @@
                           style="max-width: 300px"
                           class="select-input accountDropdown q-my-md"
                           @input="
-                            swapData.toDestinationAddresses[chain] = toAccountSelected[chain] ?
-                             ( chain == 'eos'
-                                ? toAccountSelected[chain].name
-                                : toAccountSelected[chain].key
-                             ) : {}
+                            swapData.toDestinationAddresses[chain] =
+                              toAccountSelected[chain]
+                                ? chain == 'eos'
+                                  ? toAccountSelected[chain].name
+                                  : toAccountSelected[chain].key
+                                : {}
                           "
                           v-model="toAccountSelected[chain]"
                           :options="
@@ -647,7 +850,11 @@
                                   :name="`img:${scope.opt.icon}`"
                                 />
                               </q-item-section>
-                              <q-item-section :dark="$store.state.settings.lightMode === 'true'">
+                              <q-item-section
+                                :dark="
+                                  $store.state.settings.lightMode === 'true'
+                                "
+                              >
                                 <q-item-label v-html="scope.opt.label" />
                                 <q-item-label caption class="ellipsis mw200">{{
                                   scope.opt[
@@ -675,11 +882,18 @@
                                 <q-item-label
                                   v-html="toAccountSelected[chain].name"
                                 />
-                                <q-item-label caption class="ellipsis mw200" :class="{'text-white' : $store.state.settings.lightMode === 'true'}">{{
-                            getKeyFormat(
-                              toAccountSelected[chain].key
-                            )
-                          }}</q-item-label>
+                                <q-item-label
+                                  caption
+                                  class="ellipsis mw200"
+                                  :class="{
+                                    'text-white':
+                                      $store.state.settings.lightMode ===
+                                      'true',
+                                  }"
+                                  >{{
+                                    getKeyFormat(toAccountSelected[chain].key)
+                                  }}</q-item-label
+                                >
                               </q-item-section>
                             </q-item>
                           </template>
@@ -699,42 +913,55 @@
                           v-model="swapData.toDestinationAddresses[chain]"
                         />
                       </div>
-                    <span v-if="error" class="text-red">{{error}}</span>
+                      <span v-if="error" class="text-red">{{ error }}</span>
                       <q-btn
                         :loading="spinner.tx"
-                        :disable="!swapData.toDestinationAddresses[chain] && (!toAccountSelected[chain] || !toAccountSelected[chain].key)"
+                        :disable="
+                          !swapData.toDestinationAddresses[chain] &&
+                          (!toAccountSelected[chain] ||
+                            !toAccountSelected[chain].key)
+                        "
                         label="Confirm"
                         outline
-                        @click="swapData.toDestinationAddresses[chain] =
-                              chain == 'eos'
-                                ? toAccountSelected[chain].name
-                                : toAccountSelected[chain].key ; createTransaction()"
+                        @click="
+                          swapData.toDestinationAddresses[chain] =
+                            chain == 'eos'
+                              ? toAccountSelected[chain].name
+                              : toAccountSelected[chain].key;
+                          createTransaction();
+                        "
                         rounded
                         class="q-mt-sm"
                       />
                     </div>
-                    {{tab}}
                   </q-item-section>
                 </q-item>
               </q-list>
             </q-tab-panel>
-            <q-tab-panel name="tosend" style="max-width: 500px" v-if="exchangeDetails[swapData.order_id]">
-
+            <q-tab-panel
+              name="tosend"
+              style="max-width: 500px"
+              v-if="exchangeDetails[swapData.order_id]"
+            >
               <q-item-label header>
-               <span class="text-subtitle2 ">
-                <span class="text-bold text-body1">Status: </span>
-                <span
-                  class="text-capitalize"
-                  :class="{
-                    'text-deep-purple-12': validStatus(exchangeDetails[swapData.order_id].status),
-                    'text-grey': !validStatus(exchangeDetails[swapData.order_id].status),
-                  }"
-                  >{{ exchangeDetails[swapData.order_id].status }}</span
-                >
-              </span>
+                <span class="text-subtitle2">
+                  <span class="text-bold text-body1">Status: </span>
+                  <span
+                    class="text-capitalize"
+                    :class="{
+                      'text-deep-purple-12': validStatus(
+                        exchangeDetails[swapData.order_id].status
+                      ),
+                      'text-grey': !validStatus(
+                        exchangeDetails[swapData.order_id].status
+                      ),
+                    }"
+                    >{{ exchangeDetails[swapData.order_id].status }}</span
+                  >
+                </span>
               </q-item-label>
               <p>{{ exchangeDetails[swapData.order_id].description }}</p>
-               <!--<transactEOS
+              <!--<transactEOS
                   :hideLabels="true"
                   :key="$store.state.investment.defaultAccount.key"
                   v-if="swapData.fromChosenChain === 'eos' && showSendComponent && $store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key"
@@ -742,22 +969,43 @@
                   ref="transact"
                   class="q-py-md"
                 /> -->
-            <SendComponent :isExchange="true" :miniMode="true" @setTab="setTab" :key="$store.state.investment.defaultAccount.key+$store.state.investment.defaultAccount.name" v-if="showSendComponent && $store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key" />
-
-           </q-tab-panel>
-            <q-tab-panel name="waiting" style="max-width: 500px" v-if="exchangeDetails[swapData.order_id]">
+              <SendComponent
+                :isExchange="true"
+                :miniMode="true"
+                @setTab="setTab"
+                :key="
+                  $store.state.investment.defaultAccount.key +
+                  $store.state.investment.defaultAccount.name
+                "
+                v-if="
+                  exchangeDetails[swapData.order_id].status == 'wait' &&
+                  showSendComponent &&
+                  $store.state.investment.defaultAccount &&
+                  $store.state.investment.defaultAccount.key
+                "
+              />
+            </q-tab-panel>
+            <q-tab-panel
+              name="waiting"
+              style="max-width: 500px"
+              v-if="exchangeDetails[swapData.order_id]"
+            >
               <q-item-label header>
-               <span class="text-subtitle2 ">
-                <span class="text-bold text-body1">Status: </span>
-                <span
-                  class="text-capitalize"
-                  :class="{
-                    'text-deep-purple-12': validStatus(exchangeDetails[swapData.order_id].status),
-                    'text-grey': !validStatus(exchangeDetails[swapData.order_id].status),
-                  }"
-                  >{{ exchangeDetails[swapData.order_id].status }}</span
-                >
-              </span>
+                <span class="text-subtitle2">
+                  <span class="text-bold text-body1">Status: </span>
+                  <span
+                    class="text-capitalize"
+                    :class="{
+                      'text-deep-purple-12': validStatus(
+                        exchangeDetails[swapData.order_id].status
+                      ),
+                      'text-grey': !validStatus(
+                        exchangeDetails[swapData.order_id].status
+                      ),
+                    }"
+                    >{{ exchangeDetails[swapData.order_id].status }}</span
+                  >
+                </span>
               </q-item-label>
               <q-item-label
                 >SEND {{ swapData.fromAmount }}
@@ -798,7 +1046,12 @@
               <p class="q-pt-sm">
                 Order ID:
                 <span
-                  @click="copyToClipboard(exchangeDetails[swapData.order_id].order_id, 'Order ID')"
+                  @click="
+                    copyToClipboard(
+                      exchangeDetails[swapData.order_id].order_id,
+                      'Order ID'
+                    )
+                  "
                   class="cursor-pointer text-deep-purple-12"
                   >{{ exchangeDetails[swapData.order_id].order_id }}</span
                 >
@@ -820,7 +1073,12 @@
                     <q-btn
                       filled
                       unelevated
-                      @click="copyToClipboard(exchangeDetails[swapData.order_id].memo, 'Memo')"
+                      @click="
+                        copyToClipboard(
+                          exchangeDetails[swapData.order_id].memo,
+                          'Memo'
+                        )
+                      "
                       round
                       class="btn-copy"
                       icon="file_copy"
@@ -837,7 +1095,12 @@
       <div class="q-pb-md">Recent orders:</div>
       <div class="row full-width q-col-gutter-md">
         <div class="col-md-3" v-for="(tx, index) in transactions" :key="index">
-          <q-card :dark="$store.state.settings.lightMode === 'true'" flat bordered class="shadow-1 ongoing-orders">
+          <q-card
+            :dark="$store.state.settings.lightMode === 'true'"
+            flat
+            bordered
+            class="shadow-1 ongoing-orders"
+          >
             <q-card-section>
               <div class="row items-center no-wrap">
                 <div class="col text-bdoy1">
@@ -845,11 +1108,11 @@
                     icon="close"
                     @click="removeLocalStorage(tx.order_id)"
                     class="absolute-top-right"
-                    color="white"
+
                     flat
                   />
                   <p class="q-pt-sm">
-                     ID:
+                    ID:
                     <span
                       @click="copyToClipboard(tx.order_id, 'Order ID')"
                       class="cursor-pointer text-deep-purple-12"
@@ -858,8 +1121,10 @@
                   </p>
 
                   <span class="text-body2">
-                    From: {{ parseFloat(tx.depositQuantity).toFixed(8) }} {{ tx.from }} <br>
-                    To: {{ tx.destinationQuantity }}{{ tx.toEosToken ? tx.toEosToken.toUpperCase() : tx.to
+                    From: {{ parseFloat(tx.depositQuantity).toFixed(8) }}
+                    {{ tx.from }} <br />
+                    To: {{ tx.destinationQuantity
+                    }}{{ tx.toEosToken ? tx.toEosToken.toUpperCase() : tx.to
                     }}<br />
                   </span>
                 </div>
@@ -878,23 +1143,19 @@
                     'text-grey': !validStatus(tx.status),
                     'text-green': tx.status == 'success',
                   }"
-                  >{{ tx.status }} <q-icon  name="info">
-        <q-tooltip
-          transition-show="flip-right"
-
-          transition-hide="flip-left"
-        >
-        <span
-        class="text-body1"
-        >
-         {{ getStatusDesc(tx.status) }}
-        </span>
-
-        </q-tooltip>
-      </q-icon></span
+                  >{{ tx.status }}
+                  <q-icon name="info">
+                    <q-tooltip
+                      transition-show="flip-right"
+                      transition-hide="flip-left"
+                    >
+                      <span class="text-body1">
+                        {{ getStatusDesc(tx.status) }}
+                      </span>
+                    </q-tooltip>
+                  </q-icon></span
                 >
               </div>
-
             </q-card-actions>
             <q-card-actions v-if="false">
               <q-btn flat v-if="validStatus(tx.status)">View details</q-btn>
@@ -905,8 +1166,437 @@
     </div>
 
     <div v-if="step == 2">
-    <Exchange :miniMode="true" @setStep="setStep" />
+      <Exchange :miniMode="true" @setStep="setStep" />
     </div>
+
+    <table v-if="paths.length"  class="AssetTable__Table-sc-1hzgxt1-1 hkPLhL">
+      <colgroup >
+        <col  style="width: 32px" />
+      </colgroup>
+      <thead
+
+        class="AssetTableHelpers__Head-sc-1o9oxiy-0 igjkkt"
+      >
+        <tr
+
+          class="AssetTableHelpers__Row-sc-1o9oxiy-7 bOnkOC"
+        >
+          <th
+            v-if="false"
+            class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR"
+          >
+            <div
+
+              class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO"
+            >
+              <label
+
+                class="
+                  TextElement__Spacer-hxkcw5-0
+                  kFFKOl
+                  Label__StyledLabel-sc-15jxzvg-0
+                  gzXJpq
+                  AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
+                  ftxqkW
+                "
+                >#</label
+              >
+            </div>
+          </th>
+          <th
+
+            class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR"
+          >
+            <div
+
+              class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO"
+            >
+              <label
+
+                class="
+                  TextElement__Spacer-hxkcw5-0
+                  kFFKOl
+                  Label__StyledLabel-sc-15jxzvg-0
+                  gzXJpq
+                  AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
+                  ftxqkW
+                "
+                >You send</label
+              >
+            </div>
+          </th>
+          <th
+
+            class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR"
+          >
+            <div
+
+              class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO"
+            >
+              <label
+
+                class="
+                  TextElement__Spacer-hxkcw5-0
+                  kFFKOl
+                  Label__StyledLabel-sc-15jxzvg-0
+                  gzXJpq
+                  AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
+                  ftxqkW
+                "
+                >Your receive</label
+              >
+            </div>
+          </th>
+  <th
+
+            class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR"
+          >
+            <div
+
+              class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO"
+            >
+              <label
+
+                class="
+                  TextElement__Spacer-hxkcw5-0
+                  kFFKOl
+                  Label__StyledLabel-sc-15jxzvg-0
+                  gzXJpq
+                  AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
+                  ftxqkW
+                "
+                >Price</label
+              >
+            </div>
+          </th>
+          <th
+
+            class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR"
+          >
+            <div
+
+              class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO"
+            >
+              <label
+
+                class="
+                  TextElement__Spacer-hxkcw5-0
+                  kFFKOl
+                  Label__StyledLabel-sc-15jxzvg-0
+                  gzXJpq
+                  AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
+                  ftxqkW
+                "
+                >Chains</label
+              >
+            </div>
+          </th>
+          <th
+
+            class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR"
+          >
+            <div
+
+              class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO"
+            >
+              <label
+
+                class="
+                  TextElement__Spacer-hxkcw5-0
+                  kFFKOl
+                  Label__StyledLabel-sc-15jxzvg-0
+                  gzXJpq
+                  AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
+                  ftxqkW
+                "
+                >Exchange</label
+              >
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody
+
+        class="AssetTable__AssetTableBody-sc-1hzgxt1-0 gcVqXC"
+      >
+        <tr
+          v-for="(path , index) in paths"
+          :key="index"
+
+          data-element-handle="asset-table-row"
+          data-slug="bitcoin"
+          class="styles__Row-sc-4x2924-0 hqjdOn"
+        >
+          <td
+          v-if="false"
+            class="
+              styles__Column-sc-4x2924-1
+              AssetTableRow__AssetColumn-bzcx4v-1
+              AssetTableRow__IndexColumn-bzcx4v-2
+              cxfONy
+            "
+          >
+            <span
+
+              class="
+                TextElement__Spacer-hxkcw5-0
+                cicsNy
+                Header__StyledHeader-sc-1xiyexz-0
+                bjBkPh
+                AssetTableRow__StyledHeader-bzcx4v-12
+                AssetTableRow__StyledHeaderLight-bzcx4v-13
+                jauJqX
+              "
+              >{{index+1}}</span
+            >
+            <div
+
+              class="AssetTableRow__ReorderListIconContainer-bzcx4v-17 hiXhZK"
+            >
+              <svg
+
+                viewBox="0 0 448 512"
+                data-element-handle="asset-table-row-drag-handle"
+                class="AssetTableRow__ReorderListIcon-bzcx4v-18 bowWEV"
+              >
+                <path
+
+                  d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"
+                  fill="#becada"
+                ></path>
+              </svg>
+            </div>
+          </td>
+          <td
+
+            class="
+              q-ml-lg styles__Column-sc-4x2924-1
+              AssetTableRow__AssetColumn-bzcx4v-1
+              AssetTableRow__NameColumn-bzcx4v-3
+              jwbgUu
+            "
+          >
+            <div
+
+              class="
+                Flex-l69ttv-0
+                AssetTableRow__NameColumnInner-bzcx4v-4
+                fWxga-D
+              "
+            >
+
+     <q-input flat  v-model="paths[index].fromAmount" style="max-width:300px"  >
+        <template v-slot:before>
+          <q-avatar>
+            <img :src="path.icon"
+                 >
+          </q-avatar>
+        </template>
+        <template  v-slot:append>
+        <span class="kwgTEs" >
+        {{path.fromToken.toUpperCase()}} <q-icon name="navigate_next" />
+        </span>
+        </template>
+      </q-input>
+
+              <picture  v-if="false"
+                ><source
+
+                  :srcset="path.icon"
+
+                 />
+                <img
+
+                  :src="path.icon"
+
+                  loading="lazy"
+                  height="36"
+                  width="36"
+                  class="AssetTableRow__Icon-bzcx4v-19 fgsiwR"
+              /></picture>
+              <div
+              v-if="false"
+
+                class="
+                  Flex-l69ttv-0
+                  AssetTableRow__NameColumnRow-bzcx4v-5
+                  fjfeyD
+                "
+              >
+                <span
+
+                  class="
+                    TextElement__Spacer-hxkcw5-0
+                    cicsNy
+                    Header__StyledHeader-sc-1xiyexz-0
+                    kwgTEs
+                    AssetTableRow__StyledHeader-bzcx4v-12
+                    AssetTableRow__StyledHeaderDark-bzcx4v-14
+                    hfJTMn
+                  "
+                  >$1,200<br/>
+
+                  </span
+                ><span
+                v-if="false"
+
+                  class="
+                    TextElement__Spacer-hxkcw5-0
+                    cicsNy
+                    Header__StyledHeader-sc-1xiyexz-0
+                    bjBkPh
+                    AssetTableRow__StyledHeader-bzcx4v-12
+                    AssetTableRow__StyledHeaderLight-bzcx4v-13
+                    jauJqX
+                  "
+                  >BTC</span
+                >
+              </div>
+            </div>
+          </td>
+          <td
+
+            class="
+              styles__Column-sc-4x2924-1
+              AssetTableRow__AssetColumn-bzcx4v-1
+              AssetTableRow__PriceColumn-bzcx4v-6
+              bkmkHF
+            "
+          >
+            <div
+
+              class="
+                Flex-l69ttv-0
+                AssetTableRow__PriceColumnInner-bzcx4v-7
+                hzLOxv
+              "
+            >
+            <div class="q-pr-sm">
+                            <span
+                              class="gdx-coin"
+                              v-if="destinationCoin"
+
+                              ><span class="gdx-coin-icon icon-BTC">
+                                <q-img
+                                  style="width: 20px"
+                                  :src="destinationCoin.image"
+                                />
+                              </span>
+                              </span
+                            >
+                          </div>
+              <span
+
+                class="
+                  TextElement__Spacer-hxkcw5-0
+                  cicsNy
+                  Header__StyledHeader-sc-1xiyexz-0
+                  kwgTEs
+                  AssetTableRow__StyledHeader-bzcx4v-12
+                  AssetTableRow__StyledHeaderDark-bzcx4v-14
+                  hfJTMn
+                "
+                >{{formatNumber(path.toAmount, 5)}} {{destinationCoin.value.toUpperCase()}}</span
+              >
+
+            </div>
+          </td>
+          <td
+
+            class="
+              styles__Column-sc-4x2924-1
+              AssetTableRow__AssetColumn-bzcx4v-1
+              AssetTableRow__PriceColumn-bzcx4v-6
+              bkmkHF
+            "
+          >
+            <div
+
+              class="
+                Flex-l69ttv-0
+                AssetTableRow__PriceColumnInner-bzcx4v-7
+                hzLOxv
+              "
+            >
+
+              <span
+
+                class="
+                  TextElement__Spacer-hxkcw5-0
+                  cicsNy
+                  Header__StyledHeader-sc-1xiyexz-0
+                  kwgTEs
+                  AssetTableRow__StyledHeader-bzcx4v-12
+                  AssetTableRow__StyledHeaderDark-bzcx4v-14
+                  hfJTMn
+                "
+                ><span class="priceLabel">{{path.fromToken.toUpperCase()}} to USD</span><br>${{formatNumber(path.tokenPrice, 2)}}</span
+              >
+
+            </div>
+          </td>
+          <td
+
+            class="
+              styles__Column-sc-4x2924-1
+              AssetTableRow__AssetColumn-bzcx4v-1
+              AssetTableRow__PercentChangeColumn-bzcx4v-16
+              gDZxaI
+            "
+          >
+            <span
+
+              class="
+                TextElement__Spacer-hxkcw5-0
+                cicsNy
+                Header__StyledHeader-sc-1xiyexz-0
+                iOKVsz
+                AssetTableRow__StyledHeader-bzcx4v-12
+                AssetTableRow__TabularNumeric-bzcx4v-15
+                eprtwk
+                asset-table-percent-change
+              "
+              >{{path.txChainLabel}}</span
+            >
+          </td>
+          <td
+
+            class="
+              styles__Column-sc-4x2924-1
+              AssetTableRow__AssetColumn-bzcx4v-1
+              AssetTableRow__ChartColumn-bzcx4v-8
+              jymnha
+            "
+          >
+           <q-img   style="max-width: 80px" :src="path.dexLogo" />
+          </td>
+          <td
+
+            class="
+              styles__Column-sc-4x2924-1
+              AssetTableRow__AssetColumn-bzcx4v-1
+              AssetTableRow__TradeColumn-bzcx4v-10
+              leZMkh
+            "
+          >
+            <button
+              @click="setPathTransaction(path)"
+              aria-label="Comprar Bitcoin"
+              class="
+                Button__Container-opcph8-0
+                vioLp
+                PricesTable__TradeButton-sc-1uwln1z-0
+                cPqKDE
+              "
+            >
+              <span  class="Button__Content-opcph8-1 emQNZK"
+                >Buy {{destinationCoin.value.toUpperCase()}}</span
+              >
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 <script>
@@ -914,6 +1604,7 @@ import CrosschainDex from '@/util/CrosschainDex'
 import Formatter from '@/mixins/Formatter'
 import SendComponent from '@/pages/Verto/Send'
 import Exchange from '../../../pages/Verto/Exchange.vue'
+
 // import transactEOS from '../transactEOS'
 let defaults = ['eos', 'eth', 'vtx']
 const txStatus = {
@@ -948,11 +1639,14 @@ export default {
       error: null,
       chains: [],
       step: 0,
+      pathQuantities: [],
       depositCoinOptions: [],
       spinner: {
         tx: false,
         amount: false
       },
+      path: [],
+      paths: [],
       innerStep: {
         deposit: 1,
         destination: 1
@@ -994,15 +1688,20 @@ export default {
     }
   },
   async created () {
-    if ((!this.$store.state.settings.coins.godex || !this.$store.state.settings.coins.godex.length) && this.$store.state.settings.globalSettings.godexTokens) {
-      this.$store.state.settings.coins.godex = this.$store.state.settings.globalSettings.godexTokens.map(el => {
-        return {
-          value: el.code.toLowerCase(),
-          image: el.icon,
-          label: el.name,
-          minimum: el.min_amount
-        }
-      })
+    if (
+      (!this.$store.state.settings.coins.godex ||
+        !this.$store.state.settings.coins.godex.length) &&
+      this.$store.state.settings.globalSettings.godexTokens
+    ) {
+      this.$store.state.settings.coins.godex =
+        this.$store.state.settings.globalSettings.godexTokens.map((el) => {
+          return {
+            value: el.code.toLowerCase(),
+            image: el.icon,
+            label: el.name,
+            minimum: el.min_amount
+          }
+        })
     }
 
     this.getOngoingTx()
@@ -1020,24 +1719,30 @@ export default {
     'swapData.fromChosenChain': function (chain) {
       if (chain && chain.toLowerCase() === 'eos') {
         let token = this.$store.state.settings.coins.defibox.find(
-          (o) =>
-            o.value.toLowerCase() === this.depositCoin.value.toLowerCase()
+          (o) => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()
         )
-        if (token) { this.swapData.depositTokenContract = token.contract }
+        if (token) {
+          this.swapData.depositTokenContract = token.contract
+        }
       }
     },
-    'depositCoin': function () {
-      if (this.depositCoin.value.toLowerCase() === this.destinationCoin.value.toLowerCase()) {
-        this.destinationCoin = this.destinationCoinUnfilter.find(o => defaults.includes(o.value.toLowerCase()) && this.depositCoin.value.toLowerCase() !== o.value.toLowerCase())
+    depositCoin: function () {
+      if (
+        this.depositCoin.value.toLowerCase() ===
+        this.destinationCoin.value.toLowerCase()
+      ) {
+        this.destinationCoin = this.destinationCoinUnfilter.find(
+          (o) =>
+            defaults.includes(o.value.toLowerCase()) &&
+            this.depositCoin.value.toLowerCase() !== o.value.toLowerCase()
+        )
         this.getSwapInfo()
       }
     }
   },
   computed: {
     chainData () {
-      return this.chains.find(
-        (o) => o.chain === this.swapData.fromChosenChain
-      )
+      return this.chains.find((o) => o.chain === this.swapData.fromChosenChain)
     }
   },
   methods: {
@@ -1067,12 +1772,8 @@ export default {
     },
     resetSwapData () {
       this.step = 0
-      this.exchangeDetails = {
-
-      }
-      this.fromAccountSelected = {
-
-      }
+      this.exchangeDetails = {}
+      this.fromAccountSelected = {}
       this.innerStep.deposit = 1
       let toReset = {
         toDestinationAddresses: {},
@@ -1099,28 +1800,226 @@ export default {
       this.destinationCoin = depositCoinVar
       this.getSwapInfo()
     },
+    setPathData (path) {
+      this.swapData.fromChosenChain = path.fromChain
+      this.swapData.toChosenChain = path.toChain
+      this.swapData.dex = path.dex
+    },
     changeInnerStep () {
       if (this.swapData.inChain) {
         this.getSwapInfo()
       } else {
-        setTimeout(() => { this.innerStep.deposit = this.chainData ? 2 : this.innerStep.deposit }, 300)
+        setTimeout(() => {
+          this.innerStep.deposit = this.chainData ? 2 : this.innerStep.deposit
+        }, 300)
       }
     },
-    setSuccessData () {
+    setSuccessData () {},
+    async getPaths (from, to, amount) {
+      let path = []
+      let dexes = await CrosschainDex.getDex(from.toLowerCase(), to.toLowerCase())
 
+      await Promise.all(dexes
+        .filter((o) => o.chains.length)
+        .map(async (c) => {
+          CrosschainDex.setDex(c.dex)
+
+          let data = await CrosschainDex.getPair(
+            from.toLowerCase(),
+            to.toLowerCase(),
+            amount
+          )
+
+          if (data && data.pair && data.pair.amount) {
+            c.chains.forEach(b => {
+              path.push({
+                dex: c.dex,
+                fromChain: b,
+                toChain: b,
+                fromToken: from,
+                toToken: to,
+                toAmount: data.pair.amount
+              })
+            })
+          }
+        })
+      )
+      if (dexes.find((o) => o.dex === 'godex')) {
+        CrosschainDex.setDex('godex')
+        let data = await CrosschainDex.getPair(
+          from.toLowerCase(),
+          to.toLowerCase(),
+          amount
+        )
+        if (data && data.pair) {
+          // fromChains = fromChains.concat(data.pair.fromChains)
+          // toChains = toChains.concat(data.pair.toChains)
+          data.pair.fromChains.forEach((o) => {
+            data.pair.toChains.forEach((a) => {
+              path.push({
+                dex: 'godex',
+                fromChain: o,
+                toChain: a,
+                fromToken: from,
+                toToken: to,
+                toAmount: data.pair.amount
+              })
+            })
+          })
+        }
+      }
+
+      let foundInGodex = this.$store.state.settings.coins.godex.find(
+        (o) =>
+          o.value.toLowerCase() === from.toLowerCase() &&
+          from.toLowerCase() !== 'eos'
+      )
+
+      let defiBoxTokens = this.$store.state.settings.coins.defibox.filter(
+        (o) =>
+          o.value.toLowerCase() === to.toLowerCase() &&
+          to.toLowerCase() !== 'eos'
+      )
+
+      if (foundInGodex && defiBoxTokens.length) {
+        // does the EOS Pool exist ?
+        CrosschainDex.setDex('godex')
+        let godexPair = await CrosschainDex.getPair(
+          from.toLowerCase(),
+          'eos',
+          amount
+        )
+        if (godexPair && godexPair.pair) {
+          CrosschainDex.setDex('defibox')
+          await Promise.all(defiBoxTokens.map(async (token) => {
+            let pairData = await CrosschainDex.getPair(
+              'eos',
+              to.toLowerCase(),
+              godexPair.pair.amount,
+              token.contract
+            )
+
+            if (pairData && pairData.pair) {
+              godexPair.pair.fromChains.forEach((o) => {
+                path.push({
+                  dex: 'godex',
+                  fromChain: o,
+                  fromToken: from,
+                  toToken: to,
+                  bridge: 'eos',
+                  bridgeData: {
+                    contract: token.contract,
+                    pairData: pairData.pair.pairData
+                  },
+                  toChain: 'eos',
+                  toAmount: pairData.pair.amount
+                })
+              })
+            }
+          }))
+        }
+      }
+
+      return path
     },
-    getSwapInfo (setStep = false) {
+    async getPathForToken (from, to, amount) {
+      // this.$store.state.wallets.tokens.filter(a => a.amount && !isNaN(a.amount))..
+      this.paths = []
+      /* let wallet = [
+        {
+          type: 'eth',
+          amount: 200
+        },
+        {
+          type: 'eos',
+          amount: 100
+        },
+        {
+          type: 'tpt',
+          amount: 200
+        },
+        {
+          type: 'xmr',
+          amount: 200
+        },
+        {
+          type: 'dai',
+          amount: 200
+        },
+        {
+          type: 'btc',
+          amount: 3
+        },
+        {
+          type: 'bnb',
+          amount: 2
+        }
+      ]
+      */
+      let list = [] // .concat(this.$store.state.wallets.tokens)
+      list.unshift({
+        type: from.toLowerCase(),
+        amount: amount,
+        icon: this.depositCoin.image
+      })
+      console.log(list)
+      list.filter(a => a.amount && !isNaN(a.amount)).forEach(async o => {
+        let values = (await this.getPaths(
+          o.type,
+          this.destinationCoin.value.toLowerCase(),
+          o.amount
+        ))
+        console.log(values, ' this.paths  values o.type', o.type)
+        if (values.length) {
+          values.map(a => {
+            a.icon = o.icon
+            a.tokenPrice = o.tokenPrice
+            a.fromAmount = o.amount
+
+            let fChainLabel = this.getChainLabel(a.fromChain)
+            let tChainLabel = this.getChainLabel(a.toChain)
+
+            a.dexLogo = CrosschainDex.exchangeLogo[a.dex]
+            a.txChainLabel = fChainLabel !== tChainLabel ? fChainLabel + ' to ' + tChainLabel : fChainLabel
+          })
+
+          if (values.length) {
+            this.paths = this.paths.concat(values.filter(o => o.toAmount && o.toAmount > 0.00001))
+            if (this.paths.length) {
+              let path = this.paths.find(o => o.fromToken === this.depositCoin.value.toLowerCase())
+              if (path) {
+                this.swapData.toAmount = path.toAmount
+              }
+            }
+          }
+
+          console.log(this.paths, ' this.paths ')
+        }
+      })
+    },
+    async getSwapInfo (setStep = false) {
+      this.spinner.amount = true
+      this.resetSwapData()
+      this.getPathForToken(this.depositCoin.value, this.destinationCoin.value, this.swapData.fromAmount)
+      /*
+      this.path = await this.getPaths(
+        this.depositCoin.value,
+        this.destinationCoin.value,
+        this.swapData.fromAmount
+      )
+
       this.currentDex = null
       this.resetSwapData()
       this.spinner.amount = true
+
       let eosToken = this.$store.state.settings.coins.defibox.find(
         (o) =>
           o.value.toLowerCase() === this.destinationCoin.value.toLowerCase() &&
-          !['btc', 'eth'].includes(o.value.toLowerCase()) && this.destinationCoin.value.toLowerCase() !== 'eos'
+          this.destinationCoin.value.toLowerCase() !== 'eos'
       )
 
       this.depositCoin.fromAmount = this.swapData.fromAmount
-      this.dex = CrosschainDex.getDex(
+      this.dex = await CrosschainDex.getDex(
         this.depositCoin.value.toLowerCase(),
         this.destinationCoin.value.toLowerCase()
       )
@@ -1136,13 +2035,18 @@ export default {
         this.setDefaultWallet('eth')
         this.setExchangeData(
           {
+            limitMinDepositCoin: 0,
             amount: this.swapData.fromAmount / CrosschainDex.vtxEquiv.eth,
             toChains: ['eos'],
             fromChains: ['eth']
           },
           setStep
         )
-      } else if ((!this.dex.length || (this.dex.length === 1 && this.dex.find(o => o.dex === 'godex'))) && eosToken) {
+      } else if (
+        (!this.dex.length ||
+          (this.dex.length === 1 && this.dex.find((o) => o.dex === 'godex'))) &&
+        eosToken
+      ) {
         this.swapData.toTokenContract = eosToken.contract
         let token = this.$store.state.settings.coins.godex.find(
           (o) => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()
@@ -1160,13 +2064,18 @@ export default {
               this.checkChangeMinimum(data)
               if (data && data.pair && data.pair.amount) {
                 CrosschainDex.setDex('defibox')
-                let pairData = await CrosschainDex.getPair('eos', this.destinationCoin.value.toLowerCase(), data.pair.amount)
+                let pairData = await CrosschainDex.getPair(
+                  'eos',
+                  this.destinationCoin.value.toLowerCase(),
+                  data.pair.amount
+                )
 
                 if (!pairData || !pairData.pair) return
                 this.swapData.eosProxy = true
                 this.swapData.eosPairId = pairData.pair.pair_id
                 this.setExchangeData(
                   {
+                    limitMinDepositCoin: data.pair.limitMinDepositCoin,
                     toChains: ['eos'],
                     fromChains: data.pair.fromChains,
                     amount: pairData.pair.amount
@@ -1179,19 +2088,27 @@ export default {
               this.spinner.amount = false
             })
         }
-      } else if (this.dex.length === 2 && this.dex.find(o => o.dex === 'godex')) {
-        this.currentDex = this.dex.find(o => o.dex !== 'godex')
-        this.setDefaultWallet(this.currentDex.chain)
+      } else if (
+        this.dex.length === 2 &&
+        this.dex.find((o) => o.dex === 'godex')
+      ) {
+        this.currentDex = this.dex.find((o) => o.dex !== 'godex')
+        this.setDefaultWallet(this.currentDex.chains[0])
       } else if (this.dex.length >= 2) {
         if (this.swapData.fromChosenChain) {
-          this.currentDex = this.currentDex = this.dex.find(o => o.chain === this.swapData.fromChosenChain)
+          this.currentDex = this.currentDex = this.dex.find(
+            (o) => o.chains.includes(this.swapData.fromChosenChain)
+          )
         } else {
           this.tab = 'deposit'
           this.innerStep.deposit = 1
+          let allChains = []
+          allChains = this.dex.map((o) => allChains.concat(o.chains))
           this.setExchangeData(
             {
+              limitMinDepositCoin: 0,
               toChains: [],
-              fromChains: this.dex.map(o => o.chain).filter(o => o.chain),
+              fromChains: allChains,
               amount: 0,
               inChain: true
             },
@@ -1222,6 +2139,8 @@ export default {
             this.spinner.amount = false
           })
       }
+      /*
+      console.log(this.currentDex, 'this.currentDex 0', this.swapData)
       if (this.currentDex && this.currentDex.dex) {
         this.$store.commit('settings/setDex', {
           dex: this.currentDex.dex,
@@ -1229,7 +2148,7 @@ export default {
           depositCoin: this.depositCoin,
           fromAmount: parseFloat(this.swapData.fromAmount)
         })
-      }
+      } */
     },
     checkChangeMinimum (data) {
       if (data && data.pair && !data.pair.amount && data.pair.minimum) {
@@ -1245,15 +2164,20 @@ export default {
             name: 'transfer',
             authorization: [
               {
-                actor: this.fromAccountSelected[this.swapData.fromChosenChain].name,
+                actor:
+                  this.fromAccountSelected[this.swapData.fromChosenChain].name,
                 permission: 'active'
               }
             ],
             data: {
-              from: this.fromAccountSelected[this.swapData.fromChosenChain].name,
+              from: this.fromAccountSelected[this.swapData.fromChosenChain]
+                .name,
               to: this.exchangeDetails[this.swapData.order_id].depositAddress,
               memo: this.exchangeDetails[this.swapData.order_id].memo,
-              quantity: this.exchangeDetails[this.swapData.order_id].depositQuantity.toFixed(4) + ' ' + this.exchangeDetails[this.swapData.order_id].from.toUpperCase()
+              quantity:
+                this.exchangeDetails[this.swapData.order_id].depositQuantity.toFixed(4) +
+                ' ' +
+                this.exchangeDetails[this.swapData.order_id].from.toUpperCase()
             }
           }
         ],
@@ -1276,10 +2200,14 @@ export default {
               }
             ],
             data: {
-              from: this.fromAccountSelected[this.swapData.fromChosenChain].name,
+              from: this.fromAccountSelected[this.swapData.fromChosenChain]
+                .name,
               to: this.swapData.toDestinationAddresses[this.swapData.toChosenChain],
               memo: 'swap,1,' + this.swapData.eosPairId,
-              quantity: this.exchangeDetails[this.swapData.order_id].amount.toFixed(4) + ' ' + this.exchangeDetails[this.swapData.order_id].from.toUpperCase()
+              quantity:
+                this.exchangeDetails[this.swapData.order_id].amount.toFixed(4) +
+                ' ' +
+                this.exchangeDetails[this.swapData.order_id].from.toUpperCase()
             }
           }
         ],
@@ -1287,11 +2215,40 @@ export default {
       }
       return tx
     },
+    setExchangeChains (data) {
+      this.swapData.toChains = data.toChains
+      if (this.swapData.toChains.length === 1) {
+        this.swapData.toChosenChain = this.swapData.toChains[0]
+      }
+      this.swapData.fromChains = data.fromChains
+      if (this.swapData.fromChains.length === 1) {
+        this.swapData.fromChosenChain = this.swapData.fromChains[0]
+        if (
+          this.chainData &&
+          this.chainData.accounts &&
+          this.chainData.accounts.length
+        ) {
+          this.innerStep.deposit = 2
+        }
+      }
+      if (
+        this.swapData.fromChains.find((a) =>
+          this.chains.find((o) => o.chain === a.toLowerCase())
+        )
+      ) {
+        this.tab = 'deposit'
+      } else {
+        this.swapData.fromExternalWallet = true
+        this.tab = 'destination'
+      }
+    },
     setExchangeData (data, setStep) {
       this.swapData.toAmount = data.amount
       this.swapData.inChain = data.inChain
       this.spinner.amount = false
-
+      if (data.limitMinDepositCoin) {
+        this.depositCoin.minimum = data.limitMinDepositCoin
+      }
       if (!this.swapData.toAmount) {
         this.step = 0
       } else if (setStep) {
@@ -1306,11 +2263,17 @@ export default {
 
       if (this.swapData.fromChains.length === 1) {
         this.swapData.fromChosenChain = this.swapData.fromChains[0]
-        if (this.chainData && this.chainData.accounts && this.chainData.accounts.length) { this.innerStep.deposit = 2 }
+        if (
+          this.chainData &&
+          this.chainData.accounts &&
+          this.chainData.accounts.length
+        ) {
+          this.innerStep.deposit = 2
+        }
       }
       if (
         this.swapData.fromChains.find((a) =>
-          this.chains.find(o => o.chain === a.toLowerCase())
+          this.chains.find((o) => o.chain === a.toLowerCase())
         )
       ) {
         this.tab = 'deposit'
@@ -1320,7 +2283,11 @@ export default {
       }
     },
     getRefundAddress () {
-      return this.swapData.fromChosenChain ? (this.swapData.fromChosenChain === 'eos' ? this.fromAccountSelected[this.swapData.fromChosenChain]?.name : this.fromAccountSelected[this.swapData.fromChosenChain]?.key) : null
+      return this.swapData.fromChosenChain
+        ? this.swapData.fromChosenChain === 'eos'
+          ? this.fromAccountSelected[this.swapData.fromChosenChain]?.name
+          : this.fromAccountSelected[this.swapData.fromChosenChain]?.key
+        : null
     },
     createTransaction () {
       this.error = false
@@ -1345,27 +2312,39 @@ export default {
           if (data.tx) {
             this.exchangeDetails[data.tx.order_id] = data.tx
             this.swapData.order_id = data.tx.order_id
-            if (this.$store.state.settings.chainsSendEnabled.includes(
-              this.swapData.fromChosenChain
 
-            )) {
+            console.log(this.$store.state.settings.chainsSendEnabled.includes(
+              this.swapData.fromChosenChain
+            ), this.swapData, 555, data)
+
+            if (
+              this.$store.state.settings.chainsSendEnabled.includes(
+                this.swapData.fromChosenChain
+              )
+            ) {
               this.$store.commit('currentwallet/updateParams', {
                 chainID: this.swapData.fromChosenChain.toLowerCase(),
                 tokenID: this.depositCoin.value.toLowerCase(),
-                accountName: this.fromAccountSelected[this.swapData.fromChosenChain].name.toLowerCase(),
+                accountName:
+                  this.fromAccountSelected[this.swapData.fromChosenChain].name.toLowerCase(),
                 to: data.tx.depositAddress,
                 memo: data.tx.memo,
                 disableMemoEdit: true,
                 amount: data.tx.depositQuantity
               })
 
-              this.$store.state.investment.defaultAccount = this.fromAccountSelected[this.swapData.fromChosenChain]
+              this.$store.state.investment.defaultAccount =
+                this.fromAccountSelected[this.swapData.fromChosenChain]
               this.showSendComponent = true
               this.tab = 'tosend'
-            } else if (this.swapData.fromChosenChain && this.swapData.fromChosenChain === 'xxx') {
+            } else if (
+              this.swapData.fromChosenChain &&
+              this.swapData.fromChosenChain === 'xxx'
+            ) {
               this.showSendComponent = true
               data.tx.txObj = this.getDepositTxData()
-              this.$store.state.investment.defaultAccount = this.fromAccountSelected[this.swapData.fromChosenChain]
+              this.$store.state.investment.defaultAccount =
+                this.fromAccountSelected[this.swapData.fromChosenChain]
 
               data.tx.toEosToken = true
               data.tx.eosProxy = this.swapData.eosProxy
@@ -1385,7 +2364,8 @@ export default {
             data.tx.dex = CrosschainDex.currentExchange
 
             this.exchangeDetails[data.tx.order_id].status = data.tx.status
-            this.exchangeDetails[data.tx.order_id].description = txStatus[data.tx.status]
+            this.exchangeDetails[data.tx.order_id].description =
+              txStatus[data.tx.status]
 
             localStorage.setItem(
               'vexchange_crosschain_' + data.tx.order_id,
@@ -1406,6 +2386,47 @@ export default {
           this.error = e.error
           this.spinner.tx = false
         })
+    },
+    setPathTransaction (path) {
+      this.depositCoin.value = path.fromToken
+      this.depositCoin.image = path.icon
+      this.swapData.fromAmount = path.fromAmount
+
+      if (path.dex === 'godex') {
+        this.setExchangeData(
+          {
+            limitMinDepositCoin: 0,
+            amount: path.toAmount,
+            toChains: [path.toChain],
+            fromChains: [path.fromChain]
+          },
+          1
+        )
+        this.scrollToElement('tx-tab')
+        // this.innerStep.deposit
+        /*
+        this.setExchangeData(
+          {
+            limitMinDepositCoin: path.minimum,
+            toChains: path.toChains,
+            fromChains: path.fromChains,
+            amount: path.toAmount,
+            inChain: true
+          },
+          1
+        ) */
+      } else {
+        console.log(path, 'path', 'setDex')
+        this.setDefaultWallet(path.fromChain)
+
+        this.$store.commit('settings/setDex', {
+          dex: path.dex,
+          destinationCoin: this.destinationCoin,
+          depositCoin: this.depositCoin,
+          fromAmount: parseFloat(this.swapData.fromAmount)
+        })
+        this.step = 2
+      }
     },
     setMinimum () {
       let from = this.$store.state.settings.coins.godex.find(
@@ -1438,7 +2459,11 @@ export default {
 
           if (oldTx) {
             oldTx.status = data.status
-            if (data.status === 'success' && oldTx.eosProxy && !oldTx.proxyTxSent) {
+            if (
+              data.status === 'success' &&
+              oldTx.eosProxy &&
+              !oldTx.proxyTxSent
+            ) {
               data.proxyTxSent = true
               this.$refs.transact.setTxData(data.txObj)
             }
@@ -1518,7 +2543,7 @@ export default {
 </script>
 <style scoped>
 /deep/ .q-tab-panel {
-    max-width: 500px;
+  max-width: 500px;
 }
 .ongoing-orders {
   border: 1px solid #626262;
@@ -1551,11 +2576,11 @@ export default {
 .dark-theme /deep/ .q-tab--active {
   background: #062229;
 }
-.light-mode /deep/ .q-tab--active{
-  background: #d7dddf
+.light-mode /deep/ .q-tab--active {
+  background: #d7dddf;
 }
 .light-mode .gdx-input .gdx-input-label {
-color: black !important;
+  color: black !important;
 }
 a,
 div,
@@ -1727,15 +2752,14 @@ input {
   flex-wrap: wrap;
 }
 .light-mode .gdx-input .gdx-input-field {
-      color: #000 !important;
-    border: 2px solid transparent !important;
-    background-color: #fcfcfc !important;
-        border: 2px solid #dbdbdb !important;
-    }
-   .light-mode .gdx-select .vs__dropdown-toggle {
-
-    background-color: #d7dddf !important;
-    }
+  color: #000 !important;
+  border: 2px solid transparent !important;
+  background-color: #fcfcfc !important;
+  border: 2px solid #dbdbdb !important;
+}
+.light-mode .gdx-select .vs__dropdown-toggle {
+  background-color: #d7dddf !important;
+}
 .gdx-exchange-form .coins {
   flex: 1;
   position: relative;
@@ -1912,5 +2936,383 @@ input {
   align-items: center;
   transition: 0.5s;
 }
+span.priceLabel {
+    font-size: small;
+    color: #606060;
+}
+/* Token Table */
+.cicsNy {
+  display: block;
+  margin: 0px;
+}
 
+.kFFKOl {
+  display: block;
+}
+
+.bjBkPh {
+  font-family: Graphik, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  line-height: 1.3;
+  color: rgb(var(--gray60));
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.kwgTEs {
+  font-family: Graphik, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  line-height: 1.3;
+  color: rgb(5, 15, 25);
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.iOKVsz {
+  font-family: Graphik, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  line-height: 1.3;
+  color: rgb(223, 95, 103);
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.gzXJpq {
+  font-family: Graphik, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: rgb(var(--gray60));
+  transition: color 80ms ease-in-out 0s;
+}
+
+.vioLp {
+     position: relative;
+    width: auto;
+    margin: 0px;
+    border-radius: 4px;
+    color: rgb(72 75 102);
+    cursor: pointer;
+    transition: all 80ms ease-in-out 0s;
+    padding: 12px 16px !important;
+    font-size: 14px;
+    border: 1px solid rgb(var(--green60));
+    background-color: #e7e8e8;
+}
+
+.vioLp:disabled {
+  opacity: 0.5;
+}
+
+.vioLp:focus {
+  outline: rgb(0, 82, 255) solid 2px;
+}
+
+.vioLp:hover {
+ background-color: #7272fa;
+
+    color: rgb(255 255 255);
+}
+
+.vioLp:active {
+  border: 1px solid rgb(var(--green60));
+  background-color: rgb(var(--green60));
+}
+
+.emQNZK {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  pointer-events: none;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  font-family: Graphik, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  font-weight: 500;
+}
+
+.cdfFYq {
+  display: block;
+  fill: none;
+}
+
+.csnuAl {
+  stroke-width: 1.7;
+  stroke: rgba(17, 51, 83, 0.3);
+  pointer-events: none;
+}
+
+.hqjdOn {
+  background: rgb(255, 255, 255);
+  user-select: none;
+}
+
+.hqjdOn:last-child {
+  border-bottom: 0px;
+}
+
+.hqjdOn:hover {
+  background: rgba(17, 51, 83, 0.02);
+}
+
+.cxfONy {
+  padding: 14px 48px 14px 0px;
+  border-top: 1px solid rgb(236, 239, 241);
+  cursor: default;
+  position: relative;
+  width: 85px;
+}
+
+.cxfONy:first-child {
+  padding-left: 32px;
+}
+
+@media (max-width: 768px) {
+  .cxfONy {
+    padding: 14px 24px 14px 0px;
+  }
+  .cxfONy:first-child {
+    padding-left: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cxfONy {
+    padding-right: 14px;
+    width: unset;
+  }
+}
+
+.jwbgUu {
+  padding: 0px 5px 0px 30px;
+  border-top: 1px solid rgb(236, 239, 241);
+  cursor: pointer;
+  min-width: 140px;
+}
+
+@media (max-width: 768px) {
+  .jwbgUu {
+    padding: 14px 24px 14px 0px;
+  }
+}
+
+.fWxga-D {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  flex-direction: row;
+}
+
+.fjfeyD {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.fjfeyD span {
+  padding-left: 16px;
+}
+
+@media (max-width: 768px) {
+  .fjfeyD {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.bkmkHF {
+  padding: 14px 8px 14px 0px;
+  border-top: 1px solid rgb(236, 239, 241);
+  cursor: default;
+  width:8px
+}
+
+@media (max-width: 768px) {
+  .bkmkHF {
+    padding: 14px 24px 14px 0px;
+  }
+}
+
+.hzLOxv {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.hzLOxv .asset-table-percent-change {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hzLOxv {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .hzLOxv .asset-table-percent-change {
+    display: unset;
+  }
+}
+
+.jymnha {
+  border-top: 1px solid rgb(236, 239, 241);
+  cursor: default;
+  width: 100px;
+  padding: 5px 25px 5px 5px;
+}
+
+@media (max-width: 768px) {
+  .jymnha {
+    padding: 14px 24px 14px 0px;
+  }
+}
+
+.leZMkh {
+  padding: 14px 48px 14px 0px;
+  border-top: 1px solid rgb(236, 239, 241);
+  cursor: default;
+  width: 70px;
+}
+
+.leZMkh:last-child {
+  padding-right: 32px;
+}
+
+@media (max-width: 768px) {
+  .leZMkh {
+    padding: 14px 24px 14px 0px;
+  }
+  .leZMkh:last-child {
+    padding-right: 24px;
+  }
+}
+
+.leZMkh:last-child {
+  width: 70px;
+}
+
+.jauJqX {
+  text-align: left;
+}
+
+.hfJTMn {
+  text-align: left;
+}
+
+.eprtwk {
+  width: 100%;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.gDZxaI {
+  padding: 14px 48px 14px 0px;
+  border-top: 1px solid rgb(236, 239, 241);
+  cursor: default;
+  width: 130px;
+  margin-right: 20px;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .gDZxaI {
+    padding: 14px 24px 14px 0px;
+  }
+}
+
+@media (max-width: 768px) {
+  .gDZxaI {
+    text-align: right;
+    margin-right: 0px;
+  }
+}
+
+.hiXhZK {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  left: 0px;
+  height: 100%;
+  top: 0px;
+  opacity: 0;
+  padding: inherit;
+  transition: opacity 0.25s ease 0s;
+}
+
+.bowWEV {
+  display: block;
+  width: 15px;
+  height: 15px;
+  margin-left: -6px;
+  cursor: auto;
+}
+
+.fgsiwR {
+  flex-shrink: 0;
+  border-radius: 100%;
+}
+
+.gcVqXC {
+  padding: 0px;
+  border: none;
+  transition: opacity 300ms ease 0s;
+}
+
+.hkPLhL {
+  width: 100%;
+  padding: 0px;
+  background: rgb(255, 255, 255);
+  border-spacing: 0px;
+  border-collapse: separate;
+  caption-side: top;
+}
+
+.igjkkt {
+  border: none;
+}
+
+.hBIYtO {
+  display: flex;
+  align-items: center;
+}
+
+.ftxqkW {
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.jfBtrR {
+  padding: 16px 48px 16px 0px;
+  border-bottom: none;
+  text-align: left;
+}
+
+.jfBtrR:first-child {
+  padding-left: 32px;
+}
+
+.jfBtrR:last-child {
+  padding-right: 32px;
+}
+
+.jfBtrR label {
+  width: auto;
+}
+
+.bOnkOC {
+  border-bottom: 1px solid rgb(236, 239, 241);
+}
+
+.cPqKDE {
+  padding: var(--spacing-1) var(--spacing-2);
+  white-space: nowrap;
+}
 </style>

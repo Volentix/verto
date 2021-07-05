@@ -68,6 +68,7 @@ export default {
   },
   created () {
     let closewizard = localStorage.getItem('closewizard')
+
     if (!closewizard) {
       this.showWizardAction()
     }
@@ -75,6 +76,22 @@ export default {
     this.reRender = Math.random()
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
+    if (this.$store.state.settings.isDemo) {
+      this.$q.notify({
+        type: 'my-notif',
+        message: `Click here to start using Verto`,
+        timeout: 1000000,
+        actions: [
+          { label: 'Get started',
+            color: 'white',
+            handler: () => {
+              this.$router.push({
+                name: 'create-password'
+              })
+            } }
+        ]
+      })
+    }
   },
   methods: {
     showWizardAction () {
