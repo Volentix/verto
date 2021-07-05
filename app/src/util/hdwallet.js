@@ -15,15 +15,15 @@ class HD {
     },
     {
       'value': 'eth',
-      'label': 'Ethereum Chain'
+      'label': 'Ethereum'
     },
     {
       'value': 'plg',
-      'label': 'Polygon Chain'
+      'label': 'Polygon'
     },
     {
       'value': 'bnb',
-      'label': 'Binance Chain'
+      'label': 'Binance'
     },
     {
       'value': 'bsc',
@@ -47,7 +47,7 @@ class HD {
     },
     {
       'value': 'ftm',
-      'label': 'Fantom Chain'
+      'label': 'Fantom'
     },
     {
       'value': 'dot',

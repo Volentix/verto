@@ -92,6 +92,7 @@
     "quasar": "^1.14.3",
     "quasar-app-extension-ual-vuejs-renderer-ae": "^0.1.2",
     "ripple-bip32": "^0.0.3",
+    "send-crypto": "^0.2.29",
     "sjcl": "^1.0.8",
     "steemjs-lib": "^0.3.7",
     "stellar-sdk": "^3.3.0",

@@ -2,6 +2,7 @@
 export function someAction (context) {
 }
 */
+import store from '@/store'
 import axios from 'axios'
 const config = {
   headers: {
@@ -228,7 +229,7 @@ export const getZapperTokens = (context /*, payload */) => {
 }
 
 export const getMarketDataVsUSD = (context, payload) => {
-  let coingeckoEndpoint = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
+  let coingeckoEndpoint = process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
   axios.get(coingeckoEndpoint)
     .then(function (result) {
       if (result.data.length) {
