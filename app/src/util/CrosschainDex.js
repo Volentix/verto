@@ -107,14 +107,20 @@ class Crosschaindex {
     }).filter((o, i) => !unique || coins.findIndex(a => a.value === o.value && a.contract === o.contract) === i)
   }
   async getDefiboxPairs () {
-    let rpc = new JsonRpc(process.env[store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
-    let pairs = (await rpc.get_table_rows({
-      json: true,
-      code: 'swap.defi',
-      scope: 'swap.defi',
-      table: 'pairs',
-      limit: -1
-    })).rows
+    let pairs = []
+
+    if (store.state.settings.globalSettings && store.state.settings.globalSettings.defiboxPairs) {
+      pairs = store.state.settings.globalSettings.defiboxPairs
+    } else {
+      let rpc = new JsonRpc(process.env[store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
+      pairs = (await rpc.get_table_rows({
+        json: true,
+        code: 'swap.defi',
+        scope: 'swap.defi',
+        table: 'pairs',
+        limit: -1
+      })).rows
+    }
 
     return pairs
   }

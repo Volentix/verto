@@ -1,4 +1,5 @@
 <template>
+<div class="full-width">
 <div class="full-width q-pt-md bg-white q-pa-md" v-if="chartData.length">
 <div class="text-h6 q-py-md">
 THE STATE OF VTX
@@ -6,7 +7,7 @@ THE STATE OF VTX
 <div class="row">
 <div class="col-md-12">
 
-<Chart :stakingData="chartData"   :key="chartKey" />
+<Chart :stakingData="chartData"   :key="chartKey" v-if="false" />
 </div>
 <div class="col-md-4">
 <span class="text-h6">
@@ -65,6 +66,10 @@ THE STATE OF VTX
 
 </div>
 </div>
+<div v-else>
+<q-linear-progress indeterminate color="grey" class="q-mt-sm" />
+</div>
+</div>
 </template>
 <script>
 
@@ -92,8 +97,9 @@ export default {
         'July', 'August', 'September', 'October', 'November', 'December'
       ]
 
-      const d = new Date()
+      /*  const d = new Date()
       document.write('The current month is ' + monthNames[d.getMonth()])
+      */
 
       this.state = []
       let contract = 'vertostaking'
