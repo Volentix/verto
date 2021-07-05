@@ -9,29 +9,29 @@
                     <wallets data-title="Interact with your account" class="full-height max-height" data-intro="Click on an account/token to see all actions you can perform. Click SETUP to associate EOS account(s) to account names" :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                 </div>
             </div>
-            <div class="col col-md-9 q-pr-md">
+            <div class="col col-md-9 q-pr-md bg-white">
               <div class="row dashboard-ui-tokens">
        <q-tabs
-        v-if="!assetSelected && false"
+        v-if="!assetSelected "
         v-model="tab"
         inline-label
-        class="q-mb-lg"
+
         :class="{'text-white': $store.state.settings.lightMode === 'true'}"
       >
         <q-tab name="dashboard" icon="dashboard" label="Dashboard" />
-        <q-tab name="opportunities" icon="trending_up" label="Opportunities" />
-        <q-tab name="tokens" icon="search" label="Explore tokens" />
+         <q-tab name="exchange" icon="swap_horiz" label="Exchange" />
+        <q-tab name="vtxstaking" icon="trending_up" label="VTX Staking" />
+        <q-tab name="tokens" icon="trending_up" label="Token watcher" />
       </q-tabs>
-  <q-scroll-area :visible="true" class="full-width full-height-desktop" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
-              <GodexV2   />
-              <VTXStakeState  v-if="false"  />
-              <TokenPrices class="full-width" v-if="false"   />
+          <GodexV2  v-if="!assetSelected && tab == 'exchange'" />
+              <VTXStakeState  v-if="tab == 'vtxstaking'"  />
+              <TokenPrices class="full-width" v-if="tab == 'tokens'"   />
                 <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
                   <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
                 </q-breadcrumbs>
                <NftsExplorer v-if="false && $store.state.settings.network != 'mainnet'" />
-                <AssetsExplorer @assetsChanged="assetsChanged" ref="assetsComponent" v-show="!assetSelected" @setAsset="setAsset" />
-  </q-scroll-area>
+                <AssetsExplorer @assetsChanged="assetsChanged" ref="assetsComponent" v-show="!assetSelected  && tab == 'dashboard'" @setAsset="setAsset" />
+
                 <SingleToken   ref="singleTokenComponent" @setAsset="setAsset"  :assetData="assetSelected" class="col-md-12" v-if="assetSelected" />
 
               </div>
@@ -117,9 +117,6 @@ import {
   mapState
 } from 'vuex'
 // import VespucciRatingSection from '../../components/Verto/VespucciRatingSection'
-import {
-  QScrollArea
-} from 'quasar'
 
 // import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
 // import HD from '@/util/hdwallet'
@@ -147,7 +144,6 @@ import {
 export default {
   components: {
     // ConvertAnyCoin,
-    QScrollArea,
     VTXStakeState,
     MultiTransaction,
     // NftsExplorer,
