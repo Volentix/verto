@@ -237,7 +237,7 @@ export default {
       this.$store.state.currentwallet.wallet = {
         empty: true
       }
-      Lib.removeExpiredData()
+      Lib.removeExpiredData(0)
       setTimeout(function () {
         self.$router.push({
           path: to

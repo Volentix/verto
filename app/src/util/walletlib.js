@@ -16,7 +16,7 @@ const sleep = (milliseconds) => {
 class Lib {
   constructor (evms) {
     this.evms = [{
-      name: 'Ethereum Chain',
+      name: 'Ethereum',
       chain: 'eth',
       nativeToken: 'eth',
       icon: 'https://zapper.fi/images/ETH-icon.png',
@@ -34,7 +34,7 @@ class Lib {
       gas: 'https://api.bscscan.com/api?module=proxy&action=eth_gasPrice&apikey=JK2Z5XQYR1FMCAQFQDBFNS5FJM6XC7ETTB',
       network_id: 56
     }, {
-      name: 'Polygon Chain',
+      name: 'Polygon',
       chain: 'matic',
       nativeToken: 'matic',
       icon: 'https://seeklogo.com/images/P/polygon-matic-logo-86F4D6D773-seeklogo.com.png',
@@ -52,7 +52,7 @@ class Lib {
       gas: '', // The C-Chain gas price is 225 nAVAX (225 GWei). The C-Chain gas limit is 8 * 10e6 (8,000,000).
       network_id: 43114
     }, {
-      name: 'Fantom Chain',
+      name: 'Fantom',
       chain: 'ftm',
       nativeToken: 'ftm',
       icon: 'https://assets.coingecko.com/coins/images/4001/large/Fantom.png?1558015016',
@@ -182,7 +182,7 @@ class Lib {
       saved = new Date(date)
       saved.setDate(saved.getDate() + days)
     }
-    console.log(date, now, saved)
+
     if (!date || now.getTime() > saved.getTime()) {
       let keys = Object.keys(localStorage),
         i = keys.length
@@ -201,7 +201,9 @@ class Lib {
   }
 
   cacheWalletHistoryData (data, key, chain) {
+    console.log(data, 'data 123')
     data.then(o => {
+      console.log(o, 'o 321')
       if (o && o.hasOwnProperty('history') && key) { localStorage.setItem(chain + '_history_' + key, JSON.stringify(o)) }
     })
   }
@@ -373,7 +375,7 @@ class Lib {
         })
       },
       async btc (token, key, evmData) {
-        key = '15urYnyeJe3gwbGJ74wcX89Tz7ZtsFDVew'
+        // key = '15urYnyeJe3gwbGJ74wcX89Tz7ZtsFDVew'
         return new Promise(async (resolve, reject) => {
           axios
             .get(
@@ -388,7 +390,7 @@ class Lib {
 
                   let date = new Date(a.block_time)
                   tx.timeStamp = date.getTime() / 1000
-                  console.log(a.inputs, 1, a.outputs, 3)
+                  // TO DO - LIST through all outputs and save them as separate transactions when key === spender
                   // if (tx) return
                   let spender = a.inputs[0].prev_addresses[0]
                   let receiver = a.outputs[0].addresses[0]
@@ -396,7 +398,7 @@ class Lib {
                   tx.friendlyHash = a.hash.substring(0, 6) + '...' + a.hash.substr(a.hash.length - 5)
 
                   tx.to = receiver
-                  tx.amount = a.outputs_value / 100000000
+                  tx.amount = spender !== key ? a.outputs.find(o => o.addresses[0] === key).value / 100000000 : a.outputs[0].value / 100000000
                   tx.symbol = token.toUpperCase()
                   tx.image = 'https://files.coinswitch.co/public/coins/btc.png'
 
@@ -497,10 +499,10 @@ class Lib {
     let cachedData = localStorage.getItem(chain + '_history_' + key)
     let historyData = {}
     let h = JSON.parse(cachedData)
-
+    console.log(cachedData, historyData, 'historyData')
     if (!cachedData || !h.history) {
       historyData = wallet[chain] ? wallet[chain](token, key, data) : []
-      this.cacheWalletHistoryData(historyData, key, chain)
+      // this.cacheWalletHistoryData(historyData, key, chain)
     }
 
     return cachedData ? JSON.parse(cachedData) : historyData
@@ -611,7 +613,7 @@ class Lib {
         // return { balance: float }
       },
       async btc (key) {
-        key = '15urYnyeJe3gwbGJ74wcX89Tz7ZtsFDVew'
+        // key = '15urYnyeJe3gwbGJ74wcX89Tz7ZtsFDVew'
         const amount = (await axios.get('https://blockchain.info/q/addressbalance/' + key, {
           'cors': 'true'
         })).data / 100000000
@@ -705,23 +707,24 @@ class Lib {
     return transactionReceipt.status
   }
   getWeb3Instance (chain) {
-    return (new Web3(new Web3.providers.HttpProvider(this.getEvmData(chain).provider)))
+    let evmData = this.getEvmData(chain)
+    return evmData ? (new Web3(new Web3.providers.HttpProvider(this.getEvmData(chain).provider))) : null
   }
   gas = async (chain, transaction, type, tokenPrice) => {
     let evmData = this.getEvmData(chain)
-    let response = null
+    let response = null, gasData = null
     const web3 = this.getWeb3Instance(chain)
-    // const self = this
-    if (evmData.gas && evmData.gas.length) { response = await axios.get(evmData.gas) }
+    if (evmData) {
+      if (evmData.gas && evmData.gas.length) { response = await axios.get(evmData.gas) }
 
-    let gasData = {
-      gas: 21000,
-      gasPrice: null,
-      label: 'Fee',
-      value: 0, // USD Price
-      nativeToken: evmData.nativeToken
+      gasData = {
+        gas: 21000,
+        gasPrice: null,
+        label: 'Fee',
+        value: 0, // USD Price
+        nativeToken: evmData.nativeToken
+      }
     }
-
     const convertGasPrice = (gasObj) => {
       // Return gas price in USD if tokenPrice is valid, otherwise return the value in native token unit
       gasObj.isUsd = tokenPrice
@@ -795,6 +798,33 @@ class Lib {
         gasData = convertGasPrice(gasData)
         return [gasData]
       },
+      async btc () {
+        let gasOptions = []
+
+        let response = await axios.get('https://bitcoinfees.billfodl.com/api/fees/')
+
+        /* {
+            "fastestFee": "78",
+            "halfHourFee": "76",
+            "hourFee": "67",
+            "BTCUSD": "32996.9"
+        } */
+        const getBtcFeeObject = (fee, label, bytes = 250) => {
+          let gasOption = {}
+          gasOption.gasPrice = fee
+          gasOption.label = label
+          gasOption.isUsd = true
+          gasOption.value = bytes * response.data.BTCUSD * fee / 100000000 / 2
+
+          return gasOption
+        }
+
+        gasOptions.push(getBtcFeeObject(response.data.fastestFee, 'Fastest'))
+        gasOptions.push(getBtcFeeObject(response.data.halfHourFee, '30 minutes'))
+        gasOptions.push(getBtcFeeObject(response.data.hourFee, '1 hour'))
+
+        return gasOptions
+      },
       async bsc () {
         /*
           The difference between Binance Chain and Ethereum is that there is no notion of gas.
@@ -825,12 +855,35 @@ class Lib {
     // console.log(chain, token, from, to, value, memo, key, contract, data, 'chain, token, from, to, value, memo, key, contract, data')
     const wallet = {
       async btc (token, from, to, value, memo, key) {
-        // const bitcore = require('bitcore-lib')
         const bitcoin = require('bitcoinjs-lib')
+        const CryptoAccount = require('send-crypto').default
+        const keyPair = bitcoin.ECPair.fromWIF(key)
+
+        const account = new CryptoAccount(keyPair.privateKey)
+        let fee = memo && memo.fee ? memo.fee : 10000
+
+        return new Promise((resolve, reject) =>
+          account.send(to, value, 'BTC', { fee: fee })
+            .on('transactionHash', (tx_hash) => {
+              resolve({
+                message: `https://www.blockchain.com/btc/tx/${tx_hash}`,
+                success: true,
+                transaction_id: tx_hash
+              })
+            })
+            .on('confirmation', confirmations => {
+              console.log(confirmations, 'confirmations')
+            })
+            .catch(reject)
+        )
+
+        /*
+        // const bitcore = require('bitcore-lib')
+
         const explorers = require('bitcore-explorers')
         const insight = new explorers.Insight(process.env[store.state.settings.network].CACHE + 'https://explorer.btc.zelcore.io/') // 'https://insight.bitpay.com')
         const network = store.state.settings.network === 'testnet' ? bitcoin.networks.testnet : bitcoin.networks.bitcoin
-        const keyPair = bitcoin.ECPair.fromWIF(key)
+
         const returnedUTXOS = await insight.getUtxos(from)
 
         const psbt = new bitcoin.Psbt({
@@ -902,6 +955,7 @@ class Lib {
           success,
           message
         }
+        */
       },
       async dot (token, from, to, value, memo, key, contract) {
         const { ApiPromise, WsProvider, Keyring } = require('@polkadot/api')

@@ -1,6 +1,6 @@
 <template>
     <div v-if="!chain || chains" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-      <q-btn :dark="$store.state.settings.lightMode === 'true'" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" >
+      <q-btn v-if="accountOption" :dark="$store.state.settings.lightMode === 'true'" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" >
             <q-menu>
               <q-list bordered separator>
                 <q-expansion-item  style="width:308px;"  dense-toggle class="chains" default-opened v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index" clickable  >
@@ -182,7 +182,13 @@ export default {
       )
 
       if (!updateDefaultAccount) return
-
+      console.log(this.$store.state.currentwallet.wallet, ' this.$store.state.currentwallet.wallet', this.accountOptions.find(
+        (a) =>
+          a.key === this.$store.state.currentwallet.wallet.key &&
+            a.chain === this.$store.state.currentwallet.wallet.chain &&
+            a.name.toLowerCase() ===
+              this.$store.state.currentwallet.wallet.name.toLowerCase()
+      ), this.accountOptions)
       if (
         this.$store.state.currentwallet.wallet &&
         this.$store.state.currentwallet.wallet.type
@@ -228,14 +234,14 @@ export default {
 
       this.accountOptions = this.accountOptions.filter(o => (!this.chain ||
           o.chain === this.chain))
-
+      if (!this.accountOptions && this.autoSelectChain && this.accountOptions.length) {
+        this.accountOption = this.accountOptions.find(o => o.chain === this.autoSelectChain)
+      }
       if (!this.accountOption && this.accountOptions.length) {
         this.accountOption = this.accountOptions[0]
       }
-      if (this.autoSelectChain && this.accountOptions.length) {
-        this.accountOption = this.accountOptions.find(o => o.chain === this.autoSelectChain)
-      }
-      console.log(this.autoSelectChain, 'this.autoSelectChain')
+
+      console.log(this.autoSelectChain, 'this.autoSelectChain', this.accountOption)
       this.setAccount()
     },
     setAccount (time = 0) {

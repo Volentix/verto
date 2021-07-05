@@ -231,7 +231,7 @@
 
                       </div>
                       <div class="col col-4" :class="{'col-md-12 col-12': screenSize < 1024 || miniMode}">
-                        <span class="lab-input" @click="refresh">Amount</span>
+                        <span class="lab-input" >Amount</span>
                         <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentToken.amount) ? ( miniMode ?  sendAmount :  parseFloat(currentToken.amount) ) : parseFloat(sendAmount) ; checkGas(); " :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                           <template v-slot:append>
                             <div class="flex justify-end">
@@ -265,7 +265,7 @@
                           </template>
                         </q-input>
                       </div>
-                      <div class="col col-12">
+                      <div class="col col-12" v-if="currentToken.chainID && !currentAccount.isEvm && currentAccount.chain != 'btc'">
                         <span v-if="currentToken.chainID && !currentAccount.isEvm" class="lab-input">Memo</span>
                         <q-input :disable="disableMemoEdit" v-if="currentToken.chainID && !currentAccount.isEvm" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
                       </div>
@@ -274,7 +274,7 @@
                   <br>
                 </div>
 
-                <q-list :class="{'q-pt-md': miniMode}" v-if="gasOptions.length && currentAccount.isEvm && (!miniMode || miniStep == 2)" class="gasfield q-mb-md"  separator>
+                <q-list :class="{'q-pt-md': miniMode}" v-if="gasOptions.length && (currentAccount.isEvm || currentAccount.chain == 'btc' ) && (!miniMode || miniStep == 2)" class="gasfield q-mb-md"  separator>
                <span v-if="!disableMemoEdit"> <span v-if="miniStep == 2" class="q-pr-md"><q-btn @click="miniStep = 1" icon="arrow_back" flat /> |</span> <span>Select gas</span></span>
                     <div dense class="gasSelector row" :class="{'q-pt-sm': miniStep == 2}">
                         <div class="col-md-4" :class="{'col-md-12 q-mb-sm': miniMode}" v-for="(gas, index) in gasOptions" :key="index">
@@ -311,9 +311,9 @@
                 <span class="q-pl-md cursor-pointer"  @click="showGasOptions = true" v-if="!showGasOptions"><q-icon name="add" /> Advanced </span>
                 <span class="cursor-pointer q-pt-xs" @click="showGasOptions = false" v-else>Hide </span>
                 </span>
-                <div class="standard-content--footer" v-if="!isExchange || !transSuccessDialog">
-
-                  <q-btn flat :loading="openModalProgress" class="action-link next" :disable="!currentToken.amount || currentAccount.chain == 'eth' &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="(!miniMode || !currentAccount.isEvm) ? openModalFun() :  ( miniStep == 2 ? openModalFun() : miniStep = 2 )" text-color="white"  :label="currentAccount.isEvm && miniMode && miniStep == 1 ? 'Set Gas' : 'Transfer'" />
+                <q-linear-progress v-if="sendAmount !== 0 && sendToResolved  && currentAccount.isEvm &&  gasOptions.length == 0 " indeterminate rounded  color="deep-purple-12" class="q-my-sm" />
+                 <div class="standard-content--footer" v-if="!isExchange || !transSuccessDialog">
+                   <q-btn flat :loading="openModalProgress" class="action-link next" :disable="!currentToken.amount || currentAccount.isEvm &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="(!miniMode || !currentAccount.isEvm) ? openModalFun() :  ( miniStep == 2 ? openModalFun() : miniStep = 2 )" text-color="white"  :label="currentAccount.isEvm && miniMode && miniStep == 1 ? 'Set Gas' : 'Transfer'" />
                 </div>
               </div>
             </div>
@@ -497,7 +497,9 @@ export default {
   },
   watch: {
     gasPrice: function (newVal) {
-      this.checkGas()
+      if (this.currentAccount.isEvm) {
+        this.checkGas()
+      }
     },
     '$store.state.wallets.tokens': function (tokens) {
       console.log(tokens, 'tokens')
@@ -775,8 +777,18 @@ export default {
             console.log(this.$store.state.currentwallet.wallet.tokenPrice, 'tokenPrice')
             Lib.gas(this.currentAccount.chain, tx, this.currentToken.type, this.$store.state.currentwallet.wallet.tokenPrice).then(res => {
               this.gasOptions = res
-              this.gasSelected = res[0]
+              if (!this.gasSelected) {
+                this.gasSelected = res[0]
+              }
             })
+          })
+        } else if (this.currentAccount.chain === 'btc') {
+          Lib.gas(this.currentAccount.chain, {}, this.currentToken.type, this.$store.state.currentwallet.wallet.tokenPrice).then(res => {
+            console.log(res, 'res')
+            this.gasOptions = res
+            if (!this.gasSelected) {
+              this.gasSelected = res[0]
+            }
           })
         }
       } catch (error) {
@@ -789,11 +801,15 @@ export default {
       this.transStatus = 'Transaction in progress'
 
       // Pass gas details in memo
-      console.log(this.currentAccount, 'this.currentAccount')
+
       if (this.currentAccount.isEvm) {
         this.sendMemo = {
           gasData: this.customGas ? this.customGas : this.gasSelected,
           txData: null
+        }
+      } else if (this.currentAccount.chain === 'btc') {
+        this.sendMemo = {
+          fee: parseFloat(this.gasSelected.gasPrice) * 250
         }
       }
 

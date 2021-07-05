@@ -73,8 +73,7 @@
                   </template>
                 </q-input>
                 <q-input
-                  v-if="passwordApproved"
-                  v-show="!passwordsMatch"
+                  v-show="!passwordsMatch && passwordApproved"
                   dark
                   ref="psswrdConfirm"
                   v-model="confirmPassword"
@@ -287,6 +286,7 @@ export default {
           }
         ]
       }
+      store.state.settings.isDemo = true
       store.state.currentwallet.loggedIn = true
       this.$router.push({
         path: '/verto/dashboard'
@@ -294,7 +294,7 @@ export default {
     },
     gotoSecondScreen () {
       if (this.passwordApproved) {
-        this.step = 2
+      //  this.step = 2
         this.$nextTick(() => {
           this.$refs.psswrdConfirm.focus()
         })

@@ -12,6 +12,11 @@ class Crosschaindex {
       godex: 'https://api.godex.io/api/v1/',
       oneinch: 'https://api.1inch.exchange/v3.0/'
     }
+    this.exchangeLogo = {
+      oneinch: 'https://duneanalytics.com/projects/pages/1inch/1inch.svg',
+      defibox: 'https://support.newdex.net/hc/article_attachments/360062280112/defibox__1.png',
+      godex: 'https://api.bytecoin.org/storage/godex2.png'
+    }
     this.exchanges = ['godex']
     this.coinList = {
       godex: []
@@ -116,7 +121,7 @@ class Crosschaindex {
   async getDefiboxPairData (to, from) {
     this.ErrorMessage = null
     let pairs = await this.getDefiboxPairs()
-    return pairs.find(
+    let pair = pairs.find(
       (w) =>
         (w.token1.symbol.split(',')[1].toLowerCase() === from &&
             to ===
@@ -125,32 +130,42 @@ class Crosschaindex {
             to ===
               w.token1.symbol.split(',')[1].toLowerCase())
     )
+    if (pair && pair.liquidity_token === 0) {
+      pair = false
+    }
+    return pair
   }
-  getDex = (from, to) => {
-    let dex = []
-    let crosschains = ['eth', 'btc']
-    if (store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === from.toLowerCase() && !crosschains.includes(from.toLowerCase())) &&
-      store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === to.toLowerCase() && !crosschains.includes(to.toLowerCase()))) {
-      dex.push({ chain: 'eth', dex: 'oneinch' })
-    }
-    if (store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === from.toLowerCase() && !crosschains.includes(from.toLowerCase())) &&
-      store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === to.toLowerCase() && !crosschains.includes(to.toLowerCase()))) {
-      dex.push({ chain: 'eos', dex: 'defibox' })
-    }
-    if ((store.state.settings.coins.godex.find(o => o.value.toLowerCase() === from.toLowerCase()) &&
-      store.state.settings.coins.godex.find(o => o.value.toLowerCase() === to.toLowerCase())) || (store.state.settings.coins.godex.find(o => o.value.toLowerCase() === from.toLowerCase()) &&
-      store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === to.toLowerCase()))) {
-      dex.push({ chain: false, dex: 'godex' })
-    }
-    return dex
-  }
+   getDex = async (from, to) => {
+     let dex = []
+     let pairDefibox = await this.getDefiboxPairData(to, from)
+
+     if (store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === from.toLowerCase()) &&
+      store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === to.toLowerCase())) {
+       dex.push({ chains: ['eth', 'matic', 'bsc'], dex: 'oneinch' })
+     }
+     if (store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === from.toLowerCase()) &&
+      store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === to.toLowerCase()) && pairDefibox) {
+       dex.push({ chains: ['eos'], dex: 'defibox' })
+     }
+     if (store.state.settings.coins.godex.find(o => o.value.toLowerCase() === from.toLowerCase()) &&
+      store.state.settings.coins.godex.find(o => o.value.toLowerCase() === to.toLowerCase())) {
+       dex.push({ chains: [], dex: 'godex' })
+     }
+     return dex
+   }
    getPair = (from, to, amount) => {
      const self = this
+
      let list = {
        oneinch () {
          return new Promise(async (resolve, reject) => {
            let fromToken = store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === from.toLowerCase())
            let toToken = store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === to.toLowerCase())
+
+           if (amount < 0.0000001) {
+             reject()
+             return
+           }
            let data = {
              fromTokenAddress: fromToken.address,
              toTokenAddress: toToken.address,
@@ -181,7 +196,14 @@ class Crosschaindex {
          return new Promise(async (resolve, reject) => {
            let pairData = await self.getDefiboxPairData(to, from)
            let poolOne, poolTwo, toAmount
+
            let input = 'pool1'
+           if (!pairData || pairData.liquidity_token === 0) {
+             resolve({
+               pair: false
+             })
+             return
+           }
 
            pairData.pool1 = asset(pairData.reserve0)
            pairData.pool2 = asset(pairData.reserve1)
@@ -189,11 +211,13 @@ class Crosschaindex {
            if (pairData.pool1.symbol.code().to_string() === from.toUpperCase()) {
              poolOne = pairData.pool1
              poolTwo = pairData.pool2
+
              // mul = 10000
            } else {
              poolOne = pairData.pool2
              poolTwo = pairData.pool1
            }
+
            // console.log(parseFloat(this.swapData.fromAmount), parseFloat(poolTwo.amount), parseFloat(poolOne.amount), parseFloat(mul), 'mul')
            pairData.price = (poolTwo.amount / poolOne.amount)
 
@@ -229,9 +253,10 @@ class Crosschaindex {
            data.fromChains = ['eos']
            data.toChains = ['eos']
            data.isCrosschain = false
-           data.limitMaxDepositCoin = 0
+           data.limitMaxDepositCoin = parseFloat(poolOne.amount)
            data.limitMinDepositCoin = 0
            data.pair_id = pairData.id
+           data.pairData = pairData
            resolve({
              pair: data
            })
