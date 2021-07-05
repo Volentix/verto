@@ -95,7 +95,7 @@
     "send-crypto": "^0.2.29",
     "sjcl": "^1.0.8",
     "steemjs-lib": "^0.3.7",
-    "stellar-sdk": "^3.3.0",
+    "stellar-sdk": "^8.2.3",
     "tweetnacl": "^1.0.3",
     "ual-ledger": "^0.1.3",
     "v-markdown-editor": "^1.2.5",
