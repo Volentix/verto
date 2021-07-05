@@ -275,6 +275,7 @@ export default {
       { name: 'Create new EOS Account', to: '/verto/eos-account/create', icon: 'label', info: '' },
       { name: 'Add ETH Account', to: '/verto/import-private-key/eth', icon: 'label', info: '' },
       { name: 'Add HD Account', to: '/verto/create-hd-account', icon: 'label', info: '' },
+      { name: 'Add BTC Account', to: '/verto/import-wallet/btc', icon: 'label', info: '' },
       { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
       { name: 'Network', to: '', icon: 'public_off', info: 'darkmode' },
       { name: 'Dev Mode', to: '', icon: 'public_off', info: 'darkmode' },
