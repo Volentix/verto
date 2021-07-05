@@ -272,7 +272,7 @@ export default {
     this.walletData = localStorage.getItem('walletPublicData')
 
     if (!this.$route.query.url) {
-      this.getCoinswitchCoins()
+      this.getGodexCoins()
       this.get1inchCoins()
       this.getDefiboxCoins()
     }

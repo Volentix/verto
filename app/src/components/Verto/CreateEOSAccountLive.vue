@@ -920,7 +920,7 @@ export default {
 
     let rpc = new JsonRpc(
       process.env[this.$store.state.settings.network].CACHE +
-        'https://eos.greymass.com:443'
+       'https://eos.greymass.com:443'
     )
     this.pairs = (
       await rpc.get_table_rows({

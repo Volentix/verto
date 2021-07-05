@@ -256,6 +256,7 @@
                 <q-tab name="buy" v-if="asset.chain == 'eos'" label="Buy" />
                 <q-tab name="sell" v-if="asset.chain == 'eos'" label="Sell" />
               </q-tabs>
+
               <div class="text-center">
                    <AccountSelector :chains="asset.isEvm ? ['bsc','matic','eth'] : [asset.chain]"  v-show="tab != 'swap' && !fromPreview" :showAllWallets="true"  :chain="asset.chain" class="q-pt-lg" />
               </div>
@@ -269,7 +270,7 @@
               </div>
 
               <div v-else class="q-pa-md">
-              <p class="q-pt-md text-purple-12" v-if="!['bsc','matic','eth','eos'].includes(asset.chain)"> Buying and selling {{asset.type.toLowerCase()}} will be available very soon</p>
+              <p class="q-pt-md text-purple-12" v-if="tab != 'send' && !['bsc','matic','eth','eos'].includes(asset.chain)"> Buying and selling {{asset.type.toLowerCase()}} will be available very soon</p>
               <div class="row" v-if="!fromPreview ">
               .
                 <q-input
@@ -595,6 +596,7 @@ import AssetBalancesTable from '../../components/Verto/AssetBalancesTable'
 import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 import { JsonRpc } from 'eosjs'
 import { QScrollArea } from 'quasar'
+// import Godex from './Exchange/Godex.vue'
 
 export default {
   components: {
@@ -607,6 +609,7 @@ export default {
     transactEOS,
     liquidityPoolsTable,
     SendComponent
+    // Godex
   },
   watch: {
     '$store.state.investment.accountTokens': function () {
@@ -769,7 +772,7 @@ export default {
       )
       if (token) {
         let response = await this.$axios.get(
-          'https://api.coingecko.com/api/v3/coins/' +
+          process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/' +
             token.id +
             '/market_chart?vs_currency=usd&days=' +
             days

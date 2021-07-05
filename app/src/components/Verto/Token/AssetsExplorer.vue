@@ -229,8 +229,6 @@ import {
   QScrollArea
 } from 'quasar'
 import Formatter from '@/mixins/Formatter'
-import HD from '@/util/hdwallet'
-import Lib from '@/util/walletlib'
 import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
 import ExchangeSection from '@/components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '@/components/Verto/Defi/LiquidityPoolsTable'
@@ -475,7 +473,7 @@ export default {
     },
     async getVTXHistoriclPrice (days = 30) {
       let response = await this.$axios.get(
-        'https://api.coingecko.com/api/v3/coins/volentix-vtx/market_chart?vs_currency=usd&days=' +
+        process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/volentix-vtx/market_chart?vs_currency=usd&days=' +
             days
       )
       this.chartData = response.data
@@ -585,11 +583,11 @@ export default {
       JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).filter(o => (!account && !chain) || (chain && o.chain === chain && !account) || (account && o.chain === account.chain && ((account.isEvm && o.key === account.key) || (!account.isEvm && o.name === account.name)))).forEach((token, i) => {
         token.amount = parseFloat(token.amount)
         token.usd = parseFloat(token.usd)
-        console.log(23)
-        if ((!isNaN(token.amount) && token.amount !== 0) || token.isEvm) {
-          if (this.assets.find(o => o.type === token.type && o.chain === token.chain && (token.chain !== 'eos' || o.contract === token.contract))) {
-            let index = this.assets.findIndex(o => o.type === token.type)
 
+        if ((!isNaN(token.amount) && token.amount !== 0) || token.isEvm) {
+          let index = this.assets.findIndex(o => o.type === token.type && o.chain === token.chain && (token.chain !== 'eos' || o.contract === token.contract))
+          console.log(token.chain, token.type)
+          if (index !== -1) {
             this.assets[index].amount += token.amount
             this.assets[index].usd += isNaN(token.usd) ? 0 : token.usd
             this.assets[index].rateUsd = isNaN(token.tokenPrice) ? 0 : token.tokenPrice
@@ -623,11 +621,6 @@ export default {
         token.color = change > 0 ? 'text-green-6' : 'text-pink-12'
       }
       return token
-    },
-    getChainLabel (chain) {
-      let isEvm = Lib.evms.find(a => a.chain === chain)
-
-      return isEvm ? isEvm.name : HD.names.find(a => a.value === chain)?.label
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
