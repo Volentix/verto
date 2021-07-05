@@ -337,7 +337,7 @@
           'inactive-btn': !swapData.toAmount || spinner.tx || spinner.amount,
         }"
         @click="
-          swapData.toAmount && !spinner.amount && !spinner.tx ? showSteps() : ''
+          swapData.toAmount && !spinner.amount && !spinner.tx ? ( setPathTransaction(paths.find(o => o.fromToken === depositCoin.value.toLowerCase()))) : ''
         "
         class="gdx-link theme-2"
         >Exchange</a
@@ -629,6 +629,7 @@
                         {{ chain == "eos" ? "account" : "address" }} to receive
                         {{ swapData.toAmount }}
                         {{ destinationCoin.value.toUpperCase() }}
+
                         <q-select
                           :dark="$store.state.settings.lightMode === 'true'"
                           :light="$store.state.settings.lightMode === 'false'"
@@ -710,6 +711,10 @@
                             </q-item>
                           </template>
                         </q-select>
+                         <span v-if="swapData.bridge" class="text-red">
+                          This is a multi path transaction. ({{depositCoin.value.toUpperCase()}} -> {{swapData.bridge.toUpperCase()}} -> {{ destinationCoin.value.toUpperCase() }}). You might need to convert manually the received {{swapData.bridge.toUpperCase()}}
+                          if you leave this screen.
+                        </span>
                       </div>
                       <div v-else>
                         <q-item-label class="q-py-sm" caption>
@@ -1342,7 +1347,7 @@
                   AssetTableRow__StyledHeaderDark-bzcx4v-14
                   hfJTMn
                 "
-                ><span class="priceLabel">{{path.fromToken.toUpperCase()}} to USD</span><br>${{formatNumber(path.tokenPrice, 2)}}</span
+                ><span class="priceLabel">{{path.fromToken.toUpperCase()}} to USD</span><br>{{path.tokenPrice ? '$'+formatNumber(path.tokenPrice, 2) : 'NAN'}}</span
               >
 
             </div>
@@ -1768,7 +1773,7 @@ export default {
         }
       ]
       */
-      let list = [] // .concat(this.$store.state.wallets.tokens)
+      let list = [].concat(this.$store.state.wallets.tokens)
       list.unshift({
         type: from.toLowerCase(),
         amount: amount,
@@ -1804,8 +1809,6 @@ export default {
               }
             }
           }
-
-          console.log(this.paths, ' this.paths ')
         }
       })
     },
@@ -1813,6 +1816,7 @@ export default {
       this.spinner.amount = true
       this.resetSwapData()
       this.getPathForToken(this.depositCoin.value, this.destinationCoin.value, this.swapData.fromAmount)
+      this.spinner.amount = false
       /*
       this.path = await this.getPaths(
         this.depositCoin.value,
@@ -2208,6 +2212,14 @@ export default {
         })
     },
     setPathTransaction (path) {
+      if (!path) {
+        this.$q.notify({
+          type: 'my-notif',
+          message: 'Transaction path not found',
+          timeout: 3000
+        })
+        return
+      }
       this.depositCoin.value = path.fromToken
       this.depositCoin.image = path.icon
       this.swapData.fromAmount = path.fromAmount
