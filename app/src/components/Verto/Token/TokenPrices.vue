@@ -78,12 +78,12 @@
 </div>
 
 <!-- socket loader -->
-<div  :class="{ 'visible': loaderVisible }">
-  <div class="loader-content">
-    <div v-if="status === 0"><i>📡</i> <br /> Connecting to Socket API ...</div>
-    <div v-else-if="status === 1"><i>💬</i> <br /> Waiting for data from Socket API ...</div>
-    <div v-else-if="status === 2"><i>😃</i> <br /> Connected to the Socket API</div>
-    <div v-else-if="status === -1"><i>😡</i> <br /> Error connecting to the Socket API</div>
+<div class="text-h6 flex flex-center"  :class="{ 'visible': loaderVisible }">
+  <div class="loader-content flex q-pt-lg">
+    <div v-if="status === 0"><i>📡</i> Connecting to Socket API ...</div>
+    <div v-else-if="status === 1"><i>💬</i>  Waiting for data from Socket API ...</div>
+    <div v-else-if="status === 2"><i>😃</i>  Connected to the Socket API</div>
+    <div v-else-if="status === -1"><i>😡</i>  Error connecting to the Socket API</div>
   </div>
 </div>
 

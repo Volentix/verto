@@ -128,7 +128,10 @@ export default {
       }
 
       let w = this.setChains().find(o => o.chain === chain)
+
       if (w && w.accounts && w.accounts.length) { this.$store.commit('investment/setDefaultAccount', this.formatAccoountOption(w.accounts[0])) }
+
+      return w
     },
     setChains () {
       /*

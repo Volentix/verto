@@ -433,6 +433,9 @@ export default {
         limit: -1
       })).rows
 
+      if (pairs && pairs.length) {
+        this.$store.commit('settings/setGlobalSettingsItem', { key: 'defiboxPairs', data: pairs })
+      }
       return pairs
     },
     async getDefiboxCoins () {

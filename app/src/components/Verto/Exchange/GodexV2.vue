@@ -428,7 +428,7 @@
                   </q-item-section>
                 </q-item>
                 <q-btn
-                  v-if="innerStep.deposit == 2"
+                  v-if="innerStep.deposit == 2 &&  swapData.fromChains.length > 1"
                   icon="arrow_back"
                   label="Back"
                   class="q-mb-md"
@@ -586,195 +586,7 @@
                   class="q-mt-sm"
                 />
               </q-list>
-              <q-list separator>
-                <q-item
-                  v-show="
-                    swapData.fromChains.length > 1 && innerStep.deposit == 1
-                  "
-                  v-for="chain in swapData.fromChains"
-                  :key="chain"
-                  :dark="$store.state.settings.lightMode === 'true'"
-                  tag="label"
-                  v-ripple
-                  @click="changeInnerStep()"
-                >
-                  <q-item-section
-                    v-if="swapData.fromChains.length != 1"
-                    side
-                    top
-                  >
-                    <q-radio
-                      v-model="swapData.fromChosenChain"
-                      :val="chain"
-                      label=""
-                    />
-                  </q-item-section>
 
-                  <q-item-section>
-                    <q-item-label
-                      >Send from {{ chain.toUpperCase() }} network</q-item-label
-                    >
-                  </q-item-section>
-                </q-item>
-                <q-btn
-                  v-if="innerStep.deposit == 2"
-                  icon="arrow_back"
-                  label="Back"
-                  class="q-mb-md"
-                  flat
-                  @click="innerStep.deposit = 1"
-                />
-                <div
-                  v-if="
-                    swapData.fromChosenChain &&
-                    chainData &&
-                    chainData.accounts.length &&
-                    innerStep.deposit == 2
-                  "
-                >
-                  Select {{ swapData.fromChosenChain.toUpperCase() }}
-                  {{
-                    swapData.fromChosenChain == "eos" ? "account" : "address"
-                  }}
-                  to send
-                  {{ swapData.fromAmount }}
-                  {{ depositCoin.value.toUpperCase() }}
-                  <q-select
-                    :dark="$store.state.settings.lightMode === 'true'"
-                    :light="$store.state.settings.lightMode === 'false'"
-                    separator
-                    rounded
-                    outlined
-                    style="max-width: 300px"
-                    class="select-input accountDropdown q-my-md"
-                    v-model="fromAccountSelected[swapData.fromChosenChain]"
-                    :options="chainData.accounts"
-                  >
-                    <template v-slot:option="scope">
-                      <q-item
-                        class="custom-menu"
-                        v-bind="scope.itemProps"
-                        v-on="scope.itemEvents"
-                      >
-                        <q-item-section avatar>
-                          <q-icon
-                            class="option--avatar"
-                            :name="`img:${scope.opt.icon}`"
-                          />
-                        </q-item-section>
-                        <q-item-section
-                          :dark="$store.state.settings.lightMode === 'true'"
-                        >
-                          <q-item-label v-html="scope.opt.name" />
-                          <q-item-label caption class="ellipsis mw200">{{
-                            scope.opt.key
-                          }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-                    </template>
-                    <template
-                      v-if="
-                        fromAccountSelected[swapData.fromChosenChain] &&
-                        fromAccountSelected[swapData.fromChosenChain].icon
-                      "
-                      v-slot:selected
-                    >
-                      <q-item>
-                        <q-item-section avatar>
-                          <q-icon
-                            class="option--avatar"
-                            :name="`img:${
-                              fromAccountSelected[swapData.fromChosenChain].icon
-                            }`"
-                          />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label
-                            v-html="
-                              fromAccountSelected[swapData.fromChosenChain].name
-                            "
-                          />
-                          <q-item-label
-                            caption
-                            class="ellipsis mw200"
-                            :class="{
-                              'text-white':
-                                $store.state.settings.lightMode === 'true',
-                            }"
-                            >{{
-                              getKeyFormat(
-                                fromAccountSelected[swapData.fromChosenChain]
-                                  .key
-                              )
-                            }}</q-item-label
-                          >
-                        </q-item-section>
-                      </q-item>
-                    </template>
-                  </q-select>
-                  <p
-                    v-if="fromAccountSelected[swapData.fromChosenChain]"
-                    class="text-body2 q-my-sm"
-                  >
-                    We set this address as the return address in case the
-                    transaction <br />needs to be refunded.
-                  </p>
-                </div>
-                <div v-else-if="chainData">
-                  <p
-                    v-if="
-                      $store.state.settings.chainsSendEnabled.includes(
-                        swapData.fromChosenChain.toLowerCase()
-                      ) &&
-                      chainData &&
-                      (!chainData.accounts || !chainData.accounts.length)
-                    "
-                  >
-                    No {{ swapData.fromChosenChain.toUpperCase() }} wallet
-                    found. Import this wallet and start using it inside Verto.
-                    If you decide to continue with this exchange without having
-                    your wallet in Verto, you will need an external wallet to
-                    make the deposit
-                  </p>
-
-                  <div
-                    v-else-if="
-                      chainData &&
-                      !$store.state.settings.chainsSendEnabled.includes(
-                        swapData.fromChosenChain.toLowerCase()
-                      )
-                    "
-                  >
-                    Verto will support asset transfer for this chain Very soon.
-                    You will need an external wallet to make the deposit to
-                    finalize this exchange
-                  </div>
-                </div>
-                <div v-else-if="swapData.fromChosenChain">
-                  Verto will support this chain very soon. You will need an
-                  external wallet to make the deposit to finalize this exchange
-                </div>
-
-                <q-btn
-                  :loading="spinner.tx"
-                  v-if="
-                    (swapData.fromChosenChain &&
-                      (!chainData ||
-                        !$store.state.settings.chainsSendEnabled.includes(
-                          swapData.fromChosenChain.toLowerCase()
-                        ) ||
-                        !chainData.accounts ||
-                        !chainData.accounts.length)) ||
-                    fromAccountSelected[swapData.fromChosenChain]
-                  "
-                  :disable="!swapData.fromChosenChain"
-                  label="Next"
-                  outline
-                  @click="tab = 'destination'"
-                  rounded
-                  class="q-mt-sm"
-                />
-              </q-list>
             </q-tab-panel>
             <q-tab-panel name="destination">
               <q-item-label v-if="swapData.toChains.length > 1" header
@@ -1780,7 +1592,7 @@ export default {
         txStatus: null,
         txStatusDescription: null,
         rate: 0,
-        eosProxy: false,
+        bridge: false,
         fromChosenChain: null,
         toTokenContract: false,
         toChosenChain: null,
@@ -1962,14 +1774,14 @@ export default {
         amount: amount,
         icon: this.depositCoin.image
       })
-      console.log(list)
+
       list.filter(a => a.amount && !isNaN(a.amount)).forEach(async o => {
         let values = (await this.getPaths(
           o.type,
           this.destinationCoin.value.toLowerCase(),
           o.amount
         ))
-        console.log(values, ' this.paths  values o.type', o.type)
+
         if (values.length) {
           values.map(a => {
             a.icon = o.icon
@@ -2053,7 +1865,7 @@ export default {
         )
         if (token) {
           CrosschainDex.setDex('godex')
-          this.swapData.eosProxy = true
+          this.swapData.bridge = true
           CrosschainDex.getPair(
             this.depositCoin.value,
             'eos',
@@ -2071,7 +1883,7 @@ export default {
                 )
 
                 if (!pairData || !pairData.pair) return
-                this.swapData.eosProxy = true
+                this.swapData.bridge = true
                 this.swapData.eosPairId = pairData.pair.pair_id
                 this.setExchangeData(
                   {
@@ -2220,6 +2032,11 @@ export default {
       if (this.swapData.toChains.length === 1) {
         this.swapData.toChosenChain = this.swapData.toChains[0]
       }
+
+      if (data.bridge) {
+        this.swapData.bridge = data.bridge
+      }
+
       this.swapData.fromChains = data.fromChains
       if (this.swapData.fromChains.length === 1) {
         this.swapData.fromChosenChain = this.swapData.fromChains[0]
@@ -2248,6 +2065,9 @@ export default {
       this.spinner.amount = false
       if (data.limitMinDepositCoin) {
         this.depositCoin.minimum = data.limitMinDepositCoin
+      }
+      if (data.bridge) {
+        this.swapData.bridge = data.bridge
       }
       if (!this.swapData.toAmount) {
         this.step = 0
@@ -2294,8 +2114,8 @@ export default {
       this.spinner.tx = true
       let to = this.destinationCoin.value
 
-      if (this.swapData.eosProxy) {
-        to = 'eos'
+      if (this.swapData.bridge) {
+        to = this.swapData.bridge
       }
       CrosschainDex.createTransaction(
         this.depositCoin.value,
@@ -2347,7 +2167,7 @@ export default {
                 this.fromAccountSelected[this.swapData.fromChosenChain]
 
               data.tx.toEosToken = true
-              data.tx.eosProxy = this.swapData.eosProxy
+              data.tx.bridge = this.swapData.bridge
               data.tx.toEosToken = this.destinationCoin.value.toLowerCase()
               data.tx.depositCoin = this.depositCoin
               data.tx.destinationCoin = this.destinationCoin
@@ -2394,7 +2214,7 @@ export default {
 
       if (path.dex === 'godex') {
         this.setExchangeData(
-          {
+          { bridge: path.bridge,
             limitMinDepositCoin: 0,
             amount: path.toAmount,
             toChains: [path.toChain],
@@ -2416,8 +2236,17 @@ export default {
           1
         ) */
       } else {
-        console.log(path, 'path', 'setDex')
-        this.setDefaultWallet(path.fromChain)
+        let isDefault = this.setDefaultWallet(path.fromChain)
+
+        if (!isDefault || isDefault === undefined) {
+          this.$q.notify({
+            type: 'my-notif',
+            message: `No ` + path.fromChain.toUpperCase() + ' found. Go to "Profile "to import ',
+            timeout: 3000
+
+          })
+          return
+        }
 
         this.$store.commit('settings/setDex', {
           dex: path.dex,
@@ -2461,7 +2290,7 @@ export default {
             oldTx.status = data.status
             if (
               data.status === 'success' &&
-              oldTx.eosProxy &&
+              oldTx.bridge &&
               !oldTx.proxyTxSent
             ) {
               data.proxyTxSent = true
