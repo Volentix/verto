@@ -11,7 +11,7 @@
                         <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
                     </div>
                 </div>
-                <div class="col col-md-9">
+                <div class="col" :class="{'col-md-9': !miniMode, 'col-md-12': miniMode}">
                     <div class="desktop-card-style apps-section q-mb-sm"  :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                         <!-- <q-scroll-area :visible="true" style="height: 80vh;"> -->
                         <div class="chain-tools-wrapper">
