@@ -7,9 +7,17 @@ export const setAirplaneMode = (state, data) => {
   state.airplaneMode = data
 }
 export const setGlobalSettings = (state, data) => {
-  state.globalSettings = data
+  for (let key in data) {
+    if (!state.globalSettings[key]) {
+      state.globalSettings[key] = data[key]
+    }
+  }
   localStorage.setItem('globalSettings', JSON.stringify(data))
 }
+export const setGlobalSettingsItem = (state, item) => {
+  state.globalSettings[item.key] = item.data
+}
+
 export const setEosSwapSlippage = (state, data) => {
   state.eos.swapSlippage = data
 }

@@ -31,6 +31,84 @@
         </q-scroll-area>
       </div>
     </div>
+    <q-drawer
+        side="right"
+        v-if="$store.state.settings.activityBar && false"
+        v-model="drawerRight"
+        show-if-above
+        bordered
+        :width="300"
+        :breakpoint="500"
+        class="bg-grey-3"
+      >
+        <q-scroll-area class="fit">
+          <div class="q-pa-sm">
+             <q-timeline color="secondary" class="q-pl-md">
+       <div class="text-h6 q-pb-md">Recent activity</div>
+      <q-timeline-entry
+        title="Event Title"
+        subtitle="February 22, 1986"
+      >
+        <div>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit </div>
+      </q-timeline-entry>
+
+      <q-timeline-entry
+        title="Event Title"
+        subtitle="February 21, 1986"
+        icon="delete"
+      >
+        <div>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit</div>
+      </q-timeline-entry>
+
+      <q-timeline-entry
+        title="Event Title"
+        subtitle="February 22, 1986"
+        avatar="https://cdn.quasar.dev/img/avatar2.jpg"
+      >
+        <div>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit
+           </div>
+      </q-timeline-entry>
+
+      <q-timeline-entry
+        title="Event Title"
+        subtitle="February 22, 1986"
+      >
+        <div>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit  </div>
+      </q-timeline-entry>
+
+      <q-timeline-entry
+        title="Event Title"
+        subtitle="February 22, 1986"
+        color="orange"
+        icon="done_all"
+      >
+        <div>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit    </div>
+      </q-timeline-entry>
+
+      <q-timeline-entry
+        title="Event Title"
+        subtitle="February 22, 1986"
+      >
+        <div>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit  </div>
+      </q-timeline-entry>
+
+      <q-timeline-entry
+        title="Event Title"
+        subtitle="February 22, 1986"
+      >
+        <div>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit,</div>
+      </q-timeline-entry>
+             </q-timeline>
+          </div>
+        </q-scroll-area>
+      </q-drawer>
   </q-layout>
 </template>
 
@@ -48,6 +126,7 @@ export default {
     return {
       screenSize: 0,
       showWizard: false,
+      drawerRight: false,
       osName: '',
       fab: true,
       fabPos: [ 18, 50 ],
@@ -68,6 +147,7 @@ export default {
   },
   created () {
     let closewizard = localStorage.getItem('closewizard')
+
     if (!closewizard) {
       this.showWizardAction()
     }
@@ -75,6 +155,22 @@ export default {
     this.reRender = Math.random()
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
+    if (this.$store.state.settings.isDemo) {
+      this.$q.notify({
+        type: 'my-notif',
+        message: `Click here to start using Verto`,
+        timeout: 1000000,
+        actions: [
+          { label: 'Get started',
+            color: 'white',
+            handler: () => {
+              this.$router.push({
+                name: 'create-password'
+              })
+            } }
+        ]
+      })
+    }
   },
   methods: {
     showWizardAction () {

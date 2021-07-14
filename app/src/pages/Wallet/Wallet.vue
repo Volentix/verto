@@ -337,7 +337,7 @@ export default {
         // get EOS Balance on EOS Account
         Promise.all([vtxProm, eosProm]).then(async values => {
           let results = await this.$axios.get('https://api3.stex.com/public/ticker/1059')
-          let eos2btc = await this.$axios.get('https://api.coingecko.com/api/v3/simple/price?ids=eos&vs_currencies=btc')
+          let eos2btc = await this.$axios.get( process.env[this.$store.state.settings.network].CACHE +'https://api.coingecko.com/api/v3/simple/price?ids=eos&vs_currencies=btc')
           let eosBtcTotals = parseFloat(+eos2btc.data.eos.btc * +self.eosBalance).toFixed(8)
           let vtxBtcTotals = parseFloat((+results.data.data.ask * +self.vtxTotal) / 10000).toFixed(8)
           self.currentBtcValue = +eosBtcTotals + +vtxBtcTotals || 0

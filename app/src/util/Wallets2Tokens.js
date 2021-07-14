@@ -8,23 +8,38 @@ import EosWrapper from '@/util/EosWrapper'
 class Wallets2Tokens {
   constructor (walletName = null) {
     let data = this.getWalletFromCache()
-
+    let existingWallet = null
+    let ethWallet = null
     this.tableDataCache = []
     this.tableData = []
 
     // store.state.wallets.portfolioTotal = 0
     /*
     store.state.currentwallet.config.keys.push({
-      chain: 'eos',
-      type: 'eos',
-      name: 'operationtoz',
-      key: '0x4a02dEADD223E106185144181B0816549Edec862'
+      chain: 'eth',
+      type: 'eth',
+      name: 'test',
+      key: '0x508f51c6fe10E5117caaEF3306fd2126A161825a'
     })
-*/
+    store.state.currentwallet.config.keys.push({
+      chain: 'eth',
+      type: 'eth 2',
+      name: 'test',
+      key: '0xf4dcb9ca53b74e039f5fcfccd4f0548547a25772'
+    })
+    */
+
     if (data) {
       walletName = walletName ? walletName.toLowerCase() : walletName
+
+      existingWallet = store.state.wallets.tokens.find(w => w.name.toLowerCase() === walletName)
+      // Refresh ETh wallet if refresh is requested for an evm wallet
+      if (existingWallet && existingWallet.isEvm) {
+        ethWallet = store.state.wallets.tokens.find(w => w.key.toLowerCase() === existingWallet.key.toLowerCase() && w.chain === 'eth' && w.type === 'eth')
+      }
+
       this.tableDataCache = data.filter(
-        w => w.name.toLowerCase() !== walletName || !walletName
+        w => ((!walletName || (w.name.toLowerCase() !== walletName && !ethWallet)) || (ethWallet && w.key.toLowerCase() !== ethWallet.key.toLowerCase()))
       )
 
       if (!walletName) {
@@ -39,7 +54,7 @@ class Wallets2Tokens {
     this.getEosUSD()
 
     this.tableData = [...store.state.currentwallet.config.keys].filter(
-      w => w.name.toLowerCase() === walletName || !walletName
+      w => (!walletName || (w.name.toLowerCase() === walletName.toLowerCase() && !ethWallet)) || (ethWallet && w.key.toLowerCase() === ethWallet.key.toLowerCase())
     )
 
     if (store.state.settings.network === 'testnet') {
@@ -102,7 +117,6 @@ class Wallets2Tokens {
                   usdValue = result
                   // console.log('this.eosUSD $$$$$ ', usdValue)
                   self.tableData.push({
-                    selected: false,
                     disabled: false,
                     type,
                     name,
@@ -248,7 +262,7 @@ class Wallets2Tokens {
       })
     }
     store.state.currentwallet.config.keys
-      .filter(w => w.name.toLowerCase() === walletName || !walletName)
+      .filter(w => (!walletName || (w.name.toLowerCase() === walletName.toLowerCase() && !ethWallet)) || (ethWallet && w.key.toLowerCase() === ethWallet.key.toLowerCase()))
       .filter(
         o =>
           store.state.settings.network === 'mainnet' &&
@@ -285,17 +299,52 @@ class Wallets2Tokens {
             wallet.privateKey = privateKeysAttrs.privateKey
             wallet.privateKeyEncrypted = privateKeysAttrs.privateKeyEncrypted
           }
-          let result = this.getEOSTokens(wallet, balances)
-          if (result) {
-            result.catch(e => {
-              this.getEOSTokensV2(wallet, balances, true)
-            })
-          }
-
-          this.updateWallet()
+          this.getEOSTokens(wallet, balances)
         } else if (wallet.type === 'eth') {
-          // Getting balance using zapper
+          // wallet.key = '0xf4dcb9ca53b74e039f5fcfccd4f0548547a25772'
+          Lib.evms.filter(m =>
+            m.network_id !== 1 // Until eth is integrated into covalent api
+          ).forEach(e => {
+            axios
+              .get(
+                process.env[store.state.settings.network].CACHE +
+                  'https://api.covalenthq.com/v1/' + e.network_id +
+                  '/address/' + wallet.key + '/balances_v2/',
+                { auth: { username: 'ckey_a9e6f6ab90584877b86b151eef3' } }
+              )
+              .then(res => {
+                res.data.data.items.map(t => {
+                  let amount = (t.balance / 10 ** t.contract_decimals) * t.quote_rate
 
+                  self.tableData.push({
+                    isEvm: true,
+                    disabled: false,
+                    type: t.contract_ticker_symbol
+                      ? t.contract_ticker_symbol.toLowerCase()
+                      : '',
+                    name: t.contract_name,
+                    tokenPrice: t.quote_rate,
+                    key: wallet.key.toLowerCase(),
+                    privateKey: wallet.privateKey,
+                    amount: t.balance / 10 ** t.contract_decimals,
+                    usd: amount,
+                    contract: t.contract_address,
+                    chain: e.chain,
+                    to:
+                      '/verto/wallets/' + e.chain + '/' +
+                      t.contract_ticker_symbol.toLowerCase() +
+                      '/' +
+                      wallet.key,
+                    icon: t.logo_url && t.logo_url.length ? t.logo_url : self.getTokenImage(e.chain, t.contract_ticker_symbol.toLowerCase())
+                  })
+                })
+                this.updateWallet()
+              }).catch(e => {
+                console.log(e, 'Errors')
+              })
+          })
+
+          // Getting balance using zapper
           axios
             .get(
               process.env[store.state.settings.network].CACHE +
@@ -309,9 +358,11 @@ class Wallets2Tokens {
               if (!ethplorer || !ethplorer.ETH) { return this.getEthBalanceFromZapper(wallet) }
 
               self.tableData
-                .filter(w => w.key === wallet.key)
+                .filter(w => w.key === wallet.key && w.type === 'eth' && w.chain === 'eth')
                 .map(eth => {
                   eth.amount = ethplorer.ETH.balance
+                  eth.isEvm = true
+
                   eth.key = wallet.key.toLowerCase()
                   eth.usd = ethplorer.ETH.balance * ethplorer.ETH.price.rate
                   eth.tokenPrice = ethplorer.ETH.price.rate
@@ -379,7 +430,7 @@ class Wallets2Tokens {
                             (t.balance / 10 ** t.tokenInfo.decimals) *
                             t.tokenInfo.price.rate
                           self.tableData.push({
-                            selected: false,
+                            isEvm: true,
                             disabled: false,
                             type: t.tokenInfo.symbol
                               ? t.tokenInfo.symbol.toLowerCase()
@@ -439,9 +490,21 @@ class Wallets2Tokens {
     // store.commit('wallets/updateTokens', this.tableData)
     // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)
   }
+  getTokenImage (chain, type) {
+    let image = 'https://i.ibb.co/hYhjV1j/empty-token.png'
+
+    if (Lib.evms.find(o => o.chain === chain)) {
+      let token = store.state.tokens.evmTokens[chain].find(o => o.symbol.toLowerCase() === type.toLowerCase())
+      if (token) image = token.logoURI
+      // Set bnb token image temp
+    //  if (type === 'bnb') image = 'https://nownodes.io/images/binance-smart-chain/bsc-logo.png'
+    }
+    return image
+  }
+
   async getEOSTokensV2 (wallet, balances, fetchTokens) {
     const self = this
-    console.log('getEOSTokensV2')
+
     let response = await axios.get(process.env[store.state.settings.network].CACHE + 'https://eosx-apigw.eosx.io/api/balance/mainnet/' + wallet.name)
     if (response && response.data && response.data.data && response.data.data.balances) {
       response.data.data.balances.forEach(el => {
@@ -489,7 +552,6 @@ class Wallets2Tokens {
               }
 
               self.tableData.push({
-                selected: false,
                 disabled: false,
                 type,
                 name,
@@ -518,43 +580,30 @@ class Wallets2Tokens {
             })
           }
         } else {
-          this.eos.getAccount(wallet.name).then(async a => {
-            if (this.eosUSD === 0) {
-              await this.getEosUSD()
-            }
-
-            self.tableData
-              .filter(
-                w =>
-                  w.key === wallet.key &&
-                w.type === 'eos' &&
-                w.name === wallet.name
-              )
-              .map(async eos => {
-              // let coinSlug = coinsNames.data.find(coin => coin.symbol.toLowerCase() === 'eos')
-              // eos.vespucciScore = (await this.getCoinScore(coinSlug.slug)).vespucciScore
-
-                eos.amount = t.amount ? t.amount : '0.0000'
-                eos.usd = this.eosUSD * t.amount
-                eos.contract = 'eosio.token'
-                eos.tokenPrice = this.eosUSD
-                eos.privateKey = wallet.privateKey
-                eos.privateKeyEncrypted = wallet.privateKeyEncrypted
-                eos.precision = eos.amount.toString().split('.')[1]
-                  ? eos.amount.toString().split('.')[1].length
-                  : 0
-                eos.accountData = a
-                eos.proxy = a.voter_info ? a.voter_info.proxy : ''
-                eos.staked = a.voter_info
-                  ? a.voter_info.staked / 10000
-                  : 0
-              // console.log('eos eos eos  ', eos)
-              // store.state.wallets.portfolioTotal += this.eosUSD * t.amount
-              })
-          })
-
-          this.updateWallet()
+          this.getEosMainBalance(wallet, t.amount, 45567)
         }
+      })
+  }
+  getEosMainBalance (wallet, amount, test) {
+    this.tableData
+      .filter(w => w.key === wallet.key && w.type === 'eos' && w.name === wallet.name)
+      .map(eos => {
+        this.eos.getAccount(wallet.name).then(async a => {
+          if (this.eosUSD === 0) {
+            await this.getEosUSD()
+          }
+
+          eos.amount = amount || '0.0000'
+          eos.usd = this.eosUSD * amount
+          eos.contract = 'eosio.token'
+          eos.tokenPrice = this.eosUSD
+          eos.precision = 4
+          eos.accountData = a
+          eos.proxy = a.voter_info ? a.voter_info.proxy : ''
+          eos.staked = a.voter_info
+            ? a.voter_info.staked / 10000
+            : 0
+        })
       })
   }
   getEOSTokens (wallet, balances) {
@@ -564,18 +613,20 @@ class Wallets2Tokens {
           '?type=getAccountTokens&coreSymbol=EOS'
       )
       .then(response => {
-        console.log((response && response.data && response.data.tokens), response, 'response 2')
         if (response && response.data && response.data.tokens) {
-          response.data.tokens.forEach(token => {
+          response.data.tokens.forEach((token, i) => {
             let image =
               token.metadata.logo.split('https:').length === 3
                 ? token.metadata.logo
                 : 'https://raw.githubusercontent.com/eoscafe/eos-airdrops/master/logos/placeholder.png'
             let data = token
+            let exchange = token.exchanges.find(
+              o => o.name.toLowerCase() === 'defibox'
+            )
             data.tokenPrice =
-              token.exchanges && token.exchanges[0]
-                ? token.exchanges[0].price
-                : 0
+            exchange ? exchange.price : (token.exchanges && token.exchanges[0]
+              ? token.exchanges[0].price
+              : 0)
             if (token.currency.toLowerCase() === 'vtx') {
               let vtxData = store.state.tokens.walletTokensData.find(
                 o => o.symbol === 'vtx'
@@ -584,12 +635,11 @@ class Wallets2Tokens {
                 data.tokenPrice = vtxData.current_price
               } else if (data.tokenPrice) {
                 data.tokenPrice = token.exchanges.find(
-                  o => o.name === 'Defibox'
+                  o => o.name.toLowerCase() === 'defibox'
                 ).price
               }
             }
             this.tableData.push({
-              selected: false,
               disabled: false,
               type: token.currency.toLowerCase(),
               name: wallet.name,
@@ -609,48 +659,20 @@ class Wallets2Tokens {
                 wallet.name,
               icon: image
             })
+
+            if (i === response.data.tokens.length - 1) {
+              this.getEosMainBalance(wallet, balances.find(o => o.symbol === 'EOS').amount, 12345)
+            }
           })
           this.updateWallet()
         } else {
           this.getEOSTokensV2(wallet, balances, true)
         }
       }).catch(e => {
-        const errorMessage = { code: 403, message: 'Failed fetch from bloks.io' }
-        throw errorMessage
+        this.getEOSTokensV2(wallet, balances, true)
       })
   }
-  checkForExpiredData () {
-    const keepData = [
-      'skin',
-      'hideEosSetup',
-      'disableIntro_defi',
-      'closewizard',
-      'disable_freeospopup',
-      'globalSettings'
-    ]
-    let date = localStorage.getItem('walletDataExpiration')
-    let days = 2
-    let now = new Date()
-    let saved = null
-    if (date) {
-      saved = new Date(date)
-      saved.setDate(saved.getDate() + days)
-    }
-
-    if (!date || now.getTime() > saved.getTime()) {
-      let keys = Object.keys(localStorage),
-        i = keys.length
-
-      while (i--) {
-        if (!keepData.includes(keys[i])) {
-          localStorage.removeItem(keys[i])
-        }
-      }
-    }
-    localStorage.setItem('walletDataExpiration', now)
-  }
   getWalletFromCache () {
-    this.checkForExpiredData()
     let data = localStorage.getItem('walletPublicData')
 
     if (data) {
@@ -724,10 +746,11 @@ class Wallets2Tokens {
         }
 
         this.tableData
-          .filter(w => w.key.toLowerCase() === wallet.key.toLowerCase())
+          .filter(w => w.key.toLowerCase() === wallet.key.toLowerCase() && w.type === 'eth' && w.chain === 'eth')
           .map(eth => {
             eth.amount = ethBalance.ammount
             eth.usd = ethBalance.usd
+            eth.isEvm = true
             eth.icon = 'https://zapper.fi/images/ETH-icon.png'
           })
 
@@ -735,8 +758,8 @@ class Wallets2Tokens {
           .filter(o => o.symbol.toLowerCase() !== 'eth')
           .forEach(t => {
             this.tableData.push({
-              selected: false,
               disabled: false,
+              isEvm: true,
               type: t.symbol ? t.symbol.toLowerCase() : '',
               name: wallet.name,
               key: wallet.key,

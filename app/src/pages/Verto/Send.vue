@@ -1,5 +1,5 @@
 <template>
-  <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+    <div :class="{'bg-white text-black': $store.state.settings.lightMode === 'false'}">
     <div v-if="getPassword" class="send-modal flex flex-center" :class="{'open' : openModal, 'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="send-modal__content column flex-center">
         <div class="send-modal__content--head">
@@ -73,7 +73,8 @@
           <q-btn flat round dense icon="close" v-close-popup />
         </q-toolbar>
         <q-card-section class="text-h6">
-          <div class="text-h6 q-mb-md q-pl-sm">{{transStatus  &&  transStatus == 'pending' ? 'Transaction submitted' : 'Transaction done Successfully.'}}</div>
+          <div class="text-h6 q-mb-md q-pl-sm">{{transStatus  && ( transStatus == 'pending' || isExchange ) ? 'Transaction submitted' : 'Transaction done Successfully.'}}</div>
+          <p v-if="isExchange && transSuccessDialog" class="text-body1"> Your coins are on the way: This transaction might take from 10 to 30 minutes to be fully completed. </p>
           <p class="text-body1" v-if=" transStatus == 'pending' "> Follow this link to check its status</p>
           <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" readonly class="input-input" rounded outlined color="purple" v-model="transactionLink">
             <template v-slot:append>
@@ -102,33 +103,38 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
-      <div class="desktop-version full-height" v-if="screenSize > 1024">
-        <div class="row full-height">
-          <div class="col col-md-3" v-if="!embedded">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'full-height': screenSize > 1024 && !miniMode}">
+
+      <div :class="{'desktop-version': screenSize > 1024 && !miniMode}" v-if="screenSize">
+        <div class="row ">
+
+          <div class="col col-md-3" v-if="!embedded && screenSize > 1024 && !miniMode">
             <div class="wallets-container" style="height: 100%">
               <profile-header :isMobile="false" class="marg" version="type2222" />
               <wallets :isMobile="false" class="full-height max-height" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
               <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
             </div>
           </div>
-          <div :class="[ embedded ? 'col-md-10 offset-md-1' : ' col-md-9' , 'col']">
-            <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+          <div :class="[ embedded ? 'col-md-10 offset-md-1' : (miniMode ? 'col-md-12' : ' col-md-8' ), 'col']">
+            <div class="apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'desktop-card-style': screenSize > 1024 && !miniMode }">
               <div class="standard-content">
-                <h2 class="standard-content--title flex justify-start items-center">Send <img :src="currentToken.image" class="max40 q-ml-sm" alt=""></h2>
-                <div class="standard-content--body">
+                <h2 class="standard-content--title flex justify-start items-center" v-if="!miniMode">Send <img :src="currentToken.image" class="max40 q-ml-sm" alt=""></h2>
+                <div class="standard-content--body" v-show="miniStep != 2">
                   <div class="standard-content--body__form">
+
                     <div class="row">
-                      <div class="col col-8 q-pr-lg" v-if="['eth','eos'].includes(selectedCoin.chain)">
-                        <span class="lab-input">Select token </span>
+                      <div  v-if="selectedCoin.chain == 'eos' || selectedCoin.isEvm" :class="{'col-md-12 col-12 q-pr-none': screenSize < 1024 || miniMode}" class="col col-8" >
+                        <span class="lab-input" @click="setOptions">Select token </span>
+
                         <q-select
                             :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                             separator
                             rounded
                             outlined
                             class="select-input"
+                            @input="checkGas()"
                             v-model="currentToken"
-                            :options="options.filter( o => o.chainID == selectedCoin.chain && o.label.toLowerCase() == selectedCoin.name.toLowerCase())"
+                            :options="options.filter( o => o.chainID == selectedCoin.chain && ((selectedCoin.isEvm && o.key.toLowerCase() == currentAccount.key.toLowerCase()) || (!selectedCoin.isEvm && o.label.toLowerCase() == selectedCoin.name.toLowerCase())))"
                         >
                           <template v-slot:option="scope">
                             <q-item
@@ -141,20 +147,20 @@
                               </q-item-section>
                               <q-item-section dark>
                                 <q-item-label v-html="scope.opt.type.toUpperCase()" />
-                                <q-item-label v-html="scope.opt.amount"  caption/>
+                                <q-item-label v-html="scope.opt.amount ? scope.opt.amount : 0"  caption/>
                               </q-item-section>
                             </q-item>
                           </template>
                           <template v-slot:selected>
                             <q-item
-                              v-if="currentToken"
+                              v-if="currentToken && currentToken.type"
                             >
                               <q-item-section avatar>
                                 <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
                               </q-item-section>
                               <q-item-section>
                                 <q-item-label v-html="currentToken.type.toUpperCase()" />
-                                <q-item-label class="q-pt-sm" v-html="currentToken.amount" caption/>
+                                <q-item-label class="q-pt-xs" v-html="currentToken.amount ? currentToken.amount : 0" caption/>
                               </q-item-section>
                             </q-item>
                             <q-item
@@ -171,7 +177,7 @@
                         </q-input> -->
                       </div>
 
-                      <div class="col col-8 q-pr-lg" v-else>
+                      <div class="col col-8 q-pr-lg" :class="{'col-md-12 col-12': screenSize < 1024 || miniMode}" v-else>
                         <span class="lab-input">From</span>
                         <q-select
                             :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
@@ -224,9 +230,9 @@
                         </q-input> -->
 
                       </div>
-                      <div class="col col-4">
-                        <span class="lab-input">Amount</span>
-                        <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentToken.amount) ? parseFloat(currentToken.amount) : parseFloat(sendAmount) ; checkGas();" :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
+                      <div class="col col-4" :class="{'col-md-12 col-12': screenSize < 1024 || miniMode}">
+                        <span class="lab-input" >Amount</span>
+                        <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentToken.amount) ? ( miniMode ?  sendAmount :  parseFloat(currentToken.amount) ) : parseFloat(sendAmount) ; checkGas(); " :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                           <template v-slot:append>
                             <div class="flex justify-end">
                               <span class="tokenID">{{ currentToken.type }}</span>
@@ -249,7 +255,7 @@
                           bottom-slots
                           :error="toError"
                           :error-message="toErrorMessage"
-                          :label="currentToken.chainID.toUpperCase() + ' Address'"
+                          :label="currentToken && currentToken.chainID ? currentToken.chainID.toUpperCase() + ' Address' : ''"
                         >
                           <template v-slot:append>
                             <div class="flex justify-end">
@@ -259,29 +265,31 @@
                           </template>
                         </q-input>
                       </div>
-                      <div class="col col-12">
-                        <span v-if="currentToken.chainID && currentToken.chainID.toLowerCase() != 'eth'" class="lab-input">Memo</span>
-                        <q-input :disable="disableMemoEdit" v-if="currentToken.chainID && currentToken.chainID.toLowerCase() != 'eth'" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
+                      <div class="col col-12" v-if="currentToken.chainID && !currentAccount.isEvm && currentAccount.chain != 'btc'">
+                        <span v-if="currentToken.chainID && !currentAccount.isEvm" class="lab-input">Memo</span>
+                        <q-input :disable="disableMemoEdit" v-if="currentToken.chainID && !currentAccount.isEvm" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
                       </div>
                     </div>
                   </div>
                   <br>
                 </div>
-                <q-list v-if="gasOptions.length && currentAccount.chain == 'eth' " class="gasfield q-mb-md"  separator>
-                    <q-item dense class="gasSelector">
-                        <q-item-section v-for="(gas, index) in gasOptions" :key="index">
+
+                <q-list :class="{'q-pt-md': miniMode}" v-if="!params.gasSelected && gasOptions.length && (currentAccount.isEvm || currentAccount.chain == 'btc' ) && (!miniMode || miniStep == 2)" class="gasfield q-mb-md"  separator>
+               <span v-if="!disableMemoEdit"> <span v-if="miniStep == 2" class="q-pr-md"><q-btn @click="miniStep = 1" icon="arrow_back" flat /> |</span> <span>Select gas</span></span>
+                    <div dense class="gasSelector row" :class="{'q-pt-sm': miniStep == 2}">
+                        <div class="col-md-4" :class="{'col-md-12 q-mb-sm': miniMode}" v-for="(gas, index) in gasOptions" :key="index">
                             <q-item :class="[gasSelected.label == gas.label && !customGas ? 'selected bg-black text-white' : '' , gas.label]" @click="gasSelected = gas" clickable separator v-ripple>
                                 <q-item-section>
-                                    <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 text-black']">${{gas.value }}</q-item-label>
-                                    <q-item-label class="text-body1 text-grey"> {{gas.label }}</q-item-label>
+                                    <q-item-label :class="[gasSelected.label == gas.label ? 'text-black' : 'text-body1 ']">{{gas.isUsd ? '$'+gas.value : gas.nativeToken.toUpperCase()+ ' '+gas.value  }}</q-item-label>
+                                    <q-item-label class="text-body1 text-grey text-capitalize"> {{gas.label }}</q-item-label>
                                 </q-item-section>
-                                <q-item-section avatar>
+                                <q-item-section  v-if="!miniMode" avatar>
                                     <q-icon color="primary" name="local_gas_station" />
                                 </q-item-section>
                             </q-item>
-                        </q-item-section>
+                        </div>
 
-                        <q-item-section v-if="customGas">
+                        <div class="col-md-4" :class="{'col-md-12': miniMode}" v-if="customGas">
                             <q-item class="selected bg-black text-white" clickable separator v-ripple>
                                 <q-item-section>
                                     <q-item-label class="text-black">${{customGas.value}}</q-item-label>
@@ -291,20 +299,21 @@
                                     <q-icon color="primary" name="local_gas_station" />
                                 </q-item-section>
                             </q-item>
-                        </q-item-section>
-                    </q-item>
+                        </div>
+                    </div>
                 </q-list>
 
-                <div class="row q-col-gutter-md" style="max-width:300px" v-if="showGasOptions &&  currentAccount.chain == 'eth'">
+                <div class="row q-col-gutter-md" style="max-width:300px" v-if="showGasOptions &&  currentAccount.isEvm">
                  <q-input outlined label="Gas Price (GWEI)"  @input="isBalanceEnough(); setCustomGas()" v-model="gasPriceGwei" dense   class="col-6"/>
                  <q-input outlined label="Gas limit" @input="isBalanceEnough(); setCustomGas()"  v-model="gasLimit" dense  class="col-6" />
                 </div>
-                <span v-if="gasOptions.length && currentAccount.chain == 'eth' ">
-                <span class="q-pl-md cursor-pointer" @click="showGasOptions = true" v-if="!showGasOptions"><q-icon name="add" /> Advanced options</span>
+                <span v-if="gasOptions.length && currentAccount.isEvm">
+                <span class="q-pl-md cursor-pointer"  @click="showGasOptions = true" v-if="!showGasOptions"><q-icon name="add" /> Advanced </span>
                 <span class="cursor-pointer q-pt-xs" @click="showGasOptions = false" v-else>Hide </span>
                 </span>
-                <div class="standard-content--footer">
-                  <q-btn flat :loading="openModalProgress" class="action-link next" :disable="currentAccount.chain == 'eth' &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="openModalFun()" text-color="white"  label="Transfer" />
+                <q-linear-progress v-if="!params.sendTransaction && sendAmount !== 0 && sendToResolved  && currentAccount.isEvm &&  gasOptions.length == 0 " indeterminate rounded  color="deep-purple-12" class="q-my-sm" />
+                 <div class="standard-content--footer" v-if="!params.sendTransaction && (!isExchange || !transSuccessDialog)">
+                   <q-btn flat :loading="openModalProgress" class="action-link next" :disable="!currentToken.amount || currentAccount.isEvm &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="(!miniMode || !currentAccount.isEvm) ? openModalFun() :  ( miniStep == 2 ? openModalFun() : miniStep = 2 )" text-color="white"  :label="currentAccount.isEvm && miniMode && miniStep == 1 ? 'Set Gas' : 'Transfer'" />
                 </div>
               </div>
             </div>
@@ -369,7 +378,7 @@
         </div>
       </div>
     </div>
-  </q-page>
+      </div>
 </template>
 
 <script>
@@ -383,22 +392,24 @@ import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EOSContract from '../../mixins/EOSContract'
 import ETHContract from '../../mixins/EthContract'
+import initWallet from '@/util/Wallets2Tokens'
 import {
   mapState
 } from 'vuex'
 let cruxClient
-
+const Web3 = require('web3')
 export default {
   components: {
     // desktop components
     ProfileHeader,
     Wallets
   },
-  props: ['embedded'],
+  props: ['embedded', 'miniMode', 'isExchange'],
   data () {
     return {
       osName: '',
       progressValue: 20,
+      miniStep: 1,
       gasOptions: [],
       gasPriceGwei: null,
       customGas: false,
@@ -469,13 +480,30 @@ export default {
   },
   computed: {
     selectedCoin () {
-      return this.$store.state.currentwallet.wallet || {}
+      let account = null
+
+      if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain) {
+        account = this.$store.state.investment.defaultAccount
+        account.chainID = account.chain
+        let found = this.$store.state.wallets.tokens.find(o => o.chain === account.chain && account.key.toLowerCase() === o.key.toLowerCase())
+        if (found) {
+          account.privateKey = found.privateKey
+          account.privateKeyEncrypted = found.privateKeyEncrypted
+        }
+      }
+      return this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.chain ? this.$store.state.currentwallet.wallet : account
     },
     ...mapState('investment', ['gasPrice'])
   },
   watch: {
     gasPrice: function (newVal) {
-      this.checkGas()
+      if (this.currentAccount.isEvm) {
+        this.checkGas()
+      }
+    },
+    '$store.state.wallets.tokens': function (tokens) {
+      console.log(tokens, 'tokens')
+      this.setOptions()
     },
     gasSelected (val) {
       this.gasPriceGwei = val.gasPrice / 1000000000
@@ -514,7 +542,14 @@ export default {
       if (this.params.to) {
         this.sendTo = this.params.to
         this.sendMemo = this.params.memo
-        this.disableMemoEdit = this.params.disableMemoEdit
+        if (this.params.gasSelected) {
+          this.gasSelected = this.params.gasSelected
+        }
+        this.gasSelected = this.params.gasSelected
+        if (this.params.disableMemoEdit) {
+          this.disableMemoEdit = this.params.disableMemoEdit
+          this.miniStep = 2
+        }
         this.checkTo()
       }
     } else if (this.$route.params.chainID && this.$route.params.chainID) {
@@ -533,43 +568,10 @@ export default {
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
 
-    let self = this
-    this.tableData.map(token => {
-      if (!token.disabled && token.type.toLowerCase() !== 'verto' && parseFloat(token.amount) > 0) {
-        self.options.push({
-          label: token.name.toLowerCase(),
-          value: !['eos', 'eth'].includes(token.chain) ? token.key : token.key + ' - ' + token.type.toUpperCase(),
-          image: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
-          type: token.type,
-          contract: token.contract,
-          key: token.key,
-          name: token.name,
-          precision: token.precision,
-          amount: token.amount,
-          chainID: token.chain
-        })
-      }
-    })
+    this.setOptions()
 
-    if (this.selectedCoin) {
-      this.currentAccount = this.selectedCoin
-      this.currentToken = {
-        label: this.selectedCoin.name,
-        value: this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.key + ' - ' + this.selectedCoin.type.toUpperCase(),
-        image: this.selectedCoin.type !== 'usdt' ? this.selectedCoin.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
-        type: this.selectedCoin.type,
-        contract: this.selectedCoin.contract,
-        precision: this.selectedCoin.precision,
-        chainID: this.selectedCoin.chain,
-        key: this.selectedCoin.key,
-        name: this.selectedCoin.name,
-        amount: this.selectedCoin.amount
-      }
-    } else {
-      this.currentAccount = this.getCurrentWallet()
-    }
+    this.currentAccount = this.selectedCoin
 
-    this.currentAccount = this.currentAccount || this.currentToken
     if (this.params.chainID === undefined) {
       this.params = {
         chainID: this.currentAccount.chain,
@@ -589,23 +591,61 @@ export default {
     } else {
       this.isPrivateKeyEncrypted = true
     }
-    /*
-    this.cruxKey = await HD.Wallet('crux')
 
-    cruxClient = new CruxPay.CruxClient({
-      walletClientName: this.walletClientName,
-      privateKey: this.cruxKey.privateKey
-    })
-    await cruxClient.init()
-
-    */
-
-    this.$store.dispatch('investment/getGasPrice')
+    // this.$store.dispatch('investment/getGasPrice')
 
     this.checkGas()
+
+    if (this.$store.state.currentwallet.params.sendTransaction) {
+      this.openModalFun()
+    }
   },
   methods: {
+    refresh () {
+      initWallet(this.currentAccount.name)
+    },
+    setOptions () {
+      this.options = []
+      this.$store.state.wallets.tokens.forEach(token => {
+        if (!token.disabled && token.type.toLowerCase() !== 'verto') {
+          this.options.push({
+            label: token.name.toLowerCase(),
+            value: token.key + ' - ' + token.type.toUpperCase(),
+            image: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+            type: token.type,
+            contract: token.contract,
+            key: token.key,
+            name: token.name,
+            precision: token.precision,
+            amount: token.amount,
+            chainID: token.chain
+          })
+        }
+      })
 
+      if (!this.currentToken.key) {
+        if (this.selectedCoin) {
+          this.currentAccount = this.selectedCoin
+          this.currentToken = {
+            label: this.selectedCoin.name,
+            value: this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.key + ' - ' + this.selectedCoin.type.toUpperCase(),
+            image: this.selectedCoin.type !== 'usdt' ? this.selectedCoin.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+            type: this.selectedCoin.type,
+            contract: this.selectedCoin.contract,
+            precision: this.selectedCoin.precision,
+            chainID: this.selectedCoin.chain,
+            key: this.selectedCoin.key,
+            name: this.selectedCoin.name,
+            amount: this.selectedCoin.amount
+          }
+        } else {
+          this.currentAccount = this.getCurrentWallet()
+        }
+      } else {
+        let updatedToken = this.options.find(o => o.type.toLowerCase() === this.currentToken.type.toLowerCase() && o.key.toLowerCase() === this.currentToken.key.toLowerCase() && o.name.toLowerCase() === this.currentToken.name.toLowerCase() && o.chainID === this.currentToken.chainID)
+        if (updatedToken) this.currentToken = updatedToken
+      }
+    },
     setCustomGas () {
       this.customGas = {
         value: this.converGasPriceToUSD(+this.gasPriceGwei, +this.gasLimit).toFixed(2),
@@ -623,10 +663,9 @@ export default {
     },
     isBalanceEnough () {
       if (!this.gasSelected || this.currentToken.chainID !== 'eth') return
-      const Web3 = require('web3')
 
       let ethValue = Web3.utils.fromWei(Math.round(((+this.gasPriceGwei) * 1000000000 * (+this.gasLimit))).toString(), 'ether')
-      console.log(ethValue, 'this.gasLimit)')
+
       this.sendAmount = parseFloat(this.sendAmount) === 0 && parseFloat(this.currentToken.amount) !== 0 ? this.currentToken.amount : this.sendAmount
       if ((parseFloat(this.sendAmount) + parseFloat(ethValue)) > parseFloat(this.currentToken.amount)) {
         this.sendAmount = parseFloat(this.currentToken.amount) - parseFloat(ethValue).toFixed(8)
@@ -699,7 +738,7 @@ export default {
         }
       }
 
-      if (this.currentAccount.chain === 'eth') {
+      if (this.currentAccount.isEvm) {
         this.checkGas()
       }
     },
@@ -711,6 +750,7 @@ export default {
       this.sendAmount = this.currentToken.amount
     },
     openModalFun: function (item) {
+      console.log(this.currentAccount, 'this.currentAccount')
       if (this.currentAccount.privateKey) {
         this.sendTokens()
         this.openModalProgress = true
@@ -730,20 +770,33 @@ export default {
       }
     },
     checkGas () {
-      if (this.currentAccount.chain !== 'eth') return
-
       try {
-        if (this.sendAmount && this.sendToResolved) {
+        if (this.sendAmount && this.sendToResolved && this.currentAccount.isEvm) {
           Lib.getRawETHTransaction(
-            this.currentAccount.type,
+            this.currentToken.type,
             this.currentAccount.key,
             this.sendToResolved,
             this.sendAmount,
             this.privateKey.key,
-            this.currentAccount.contract
+            this.currentToken.contract,
+            'mnemonic',
+            this.currentAccount.chain
           ).then((tx) => {
-            console.log(tx, 'tx')
-            this.getGasOptions(tx, this.gasLimit)
+            console.log(this.$store.state.currentwallet.wallet.tokenPrice, 'tokenPrice')
+            Lib.gas(this.currentAccount.chain, tx, this.currentToken.type, this.$store.state.currentwallet.wallet.tokenPrice).then(res => {
+              this.gasOptions = res
+              if (!this.gasSelected) {
+                this.gasSelected = res[0]
+              }
+            })
+          })
+        } else if (this.currentAccount.chain === 'btc') {
+          Lib.gas(this.currentAccount.chain, {}, this.currentToken.type, this.$store.state.currentwallet.wallet.tokenPrice).then(res => {
+            console.log(res, 'res')
+            this.gasOptions = res
+            if (!this.gasSelected) {
+              this.gasSelected = res[0]
+            }
           })
         }
       } catch (error) {
@@ -756,10 +809,15 @@ export default {
       this.transStatus = 'Transaction in progress'
 
       // Pass gas details in memo
-      if (this.currentAccount.chain === 'eth') {
+
+      if (this.currentAccount.isEvm) {
         this.sendMemo = {
           gasData: this.customGas ? this.customGas : this.gasSelected,
           txData: null
+        }
+      } else if (this.currentAccount.chain === 'btc') {
+        this.sendMemo = {
+          fee: parseFloat(this.gasSelected.gasPrice) * 250
         }
       }
 
@@ -772,6 +830,7 @@ export default {
         this.sendMemo,
         this.privateKey.key,
         this.currentToken.contract
+
       ).then(result => {
         if (result.success) {
           this.getPassword = false
@@ -781,6 +840,10 @@ export default {
           this.transSuccessDialog = true
           this.transactionLink = result.message
           this.transStatus = !result.status ? 'Sent Successfully' : result.status
+          setTimeout(() => {
+            initWallet(this.currentAccount.name)
+          }, 1000)
+          this.$emit('setTransactionStatus', { order_id: this.params.order_id, chain: this.currentAccount.chain, hash: result.transaction_id })
         } else {
           if (result.message.toString().includes('is greater than the maximum billable CPU time for the transaction') || result.message.toString().includes('the current CPU usage limit imposed on the transaction')) {
             this.payForUserCPU()
@@ -835,6 +898,7 @@ export default {
           this.transSuccessDialog = true
           this.transactionLink = result.message
           this.transStatus = !result.status ? 'Sent Successfully' : result.status
+          initWallet(this.currentAccount.name)
         } else {
           this.unknownError = true
           this.ErrorMessage = result.message
@@ -883,7 +947,9 @@ export default {
 </script>
 <style lang="scss" scoped>
   @import "~@/assets/styles/variables.scss";
-
+.full-height {
+height: 100vh  !important;
+}
 .gasfield {
     /deep/ .q-item.gasSelector {
         padding-left: 0px;
@@ -994,7 +1060,7 @@ export default {
     }
   }
   .desktop-card-style{
-    height: 100%;
+        height: 90%;
   }
   .standard-content{
     padding: 5% 10%;

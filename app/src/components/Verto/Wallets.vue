@@ -135,16 +135,18 @@
                             </q-card>
 
                         </q-expansion-item>
-                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.total)" @click="$store.state.wallets.tokens.filter(f => f.type == chain.chain).length == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type == chain.chain)) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
-                        <template v-slot:header>
+                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                    <template v-slot:header>
+
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" :src="chain.icon"  />
                             </q-item-section>
-                            <q-item-section  class="item-name" :set="tokensCount = $store.state.wallets.tokens.filter(f => f.chain == chain.chain)">
-                            <span class="item-name--name"> {{chain.label}}</span>
-                            <span  class="item-name--staked" v-if="chain.count > 1">{{chain.count}} accounts</span>
-                            <span   class="item-name--staked" v-else-if="chain.count == 1 &&  tokensCount.length > 1">{{tokensCount.length}} tokens</span>
+                            <q-item-section  class="item-name" >
 
+                            <span class="item-name--name"> {{chain.label}}</span>
+                            <span  class="item-name--staked" v-if="loadingIndex == index + 1 "> <q-spinner-dots color="primary" size="2em" /> </span>
+                            <span  class="item-name--staked" v-else-if="chain.accounts.length > 1">{{chain.accounts.length}} accounts</span>
+                            <span   class="item-name--staked" v-else-if="chain.accounts.length == 1 && chain.accounts[0].tokenList && chain.accounts[0].tokenList.length > 1">{{chain.accounts[0].tokenList.length}} tokens</span>
                             </q-item-section>
 
                             <q-item-section class="item-info col" side>
@@ -157,18 +159,20 @@
 
                             <q-card :dark="$store.state.settings.lightMode === 'true'">
                             <q-card-section>
-                                <q-item :set="chainTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && f.name.toLowerCase() == item.name.toLowerCase())" :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.type == chain.chain && f.chain == chain.chain && !f.hidden && !f.disabled).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                                <q-item  :key="Math.random()+index"  v-for="(item, index) in chain.accounts"   clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                                 <div class="header-wallet-wrapper culumn full-width">
-                                    <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
+                                    <div @click="!item.disabled ? showMenu(item) : ''" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
-                                            <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
+                                           <q-icon name="fiber_manual_record" :color="item.color"/>
                                         </q-item-section>
                                         <q-item-section class="item-name">
-                                            <span class="item-name--name">{{item.name}}</span>
+                                            <span class="item-name--name" v-if="item.isEvm"> {{item.key.substr(item.key.length - 6)}}</span>
+                                            <span class="item-name--name" v-else> {{item.name}}</span>
                                             <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
 
-                                            <span  class="item-name--staked" >{{chainTokens.length}} token{{ chainTokens.length > 1 ? 's' : '' }}</span>
+                                            <span  class="item-name--staked" v-if="item.tokenList">{{item.tokenList.length}} token{{ item.tokenList.length > 1 ? 's' : '' }}</span>
 
+                                            <span  class="item-name--staked" ></span>
                                         </q-item-section>
                                         <q-item-section class="item-info" v-if="!item.disabled">
                                             <span class="item-info--amount">{{formatNumber(item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(4) : new Number(item.amount).toFixed(4).toString()) : 0, 2) }} {{item.type.toUpperCase()}}</span>
@@ -190,62 +194,6 @@
 
                         </q-expansion-item>
 
-                        <q-item  v-show="!selectedChain || item.chain == selectedChain" :style="setPosition(item.usd)" :data-total="!isNaN(item.usd) ? item.usd : 0 "  v-for="(item) in $store.state.wallets.tokens.filter(f => f.chain == 'eos' && f.type == 'verto' && !f.hidden && !f.disabled).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))" :class="{'selected' : item.selected}" :key="Math.random()+item.name+'_'+item.type" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
-                            <div class="header-wallet-wrapper culumn full-width">
-                                <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
-                                    <q-item-section avatar class="item-coin">
-                                        <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
-                                        <span class="item-name--name">{{item.type.toUpperCase()}}</span>
-                                    </q-item-section>
-                                    <q-item-section class="item-name">
-                                        <span class="item-name--name">{{item.name.replace('- HD', '')}}</span>
-                                        <span class="item-name--staked" v-if="item.staked && item.staked !== 0">Staked : {{nFormatter2(item.staked, 3)}}</span>
-                                    </q-item-section>
-                                    <q-item-section class="item-info" v-if="!item.disabled">
-                                        <span class="item-info--amount">{{item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(8) : new Number(item.amount).toString()) : 0 }} {{item.type.toUpperCase()}}</span>
-                                        <span class="item-info--amountUSD">${{new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2)}}</span>
-                                    </q-item-section>
-                                    <q-item-section class="item-info" v-else>
-                                        <span class="item-info--amount">in progress</span>
-                                    </q-item-section>
-                                </div>
-                                <div class="menu-wallet">
-                                    <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
-                                        <!-- <q-item v-if="false" class="p-relative full-width no-pad">
-                                            <div class="vespucci-score--wrapper full-width flex justify-between items-center">
-                                                <span class="label">{{ item.vespucciScore > 50 ? 'Strong Buy':'Strong Sell' }}</span>
-                                                <span class="value">{{ item.vespucciScore }}</span>
-                                                <span class="powered">Powered by Vespucci</span>
-                                            </div>
-                                        </q-item> -->
-                                        <q-separator style="margin-top: 10px" />
-                                        <q-item data-name='Trade' v-if="item.disabled" clickable v-ripple class="p-relative" to="/verto/exchange">Trade
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                        <q-item data-name='Create EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">Create EOS account
-                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                            </q-item>
-                                            <q-item data-name='Import EOS account' v-if="item.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative bold-btn">Import EOS account
-                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                            </q-item>
-                                        <q-item v-if="item.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                        <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                        <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
-                                            <q-item-section>
-                                                <q-item-label>{{item.hidden ? 'Reveal' : 'Hide'}} Currency Chain</q-item-label>
-                                            </q-item-section>
-                                            <q-item-section avatar>
-                                                <q-toggle class="p-abs" color="blue" @input="hideCurrency()" v-model="item.hidden" />
-                                            </q-item-section>
-                                        </q-item>
-                                    </q-list>
-                                </div>
-                            </div>
-                        </q-item>
                     </div>
                     <div v-else>
                         <q-item class="selected selected22222" clickable active-class="bg-teal-1 text-grey-8">
@@ -501,11 +449,11 @@
                         </q-item>
                     </div>
                 </q-list>
-
-                <div class="wallet-list q-pa-sm text-body1 q-mt-md text-grey-9" v-if="$store.state.currentwallet.wallet.chain" >
+               <div v-if="$store.state.currentwallet.wallet.chain"  >
+                <div class="wallet-list q-pa-sm text-body1 q-mt-md text-grey-9" >
                    <q-icon name="add" /> More wallets and accounts
                 </div>
-                   <q-expansion-item   v-if="$store.state.currentwallet.wallet.chain"  :style="setPosition(99999999)" @click="vtxAccounts.length == 1 ? showMenu(vtxAccounts[0]) : showChainAccounts('', 'vtx')"  :key="Math.random()" clickable  >
+                   <q-expansion-item    :style="setPosition(99999999)" @click="vtxAccounts.length == 1 ? showMenu(vtxAccounts[0]) : showChainAccounts('', 'vtx')"  :key="Math.random()" clickable  >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" src="statics/icons/favicon-32x32.png"  />
@@ -556,16 +504,19 @@
                             </q-card>
 
                         </q-expansion-item>
-                <q-expansion-item  v-show="$store.state.currentwallet.wallet.chain" :ref="'chain'+index" :style="setPosition(chain.total)" @click="$store.state.wallets.tokens.filter(f => f.type == chain.chain).length == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.type == chain.chain)) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
-                        <template v-slot:header>
+
+                                       <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                    <template v-slot:header>
+
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" :src="chain.icon"  />
                             </q-item-section>
-                            <q-item-section  class="item-name" :set="tokensCount = $store.state.wallets.tokens.filter(f => f.chain == chain.chain)">
-                            <span class="item-name--name"> {{chain.label}}</span>
-                            <span  class="item-name--staked" v-if="chain.count > 1">{{chain.count}} accounts</span>
-                            <span   class="item-name--staked" v-else-if="chain.count == 1 &&  tokensCount.length > 1">{{tokensCount.length}} tokens</span>
+                            <q-item-section  class="item-name" >
 
+                            <span class="item-name--name"> {{chain.label}}</span>
+                            <span  class="item-name--staked" v-if="loadingIndex == index + 1 "> <q-spinner-dots color="primary" size="2em" /> </span>
+                            <span  class="item-name--staked" v-else-if="chain.accounts.length > 1">{{chain.accounts.length}} accounts</span>
+                            <span   class="item-name--staked" v-else-if="chain.accounts.length == 1 && chain.accounts[0].tokenList && chain.accounts[0].tokenList.length > 1">{{chain.accounts[0].tokenList.length}} tokens</span>
                             </q-item-section>
 
                             <q-item-section class="item-info col" side>
@@ -578,18 +529,20 @@
 
                             <q-card :dark="$store.state.settings.lightMode === 'true'">
                             <q-card-section>
-                                <q-item  :set="chainTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && f.name.toLowerCase() == item.name.toLowerCase())"  :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.type == chain.chain && f.chain == chain.chain && !f.hidden && !f.disabled).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                                <q-item  :key="Math.random()+index"  v-for="(item, index) in chain.accounts"   clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                                 <div class="header-wallet-wrapper culumn full-width">
-                                    <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
+                                    <div @click="!item.disabled ? showMenu(item) : ''" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
-                                            <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
+                                           <q-icon name="fiber_manual_record" :color="item.color"/>
                                         </q-item-section>
                                         <q-item-section class="item-name">
-                                            <span class="item-name--name">{{item.name}}</span>
+                                            <span class="item-name--name" v-if="item.isEvm"> {{item.key.substr(item.key.length - 6)}}</span>
+                                            <span class="item-name--name" v-else> {{item.name}}</span>
                                             <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
 
-                                            <span  class="item-name--staked" >{{chainTokens.length}} token{{ chainTokens.length > 1 ? 's' : '' }}</span>
+                                            <span  class="item-name--staked" v-if="item.tokenList">{{item.tokenList.length}} token{{ item.tokenList.length > 1 ? 's' : '' }}</span>
 
+                                            <span  class="item-name--staked" ></span>
                                         </q-item-section>
                                         <q-item-section class="item-info" v-if="!item.disabled">
                                             <span class="item-info--amount">{{formatNumber(item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(4) : new Number(item.amount).toFixed(4).toString()) : 0, 2) }} {{item.type.toUpperCase()}}</span>
@@ -609,7 +562,7 @@
 
                             </q-card>
 
-                        </q-expansion-item>
+                        </q-expansion-item>                        </div>
             </q-scroll-area>
             <!-- <div v-if="$store.state.currentwallet.wallet.empty" class="add-remove-wrapper flex column flex-center item-center content-center">
                 <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Hide Currencies' : 'Show Currencies'" :class="showText ? 'open': 'hide'" />
@@ -831,57 +784,64 @@
                             </q-card>
 
                         </q-expansion-item>
-                <q-expansion-item :ref="'chain'+index" :style="setPosition(chain.total)" @click="$store.state.wallets.tokens.filter(f => f.chain == chain.chain).length == 1 ? showMenu($store.state.wallets.tokens.find(f =>  f.chain == chain.chain)) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{'selected full-width' : chain.selected, 'single-chain': chain.count }" :key="Math.random()+index" clickable>
-                  <template v-slot:header>
-                      <q-item-section avatar>
-                          <img class="coin-icon" width="35px" :src="chain.icon"  />
-                      </q-item-section>
-                      <q-item-section  class="item-name" :set="tokensCount = $store.state.wallets.tokens.filter(f => f.chain == chain.chain)">
-                            <span class="item-name--name"> {{chain.label}}</span>
-                            <span  class="item-name--staked" v-if="chain.count > 1">{{chain.count}} accounts</span>
-                            <span   class="item-name--staked" v-else-if="chain.count == 1 &&  tokensCount.length > 1">{{tokensCount.length}} tokens</span>
+                                      <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                    <template v-slot:header>
 
+                            <q-item-section avatar>
+                                <img class="coin-icon" width="35px" :src="chain.icon"  />
+                            </q-item-section>
+                            <q-item-section  class="item-name" >
+
+                            <span class="item-name--name"> {{chain.label}}</span>
+                            <span  class="item-name--staked" v-if="loadingIndex == index + 1 "> <q-spinner-dots color="primary" size="2em" /> </span>
+                            <span  class="item-name--staked" v-else-if="chain.accounts.length > 1">{{chain.accounts.length}} accounts</span>
+                            <span   class="item-name--staked" v-else-if="chain.accounts.length == 1 && chain.accounts[0].tokenList && chain.accounts[0].tokenList.length > 1">{{chain.accounts[0].tokenList.length}} tokens</span>
                             </q-item-section>
 
-                      <q-item-section class="item-info col" side>
-                      <div class="row items-center text-bold">
+                            <q-item-section class="item-info col" side>
+                            <div class="row items-center text-bold">
 
-                      <span> ${{formatNumber(chain.chainTotal ? chain.chainTotal.toFixed(0) : 0 , 0)}}</span>
-                          </div>
-                      </q-item-section>
-                  </template>
-                  <q-card :dark="$store.state.settings.lightMode === 'true'">
-                    <q-card-section>
-                        <q-item :set="chainTokens = $store.state.wallets.tokens.filter(f => f.chain == item.chain && f.name.toLowerCase() == item.name.toLowerCase())" :key="Math.random()+index"  v-for="(item, index) in $store.state.wallets.tokens.filter(f => f.type == chain.chain && f.chain == chain.chain && !f.hidden && !f.disabled).sort((a, b) => b.type.toLowerCase() == 'vtx' ? 99999 : parseFloat(b.usd) - parseFloat(a.usd))"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
-                        <div class="header-wallet-wrapper culumn full-width">
-                            <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
-                                <q-item-section avatar>
-                                    <img class="coin-icon" width="35px" :src="item.type !== 'usdt' ? item.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png'" alt="">
-                                </q-item-section>
-                                <q-item-section class="item-name">
-                                    <span class="item-name--name">{{item.name}}</span>
-                                    <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
+                            <span> ${{formatNumber(chain.chainTotal ? chain.chainTotal.toFixed(0) : 0 , 0)}}</span>
+                                </div>
+                            </q-item-section>
+                            </template>
 
-                                    <span  class="item-name--staked" >{{chainTokens.length}} token{{ chainTokens.length > 1 ? 's' : '' }}</span>
+                            <q-card :dark="$store.state.settings.lightMode === 'true'">
+                            <q-card-section>
+                                <q-item  :key="Math.random()+index"  v-for="(item, index) in chain.accounts"   clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                                <div class="header-wallet-wrapper culumn full-width">
+                                    <div @click="!item.disabled ? showMenu(item) : ''" class="header-wallet full-width flex justify-between">
+                                        <q-item-section avatar>
+                                           <q-icon name="fiber_manual_record" :color="item.color"/>
+                                        </q-item-section>
+                                        <q-item-section class="item-name">
+                                            <span class="item-name--name" v-if="item.isEvm"> {{item.key.substr(item.key.length - 6)}}</span>
+                                            <span class="item-name--name" v-else> {{item.name}}</span>
+                                            <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
 
-                                </q-item-section>
-                                <q-item-section class="item-info" v-if="!item.disabled">
-                                    <span class="item-info--amount">{{formatNumber(item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(4) : new Number(item.amount).toFixed(4).toString()) : 0, 2) }} {{item.type.toUpperCase()}}</span>
-                                    <span class="item-info--amountUSD" v-if="item.total">${{formatNumber(new Number(isNaN(item.total) ? 0 : item.total).toFixed(2),0)}}</span>
-                                    <span class="item-info--amountUSD" v-else>${{formatNumber(new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2),0)}}</span>
-                                </q-item-section>
-                                <q-item-section class="item-info" v-else>
-                                    <span class="item-info--amount">in progress</span>
-                                </q-item-section>
-                            </div>
+                                            <span  class="item-name--staked" v-if="item.tokenList">{{item.tokenList.length}} token{{ item.tokenList.length > 1 ? 's' : '' }}</span>
 
-                        </div>
-                    </q-item>
+                                            <span  class="item-name--staked" ></span>
+                                        </q-item-section>
+                                        <q-item-section class="item-info" v-if="!item.disabled">
+                                            <span class="item-info--amount">{{formatNumber(item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(4) : new Number(item.amount).toFixed(4).toString()) : 0, 2) }} {{item.type.toUpperCase()}}</span>
+                                            <span class="item-info--amountUSD" v-if="item.total">${{formatNumber(new Number(isNaN(item.total) ? 0 : item.total).toFixed(2),0)}}</span>
+                                            <span class="item-info--amountUSD" v-else>${{formatNumber(new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2),0)}}</span>
+                                        </q-item-section>
+                                        <q-item-section class="item-info" v-else>
+                                            <span class="item-info--amount">in progress</span>
+                                        </q-item-section>
+                                    </div>
 
-                    </q-card-section>
-                    <q-separator />
-                  </q-card>
-                </q-expansion-item>
+                                </div>
+                            </q-item>
+
+                            </q-card-section>
+                            <q-separator />
+
+                            </q-card>
+
+                        </q-expansion-item>
             </q-scroll-area>
             <div v-if="false" class="add-remove-wrapper flex column flex-center item-center content-center">
                 <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Hide Currencies' : 'Show Currencies'" :class="showText ? 'open': 'hide'" />
@@ -912,10 +872,8 @@
 </template>
 
 <script>
-// import Lib from '@/util/walletlib'
 import initWallet from '@/util/Wallets2Tokens'
 import mobileAssets from '@/components/Verto/Mobile/Wallets'
-import HD from '@/util/hdwallet'
 import {
   QScrollArea,
   openURL
@@ -926,6 +884,7 @@ const eos = new EosWrapper()
 import {
   mapState
 } from 'vuex'
+
 export default {
   components: {
     QScrollArea,
@@ -969,9 +928,12 @@ export default {
     tokens: {
       deep: true,
       handler (val, old) {
-        this.setChains()
-        this.setVtxData()
-        this.rekey++
+        if (old && val && val.length !== old.length) {
+          this.chains = this.setChains()
+          this.setVtxData()
+          console.log(this.rekey)
+          this.rekey++
+        }
       }
     }
   },
@@ -979,6 +941,7 @@ export default {
     return {
       selectedChain: null,
       vtxAccounts: [],
+      loadingIndex: false,
       chainSwitcher: '',
       searchAccount: '',
       chains: [],
@@ -1036,24 +999,27 @@ export default {
     setTimeout(() => {
       this.showSetupEos()
     }, 5000)
-    this.setChains()
+    this.chains = this.setChains()
     this.setVtxData()
-    /*
+
     setTimeout(() => {
       this.$store.state.wallets.tokens.map(async (f) => {
         let stakedAmounts = 0
         if (f.type === 'vtx') {
-          let stakes = await eos.getTable('vertostaking', f.name, 'accountstake')
-          stakes.map(s => {
-            s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
-            s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
-            stakedAmounts += +s.stake_amount
+          eos.getTable('vertostaking', f.name, 'accountstake').then(stakes => {
+            console.log(stakes, 'stakes')
+            stakes.map(s => {
+              s.amount = Math.round(+s.amount.split(' ')[0] * 10000) / 10000
+              s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+              stakedAmounts += +s.amount
+            })
+            f.staked = stakedAmounts
+            console.log(f.staked, 'f.staked')
           })
-          f.staked = stakedAmounts
         }
       })
     }, 6000)
-     */
+
     this.setRessourcesInfos()
   },
   async updated () {
@@ -1094,23 +1060,10 @@ export default {
       }
     },
     setVtxData () {
-      this.vtxAccounts = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).filter((v) => v.type === 'vtx' && v.chain === 'eos')
+      this.vtxAccounts = this.$store.state.wallets.tokens.filter((v) => v.type === 'vtx' && v.chain === 'eos')
       this.vtxAccounts.total = this.vtxAccounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
+      this.vtxAccounts.totalStaked = this.vtxAccounts.reduce((a, b) => +a + (isNaN(b.staked) ? 0 : +b.staked), 0)
       this.vtxAccounts.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
-    },
-    setChains () {
-      this.chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).filter((v, i, a) => v.type === v.chain && a.findIndex(t => (t.type === v.type && t.chain === v.chain)) === i)
-        .map(o => {
-          let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
-          o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
-          o.count = accounts.filter(o => o.type === o.chain).length
-
-          let chain = HD.names.find(a => a.value === o.chain)
-          o.label = chain ? chain.label : o.chain
-
-          return o
-        })
-      this.chains.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
     },
     showChainAccounts (index, chain) {
       // let nodeList = document.querySelectorAll('.all-wallets .q-expansion-item__toggle-icon')
@@ -1196,6 +1149,8 @@ export default {
     },
     refreshWallet (name = null) {
       if (!name) {
+        this.$store.state.tokens.walletTokensData = []
+        this.$store.state.tokens.pending = []
         this.singleWalletRefresh = null
         localStorage.removeItem('walletPublicData')
       } else {
@@ -1227,48 +1182,50 @@ export default {
     openModalFun: function (item) {
       this.openModal = true
     },
-    async showMenu (menu, to) {
-      if (!menu.selected) {
-        setTimeout(() => {
-          if (this.$refs.walletsScrollArea) { this.$refs.walletsScrollArea.setScrollPosition(0, 50) }
-        }, 500)
-        this.removeClassSelected()
-        menu.selected = true
-        console.log(menu, 'menu', 99)
-        this.selectedCoin = menu
-        if (this.selectedCoin.hidden === undefined) {
-          this.selectedCoin.hidden = false
-        }
-
-        // this.$store.commit('currentwallet/updateParams', {
-        //   chainID: this.selectedCoin.chain,
-        //   tokenID: this.selectedCoin.type,
-        //   accountName: this.selectedCoin.name
-        // })
-
-        this.$store.commit('currentwallet/updateParams', {
-          chainID: this.$route.params.chainID || this.selectedCoin.chain,
-          tokenID: this.$route.params.tokenID || this.selectedCoin.type,
-          accountName: this.$route.params.accountName || this.selectedCoin.name.toLowerCase()
-        })
-        // let stakedAmounts = 0
-        // if (this.selectedCoin.type === 'vtx') {
-        //   let stakes = await eos.getTable('vtxstake1111', this.selectedCoin.name, 'accounts')
-        //   stakes.map(s => {
-        //     s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
-        //     s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
-        //     stakedAmounts += +s.stake_amount
-        //   })
-        //   this.selectedCoin.staked = stakedAmounts
-        // }
-        // this.$store.state.currentwallet.wallet = this.currentAccount
-
+    async showMenu (menu, to, loadingIndex) {
+      this.loadingIndex = loadingIndex
+      this.$store.state.currentwallet.wallet = menu
+      setTimeout(() => {
         this.$store.state.currentwallet.wallet = this.selectedCoin
-        this.$store.commit('investment/setDefaultAccount', this.selectedCoin)
-        this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.selectedCoin.chain && w.key === this.selectedCoin.key))
+        this.loadingIndex = false
+        if (this.$refs.walletsScrollArea) { this.$refs.walletsScrollArea.setScrollPosition(0, 50) }
+      }, 200)
+      this.removeClassSelected()
+      menu.selected = true
 
-        this.setRessourcesInfos()
-        /* //console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
+      this.selectedCoin = menu
+      if (this.selectedCoin.hidden === undefined) {
+        this.selectedCoin.hidden = false
+      }
+
+      // this.$store.commit('currentwallet/updateParams', {
+      //   chainID: this.selectedCoin.chain,
+      //   tokenID: this.selectedCoin.type,
+      //   accountName: this.selectedCoin.name
+      // })
+
+      this.$store.commit('currentwallet/updateParams', {
+        chainID: this.$route.params.chainID || this.selectedCoin.chain,
+        tokenID: this.$route.params.tokenID || this.selectedCoin.type,
+        accountName: this.$route.params.accountName || this.selectedCoin.name.toLowerCase()
+      })
+      // let stakedAmounts = 0
+      // if (this.selectedCoin.type === 'vtx') {
+      //   let stakes = await eos.getTable('vtxstake1111', this.selectedCoin.name, 'accounts')
+      //   stakes.map(s => {
+      //     s.stake_amount = Math.round(+s.stake_amount.split(' ')[0] * 10000) / 10000
+      //     s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+      //     stakedAmounts += +s.stake_amount
+      //   })
+      //   this.selectedCoin.staked = stakedAmounts
+      // }
+      // this.$store.state.currentwallet.wallet = this.currentAccount
+
+      this.$store.commit('investment/setDefaultAccount', this.selectedCoin)
+      this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.selectedCoin.chain && w.key === this.selectedCoin.key))
+
+      this.setRessourcesInfos()
+      /* //console.log('****_*_*_selectedCoin****_*_*_', stakedAmounts)
 
         if (this.selectedCoin.chain !== 'eos' && this.selectedCoin.chain !== 'eth') {
           this.history = []
@@ -1281,10 +1238,7 @@ export default {
           this.history = (await Lib.history(this.selectedCoin.chain, this.selectedCoin.type, nameOrKey, pagination)).history
         }
         */
-      } else {
-        menu.selected = false
-        this.$store.state.currentwallet.wallet = undefined
-      }
+
       if (this.selectedCoin.chain === 'eos' && this.selectedCoin.type === 'verto') {
         let result = await eos.getAccountNamesFromPubKeyP(this.selectedCoin.key)
         if (result && result.account_names.length) {
@@ -1396,6 +1350,13 @@ export default {
 a {
     text-decoration: none;
     color: inherit;
+}
+.all-wallets > div:hover {
+   background:#f9fcfe
+}
+
+.dark-theme .all-wallets > div:hover {
+   background:#11284c
 }
 .chain-tools /deep/ .q-item__section--side {
     min-width: 0px  !important

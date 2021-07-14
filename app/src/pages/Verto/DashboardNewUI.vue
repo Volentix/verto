@@ -9,51 +9,31 @@
                     <wallets data-title="Interact with your account" class="full-height max-height" data-intro="Click on an account/token to see all actions you can perform. Click SETUP to associate EOS account(s) to account names" :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                 </div>
             </div>
-            <div class="col col-md-9 q-pr-md">
+            <div class="col col-md-9 q-pr-md bg-white">
               <div class="row dashboard-ui-tokens">
-                <div class="col col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet' && false" >
-                  <ExchangeSection3  v-if=" $store.state.settings.network == 'mainnet'"  />
-                </div>
-                <div class="col-md-6 customSlider q-mb-sm" v-show="!assetSelected && $store.state.settings.network == 'mainnet' && false">
-                  <makeVTXSection2   />
-                </div>
+       <q-tabs
+        v-if="!assetSelected "
+        v-model="tab"
+        inline-label
+
+        :class="{'text-white': $store.state.settings.lightMode === 'true'}"
+      >
+        <q-tab name="dashboard" icon="dashboard" label="Dashboard" />
+         <q-tab name="exchange" icon="swap_horiz" label="Exchange"  @click="show.exchange = true"/>
+        <q-tab name="vtxstaking" icon="trending_up" label="VTX Staking" @click="show.vtxstaking = true" />
+        <q-tab name="tokens" icon="trending_up" label="Token watcher" @click="show.tokens = true"/>
+      </q-tabs>
+          <GodexV2  v-show="tab == 'exchange'" v-if="show.exchange" />
+              <VTXStakeState v-show="tab == 'vtxstaking'"  v-if="show.vtxstaking"   />
+              <TokenPrices v-show="tab == 'tokens'" class="full-width" v-if="show.tokens"    />
                 <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
                   <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
                 </q-breadcrumbs>
-               <!-- <NftsExplorer v-if=" && $store.state.settings.network != 'mainnet'" /> -->
-                <AssetsExplorer v-show="!assetSelected" @setAsset="setAsset" />
-                <SingleToken  :assetData="assetSelected" class="col-md-12" v-if="assetSelected" />
-                <div class="col col-md-12 full-height max-height2" v-else-if="$store.state.settings.network == 'mainnet' && false" >
+               <NftsExplorer v-if="false && $store.state.settings.network != 'mainnet'" />
+                <AssetsExplorer @assetsChanged="assetsChanged" ref="assetsComponent" v-show="!assetSelected  && tab == 'dashboard'" @setAsset="setAsset" />
 
-                    <div class="liquidityPoolsTable column q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-                        <q-tabs
-                            v-model="tabPoolAndAssetBalances"
-                            class="tabPoolAndAssetBalances"
-                            :class="{'text-black bg-white': $store.state.settings.lightMode === 'false', 'text-white bg-myblue': $store.state.settings.lightMode === 'true'}"
-                        >
-                            <q-tab name="asset" class="text-capitalize" label="Asset Balances" />
-                            <q-tab name="explore" class="text-capitalize" label="Explore Opportunities" />
-                        </q-tabs>
-                        <q-tab-panels
-                            v-model="tabPoolAndAssetBalances"
-                            animated
-                            swipeable
-                            flat
-                            class="tabPoolAndAssetBalancesPanels"
-                            vertical
-                            transition-prev="jump-up"
-                            transition-next="jump-up"
-                            >
-                            <q-tab-panel name="explore">
-                                <liquidityPoolsTable data-title="Liquidity pools" data-intro="Here you can click the ADD button to add liquidity to any pools" :rowsPerPage="8"  v-if="$store.state.settings.network == 'mainnet'" />
-                                <TestnetPools :showAddLiquidity="true" class="bg-white" v-else />
-                            </q-tab-panel>
-                            <q-tab-panel name="asset">
-                                <AssetBalancesTable @setAsset="setAsset" data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="8" />
-                            </q-tab-panel>
-                        </q-tab-panels>
-                    </div>
-                </div>
+                <SingleToken   ref="singleTokenComponent" @setAsset="setAsset"  :assetData="assetSelected" class="col-md-12" v-if="assetSelected" />
+
               </div>
             </div>
         </div>
@@ -126,19 +106,17 @@ import Wallets from '../../components/Verto/Wallets'
 // import MakeVTXSection from '../../components/Verto/MakeVTXSection'
 import MakeVTXSection2 from '../../components/Verto/MakeVTXSection2'
 // import ExchangeSection from '../../components/Verto/ExchangeSection'
-import ExchangeSection3 from '../../components/Verto/ExchangeSection3'
-import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
+// import ExchangeSection3 from '../../components/Verto/ExchangeSection3'
+//
 import SingleToken from '../../components/Verto/SingleToken'
-import AssetBalancesTable from '../../components/Verto/AssetBalancesTable'
+import GodexV2 from '../../components/Verto/Exchange/GodexV2'
+import VTXStakeState from '../../components/Verto/EOS/StakingState'
 import AssetsExplorer from '../../components/Verto/Token/AssetsExplorer'
-
+import TokenPrices from '../../components/Verto/Token/TokenPrices'
 import {
   mapState
 } from 'vuex'
 // import VespucciRatingSection from '../../components/Verto/VespucciRatingSection'
-// import {
-//   QScrollArea
-// } from 'quasar'
 
 // import ConvertAnyCoin from '../../components/Verto/ConvertAnyCoin'
 // import HD from '@/util/hdwallet'
@@ -148,6 +126,7 @@ import {
 let cruxClient
 */
 import DexInteraction from '../../mixins/DexInteraction'
+import CrosschainDex from '@/util/CrosschainDex'
 // import EosWrapper from '@/util/EosWrapper'
 // import Bridge from '@/util/Bridge'
 import MultiTransaction from '../../components/Verto/Defi/MultiTransaction'
@@ -155,36 +134,39 @@ import MultiTransaction from '../../components/Verto/Defi/MultiTransaction'
 import initWallet from '@/util/Wallets2Tokens'
 let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
-import TestnetPools from '../../components/Verto/Defi/TestnetPools'
+// import TestnetPools from '../../components/Verto/Defi/TestnetPools'
 import 'intro.js/minified/introjs.min.css'
 import {
   osName
 } from 'mobile-device-detect'
+// import Godex from '../../components/Verto/Exchange/Godex.vue'
 // import NftsExplorer from '../../components/Verto/Token/NftsExplorer.vue'
 export default {
   components: {
     // ConvertAnyCoin,
-    // QScrollArea,
+    VTXStakeState,
     MultiTransaction,
     // NftsExplorer,
     ProfileHeader,
     Wallets,
+    GodexV2,
     // AppsSection,
     SingleToken,
     AssetsExplorer,
     // StartNodeSection,
     // maxDeFiYield,
     // ChainToolsSection,
-    TestnetPools,
+    // TestnetPools,
     // TransactionsSection,
     // LiquidityPoolsSection,
     // LiquidityPoolsSection2,
-    liquidityPoolsTable,
-    AssetBalancesTable,
+    // liquidityPoolsTable,
+    // AssetBalancesTable,
     // MakeVTXSection,
     MakeVTXSection2,
+    TokenPrices
     // ExchangeSection,
-    ExchangeSection3
+    // ExchangeSection3
     // VespucciRatingSection
 
   },
@@ -193,11 +175,17 @@ export default {
       customSlider: true,
       rawPools: [],
       showAssetsExplorer: false,
+      tab: 'dashboard',
       cruxKey: {},
       assetSelected: false,
       alert: true,
       interval: null,
       osName: '',
+      show: {
+        exchange: false,
+        tokens: false,
+        vtxstaking: false
+      },
       tabPoolAndAssetBalances: 'asset',
       screenSize: 0,
       openDialog: false,
@@ -339,13 +327,23 @@ export default {
 
     if (!this.$store.state.settings.coins.defibox.length) {
       setTimeout(() => {
-        this.getCoinswitchCoins()
+        this.getGodexCoins()
         this.get1inchCoins()
         this.getDefiboxCoins()
       }, 3000)
     }
   },
   methods: {
+    assetsChanged (assets) {
+      if (this.assetSelected) {
+        let asset = assets.find(o => o.type === this.assetSelected.type && o.chain === this.assetSelected.chain && (this.assetSelected.chain !== 'eos' || o.contract === this.assetSelected.contract))
+        console.log(asset, 'asset')
+        if (asset) {
+          this.$refs.singleTokenComponent.asset.usd = asset.usd
+          this.$refs.singleTokenComponent.asset.amount = asset.amount
+        }
+      }
+    },
     setAsset (asset) {
       this.assetSelected = asset
     },
@@ -370,7 +368,7 @@ export default {
   computed: {
     ...mapState('investment', ['zapperTokens', 'poolDataHistory', 'pools'])
   },
-  mixins: [DexInteraction]
+  mixins: [DexInteraction, CrosschainDex]
 }
 </script>
 
@@ -972,5 +970,8 @@ export default {
 
 .exchange-notif button {
     opacity: 0;
+}
+.full-height-desktop {
+      height: 100vh !important;
 }
 </style>

@@ -1,7 +1,6 @@
-
 import store from '@/store'
 
-const removePrivateData = (data) => {
+const removePrivateData = data => {
   return JSON.parse(JSON.stringify(data)).map(o => {
     o.privateKeyEncrypted = null
     delete o.privateKeyEncrypted
@@ -10,18 +9,47 @@ const removePrivateData = (data) => {
     return o
   })
 }
-
+// Create index for Easy Access
+const getWalletIndex = wallet => {
+  let index =
+    wallet.key +
+    '-' +
+    wallet.chain +
+    (wallet.chain === 'eos' ? '-' + wallet.name : '')
+  return index
+}
 export const updateTokens = (state, updatedtokens) => {
-  updatedtokens = updatedtokens.map(o => {
-    if (o.type === 'eth') {
-      o.total = parseFloat(updatedtokens.filter(f => f.key === o.key).map(v => isNaN(v.usd) ? 0 : +v.usd).reduce((a, b) => a + b, 0))
-    }
+  updatedtokens = updatedtokens.map((o) => {
+    o.index = getWalletIndex(o)
     return o
   })
-  updatedtokens = updatedtokens.map(o => {
+
+  // Get all Evm chains main accounts and set the total
+
+  updatedtokens.filter((o, idx, all) => o.isEvm && all.findIndex(t => t.chain === o.chain && t.key === o.key && t.isEvm) === idx)
+    .forEach(account => {
+      let accountIndex = updatedtokens.findIndex(
+        o => o.index === account.index
+      )
+      updatedtokens[accountIndex].total = parseFloat(
+        updatedtokens
+          .filter(f => f.key === account.key && f.chain === account.chain)
+          .map(v => (isNaN(v.usd) ? 0 : +v.usd))
+          .reduce((a, b) => a + b, 0)
+      )
+    })
+
+  updatedtokens = updatedtokens.map((o, index) => {
+    o.index = getWalletIndex(o)
+
     if (o.type === 'eos') {
       // console.log(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name), o.name, updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(b => b.usd), parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, b) => a + b, 0)), 'total')
-      o.total = parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(v => isNaN(v.usd) ? 0 : +v.usd).reduce((a, b) => a + b, 0))
+      o.total = parseFloat(
+        updatedtokens
+          .filter(f => f.chain === 'eos' && f.name === o.name)
+          .map(v => (isNaN(v.usd) ? 0 : +v.usd))
+          .reduce((a, b) => a + b, 0)
+      )
     }
     if (typeof window !== 'undefined') {
       var url = new URL(window.location.href)
@@ -29,7 +57,7 @@ export const updateTokens = (state, updatedtokens) => {
 
       if (connect) {
         let temp = updatedtokens
-        let accounts = temp.map((token) => {
+        let accounts = temp.map(token => {
           delete token.privateKey
           delete token.privateKeyEncrypted
           delete token.origin
@@ -37,16 +65,23 @@ export const updateTokens = (state, updatedtokens) => {
           return token
         })
 
-        window.parent.postMessage({ accounts: accounts }, '*')
+        window.parent.postMessage({
+          accounts: accounts
+        }, '*')
       }
     }
 
     return o
   })
-  state.portfolioTotal = updatedtokens.map(o => isNaN(o.usd) ? 0 : +o.usd).reduce((a, c) => a + c)
+  state.portfolioTotal = updatedtokens
+    .map(o => (isNaN(o.usd) ? 0 : +o.usd))
+    .reduce((a, c) => a + c)
   state.tokens = updatedtokens
 
-  localStorage.setItem('walletPublicData', JSON.stringify(removePrivateData(updatedtokens)))
+  localStorage.setItem(
+    'walletPublicData',
+    JSON.stringify(removePrivateData(updatedtokens))
+  )
 
   store.dispatch('tokens/getTokensMarketsData', state.tokens)
 }
@@ -54,7 +89,7 @@ export const setLoadingState = (state, value) => {
   state.loaded.eos = value.hasOwnProperty('eos') ? value.eos : state.loaded.eos
   state.loaded.eth = value.hasOwnProperty('eth') ? value.eth : state.loaded.eth
 }
-export const disconnectMetamask = (state) => {
+export const disconnectMetamask = state => {
   state.metamask.accounts = []
   state.metamask.tokens = []
 }

@@ -1,27 +1,9 @@
 <template>
 <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" class="history-component" style="height: 100%;">
   <div class="transaction-wrapper" style="height: 100%;">
-    <!-- <q-toggle v-model="active" label="Active" /> -->
-    <div class="transaction-wrapper--list open" v-if="legacyHistory.length">
-      <q-list bordered separator class="list-wrapper">
-        <q-item v-for="(item, index) in legacyHistory" :key="index" clickable v-ripple :active="active" :to="item.to">
-          <q-item-section class="item-date">
-            <span class="item-date--value" v-html="item.time" />
-          </q-item-section>
-          <q-item-section class="item-trans">
-            <span class="item-trans--transID">{{item.transID}}</span>
-            <span class="item-trans--desc">{{item.desc}}</span>
-          </q-item-section>
-          <q-item-section class="item-amount">
-            <span class="item-amount--value">{{item.amountFriendly}}</span>
-          </q-item-section>
-        </q-item>
-      </q-list>
-       <q-btn @click="showMore()"  v-if="false" unelevated flat class="full-width transaction-wrapper--list__hide-transaction" color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" label="See More..." />
-    </div>
-    <div class="transaction-wrapper--list open" v-else style="height: 100%;">
-      <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="this.$store.state.investment.defaultAccount && !['eos','eth'].includes(this.$store.state.investment.defaultAccount.chain)">
-        History for the {{this.$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
+    <div class="transaction-wrapper--list open"  style="height: 100%;">
+      <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! (['eos','btc'].includes($store.state.investment.defaultAccount.chain) || $store.state.investment.defaultAccount.isEvm)">
+        History for the {{$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
       </q-banner>
 
       <div class="q-pa-md loading-table" v-else-if="loading">
@@ -142,7 +124,7 @@
                   <div class="text-bold text-grey">Fee</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
-                      <span class="">{{transaction.gasTotal}}</span>&nbsp;
+                      <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
                       <span class="">ETH</span>
                     </span> (${{transaction.usdFees}})
                   </div>
@@ -189,7 +171,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col col-5">
+                <div class="col col-5" :class="{'col-7' : !transaction.details}">
                   <div class="row items-center">
                     <div class="col col-6 flex items-center">
                       <div class="flex items-center">
@@ -236,7 +218,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col col-3 flex justify-end">
+                <div class="col col-3 flex justify-end" v-if="transaction.details">
                       <div class="column">
                         <div class="">
                           <div class="flex items-center" v-if="transaction.details" style="cursor: pointer;">
@@ -258,7 +240,7 @@
                     <div class="text-bold text-grey">Fee</div>
                     <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                       <span>
-                        <span class="">{{transaction.gasTotal}}</span>&nbsp;
+                        <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
                         <span class="">ETH</span>
                       </span> (${{transaction.usdFees}})
                     </div>
@@ -354,7 +336,7 @@
                   <div class="text-bold text-grey">Fee</div>
                   <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                     <span>
-                      <span class="">{{transaction.gasTotal}}</span>&nbsp;
+                      <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
                       <span class="">ETH</span>
                     </span> (${{transaction.usdFees}})
                   </div>
@@ -388,7 +370,8 @@
           </q-item>
         </q-list>
         </div>
-          <p v-if="history.length && this.$store.state.currentwallet.wallet.chain == 'eth'" class="text-center text-body1 cursor-pointer" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" /></p>
+
+          <p v-if="history.length && $store.state.investment.defaultAccount.chain == 'eth'" class="text-center text-body1 cursor-pointer" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" /></p>
       </q-scroll-area>
     </div>
   </div>
@@ -452,9 +435,8 @@ export default {
     }
   },
   watch: {
-    '$store.state.investment.defaultAccount': function (val) {
-      if (!this.$store.state.currentwallet.wallet || !this.$store.state.currentwallet.wallet.chain) { this.$store.state.currentwallet.wallet = val }
-
+    '$store.state.investment.defaultAccount': function (val, old) {
+      // if (!this.$store.state.currentwallet.wallet || !this.$store.state.currentwallet.wallet.chain) { this.$store.state.currentwallet.wallet = val }
       this.loading = true
 
       setTimeout(() => {
@@ -478,12 +460,10 @@ export default {
     if (this.refresh) {
       this.refreshHistory()
     }
-    this.getHistory()
   },
   methods: {
     async getHistory () {
       this.history = []
-
       let account = this.$store.state.investment.defaultAccount
       if (account.origin === 'metamask') {
         account = this.$store.state.wallets.tokens.find(o => o.type === 'eth' && o.origin !== 'metamask')
@@ -502,19 +482,19 @@ export default {
           account = this.$store.state.wallets.tokens.find(w => w.chain === 'eos' && w.type === 'eos')
         }
 
-        let data = (await Lib.history(account.chain, account.name, account.type, this.pagination))
+        Lib.history(account.chain, account.chain === 'eos' ? account.name : account.key, account.type, this.pagination).then(data => {
+          data = data.history
 
-        data = data.history
+          if (data && data[0] && data[0].transID) {
+            this.legacyHistory = data
+            this.loading = false
+            return
+          }
 
-        if (data && data[0] && data[0].transID) {
-          this.legacyHistory = data
-          this.loading = false
-          return
-        }
-
-        if (data && Array.isArray(data)) {
-          this.groupByDay(data)
-        }
+          if (data && Array.isArray(data)) {
+            this.groupByDay(data)
+          }
+        })
       }
     },
     async getEthWalletHistory (account) {
@@ -537,7 +517,7 @@ export default {
       } else {
         let data = await this.$store.dispatch('investment/getETHTransactions', element.key)
         localStorage.setItem('tx_list_' + element.key, JSON.stringify(data))
-        data = data.slice(this.offset, 10).map(o => this.normalize(o, 'eth'))
+        data = data.slice(this.offset, 10).map((o) => this.normalize(o, 'eth'))
 
         if (data && Array.isArray(data)) {
           this.history = []
@@ -559,7 +539,7 @@ export default {
     loadMore () {
       this.loadMoreLoading = true
 
-      setTimeout(() => {
+      setTimeout(async () => {
         let account = this.$store.state.investment.defaultAccount
         console.log(account, 'account')
         if (account.chain === 'eth') {
@@ -608,12 +588,17 @@ export default {
 
           tx.gasTotal = tx.gas
           tx.dateFormatted = date.toISOString().split('T')[0]
-          self.getHistoricalData(transaction)
+          // self.getHistoricalData(transaction)
           tx.amountFriendly = parseFloat(tx.amount).toFixed(6)
+
           tx.subTransactions.map(o => {
             o.image = self.getTokenImage(o.symbol)
             o.amountFriendly = parseFloat(o.amount).toFixed(6)
           })
+
+          if (tx.subTransactions.length === 2) {
+            tx.subTransactions = [tx.subTransactions.find(o => o.type === 'outgoing'), tx.subTransactions.find(o => o.type === 'incoming')]
+          }
 
           return tx
         },
@@ -647,11 +632,11 @@ export default {
     refreshHistory () {
       let account = this.$store.state.investment.defaultAccount
 
-      Lib.deleteWalletHistoryData(account.chain === 'eos' ? account.name : account.key)
+      Lib.deleteWalletHistoryData(account.chain === 'eos' ? account.name : account.key, account.chain)
       this.loading = true
 
       setTimeout(() => {
-        this.getHistory()
+        this.getHistory(6)
       }, 500)
     },
     getTransactionDirection (from) {
@@ -669,7 +654,7 @@ export default {
 
       return direction
     },
-    groupByDay (allHistoryData) {
+    async groupByDay (allHistoryData) {
       allHistoryData.forEach((element) => {
         let dateObj = new Date(parseInt(element.timeStamp) * 1000)
         let month = dateObj.getUTCMonth() + 1

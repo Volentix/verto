@@ -1,35 +1,11 @@
 <template>
   <div :class="{'q-pt-lg': !allAssets, 'dark-theme': $store.state.settings.lightMode === 'true'}" class="wrapper q-px-lg full-width">
-    <div class="top-part-all"  v-if="false">>
-      <div class="text-h6">Invest</div>
-      <div class="top-4part">
-        <a href="#">
-          <div class="top-part top-part1">
-            <h4>Top Gainers</h4>
-          </div>
-        </a>
 
-        <a href="#">
-          <div class="top-part top-part2">
-            <h4>Top Losers</h4>
-          </div> </a
-        ><a href="#">
-          <div class="top-part top-part3">
-            <h4>Market</h4>
-          </div>
-        </a>
-        <a href="#">
-          <div class="top-part top-part4">
-            <h4>Pools</h4>
-          </div>
-        </a>
-      </div>
-    </div>
     <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
       <div v-show="!allAssets">
         <div class="sub-top row gt-sm">
           <div class="subt-text col-md-7 col-12" >
-            <p class="q-ma-none text-bold text-body1"><q-icon name="img:statics/icons/favicon-96x96.png" style="font-size: 24px" class="q-mr-sm"/>Trade & Earn VTX  </p>
+            <p class="q-ma-none text-bold text-body1" v-show="!$store.state.currentwallet.wallet.chain"><q-icon name="img:statics/icons/favicon-96x96.png" style="font-size: 24px" class="q-mr-sm"/>Trade & Earn VTX  </p>
           </div>
           <div class="see-text col col-12 " >
           <q-input :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol"  >
@@ -40,13 +16,13 @@
           </q-input>
           </div>
         </div>
-        <div class="row q-col-gutter-md q-pr-lg" v-show="!tokenSearchVal.length">
+        <div class="row q-col-gutter-md q-pr-lg"  v-show="!tokenSearchVal.length && !$store.state.currentwallet.wallet.chain">
           <div class="col-md-6 col-12">
             <ExchangeSection data-title="Any to any" data-intro="Crosschain transactions: Exchange Any to Any is easier than ever" />
           </div>
           <div class="col-md-6  col-12">
           <makeVTXSection data-title="Earn with VTX" data-intro="Start staking VTX now and enjoy the benefits"   />
-          </div>
+        </div>
           <PriceChart
               :dataType="'price'"
               class="col-md-12"
@@ -55,10 +31,11 @@
             />
         </div>
       </div>
-      <div class="q-pt-md" v-show="filterTokens(item).length || tokenSearchVal.length" v-for="(item, index) in assetsOptions.filter(o =>  !allAssets || o.title == allAssets.title)" :key="index+uniqueKey">
-        <div class="sub-top sub-top-chart">
+
+      <div class="q-pt-md" v-show="filterTokens(item).length ||  tokenSearchVal.length" v-for="(item, index) in assetsOptions.filter(o =>  !allAssets || o.title == allAssets.title)" :key="index+uniqueKey">
+      <div class="sub-top sub-top-chart">
           <div class="subt-text " v-if="!allAssets" >
-            <p class="q-ma-none text-bold text-body1">{{item.title}} <span class="text-body2 gt-sm">| {{item.subtitle}}</span></p>
+            <p class="q-ma-none text-bold text-body1">{{getSectionTitle(item)}} <span class="text-body2 gt-sm">| {{item.subtitle}}</span></p>
           </div>
           <div class="subt-text" v-else>
             <p>
@@ -103,16 +80,17 @@
                 </div>
               </div>
               <h2 class="q-my-none">
-                ${{formatNumber(asset.usd,0)}}
-                <span v-if="parseInt(asset.usd).toString().length <= 5" class="g-txt">.{{formatNumber(asset.usd,2).split('.')[1]}}</span>
+                ${{formatNumber(asset.usd, (5 - parseInt(asset.usd).toString().length) % 5 )}}
+               <!-- <span v-if="parseInt(asset.usd).toString().length <= 5" class="g-txt">.{{formatNumber(asset.usd,2).split('.')[1]}}</span> -->
                 <span v-if="asset.change24hPercentage" :class="'sr-txt absolute-top-right ' + asset.color">{{asset.color === 'text-green-6'? '↑':'↓'}} {{asset.change24hPercentage.substring(1)}}</span>
                 <a href="javascript:void(0)">Trade</a>
               </h2>
-              <q-item-label :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" class="q-pt-sm" caption>Amount: <span class="text-grey q-pl-xs">{{formatNumber(asset.amount,4)}}</span></q-item-label>
+              <q-item-label :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" class="q-pt-sm" caption>Amount: <span class="text-grey q-pl-xs">{{formatNumber(asset.amount,6)}}</span></q-item-label>
               <div class="q-pt-sm">Price: <span class="text-grey q-pl-xs">${{formatNumber(asset.rateUsd,4)}}</span></div>
               <div class="q-py-sm" v-if="asset.protocol"><q-icon class="q-pr-sm" size="1.2rem" :name="'img:'+asset.protocolIcon" />{{asset.protocol}}:</div>
               <span class="text-grey" v-if="asset.poolsCount == 1">{{asset.poolName}} pool</span>
               <span class="text-grey" v-else-if="asset.poolsCount">{{asset.poolsCount}} pools</span>
+                <q-item-label class="text-caption chain-label q-py-sm"  v-if="asset.chainLabel" :class="{'text-white':$store.state.settings.lightMode === 'true'}" >Chain: <span  class="text-grey">{{asset.chainLabel.replace('Chain', '')}}</span></q-item-label>
             </div>
 
           </div>
@@ -270,6 +248,7 @@ export default {
     return {
       chartData: false,
       listViewMode: 'card',
+      chainSelected: false,
       uniqueKey: 1235878,
       allAssets: null,
       currentChain: false,
@@ -415,6 +394,7 @@ export default {
   watch: {
     '$store.state.wallets.tokens': function () {
       this.initTable()
+      this.$emit('assetsChanged', this.assetsOptions[0].data)
     },
     '$store.state.investment.investments': function (investments) {
       this.getInvestedTokens(investments)
@@ -461,13 +441,14 @@ export default {
       let assets = []
       const setValue = (t, index) => {
         let tkData = this.$store.state.tokens.walletTokensData.find(a => a.symbol.toLowerCase() === t['symbol' + index].toLowerCase())
-
+        console.log(investments, 'investments')
         return {
           usd: tkData ? tkData.current_price * t['count' + index] : '',
           rateUsd: tkData ? tkData.current_price : '',
           type: t['symbol' + index].toLowerCase(),
           chain: 'eos',
           poolsCount: 1,
+          owner: t.owner,
           poolName: t.symbol0 + ' / ' + t.symbol1,
           amount: t['count' + index],
           icon: 'https://ndi.340wan.com/eos/' + t['contract' + index] + '-' + t['symbol' + index].toLowerCase() + '.png',
@@ -492,14 +473,14 @@ export default {
     },
     async getVTXHistoriclPrice (days = 30) {
       let response = await this.$axios.get(
-        'https://api.coingecko.com/api/v3/coins/volentix-vtx/market_chart?vs_currency=usd&days=' +
+        process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/volentix-vtx/market_chart?vs_currency=usd&days=' +
             days
       )
       this.chartData = response.data
     },
     getInvestedTokens (investments) {
       let assets = []
-      console.log(investments, 'investments eth')
+
       investments.forEach(t => {
         t.tokens.forEach(a => {
           let protocolData = this.platformOptions.find(o => o.label.toLowerCase() === t.protocolDisplay.toLowerCase())
@@ -585,22 +566,28 @@ export default {
       }
       return tokens
     },
+    getSectionTitle (item) {
+      return this.chainSelected && item.id === 'assets' ? item.title.replace(' ', ' ' + this.chainSelected + ' ') : item.title
+    },
     initTable (chain) {
       let account = null
 
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.name) {
         account = this.$store.state.currentwallet.wallet
+        this.getChainLabel(account.chain)
+      } else {
+        this.chainSelected = chain && chain !== 'vtx' ? this.getChainLabel(chain) : false
       }
       this.assets = []
 
-      JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter(o => (!account && !chain) || (chain && o.chain === chain) || (account && o.chain === account.chain && o.name === account.name)))).forEach((token, i) => {
+      JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).filter(o => (!account && !chain) || (chain && o.chain === chain && !account) || (account && o.chain === account.chain && ((account.isEvm && o.key === account.key) || (!account.isEvm && o.name === account.name)))).forEach((token, i) => {
         token.amount = parseFloat(token.amount)
         token.usd = parseFloat(token.usd)
 
-        if (!isNaN(token.amount) && token.amount !== 0) {
-          if (this.assets.find(o => o.type === token.type && o.chain === token.chain && (token.chain !== 'eos' || o.contract === token.contract))) {
-            let index = this.assets.findIndex(o => o.type === token.type)
-
+        if ((!isNaN(token.amount) && token.amount !== 0) || token.isEvm) {
+          let index = this.assets.findIndex(o => o.type === token.type && o.chain === token.chain && (token.chain !== 'eos' || o.contract === token.contract))
+          console.log(token.chain, token.type)
+          if (index !== -1) {
             this.assets[index].amount += token.amount
             this.assets[index].usd += isNaN(token.usd) ? 0 : token.usd
             this.assets[index].rateUsd = isNaN(token.tokenPrice) ? 0 : token.tokenPrice
@@ -611,6 +598,7 @@ export default {
             token.index = this.assets.length
             token.rateUsd = isNaN(token.tokenPrice) ? 0 : token.tokenPrice
             token.friendlyType = token.type.length > 6 ? token.type.substring(0, 6) + '...' : token.type
+            token.chainLabel = this.getChainLabel(token.chain)
             token = this.getHistoricalValue(token)
             this.assets.push(token)
           }
