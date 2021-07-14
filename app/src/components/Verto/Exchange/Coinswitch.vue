@@ -1402,7 +1402,7 @@
 import store from '@/store'
 // import { userError } from '@/util/errorHandler'
 import ExternalWallets from '@/util/ExternalWallets'
-const url = 'https://api.coinswitch.co'
+const url = 'http://api.godex.io/api/v1/'
 let headers = {
   'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
 }
@@ -1621,6 +1621,7 @@ export default {
       } else if (this.depositCoin && this.depositCoin.value) {
         this.depositCoin = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())
       }
+      console.log(this.$store.state.settings.dexData, 4, this.depositCoin, this.destinationCoin)
     },
     toCoin (val) {
       // console.log(val, 'toCoin')
@@ -1861,7 +1862,7 @@ export default {
     self.depositCoinOptions = this.getUniqueTokens(self.coins)
     self.destinationCoinUnfilter = self.depositCoinOptions
     self.depositCoinUnfilter = self.depositCoinOptions
-
+    console.log(this.$store.state.settings.dexData, 1, this.depositCoin, this.destinationCoin)
     if (this.$store.state.settings.dexData.depositCoin) {
       this.depositCoin = this.$store.state.settings.coins.coinswitch.find((o) => o.value.toLowerCase() === this.$store.state.settings.dexData.depositCoin.value.toLowerCase())
       if (this.$store.state.settings.dexData.destinationCoin) {
@@ -1886,6 +1887,7 @@ export default {
     if (this.$store.state.wallets.metamask.accounts.length) {
       this.connectWallet('metamask')
     }
+    console.log(this.$store.state.settings.dexData, 2, this.depositCoin, this.destinationCoin)
   },
   methods: {
     disconnectMetamask () {
@@ -2027,10 +2029,14 @@ export default {
     },
     checkGas () {
       try {
+        let from = this.fromCoin.value
+        if (this.fromCoin.value && this.fromCoin.value) {
+          from = this.fromCoin.value.split('-')[0]
+        }
         if (this.isEthToVtx) {
           Lib.getRawETHTransaction(
             this.depositCoin.value,
-            this.fromCoin.value,
+            from,
             ethVTxAddress,
             this.depositQuantity,
             '',
@@ -2165,7 +2171,7 @@ export default {
         }
         let data = {
           gasData: this.gasSelected,
-          txData: this.toCoin.value + (this.accountToBeCreated ? account.key : ''),
+          txData: web3.utils.utf8ToHex(this.toCoin.value + (this.accountToBeCreated ? account.key : '')),
           gasLimit: 30000
         }
 
@@ -2739,7 +2745,7 @@ export default {
     },
     getPairs () {
       const self = this
-      this.$axios.post(url + '/v2/pairs', {
+      this.$axios.post(url + '/coins', {
         depositCoin: self.depositCoin.value
       }, {
         headers
@@ -2791,7 +2797,7 @@ export default {
       let vtxAmount = false
 
       if (!this.eThToVTXPrice) {
-        let response = await this.$axios.get('https://api.coingecko.com/api/v3/simple/price?ids=volentix-vtx&vs_currencies=eth')
+        let response = await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=volentix-vtx&vs_currencies=eth')
         if (response.data && response.data['volentix-vtx'] && response.data['volentix-vtx'].eth) {
           this.eThToVTXPrice = parseFloat(response.data['volentix-vtx'].eth)
         }
@@ -2808,7 +2814,7 @@ export default {
         if (this.$route.params.amount && !this.depositQuantity) {
           this.depositQuantity = this.$route.params.amount
         } else if (!this.depositQuantity) {
-          this.depositQuantity = 1
+          this.depositQuantity = this.$store.state.settings.dexData && this.$store.state.settings.dexData.fromAmount ? this.$store.state.settings.dexData.fromAmount : 1
         }
 
         this.rateDataVtx = {

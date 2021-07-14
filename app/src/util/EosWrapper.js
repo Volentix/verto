@@ -5,6 +5,7 @@ import { userError } from '@/util/errorHandler'
 import { userResult } from '@/util/resultHandler'
 import store from '@/store'
 import axios from 'axios'
+import { Notify } from 'quasar'
 
 // const floatRegex = /[^\d.-]/g
 const ecc = require('eosjs-ecc')
@@ -34,7 +35,27 @@ class EosWrapper {
     return names
   }
   async freePowerUp (name) {
-    (await axios.get('https://api.eospowerup.io/freePowerup/' + name))
+    let lastpwUp = localStorage.getItem('freepwup_' + name)
+
+    if (lastpwUp) {
+      let today = new Date()
+      lastpwUp = new Date(lastpwUp * 1000)
+      lastpwUp.setHours(lastpwUp.getHours() + 12)
+      if (lastpwUp.getTime() > today.getTime()) return
+    }
+
+    let response = await axios.get('https://api.eospowerup.io/freePowerup/' + name)
+    if (response && response.data && response.data.result) {
+      localStorage.setItem('freepwup_' + name, Math.round(+new Date() / 1000))
+      Notify.create({
+        progress: true,
+        message: 'Whoohahh: ' + name + ' has been powered up for free',
+        caption: 'Valid for 12 hours',
+        color: 'deep-purple-14',
+        position: 'bottom-left',
+        avatar: 'https://verto.volentix.io/statics/icons/vtx-logo-1024x1024.png'
+      })
+    }
   }
   async getActions (accountName) {
     const actions = (await this.rpc.getActions(accountName)).actions

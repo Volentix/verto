@@ -12,9 +12,6 @@
           </div>
           <div class="col col-md-9">
             <div class="desktop-card-style apps-section history-card" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100%;">
-              <q-banner inline-actions class="text-white bg-red q-my-md " v-if="false">
-                Section currently in development: currently showing ETH wallets history
-              </q-banner>
               <div class="row">
                 <div class="standard-content--title col-md-4 float-left flex justify-start q-pl-md q-pt-lg" >History  <q-icon name="cached"  @click="refresh++" class="refresh-history q-pl-sm"/></div>
 
@@ -28,7 +25,7 @@
           </div>
         </div>
       </div>
-      <div class="mobile-version full-height" v-else>
+       <div class="mobile-version full-height" v-else>
         <div class="desktop-card-style apps-section history-card" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100%;">
           <q-banner inline-actions class="text-white bg-red q-my-md " v-if="false">
             Section currently in development: currently showing ETH wallets history
@@ -47,6 +44,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </q-page>
 </template>

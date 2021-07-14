@@ -240,12 +240,13 @@
 <script>
 // import store from '@/store'
 // import { userError } from '@/util/errorHandler'
-const _1inch = 'https://api.1inch.exchange'
+const baseUrl = 'https://api.1inch.exchange'
 import Lib from '@/util/walletlib'
 // const url = 'https://api.coinswitch.co'
 // let headers = {
 //   'x-api-key': process.env[store.state.settings.network].COINSWITCH_APIKEY
 // }
+import CrosschainDex from '@/util/CrosschainDex'
 const typeUpper = function (thing) {
   if (typeof thing === 'string' && thing.length >= 1) {
     return thing.toUpperCase()
@@ -255,7 +256,7 @@ const typeUpper = function (thing) {
 }
 import DexInteraction from '../../../mixins/DexInteraction'
 import AccountSelector from './AccountSelector.vue'
-const _1inchApprovalAddress = '0xe4c9194962532feb467dce8b3d42419641c6ed2e'
+const baseUrlApprovalAddress = '0xe4c9194962532feb467dce8b3d42419641c6ed2e'
 import contract from '../../../mixins/EthContract'
 const Web3 = require('web3')
 let web3
@@ -582,42 +583,43 @@ export default {
       let chain = this.$store.state.investment.defaultAccount.chain
       chain = chain || 'eth'
       this.getChainData()
-      let coins = this.get1inchCoinsByChain(chain)
-      this.gasOptions = []
-      // coins = this.getUniqueTokens(coins)
+      CrosschainDex.getCoinList('godex').then(res => {
+        let coins = res.coins
+        this.gasOptions = []
+        // coins = this.getUniqueTokens(coins)
 
-      if (coins.length) {
-        this.destinationCoin = coins[0]
-        this.destinationCoinUnfilter = coins
-        this.destinationCoinOptions = coins
-      }
-      this.depositCoinOptions = coins.filter(t => val.find(o => o.type.toLowerCase() === t.value.toLowerCase()))
-      this.depositCoinOptions.map(o => {
-        o.amount = val.find(t => t.type.toLowerCase() === o.value.toLowerCase()).amount
+        if (coins.length) {
+          this.destinationCoin = coins[0]
+          this.destinationCoinUnfilter = coins
+          this.destinationCoinOptions = coins
+        }
+        this.depositCoinOptions = coins.filter(t => val.find(o => o.type.toLowerCase() === t.value.toLowerCase()))
+        this.depositCoinOptions.map(o => {
+          o.amount = val.find(t => t.type.toLowerCase() === o.value.toLowerCase()).amount
 
-        if (this.crossChain) { o.address = coins.find(t => t.value.toLowerCase() === o.value.toLowerCase()).address }
+          if (this.crossChain) { o.address = coins.find(t => t.value.toLowerCase() === o.value.toLowerCase()).address }
 
-        return o
-      })
+          return o
+        })
 
-      this.depositCoinUnfilter = this.depositCoinOptions
+        this.depositCoinUnfilter = this.depositCoinOptions
 
-      this.getSwapQuote()
-
-      if (this.depositCoinOptions.length) {
-        let token = this.depositCoinOptions.find(o => !this.tokenType || this.tokenType === o.value.toLowerCase())
-        let defaultFrom = this.depositCoinOptions.find((o, i) => defaultToken[chain].includes(o.value.toLowerCase()))
-
-        this.depositCoin = this.tokenType && token ? token : (defaultFrom || this.depositCoinOptions[0])
-
-        let defaultTo = coins.find((o, i) => defaultToken[chain].includes(o.value.toLowerCase()) && o.value.toLowerCase() !== this.depositCoin.value.toLowerCase())
-        let tokenToBuy = coins.find(o => !token && this.tokenType === o.value.toLowerCase())
-        this.destinationCoin = tokenToBuy && this.tokenType ? tokenToBuy : (defaultTo || coins.find(o => o.value.toLowerCase() !== this.depositCoin.value.toLowerCase()))
-        console.log(defaultTo, 'defaultTo', tokenToBuy, 'tokenToBuy', defaultFrom, 'defaultFrom', this.destinationCoin)
         this.getSwapQuote()
-        this.checkBalance()
-      }
-      /*
+
+        if (this.depositCoinOptions.length) {
+          let token = this.depositCoinOptions.find(o => !this.tokenType || this.tokenType === o.value.toLowerCase())
+          let defaultFrom = this.depositCoinOptions.find((o, i) => defaultToken[chain].includes(o.value.toLowerCase()))
+
+          this.depositCoin = this.tokenType && token ? token : (defaultFrom || this.depositCoinOptions[0])
+
+          let defaultTo = coins.find((o, i) => defaultToken[chain].includes(o.value.toLowerCase()) && o.value.toLowerCase() !== this.depositCoin.value.toLowerCase())
+          let tokenToBuy = coins.find(o => !token && this.tokenType === o.value.toLowerCase())
+          this.destinationCoin = tokenToBuy && this.tokenType ? tokenToBuy : (defaultTo || coins.find(o => o.value.toLowerCase() !== this.depositCoin.value.toLowerCase()))
+          console.log(defaultTo, 'defaultTo', tokenToBuy, 'tokenToBuy', defaultFrom, 'defaultFrom', this.destinationCoin)
+          this.getSwapQuote()
+          this.checkBalance()
+        }
+        /*
       if (!this.depositCoin || !this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())) {
         let item = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.$store.state.investment.defaultAccount.chain)
         if (item) {
@@ -637,9 +639,9 @@ export default {
         }
       }
       */
-      setTimeout(() => {
-        this.checkBalance()
-      }, 300)
+        setTimeout(() => {
+          this.checkBalance()
+        }, 300)
 
       /* let chain = this.$store.state.investment.defaultAccount.chain
       chain = chain || 'eth'
@@ -657,10 +659,11 @@ export default {
       if (this.depositCoin) {
         this.getSwapQuote()
       } */
+      })
     },
     getExchanges () {
       const self = this
-      this.$axios.get(_1inch + '/v1.1/exchanges').then(function (result) {
+      this.$axios.get(baseUrl + '/v1.1/exchanges').then(function (result) {
         self.exchangesList = result.data.map(function (exchange) {
           let row = {
             'label': exchange.name,
@@ -700,7 +703,7 @@ export default {
         referrerAddress: '0x91B9dAda77e2eb76d6F36B96F448c1F9A066BE74',
         fee: this.$store.state.settings.globalSettings ? this.$store.state.settings.globalSettings.fee1inch : 0.75
       }
-      let swapRequestUrl = _1inch + '/v3.0/' + this.evmData.network_id + '/swap?' + new URLSearchParams(data).toString()
+      let swapRequestUrl = baseUrl + '/v3.0/' + this.evmData.network_id + '/swap?' + new URLSearchParams(data).toString()
       this.$axios.get(swapRequestUrl)
         .then(async function (result) {
           if (!result.data && !trial) {
@@ -717,7 +720,7 @@ export default {
           let isERC2O = self.depositCoin.value.toLowerCase() !== self.evmData.nativeToken
 
           if (isERC2O) {
-            self.transactionObject = await self.isApprovalRequired(self.depositCoin.address, _1inchApprovalAddress, self.swapData.fromAmount, false, nonce, self.$store.state.investment.defaultAccount, false)
+            self.transactionObject = await self.isApprovalRequired(self.depositCoin.address, baseUrlApprovalAddress, self.swapData.fromAmount, false, nonce, self.$store.state.investment.defaultAccount, false)
           }
 
           // if (!approvalRequired) return
@@ -848,7 +851,7 @@ export default {
         fee: this.$store.state.settings.globalSettings ? this.$store.state.settings.globalSettings.fee1inch : 0.75
       }
 
-      let swapRequestUrl = _1inch + '/v3.0/' + this.evmData.network_id + '/swap?' + new URLSearchParams(data).toString()
+      let swapRequestUrl = baseUrl + '/v3.0/' + this.evmData.network_id + '/swap?' + new URLSearchParams(data).toString()
 
       // JSON.stringify for easy copy paste
       this.$axios.get(swapRequestUrl)
@@ -920,7 +923,7 @@ export default {
     },
     getMarketDataVsUSD () {
       const self = this
-      let coingeckoEndpoint = process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
+      let coingeckoEndpoint =  process.env[this.$store.state.settings.network].CACHE +'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
       this.$axios.get(coingeckoEndpoint)
         .then(function (result) {
           if (result.data.length) {

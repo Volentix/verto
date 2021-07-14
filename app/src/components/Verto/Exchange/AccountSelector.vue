@@ -1,161 +1,300 @@
 <template>
-<div>
-  <q-select
-    :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
-    separator
-    rounded
-    outlined
-    :color="$store.state.settings.lightMode === 'true' ? 'white':'black'"
-    class="select-input"
-    label="Account name"
-    :class="{
-      'text-black': $store.state.settings.lightMode === 'false',
-      'dark-input': $store.state.settings.lightMode === 'true'
-      }"
-    @input="setAccount()"
-    v-model="accountOption"
-    v-if="accountOptions.length"
-    :options="accountOptions">
-    <template v-slot:selected>
-      <q-item
-        :dark="$store.state.settings.lightMode === 'true'"
-        v-if="accountOption"
-        class="full-width"
-        >
-        <q-item-section class="q-pr-sm">
-          <q-item-label caption class="ellipsis mw200 text-black flex items-center">
-            <q-icon :color="accountOption.color" name="fiber_manual_record" class="q-mr-xs" />
-            <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':''">{{ accountOption.label }}</span>
-            <q-icon size="16px" class="q-ml-sm absolute-right" :name="`img:${accountOption.image}`" />
-          </q-item-label>
-          </q-item-section>
-      </q-item>
+    <div v-if="!chain || chains" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+      <q-btn v-if="accountOption" :dark="$store.state.settings.lightMode === 'true'" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" >
+            <q-menu>
+              <q-list bordered separator>
+                <q-expansion-item  style="width:308px;"  dense-toggle class="chains" default-opened v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index" clickable  >
+                              <template v-slot:header>
+                                  <q-item-section avatar>
+                                      <img class="coin-icon" width="25px" :src="tokChain.icon"  />
+                                  </q-item-section>
+                                  <q-item-section  class="item-name" >
+                                  <span class="item-name--name"> {{tokChain.label}}</span>
+                                  <q-item-label caption>
+                                  <span  class="item-name--staked" v-if="tokChain.count > 1">{{tokChain.count}} accounts</span>
+                                  <span   class="item-name--staked" v-else-if="tokChain.count == 1">{{getAccountLabel(tokChain)}}</span>
+                                  </q-item-label>
 
-    </template>
-    <template v-slot:option="scope">
-      <q-item
-        class="custom-menu"
-        v-bind="scope.itemProps"
-        v-on="scope.itemEvents"
+                                  </q-item-section>
 
-      >
+                                  <q-item-section class="item-info col" side>
+                                  <div class="row items-center text-bold">
 
-        <q-item-section>
-          <q-item-label caption class="ellipsis mw200 q-pt-xs flex"> <q-icon
-            size="16px"
-          :name="`img:${scope.opt.image}`"
-        />  <div style="width:110px" class="q-pl-sm">{{ scope.opt.label }}</div> <q-icon :color="scope.opt.color" name="fiber_manual_record"  :class="'q-mr-sm ellipsis mw200 q-pt-xs text-'+scope.opt.color" /> ${{ scope.opt.total ? formatNumber(scope.opt.total, 0) : 0 }}
-          </q-item-label>
+                                  <span> ${{nFormatter2(tokChain.chainTotal ? tokChain.chainTotal.toFixed(0) : 0 , 0)}}</span>
+                                      </div>
+                                  </q-item-section>
+                                  </template>
 
-        </q-item-section>
-      </q-item>
-    </template>
-    <!-- <template v-slot:append>
-        <q-avatar>
-            <img src="https://www.volentix.io/statics/icons_svg/svg_logo.svg">
-        </q-avatar>
-    </template> -->
-  </q-select>
-  <div class="text-center" v-else>No {{chain}} account found</div>
+                                  <q-card class="accounts" :dark="$store.state.settings.lightMode === 'true'" dense>
+                                  <q-card-section>
+                                      <q-item  @click="getAccount(item) ; setAccount(300) ;" :key="Math.random()+index"  v-for="(item, index) in tokChain.accounts"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                                      <div class="header-wallet-wrapper culumn full-width">
+                                          <div   class="header-wallet full-width flex justify-between">
+                                              <q-item-section avatar>
+                                                <q-icon name="fiber_manual_record" :color="item.color"/>
+                                              </q-item-section>
+                                              <q-item-section class="item-name">
+                                                  <span class="item-name--name" v-if="item.isEvm"> {{getAccountLabel(item)}}</span>
+                                                  <span class="item-name--name" v-else> {{item.name}}</span>
+                                                  <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
+                                                  <span  class="item-name--staked" v-if="item.tokenList">{{item.tokenList.length}} token{{ item.tokenList.length > 1 ? 's' : '' }}</span>
+                                              </q-item-section>
+                                              <q-item-section   side>
+                                                  <span class="item-info--amountUSD" v-if="item.total">${{nFormatter2(new Number(isNaN(item.total) ? 0 : item.total).toFixed(2),0)}}</span>
+                                                  <span class="item-info--amountUSD" v-else>${{nFormatter2(new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2),0)}}</span>
+                                              </q-item-section>
+
+                                          </div>
+
+                                      </div>
+                                  </q-item>
+
+                                   <q-item  v-if="!tokChain.accounts || !tokChain.accounts.length" clickable active-class="bg-teal-1 text-grey-8">
+                                      <div class="header-wallet-wrapper culumn full-width">
+                                          <div   class="header-wallet full-width flex justify-between">
+
+                                              <q-item-section class="item-name">
+                                                  <span class="item-name--name" v-if="item.isEvm"> {{getAccountLabel(item)}}</span>
+                                                   <span>No {{ tokChain.chain.toUpperCase() }} account found</span>
+                                                  <div class="q-mt-md"   v-if=" tokChain.chain == 'eos' && $store.state.wallets.tokens.find( o => o.chain == 'eos' && o.type == 'verto')">
+                                                  You need to setup your EOS account.<br/>
+                                                    <q-btn class="q-mt-md" outline label="Setup EOS account" @click="$router.push('/verto/eos-account/create')"/>
+                                                  </div>
+                                                    </q-item-section>
+
+                                          </div>
+
+                                      </div>
+                                  </q-item>
+
+                                  </q-card-section>
+                                  <q-separator />
+
+                                  </q-card>
+
+                              </q-expansion-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+
   </div>
+
 </template>
 <script>
-const palette = ['cyan', 'teal', 'light-blue', 'blue-1', 'pink', 'purple']
 import Formatter from '@/mixins/Formatter'
+import DexInteraction from '@/mixins/DexInteraction'
 export default {
-  props: ['chain', 'showAllWallets', 'autoSelect'],
+  props: ['chain', 'showAllWallets', 'autoSelectChain', 'chains'],
   data () {
     return {
       accountOptions: [],
-      accountOption: null
+      accountOption: null,
+      chainsData: []
     }
   },
   created () {
     this.init()
+    this.chainsData = this.setChains()
+    this.chainsData = this.chainsData.filter(o => this.checkChain(o))
+    console.log(this.chainsData, 'this.chainsData ')
   },
   methods: {
+    getAccount (item) {
+      let w = this.formatAccoountOption(this.$store.state.wallets.tokens.find(a => a.index === item.index))
+
+      if (w) {
+        this.accountOption = w
+      }
+    },
+    checkChain (o) {
+      return (!this.chains && (o.chain === this.chain || !this.chain)) || (this.chains && this.chains.includes(o.chain)) || (!this.chain && !this.chains)
+    },
     init (updateDefaultAccount = true) {
       let tableData = this.$store.state.wallets.tokens
 
-      tableData.filter(w => w.chain === 'eos' && w.type === 'eos' && (this.chain === w.chain || !this.chain) && this.accountOptions.push({
-        value: w.name,
-        name: w.name,
-        key: w.key,
-        usd: w.usd,
-        chain: 'eos',
-        total: w.total,
-        image: w.icon,
-        icon: w.icon,
-        type: w.type,
-        label: w.name,
-        color: palette[this.accountOptions.length]
-      }))
+      tableData.filter(
+        (w) =>
+          w.chain === 'eos' &&
+          w.type === 'eos' &&
+          this.checkChain(w) &&
+          this.accountOptions.push({
+            value: w.name,
+            amount: w.amount,
+            name: w.name,
+            key: w.key,
+            index: w.index,
+            usd: w.usd,
+            chain: 'eos',
+            total: w.total,
+            image: w.icon,
+            icon: w.icon,
+            type: w.type,
+            label: w.name,
+            color: this.getRandomColor()
+          })
+      )
 
-      tableData.filter(w => w.chain === 'eth' && (this.chain === w.chain || !this.chain) && w.type === 'eth' && this.accountOptions.push({
-        value: w.key,
-        name: w.name,
-        key: w.key,
-        chain: 'eth',
-        type: w.type,
-        usd: w.usd,
-        total: w.total,
-        icon: w.icon,
-        image: w.icon,
-        label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
-        color: palette[this.accountOptions.length]
-      }))
+      tableData.filter(
+        (w) =>
+          w.chain === 'eth' &&
+          this.checkChain(w) &&
+          w.type === 'eth' &&
+          this.accountOptions.push({
+            value: w.key,
+            name: w.name,
+            key: w.key,
+            amount: w.amount,
+            chain: 'eth',
+            index: w.index,
+            isEvm: w.isEvm,
+            type: w.type,
+            usd: w.usd,
+            total: w.total,
+            icon: w.icon,
+            image: w.icon,
+            label: this.getAccountLabel(w),
+            color: this.getRandomColor()
+          })
+      )
 
       if (this.showAllWallets) {
-        tableData.filter(w => w.chain !== 'eth' && w.chain !== 'eos' && this.accountOptions.push({
-          value: w.key,
-          key: w.key,
-          chain: w.chain,
-          type: w.type,
-          usd: w.usd,
-          total: w.total,
-          icon: w.icon,
-          image: w.icon,
-          name: w.name,
-          label: w.key.substring(0, 6).toLowerCase() + '...' + w.key.substr(w.key.length - 5).toLowerCase(),
-          color: palette[this.accountOptions.length]
-        }))
+        tableData.filter(
+          (w, i, a) =>
+            ((w.chain !== 'eth' && w.chain !== 'eos')) &&
+             this.checkChain(w) &&
+            a.findIndex((t) => t.key === w.key && t.chain === w.chain) === i &&
+            this.accountOptions.push(this.formatAccoountOption(w))
+        )
       }
-      this.accountOptions = this.accountOptions.filter(o => o && o.name)
+      this.accountOptions = this.accountOptions.filter((o) => o && o.name)
       if (this.$store.state.wallets.metamask.accounts.length) {
-        this.accountOptions.push(this.$store.state.wallets.metamask.accounts.find(o => o.type === 'eth' && o.chain === 'eth'))
+        this.accountOptions.push(
+          this.$store.state.wallets.metamask.accounts.find(
+            (o) => o.type === 'eth' && o.chain === 'eth'
+          )
+        )
       }
 
-      this.accountOptions.sort((a, b) => (isNaN(parseFloat(b.total)) ? 0 : parseFloat(b.total)) - (isNaN(parseFloat(a.total)) ? 0 : parseFloat(a.total)))
+      this.accountOptions.sort(
+        (a, b) =>
+          (isNaN(parseFloat(b.total)) ? 0 : parseFloat(b.total)) -
+          (isNaN(parseFloat(a.total)) ? 0 : parseFloat(a.total))
+      )
 
       if (!updateDefaultAccount) return
-
-      if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.type) {
-        this.accountOption = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain && a.name.toLowerCase() === this.$store.state.currentwallet.wallet.name.toLowerCase())
-      } else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount !== undefined && this.$store.state.investment.defaultAccount.name && (!this.chain || (this.$store.state.investment.defaultAccount.chain === this.chain && this.$store.state.investment.defaultAccount.origin !== 'metamask'))) {
-        console.log(this.$store.state.investment.defaultAccount, 'this.$store.state.investment.defaultAccount f')
-        this.accountOption = this.accountOptions.find(f => f.type === this.$store.state.investment.defaultAccount.type && f.chain === this.$store.state.investment.defaultAccount.chain && f.name.toLowerCase() === this.$store.state.investment.defaultAccount.name.toLowerCase())
+      console.log(this.$store.state.currentwallet.wallet, ' this.$store.state.currentwallet.wallet', this.accountOptions.find(
+        (a) =>
+          a.key === this.$store.state.currentwallet.wallet.key &&
+            a.chain === this.$store.state.currentwallet.wallet.chain &&
+            a.name.toLowerCase() ===
+              this.$store.state.currentwallet.wallet.name.toLowerCase()
+      ), this.accountOptions)
+      if (
+        this.$store.state.currentwallet.wallet &&
+        this.$store.state.currentwallet.wallet.type
+      ) {
+        this.accountOption = this.accountOptions.find(
+          (a) =>
+            a.key === this.$store.state.currentwallet.wallet.key &&
+            a.chain === this.$store.state.currentwallet.wallet.chain &&
+            a.name.toLowerCase() ===
+              this.$store.state.currentwallet.wallet.name.toLowerCase()
+        )
+      } else if (
+        this.$store.state.investment.defaultAccount &&
+        this.$store.state.investment.defaultAccount !== undefined &&
+        this.$store.state.investment.defaultAccount.name &&
+        (!this.chain ||
+          (this.$store.state.investment.defaultAccount.chain === this.chain &&
+            this.$store.state.investment.defaultAccount.origin !== 'metamask'))
+      ) {
+        this.accountOption = this.accountOptions.find(
+          (f) =>
+            f.type === this.$store.state.investment.defaultAccount.type &&
+            f.chain === this.$store.state.investment.defaultAccount.chain &&
+            f.name.toLowerCase() ===
+              this.$store.state.investment.defaultAccount.name.toLowerCase()
+        )
       } else {
-        let item = this.accountOptions.find(o => (this.autoSelectChain && o.chain === this.autoSelectChain) || (this.chain && o.chain === this.chain) || o.chain === 'eos')
+        let item = this.accountOptions.find(
+          (o) =>
+            (this.autoSelectChain && o.chain === this.autoSelectChain) ||
+            (this.chain && o.chain === this.chain) ||
+            o.chain === 'eos'
+        )
 
         if (!item) {
-          item = this.accountOptions.find(o => (this.chain && o.chain === this.chain) || o.chain === 'eth')
+          item = this.accountOptions.find(
+            (o) => (this.chain && o.chain === this.chain) || o.chain === 'eth'
+          )
         }
 
         this.accountOption = item
       }
+
+      this.accountOptions = this.accountOptions.filter(o => (!this.chain ||
+          o.chain === this.chain))
+      if (!this.accountOptions && this.autoSelectChain && this.accountOptions.length) {
+        this.accountOption = this.accountOptions.find(o => o.chain === this.autoSelectChain)
+      }
+      if (!this.accountOption && this.accountOptions.length) {
+        this.accountOption = this.accountOptions[0]
+      }
+
+      console.log(this.autoSelectChain, 'this.autoSelectChain', this.accountOption)
       this.setAccount()
     },
-    setAccount () {
-      if (this.accountOption) {
-        this.$store.commit('investment/setDefaultAccount', this.accountOption)
-        if (this.accountOption && this.accountOption.origin === 'metamask') {
-          this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.metamask.tokens)
-        } else {
-          let tokens = this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && w.key === this.accountOption.key && (this.accountOption.chain !== 'eos' || w.name.toLowerCase() === this.accountOption.name.toLowerCase()))
+    setAccount (time = 0) {
+      setTimeout(() => {
+        if (this.accountOption) {
+          this.$store.commit(
+            'investment/setDefaultAccount',
+            this.accountOption
+          )
+          if (this.accountOption && this.accountOption.origin === 'metamask') {
+            this.$store.commit(
+              'investment/setAccountTokens',
+              this.$store.state.wallets.metamask.tokens
+            )
+          } else {
+            let tokens = this.$store.state.wallets.tokens.filter(
+              (w) =>
+                w.chain === this.accountOption.chain &&
+                w.key === this.accountOption.key &&
+                (this.accountOption.chain !== 'eos' ||
+                  w.name.toLowerCase() ===
+                    this.accountOption.name.toLowerCase())
+            )
 
-          this.$store.commit('investment/setAccountTokens', tokens)
+            this.$store.commit('investment/setAccountTokens', tokens)
+
+            if (
+              this.$store.state.currentwallet.wallet.chain &&
+              this.$store.state.currentwallet.wallet.name !==
+                this.accountOption.name &&
+              this.$store.state.currentwallet.wallet.key !==
+                this.accountOption.key
+            ) {
+              this.$store.commit('currentwallet/updateParams', {
+                chainID: this.accountOption.chain,
+                tokenID: this.accountOption.type,
+                accountName: this.accountOption.name
+              })
+              this.$store.state.currentwallet.wallet = this.$store.state.wallets.tokens.find(
+                (w) =>
+                  w.chain === this.accountOption.chain &&
+                  w.type === this.accountOption.type &&
+                  w.name.toLowerCase() === this.accountOption.name.toLowerCase()
+              )
+            }
+          }
+          if (['matic', 'bsc'].includes(this.accountOption.chain)) {
+            this.$store.commit('settings/setDex', {
+              dex: 'oneinch'
+            })
+          }
         }
-      }
+      }, time)
     }
   },
   watch: {
@@ -165,15 +304,25 @@ export default {
         if (newVal.length !== old.length) {
           this.accountOptions = []
           this.init(false)
+          this.chainsData = this.setChains()
+          this.chainsData = this.chainsData.filter(o => this.checkChain(o))
         }
       }
     },
     '$store.state.currentwallet.wallet': function () {
-      let item = this.accountOptions.find(a => a.key === this.$store.state.currentwallet.wallet.key && a.chain === this.$store.state.currentwallet.wallet.chain && (this.$store.state.currentwallet.wallet.chain !== 'eos' || (this.$store.state.currentwallet.wallet.chain === 'eos' && this.$store.state.currentwallet.wallet.type !== 'verto' && this.$store.state.currentwallet.wallet.name === a.name)))
+      let item = this.accountOptions.find(
+        (a) =>
+          a.key === this.$store.state.currentwallet.wallet.key &&
+          a.chain === this.$store.state.currentwallet.wallet.chain &&
+          (this.$store.state.currentwallet.wallet.chain !== 'eos' ||
+            (this.$store.state.currentwallet.wallet.chain === 'eos' &&
+              this.$store.state.currentwallet.wallet.type !== 'verto' &&
+              this.$store.state.currentwallet.wallet.name === a.name))
+      )
 
       if (item) {
-        this.setAccount()
         this.accountOption = item
+        this.setAccount()
       }
     },
     '$store.state.investment.defaultAccount': function (val) {
@@ -183,30 +332,41 @@ export default {
 
       this.accountOption = {
         value: w.key,
+        isEvm: w.isEvm,
         key: w.key,
         chain: w.chain,
+        index: w.index,
         usd: w.usd,
         name: w.name,
         type: w.type,
         total: w.total,
         icon: w.icon,
         image: w.icon,
-        label: w.label,
-        color: palette[this.accountOptions.length]
+        label: this.getAccountLabel(w),
+        color: this.getRandomColor()
       }
-      this.$store.commit('investment/setAccountTokens', this.$store.state.wallets.tokens.filter(w => w.chain === this.accountOption.chain && (this.accountOption.chain !== 'eos' || w.name === this.accountOption.name)))
+      this.$store.commit(
+        'investment/setAccountTokens',
+        this.$store.state.wallets.tokens.filter(
+          (w) =>
+            w.chain === this.accountOption.chain &&
+            (this.accountOption.chain !== 'eos' ||
+              w.name === this.accountOption.name)
+        )
+      )
     },
     '$store.state.wallets.metamask': {
       deep: true,
       handler (val) {
         if (this.chain) return
-        let w = val.tokens.find(a => a.type === 'eth' && a.chain === 'eth')
+        let w = val.tokens.find((a) => a.type === 'eth' && a.chain === 'eth')
 
         if (w) {
           this.accountOption = {
             value: w.key,
             key: w.key,
             chain: 'eth',
+            isEvm: w.isEvm,
             usd: w.usd,
             type: w.type,
             total: w.total,
@@ -214,75 +374,95 @@ export default {
             name: w.name,
             icon: w.icon,
             origin: 'metamask',
-            label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
-            color: palette[this.accountOptions.length]
+            label: this.getAccountLabel(w),
+            color: this.getRandomColor()
           }
-          let item = this.accountOptions.find(a => a && a.key === this.accountOption.key)
-          if (!item) { this.accountOptions.push(this.accountOption) }
+          let item = this.accountOptions.find(
+            (a) => a && a.key === this.accountOption.key
+          )
+          if (!item) {
+            this.accountOptions.push(this.accountOption)
+          }
           this.setAccount()
         }
       }
     }
   },
-  mixins: [Formatter]
+  mixins: [Formatter, DexInteraction]
 }
 </script>
 <style lang="scss" scoped>
-  .select-input{
-    border-radius: 100px !important;
-    $height: 60px;
+.item-info {
+    max-width: 40px !important;
+}
+.chains:hover .accounts {
+display: block;
+background: #e7e8e8;
+}
+.chains:hover {
+background: #e7e8e8;
+}
+.accounts {
+display: none;
+}
+.accounts .q-card__section--vert {
+    padding: 0px;
+}
+.select-input {
+  border-radius: 100px !important;
+  $height: 60px;
+  height: $height;
+  /deep/ .q-field__marginal {
     height: $height;
-    /deep/ .q-field__marginal{
-      height: $height;
-      min-height: unset;
-    }
-    /deep/ .q-field__control{
-      height: $height;
-      min-height: unset;
-      .q-field__label.no-pointer-events{
-        left: 15px;
-        @media screen and (max-width: 1024px) {
-          left: 31px;
-        }
+    min-height: unset;
+  }
+  /deep/ .q-field__control {
+    height: $height;
+    min-height: unset;
+    .q-field__label.no-pointer-events {
+      left: 15px;
+      @media screen and (max-width: 1024px) {
+        left: 31px;
       }
-      .q-field__native{
+    }
+    .q-field__native {
+      padding-left: 0px;
+      padding-top: 0px;
+      padding-bottom: 0px;
+      height: $height;
+      min-height: unset;
+      .q-item {
+        padding: 0px;
         padding-left: 0px;
-        padding-top: 0px;
+        min-height: $height;
         padding-bottom: 0px;
-        height: $height;
-        min-height: unset;
-        .q-item{
-          padding: 0px;
-          padding-left: 0px;
-          min-height: $height;
-          padding-bottom: 0px;
-          .q-item__label--caption{
-            margin-top: -35px;
+        .q-item__label--caption {
+          margin-top: -35px;
+        }
+        .q-item__section {
+          padding-right: 0px;
+          min-width: 36px;
+          .q-item__label + .q-item__label {
+            margin-top: 0px;
           }
-          .q-item__section{
-            padding-right: 0px;
-            min-width: 36px;
+        }
+      }
+    }
+  }
+}
+.dark-input {
+  &.select-input {
+    /deep/ .q-field__control {
+      .q-field__native {
+        .q-item {
+          .q-item__section {
             .q-item__label + .q-item__label {
-              margin-top: 0px;
+              color: #ccc;
             }
           }
         }
       }
     }
   }
-  .dark-input{
-    &.select-input{
-      /deep/ .q-field__control{
-        .q-field__native{
-          .q-item{
-            .q-item__section{
-              .q-item__label + .q-item__label {
-                color: #CCC;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+}
 </style>

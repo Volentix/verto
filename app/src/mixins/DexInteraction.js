@@ -3,6 +3,7 @@ import {
 } from 'eosjs'
 import EOSContract from './EOSContract'
 import Formatter from './Formatter'
+import CrosschainDex from '@/util/CrosschainDex'
 export default {
   data () {
     return {
@@ -29,7 +30,7 @@ export default {
     '$store.state.settings.coins': function () {
       this.checkPair()
     },
-
+    /*
     '$store.state.investment.accountTokens': function (val) {
       this.coins = this.$store.state.settings.coins.oneinch
       this.depositCoinOptions = this.getUniqueTokens(this.coins).filter(t => val.find(o => o.type === t.value)).map(o => {
@@ -48,9 +49,10 @@ export default {
         this.depositCoin = this.depositCoinOptions.find(v => v.value.toLowerCase() === this.depositCoin.value.toLowerCase())
       }
     },
+    */
     '$store.state.wallets.tokens': function (val) {
       if (val && !this.$store.state.settings.coins.coinswitch.length) {
-        this.getCoinswitchCoins()
+        this.getGodexCoins()
         this.get1inchCoins()
         this.getDefiboxCoins()
       }
@@ -64,7 +66,9 @@ export default {
   },
   methods: {
     checkBalance () {
-      if ((this.depositCoin && (!this.depositCoin.amount || parseFloat(this.depositCoin.amount) === 0))) {
+      this.error = ''
+
+      if (((!this.swapData || this.swapData.fromAmount !== 0) && this.depositCoin && (!this.depositCoin.amount || parseFloat(this.depositCoin.amount) === 0))) {
         this.error = 'Insuficient ' + this.depositCoin.value.toUpperCase() + ' balance'
       } else if ((this.tab === 'liquidity' && (!this.destinationCoin.amount || parseFloat(this.depositCoin.amount) === 0))) {
         this.error = 'Insuficient ' + this.destinationCoin.value.toUpperCase() + ' balance'
@@ -123,8 +127,9 @@ export default {
         return a.name ? -1 : 1
       })
     },
+
     getAllCoins (dex = false) {
-      let coins = this.$store.state.settings.coins.coinswitch.concat(this.$store.state.settings.coins.oneinch).concat(this.$store.state.settings.coins.defibox)
+      let coins = this.$store.state.settings.coins.coinswitch.concat(this.$store.state.settings.coins.oneinch).concat(this.$store.state.settings.coins.defibox).concat(this.$store.state.settings.coins.godex)
 
       coins = coins.filter(o => !(this.$store.state.wallets.tokens.filter(x => x.chain === 'eos').map(w => w.type.toLowerCase()).includes(o.value.toLowerCase())))
 
@@ -149,36 +154,8 @@ export default {
         return a.name ? -1 : 1
       })
     },
-    setDefaultWallet (chain) {
-      if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain) {
-        if (chain === this.$store.state.investment.defaultAccount.chain) return
-      }
-
-      let w = this.$store.state.wallets.tokens.find(x => x.chain === chain && x.type === chain)
-
-      this.$store.commit('investment/setDefaultAccount', chain === 'eth' ? {
-        value: w.key,
-        key: w.key,
-        chain: 'eth',
-        type: 'eth',
-        name: w.name,
-        usd: w.usd,
-        total: w.total,
-        image: w.icon,
-        label: w.key.substring(0, 6) + '...' + w.key.substr(w.key.length - 5),
-        color: 'green'
-      } : {
-        value: w.name,
-        name: w.name,
-        key: w.key,
-        usd: w.usd,
-        chain: 'eos',
-        type: 'eos',
-        total: w.total,
-        image: w.icon,
-        label: w.name,
-        color: 'green'
-      })
+    sleep (milliseconds) {
+      return new Promise(resolve => setTimeout(resolve, milliseconds))
     },
     checkPair () {
       this.dex = null
@@ -186,6 +163,8 @@ export default {
       let crosschain = ['eth', 'btc']
 
       if (!this.destinationCoin || !this.depositCoin) return
+
+      console.log(this.destinationCoin, this.depositCoin, this.$store.state.investment.defaultAccount, '76')
 
       // let from = this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
       // let to = this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())
@@ -198,9 +177,14 @@ export default {
         this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase()))) {
         this.dex = 'defibox'
         this.setDefaultWallet('eos')
-      } else {
-        // this.dex = null
+      } else if (this.$store.state.settings.coins.godex.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase()) &&
+        this.$store.state.settings.coins.godex.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())) {
+        this.dex = 'godex'
       }
+
+      /* else if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.isEvm) {
+        this.dex = 'oneinch'
+      } */
       if (this.destinationCoin.value === 'vtx' && this.depositCoin.value === 'eth') {
         this.dex = 'coinswitch'
       }
@@ -215,7 +199,15 @@ export default {
         })
       }
     },
-    getCoinswitchCoins () {
+    getGodexCoins () {
+      CrosschainDex.setDex('godex')
+      CrosschainDex.getCoinList('godex').then((res) => {
+        this.depositCoinOptions = res.coins
+        this.$store.commit('settings/setCoinData', {
+          source: 'godex',
+          data: res.coins
+        })
+      })
       /*
       const url = 'https://api.coinswitch.co'
       let headers = {
@@ -269,11 +261,13 @@ export default {
         isFiat: false,
         logoUrl: 'https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/volentixgsys/VTX.png',
         name: 'VTX',
+        chain: 'eos',
         symbol: 'vtx'
       })
       coins.push({
         isActive: true,
         isFiat: false,
+        chain: 'eth',
         logoUrl: 'https://zapper.fi/images/ETH-icon.png',
         name: 'ETH',
         symbol: 'eth'
@@ -287,6 +281,7 @@ export default {
             'value': coin.symbol,
             'image': coin.logoUrl,
             'dex': 'coinswitch',
+            'chain': [coin.chain],
             'amount': item ? item.amount : 0,
             'contract': item ? item.contract : null,
             'amountUSD': item ? item.usd : 0
@@ -302,14 +297,45 @@ export default {
 
       return coins
     },
-    get1inchCoins () {
+    get1inchCoinsByChain (chain) {
+      let coins = this.$store.state.tokens.evmTokens[chain]
+      if (coins) {
+        coins = Object.keys(coins).map((key, index) => {
+          let item = this.$store.state.wallets.tokens.find(o => o.type.toLowerCase() === coins[key].symbol.toLowerCase() && o.chain === chain)
+          let row = {
+            'label': coins[key].name.toUpperCase(),
+            'value': coins[key].symbol,
+            'image': coins[key].logoURI,
+            'address': coins[key].address,
+            'chains': ['eth', 'matic'],
+            'price': item ? item.tokenPrice : 0,
+            'dex': 'oneinch',
+            'amount': item ? item.amount : 0,
+            'contract': item ? item.address : null,
+            'amountUSD': item ? item.usd : 0
+          }
+
+          return row
+        })
+        coins = coins.filter(function (el) {
+          return el != null
+        }).sort(function (a, b) {
+          if (a.label && b.label && a.label.toLowerCase() < b.label.toLowerCase()) {
+            return -1
+          }
+          return 1
+        })
+      }
+      return coins || []
+    },
+    get1inchCoins (chain = 1) {
       const _1inch = 'https://api.1inch.exchange'
-      this.$axios.get(_1inch + '/v3.0/1/tokens').then((result) => {
+      this.$axios.get(_1inch + '/v3.0/' + chain + '/tokens').then((result) => {
         // will be using this coins array later with the destination select
         let coins = result.data.tokens
 
-        coins = Object.keys(coins).map((key, index) => {
-          let item = this.$store.state.wallets.tokens.find(o => o.type.toLowerCase() === coins[key].symbol.toLowerCase())
+        coins = Object.keys(coins).filter(o => coins[o].symbol.toLowerCase() !== 'vtx').map((key, index) => {
+          let item = this.$store.state.wallets.tokens.find(o => o.type.toLowerCase() === coins[key].symbol.toLowerCase() && o.chain === 'eth')
           let image = coins[key].symbol.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : 'https://tokens.1inch.exchange/' + coins[key].address.toLowerCase() + '.png'
 
           let row = {
@@ -317,6 +343,8 @@ export default {
             'value': coins[key].symbol,
             'image': image,
             'address': coins[key].address,
+            'decimals': coins[key].decimals,
+            'chains': ['eth', 'matic'],
             'price': coins[key].current_price,
             'dex': 'oneinch',
             'amount': item ? item.amount : 0,
@@ -396,7 +424,7 @@ export default {
 
       return this.assets
     },
-    async getDefiboxCoins () {
+    async getDefiboxPairs () {
       let rpc = new JsonRpc(process.env[this.$store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
       let pairs = (await rpc.get_table_rows({
         json: true,
@@ -405,6 +433,14 @@ export default {
         table: 'pairs',
         limit: -1
       })).rows
+
+      if (pairs && pairs.length) {
+        this.$store.commit('settings/setGlobalSettingsItem', { key: 'defiboxPairs', data: pairs })
+      }
+      return pairs
+    },
+    async getDefiboxCoins () {
+      let pairs = await this.getDefiboxPairs()
       let coins = []
 
       pairs.forEach((value, index, array) => {
@@ -473,6 +509,7 @@ export default {
           value: infosArray[1],
           contract: value[key].contract,
           image: url,
+          chains: ['eos'],
           dex: 'defibox',
           amount: item ? item.amount : 0,
           amountUSD: item ? item.usd : 0

@@ -98,6 +98,14 @@ export default [
         meta: {
           authRequired: true
         }
+      }, {
+        // Any Non-EOS wallet
+        name: 'import-wallet',
+        path: '/verto/import-wallet/:chain',
+        component: () => import('pages/Verto/ImportAnyPrivateKey.vue'),
+        meta: {
+          authRequired: true
+        }
       }, /* {
         name: 'assets-explorer',
         path: '/verto/assets-explorer',

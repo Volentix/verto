@@ -29,7 +29,7 @@
           <div class="standard-content--footer auto full-width justify-center">
               <span></span>
               <q-btn flat v-show="passHasError" rounded @click="restoreFromWords = true" outline class="q-mb-lg" no-caps text-color="white" label="Restore from 24 Words" />
-              <span></span>
+               <span></span>
           </div>
         </div>
       </div>
@@ -64,6 +64,7 @@ import configManager from '@/util/ConfigManager'
 import {
   version
 } from '../../../package.json'
+import Lib from '@/util/walletlib'
 import initWallet from '@/util/Wallets2Tokens'
 import DexInteraction from '../../mixins/DexInteraction'
 import Vue from 'vue'
@@ -103,7 +104,7 @@ export default {
       position: 'top'
     })
     this.triggerCustomRegisteredType1()
-    this.getCoinswitchCoins()
+    this.getGodexCoins()
     this.get1inchCoins()
     this.getDefiboxCoins()
 
@@ -124,19 +125,15 @@ export default {
     this.$refs.psswrd.focus()
   },
   created () {
+    Lib.removeExpiredData()
     this.$store.dispatch('tokens/getTokenList')
     this.$store.dispatch('settings/getSettings')
-    this.$store.dispatch('tokens/getTokenMarketData', 'volentix-vtx')
+    let ids = ['volentix-vtx']
+    this.$store.dispatch('tokens/getTokenMarketData', ids)
+    this.$store.dispatch('tokens/getEvmsTokensData')
   },
   methods: {
-    /*
-    getTitle () {
-      let messages = {
-        default: 'Multi-chain wallet manager',
-        messages: ['Login to get access', '']
-      }
-    },
-    */
+
     checkPassword () {
       if (this.password.length > 1) {
         this.showSubmit = true
