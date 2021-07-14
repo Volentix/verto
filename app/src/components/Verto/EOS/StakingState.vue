@@ -7,7 +7,8 @@ THE STATE OF VTX
 <div class="row">
 <div class="col-md-12">
 
-<Chart :stakingData="chartData"   :key="chartKey" v-if="false" />
+<Chart :stakingData="chartData"   :key="chartKey" />
+
 </div>
 <div class="col-md-4">
 <span class="text-h6">
@@ -75,6 +76,9 @@ THE STATE OF VTX
 
 import Chart from './BarChart'
 import Formatter from '@/mixins/Formatter'
+import {
+  EosRPC
+} from '@/util/EosInterac'
 
 export default {
   components: {
@@ -90,8 +94,20 @@ export default {
   }),
   async mounted () {
     this.getHistoryData()
+    const rpc = new EosRPC(process.env[this.$store.state.settings.network].EOS_HISTORYAPI)
+    let data = await rpc.getTableByScope(
+      'vertostaking',
+      'vertostaking',
+      'accountstake'
+    )
+    console.log(data, 'data')
   },
   methods: {
+    estimateReward (amount, period) {
+      let stake_per = (1 + period / 10.0) / 100
+
+      return (Math.round(amount * stake_per * 100) / 100) * period
+    },
     getHistoryData () {
       const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
@@ -117,6 +133,13 @@ export default {
               if (a.act.data.to === contract && stakingMemo) {
                 item.action = 'stake'
                 item.staker = a.act.data.from
+                item.period = parseInt(a.act.data.memo)
+                let maturity = (new Date(a.timestamp))
+
+                maturity.setDate(maturity.getDate() + parseInt(a.act.data.memo) * 30)
+
+                item.maturity = maturity
+                item.reward = this.estimateReward(parseFloat(a.act.data.quantity), item.period)
               } else if (a.act.data.from === contract && a.act.data.memo === 'unstaking fund') {
                 item.action = 'unstake'
                 item.staker = a.act.data.to
@@ -137,6 +160,11 @@ export default {
           }
           )
         }
+
+        this.state.sort(function (a, b) {
+          return (new Date(a.maturity)).getTime() - (new Date(b.maturity)).getTime()
+        })
+
         /* const formatForChartv1 = (data, i) => {
           let days = this.groupday(data, 'timestamp')
           console.log(days, i, 77)
@@ -146,20 +174,24 @@ export default {
           }).filter(o => o)
         } */
 
-        const formatForChartV2 = (dataset, action) => {
-          let data = []
+        const formatForChartV2 = (dataset, action, key) => {
+          let set = {
+            data: [],
+            time: []
+          }
           dataset.forEach(o => {
             if (o.action === action) {
-              data.push(o.amount)
+              set.data.push({ y: o[key], x: (new Date(o.maturity)).toISOString().substring(0, 10) })
+            //  set.time.push(o.timestamp)
             } else {
-              data.push(0)
+              //   data.push(0)
             }
           })
-          return data
+          return set
         }
-
-        this.chartData = [formatForChartV2(this.state, 'stake'), formatForChartV2(this.state, 'unstake')]
-        console.log(this.chartData, ' this.chartData 8')
+        let set = formatForChartV2(this.state, 'stake', 'reward')
+        this.chartData = [set.data, set.time]
+        console.log(this.chartData, ' this.chartData 8', this.monthGroup)
       })
     }
   },
