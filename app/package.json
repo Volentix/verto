@@ -54,6 +54,8 @@
     "@polkadot/api": "^3.8.1",
     "@quasar/extras": "^1.9.10",
     "@quasar/quasar-app-extension-qenv": "^1.0.3",
+    "@renproject/chains": "^2.4.4",
+    "@renproject/ren": "^2.4.4",
     "@solana/web3.js": "^1.7.1",
     "@uniswap/sdk": "^2.0.5",
     "apexcharts": "^3.8.6",
