@@ -29,7 +29,7 @@
       <div class="col col-7 flex justify-end q-pr-md items-center menu">
         <!-- to="/verto/create-polkadot-account" -->
        <!-- <router-link to="/verto/create-polkadot-account" >Polkadot</router-link> -->
-        <q-btn dense flat round icon="notifications_none" class="q-ml-md"  v-if="$store.state.settings.network == 'testnet'">
+        <q-btn @click="$store.state.settings.activityBar = !$store.state.settings.activityBar" dense flat round icon="notifications_none" class="q-ml-md q-mr-md"  >
           <q-badge color="white" class="text-black" floating>0</q-badge>
         </q-btn>
         <q-btn-dropdown
@@ -129,6 +129,7 @@
           v-model="network"
           :options="networks"
         >
+        <!--
           <template v-slot:option="scope">
             <q-item  dense class="custom-menu" v-bind="scope.itemProps" v-on="scope.itemEvents">
               <q-item-section avatar>
@@ -139,6 +140,7 @@
               </q-item-section>
             </q-item>
           </template>
+
           <template v-slot:selected>
             <q-item dense v-if="network">
               <q-item-section avatar>
@@ -150,6 +152,7 @@
             </q-item>
             <q-item v-else> </q-item>
           </template>
+            -->
         </q-select>
 
         <a href="javascript:void(0)" @click="logout">

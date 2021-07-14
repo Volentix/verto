@@ -2797,7 +2797,7 @@ export default {
       let vtxAmount = false
 
       if (!this.eThToVTXPrice) {
-        let response = await this.$axios.get(process.env[this.$tore.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=volentix-vtx&vs_currencies=eth')
+        let response = await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=volentix-vtx&vs_currencies=eth')
         if (response.data && response.data['volentix-vtx'] && response.data['volentix-vtx'].eth) {
           this.eThToVTXPrice = parseFloat(response.data['volentix-vtx'].eth)
         }
