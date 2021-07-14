@@ -710,7 +710,7 @@ class Lib {
     let evmData = this.getEvmData(chain)
     return evmData ? (new Web3(new Web3.providers.HttpProvider(this.getEvmData(chain).provider))) : null
   }
-  gas = async (chain, transaction, type, tokenPrice) => {
+  gas = async (chain, transaction, type, tokenPrice, gasLimit) => {
     let evmData = this.getEvmData(chain)
     let response = null, gasData = null
     const web3 = this.getWeb3Instance(chain)
@@ -718,7 +718,7 @@ class Lib {
       if (evmData.gas && evmData.gas.length) { response = await axios.get(evmData.gas) }
 
       gasData = {
-        gas: 21000,
+        gas: gasLimit || 21000,
         gasPrice: null,
         label: 'Fee',
         value: 0, // USD Price
@@ -728,7 +728,7 @@ class Lib {
     const convertGasPrice = (gasObj) => {
       // Return gas price in USD if tokenPrice is valid, otherwise return the value in native token unit
       gasObj.isUsd = tokenPrice
-      gasObj.value = web3.utils.fromWei(gasObj.gasPrice.toString(), 'ether') * gasObj.gas * (gasObj.isUsd ? tokenPrice : 1)
+      gasObj.value = web3.utils.fromWei(parseInt(gasObj.gasPrice).toString(), 'ether') * gasObj.gas * (gasObj.isUsd ? tokenPrice : 1)
       return gasObj
     }
 
@@ -736,7 +736,7 @@ class Lib {
       async ftm () {
         gasData.gasPrice = await web3.eth.getGasPrice()
 
-        if (type !== evmData.nativeToken) {
+        if ((type !== evmData.nativeToken || transaction.data) && !gasLimit) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
         }
@@ -745,7 +745,7 @@ class Lib {
       },
       async matic () {
         let gasOptions = []
-        if (type !== evmData.nativeToken || transaction.data) {
+        if ((type !== evmData.nativeToken || transaction.data) && !gasLimit) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
         }
@@ -767,7 +767,7 @@ class Lib {
       },
       async eth () {
         let gasOptions = []
-        if (type !== evmData.nativeToken || transaction.data) {
+        if ((type !== evmData.nativeToken || transaction.data) && !gasLimit) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
           console.log('gas', gas, response.data)
@@ -791,7 +791,7 @@ class Lib {
       async avaxc () {
         gasData.gasPrice = await web3.eth.getGasPrice()
 
-        if (type !== evmData.nativeToken || transaction.data) {
+        if ((type !== evmData.nativeToken || transaction.data) && !gasLimit) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
         }
@@ -832,7 +832,7 @@ class Lib {
           https://docs.binance.org/guides/concepts/fees.html
           */
 
-        if (type !== evmData.nativeToken || transaction.data) {
+        if ((type !== evmData.nativeToken || transaction.data) && !gasLimit) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
         }

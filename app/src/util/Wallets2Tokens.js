@@ -301,7 +301,7 @@ class Wallets2Tokens {
           }
           this.getEOSTokens(wallet, balances)
         } else if (wallet.type === 'eth') {
-          // wallet.key = '0x508f51c6fe10E5117caaEF3306fd2126A161825a'
+          // wallet.key = '0xf4dcb9ca53b74e039f5fcfccd4f0548547a25772'
           Lib.evms.filter(m =>
             m.network_id !== 1 // Until eth is integrated into covalent api
           ).forEach(e => {
@@ -362,6 +362,7 @@ class Wallets2Tokens {
                 .map(eth => {
                   eth.amount = ethplorer.ETH.balance
                   eth.isEvm = true
+
                   eth.key = wallet.key.toLowerCase()
                   eth.usd = ethplorer.ETH.balance * ethplorer.ETH.price.rate
                   eth.tokenPrice = ethplorer.ETH.price.rate
@@ -619,10 +620,13 @@ class Wallets2Tokens {
                 ? token.metadata.logo
                 : 'https://raw.githubusercontent.com/eoscafe/eos-airdrops/master/logos/placeholder.png'
             let data = token
+            let exchange = token.exchanges.find(
+              o => o.name.toLowerCase() === 'defibox'
+            )
             data.tokenPrice =
-              token.exchanges && token.exchanges[0]
-                ? token.exchanges[0].price
-                : 0
+            exchange ? exchange.price : (token.exchanges && token.exchanges[0]
+              ? token.exchanges[0].price
+              : 0)
             if (token.currency.toLowerCase() === 'vtx') {
               let vtxData = store.state.tokens.walletTokensData.find(
                 o => o.symbol === 'vtx'

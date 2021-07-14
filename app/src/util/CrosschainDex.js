@@ -2,20 +2,28 @@ import axios from 'axios'
 import store from '@/store'
 import { computeForward } from '@/util/VolentixPools'
 import { number_to_asset, asset } from 'eos-common'
+import RenJS from '@renproject/ren'
+import { Bitcoin, Ethereum } from '@renproject/chains'
+import Lib from '@/util/walletlib'
+import abiArray from '@/statics/abi/erc20.json'
+const _1inch = 'https://api.1inch.exchange'
 import {
   JsonRpc
 } from 'eosjs'
-const Web3 = require('web3')
+
 class Crosschaindex {
   constructor () {
     this.base = {
       godex: 'https://api.godex.io/api/v1/',
       oneinch: 'https://api.1inch.exchange/v3.0/'
     }
+    this.cache = {}
     this.exchangeLogo = {
       oneinch: 'https://duneanalytics.com/projects/pages/1inch/1inch.svg',
-      defibox: 'https://support.newdex.net/hc/article_attachments/360062280112/defibox__1.png',
-      godex: 'https://api.bytecoin.org/storage/godex2.png'
+      defibox: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiUSq9pt4nXXFxXuyWhIxw7mOB1oH0wRgw6tBtb0bfLZAMX3aqTKjz6V4oma4u3zVYOfA&usqp=CAU',
+      godex: 'https://api.bytecoin.org/storage/godex2.png',
+      coinswitch: 'statics/icons/vtx-logo-1024x1024.png',
+      renbridge: 'https://images.saymedia-content.com/.image/t_share/MTgxNzU2MTk4NTExNTg0ODc1/ren-cryptocurrency.png'
     }
     this.exchanges = ['godex']
     this.coinList = {
@@ -106,6 +114,66 @@ class Crosschaindex {
       return a.name ? -1 : 1
     }).filter((o, i) => !unique || coins.findIndex(a => a.value === o.value && a.contract === o.contract) === i)
   }
+
+  getApprovalDataV3 (tokenAddress, evmData) {
+    let response = axios.get('https://api.1inch.exchange/v3.0/' + evmData.network_id + '/approve/calldata?tokenAddress=' + tokenAddress)
+    return response
+  }
+
+  getSpender1Inchv3 (evmData) {
+    let response = axios.get('https://api.1inch.exchange/v3.0/' + evmData.network_id + '/approve/spender')
+    return response
+  }
+  async isOneinchApprovalRequired (fromUserAddress, fromToken, toToken, amountToSend, fromChain) {
+    let transactionObject = {}
+    let check = {
+      required: false,
+      error: false,
+      transactionObject: null
+    }
+    const web3 = Lib.getWeb3Instance(fromChain)
+    let evmData = Lib.evms.find(o => o.chain === fromChain)
+    let tokenData = await this.getOneInchCoinData(fromToken, toToken, evmData.network_id)
+
+    if (tokenData && tokenData.fromData && tokenData.toData && evmData.nativeToken !== fromToken.toLowerCase()) {
+      const tokenContract = new web3.eth.Contract(abiArray, tokenData.fromData.address)
+
+      let spenderData = await this.getSpender1Inchv3(evmData)
+
+      if (spenderData.data && spenderData.data.address) {
+        let toAddress = spenderData.data.address
+
+        const allowance = await tokenContract.methods.allowance(fromUserAddress, toAddress).call()
+
+        if (parseFloat(allowance) === 0 || parseFloat(allowance) < parseFloat(amountToSend)) {
+          let nonce = await web3.eth.getTransactionCount(fromUserAddress, 'latest')
+
+          transactionObject = {
+            from: fromUserAddress,
+            nonce: nonce
+          }
+          check.required = true
+
+          let approvalData = await this.getApprovalDataV3(tokenData.fromData.address, evmData)
+
+          if (approvalData.data && approvalData.data.data) {
+            transactionObject.data = approvalData.data.data
+            transactionObject.value = web3.utils.toHex(approvalData.data.value)
+            transactionObject.gasPrice = web3.utils.toHex(approvalData.data.gasPrice)
+          }
+          transactionObject.to = tokenData.fromData.address
+          transactionObject.chainId = evmData.network_id
+          check.transactionObject = transactionObject
+        }
+      } else {
+        check.error = 'Spender address not found'
+      }
+    } else {
+      check.error = 'Token not found'
+    }
+
+    return check
+  }
   async getDefiboxPairs () {
     let pairs = []
 
@@ -113,13 +181,18 @@ class Crosschaindex {
       pairs = store.state.settings.globalSettings.defiboxPairs
     } else {
       let rpc = new JsonRpc(process.env[store.state.settings.network].CACHE + 'https://eos.greymass.com:443')
-      pairs = (await rpc.get_table_rows({
-        json: true,
-        code: 'swap.defi',
-        scope: 'swap.defi',
-        table: 'pairs',
-        limit: -1
-      })).rows
+
+      let pairs = this.cache['defibox_pairs']
+      if (!pairs) {
+        pairs = (await rpc.get_table_rows({
+          json: true,
+          code: 'swap.defi',
+          scope: 'swap.defi',
+          table: 'pairs',
+          limit: -1
+        })).rows
+        this.cache['defibox_pairs'] = pairs
+      }
     }
 
     return pairs
@@ -153,11 +226,34 @@ class Crosschaindex {
       store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === to.toLowerCase()) && pairDefibox) {
        dex.push({ chains: ['eos'], dex: 'defibox' })
      }
+
+     if (['btc'].includes(from.toLowerCase()) && ['renbtc'].includes(to.toLowerCase())) {
+       dex.push({ chains: [], dex: 'renbridge' })
+     }
+
      if (store.state.settings.coins.godex.find(o => o.value.toLowerCase() === from.toLowerCase()) &&
       store.state.settings.coins.godex.find(o => o.value.toLowerCase() === to.toLowerCase())) {
        dex.push({ chains: [], dex: 'godex' })
      }
      return dex
+   }
+   async getOneInchCoinData (from, to, chainId) {
+     let coins = this.cache['oneinch_' + chainId]
+     if (!coins) {
+       let result = await axios.get(_1inch + '/v3.0/' + chainId + '/tokens')
+       coins = result.data.tokens
+       this.cache['oneinch_' + chainId] = coins
+     }
+
+     let fromData = Object.keys(coins).filter(o => coins[o].symbol.toLowerCase() === from.toLowerCase()).map(o => coins[o])
+     let toData = Object.keys(coins).filter(o => coins[o].symbol.toLowerCase() === to.toLowerCase()).map(o => coins[o])
+
+     let pair = {
+       fromData: fromData ? fromData[0] : null,
+       toData: toData ? toData[0] : null
+     }
+
+     return pair
    }
    getPair = (from, to, amount) => {
      const self = this
@@ -167,26 +263,39 @@ class Crosschaindex {
          return new Promise(async (resolve, reject) => {
            let fromToken = store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === from.toLowerCase())
            let toToken = store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === to.toLowerCase())
+           let validChains = []
+           let evmData = {
+             network_id: 1
+           }
+           await Promise.all(['eth', 'matic', 'bsc'].map(async chain => {
+             let evm = Lib.evms.find(o => o.chain === chain)
+             let pair = await self.getOneInchCoinData(from, to, evm.network_id)
+
+             if (pair.fromData && pair.toData) {
+               validChains.push(evm.chain)
+             }
+           }))
 
            if (amount < 0.0000001) {
              reject()
              return
            }
+           // if (validChains.length) { evmData = Lib.evms.find(o => o.chain === validChains[0]) }
            let data = {
              fromTokenAddress: fromToken.address,
              toTokenAddress: toToken.address,
-             amount: Web3.utils.toWei(amount.toString(), 'ether')
+             amount: Math.round(amount * 10 ** fromToken.decimals)
            }
            axios
-             .get(self.base.oneinch + '1/quote?' + new URLSearchParams(data).toString())
+             .get(self.base.oneinch + evmData.network_id + '/quote?' + new URLSearchParams(data).toString())
              .then(res => {
-               data.amount = parseFloat(Web3.utils.fromWei(res.data.toTokenAmount.toString(), 'ether'))
-               data.fromChains = ['eth', 'matic', 'bsc']
-               data.toChains = ['eth', 'matic', 'bsc']
+               data.amount = res.data.toTokenAmount.toString() / (10 ** toToken.decimals)
+               data.fromChains = validChains
+               data.toChains = validChains
                data.isCrosschain = false
                data.limitMaxDepositCoin = 0
                data.limitMinDepositCoin = 0
-               data.rate = parseFloat(Web3.utils.fromWei(res.data.toTokenAmount.toString(), 'ether')) / amount
+
                resolve({
                  pair: data
                })
@@ -308,10 +417,111 @@ class Crosschaindex {
         if (res && res.data && res.data['volentix-vtx']) { this.vtxEquiv = res.data['volentix-vtx'] }
       })
   }
-  createTransaction = (from, to, amount, toAddress, fromChain, toChain, refundAddress) => {
-    this.setDex('godex')
+  renDepositListener (mint) {
+    mint.on('deposit', async (deposit) => {
+      // Details of the deposit are available from `deposit.depositDetails`.
+
+      const hash = deposit.txHash()
+      const depositLog = (msg) => console.log(`[${hash.slice(0, 8)}][${deposit.status}] ${msg}`)
+
+      await deposit.confirmed()
+        .on('target', (confs, target) => depositLog(`${confs}/${target} confirmations`))
+        .on('confirmation', (confs, target) => depositLog(`${confs}/${target} confirmations`))
+
+      await deposit.signed()
+        // Print RenVM status - "pending", "confirming" or "done".
+        .on('status', (status) => depositLog(`Status: ${status}`))
+
+      await deposit.mint()
+        // Print Ethereum transaction hash.
+        .on('transactionHash', (txHash) => depositLog(`Mint tx: ${txHash}`))
+        .on('tx_details', (tx_details) => {
+          console.log(tx_details, 'tx_details')
+        })
+    })
+  }
+
+  createTransaction = (from, to, amount, toAddress, fromChain, toChain, refundAddress, fromAddress) => {
     const self = this
+
     let list = {
+      oneinch () {
+        return new Promise(async (resolve, reject) => {
+          let web3 = Lib.getWeb3Instance(fromChain)
+          let evmData = Lib.evms.find(o => o.chain === fromChain)
+          let pair = await self.getOneInchCoinData(from, to, evmData.network_id)
+          if (!pair.fromData || !pair.toData) {
+            reject('Data not available')
+            return
+          }
+          let params = {
+            fromTokenAddress: pair.fromData.address,
+            toTokenAddress: pair.toData.address,
+            amount: Math.round(amount * 10 ** pair.fromData.decimals),
+            slippage: 2,
+            fromAddress: fromAddress,
+            disableEstimate: true,
+            referrerAddress: '0x91B9dAda77e2eb76d6F36B96F448c1F9A066BE74',
+            fee: store.state.settings.globalSettings ? store.state.settings.globalSettings.fee1inch : 0.75
+          }
+          let swapRequestUrl = _1inch + '/v3.0/' + evmData.network_id + '/swap?' + new URLSearchParams(params).toString()
+          axios.get(swapRequestUrl)
+            .then(async function (result) {
+              let nonce = await web3.eth.getTransactionCount(fromAddress, 'latest')
+              let txObject = result.data.tx
+              txObject.nonce = nonce
+              txObject.chainId = evmData.network_id
+              resolve(txObject)
+            })
+        })
+      },
+      renbridge () {
+        return new Promise(async (resolve, reject) => {
+          let mintFromChain = {
+            async btc () {
+              let minToChain = {
+                async eth () {
+                  const ren = new RenJS()
+                  await window.ethereum.enable()
+                  let web3 = Lib.getWeb3Instance('eth')
+
+                  // if (account) return
+
+                  web3.eth.defaultAccount = toAddress
+
+                  let mint = await ren.lockAndMint({
+                    asset: from.toUpperCase(),
+                    from: Bitcoin(),
+                    to: Ethereum(web3.currentProvider)
+                      .Address(toAddress)
+                  })
+
+                  return mint
+                }
+              }
+              const mint = await minToChain[toChain]()
+
+              //   self.renDepositListener(mint)
+
+              let tx = {
+                mintObject: mint,
+                status: 'wait',
+                from: from,
+                to: to,
+                depositQuantity: amount,
+                depositAddress: mint.gatewayAddress,
+                destinationAddress: toAddress,
+                order_id: parseInt(Date.now() + Math.random())
+              }
+
+              resolve({
+                tx: tx
+              })
+            }
+          }
+          mintFromChain[fromChain]()
+        })
+      },
       godex () {
         return new Promise(async (resolve, reject) => {
           let data = {
@@ -339,6 +549,7 @@ class Crosschaindex {
                 memo: res.data.deposit_extra_id,
                 rate: res.data.rate,
                 fee: res.data.fee,
+                fetchStatus: true,
                 order_id: res.data.transaction_id
               }
               resolve({
@@ -353,7 +564,7 @@ class Crosschaindex {
         })
       }
     }
-    return list['godex']()
+    return list[ this.currentExchange ]()
   }
 }
 window.CrosschainDex = new Crosschaindex()
