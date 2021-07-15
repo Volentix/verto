@@ -1514,6 +1514,24 @@
         </tr>
       </tbody>
     </table>
+    <q-dialog v-model="showMessage">
+      <q-card>
+        <q-card-section class="row items-center q-pb-none">
+          <div  class="text-h6">Action Required</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="text-body1">
+{{popupData.msg}}
+  <q-input v-if="popupData.key" v-model="popupData.key" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" color="green" label="Minimum Amount:" readonly>
+                                <template v-slot:append>
+                                    <q-icon name="file_copy" @click="copyToClipboard(popupData.key, 'Key')" />
+                                </template>
+                            </q-input>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 <script>
@@ -1555,6 +1573,12 @@ export default {
       tab: 'deposit',
       showSendComponent: false,
       splitterModel: 10,
+      showMessage: false,
+      popupData: {
+        msg: null,
+        to: null,
+        key: false
+      },
       currentDex: null,
       error: null,
       chains: [],
@@ -2775,14 +2799,17 @@ export default {
     },
     isPathInvalid (path) {
       let message = null
+
       if (!path.walletToken && path.dex !== 'godex') {
-        message = 'You do not own this token in your ' + path.fChainLabel + ' wallet'
+        message = 'You do not own this token in your ' + path.fChainLabel + ' wallet.'
       } else if (path.walletToken && path.dex !== 'godex' && path.walletToken.amount < path.fromAmount) {
         message = 'Insuficient ' + path.fromToken.toUpperCase() + ' balance (' + path.fChainLabel.toUpperCase() + ' chain)'
       }
       return message
     },
     setPathTransaction (path) {
+      let errorMessage = this.isPathInvalid(path)
+      let isDefault = this.setDefaultWallet(path.fromChain)
       if (!path) {
         this.$q.notify({
           type: 'my-notif',
@@ -2790,12 +2817,18 @@ export default {
           timeout: 3000
         })
         return
-      } else if (this.isPathInvalid(path)) {
-        this.$q.notify({
+      } else if (errorMessage) {
+        /* this.$q.notify({
           type: 'my-notif',
           message: this.isPathInvalid(path),
           timeout: 3000
         })
+*/
+        this.popupData.msg = errorMessage
+        this.popupData.msg += '\nFund your wallet or go to your profile to import a new ' + path.fChainLabel + ' account.'
+        this.popupData.to = '/verto/profile'
+        this.popupData.key = isDefault ? (isDefault.chain === 'eos' ? isDefault.name : isDefault.key) : false
+        this.showMessage = true
         return
       }
 
@@ -2819,8 +2852,6 @@ export default {
       } else if (path.dex === 'oneinch') {
 
       } else {
-        let isDefault = this.setDefaultWallet(path.fromChain)
-
         if (!isDefault || isDefault === undefined) {
           this.$q.notify({
             type: 'my-notif',
