@@ -274,7 +274,7 @@
                   <br>
                 </div>
 
-                <q-list :class="{'q-pt-md': miniMode}" v-if="gasOptions.length && (currentAccount.isEvm || currentAccount.chain == 'btc' ) && (!miniMode || miniStep == 2)" class="gasfield q-mb-md"  separator>
+                <q-list :class="{'q-pt-md': miniMode}" v-if="!params.gasSelected && gasOptions.length && (currentAccount.isEvm || currentAccount.chain == 'btc' ) && (!miniMode || miniStep == 2)" class="gasfield q-mb-md"  separator>
                <span v-if="!disableMemoEdit"> <span v-if="miniStep == 2" class="q-pr-md"><q-btn @click="miniStep = 1" icon="arrow_back" flat /> |</span> <span>Select gas</span></span>
                     <div dense class="gasSelector row" :class="{'q-pt-sm': miniStep == 2}">
                         <div class="col-md-4" :class="{'col-md-12 q-mb-sm': miniMode}" v-for="(gas, index) in gasOptions" :key="index">
@@ -311,8 +311,8 @@
                 <span class="q-pl-md cursor-pointer"  @click="showGasOptions = true" v-if="!showGasOptions"><q-icon name="add" /> Advanced </span>
                 <span class="cursor-pointer q-pt-xs" @click="showGasOptions = false" v-else>Hide </span>
                 </span>
-                <q-linear-progress v-if="sendAmount !== 0 && sendToResolved  && currentAccount.isEvm &&  gasOptions.length == 0 " indeterminate rounded  color="deep-purple-12" class="q-my-sm" />
-                 <div class="standard-content--footer" v-if="!isExchange || !transSuccessDialog">
+                <q-linear-progress v-if="!params.sendTransaction && sendAmount !== 0 && sendToResolved  && currentAccount.isEvm &&  gasOptions.length == 0 " indeterminate rounded  color="deep-purple-12" class="q-my-sm" />
+                 <div class="standard-content--footer" v-if="!params.sendTransaction && (!isExchange || !transSuccessDialog)">
                    <q-btn flat :loading="openModalProgress" class="action-link next" :disable="!currentToken.amount || currentAccount.isEvm &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="(!miniMode || !currentAccount.isEvm) ? openModalFun() :  ( miniStep == 2 ? openModalFun() : miniStep = 2 )" text-color="white"  :label="currentAccount.isEvm && miniMode && miniStep == 1 ? 'Set Gas' : 'Transfer'" />
                 </div>
               </div>
@@ -482,7 +482,7 @@ export default {
     selectedCoin () {
       let account = null
 
-      if (this.$store.state.investment.defaultAccount) {
+      if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain) {
         account = this.$store.state.investment.defaultAccount
         account.chainID = account.chain
         let found = this.$store.state.wallets.tokens.find(o => o.chain === account.chain && account.key.toLowerCase() === o.key.toLowerCase())
@@ -542,6 +542,10 @@ export default {
       if (this.params.to) {
         this.sendTo = this.params.to
         this.sendMemo = this.params.memo
+        if (this.params.gasSelected) {
+          this.gasSelected = this.params.gasSelected
+        }
+        this.gasSelected = this.params.gasSelected
         if (this.params.disableMemoEdit) {
           this.disableMemoEdit = this.params.disableMemoEdit
           this.miniStep = 2
@@ -566,7 +570,7 @@ export default {
 
     this.setOptions()
 
-    this.currentAccount = this.currentAccount || this.currentToken
+    this.currentAccount = this.selectedCoin
 
     if (this.params.chainID === undefined) {
       this.params = {
@@ -591,6 +595,10 @@ export default {
     // this.$store.dispatch('investment/getGasPrice')
 
     this.checkGas()
+
+    if (this.$store.state.currentwallet.params.sendTransaction) {
+      this.openModalFun()
+    }
   },
   methods: {
     refresh () {
@@ -630,7 +638,6 @@ export default {
             name: this.selectedCoin.name,
             amount: this.selectedCoin.amount
           }
-          console.log(this.currentToken, 'this.currentToken', this.selectedCoin, this.$store.state.currentwallet.wallet)
         } else {
           this.currentAccount = this.getCurrentWallet()
         }
@@ -743,6 +750,7 @@ export default {
       this.sendAmount = this.currentToken.amount
     },
     openModalFun: function (item) {
+      console.log(this.currentAccount, 'this.currentAccount')
       if (this.currentAccount.privateKey) {
         this.sendTokens()
         this.openModalProgress = true
@@ -835,7 +843,7 @@ export default {
           setTimeout(() => {
             initWallet(this.currentAccount.name)
           }, 1000)
-          // this.$emit('setTab',  'wait')
+          this.$emit('setTransactionStatus', { order_id: this.params.order_id, chain: this.currentAccount.chain, hash: result.transaction_id })
         } else {
           if (result.message.toString().includes('is greater than the maximum billable CPU time for the transaction') || result.message.toString().includes('the current CPU usage limit imposed on the transaction')) {
             this.payForUserCPU()

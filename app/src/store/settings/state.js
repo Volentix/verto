@@ -4,6 +4,7 @@ export default {
   network: 'mainnet',
   devMode: false,
   globalSettings: {},
+  activityBar: false,
   coins: {
     coinswitch: [],
     oneinch: [],

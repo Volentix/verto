@@ -1,36 +1,80 @@
 <script>
-
-import { Line } from 'vue-chartjs'
+import { Bar } from 'vue-chartjs'
 import Formatter from '@/mixins/Formatter'
 
 export default {
-  extends: Line,
+  extends: Bar,
   props: ['dataType', 'stakingData'],
   data: () => ({
     chartdata: {
-
-      type: 'bar',
       datasets: [
         {
           data: [],
           backgroundColor: '#f87979',
           label: 'Stake'
-        },
-        {
-          data: [],
-          backgroundColor: '#000',
-          label: 'Rewards'
         }
       ]
     }
   }),
   async mounted () {
-    this.chartdata.labels = this.stakingData[0]
+    // this.chartdata.labels = this.stakingData[0]
     console.log(this.chartdata, this.stakingData, 'this.chartdata')
-    this.chartdata.datasets[0].data = this.stakingData[0]
-    this.chartdata.datasets[1].data = this.stakingData[1]
+    this.chartdata.labels = [].concat(this.stakingData[0]).map(o => o.x)
+    this.chartdata.datasets[0].data = [].concat(this.stakingData[0]).map(o => o.y)
+    // this.chartdata.datasets[1].data = this.stakingData[1]
+    console.log(this.chartdata, 123, 'wer')
+    const self = this
+    this.renderChart(this.chartdata, { responsive: true,
+      maintainAspectRatio: false,
+      tooltips: {
+        mode: 'index',
+        intersect: false
+      },
+      scales: {
+        y: {
+          type: 'linear',
+          grace: '50%'
+        },
+        yAxes: [{
+          gridLines: {
+            color: 'rgba(0, 0, 0, 0)'
+          },
+          stacked: true,
+          ticks: {
 
-    this.renderChart(this.chartdata, { responsive: true, maintainAspectRatio: false })
+            callback: function (value, index, values) {
+              console.log(value, 'value')
+              return self.nFormatter2(value, 2) + ' VTX'
+            },
+
+            beginAtZero: false,
+            steps: 100000,
+            stepValue: 100000,
+            suggestedMin: 50,
+            suggestedMax: 100
+          }
+
+        }],
+
+        xAxes: [{
+
+          gridLines: {
+            color: 'rgba(0, 0, 0, 0)'
+          },
+          stacked: true,
+          display: true,
+
+          time: {
+            parser: 'YYYY-MM-DD',
+            tooltipFormat: 'll HH:mm',
+            unit: 'year',
+
+            displayFormats: {
+              'day': 'YYYY-MM-DD'
+            }
+          }
+        }]
+      } })
   },
   mixins: [Formatter]
 }
