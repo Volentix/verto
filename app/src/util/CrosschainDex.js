@@ -482,7 +482,7 @@ class Crosschaindex {
               let minToChain = {
                 async eth () {
                   const ren = new RenJS()
-                  await window.ethereum.enable()
+                  // await window.ethereum.enable()
                   let web3 = Lib.getWeb3Instance('eth')
 
                   // if (account) return
