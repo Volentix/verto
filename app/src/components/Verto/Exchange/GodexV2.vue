@@ -524,7 +524,7 @@
                       </q-item>
                     </template>
                   </q-select>
-                <span class="text-green" v-if="swapData.mint && swapData.mint.status == 'Success'">Minting successful. You have received renBTC. Now you can process the swap<br></span>
+                <span class="text-green" v-if="swapData.mint && swapData.mint.status == 'Success' && !(swapData.transferObject && swapData.transferObject.status == 'Success')">Minting successful. You have received renBTC. Now you can process the swap<br></span>
 
                   <GasSelector ref="gas_global" :key="'gas_global'" v-if="swapData.dex != 'oneinch' && swapData.approvalCheck && swapData.approval && !swapData.approval.required"  @setGas="setSelectedGas" :currentAccount="fromAccountSelected[swapData.fromChosenChain] ? fromAccountSelected[swapData.fromChosenChain] : $store.state.wallets.tokens.find(o => o.chain === swapData.fromChosenChain)" :txData="{amount: swapData.fromAmount}" :type="depositCoin.value" />
                   <GasSelector ref="gas_approval" :key="'gas_approval'" :txObject="swapData.approval.transactionObject" v-else-if="swapData.dex == 'oneinch' && swapData.approvalCheck && swapData.approval && swapData.approval.required && swapData.approval.status != 'Success'"  @setGas="setSelectedGas" :currentAccount="fromAccountSelected[swapData.fromChosenChain]" :txData="{amount: swapData.fromAmount, title: 'Approval' , method: 'txObject'}" :type="depositCoin.value" />
@@ -532,8 +532,8 @@
 
                   <span v-if="swapData.dex == 'oneinch'  && swapData.mint && swapData.mint.status">
                      <span  class="text-deep-purple-12"  v-if="swapData.approval && swapData.approval.required && swapData.approval.status != 'Success'">Proceed first with the approval transaction</span>
-                     <span class="text-green" v-else-if="swapData.approval && swapData.approval.required && swapData.approval.status == 'Success'">Approval successful. Click confirm to swap</span><br>
-                     <span class="text-grey cursor-pointer" v-if="swapData.approval && swapData.approval.hash"><span class="text-deep-pruple-12">Approval</span> Tx Hash: {{getKeyFormat(swapData.approval.hash)}}</span><br>
+                     <span class="text-green" v-else-if="swapData.approval && swapData.approval.required && swapData.approval.status == 'Success'">Approval successful. Click confirm to swap<br></span>
+                     <span class="text-grey cursor-pointer" v-if="swapData.approval && swapData.approval.hash"><span class="text-deep-pruple-12">Approval</span> Tx Hash: {{getKeyFormat(swapData.approval.hash)}}<br></span>
                      <span class="text-grey cursor-pointer" v-if="swapData.transferObject && swapData.transferObject.hash"> <span class="text-deep-pruple-12">Tx Hash:</span>  {{getKeyFormat(swapData.transferObject.hash)}}</span>
                   </span>
                   <p
@@ -655,7 +655,7 @@
 
                   <q-item-section>
                     <q-item-label class="q-pb-sm"
-                      ><b>Network chosen:</b> to {{ swapData.tChainLabel}} </q-item-label
+                      ><b>To network:</b>  ETHEREUM </q-item-label
                     >
                     <div
                       v-if="
@@ -756,13 +756,13 @@
                           </template>
                         </q-select>
 
-                 <GasSelector v-if="swapData.bridge == 'renbtc' && !swapData.order_id" @setGas="setSelectedGas" :currentAccount="$store.state.wallets.tokens.find(o => o.chain === swapData.toChosenChain)" :txData="{amount: swapData.toAmount, method: 'mint', info: 'Fees to be paid for minting your '+destinationCoin.value.toUpperCase()+' on the '+swapData.toChosenChain.toUpperCase()+ ' network' }" />
+                 <GasSelector v-if="swapData.dex == 'renbridge' && !swapData.order_id" @setGas="setSelectedGas" :currentAccount="$store.state.wallets.tokens.find(o => o.chain === swapData.toChosenChain)" :txData="{amount: swapData.toAmount, method: 'mint', info: 'Fees to be paid for minting your '+destinationCoin.value.toUpperCase()+' on the '+swapData.toChosenChain.toUpperCase()+ ' network' }" />
 
                   <p v-if="swapData.status">Transaction status: <span class="text-deep-purple">{{swapData.status}}</span> </p>
-                  <p  v-if="swapData.bridge == 'renbtc' && swapData.fromChosenChain == 'btc'">Each transaction to this deposit address takes about about 60 minutes to complete. For security reasons, you will need to wait for 6 block confirmations</p>
-                 <div v-if="swapData.bridge == 'renbtc' && swapData.status">
+                  <p  v-if="swapData.dex == 'renbridge' && swapData.fromChosenChain == 'btc'">Each transaction to this deposit address takes about about 60 minutes to complete. For security reasons, you will need to wait for 6 block confirmations</p>
+                 <div v-if="swapData.dex == 'renbridge' && swapData.status">
                  <span class="text-grey cursor-pointer" v-if="swapData.hash">Tx Hash: {{getKeyFormat(swapData.hash)}}</span><br>
-                 <p v-if="exchangeDetails[swapData.order_id] && exchangeDetails[swapData.order_id].bridgeStatus">{{exchangeDetails[swapData.order_id].bridgeStatus.msg}}</p>
+                 <p v-if="(exchangeDetails[swapData.order_id] && exchangeDetails[swapData.order_id].bridgeStatus) ">{{exchangeDetails[swapData.order_id].bridgeStatus.msg}}</p>
                  <q-linear-progress indeterminate color="grey" class="q-mt-sm" />
                  </div>
                   <span v-if="swapData.dex == 'renbridge' && swapData.mint.status ">
@@ -816,7 +816,7 @@
                       </div>
                       <span v-if="error" class="text-red">{{ error }}</span>
                       <q-btn
-                          v-if="!(swapData.bridge == 'renbtc' && swapData.order_id)"
+                          v-if="!(swapData.dex == 'renbridge' && swapData.order_id)"
                         :loading="spinner.tx"
                         :disable="
                           !swapData.toDestinationAddresses[chain] &&
@@ -835,7 +835,7 @@
                         rounded
                         class="q-mt-sm"
                       />
-                      <div class="q-pt-md">
+                      <div class="q-pt-md" v-if="swapData.dex == 'renbridge' && swapData.fromChosenChain == 'btc' && !exchangeDetails[swapData.order_id]">
 
                   If you cannot complete this transaction within the required time, please return at a later date.<br><br>
 
@@ -1017,9 +1017,8 @@
 
                   <span class="text-body2">
                     From: {{ parseFloat(tx.depositQuantity).toFixed(8) }}
-                    {{ tx.from }} <br />
-                    To: {{ tx.destinationQuantity
-                    }}{{ tx.toEosToken ? tx.toEosToken.toUpperCase() : tx.to
+                    {{ tx.from.toUpperCase() }} <br />
+                    To: {{ tx.mintObject ? tx.mintObject.toAmount +' '+  tx.mintObject.toToken : tx.destinationQuantity + ' '+ (tx.toEosToken ? tx.toEosToken.toUpperCase() : tx.to)
                     }}<br />
                   </span>
                 </div>
@@ -1028,7 +1027,7 @@
 
             <q-separator />
 
-            <q-card-actions>
+            <q-card-actions v-if="!tx.mintObject">
               <div class="text-subtitle2 q-pb-md q-pl-sm">
                 <span class="text-bold text-body1">Status: </span>
                 <span
@@ -1049,6 +1048,21 @@
                       </span>
                     </q-tooltip>
                   </q-icon></span
+                >
+              </div>
+            </q-card-actions>
+             <q-card-actions>
+              <div class="text-subtitle2 q-pb-md q-pl-sm">
+                <span class="text-bold text-body1">Action: </span>
+                <span
+                  class="text-capitalize"
+                  :class="{
+                    'text-deep-purple-12': validStatus(tx.status),
+                    'text-grey': !validStatus(tx.status),
+                    'text-green': tx.status == 'success',
+                  }"
+                  >
+                  <q-btn :loading="spinner.tx" flat label="Resume" @click="resumeMinting(tx)"/></span
                 >
               </div>
             </q-card-actions>
@@ -1572,6 +1586,7 @@ export default {
         gas: {},
         mint: {
         },
+        status: null,
         toChosenChain: null,
         transferObject: null,
         fromChosenChain: null,
@@ -1724,7 +1739,7 @@ export default {
         this.spinner.tx = false
       })
     },
-    mintRenBtc () {
+    mintRenBtc (order_id) {
       console.log(123)
       let data = {
         gasData: this.swapData.gas[this.swapData.toChosenChain],
@@ -1750,6 +1765,8 @@ export default {
           let status = await Lib.checkEvmTxStatus(this.swapData.mint.hash, this.swapData.toChosenChain)
           if (status) {
             this.swapData.mint.status = 'Success'
+            localStorage.removeItem(
+              'vexchange_crosschain_' + order_id)
             this.swapData.fromChosenChain = this.swapData.toChosenChain
             this.fromAccountSelected[this.swapData.fromChosenChain] = this.toAccountSelected[this.swapData.toChosenChain]
             this.swapData.dex = 'oneinch'
@@ -1824,7 +1841,12 @@ export default {
       const self = this
       mint.on('deposit', async (deposit) => {
       // Details of the deposit are available from `deposit.depositDetails`.
-
+        let data = localStorage.getItem(
+          'vexchange_crosschain_' + order_id)
+        data = JSON.parse(data)
+        if (data && !data.depositDetails) {
+          data.depositDetails = deposit.depositDetails
+        }
         const hash = deposit.txHash()
         const depositLog = (msg, confs) => {
           this.$set(this.exchangeDetails[order_id], 'bridgeStatus', {
@@ -1834,20 +1856,27 @@ export default {
             confirmed: parseInt(confs) === 6
 
           })
+
+          console.log(this.exchangeDetails, 'this.exchangeDetails')
         }
-        console.log(deposit, mint, 'mint')
+        console.log(deposit, mint, 'mint', 1)
         await deposit.confirmed()
         //  .on('target', (confs, target) => depositLog((target || 0) + '/6 confirmations', confs, target))
           .on('confirmation', (confs, target) => depositLog(`Confirmation check : ${confs}/6 confirmations`, confs))
-        console.log(deposit, mint, 'mint')
+        console.log(deposit, mint, 'mint', 2)
         await deposit.signed()
         // Print RenVM status - "pending", "confirming" or "done".
           .on('status', (status) => depositLog(`Status: ${status}`))
 
+        console.log(deposit, mint, 'mint', 3)
         await deposit.mint()
         // Print Ethereum transaction hash.
-          .on('transactionHash', (txHash) => depositLog(`Mint tx: ${txHash}`))
+          .on('transactionHash', (txHash) => {
+            console.log(deposit, mint, 'mint', 4)
+          })
           .on('tx_details', (tx_details) => {
+            console.log(tx_details, 'tx_details')
+
             self.swapData.mint = {
               from: tx_details.from,
               to: tx_details.to,
@@ -1856,13 +1885,68 @@ export default {
               value: 0
             }
 
-            self.mintRenBtc()
+            self.mintRenBtc(order_id)
           })
       })
     },
     setSelectedGas (data) {
       this.swapData.gas[data.chain] = data.value
       console.log(this.swapData, '  this.swapData', this.fromAccountSelected[this.swapData.fromChosenChain])
+    },
+    resumeMinting (tx) {
+      this.spinner.tx = true
+      for (let key in tx.swapData) {
+        this.$set(this.swapData, key, tx.swapData[key])
+      }
+      console.log(this.swapData, 'this.swapData 125')
+      this.error = false
+      this.spinner.tx = true
+
+      this.swapData.status = 'Unconfirmed'
+
+      let to = tx.mintObject.toToken
+      let from = tx.mintObject.fromToken
+
+      this.depositCoin = CrosschainDex.getAllCoins().find(o => o.value.toLowerCase() === from.toLowerCase())
+      this.destinationCoin = CrosschainDex.getAllCoins().find(o => o.value.toLowerCase() === to.toLowerCase())
+
+      if (this.swapData.bridge) {
+        to = this.swapData.bridge
+      }
+      if (this.swapData.dex) {
+        CrosschainDex.setDex(this.swapData.dex)
+      }
+
+      CrosschainDex.createTransaction(
+        this.depositCoin.value,
+        to,
+        this.swapData.fromAmount,
+        this.swapData.toDestinationAddresses[this.swapData.toChosenChain],
+        this.swapData.fromChosenChain,
+        this.swapData.toChosenChain,
+        ''
+      )
+        .then((data) => {
+          this.spinner.tx = false
+
+          if (data.tx) {
+            // this.exchangeDetails[data.tx.order_id] = data.tx
+            this.$set(this.exchangeDetails, tx.order_id, tx)
+
+            this.setExchangeData(
+              { bridge: tx.dex,
+                limitMinDepositCoin: 0,
+                amount: tx.mintObject.toAmount,
+                toChains: [tx.mintObject.toChain],
+                fromChains: [tx.mintObject.fromChain],
+                dex: tx.mintObject.dex
+              },
+              1
+            )
+            this.tab = 'destination'
+            this.renDepositListener(data.tx.mintObject, tx.order_id)
+          }
+        })
     },
     setTab (tab) {
       this.tab = tab
@@ -2586,7 +2670,7 @@ export default {
       )
         .then((data) => {
           this.spinner.tx = false
-
+          console.log(data.tx, 'data.tx')
           if (data.tx) {
             // this.exchangeDetails[data.tx.order_id] = data.tx
             this.$set(this.exchangeDetails, data.tx.order_id, data.tx)
@@ -2604,7 +2688,7 @@ export default {
               setTimeout(() => {
                 this.spinner.tx = false
               }, 6000)
-
+              this.showSendComponent = false
               this.$store.commit('currentwallet/updateParams', {
                 chainID: this.swapData.fromChosenChain.toLowerCase(),
                 tokenID: this.depositCoin.value.toLowerCase(),
@@ -2623,7 +2707,7 @@ export default {
                 this.fromAccountSelected[this.swapData.fromChosenChain]
 
               this.showSendComponent = true
-              this.setTransactionStatus({ order_id: data.tx.order_id, chain: 'btc', hash: '0xidjeidjiejdijeidjeidjiedjiejdiejdijdeijde' })
+              //    this.setTransactionStatus({ order_id: data.tx.order_id, chain: 'btc', hash: '0xidjeidjiejdijeidjeidjiedjiejdiejdijdeijde' })
               // this.tab = 'tosend'
             } else if (
               this.swapData.fromChosenChain &&
@@ -2655,7 +2739,7 @@ export default {
             this.exchangeDetails[data.tx.order_id].description =
               txStatus[data.tx.status]
             if (data.tx.mintObject) {
-              data.tx.mintObject = {
+              let obj = {
                 dex: 'renbridge',
                 fromChain: this.swapData.fromChosenChain,
                 toChain: this.swapData.toChosenChain,
@@ -2665,6 +2749,7 @@ export default {
                 fromAmount: this.swapData.fromAmount,
                 toAmount: this.swapData.toAmount
               }
+              data.tx.mintObject = obj
             }
             localStorage.setItem(
               'vexchange_crosschain_' + data.tx.order_id,
