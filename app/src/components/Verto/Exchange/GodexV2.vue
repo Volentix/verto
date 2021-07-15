@@ -655,7 +655,7 @@
 
                   <q-item-section>
                     <q-item-label class="q-pb-sm"
-                      ><b>To network:</b>  ETHEREUM </q-item-label
+                      ><b>To network:</b>  {{swapData.toChosenChain.toUpperCase()}} </q-item-label
                     >
                     <div
                       v-if="
@@ -757,13 +757,14 @@
                         </q-select>
 
                  <GasSelector v-if="swapData.dex == 'renbridge' && !swapData.order_id" @setGas="setSelectedGas" :currentAccount="$store.state.wallets.tokens.find(o => o.chain === swapData.toChosenChain)" :txData="{amount: swapData.toAmount, method: 'mint', info: 'Fees to be paid for minting your '+destinationCoin.value.toUpperCase()+' on the '+swapData.toChosenChain.toUpperCase()+ ' network' }" />
-
+                   <p v-if="swapData.error" class="text-red">{{swapData.error}}</p>
                   <p v-if="swapData.status">Transaction status: <span class="text-deep-purple">{{swapData.status}}</span> </p>
                   <p  v-if="swapData.dex == 'renbridge' && swapData.fromChosenChain == 'btc'">Each transaction to this deposit address takes about about 60 minutes to complete. For security reasons, you will need to wait for 6 block confirmations</p>
                  <div v-if="swapData.dex == 'renbridge' && swapData.status">
                  <span class="text-grey cursor-pointer" v-if="swapData.hash">Tx Hash: {{getKeyFormat(swapData.hash)}}</span><br>
-                 <p v-if="(exchangeDetails[swapData.order_id] && exchangeDetails[swapData.order_id].bridgeStatus) ">{{exchangeDetails[swapData.order_id].bridgeStatus.msg}}</p>
-                 <q-linear-progress indeterminate color="grey" class="q-mt-sm" />
+
+                 <p v-if="(exchangeDetails[swapData.order_id] && exchangeDetails[swapData.order_id].bridgeStatus)">{{exchangeDetails[swapData.order_id].bridgeStatus.msg}}</p>
+                 <q-linear-progress v-if="!swapData.error" indeterminate color="grey" class="q-mt-sm" />
                  </div>
                   <span v-if="swapData.dex == 'renbridge' && swapData.mint.status ">
                      <span  class="text-deep-purple-12"  v-if="swapData.mint && swapData.mint.status == 'Submitted'">
@@ -1610,6 +1611,7 @@ export default {
         gas: {},
         mint: {
         },
+        error: false,
         status: null,
         toChosenChain: null,
         transferObject: null,
@@ -1743,7 +1745,6 @@ export default {
         account.privateKey,
         ''
       ).then(async (result) => {
-        console.log(result, 'result 1')
         if (result.success) {
           this.swapData.transferObject.hash = result.transaction_id
           this.swapData.transferObject.status = 'Submitted'
@@ -1756,15 +1757,17 @@ export default {
           initWallet(account.name)
         } else {
           this.swapData.error = result.message
+          this.swapData.status = 'Error'
         }
         this.spinner.tx = false
       }).catch((error) => {
+        this.swapData.status = 'Error'
         this.swapData.error = error
         this.spinner.tx = false
       })
     },
     mintRenBtc (order_id) {
-      console.log(123)
+      this.swapData.error = false
       let data = {
         gasData: this.swapData.gas[this.swapData.toChosenChain],
         txData: this.swapData.mint.data
@@ -1807,7 +1810,7 @@ export default {
         this.spinner.tx = false
       }).catch((error) => {
         console.log(error, 'error')
-        this.swapData.error = error
+        this.swapData.error = error.message
         this.spinner.tx = false
       })
     },
@@ -1845,6 +1848,7 @@ export default {
         }
         this.spinner.tx = false
       }).catch((error) => {
+        console.log(error, 'error')
         this.swapData.error = error
         this.spinner.tx = false
       })
@@ -1863,6 +1867,7 @@ export default {
     },
     renDepositListener (mint, order_id, target) {
       const self = this
+
       mint.on('deposit', async (deposit) => {
       // Details of the deposit are available from `deposit.depositDetails`.
         let data = localStorage.getItem(
@@ -1870,6 +1875,8 @@ export default {
         data = JSON.parse(data)
         if (data && !data.depositDetails) {
           data.depositDetails = deposit.depositDetails
+          localStorage.setItem(
+            'vexchange_crosschain_' + order_id, JSON.stringify(data))
         }
         const hash = deposit.txHash()
         const depositLog = (msg, confs) => {
@@ -1883,11 +1890,20 @@ export default {
 
           console.log(this.exchangeDetails, 'this.exchangeDetails')
         }
-        console.log(deposit, mint, 'mint', 1)
+        if (deposit.depositDetails) {
+          localStorage.setItem(
+            'safe_vexchange_crosschain_' + order_id, JSON.stringify({ deposit: deposit.depositDetails, data: this.swapData }))
+        }
+        console.log(CrosschainDex.getRenMintTx(deposit, this.swapData.toChosenChain), deposit, mint, 'mint', 1)
         await deposit.confirmed()
         //  .on('target', (confs, target) => depositLog((target || 0) + '/6 confirmations', confs, target))
-          .on('confirmation', (confs, target) => depositLog(`Confirmation check : ${confs}/6 confirmations`, confs))
-        console.log(deposit, mint, 'mint', 2)
+          .on('confirmation', (confs, target) => {
+            depositLog(`Confirmation check : ${confs}/6 confirmations`, confs)
+            console.log(deposit, mint, 'mint', 266)
+          })
+        console.log(deposit, mint, 'mint', 3)
+        self.swapData.mint = CrosschainDex.getRenMintTx(deposit, self.swapData.toChosenChain)
+        console.log(deposit, mint, 'mint', 38)
         await deposit.signed()
         // Print RenVM status - "pending", "confirming" or "done".
           .on('status', (status) => depositLog(`Status: ${status}`))
@@ -1901,15 +1917,15 @@ export default {
           .on('tx_details', (tx_details) => {
             console.log(tx_details, 'tx_details')
 
-            self.swapData.mint = {
+            /* {
               from: tx_details.from,
               to: tx_details.to,
               data: tx_details.data,
               amount: tx_details.amount,
               value: 0
-            }
+            } */
 
-            self.mintRenBtc(order_id)
+            // self.mintRenBtc(order_id)
           })
       })
     },
@@ -1922,7 +1938,8 @@ export default {
       for (let key in tx.swapData) {
         this.$set(this.swapData, key, tx.swapData[key])
       }
-      console.log(this.swapData, 'this.swapData 125')
+      const self = this
+      console.log(tx, 'this.swapData 125', tx)
       this.error = false
       this.spinner.tx = true
 
@@ -1950,13 +1967,24 @@ export default {
         this.swapData.toChosenChain,
         ''
       )
-        .then((data) => {
+        .then(async (data) => {
           this.spinner.tx = false
 
           if (data.tx) {
             // this.exchangeDetails[data.tx.order_id] = data.tx
             this.$set(this.exchangeDetails, tx.order_id, tx)
 
+            const depositLog = (msg, confs) => {
+              this.$set(this.exchangeDetails[tx.order_id], 'bridgeStatus', {
+
+                msg: msg,
+
+                confirmed: parseInt(confs) === 6
+
+              })
+
+              console.log(this.exchangeDetails, 'this.exchangeDetails')
+            }
             this.setExchangeData(
               { bridge: tx.dex,
                 limitMinDepositCoin: 0,
@@ -1968,7 +1996,25 @@ export default {
               1
             )
             this.tab = 'destination'
-            this.renDepositListener(data.tx.mintObject, tx.order_id)
+
+            if (!tx.depositDetails) {
+              this.renDepositListener(data.tx.mintObject, tx.order_id)
+            } else {
+              data.tx.mintObject.processDeposit(tx.depositDetails)
+                .then(async (deposit) => {
+                  console.log(deposit, 'deposit deposit')
+                  await deposit.confirmed()
+                  //  .on('target', (confs, target) => depositLog((target || 0) + '/6 confirmations', confs, target))
+                    .on('confirmation', (confs, target) => {
+                      depositLog(`Confirmation check : ${confs}/6 confirmations`, confs)
+                      console.log(deposit, data.tx.mintObject, 'mint', 455)
+                    })
+                  self.swapData.mint = CrosschainDex.getRenMintTx(deposit, tx.swapData.toChosenChain)
+                  console.log(self.swapData.mint, ' self.swapData.mint ')
+                  self.mintRenBtc(tx.order_id)
+                })
+            }
+            // this.renDepositListener(data.tx.mintObject, tx.order_id)
           }
         })
     },
@@ -2009,6 +2055,7 @@ export default {
         gas: {},
         transferObject: null,
         approval: null,
+        error: false,
         bridge: false,
         fromChosenChain: null,
         toTokenContract: false,

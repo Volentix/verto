@@ -1295,7 +1295,7 @@ class Lib {
             const erroMessages = [
               {
                 string: 'insufficient funds for gas',
-                text: 'You have a pending transaction. Please wait and try again.'
+                text: 'Insufficient funds for gas'
               }
             ]
 

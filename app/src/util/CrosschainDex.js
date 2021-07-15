@@ -36,6 +36,27 @@ class Crosschaindex {
   setDex = exchange => {
     this.currentExchange = exchange
   }
+  getRenMintTx (deposit, fromChain) {
+    console.log(deposit, fromChain, 'mint, fromChain')
+    const utils_1 = require('@renproject/utils')
+    const web3 = Lib.getWeb3Instance(fromChain)
+    let params = deposit.params.contractCalls[0]
+    let contractFn = params.contractFn
+    const ABI = utils_1.payloadToABI(contractFn, params.contractParams)
+    const contract = new web3.eth.Contract(ABI, params.sendTo)
+    let from = params.contractParams.find(o => o.name === '_address').value
+    let callParams = params.contractParams.map((value) => value.value)
+    const txData = contract.methods[contractFn](...callParams).encodeABI()
+
+    let tx = {
+      from: from,
+      to: params.sendTo,
+      data: txData,
+      amount: parseFloat(deposit.depositDetails.amount) / 100000000,
+      value: 0
+    }
+    return tx
+  }
   getTxStatus = (order_id, exchange) => {
     const self = this
     let list = {
