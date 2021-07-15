@@ -343,6 +343,7 @@ export default {
             'value': coins[key].symbol,
             'image': image,
             'address': coins[key].address,
+            'decimals': coins[key].decimals,
             'chains': ['eth', 'matic'],
             'price': coins[key].current_price,
             'dex': 'oneinch',

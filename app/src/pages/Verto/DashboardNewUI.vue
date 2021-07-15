@@ -19,13 +19,13 @@
         :class="{'text-white': $store.state.settings.lightMode === 'true'}"
       >
         <q-tab name="dashboard" icon="dashboard" label="Dashboard" />
-         <q-tab name="exchange" icon="swap_horiz" label="Exchange" />
-        <q-tab name="vtxstaking" icon="trending_up" label="VTX Staking" />
-        <q-tab name="tokens" icon="trending_up" label="Token watcher" />
+         <q-tab name="exchange" icon="swap_horiz" label="Exchange"  @click="show.exchange = true"/>
+        <q-tab name="vtxstaking" icon="trending_up" label="VTX Staking" @click="show.vtxstaking = true" />
+        <q-tab name="tokens" icon="trending_up" label="Token watcher" @click="show.tokens = true"/>
       </q-tabs>
-          <GodexV2  v-if="!assetSelected && tab == 'exchange'" />
-              <VTXStakeState  v-if="tab == 'vtxstaking'"  />
-              <TokenPrices class="full-width" v-if="tab == 'tokens'"   />
+          <GodexV2  v-show="tab == 'exchange'" v-if="show.exchange" />
+              <VTXStakeState v-show="tab == 'vtxstaking'"  v-if="show.vtxstaking"   />
+              <TokenPrices v-show="tab == 'tokens'" class="full-width" v-if="show.tokens"    />
                 <q-breadcrumbs class="col-12 q-pt-md q-pl-md bg-white breadcrumbs" v-if="assetSelected">
                   <q-breadcrumbs-el  class="cursor-pointer" @click="assetSelected = null" label="Back"  icon="keyboard_backspace" />
                 </q-breadcrumbs>
@@ -173,7 +173,6 @@ export default {
   data () {
     return {
       customSlider: true,
-      showTokenPrices: false,
       rawPools: [],
       showAssetsExplorer: false,
       tab: 'dashboard',
@@ -182,6 +181,11 @@ export default {
       alert: true,
       interval: null,
       osName: '',
+      show: {
+        exchange: false,
+        tokens: false,
+        vtxstaking: false
+      },
       tabPoolAndAssetBalances: 'asset',
       screenSize: 0,
       openDialog: false,

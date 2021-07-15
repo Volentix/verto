@@ -124,7 +124,7 @@ export default {
     },
     setDefaultWallet (chain) {
       if (this.$store.state.investment.defaultAccount && this.$store.state.investment.defaultAccount.chain) {
-        if (chain === this.$store.state.investment.defaultAccount.chain) return
+        if (chain === this.$store.state.investment.defaultAccount.chain) return this.$store.state.investment.defaultAccount
       }
 
       let w = this.setChains().find(o => o.chain === chain)
