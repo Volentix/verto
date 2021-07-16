@@ -2030,7 +2030,7 @@ export default {
       }
       this.spinner.tx = true
       let account = this.toAccountSelected[this.swapData.toChosenChain]
-      console.log(account, 'account 43')
+
       Lib.send(
         this.swapData.toChosenChain,
         '',
