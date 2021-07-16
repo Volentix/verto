@@ -152,7 +152,7 @@ export default {
       },
       {
         value: 1E9,
-        symbol: 'G'
+        symbol: 'B'
       },
       {
         value: 1E12,
