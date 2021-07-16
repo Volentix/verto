@@ -441,7 +441,7 @@ export default {
       let assets = []
       const setValue = (t, index) => {
         let tkData = this.$store.state.tokens.walletTokensData.find(a => a.symbol.toLowerCase() === t['symbol' + index].toLowerCase())
-        console.log(investments, 'investments')
+
         return {
           usd: tkData ? tkData.current_price * t['count' + index] : '',
           rateUsd: tkData ? tkData.current_price : '',
@@ -586,7 +586,7 @@ export default {
 
         if ((!isNaN(token.amount) && token.amount !== 0) || token.isEvm) {
           let index = this.assets.findIndex(o => o.type === token.type && o.chain === token.chain && (token.chain !== 'eos' || o.contract === token.contract))
-          console.log(token.chain, token.type)
+
           if (index !== -1) {
             this.assets[index].amount += token.amount
             this.assets[index].usd += isNaN(token.usd) ? 0 : token.usd

@@ -465,7 +465,7 @@ class Lib {
       },
       async ksm (token, key) {
         let actions = []
-        await axios.post('https://kusama.api.subscan.io/api/scan/transfers', {
+        await axios.post(process.env[store.state.settings.network].CACHE + 'https://kusama.api.subscan.io/api/scan/transfers', {
           'X-API-Key': key
         })
           .then(function (result) {
@@ -592,7 +592,7 @@ class Lib {
 
         */
 
-        let res = await axios.get('https://explorer-32.polkascan.io/api/v1/kusama/account/' + key)
+        let res = await axios.get(process.env[store.state.settings.network].CACHE + 'https://explorer-32.polkascan.io/api/v1/kusama/account/' + key)
         let amount = 0
         if (res && res.data && res.data.data) {
           amount = res.data.data.attributes.balance_free / 1000000000000
@@ -614,7 +614,7 @@ class Lib {
       },
       async btc (key) {
         // key = '15urYnyeJe3gwbGJ74wcX89Tz7ZtsFDVew'
-        const amount = (await axios.get('https://blockchain.info/q/addressbalance/' + key, {
+        const amount = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://blockchain.info/q/addressbalance/' + key, {
           'cors': 'true'
         })).data / 100000000
         let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')).data.bitcoin.usd
@@ -626,7 +626,7 @@ class Lib {
         }
       },
       async ltc (key) {
-        const amount = (await axios.get('https://chainz.cryptoid.info/ltc/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
+        const amount = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://chainz.cryptoid.info/ltc/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
         let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd')).data.litecoin.usd
         const usd = amount * tokenPrice
         return {
@@ -638,7 +638,7 @@ class Lib {
       async bnb (key, token) {
         let amount = 0
         try {
-          const balances = (await axios.get('https://dex.binance.org/api/v1/account/' + key)).data.balances
+          const balances = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://dex.binance.org/api/v1/account/' + key)).data.balances
           if (balances) {
             balances.filter(b => b.symbol === token.toUpperCase()).map(b => {
               amount = +b.free + +b.frozen + +b.locked
@@ -659,7 +659,7 @@ class Lib {
       async ada (key, token) {
         let amount = 0
         try {
-          const balances = (await axios.get('https://cardano-mainnet.blockfrost.io/api/v0/addresses/' + key, { project_id: 'hFiQ3t403yXFYs3bfOKDwVX9BMGpJbDH' })).data.amount
+          const balances = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://cardano-mainnet.blockfrost.io/api/v0/addresses/' + key, { project_id: 'hFiQ3t403yXFYs3bfOKDwVX9BMGpJbDH' })).data.amount
           if (balances) {
             balances.filter(b => b.unit === token).map(b => {
               amount = +b.quantity
@@ -678,7 +678,7 @@ class Lib {
         }
       },
       async dash (key) {
-        const amount = (await axios.get('https://chainz.cryptoid.info/dash/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
+        const amount = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://chainz.cryptoid.info/dash/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
         let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=dash&vs_currencies=usd')).data.dash.usd
         const usd = amount * tokenPrice
         return {
@@ -801,7 +801,7 @@ class Lib {
       async btc () {
         let gasOptions = []
 
-        let response = await axios.get('https://bitcoinfees.billfodl.com/api/fees/')
+        let response = await axios.get(process.env[store.state.settings.network].CACHE + 'https://bitcoinfees.billfodl.com/api/fees/')
 
         /* {
             "fastestFee": "78",

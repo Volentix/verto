@@ -1294,7 +1294,7 @@
     <div class="q-pa-lg" v-if="transactions.length && step != 2">
       <div class="q-pb-md">Recent orders:</div>
       <div class="row full-width q-col-gutter-md">
-        <div class="col-md-3" v-for="(tx, index) in transactions" :key="index">
+      <div class="col-md-3" v-for="(tx, index) in transactions" :key="index">
           <q-card
             :dark="$store.state.settings.lightMode === 'true'"
             flat
@@ -1361,7 +1361,7 @@
                 >
               </div>
             </q-card-actions>
-            <q-card-actions>
+            <q-card-actions v-else>
               <div class="text-subtitle2 q-pb-md q-pl-sm">
                 <span class="text-bold text-body1">Action: </span>
                 <span
@@ -2030,7 +2030,7 @@ export default {
       }
       this.spinner.tx = true
       let account = this.toAccountSelected[this.swapData.toChosenChain]
-
+      console.log(account, 'account 43')
       Lib.send(
         this.swapData.toChosenChain,
         '',
@@ -2137,11 +2137,12 @@ export default {
     },
     renDepositListener (mint, order_id, target) {
       const self = this
-
+      console.log(mint, order_id, 1)
       mint.on('deposit', async (deposit) => {
         // Details of the deposit are available from `deposit.depositDetails`.
         let data = localStorage.getItem('vexchange_crosschain_' + order_id)
         data = JSON.parse(data)
+        console.log(mint, order_id, 3, data)
         if (data && !data.depositDetails) {
           data.depositDetails = deposit.depositDetails
           localStorage.setItem(
@@ -2149,6 +2150,7 @@ export default {
             JSON.stringify(data)
           )
         }
+        console.log(mint, order_id, 4, data, deposit)
         const hash = deposit.txHash()
         const depositLog = (msg, confs) => {
           this.$set(this.exchangeDetails[order_id], 'bridgeStatus', {
@@ -2157,7 +2159,7 @@ export default {
             confirmed: parseInt(confs) === 6
           })
 
-          console.log(this.exchangeDetails, 'this.exchangeDetails')
+          console.log(mint, order_id, 5, deposit)
         }
         if (deposit.depositDetails) {
           localStorage.setItem(
@@ -2188,6 +2190,9 @@ export default {
           self.swapData.toChosenChain
         )
         console.log(deposit, mint, 'mint', 38)
+
+        self.mintRenBtc(order_id)
+        /*
         await deposit
           .signed()
           // Print RenVM status - "pending", "confirming" or "done".
@@ -2211,8 +2216,8 @@ export default {
               value: 0
             } */
 
-            // self.mintRenBtc(order_id)
-          })
+        //
+        //  })
       })
     },
     setSelectedGas (data) {
@@ -2276,6 +2281,10 @@ export default {
 
             console.log(this.exchangeDetails, 'this.exchangeDetails')
           }
+
+          let wallets = this.chains.find((o) => o.chain === this.swapData.toChosenChain)
+          this.toAccountSelected[this.swapData.toChosenChain] = wallets.accounts.find(o => o.key.toLowerCase() === this.swapData.toDestinationAddresses[this.swapData.toChosenChain].toLowerCase())
+
           this.setExchangeData(
             {
               bridge: tx.dex,
@@ -2310,7 +2319,8 @@ export default {
                   deposit,
                   tx.swapData.toChosenChain
                 )
-                console.log(self.swapData.mint, ' self.swapData.mint ')
+                console.log(self.swapData.mint, ' self.swapData.mint ', deposit)
+
                 self.mintRenBtc(tx.order_id)
               })
           }
@@ -2353,6 +2363,8 @@ export default {
         txStatusDescription: null,
         rate: 0,
         gas: {},
+        status: false,
+        order_id: false,
         transferObject: null,
         approval: null,
         error: false,
@@ -2606,7 +2618,7 @@ export default {
       })
 
       list
-        .filter((a) => a.amount && !isNaN(a.amount))
+        .filter((a) => a.amount && !isNaN(a.amount) && a.type !== this.destinationCoin.value.toLowerCase())
         .forEach(async (o) => {
           let values = await this.getPaths(
             o.type,
@@ -2855,9 +2867,7 @@ export default {
               to: this.exchangeDetails[this.swapData.order_id].depositAddress,
               memo: this.exchangeDetails[this.swapData.order_id].memo,
               quantity:
-                this.exchangeDetails[
-                  this.swapData.order_id
-                ].depositQuantity.toFixed(4) +
+                this.exchangeDetails[this.swapData.order_id].depositQuantity.toFixed(4) +
                 ' ' +
                 this.exchangeDetails[this.swapData.order_id].from.toUpperCase()
             }
@@ -2884,9 +2894,7 @@ export default {
             data: {
               from: this.fromAccountSelected[this.swapData.fromChosenChain]
                 .name,
-              to: this.swapData.toDestinationAddresses[
-                this.swapData.toChosenChain
-              ],
+              to: this.swapData.toDestinationAddresses[this.swapData.toChosenChain],
               memo: 'swap,1,' + this.swapData.eosPairId,
               quantity:
                 this.exchangeDetails[this.swapData.order_id].amount.toFixed(4) +
@@ -2985,6 +2993,7 @@ export default {
       this.swapData.transferObject = txData
       this.swapData.transferObject.status = 'Pending payment'
     },
+
     async setExchangeData (data, setStep) {
       this.swapData.toAmount = data.amount
       this.swapData.inChain = data.inChain
@@ -3124,18 +3133,14 @@ export default {
                 chainID: this.swapData.fromChosenChain.toLowerCase(),
                 tokenID: this.depositCoin.value.toLowerCase(),
                 accountName:
-                  this.fromAccountSelected[
-                    this.swapData.fromChosenChain
-                  ].name.toLowerCase(),
+                  this.fromAccountSelected[this.swapData.fromChosenChain].name.toLowerCase(),
                 to: data.tx.depositAddress,
                 memo: data.tx.memo,
                 disableMemoEdit: true,
                 order_id: data.tx.order_id,
                 sendTransaction: true,
                 gasSelected:
-                  this.swapData.gas[
-                    this.swapData.fromChosenChain.toLowerCase()
-                  ],
+                  this.swapData.gas[this.swapData.fromChosenChain.toLowerCase()],
                 amount: data.tx.depositQuantity
               })
 
@@ -3212,10 +3217,11 @@ export default {
     isPathInvalid (path) {
       let message = null
 
-      if (!path.walletToken && path.dex !== 'godex') {
+      if (path && !path.walletToken && path.dex !== 'godex') {
         message =
           'You do not own this token in your ' + path.fChainLabel + ' wallet.'
       } else if (
+        path &&
         path.walletToken &&
         path.dex !== 'godex' &&
         path.walletToken.amount < path.fromAmount
@@ -3368,7 +3374,7 @@ export default {
       this.transactions = []
       let finalStatus = ['overdue', 'error', 'refunded', 'success']
       while (i--) {
-        if (keys[i].includes('vexchange_crosschain_')) {
+        if (keys[i].includes('vexchange_crosschain_') && !keys[i].includes('safe')) {
           let tx = JSON.parse(localStorage.getItem(keys[i]))
           if (!finalStatus.includes(tx.status)) {
             if (tx.fetchStatus) {
@@ -3384,6 +3390,7 @@ export default {
           this.transactions.push(tx)
         }
       }
+      console.log(this.transactions)
     },
     filterDepositCoin (val, update, abort) {
       update(() => {
