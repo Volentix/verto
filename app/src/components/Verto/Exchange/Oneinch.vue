@@ -690,10 +690,13 @@ export default {
       if (self.swapData.fromAmount <= 0) return
       self.spinnervisible = true
 
+      let fromToken = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === self.depositCoin.value.toLowerCase())
+      let toToken = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === self.destinationCoin.value.toLowerCase())
+
       let data = {
-        fromTokenAddress: self.depositCoin.address,
-        toTokenAddress: self.destinationCoin.address,
-        amount: web3.utils.toWei(self.swapData.fromAmount.toString(), 'ether'),
+        fromTokenAddress: fromToken.address,
+        toTokenAddress: toToken.address,
+        amount: self.swapData.fromAmount.toString() * (10 ** fromToken.decimals),
         slippage: 2,
         fromAddress: self.$store.state.investment.defaultAccount.key,
         disableEstimate: true,
@@ -837,10 +840,13 @@ export default {
       this.step = 2
       this.spinnervisible = true
       this.transactionStatus = 'Pending'
+      let fromToken = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === self.depositCoin.value.toLowerCase())
+      let toToken = this.$store.state.settings.coins.oneinch.find(o => o.value.toLowerCase() === self.destinationCoin.value.toLowerCase())
+
       let data = {
-        fromTokenAddress: self.depositCoin.address,
-        toTokenAddress: self.destinationCoin.address,
-        amount: web3.utils.toWei(this.swapData.fromAmount.toString(), 'ether'),
+        fromTokenAddress: fromToken.address,
+        toTokenAddress: toToken.address,
+        amount: self.swapData.fromAmount.toString() * (10 ** fromToken.decimals),
         slippage: 1,
         fromAddress: self.$store.state.investment.defaultAccount.key,
         disableEstimate: true,
