@@ -727,7 +727,7 @@
                   @click="swapTokens()"
                   v-else-if="
                     swapData.approvalCheck &&
-                    (swapData.approval.status == 'Success' ||
+                   swapData.approval && (swapData.approval.status == 'Success' ||
                       !swapData.approval.required) &&
                     swapData.transferObject &&
                     swapData.transferObject.status != 'Success'
@@ -2010,6 +2010,9 @@ export default {
               this.swapData.transferObject.status = 'Failed'
             }
             initWallet(account.name)
+            setTimeout(() => {
+              this.getSwapInfo()
+            })
           } else {
             this.swapData.error = result.message
             this.swapData.status = 'Error'
