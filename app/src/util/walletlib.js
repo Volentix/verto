@@ -380,30 +380,32 @@ class Lib {
           axios
             .get(
               process.env[store.state.settings.network].CACHE +
-          'https://chain.api.btc.com/v3/address/' + key + '/tx'
+         // 'https://chain.api.btc.com/v3/address/' + key + '/tx'
+         'https://api.blockchain.info/haskoin-store/btc/address/' + key + '/transactions/full?limit=100&offset=0'
             )
             .then(res => {
-              if (res.data && res.data.data && res.data.data.list) {
+              if (res.data) {
                 let transactions = []
-                res.data.data.list.forEach((a, index) => {
+                res.data.filter(o => o.inputs && o.outputs).forEach((a, index) => {
                   let tx = {}
 
-                  let date = new Date(a.block_time)
-                  tx.timeStamp = date.getTime() / 1000
+                  let date = new Date(a.time)
+                  tx.timeStamp = a.time
                   // TO DO - LIST through all outputs and save them as separate transactions when key === spender
                   // if (tx) return
-                  let spender = a.inputs[0].prev_addresses[0]
-                  let receiver = a.outputs[0].addresses[0]
+
+                  let spender = a.inputs[0].address
+                  let receiver = a.outputs[0].address
                   tx.chain = token
-                  tx.friendlyHash = a.hash.substring(0, 6) + '...' + a.hash.substr(a.hash.length - 5)
+                  tx.friendlyHash = a.txid.substring(0, 6) + '...' + a.txid.substr(a.txid.length - 5)
 
                   tx.to = receiver
-                  tx.amount = spender !== key ? a.outputs.find(o => o.addresses[0] === key).value / 100000000 : a.outputs[0].value / 100000000
+                  tx.amount = spender !== key ? a.outputs.find(o => o.address === key).value / 100000000 : a.outputs[0].value / 100000000
                   tx.symbol = token.toUpperCase()
                   tx.image = 'https://files.coinswitch.co/public/coins/btc.png'
 
-                  tx.hash = a.hash
-                  tx.explorerLink = 'https://www.blockchain.com/btc/block/' + a.block_hash
+                  tx.hash = a.txid
+                  tx.explorerLink = 'https://www.blockchain.com/btc/block/' + a.txid
                   tx.from = spender
                   tx.friendlyTo = tx.to.length ? tx.to.substring(0, 6) + '...' + tx.to.substr(tx.to.length - 5) : ''
                   tx.friendlyFrom = tx.from.substring(0, 6) + '...' + tx.from.substr(tx.from.length - 5)
@@ -499,9 +501,10 @@ class Lib {
     let cachedData = localStorage.getItem(chain + '_history_' + key)
     let historyData = {}
     let h = JSON.parse(cachedData)
-    console.log(cachedData, historyData, 'historyData')
-    if (!cachedData || !h.history) {
+
+    if (!cachedData || !h || !h.history) {
       historyData = wallet[chain] ? wallet[chain](token, key, data) : []
+
       // this.cacheWalletHistoryData(historyData, key, chain)
     }
 

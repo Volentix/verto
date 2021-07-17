@@ -484,7 +484,7 @@ export default {
 
         Lib.history(account.chain, account.chain === 'eos' ? account.name : account.key, account.type, this.pagination).then(data => {
           data = data.history
-
+          console.log(data, 'data')
           if (data && data[0] && data[0].transID) {
             this.legacyHistory = data
             this.loading = false
@@ -541,7 +541,7 @@ export default {
 
       setTimeout(async () => {
         let account = this.$store.state.investment.defaultAccount
-        console.log(account, 'account')
+
         if (account.chain === 'eth') {
           let cacheData = localStorage.getItem('history_' + account.key)
 
