@@ -2011,7 +2011,11 @@ export default {
             }
             initWallet(account.name)
             setTimeout(() => {
-              this.getSwapInfo()
+              this.getPathForToken(
+                this.depositCoin.value,
+                this.destinationCoin.value,
+                this.swapData.fromAmount
+              )
             })
           } else {
             this.swapData.error = result.message
