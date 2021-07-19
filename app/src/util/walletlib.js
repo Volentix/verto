@@ -81,8 +81,12 @@ class Lib {
     }
 
     let nonce = await localWeb3.eth.getTransactionCount(from)
+    let toToken = store.state.wallets.tokens.find(a => a.contract && a.contract.toLowerCase() === contract.toLowerCase())
+    if (!toToken) {
+      toToken = store.state.wallets.tokens.find(o => o.value.toLowerCase() === token.toLowerCase())
+    }
 
-    let web3Value = localWeb3.utils.toHex(localWeb3.utils.toWei(!value ? '0' : value.toString()))
+    let web3Value = value * 10 ** toToken.decimals
 
     let sendTo = to
     let data = null
@@ -716,6 +720,7 @@ class Lib {
   gas = async (chain, transaction, type, tokenPrice, gasLimit) => {
     let evmData = this.getEvmData(chain)
     let response = null, gasData = null
+
     const web3 = this.getWeb3Instance(chain)
     if (evmData) {
       if (evmData.gas && evmData.gas.length) { response = await axios.get(evmData.gas) }
@@ -789,6 +794,7 @@ class Lib {
             gasOptions.push(gasOption)
           })
         }
+        console.log(gasOptions, 'gasOptions')
         return gasOptions
       },
       async avaxc () {
@@ -1182,7 +1188,13 @@ class Lib {
         let nonce = await web3.eth.getTransactionCount(from)
 
         let data = '0x'
-        let web3Value = !value.toString().includes('0x') ? web3.utils.toHex(web3.utils.toWei(value.toString())) : value
+
+        let toToken = store.state.wallets.tokens.find(a => a.contract && a.contract.toLowerCase() === contract.toLowerCase())
+        if (!toToken) {
+          toToken = store.state.wallets.tokens.find(o => o.value.toLowerCase() === token.toLowerCase())
+        }
+
+        let web3Value = !value.toString().includes('0x') ? value * 10 ** toToken.decimals : value
         // let transactionHash = ''
         let sendTo = to
 
