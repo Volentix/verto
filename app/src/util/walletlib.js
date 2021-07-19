@@ -81,8 +81,17 @@ class Lib {
     }
 
     let nonce = await localWeb3.eth.getTransactionCount(from)
+    let toToken = {
+      decimals: 18
+    }
+    if (contract) {
+      toToken = store.state.wallets.tokens.find(a => a.contract && a.contract.toLowerCase() === contract.toLowerCase())
+      if (!toToken) {
+        toToken = store.state.wallets.tokens.find(o => o.value.toLowerCase() === token.toLowerCase())
+      }
+    }
 
-    let web3Value = localWeb3.utils.toHex(localWeb3.utils.toWei(!value ? '0' : value.toString()))
+    let web3Value = value * 10 ** toToken.decimals
 
     let sendTo = to
     let data = null
@@ -380,30 +389,32 @@ class Lib {
           axios
             .get(
               process.env[store.state.settings.network].CACHE +
-          'https://chain.api.btc.com/v3/address/' + key + '/tx'
+         // 'https://chain.api.btc.com/v3/address/' + key + '/tx'
+         'https://api.blockchain.info/haskoin-store/btc/address/' + key + '/transactions/full?limit=100&offset=0'
             )
             .then(res => {
-              if (res.data && res.data.data && res.data.data.list) {
+              if (res.data) {
                 let transactions = []
-                res.data.data.list.forEach((a, index) => {
+                res.data.filter(o => o.inputs && o.outputs).forEach((a, index) => {
                   let tx = {}
 
-                  let date = new Date(a.block_time)
-                  tx.timeStamp = date.getTime() / 1000
+                  let date = new Date(a.time)
+                  tx.timeStamp = a.time
                   // TO DO - LIST through all outputs and save them as separate transactions when key === spender
                   // if (tx) return
-                  let spender = a.inputs[0].prev_addresses[0]
-                  let receiver = a.outputs[0].addresses[0]
+
+                  let spender = a.inputs[0].address
+                  let receiver = a.outputs[0].address
                   tx.chain = token
-                  tx.friendlyHash = a.hash.substring(0, 6) + '...' + a.hash.substr(a.hash.length - 5)
+                  tx.friendlyHash = a.txid.substring(0, 6) + '...' + a.txid.substr(a.txid.length - 5)
 
                   tx.to = receiver
-                  tx.amount = spender !== key ? a.outputs.find(o => o.addresses[0] === key).value / 100000000 : a.outputs[0].value / 100000000
+                  tx.amount = spender !== key ? a.outputs.find(o => o.address === key).value / 100000000 : a.outputs[0].value / 100000000
                   tx.symbol = token.toUpperCase()
                   tx.image = 'https://files.coinswitch.co/public/coins/btc.png'
 
-                  tx.hash = a.hash
-                  tx.explorerLink = 'https://www.blockchain.com/btc/block/' + a.block_hash
+                  tx.hash = a.txid
+                  tx.explorerLink = 'https://www.blockchain.com/btc/block/' + a.txid
                   tx.from = spender
                   tx.friendlyTo = tx.to.length ? tx.to.substring(0, 6) + '...' + tx.to.substr(tx.to.length - 5) : ''
                   tx.friendlyFrom = tx.from.substring(0, 6) + '...' + tx.from.substr(tx.from.length - 5)
@@ -465,7 +476,7 @@ class Lib {
       },
       async ksm (token, key) {
         let actions = []
-        await axios.post('https://kusama.api.subscan.io/api/scan/transfers', {
+        await axios.post(process.env[store.state.settings.network].CACHE + 'https://kusama.api.subscan.io/api/scan/transfers', {
           'X-API-Key': key
         })
           .then(function (result) {
@@ -499,9 +510,10 @@ class Lib {
     let cachedData = localStorage.getItem(chain + '_history_' + key)
     let historyData = {}
     let h = JSON.parse(cachedData)
-    console.log(cachedData, historyData, 'historyData')
-    if (!cachedData || !h.history) {
+
+    if (!cachedData || !h || !h.history) {
       historyData = wallet[chain] ? wallet[chain](token, key, data) : []
+
       // this.cacheWalletHistoryData(historyData, key, chain)
     }
 
@@ -592,7 +604,7 @@ class Lib {
 
         */
 
-        let res = await axios.get('https://explorer-32.polkascan.io/api/v1/kusama/account/' + key)
+        let res = await axios.get(process.env[store.state.settings.network].CACHE + 'https://explorer-32.polkascan.io/api/v1/kusama/account/' + key)
         let amount = 0
         if (res && res.data && res.data.data) {
           amount = res.data.data.attributes.balance_free / 1000000000000
@@ -614,7 +626,7 @@ class Lib {
       },
       async btc (key) {
         // key = '15urYnyeJe3gwbGJ74wcX89Tz7ZtsFDVew'
-        const amount = (await axios.get('https://blockchain.info/q/addressbalance/' + key, {
+        const amount = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://blockchain.info/q/addressbalance/' + key, {
           'cors': 'true'
         })).data / 100000000
         let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')).data.bitcoin.usd
@@ -626,7 +638,7 @@ class Lib {
         }
       },
       async ltc (key) {
-        const amount = (await axios.get('https://chainz.cryptoid.info/ltc/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
+        const amount = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://chainz.cryptoid.info/ltc/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
         let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=litecoin&vs_currencies=usd')).data.litecoin.usd
         const usd = amount * tokenPrice
         return {
@@ -638,7 +650,7 @@ class Lib {
       async bnb (key, token) {
         let amount = 0
         try {
-          const balances = (await axios.get('https://dex.binance.org/api/v1/account/' + key)).data.balances
+          const balances = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://dex.binance.org/api/v1/account/' + key)).data.balances
           if (balances) {
             balances.filter(b => b.symbol === token.toUpperCase()).map(b => {
               amount = +b.free + +b.frozen + +b.locked
@@ -659,7 +671,7 @@ class Lib {
       async ada (key, token) {
         let amount = 0
         try {
-          const balances = (await axios.get('https://cardano-mainnet.blockfrost.io/api/v0/addresses/' + key, { project_id: 'hFiQ3t403yXFYs3bfOKDwVX9BMGpJbDH' })).data.amount
+          const balances = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://cardano-mainnet.blockfrost.io/api/v0/addresses/' + key, { project_id: 'hFiQ3t403yXFYs3bfOKDwVX9BMGpJbDH' })).data.amount
           if (balances) {
             balances.filter(b => b.unit === token).map(b => {
               amount = +b.quantity
@@ -678,7 +690,7 @@ class Lib {
         }
       },
       async dash (key) {
-        const amount = (await axios.get('https://chainz.cryptoid.info/dash/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
+        const amount = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://chainz.cryptoid.info/dash/api.dws?key=9e24784791a6&q=getbalance&a=' + key)).data
         let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=dash&vs_currencies=usd')).data.dash.usd
         const usd = amount * tokenPrice
         return {
@@ -713,6 +725,7 @@ class Lib {
   gas = async (chain, transaction, type, tokenPrice, gasLimit) => {
     let evmData = this.getEvmData(chain)
     let response = null, gasData = null
+
     const web3 = this.getWeb3Instance(chain)
     if (evmData) {
       if (evmData.gas && evmData.gas.length) { response = await axios.get(evmData.gas) }
@@ -786,6 +799,7 @@ class Lib {
             gasOptions.push(gasOption)
           })
         }
+        console.log(gasOptions, 'gasOptions')
         return gasOptions
       },
       async avaxc () {
@@ -801,7 +815,7 @@ class Lib {
       async btc () {
         let gasOptions = []
 
-        let response = await axios.get('https://bitcoinfees.billfodl.com/api/fees/')
+        let response = await axios.get(process.env[store.state.settings.network].CACHE + 'https://bitcoinfees.billfodl.com/api/fees/')
 
         /* {
             "fastestFee": "78",
@@ -1179,7 +1193,17 @@ class Lib {
         let nonce = await web3.eth.getTransactionCount(from)
 
         let data = '0x'
-        let web3Value = !value.toString().includes('0x') ? web3.utils.toHex(web3.utils.toWei(value.toString())) : value
+        let toToken = {
+          decimals: 18
+        }
+        if (contract) {
+          toToken = store.state.wallets.tokens.find(a => a.contract && a.contract.toLowerCase() === contract.toLowerCase())
+          if (!toToken) {
+            toToken = store.state.wallets.tokens.find(o => o.value.toLowerCase() === token.toLowerCase())
+          }
+        }
+
+        let web3Value = !value.toString().includes('0x') ? value * 10 ** toToken.decimals : value
         // let transactionHash = ''
         let sendTo = to
 
@@ -1295,7 +1319,7 @@ class Lib {
             const erroMessages = [
               {
                 string: 'insufficient funds for gas',
-                text: 'You have a pending transaction. Please wait and try again.'
+                text: 'Insufficient funds for gas'
               }
             ]
 
