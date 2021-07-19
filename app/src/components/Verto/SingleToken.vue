@@ -914,6 +914,10 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+
+/deep/ .gasSelector * {
+    font-size: 11px;
+}
 .wrapper {
   background: #fff;
   // min-height: 78vh;
