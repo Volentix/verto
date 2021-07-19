@@ -662,19 +662,24 @@ export default {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
     isBalanceEnough () {
-      if (!this.gasSelected || this.currentToken.chainID !== 'eth') return
+      if (!this.gasSelected || !this.currentAccount.isEvm) return
 
-      let ethValue = Web3.utils.fromWei(Math.round(((+this.gasPriceGwei) * 1000000000 * (+this.gasLimit))).toString(), 'ether')
+      let evmData = Lib.evms.find(o => o.chain === this.currentAccount.chain)
 
-      this.sendAmount = parseFloat(this.sendAmount) === 0 && parseFloat(this.currentToken.amount) !== 0 ? this.currentToken.amount : this.sendAmount
-      if ((parseFloat(this.sendAmount) + parseFloat(ethValue)) > parseFloat(this.currentToken.amount)) {
-        this.sendAmount = parseFloat(this.currentToken.amount) - parseFloat(ethValue).toFixed(8)
+      if (evmData.nativeToken === this.currentToken.type) {
+        let ethValue = Web3.utils.fromWei(Math.round(((+this.gasPriceGwei) * 1000000000 * (+this.gasLimit))).toString(), 'ether')
 
-        if (this.sendAmount <= 0) {
-          this.ErrorMessage = 'Insufficient balance'
-          this.sendAmount = 0
+        this.sendAmount = parseFloat(this.sendAmount) === 0 && parseFloat(this.currentToken.amount) !== 0 ? this.currentToken.amount : this.sendAmount
+        if ((parseFloat(this.sendAmount) + parseFloat(ethValue)) > parseFloat(this.currentToken.amount)) {
+          this.sendAmount = parseFloat(this.currentToken.amount) - parseFloat(ethValue).toFixed(8)
+
+          if (this.sendAmount <= 0) {
+            this.ErrorMessage = 'Insufficient balance'
+            this.sendAmount = 0
+          }
         }
       }
+      this.checkGas()
     },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
