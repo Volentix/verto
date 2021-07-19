@@ -81,9 +81,14 @@ class Lib {
     }
 
     let nonce = await localWeb3.eth.getTransactionCount(from)
-    let toToken = store.state.wallets.tokens.find(a => a.contract && a.contract.toLowerCase() === contract.toLowerCase())
-    if (!toToken) {
-      toToken = store.state.wallets.tokens.find(o => o.value.toLowerCase() === token.toLowerCase())
+    let toToken = {
+      decimals: 18
+    }
+    if (contract) {
+      toToken = store.state.wallets.tokens.find(a => a.contract && a.contract.toLowerCase() === contract.toLowerCase())
+      if (!toToken) {
+        toToken = store.state.wallets.tokens.find(o => o.value.toLowerCase() === token.toLowerCase())
+      }
     }
 
     let web3Value = value * 10 ** toToken.decimals
@@ -1188,10 +1193,14 @@ class Lib {
         let nonce = await web3.eth.getTransactionCount(from)
 
         let data = '0x'
-
-        let toToken = store.state.wallets.tokens.find(a => a.contract && a.contract.toLowerCase() === contract.toLowerCase())
-        if (!toToken) {
-          toToken = store.state.wallets.tokens.find(o => o.value.toLowerCase() === token.toLowerCase())
+        let toToken = {
+          decimals: 18
+        }
+        if (contract) {
+          toToken = store.state.wallets.tokens.find(a => a.contract && a.contract.toLowerCase() === contract.toLowerCase())
+          if (!toToken) {
+            toToken = store.state.wallets.tokens.find(o => o.value.toLowerCase() === token.toLowerCase())
+          }
         }
 
         let web3Value = !value.toString().includes('0x') ? value * 10 ** toToken.decimals : value
