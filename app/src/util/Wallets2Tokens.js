@@ -301,7 +301,7 @@ class Wallets2Tokens {
           }
           this.getEOSTokens(wallet, balances)
         } else if (wallet.type === 'eth') {
-          // wallet.key = '0xf4dcb9ca53b74e039f5fcfccd4f0548547a25772'
+          // wallet.key = '0x181717bab64928669f606ee8b266502aaa2f6608'
           Lib.evms.filter(m =>
             m.network_id !== 1 // Until eth is integrated into covalent api
           ).forEach(e => {

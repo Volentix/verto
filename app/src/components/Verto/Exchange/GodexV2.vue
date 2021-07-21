@@ -63,7 +63,7 @@
                           </q-item-section>
                           <q-item-section>
                             <q-item-label
-                              v-html="scope.opt.label.toUpperCase()"
+                              v-html="scope.opt.value.toUpperCase()"
                             />
                           </q-item-section>
                         </q-item>
@@ -211,7 +211,7 @@
                             </q-item-section>
                             <q-item-section>
                               <q-item-label
-                                v-html="scope.opt.label.toUpperCase()"
+                                v-html="scope.opt.value.toUpperCase()"
                               />
                             </q-item-section>
                           </q-item>

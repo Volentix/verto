@@ -91,7 +91,7 @@ class Lib {
       }
     }
 
-    let web3Value = value * 10 ** toToken.decimals
+    let web3Value = localWeb3.utils.toHex(value * 10 ** toToken.decimals)
 
     let sendTo = to
     let data = null
@@ -104,7 +104,7 @@ class Lib {
         console.log(error, gasAmount, 'error, gasAmount)')
       }) */
       sendTo = contract
-      web3Value = '0x00'
+      web3Value = '0x0'
     }
 
     let rawTx = {
@@ -725,7 +725,9 @@ class Lib {
   gas = async (chain, transaction, type, tokenPrice, gasLimit) => {
     let evmData = this.getEvmData(chain)
     let response = null, gasData = null
-
+    delete transaction.chainId
+    delete transaction.gas
+    delete transaction.gasPrice
     const web3 = this.getWeb3Instance(chain)
     if (evmData) {
       if (evmData.gas && evmData.gas.length) { response = await axios.get(evmData.gas) }
@@ -780,11 +782,12 @@ class Lib {
       },
       async eth () {
         let gasOptions = []
+
         if ((type !== evmData.nativeToken || transaction.data) && !gasLimit) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
-          console.log('gas', gas, response.data)
         }
+        console.log(6)
 
         if (!response.data) {
           gasData.gasPrice = await web3.eth.getGasPrice()
@@ -1203,7 +1206,7 @@ class Lib {
           }
         }
 
-        let web3Value = !value.toString().includes('0x') ? value * 10 ** toToken.decimals : value
+        let web3Value = !value.toString().includes('0x') ? web3.utils.toHex(value * 10 ** toToken.decimals) : value
         // let transactionHash = ''
         let sendTo = to
 
@@ -1212,7 +1215,7 @@ class Lib {
           data = web3Contract.methods.transfer(to, web3Value).encodeABI()
 
           sendTo = contract
-          web3Value = '0x00'
+          web3Value = '0x0'
         } else if (info && info.txData) {
           data = info.txData
         }
