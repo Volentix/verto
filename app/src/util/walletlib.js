@@ -725,9 +725,16 @@ class Lib {
   gas = async (chain, transaction, type, tokenPrice, gasLimit) => {
     let evmData = this.getEvmData(chain)
     let response = null, gasData = null
-    delete transaction.chainId
-    delete transaction.gas
-    delete transaction.gasPrice
+    let txData = {}
+
+    if (transaction && typeof transaction === 'object') {
+      let excludes = ['chainId', 'gas']
+      for (let key in transaction) {
+        if (!excludes.includes(key)) { txData[key] = transaction[key] }
+      }
+    }
+    transaction = txData
+
     const web3 = this.getWeb3Instance(chain)
     if (evmData) {
       if (evmData.gas && evmData.gas.length) { response = await axios.get(evmData.gas) }
