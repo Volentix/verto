@@ -14,6 +14,7 @@ const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 class Lib {
+  // http://ethgas.watch/api/gas
   constructor (evms) {
     this.evms = [{
       name: 'Ethereum',
@@ -22,7 +23,7 @@ class Lib {
       icon: 'https://zapper.fi/images/ETH-icon.png',
       provider: 'https://mainnet.infura.io/v3/a66f85635aef42758bc4aeed2f295645',
       explorer: 'https://etherscan.io/tx/',
-      gas: 'https://data-api.defipulse.com/api/v1/egs/api/ethgasAPI.json?api-key=61cb5f87d40937069b831354a3d9e8a5c1f1e69ebb755140b79e555249a8',
+      gas: 'http://ethgas.watch/api/gas',
       network_id: 1
     }, {
       name: 'Binance Smart Chain',
@@ -747,10 +748,10 @@ class Lib {
         nativeToken: evmData.nativeToken
       }
     }
-    const convertGasPrice = (gasObj) => {
+    const convertGasPrice = (gasObj, nativeTokenPrice) => {
       // Return gas price in USD if tokenPrice is valid, otherwise return the value in native token unit
-      gasObj.isUsd = tokenPrice
-      gasObj.value = web3.utils.fromWei(parseInt(gasObj.gasPrice).toString(), 'ether') * gasObj.gas * (gasObj.isUsd ? tokenPrice : 1)
+      gasObj.isUsd = nativeTokenPrice || tokenPrice
+      gasObj.value = web3.utils.fromWei(parseInt(gasObj.gasPrice).toString(), 'ether') * gasObj.gas * (gasObj.isUsd ? gasObj.isUsd : 1)
       return gasObj
     }
 
@@ -794,18 +795,21 @@ class Lib {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
         }
-        console.log(6)
 
         if (!response.data) {
           gasData.gasPrice = await web3.eth.getGasPrice()
           gasData.label = 'Fee'
           gasOptions.push(gasData)
         } else {
-          ['average', 'fast', 'fastest'].forEach((option) => {
+          let gasStationData = response.data.sources.find(o => o.name.toLowerCase().includes('gas now'))
+          if (!gasStationData) {
+            gasStationData = response.data.sources.find(o => o.name.toLowerCase().includes('poa'))
+          }
+          ['slow', 'standard', 'fast'].forEach((option) => {
             let gasOption = Object.assign({}, gasData)
-            gasOption.gasPrice = response.data[option] / 10 * 1000000000 // To wei
+            gasOption.gasPrice = gasStationData[option] * 1000000000 // To wei
             gasOption.label = option
-            gasOption = convertGasPrice(gasOption)
+            gasOption = convertGasPrice(gasOption, response.data.ethPrice)
             gasOptions.push(gasOption)
           })
         }
