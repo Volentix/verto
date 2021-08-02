@@ -1821,6 +1821,7 @@ export default {
     GasSelector
     // transactEOS
   },
+  props: ['fromAssetData', 'toAssetData'],
   data () {
     return {
       tab: 'deposit',
@@ -1899,6 +1900,20 @@ export default {
     }
   },
   async created () {
+    if (this.fromAssetData && this.fromAssetData.type) {
+      this.depositCoin = {
+        label: this.fromAssetData.type.toUpperCase(),
+        value: this.fromAssetData.type,
+        image: this.fromAssetData.icon
+      }
+    }
+    if (this.toAssetData && this.toAssetData.type) {
+      this.destinationCoin = {
+        label: this.toAssetData.type.toUpperCase(),
+        value: this.toAssetData.type,
+        image: this.toAssetData.icon
+      }
+    }
     if (
       (!this.$store.state.settings.coins.godex ||
         !this.$store.state.settings.coins.godex.length) &&

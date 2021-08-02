@@ -14,7 +14,6 @@ const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 class Lib {
-  // http://ethgas.watch/api/gas
   constructor (evms) {
     this.evms = [{
       name: 'Ethereum',

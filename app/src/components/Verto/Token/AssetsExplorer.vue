@@ -97,7 +97,7 @@
         <AssetBalancesTable @setAsset="showTokenPage" data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="8"  v-if="allAssets && listViewMode == 'list'" class="full-width" :tableData="filterTokens(allAssets)" />
     </div>
 </div>
- <liquidityPoolsTable v-if="!allAssets" :key="4 + uniqueKey" data-title="Liquidity pools" class="q-pt-md" data-intro="Here you can click the ADD button to add liquidity to any pools" :chain="currentChain" :rowsPerPage="10"  />
+ <liquidityPoolsTable v-if="$store.state.settings.show.tab == 'history' "  :key="4 + uniqueKey" data-title="Liquidity pools" class="q-pt-md" data-intro="Here you can click the ADD button to add liquidity to any pools" :chain="currentChain" :rowsPerPage="10"  />
    </q-scroll-area>
     <div class="small-grid" v-if="false">
       <div class="main">
