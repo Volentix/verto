@@ -51,7 +51,7 @@
 <!-- price list grid -->
 <div class="main-wrap bg-white">
   <div class="main-grid-list row q-col-gutter-md">
-    <div class="main-grid-item col-md-4 q-ma-md " v-for="c in coinsList" :key="c.symbol" :class="c.style">
+    <div @click="$emit('buyToken', {icon:c.icon, type:c.token.toLowerCase()})" class="cursor-pointer main-grid-item col-md-4 q-ma-md " v-for="c in coinsList" :key="c.symbol" :class="c.style">
       <div class="main-grid-info bg-white  flex-row flex-top flex-stretch q-pa-sm rounded-borders">
         <div class="push-right">
           <img :src="c.icon"  onerror="this.src='https://rainner.github.io/binance-watch/public/images/icons/default_.png'" style="width:40px; height:auto" />
