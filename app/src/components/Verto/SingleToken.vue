@@ -252,7 +252,7 @@
                 :set="show1inch = ['bsc','matic','eth'].includes(asset.chain)"
               >
                 <q-tab name="send" label="Send" />
-                <q-tab name="swap" v-if="asset.chain != 'eos'  && show1inch" label="Swap" />
+           <!--     <q-tab name="swap" v-if="asset.chain != 'eos'  && show1inch" label="Swap" />-->
                 <q-tab name="buy" v-if="asset.chain == 'eos'" label="Buy" />
                 <q-tab name="sell" v-if="asset.chain == 'eos'" label="Sell" />
               </q-tabs>
@@ -269,7 +269,7 @@
                <Oneinch :miniMode="true" :tokenType="asset.type"  :chain="asset.chain" class="oneinch-wrapper"></Oneinch>
               </div>
 
-              <div v-else class="q-pa-md">
+              <div v-else-if="tab != 'send' || (tab == 'send' && asset.chain == 'eos')" class="q-pa-md">
               <p class="q-pt-md text-purple-12" v-if="tab != 'send' && !['bsc','matic','eth','eos'].includes(asset.chain)"> Buying and selling {{asset.type.toLowerCase()}} will be available very soon</p>
               <div class="row" v-if="!fromPreview ">
               .
@@ -566,8 +566,8 @@
             </table>
           </div>
 
-          <h3><span class="text-bold q-pl-md q-ml-sm">History  <q-icon name="cached"  @click="refresh++" class="refresh-history q-pl-sm"/></span></h3>
-          <History :refresh="refresh" :key="refresh" v-if="tokenTabOption == 'history'" :isMobile="false" />
+          <h3 v-if="$store.state.investment.defaultAccount" ><span class="text-bold q-pl-md q-ml-sm">History  <q-icon name="cached"  @click="refresh++" class="refresh-history q-pl-sm"/></span></h3>
+          <History :refresh="refresh" :key="refresh" v-if="$store.state.investment.defaultAccount" :isMobile="false" />
           <AssetBalancesTable
             v-else-if="tokenTabOption == 'assets'"
             @setAsset="setAsset"

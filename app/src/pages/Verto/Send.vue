@@ -242,7 +242,7 @@
                         </q-input>
                       </div>
                     </div>
-                    <div class="row">
+                    <div class="row" v-if="parseFloat(sendAmount) || !miniMode">
                       <div class="col col-12">
                         <span class="lab-input">To</span>
                         <q-input

@@ -11,6 +11,12 @@ export default {
     defibox: [],
     godex: []
   },
+  show: {
+    exchange: false,
+    tokens: false,
+    vtxstaking: false,
+    tab: 'dashboard'
+  },
   chainsSendEnabled: ['eos', 'eth', 'dot', 'ksm', 'bsc', 'avax', 'avaxc', 'matic', 'ftm', 'btc'],
   backupConfig: false,
   defiMenu: 'swap',
