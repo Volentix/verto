@@ -14,7 +14,7 @@
     >
       <div class="desktop-version full-height" v-if="screenSize > 1024">
         <div class="row full-height">
-          <div class="col col-md-3">
+          <div class="col col-md-3" v-if="false">
             <div class="wallets-container" style="height: 100%">
               <profile-header
                 @setAsset="setAsset"
@@ -33,10 +33,11 @@
               />
             </div>
           </div>
-          <div class="col col-md-9 q-pr-md bg-white">
+          <div class="col col-md-12 q-pr-md bg-white">
             <div class="row dashboard-ui-tokens">
               <q-tabs
                 v-model="tab"
+                v-if="false"
                 inline-label
                 @click="$store.state.settings.show.tab = tab"
                 :class="{
@@ -87,13 +88,6 @@
                   icon="slow_motion_video"
                   label="Stake"
                   @click="$store.state.settings.show.stake = true"
-                />
-                <q-tab
-                  v-if="assetSelected"
-                  name="history"
-                  icon="filter_list"
-                  label="History"
-                  @click="$store.state.settings.show.history = true"
                 />
 
                 <q-tab

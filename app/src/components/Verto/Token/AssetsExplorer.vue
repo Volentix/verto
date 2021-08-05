@@ -1,19 +1,67 @@
 <template>
   <div :class="{'q-pt-lg': !allAssets, 'dark-theme': $store.state.settings.lightMode === 'true'}" class="wrapper q-px-lg full-width">
+    <div class="wrap">
+<div class="row">
+<div class="col">
+<ul class="tabs group">
+    <li><a  @click="tab = 'chains'" :class="{'active' : tab == 'chains'}" href="javascript:void(0)"><q-icon name="link" /> Chains</a></li>
+    <li><a @click="tab = 'assets'" :class="{'active' : tab == 'assets'}" href="javascript:void(0)"><q-icon name="lens" /> Assets</a></li>
+    <li><a @click="tab = 'investments'" :class="{'active' : tab == 'investments'}" href="javascript:void(0)"><q-icon name="trending_up" /> Investments</a></li>
+      <li><a @click="tab = 'nfts'" :class="{'active' : tab == 'nfts'}" href="javascript:void(0)"><q-icon name="trending_up" /> Nfts</a></li>
+  </ul>
+ </div>
+<div class="col-md-4">
+   <q-input @input="tab = 'assets'" :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="tokenSearchVal" style="width:280px" class="float-left q-mr-md bg-white" icon-right="search" label="Search token by symbol"  >
+              <template v-slot:append>
+                <q-icon v-if="tokenSearchVal !== ''" name="close" @click="tokenSearchVal = ''" class="cursor-pointer" />
+                <q-icon name="search" />
+              </template>
+            </q-input>
+  </div>
+</div>
+    </div> <q-tabs
+      v-if="!$route.params.selectChain && false"
+                v-model="tab"
+                align="left"
+                inline-label
+                @click="$store.state.settings.show.tab = tab"
+                :class="{
+                  'text-white': $store.state.settings.lightMode === 'true',
+                }"
+                class="text-grey-8 flex"
+              >
+                <q-tab
+                  name="chains"
+                  icon="link"
+                  label="Chains"
+                />
+                <q-tab
+                  label="Assets"
+                  name="assets"
+                  icon="lens"
+                />
+                <q-tab
+                  label="Investments"
+                  name="investments"
+                  icon="trending_up"
+                />
+                <q-tab
+                  label="NFTs"
+                  name="nfts"
+                  icon="auto_fix_high"
+                />
 
-    <q-scroll-area :visible="true" :class="{'desktop-size': screenSize > 1024, 'mobile-size': screenSize < 1024}">
-      <div v-show="!allAssets">
+              </q-tabs>
+              <div class="text-h6 q-pb-sm" v-else-if="$route.params.label">
+               {{$route.params.label}}
+              </div>
+     <div v-show="!allAssets && false">
         <div class="sub-top row gt-sm">
           <div class="subt-text col-md-7 col-12" >
             <p class="q-ma-none text-bold text-body1" v-show="!$store.state.currentwallet.wallet.chain"><q-icon name="img:statics/icons/favicon-96x96.png" style="font-size: 24px" class="q-mr-sm"/>Trade & Earn VTX  </p>
           </div>
           <div class="see-text col col-12 " >
-          <q-input :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="tokenSearchVal" style="width:280px" class="float-right q-mr-md" icon-right="search" label="Search token by symbol"  >
-            <template v-slot:append>
-              <q-icon v-if="tokenSearchVal !== ''" name="close" @click="tokenSearchVal = ''" class="cursor-pointer" />
-              <q-icon name="search" />
-            </template>
-          </q-input>
+
           </div>
         </div>
         <div class="row q-col-gutter-md q-pr-lg"  v-show="!tokenSearchVal.length && !$store.state.currentwallet.wallet.chain">
@@ -32,26 +80,26 @@
         </div>
       </div>
 
-      <div class="q-pt-md" v-show="filterTokens(item).length ||  tokenSearchVal.length" v-for="(item, index) in assetsOptions.filter(o =>  !allAssets || o.title == allAssets.title)" :key="index+uniqueKey">
-      <div class="sub-top sub-top-chart">
-          <div class="subt-text " v-if="!allAssets" >
-            <p class="q-ma-none text-bold text-body1">{{getSectionTitle(item)}} <span class="text-body2 gt-sm">| {{item.subtitle}}</span></p>
+      <div class="q-pt-md chains"  v-if="tab == 'chains' ">
+      <div class="sub-top sub-top-chart"  >
+          <div class="subt-text " v-if="!allChains && false">
+            <p class="q-ma-none text-bold text-body1">Chain overview <span class="text-body2 gt-sm">| Summary by chain</span></p>
           </div>
-          <div class="subt-text" v-else>
+          <div class="subt-text" v-else-if="false">
             <p>
-              <q-breadcrumbs class="col-12  breadcrumbs"  v-if="allAssets">
-                <q-breadcrumbs-el  class="cursor-pointer" :class="{'text-white':$store.state.settings.lightMode === 'true'}" @click="allAssets = null" label="Back"  icon="keyboard_backspace" />
-                <q-breadcrumbs-el  class="cursor-pointer"  :label="'Showing '+filterTokens(item).length+ ' ' + item.title"  />
+              <q-breadcrumbs class="col-12  breadcrumbs"  v-if="allChains">
+                <q-breadcrumbs-el  class="cursor-pointer" :class="{'text-white':$store.state.settings.lightMode === 'true'}" @click="allChains = null" label="Back"  icon="keyboard_backspace" />
+                <q-breadcrumbs-el  class="cursor-pointer"  :label="'Showing '+allChains.length+ ' chains'"  />
               </q-breadcrumbs>
             </p>
           </div>
 
-          <div v-if="!allAssets" class="see-text q-mr-lg cursor-pointer" @click="allAssets = item">
-          See all (<span class="text-deep-purple-12">{{filterTokens(item).length}}</span>) <q-icon name="arrow_forward_ios" />
+          <div v-if="!allChains && false" class="see-text q-mr-lg cursor-pointer" @click="allChains = item">
+          See all (<span class="text-deep-purple-12">{{allChains.length}}</span>) <q-icon name="arrow_forward_ios" />
           </div>
 
-          <div  class="see-text col flex  justify-end" v-else>
-            <span v-if="item.id == 'assets'" class="flex flex-center">
+          <div  class="see-text col flex  justify-end" v-else-if="false">
+            <span  class="flex flex-center">
             <span class="text-body2 q-pr-sm ">List view</span>
             <q-icon name="table_rows" @click="listViewMode = 'list'" size="1.2rem" :color="listViewMode == 'list' ? 'deep-purple-3': 'grey'" class="q-pr-xs " />
             <q-icon name="dashboard_customize"  @click="listViewMode = 'card'" size="1.2rem" :color="listViewMode == 'card' ? 'deep-purple-3': 'grey'" class="q-pr-sm"  />
@@ -65,9 +113,91 @@
           </div>
 
         </div>
+        <div class="row q-col-gutter-md " :class="{'q-pr-lg': $q.screen.width > 500}">
+
+          <div class=" col-md-3 " v-show="!allChains" @click="selectChain(chain)" v-for="(chain, i) in chains" :key="i">
+            <div class="main cursor-pointer">
+             <div class="q-pb-md text-capitalize ellipsis text-h6">{{chain.label}}</div>
+              <div class="main-top">
+                <div class="mt-img">
+                  <img :src="chain.icon"  />
+                </div>
+                <div v-if="!$route.params.selectChain">
+                  <h6>
+                   ${{nFormatter2(chain.chainTotal , chain.chainTotal > 10 ? 0 : 2 )}}
+                   <br/>
+
+                  </h6>
+                </div>
+              </div>
+              <span class="q-my-none text-body1">
+              <svg  v-if="false" class="q-ml-md" viewBox="0 0 32 32" fill="none" style="width: 20px; height: 20px; vertical-align: middle; margin-left: 0px;"><path d="M15.705 4.215a.5.5 0 01.59 0l2.725 1.988a.5.5 0 00.296.096l3.373-.007a.5.5 0 01.477.347l1.036 3.21a.5.5 0 00.182.251l2.733 1.978a.5.5 0 01.182.56l-1.048 3.207a.5.5 0 000 .31l1.048 3.206a.5.5 0 01-.182.561L24.384 21.9a.5.5 0 00-.182.251l-1.037 3.21a.5.5 0 01-.476.346l-3.373-.006a.5.5 0 00-.296.096l-2.725 1.988a.5.5 0 01-.59 0l-2.725-1.988a.5.5 0 00-.296-.096l-3.373.006a.5.5 0 01-.476-.346l-1.037-3.21a.5.5 0 00-.182-.251l-2.733-1.978a.5.5 0 01-.182-.56l1.048-3.207a.5.5 0 000-.31l-1.048-3.207a.5.5 0 01.182-.56L7.616 10.1a.5.5 0 00.182-.251l1.037-3.21a.5.5 0 01.476-.347l3.373.007a.5.5 0 00.296-.096l2.725-1.988z" fill="url(#verified_svg__paint0_linear)"></path><path opacity="0.5" d="M16 4.619l2.725 1.988a1 1 0 00.591.192l3.374-.007 1.036 3.21a1 1 0 00.365.503l2.733 1.978-1.048 3.206a.999.999 0 000 .622l1.048 3.206-2.733 1.977a1 1 0 00-.365.503l-1.036 3.21-3.374-.006a1 1 0 00-.59.192L16 27.381l-2.725-1.988a1 1 0 00-.591-.192l-3.374.006-1.036-3.21a1 1 0 00-.365-.503l-2.733-1.977 1.048-3.206a1 1 0 000-.622l-1.048-3.206 2.733-1.978-.293-.405.293.405a1 1 0 00.365-.502l1.036-3.21 3.374.006a1 1 0 00.59-.192L16 4.619z" stroke="url(#verified_svg__paint1_linear)"></path><g filter="url(#verified_svg__filter0_d)"><path d="M21.506 11.464a.677.677 0 00-.948.001l-6.745 6.636-2.378-2.334a.675.675 0 00-.946.963L13.813 20l7.695-7.57a.677.677 0 00-.002-.966z" fill="#fff"></path><path d="M21.506 11.464a.677.677 0 00-.948.001l-6.745 6.636-2.378-2.334a.675.675 0 00-.946.963L13.813 20l7.695-7.57a.677.677 0 00-.002-.966z" stroke="#fff" stroke-width="0.5"></path></g><defs><linearGradient id="verified_svg__paint0_linear" x1="6.4" y1="5.2" x2="25.6" y2="26.2" gradientUnits="userSpaceOnUse"><stop stop-color="#376DF3"></stop><stop offset="1" stop-color="#1E56E0"></stop></linearGradient><linearGradient id="verified_svg__paint1_linear" x1="7" y1="4" x2="24.4" y2="26.8" gradientUnits="userSpaceOnUse"><stop stop-color="#2D61E1"></stop><stop offset="1" stop-color="#1549CA"></stop></linearGradient><filter id="verified_svg__filter0_d" x="8.037" y="10.021" width="15.922" height="13.33" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"></feColorMatrix><feOffset dy="1"></feOffset><feGaussianBlur stdDeviation="1"></feGaussianBlur><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0"></feColorMatrix><feBlend in2="BackgroundImageFix" result="effect1_dropShadow"></feBlend><feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape"></feBlend></filter></defs></svg>
+               <!-- <span v-if="parseInt(chain.usd).toString().length <= 5" class="g-txt">.{{formatNumber(chain.usd,2).split('.')[1]}}</span> -->
+                <span  class="sr-txt absolute-top-right ">+ 4 assets</span>
+
+              </span>
+                <div class="row q-pt-md" v-if="!$route.params.selectChain" >
+                 <q-btn  align="left" size="sm" class="col-12 q-mb-sm text-left" v-for="(item,index) in assetsOptions[0].data.filter(o => o.chain === chain.chain).slice(0, 1)" :key="index" :icon="'img:'+item.icon" :label="item.type.toUpperCase()" flat dense >
+                 <span  class="q-pl-sm text-grey">${{formatNumber(item.usd, 0 )}}</span>
+                 </q-btn>
+                 <span  class="text-caption" v-if="false">3 accounts</span><br/>
+                 <span class="text-caption" v-if="false">2 tokens</span>
+                </div>
+              <div class="text-caption q-pt-md">
+              Select <q-icon name="arrow_right_alt" />
+              </div>
+              <div v-if="false">
+              <q-item-label :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" class="q-pt-sm" caption>Amount: <span class="text-grey q-pl-xs">{{formatNumber(chain.amount, 6)}}</span></q-item-label>
+              <div class="q-pt-sm">Price: <span class="text-grey q-pl-xs">${{formatNumber(chain.rateUsd,4)}}</span></div>
+              <div class="q-py-sm" v-if="chain.protocol"><q-icon class="q-pr-sm" size="1.2rem" :name="'img:'+chain.protocolIcon" />{{chain.protocol}}:</div>
+              <span class="text-grey" v-if="chain.poolsCount == 1">{{chain.poolName}} pool</span>
+              <span class="text-grey" v-else-if="chain.poolsCount">{{chain.poolsCount}} pools</span>
+                <q-item-label class="text-caption chain-label q-py-sm"  v-if="chain.chainLabel" :class="{'text-white':$store.state.settings.lightMode === 'true'}" >Chain: <span  class="text-grey">{{chain.chainLabel.replace('Chain', '')}}</span></q-item-label>
+          </div>
+            </div>
+
+          </div>
+        </div>
+</div>
+
+      <div class="q-pt-md chains" v-show=" tab == item.id  &&  (filterTokens(item).length ||  tokenSearchVal.length)" v-for="(item, index) in assetsOptions.filter(o =>  (!allAssets || o.title == allAssets.title) )" :key="index+uniqueKey">
+      <div class="sub-top sub-top-chart">
+         <!-- <div class="subt-text " v-if="!allAssets" >
+            <p>
+              <q-breadcrumbs class="col-12  breadcrumbs"  v-if="allAssets">
+                <q-breadcrumbs-el  class="cursor-pointer" :class="{'text-white':$store.state.settings.lightMode === 'true'}" @click="allAssets = null" label="Back"  icon="keyboard_backspace" />
+                <q-breadcrumbs-el  class="cursor-pointer"  :label="'Showing '+filterTokens(item).length+ ' ' + item.title"  />
+              </q-breadcrumbs>
+            </p>
+
+            <p class="q-ma-none text-bold text-body1">{{getSectionTitle(item)}} <span class="text-body2 gt-sm">| {{item.subtitle}}</span></p>
+          </div>-->
+          <div class="subt-text"  v-if="false">
+            <p>
+              <q-breadcrumbs class="col-12  breadcrumbs"  v-if="allAssets">
+                <q-breadcrumbs-el  class="cursor-pointer" :class="{'text-white':$store.state.settings.lightMode === 'true'}" @click="allAssets = null" label="Back"  icon="keyboard_backspace" />
+                <q-breadcrumbs-el  class="cursor-pointer"  :label="'Showing '+filterTokens(item).length+ ' ' + item.title"  />
+              </q-breadcrumbs>
+            </p>
+          </div>
+
+          <div v-if="!allAssets && false" class="see-text q-mr-lg cursor-pointer" @click="allAssets = item">
+          See all (<span class="text-deep-purple-12">{{filterTokens(item).length}}</span>) <q-icon name="arrow_forward_ios" />
+          </div>
+
+          <div  class="see-text col flex  justify-end" v-else>
+            <span v-if="item.id == 'assets' && false" class="flex flex-center">
+            <span class="text-body2 q-pr-sm ">List view</span>
+            <q-icon name="table_rows" @click="listViewMode = 'list'" size="1.2rem" :color="listViewMode == 'list' ? 'deep-purple-3': 'grey'" class="q-pr-xs " />
+            <q-icon name="dashboard_customize"  @click="listViewMode = 'card'" size="1.2rem" :color="listViewMode == 'card' ? 'deep-purple-3': 'grey'" class="q-pr-sm"  />
+            </span>
+
+          </div>
+
+        </div>
         <div class="row q-col-gutter-md" :class="{'q-pr-lg': $q.screen.width > 500}">
 
-          <div class=" col-md-3 " v-show="!allAssets || item.id == 'investments' || listViewMode == 'card' " @click="showTokenPage(asset)" v-for="(asset, i) in filterTokens(item).slice(0,(!allAssets ? ($q.screen.height > 1100 ? 8 : 4) : allAssets.length))" :key="i">
+          <div class=" col-md-3 " v-show="!allAssets || item.id == 'investments' || listViewMode == 'card' " @click="showTokenPage(asset)" v-for="(asset, i) in filterTokens(item)" :key="i">
             <div class="main cursor-pointer">
               <div class="main-top">
                 <div class="mt-img">
@@ -98,7 +228,7 @@
     </div>
 </div>
  <liquidityPoolsTable v-if="$store.state.settings.show.tab == 'history' "  :key="4 + uniqueKey" data-title="Liquidity pools" class="q-pt-md" data-intro="Here you can click the ADD button to add liquidity to any pools" :chain="currentChain" :rowsPerPage="10"  />
-   </q-scroll-area>
+
     <div class="small-grid" v-if="false">
       <div class="main">
         <div class="main-top">
@@ -225,9 +355,7 @@
 </template>
 
 <script>
-import {
-  QScrollArea
-} from 'quasar'
+
 import Formatter from '@/mixins/Formatter'
 import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
 import ExchangeSection from '@/components/Verto/ExchangeSection3'
@@ -236,7 +364,7 @@ import PriceChart from '@/components/Verto/Token/PriceChart'
 import AssetBalancesTable from '@/components/Verto/AssetBalancesTable'
 export default {
   components: {
-    QScrollArea,
+
     ExchangeSection,
     AssetBalancesTable,
     MakeVTXSection,
@@ -249,6 +377,7 @@ export default {
       chartData: false,
       listViewMode: 'card',
       chainSelected: false,
+      tab: 'chains',
       uniqueKey: 1235878,
       allAssets: null,
       currentChain: false,
@@ -362,11 +491,18 @@ export default {
           sortable: false
         }
       ],
-      openDialog: false
+      openDialog: false,
+      chains: [],
+      selectedChain: null,
+      allChains: false
     }
   },
   created () {
     this.getWindowWidth()
+    if (this.$route.params.tab) {
+      this.tab = this.$route.params.tab
+    }
+    this.chains = this.setChains().filter(o => o.accounts && o.accounts.length && o.accounts.find(a => parseFloat(a.amount) && !isNaN(a.amount)))
 
     this.initTable()
 
@@ -417,8 +553,34 @@ export default {
     }
   },
   methods: {
+    selectChain (chain) {
+      if (!this.$route.params.selectChain) {
+        this.selectedChain = chain
+        this.tab = 'assets'
+      } else {
+        if (this.$route.params.import) {
+          let routes = {
+            eth: '/verto/import-private-key/eth',
+            eos: '/verto/eos-account/import',
+            btc: '/verto/import-wallet/btc'
+          }
+          if (routes[chain.chain]) {
+            this.$router.push(routes[chain.chain])
+          } else {
+            this.$router.push('/verto/import-wallet/' + chain.chain)
+          }
+        }
+      }
+    },
     showTokenPage (asset) {
-      this.$emit('setAsset', asset)
+      this.$router.push({
+        name: 'token-page',
+        to: '/verto/' + asset.chain + '/' + asset.type,
+        params: {
+          asset: asset
+        }
+      })
+      // this.$emit('setAsset', asset)
     },
     setVtxData () {
       let chain = localStorage.getItem('selectedChain')
@@ -564,6 +726,7 @@ export default {
       if (this.tokenSearchVal.trim().length) {
         tokens = tokens.filter(o => o.type.toLowerCase().includes(this.tokenSearchVal.toLowerCase()))
       }
+      tokens = tokens.filter(o => !this.selectedChain || o.chain === this.selectedChain.chain)
       return tokens
     },
     getSectionTitle (item) {
@@ -638,6 +801,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.chains h6 {
+    margin-block-end: 0;
+    }
 /deep/ .q-field--filled .q-field__control {
   padding: 0 12px;
   background: rgba(0,0,0,0.05);
@@ -780,6 +946,7 @@ export default {
   // height: 86vh;
   border-radius: 12px;
   padding-right: 10px;
+      margin-top: 20px;
 }
 .wrapper{
   height: 88.5vh;
@@ -861,7 +1028,7 @@ export default {
 
 .sub-top h3 {
   font-size: 24px;
-  line-height: 28px;
+  line-height: 20px;
   font-weight: 600;
   letter-spacing: -0.5px;
   color: #000;
@@ -952,7 +1119,7 @@ export default {
 }
 
 .main h2 {
-  font-size: 28px;
+  font-size: 20px;
   line-height: 32px;
   font-weight: 500;
   letter-spacing: -0.4px;
@@ -973,7 +1140,7 @@ export default {
   font-weight: 500;
   letter-spacing: -0.6px;
   font-family: "Roboto";
-  margin-top: -60px;
+  margin-top: -40px;
 }
 
 .main .sg-txt {
@@ -1093,7 +1260,7 @@ export default {
     color: rgb(240, 240, 240);
   }
   .wrapper {
-    background-color: #04111F;
+    background-color: #ffffff;
     // border: 1px solid #627797;
     /deep/ .q-dark{
       background-color: #04111F !important;
@@ -1116,5 +1283,99 @@ export default {
       }
     }
   }
+}
+.chains {
+    border: 1px #dddada solid;
+    padding: 20px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+        margin-top: -29px;
+}
+.q-tab--active {
+    background: #f2f2f2;
+}
+
+.wrap {
+  marin: 0 auto;
+}
+ul.tabs {
+
+    height: 80px;
+    margin-top: -40px;
+    list-style: none;
+    overflow: hidden;
+  padding: 0;
+}
+ul.tabs li {
+    float: left;
+    width: fit-content ;
+
+}
+
+ul.tabs li a {
+padding: 6px 30px;
+
+  }
+ul.tabs li a {
+    position: relative;
+    display: block;
+    height: 60px;
+    margin-top: 40px;
+
+    font-family: 'Open Sans', sans-serif;
+    font-size: 18px;
+    text-align: center;
+    text-decoration: none;
+    color: #919191;
+    background: #f8f8f8;
+    -webkit-box-shadow: 8px 12px 25px 2px rgba(0,0,0,0.4);
+       -moz-box-shadow: 8px 12px 25px 2px rgba(0,0,0,0.4);
+            box-shadow: 8px 12px 25px 2px rgba(0,0,0,0.4);
+                border: 0px solid #000000;
+    -webkit-transition: padding 0.2s ease, margin 0.2s ease;
+       -moz-transition: padding 0.2s ease, margin 0.2s ease;
+         -o-transition: padding 0.2s ease, margin 0.2s ease;
+        -ms-transition: padding 0.2s ease, margin 0.2s ease;
+            transition: padding 0.2s ease, margin 0.2s ease;
+}
+.tabs li:first-child a {
+    z-index: 3;
+  -webkit-border-top-left-radius: 8px;
+-moz-border-radius-topleft: 8px;
+border-top-left-radius: 8px;
+}
+.tabs li:nth-child(2) a {
+    z-index: 2;
+}
+.tabs li:last-child a {
+    z-index: 1;
+  -webkit-box-shadow: 2px 8px 25px -2px rgba(0,0,0,0.3);
+       -moz-box-shadow: 2px 8px 25px -2px rgba(0,0,0,0.3);
+            box-shadow: 2px 8px 25px -2px rgba(0,0,0,0.3);
+  -webkit-border-top-right-radius: 8px;
+-moz-border-radius-topright: 8px;
+border-top-right-radius: 8px;
+}
+ul.tabs li a:hover {
+    margin: 35px 0 0 0;
+
+}
+ul.tabs li a.active {
+    margin: 30px 0 0 0;
+
+    background: #919191;
+    color: #f8f8f8;
+  padding-top: 10px;
+    z-index: 4;
+    outline: none;
+}
+.group:before,
+.group:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+.group:after {
+    clear: both;
 }
 </style>

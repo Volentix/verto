@@ -439,7 +439,7 @@ export default {
       // if (!this.$store.state.currentwallet.wallet || !this.$store.state.currentwallet.wallet.chain) { this.$store.state.currentwallet.wallet = val }
       this.loading = true
 
-      setTimeout(() => {
+      setTimeout(async () => {
         this.getHistory()
       }, 500)
     }

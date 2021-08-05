@@ -3,14 +3,14 @@
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" class="history-main-top-wrapper" style="height: 100vh;">
       <div class="desktop-version full-height" v-if="screenSize > 1024">
         <div class="row full-height">
-          <div class="col col-md-3">
+          <div class="col col-md-3" v-if="false">
             <div class="wallets-container" style="height: 100%">
               <profile-header :isMobile="false" class="marg" version="type2222" />
               <wallets :isMobile="false" :showWallets="false" class="full-height max-height" :isWalletsPage="false" :isWalletDetail="false" />
               <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
             </div>
           </div>
-          <div class="col col-md-9">
+          <div class="col col-md-12">
             <div class="desktop-card-style apps-section history-card" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100%;">
               <div class="row">
                 <div class="standard-content--title col-md-4 float-left flex justify-start q-pl-md q-pt-lg" >History  <q-icon name="cached"  @click="refresh++" class="refresh-history q-pl-sm"/></div>

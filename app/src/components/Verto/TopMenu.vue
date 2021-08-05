@@ -4,8 +4,9 @@
     :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
   >
     <div class="row">
-      <div class="col col-2 app-logo flex q-pl-md items-center">
+      <div class="col col-1 app-logo row flex q-pl-md items-center q-pt-md">
         <!-- <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;"> -->
+        <div class="col-12">
         <svg
           class="svg_logo q-mr-sm"
           width="20"
@@ -18,15 +19,29 @@
           ></path>
         </svg>
         <router-link to="/verto/dashboard">VERTO</router-link>
+        </div>
+
       </div>
-      <div class="col col-3 flex items-center date-scrolling-msg">
+       <div class="col-2 q-pt-sm" style="width: 150px;">
+
+   </div>
+      <div class="col-md-2">
+        <q-input  :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="searchVal" style="width:280px" class="float-right  full-width q-mt-sm" icon-right="search" label="Search token by symbol"  >
+            <template v-slot:append>
+              <q-icon v-if="searchVal !== ''" name="close" @click="searchVal = ''" class="cursor-pointer" />
+              <q-icon name="search" />
+            </template>
+          </q-input>
+          </div>
+
+    <div class="col col-3 flex items-center date-scrolling-msg">
         <div class="flex items-center main_portfolio" :class="{'text-white': $store.state.settings.lightMode === 'true'}" v-if="$router.currentRoute.path === '/verto/defi'">
           <h3 class="">Main Portfolio</h3> <span class="q-ml-sm q-mr-sm q-mb-xs">|</span> <h2 class="">${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }} USD</h2>
         </div>
         <!-- <div class="date">{{ refreshDate() }}</div> -->
         <!-- <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content='This app is in beta, please send us bug reports if you find any. <b><a target="_blank" href="https://t.me/vertosupport">t.me/vertosupport</a></b>' /> -->
       </div>
-      <div class="col col-7 flex justify-end q-pr-md items-center menu">
+      <div class="col col-3 flex justify-end q-pr-md items-center menu">
         <!-- to="/verto/create-polkadot-account" -->
        <!-- <router-link to="/verto/create-polkadot-account" >Polkadot</router-link> -->
         <q-btn @click="$store.state.settings.activityBar = !$store.state.settings.activityBar" dense flat round icon="notifications_none" class="q-ml-md q-mr-md"  >
@@ -199,13 +214,14 @@ import configManager from '@/util/ConfigManager'
 export default {
   name: 'TopMenu',
   components: {
-    // VTextMarquee: VTextMarquee
+
   },
   data () {
     return {
       lightMode: true,
       temp: false,
       animate: true,
+      searchVal: '',
       interval: null,
       key: 0,
       network: null,

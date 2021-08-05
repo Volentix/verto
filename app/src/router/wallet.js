@@ -92,6 +92,34 @@ export default [
           authRequired: true
         }
       }, {
+        name: 'import-chain',
+        path: '/verto/import-chain',
+        component: () => import('components/Verto/Token/AssetsExplorer.vue'),
+        meta: {
+          authRequired: true
+        }
+      }, {
+        name: 'token-page',
+        path: '/verto/token/:chain/:type',
+        component: () => import('components/Verto/SingleToken.vue'),
+        meta: {
+          authRequired: true
+        }
+      }, {
+        name: 'crosschain-exchange',
+        path: '/verto/crosschain-exchange',
+        component: () => import('components/Verto/Exchange/GodexV2.vue'),
+        meta: {
+          authRequired: true
+        }
+      }, {
+        name: 'token-page',
+        path: '/verto/token',
+        component: () => import('components/Verto/SingleToken.vue'),
+        meta: {
+          authRequired: true
+        }
+      }, {
         name: 'import-eth-private-key',
         path: '/verto/import-private-key/eth',
         component: () => import('pages/Verto/ImportETHPrivateKey.vue'),

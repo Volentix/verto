@@ -6,7 +6,7 @@
     }"
     class="full-width"
   >
-    <q-btn label="test" v-if="false" @click="testF()" />
+    <q-btn label="test" v-if="false" @click="testData()" />
     <div class="gdx-exchange-form q-px-md" v-show="step != 2">
       <div class="text-h6 full-width q-py-md">Exchange any to any</div>
       <div class="coins">
@@ -771,6 +771,8 @@
                           }}</span
                         ></q-item-label
                       >
+                      <q-item-label v-if="swapData.approval &&
+                              swapData.approval.hash">{{getKeyFormat(swapData.approval.hash)}}</q-item-label>
                     </q-item-section>
                     <q-item-section side></q-item-section>
                   </q-item>
@@ -807,7 +809,10 @@
                           }}</span
                         ></q-item-label
                       >
+                         <q-item-label v-if="swapData.transferObject &&
+                              swapData.transferObject.hash">{{getKeyFormat(swapData.transferObject.hash)}}</q-item-label>
                     </q-item-section>
+
                     <q-item-section side></q-item-section>
                   </q-item>
                 </q-list>
@@ -1873,7 +1878,8 @@ export default {
           error: false,
           hash: false,
           required: false,
-          transactionObject: null
+          transactionObject: null,
+          explorer_link: ''
         },
         toChains: [],
         fromChains: []
@@ -1900,20 +1906,8 @@ export default {
     }
   },
   async created () {
-    if (this.fromAssetData && this.fromAssetData.type) {
-      this.depositCoin = {
-        label: this.fromAssetData.type.toUpperCase(),
-        value: this.fromAssetData.type,
-        image: this.fromAssetData.icon
-      }
-    }
-    if (this.toAssetData && this.toAssetData.type) {
-      this.destinationCoin = {
-        label: this.toAssetData.type.toUpperCase(),
-        value: this.toAssetData.type,
-        image: this.toAssetData.icon
-      }
-    }
+    let coins = CrosschainDex.getAllCoins()
+    this.setDefaulValue()
     if (
       (!this.$store.state.settings.coins.godex ||
         !this.$store.state.settings.coins.godex.length) &&
@@ -1931,7 +1925,7 @@ export default {
     }
 
     this.getOngoingTx()
-    let coins = CrosschainDex.getAllCoins()
+
     this.chains = this.setChains()
     this.depositCoinOptions = coins
 
@@ -1972,6 +1966,39 @@ export default {
     }
   },
   methods: {
+    setDefaulValue () {
+      let from = this.fromAssetData && this.fromAssetData.type ? this.fromAssetData.type : (this.$route.params.from ? this.$route.params.from : null)
+      let to = this.toAssetData && this.toAssetData.type ? this.toAssetData.type : (this.$route.params.to ? this.$route.params.to : null)
+
+      if (from) {
+        let img = Lib.getTokenImage(from)
+
+        this.depositCoin = {
+          label: from.toUpperCase(),
+          value: from,
+          image: img
+        }
+      }
+      if (to) {
+        let img = Lib.getTokenImage(to)
+
+        this.destinationCoin = {
+          label: to.toUpperCase(),
+          value: to,
+          image: img
+        }
+      }
+    },
+    testData () {
+      this.swapData.approval = {
+        error: false,
+        status: 'Submitted',
+        hash: '0xaCd398c95D7fb6fb4071C2892eADdaD12778dfDb',
+        explorer_link: 'https://etherscan.io/address/0x2c13f9722540a3b0a75cc641005f4954cc7e8771',
+        required: false,
+        transactionObject: null
+      }
+    },
     generateSteps () {
       this.tabs = []
       if (this.swapData.dex === 'oneinch') {
@@ -2015,6 +2042,7 @@ export default {
           if (result.success) {
             this.swapData.transferObject.hash = result.transaction_id
             this.swapData.transferObject.status = 'Submitted'
+            this.swapData.transferObject.explorer_link = result.message
             let status = await Lib.checkEvmTxStatus(
               this.swapData.transferObject.hash,
               this.swapData.fromChosenChain
@@ -2123,6 +2151,7 @@ export default {
           if (result.success) {
             this.swapData.approval.hash = result.transaction_id
             this.swapData.approval.status = 'Submitted'
+            this.swapData.approval.explorer_link = result.message
             let status = await Lib.checkEvmTxStatus(
               this.swapData.approval.hash,
               this.swapData.fromChosenChain
@@ -2628,11 +2657,7 @@ export default {
         }
       ]
       */
-      let list = [].concat(
-        this.$store.state.wallets.tokens.filter(
-          (o) => o.type !== from.toLowerCase()
-        )
-      )
+      let list = []
       list.unshift({
         type: from.toLowerCase(),
         amount: amount,
@@ -3237,25 +3262,7 @@ export default {
         })
     },
     isPathInvalid (path) {
-      let message = null
-
-      if (path && !path.walletToken && path.dex !== 'godex') {
-        message =
-          'You do not own this token in your ' + path.fChainLabel + ' wallet.'
-      } else if (
-        path &&
-        path.walletToken &&
-        path.dex !== 'godex' &&
-        path.walletToken.amount < path.fromAmount
-      ) {
-        message =
-          'Insuficient ' +
-          path.fromToken.toUpperCase() +
-          ' balance (' +
-          path.fChainLabel.toUpperCase() +
-          ' chain)'
-      }
-      return message
+      return null
     },
     setPathTransaction (path) {
       let errorMessage = this.isPathInvalid(path)
