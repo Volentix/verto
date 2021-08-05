@@ -92,6 +92,7 @@
 </template>
 <script>
 import LineChartItem from './LineChart'
+
 export default {
   components: {
     LineChartItem
@@ -129,6 +130,7 @@ export default {
         let reg = new RegExp('^(' + search + ')', 'i')
         list = list.filter(i => reg.test(i.token))
       }
+
       if (this.sort) {
         list = this.sortList(list, this.sort, this.order)
       }

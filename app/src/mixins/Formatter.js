@@ -182,13 +182,23 @@ export default {
       return chains.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
     },
     formatNumber (num, decimals = 4) {
+      num = isNaN(num) ? 0 : num
+      if (num && decimals !== 2 && decimals !== 0) {
+        decimals = (parseFloat(num) - parseInt(num)) === 0 ? 0 : decimals
+      }
       decimals = decimals < 0 ? 0 : decimals
+
       let value = parseFloat(num ? num.toString().split(',').join('') : num).toFixed(decimals)
       const formatter = new Intl.NumberFormat('en-US', {
         minimumFractionDigits: decimals
       })
 
-      return isNaN(value) ? '0.00' : formatter.format(value)
+      let amount = isNaN(value) ? '0.00' : formatter.format(value)
+
+      if (parseFloat(amount) === 0 && parseFloat(num) !== 0 && !isNaN(amount) && decimals !== 0) {
+        amount = Number(num).toString()
+      }
+      return amount
     },
     convertTimestamp (timestamp) {
       let d = isNaN(timestamp) ? new Date(timestamp) : new Date(timestamp * 1000),

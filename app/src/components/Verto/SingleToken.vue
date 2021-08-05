@@ -2,13 +2,8 @@
   <div
     :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
     class="wrapper"
+    v-if="asset.type"
   >
-    <q-scroll-area
-      :visible="true"
-      class="q-mr-sm"
-      style="height: 75vh"
-      v-if="asset.type"
-    >
       <div class="row" >
         <div class="left-area col-md-8">
           <div class="left q-ml-md q-py-md">
@@ -253,8 +248,8 @@
               >
                 <q-tab name="send" label="Send" />
            <!--     <q-tab name="swap" v-if="asset.chain != 'eos'  && show1inch" label="Swap" />-->
-                <q-tab name="buy" v-if="asset.chain == 'eos'" label="Buy" />
-                <q-tab name="sell" v-if="asset.chain == 'eos'" label="Sell" />
+                <q-tab name="buy" @click="exchangeToken({to:asset.type})" v-if="asset.chain == 'eos'" label="Buy" />
+                <q-tab name="sell" @click="exchangeToken({from:asset.type})" v-if="asset.chain == 'eos'" label="Sell" />
               </q-tabs>
 
               <div class="text-center">
@@ -580,7 +575,7 @@
           />
         </div>
       </div>
-    </q-scroll-area>
+
   </div>
 </template>
 <script>
@@ -595,12 +590,12 @@ import AccountSelector from './Exchange/AccountSelector.vue'
 import AssetBalancesTable from '../../components/Verto/AssetBalancesTable'
 import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 import { JsonRpc } from 'eosjs'
-import { QScrollArea } from 'quasar'
+
 // import Godex from './Exchange/Godex.vue'
 
 export default {
   components: {
-    QScrollArea,
+
     Oneinch,
     AccountSelector,
     AssetBalancesTable,
@@ -656,7 +651,9 @@ export default {
   },
   async created () {
     this.asset = this.assetData
-
+    if (!this.asset && this.$route.params.asset) {
+      this.asset = this.$route.params.asset
+    }
     this.depositCoin = {
       label: this.asset.type.toUpperCase(),
       value: this.asset.type,
@@ -710,6 +707,12 @@ export default {
     this.setPaymentOptions()
   },
   methods: {
+    exchangeToken (params) {
+      this.$router.push({
+        name: 'crosschain-exchange',
+        params: params
+      })
+    },
     getEchangeData () {
       const self = this
       let exchange = {
@@ -1492,7 +1495,10 @@ export default {
     font-size: 16px;
   }
 }
-
+.wrapper .row {
+    max-width: 1100px;
+    margin: 0 auto;
+}
 @media screen and (max-width: 767px) {
   .wrapper {
     width: 100%;

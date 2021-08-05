@@ -282,6 +282,7 @@ export default {
       { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'soon' },
       { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' }
     ]
+
     if (this.screenSize <= 1024) {
       this.menu.unshift({ name: 'Wallets', to: '/verto/wallets', icon: 'o_account_balance_wallet', info: '' })
       this.menu.push({ name: 'Theme', to: '', icon: 'format_paint', info: 'darkmode' })

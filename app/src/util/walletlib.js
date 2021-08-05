@@ -15,12 +15,13 @@ const sleep = (milliseconds) => {
 }
 class Lib {
   constructor (evms) {
+    // https://mainnet.infura.io/v3/a66f85635aef42758bc4aeed2f295645
     this.evms = [{
       name: 'Ethereum',
       chain: 'eth',
       nativeToken: 'eth',
       icon: 'https://zapper.fi/images/ETH-icon.png',
-      provider: 'https://mainnet.infura.io/v3/a66f85635aef42758bc4aeed2f295645',
+      provider: 'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63',
       explorer: 'https://etherscan.io/tx/',
       gas: 'http://ethgas.watch/api/gas',
       network_id: 1
