@@ -502,7 +502,6 @@ export default {
     if (this.$route.params.tab) {
       this.tab = this.$route.params.tab
     }
-    this.chains = this.setChains().filter(o => o.accounts && o.accounts.length && o.accounts.find(a => parseFloat(a.amount) && !isNaN(a.amount)))
 
     this.initTable()
 
@@ -734,6 +733,7 @@ export default {
     },
     initTable (chain) {
       let account = null
+      this.chains = this.setChains().filter(o => o.accounts && o.accounts.length && o.accounts.find(a => parseFloat(a.amount) && !isNaN(a.amount)))
 
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.name) {
         account = this.$store.state.currentwallet.wallet
