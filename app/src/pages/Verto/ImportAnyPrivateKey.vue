@@ -14,7 +14,7 @@
                 <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                     <div class="chain-tools-wrapper">
                         <div class="standard-content">
-                            <h2 v-show="showMainSteps" class="standard-content--title flex">Import {{currentChain}} wallet</h2>
+                            <h2 v-show="showMainSteps" class="standard-content--title flex">Import {{getChainLabel(currentChain)}} wallet</h2>
                             <h2 v-show="!showMainSteps" class="standard-content--title flex">Save Private Key</h2>
                         </div>
                         <div class="chain-tools-wrapper--list open">
@@ -366,10 +366,11 @@
 <script>
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
-
+import Formatter from '@/mixins/Formatter'
 const Web3 = require('web3')
 let web3 = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
 export default {
+  mixins: [Formatter],
   components: {
     // desktop components
     ProfileHeader,
@@ -414,6 +415,7 @@ export default {
   created () {
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
+    this.currentChain = this.$route.params.chain.toUpperCase()
     this.currentChain = this.$route.params.chain.toUpperCase()
   },
   methods: {

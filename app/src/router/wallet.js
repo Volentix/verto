@@ -92,8 +92,8 @@ export default [
           authRequired: true
         }
       }, {
-        name: 'import-chain',
-        path: '/verto/import-chain',
+        name: 'accounts',
+        path: '/verto/manage/:accounts',
         component: () => import('components/Verto/Token/AssetsExplorer.vue'),
         meta: {
           authRequired: true

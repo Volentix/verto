@@ -1,13 +1,17 @@
 <template>
   <div :class="{'q-pt-lg': !allAssets, 'dark-theme': $store.state.settings.lightMode === 'true'}" class="wrapper q-px-lg full-width">
-    <div class="wrap">
+  <div class="wrap" :class="{'account-tabs': $route.params.accounts,'assets-tabs': !$route.params.accounts }">
 <div class="row">
 <div class="col">
-<ul class="tabs group">
-    <li><a  @click="tab = 'chains'" :class="{'active' : tab == 'chains'}" href="javascript:void(0)"><q-icon name="link" /> Chains</a></li>
-    <li><a @click="tab = 'assets'" :class="{'active' : tab == 'assets'}" href="javascript:void(0)"><q-icon name="lens" /> Assets</a></li>
-    <li><a @click="tab = 'investments'" :class="{'active' : tab == 'investments'}" href="javascript:void(0)"><q-icon name="trending_up" /> Investments</a></li>
-      <li><a @click="tab = 'nfts'" :class="{'active' : tab == 'nfts'}" href="javascript:void(0)"><q-icon name="trending_up" /> Nfts</a></li>
+ <ul class="tabs group">
+    <li class="manage"><a  @click="tab = 'receive'" :class="{'active' : tab == 'receive'}" href="javascript:void(0)"><q-icon name="link" /> Receive</a></li>
+    <li class="manage"><a  @click="tab = 'import'" :class="{'active' : tab == 'import'}" href="javascript:void(0)"><q-icon name="link" /> Import</a></li>
+      <li class="manage"><a  @click="tab = 'create'" :class="{'active' : tab == 'create'}" href="javascript:void(0)"><q-icon name="link" /> Create new account</a></li>
+       <li class="read"><a  @click="tab = 'chains'" :class="{'active' : tab == 'chains'}" href="javascript:void(0)"><q-icon name="link" /> Chains</a></li>
+    <li class="read"><a @click="tab = 'assets'" :class="{'active' : tab == 'assets'}" href="javascript:void(0)"><q-icon name="lens" /> Assets</a></li>
+    <li class="read"><a @click="tab = 'accounts'" :class="{'active' : tab == 'accounts'}" href="javascript:void(0)"><q-icon name="trending_up" /> Receive</a></li>
+    <li class="read"><a @click="tab = 'investments'" :class="{'active' : tab == 'investments'}" href="javascript:void(0)"><q-icon name="trending_up" /> Investments</a></li>
+      <li v-if="false"><a @click="tab = 'nfts'" :class="{'active' : tab == 'nfts'}" href="javascript:void(0)"><q-icon name="trending_up" /> Nfts</a></li>
   </ul>
  </div>
 <div class="col-md-4">
@@ -20,7 +24,7 @@
   </div>
 </div>
     </div> <q-tabs
-      v-if="!$route.params.selectChain && false"
+      v-if="!$route.params.accounts && false"
                 v-model="tab"
                 align="left"
                 inline-label
@@ -40,6 +44,7 @@
                   name="assets"
                   icon="lens"
                 />
+
                 <q-tab
                   label="Investments"
                   name="investments"
@@ -52,8 +57,11 @@
                 />
 
               </q-tabs>
-              <div class="text-h6 q-pb-sm" v-else-if="$route.params.label">
-               {{$route.params.label}}
+              <div class="text-h6 q-pb-sm" v-if="tab == 'import'">
+               Select chain to import
+              </div>
+              <div class="text-h6 q-pb-sm" v-else-if="tab == 'receive'">
+               Select the chain of the receiving account
               </div>
      <div v-show="!allAssets && false">
         <div class="sub-top row gt-sm">
@@ -79,8 +87,7 @@
             />
         </div>
       </div>
-
-      <div class="q-pt-md chains"  v-if="tab == 'chains' ">
+      <div :class="{'chains q-pt-md': !$route.params.accounts}"  v-if="tab == 'chains' || $route.params.accounts">
       <div class="sub-top sub-top-chart"  >
           <div class="subt-text " v-if="!allChains && false">
             <p class="q-ma-none text-bold text-body1">Chain overview <span class="text-body2 gt-sm">| Summary by chain</span></p>
@@ -115,14 +122,14 @@
         </div>
         <div class="row q-col-gutter-md " :class="{'q-pr-lg': $q.screen.width > 500}">
 
-          <div class=" col-md-3 " v-show="!allChains" @click="selectChain(chain)" v-for="(chain, i) in chains" :key="i">
+          <div :class="{' col-md-2 ' : tab == 'receive', 'col-md-3' : tab == 'import'}" v-show="!allChains" @click="chainAction(chain)" v-for="(chain, i) in chains" :key="i">
             <div class="main cursor-pointer">
              <div class="q-pb-md text-capitalize ellipsis text-h6">{{chain.label}}</div>
               <div class="main-top">
                 <div class="mt-img">
                   <img :src="chain.icon"  />
                 </div>
-                <div v-if="!$route.params.selectChain">
+                <div v-if="!$route.params.accounts || tab == 'receive'">
                   <h6>
                    ${{nFormatter2(chain.chainTotal , chain.chainTotal > 10 ? 0 : 2 )}}
                    <br/>
@@ -136,16 +143,23 @@
                 <span  class="sr-txt absolute-top-right ">+ 4 assets</span>
 
               </span>
-                <div class="row q-pt-md" v-if="!$route.params.selectChain" >
+                <div class="row q-pt-md" v-if="!$route.params.accounts" >
                  <q-btn  align="left" size="sm" class="col-12 q-mb-sm text-left" v-for="(item,index) in assetsOptions[0].data.filter(o => o.chain === chain.chain).slice(0, 1)" :key="index" :icon="'img:'+item.icon" :label="item.type.toUpperCase()" flat dense >
                  <span  class="q-pl-sm text-grey">${{formatNumber(item.usd, 0 )}}</span>
                  </q-btn>
                  <span  class="text-caption" v-if="false">3 accounts</span><br/>
                  <span class="text-caption" v-if="false">2 tokens</span>
                 </div>
-              <div class="text-caption q-pt-md">
+              <div class="text-body1 q-pt-md copy-key" v-if="tab == 'receive' && chain.accounts && chain.accounts.length == 1" >
+               {{getKeyFormat(chain.key)}} <q-icon name="o_file_copy"  />
+              </div>
+                <div class="text-caption q-pt-md" v-else-if="tab == 'import'">
+              Import <q-icon name="arrow_right_alt" />
+              </div>
+              <div class="text-caption q-pt-md" v-else>
               Select <q-icon name="arrow_right_alt" />
               </div>
+              {{tab}}
               <div v-if="false">
               <q-item-label :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" class="q-pt-sm" caption>Amount: <span class="text-grey q-pl-xs">{{formatNumber(chain.amount, 6)}}</span></q-item-label>
               <div class="q-pt-sm">Price: <span class="text-grey q-pl-xs">${{formatNumber(chain.rateUsd,4)}}</span></div>
@@ -357,6 +371,7 @@
 <script>
 
 import Formatter from '@/mixins/Formatter'
+// import HD from '@/util/hdwallet'
 import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
 import ExchangeSection from '@/components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '@/components/Verto/Defi/LiquidityPoolsTable'
@@ -499,6 +514,10 @@ export default {
   },
   created () {
     this.getWindowWidth()
+    if (this.$route.params.accounts) {
+      this.tab = 'receive'
+    }
+
     if (this.$route.params.tab) {
       this.tab = this.$route.params.tab
     }
@@ -552,24 +571,33 @@ export default {
     }
   },
   methods: {
-    selectChain (chain) {
-      if (!this.$route.params.selectChain) {
-        this.selectedChain = chain
-        this.tab = 'assets'
-      } else {
-        if (this.$route.params.import) {
-          let routes = {
-            eth: '/verto/import-private-key/eth',
-            eos: '/verto/eos-account/import',
-            btc: '/verto/import-wallet/btc'
-          }
-          if (routes[chain.chain]) {
-            this.$router.push(routes[chain.chain])
+    chainAction (chain) {
+      const self = this
+      let actions = {
+        imporf () {
+          if (!self.$route.params.accounts) {
+            self.selectedChain = chain
+            self.tab = 'assets'
           } else {
-            this.$router.push('/verto/import-wallet/' + chain.chain)
+            if (self.$route.params.import) {
+              let routes = {
+                eth: '/verto/import-private-key/eth',
+                eos: '/verto/eos-account/import',
+                btc: '/verto/import-wallet/btc'
+              }
+              if (routes[chain.chain]) {
+                self.$router.push(routes[chain.chain])
+              } else {
+                self.$router.push('/verto/import-wallet/' + chain.chain)
+              }
+            }
           }
+        },
+        receive () {
+          self.copyToClipboard(chain.key, chain.chain + ' account')
         }
       }
+      actions[self.tab]()
     },
     showTokenPage (asset) {
       this.$router.push({
@@ -733,8 +761,9 @@ export default {
     },
     initTable (chain) {
       let account = null
-      this.chains = this.setChains().filter(o => o.accounts && o.accounts.length && o.accounts.find(a => parseFloat(a.amount) && !isNaN(a.amount)))
-
+      // this.chains = (this.$route.params.accounts) ? HD.getVertoChains() :
+      this.chains = this.setChains().filter(o => o.accounts && o.accounts.length && (this.$route.params.accounts || o.accounts.find(a => parseFloat(a.amount) && !isNaN(a.amount))))
+      console.log(this.chains, 'this.chains = ')
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.name) {
         account = this.$store.state.currentwallet.wallet
         this.getChainLabel(account.chain)
@@ -1378,4 +1407,16 @@ ul.tabs li a.active {
 .group:after {
     clear: both;
 }
+.account-tabs .read {
+display: none;
+}
+.assets-tabs  .manage {
+display: none;
+}
+.copy-key {
+    background: #f2f2f2;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 13px;
+  }
 </style>

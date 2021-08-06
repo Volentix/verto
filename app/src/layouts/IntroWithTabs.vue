@@ -29,7 +29,7 @@
         </svg>
         <router-link to="/verto/dashboard">VERTO</router-link>
 
-          <span class="text-caption">Total Balance   <q-btn     dense flat icon-right="cached" color="grey" @click="refreshWallet()"/></span>
+          <div class="text-caption full-width text-center">Total Balance   <q-btn     dense flat icon-right="cached" color="grey" @click="refreshWallet()"/></div>
           <div class="text-h3 total">${{nFormatter2($store.state.wallets.portfolioTotal , 3)}}</div>
   <AccountSelector class="top q-pt-md" :showAllWallets="true"   />
         </div>
@@ -56,8 +56,8 @@
           <li :class="{'active' : $route.path ==  '/verto/profile'}">
            <router-link   to="/verto/profile"><i class="far fa-user change-c"></i><span>Profile</span> </router-link>
           </li>
-          <li @click="goToImport()"  :class="{'active' : $route.path.includes('import')}">
-          <a href="javascript:void(0)"><i class="fas  fa-plus change-c"></i><span>Import </span>  </a>
+          <li @click="goToAccounts()"  :class="{'active' : $route.path.includes('accounts')}">
+          <a href="javascript:void(0)"><i class="fas  fa-plus change-c"></i><span>Accounts </span>  </a>
           </li>
 
         </ul>
@@ -127,15 +127,8 @@ export default {
     }
   },
   methods: {
-    goToImport () {
-      this.$router.push({
-        name: 'import-chain',
-        params: {
-          import: true,
-          selectChain: true,
-          label: 'Select chain to import'
-        }
-      })
+    goToAccounts () {
+      this.$router.push('/verto/manage/accounts')
     },
     goToTab (tab) {
       this.$router.push({

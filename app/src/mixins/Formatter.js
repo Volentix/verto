@@ -26,6 +26,7 @@ export default {
       setScrollPosition(target, offset, duration)
     },
     getChainLabel (chain) {
+      chain = chain.toLowerCase()
       let isEvm = Lib.evms.find(a => a.chain === chain)
       let chainLabel = HD.names.find(a => a.value === chain)
 

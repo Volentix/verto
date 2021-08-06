@@ -38,7 +38,7 @@ class Lib {
       name: 'Polygon',
       chain: 'matic',
       nativeToken: 'matic',
-      icon: 'https://seeklogo.com/images/P/polygon-matic-logo-86F4D6D773-seeklogo.com.png',
+      icon: 'https://cdnwp-s3.benzinga.com/wp-content/uploads/2021/04/29083434/polygon.png',
       provider: 'https://rpc-mainnet.maticvigil.com/v1/08e234538a11a966248fd358b3b135c4aeb6924b',
       explorer: 'https://explorer-mainnet.maticvigil.com/tx/',
       gas: 'https://gasstation-mainnet.matic.network/',
