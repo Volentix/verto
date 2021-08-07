@@ -57,6 +57,7 @@
                 />
 
               </q-tabs>
+
               <div class="text-h6 q-pb-sm" v-if="tab == 'import'">
                Select chain to import
               </div>
@@ -122,7 +123,7 @@
         </div>
         <div class="row q-col-gutter-md " :class="{'q-pr-lg': $q.screen.width > 500}">
 
-          <div :class="{' col-md-2 ' : tab == 'receive', 'col-md-3' : tab == 'import'}" v-show="!allChains" @click="chainAction(chain)" v-for="(chain, i) in chains" :key="i">
+          <div :class="[ tab == 'receive' ||  tab == 'import' ? ' col-md-2 ' : 'col-md-3']" v-show="!allChains" @click="chainAction(chain)" v-for="(chain, i) in chains" :key="i">
             <div class="main cursor-pointer">
              <div class="q-pb-md text-capitalize ellipsis text-h6">{{chain.label}}</div>
               <div class="main-top">
@@ -159,7 +160,7 @@
               <div class="text-caption q-pt-md" v-else>
               Select <q-icon name="arrow_right_alt" />
               </div>
-              {{tab}}
+
               <div v-if="false">
               <q-item-label :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" class="q-pt-sm" caption>Amount: <span class="text-grey q-pl-xs">{{formatNumber(chain.amount, 6)}}</span></q-item-label>
               <div class="q-pt-sm">Price: <span class="text-grey q-pl-xs">${{formatNumber(chain.rateUsd,4)}}</span></div>
@@ -574,23 +575,16 @@ export default {
     chainAction (chain) {
       const self = this
       let actions = {
-        imporf () {
-          if (!self.$route.params.accounts) {
-            self.selectedChain = chain
-            self.tab = 'assets'
+        import () {
+          let routes = {
+            eth: '/verto/import-private-key/eth',
+            eos: '/verto/eos-account/import',
+            btc: '/verto/import-wallet/btc'
+          }
+          if (routes[chain.chain]) {
+            self.$router.push(routes[chain.chain])
           } else {
-            if (self.$route.params.import) {
-              let routes = {
-                eth: '/verto/import-private-key/eth',
-                eos: '/verto/eos-account/import',
-                btc: '/verto/import-wallet/btc'
-              }
-              if (routes[chain.chain]) {
-                self.$router.push(routes[chain.chain])
-              } else {
-                self.$router.push('/verto/import-wallet/' + chain.chain)
-              }
-            }
+            self.$router.push('/verto/import-wallet/' + chain.chain)
           }
         },
         receive () {
@@ -745,7 +739,7 @@ export default {
       }
       this.$axios.post('https://eth-mainnet.alchemyapi.io/v2/Le_8-Zg9gV0p_gRbw3kpCJj94eH6Fjg_', request)
         .then((res) => {
-          console.log(res)
+          // console.log(res)
         })
     },
     filterTokens (item) {
@@ -763,7 +757,7 @@ export default {
       let account = null
       // this.chains = (this.$route.params.accounts) ? HD.getVertoChains() :
       this.chains = this.setChains().filter(o => o.accounts && o.accounts.length && (this.$route.params.accounts || o.accounts.find(a => parseFloat(a.amount) && !isNaN(a.amount))))
-      console.log(this.chains, 'this.chains = ')
+      // console.log(this.chains, 'this.chains = ')
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.name) {
         account = this.$store.state.currentwallet.wallet
         this.getChainLabel(account.chain)
@@ -816,7 +810,7 @@ export default {
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
-      console.log('this.screenSize', this.screenSize)
+      // console.log('this.screenSize', this.screenSize)
     },
     filterTable (rows, terms, cols, cellValue) {
       const lowerTerms = terms ? terms.toLowerCase() : ''
