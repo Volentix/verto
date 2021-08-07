@@ -887,7 +887,9 @@ class Lib {
         const CryptoAccount = require('send-crypto').default
         const keyPair = bitcoin.ECPair.fromWIF(key)
 
-        const account = new CryptoAccount(keyPair.privateKey)
+        const account = new CryptoAccount(keyPair.privateKey, {
+          network: ''
+        })
         let fee = memo && memo.fee ? memo.fee : 10000
 
         return new Promise((resolve, reject) =>
