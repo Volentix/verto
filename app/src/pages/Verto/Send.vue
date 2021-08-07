@@ -213,7 +213,8 @@
                               </q-item-section>
                               <q-item-section>
                                 <q-item-label v-html="currentToken.label"/>
-                                <q-item-label caption class="ellipsis mw200">{{ currentToken.value }}</q-item-label>
+                                <q-item-label caption class="ellipsis mw200">{{ getKeyFormat( currentToken.value ) }}</q-item-label>
+
                               </q-item-section>
                             </q-item>
                             <q-item
@@ -311,9 +312,13 @@
                 <span class="q-pl-md cursor-pointer"  @click="showGasOptions = true" v-if="!showGasOptions"><q-icon name="add" /> Advanced </span>
                 <span class="cursor-pointer q-pt-xs" @click="showGasOptions = false" v-else>Hide </span>
                 </span>
+                {{!currentToken.amount? '!currentToken.amount' :9 }}
+                {{ currentAccount.isEvm ? 'currentAccount.isEvm ' : '5'}}
+                {{ gasOptions.length == 0 ? 'gasOptions.length == 0 ' : 4}}
+                {{!sendToResolved ? ' !sendToResolve':'6'}}{{ currentAccount.chain}}
                 <q-linear-progress v-if="!params.sendTransaction && sendAmount !== 0 && sendToResolved  && currentAccount.isEvm &&  gasOptions.length == 0 " indeterminate rounded  color="deep-purple-12" class="q-my-sm" />
                  <div class="standard-content--footer" v-if="!params.sendTransaction && (!isExchange || !transSuccessDialog)">
-                   <q-btn flat :loading="openModalProgress" class="action-link next" :disable="!currentToken.amount || currentAccount.isEvm &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="(!miniMode || !currentAccount.isEvm) ? openModalFun() :  ( miniStep == 2 ? openModalFun() : miniStep = 2 )" text-color="white"  :label="currentAccount.isEvm && miniMode && miniStep == 1 ? 'Set Gas' : 'Transfer'" />
+                   <q-btn flat :loading="openModalProgress" class="action-link next" :disable="!currentToken.amount || currentAccount.isEvm &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="(!miniMode || !(currentAccount.isEvm || currentAccount.chain == 'btc') ) ? openModalFun() :  ( miniStep == 2 ? openModalFun() : miniStep = 2 )" text-color="white"  :label="(currentAccount.isEvm || currentAccount.chain == 'btc' )  && miniMode && miniStep == 1 ? 'Set Gas' : 'Transfer'" />
                 </div>
               </div>
             </div>
@@ -391,6 +396,7 @@ import { osName } from 'mobile-device-detect'
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EOSContract from '../../mixins/EOSContract'
+import Formatter from '../../mixins/Formatter'
 import ETHContract from '../../mixins/EthContract'
 import initWallet from '@/util/Wallets2Tokens'
 import {
@@ -947,7 +953,7 @@ export default {
       this.openModalProgress = false
     }
   },
-  mixins: [EOSContract, ETHContract]
+  mixins: [EOSContract, ETHContract, Formatter]
 }
 </script>
 <style lang="scss" scoped>
