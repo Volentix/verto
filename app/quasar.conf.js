@@ -125,7 +125,8 @@ module.exports = function (ctx) {
 
     build: {
       uglifyOptions: {
-        compress: { drop_console: true }
+        keep_fnames: true ,
+        compress: { /*drop_console: true*/ }
       },
       scopeHoisting: true,
       vueRouterMode: 'history',
