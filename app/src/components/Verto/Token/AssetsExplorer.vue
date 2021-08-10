@@ -4,14 +4,15 @@
 <div class="row">
 <div class="col">
  <ul class="tabs group">
-    <li class="manage"><a  @click="tab = 'receive'" :class="{'active' : tab == 'receive'}" href="javascript:void(0)"><q-icon name="link" /> Receive</a></li>
-    <li class="manage"><a  @click="tab = 'import'" :class="{'active' : tab == 'import'}" href="javascript:void(0)"><q-icon name="link" /> Import</a></li>
+
+    <li class="manage"><a  @click="tab = 'receive'; getChains()" :class="{'active' : tab == 'receive'}" href="javascript:void(0)"><q-icon name="link" /> Receive</a></li>
+    <li class="manage"><a  @click="tab = 'import' ; getChains()" :class="{'active' : tab == 'import'}" href="javascript:void(0)"><q-icon name="link" /> Import</a></li>
       <li class="manage"><a  @click="tab = 'create'" :class="{'active' : tab == 'create'}" href="javascript:void(0)"><q-icon name="link" /> Create new account</a></li>
-       <li class="read"><a  @click="tab = 'chains'" :class="{'active' : tab == 'chains'}" href="javascript:void(0)"><q-icon name="link" /> Chains</a></li>
-    <li class="read"><a @click="tab = 'assets'" :class="{'active' : tab == 'assets'}" href="javascript:void(0)"><q-icon name="lens" /> Assets</a></li>
-    <li class="read"><a @click="tab = 'accounts'" :class="{'active' : tab == 'accounts'}" href="javascript:void(0)"><q-icon name="trending_up" /> Receive</a></li>
-    <li class="read"><a @click="tab = 'investments'" :class="{'active' : tab == 'investments'}" href="javascript:void(0)"><q-icon name="trending_up" /> Investments</a></li>
-      <li v-if="false"><a @click="tab = 'nfts'" :class="{'active' : tab == 'nfts'}" href="javascript:void(0)"><q-icon name="trending_up" /> Nfts</a></li>
+       <li class="read"><a  @click="tab = 'chains' ; selectedChain = null ; $store.state.settings.defaultChainData = null" :class="{'active' : tab == 'chains'}" href="javascript:void(0)"><q-icon name="link" /> Chains</a></li>
+    <li class="read"><a @click="tab = 'assets' ; $store.state.wallets.customTotal.show = false ;" :class="{'active' : tab == 'assets'}" href="javascript:void(0)"><q-icon name="lens" /> Assets</a></li>
+
+    <li class="read"><a @click="tab = 'investments'; $store.state.wallets.customTotal.show = false ;" :class="{'active' : tab == 'investments'}" href="javascript:void(0)"><q-icon name="trending_up" /> Investments</a></li>
+       <li v-if="false"><a @click="tab = 'nfts'" :class="{'active' : tab == 'nfts'}" href="javascript:void(0)"><q-icon name="trending_up" /> Nfts</a></li>
   </ul>
  </div>
 <div class="col-md-4">
@@ -23,7 +24,8 @@
             </q-input>
   </div>
 </div>
-    </div> <q-tabs
+    </div>
+    <q-tabs
       v-if="!$route.params.accounts && false"
                 v-model="tab"
                 align="left"
@@ -88,6 +90,7 @@
             />
         </div>
       </div>
+
       <div :class="{'chains q-pt-md': !$route.params.accounts}"  v-if="tab == 'chains' || $route.params.accounts">
       <div class="sub-top sub-top-chart"  >
           <div class="subt-text " v-if="!allChains && false">
@@ -121,6 +124,7 @@
           </div>
 
         </div>
+
         <div class="row q-col-gutter-md " :class="{'q-pr-lg': $q.screen.width > 500}">
 
           <div :class="[ tab == 'receive' ||  tab == 'import' ? ' col-md-2 ' : 'col-md-3']" v-show="!allChains" @click="chainAction(chain)" v-for="(chain, i) in chains" :key="i">
@@ -151,12 +155,15 @@
                  <span  class="text-caption" v-if="false">3 accounts</span><br/>
                  <span class="text-caption" v-if="false">2 tokens</span>
                 </div>
-              <div class="text-body1 q-pt-md copy-key" v-if="tab == 'receive' && chain.accounts && chain.accounts.length == 1" >
-               {{getKeyFormat(chain.key)}} <q-icon name="o_file_copy"  />
+              <div class="text-body1 q-pt-md copy-key" v-if="tab == 'receive' && chain.accounts && chain.accounts.length >= 1" >
+               {{chain.chain == 'eos' ? chain.name : getKeyFormat(chain.key)}} <q-icon name="o_file_copy"  />
               </div>
                 <div class="text-caption q-pt-md" v-else-if="tab == 'import'">
               Import <q-icon name="arrow_right_alt" />
               </div>
+              <span v-else-if="tab == 'chains' && chain.chain == 'eos' && chain.type == 'verto'">
+                <q-btn  label="Get EOS account" outline rounded/>
+                </span>
               <div class="text-caption q-pt-md" v-else>
               Select <q-icon name="arrow_right_alt" />
               </div>
@@ -175,8 +182,8 @@
         </div>
 </div>
 
-      <div class="q-pt-md chains" v-show=" tab == item.id  &&  (filterTokens(item).length ||  tokenSearchVal.length)" v-for="(item, index) in assetsOptions.filter(o =>  (!allAssets || o.title == allAssets.title) )" :key="index+uniqueKey">
-      <div class="sub-top sub-top-chart">
+      <div class="q-pt-md chains" v-show=" tab == item.id " v-for="(item, index) in assetsOptions.filter(o =>  (!allAssets || o.title == allAssets.title) )" :key="index+uniqueKey">
+     <div class="sub-top sub-top-chart">
          <!-- <div class="subt-text " v-if="!allAssets" >
             <p>
               <q-breadcrumbs class="col-12  breadcrumbs"  v-if="allAssets">
@@ -224,8 +231,8 @@
                   </h6>
                 </div>
               </div>
-              <h2 class="q-my-none">
-                ${{formatNumber(asset.usd, (5 - parseInt(asset.usd).toString().length) % 5 )}}
+              <h2 class="q-my-none ellipsis">
+                ${{formatNumber(asset.usd, 2)}}
                <!-- <span v-if="parseInt(asset.usd).toString().length <= 5" class="g-txt">.{{formatNumber(asset.usd,2).split('.')[1]}}</span> -->
                 <span v-if="asset.change24hPercentage" :class="'sr-txt absolute-top-right ' + asset.color">{{asset.color === 'text-green-6'? '↑':'↓'}} {{asset.change24hPercentage.substring(1)}}</span>
                 <a href="javascript:void(0)">Trade</a>
@@ -239,6 +246,7 @@
             </div>
 
           </div>
+          <p v-if="!filterTokens(item).length"> No assets found {{ tokenSearchVal ? '' :  'for this chain'}}</p>
         <AssetBalancesTable @setAsset="showTokenPage" data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="8"  v-if="allAssets && listViewMode == 'list'" class="full-width" :tableData="filterTokens(allAssets)" />
     </div>
 </div>
@@ -372,7 +380,7 @@
 <script>
 
 import Formatter from '@/mixins/Formatter'
-// import HD from '@/util/hdwallet'
+import HD from '@/util/hdwallet'
 import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
 import ExchangeSection from '@/components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '@/components/Verto/Defi/LiquidityPoolsTable'
@@ -573,6 +581,7 @@ export default {
   },
   methods: {
     chainAction (chain) {
+      this.$store.state.settings.defaultChainData = chain
       const self = this
       let actions = {
         import () {
@@ -589,6 +598,18 @@ export default {
         },
         receive () {
           self.copyToClipboard(chain.key, chain.chain + ' account')
+        },
+        chains () {
+          self.$store.state.wallets.customTotal.usd = chain.chainTotal
+          self.$store.state.wallets.customTotal.show = true
+          self.$store.state.wallets.customTotal.label = chain.label + ' balance'
+
+          if (chain.isEvm || chain.chain === 'eos') {
+            self.selectedChain = chain
+            self.tab = 'assets'
+          } else {
+            self.showTokenPage(chain, self.assetsOptions[0].data)
+          }
         }
       }
       actions[self.tab]()
@@ -596,9 +617,10 @@ export default {
     showTokenPage (asset) {
       this.$router.push({
         name: 'token-page',
-        to: '/verto/' + asset.chain + '/' + asset.type,
+        path: '/verto/token/' + asset.chain + '/' + asset.type,
         params: {
-          asset: asset
+          asset: asset,
+          assets: this.assetsOptions[0].data
         }
       })
       // this.$emit('setAsset', asset)
@@ -753,10 +775,14 @@ export default {
     getSectionTitle (item) {
       return this.chainSelected && item.id === 'assets' ? item.title.replace(' ', ' ' + this.chainSelected + ' ') : item.title
     },
+    getChains () {
+      this.chains = ['new', 'import'].includes(this.tab) ? HD.getVertoChains() : this.setChains().filter(o => o.accounts && o.accounts.length && (this.$route.params.accounts || o.accounts.find(a => (parseFloat(o.chainTotal) && !isNaN(o.chainTotal)) || (parseFloat(o.usd) && !isNaN(o.usd)) || ['eos'].includes(o.chain))))
+      console.log(this.chains, ' this.chains ')
+    },
     initTable (chain) {
       let account = null
       // this.chains = (this.$route.params.accounts) ? HD.getVertoChains() :
-      this.chains = this.setChains().filter(o => o.accounts && o.accounts.length && (this.$route.params.accounts || o.accounts.find(a => parseFloat(a.amount) && !isNaN(a.amount))))
+      this.getChains()
       // console.log(this.chains, 'this.chains = ')
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.name) {
         account = this.$store.state.currentwallet.wallet

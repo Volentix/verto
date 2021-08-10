@@ -1,76 +1,165 @@
 
 <template>
   <div class="wrapper">
-    <q-layout view="hHh Lpr lff" container style="height: 100vh" class="shadow-2 rounded-borders">
-    <q-drawer
+    <q-layout
+      view="hHh Lpr lff"
+      container
+      style="height: 100vh"
+      class="shadow-2 rounded-borders"
+    >
+      <q-drawer
         v-model="drawer"
         show-if-above
-
         :mini="!drawer || miniState"
-
         :width="250"
         :breakpoint="500"
-
         content-class="bg-grey-3"
       >
-       <div class="left-area gt-sm full-width" v-if="!$q.screen.lt.sm">
-      <div class="left">
-       <div class="img app-logo q-pt-md flex flex-center">
-     <div class="balance flex flex-center">   <svg
-          class="svg_logo q-mr-sm"
-          width="20"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 16 20.58"
-        >
-          <path
-            d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z"
-            transform="translate(-183 -18.21)"
-          ></path>
-        </svg>
-        <router-link to="/verto/dashboard">VERTO</router-link>
+        <div class="left-area gt-sm full-width" v-if="!$q.screen.lt.sm">
+          <div class="left">
+            <div class="img app-logo q-pt-md flex flex-center">
+              <div class="balance flex flex-center">
+                <svg
+                  class="svg_logo q-mr-sm"
+                  width="20"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 20.58"
+                >
+                  <path
+                    d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z"
+                    transform="translate(-183 -18.21)"
+                  ></path>
+                </svg>
+                <router-link to="/verto/dashboard">VERTO</router-link>
 
-          <div class="text-caption full-width text-center">Total Balance   <q-btn     dense flat icon-right="cached" color="grey" @click="refreshWallet()"/></div>
-          <div class="text-h3 total">${{nFormatter2($store.state.wallets.portfolioTotal , 3)}}</div>
-  <AccountSelector class="top q-pt-md" :showAllWallets="true"   />
+                <div class="text-caption full-width text-center">
+                 <span v-if="$store.state.wallets.customTotal.show">{{$store.state.wallets.customTotal.label}}</span>
+                 <span v-else>Total Balance</span>
+                  <q-btn
+                    dense
+                    flat
+                    icon-right="cached"
+                    color="grey"
+                    @click="refreshWallet()"
+                  />
+                </div>
+                <div class="text-h3 total" v-if="$store.state.wallets.customTotal.show">
+                  ${{ nFormatter2($store.state.wallets.customTotal.usd, 3) }}
+                </div>
+                <div class="text-h3 total" v-else>
+                  ${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }}
+                </div>
+
+                <div class="row flex flex-center q-pt-md q-pb-sm">
+                  <q-btn
+                    size="sm"
+                    label="Send"
+                    @click="keys.send++ ; chainTools.send = true "
+                    icon="file_upload"
+                    outline
+                    rounded
+                  />
+                  <q-btn
+                    size="sm"
+                    label=""
+                    icon="file_download"
+                    outline
+                    rounded
+                    class="q-ml-sm"
+                    to="/verto/manage/receive"
+                  />
+                  <div></div>
+                </div>
+                <AccountSelector
+                  class="top q-pt-md"
+                  :showAllWallets="true"
+                  v-if="false"
+                />
+              </div>
+            </div>
+
+            <ul class="left-menu">
+            <li class="q-pb-md flex text-center cursor-pointer" v-if="$store.state.settings.defaultChainData" >
+                <a @click="chainTools.show = !chainTools.show" class=" tools-label">
+                  <q-icon size="md"  class="q-pr-md" :name="'img:'+$store.state.settings.defaultChainData.icon" /><span>Chains Tools <q-icon  class="q-pl-md" :name="!chainTools.show  ? 'expand_more' : 'expand_less' " /></span></a
+                >
+                <AccountSelector
+                  class="top q-pt-md"
+                  v-show="chainTools.show"
+                  :showAllWallets="true"
+                  :key="$store.state.settings.defaultChainData.chain"
+                  :chains="[$store.state.settings.defaultChainData.chain]"
+                />
+              </li>
+            <li  v-show="chainTools.show && $store.state.settings.defaultChainData && tools[$store.state.settings.defaultChainData.chain]" v-for="(path, index) in ( $store.state.settings.defaultChainData ? tools[$store.state.settings.defaultChainData.chain] : [])" :key="index" class="tools" :class="{ active: $route.path == path.to }">
+                <router-link :to="path.to">
+                  <q-icon :name="path.icon"/><span>{{path.title}}</span></router-link
+                >
+              </li>
+              <li :class="{ active: $route.path == '/verto/dashboard' }">
+                <router-link to="/verto/dashboard">
+                  <i class="fas fa-columns change-c"></i
+                  ><span>Dashboard</span></router-link
+                >
+              </li>
+              <li
+                :class="{ active: $route.path == '/verto/crosschain-exchange' }"
+              >
+                <router-link to="/verto/crosschain-exchange"
+                  ><i class="fas fa-exchange-alt change-c"></i
+                  ><span>Exchange</span></router-link
+                >
+              </li>
+              <li :class="{ active: $route.path == '/verto/history' }">
+                <router-link to="/verto/history"
+                  ><i class="fas fa-stream change-c"></i
+                  ><span>History</span></router-link
+                >
+              </li>
+              <li
+                v-if="false"
+                :class="{ active: $route.path == '/verto/stake' }"
+              >
+                <router-link to="/verto/stake"
+                  ><i class="fas fa-stream change-c"></i
+                  ><span>Stake</span></router-link
+                >
+              </li>
+              <li
+                v-if="false"
+                :class="{ active: $route.path == '/verto/explorer' }"
+              >
+                <router-link to="/verto/explorer"
+                  ><i class="fas fa-stream change-c"></i
+                  ><span>Explorer</span></router-link
+                >
+              </li>
+              <li :class="{ active: $route.path == '/verto/profile' }">
+                <router-link to="/verto/profile"
+                  ><i class="far fa-user change-c"></i><span>Profile</span>
+                </router-link>
+              </li>
+              <li
+                @click="goToAccounts()"
+                :class="{ active: $route.path.includes('accounts') }"
+              >
+                <a href="javascript:void(0)"
+                  ><i class="fas fa-plus change-c"></i><span>Accounts </span>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-
-        </div>
-
-        <ul class="left-menu" >
-
-          <li :class="{'active' : $route.path ==  '/verto/dashboard'}">
-              <router-link   to="/verto/dashboard"> <i class="fas fa-columns change-c"></i><span>Dashboard</span></router-link>
-          </li>
-          <li :class="{'active' : $route.path ==  '/verto/crosschain-exchange'}">
-             <router-link   to="/verto/crosschain-exchange"><i class="fas fa-exchange-alt change-c"></i><span>Exchange</span></router-link>
-          </li>
-          <li :class="{'active' : $route.path ==  '/verto/history'}">
-            <router-link   to="/verto/history"><i class="fas fa-stream change-c"></i><span>History</span></router-link>
-          </li>
-          <li v-if="false" :class="{'active' : $route.path ==  '/verto/stake'}">
-            <router-link   to="/verto/stake"><i class="fas fa-stream change-c"></i><span>Stake</span></router-link>
-          </li>
-          <li v-if="false" :class="{'active' : $route.path ==  '/verto/explorer'}">
-            <router-link   to="/verto/explorer"><i class="fas fa-stream change-c"></i><span>Explorer</span></router-link>
-          </li>
-          <li :class="{'active' : $route.path ==  '/verto/profile'}">
-           <router-link   to="/verto/profile"><i class="far fa-user change-c"></i><span>Profile</span> </router-link>
-          </li>
-          <li @click="goToAccounts()"  :class="{'active' : $route.path.includes('accounts')}">
-          <a href="javascript:void(0)"><i class="fas  fa-plus change-c"></i><span>Accounts </span>  </a>
-          </li>
-
-        </ul>
-
-      </div>
-    </div>
 
         <!--
           in this case, we use a button (can be anything)
           so that user can switch back
           to mini-mode
         -->
-        <div class="q-mini-drawer-hide absolute" style="top: 15px; right: -17px">
+        <div
+          class="q-mini-drawer-hide absolute"
+          style="top: 15px; right: -17px"
+        >
           <q-btn
             dense
             round
@@ -81,30 +170,36 @@
             @click="miniState = true"
           />
         </div>
-
       </q-drawer>
 
-       <q-page-container>
-       <TopMenu />
+      <q-page-container>
+        <TopMenu />
 
-     <q-breadcrumbs class="text-deep-purple-8 breadcrumbs" v-if="$route.path !=  '/verto/dashboard'">
-      <template v-slot:separator>
-        <q-icon
-          size="1.5em"
-          name="chevron_right"
-          color="primary"
-        />
-      </template>
+        <q-breadcrumbs
+          class="text-deep-purple-8 breadcrumbs"
+          v-if="$route.path != '/verto/dashboard'"
+        >
+          <template v-slot:separator>
+            <q-icon size="1.5em" name="chevron_right" color="primary" />
+          </template>
 
-      <q-breadcrumbs-el label="Chains" icon="dashboard" to="/verto/dashboard" />
-      <q-breadcrumbs-el @click="goToTab('assets')" label="Assets" class="cursor-pointer" icon="circle" />
-      <q-breadcrumbs-el class="text-capitalize" :label="$route.name"  />
-    </q-breadcrumbs>
-      <router-view class="main-container"/>
-
+          <q-breadcrumbs-el
+            label="Chains"
+            icon="dashboard"
+            to="/verto/dashboard"
+          />
+          <q-breadcrumbs-el
+            @click="goToTab('assets')"
+            label="Assets"
+            class="cursor-pointer"
+            icon="circle"
+          />
+          <q-breadcrumbs-el class="text-capitalize" :label="$route.name" />
+        </q-breadcrumbs>
+        <router-view class="main-container" v-if="toggleView" />
       </q-page-container>
+      <SelectTokenPopup :key="keys.send" v-if="chainTools.send" />
     </q-layout>
-
   </div>
 </template>
 
@@ -113,20 +208,80 @@ import initWallet from '@/util/Wallets2Tokens'
 import Formatter from '@/mixins/Formatter'
 import AccountSelector from '@/components/Verto/Exchange/AccountSelector.vue'
 import TopMenu from '../components/Verto/TopMenu'
+import SelectTokenPopup from '../components/Verto/Token/SelectTokenPopup.vue'
 export default {
   components: {
     AccountSelector,
-    TopMenu
+    TopMenu,
+    SelectTokenPopup
   },
   data () {
     return {
+      toggleView: true,
+      keys: {
+        send: 1
+      },
+      tools: {
+        eos: [{
+          icon: 'bolt',
+          to: '/verto/wallet/eos/powerup',
+          title: 'Power up',
+          activeAccRequired: true
+        }, {
+          icon: 'img:https://www.api.bloks.io/image-proxy/display?w=100&h=100&url=https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/volentixgsys/VTX.png&op=resize',
+          title: 'Stake VTX',
+          activeAccRequired: true,
+          to: '/verto/stake/vtx'
+        }, {
+          icon: 'battery_charging_full',
+          title: 'Buy / Sell Ram',
+          activeAccRequired: true,
+          to: '/verto/ram-market'
+        }, /* {
+          icon: 'shield',
+          title: 'Stake Proxy EOS',
+          activeAccRequired: true,
+          to: '/verto/stakeproxy',
+        }, */ {
+          icon: 'swap_vert',
+          title: 'Stake EOS',
+          activeAccRequired: true,
+          to: '/verto/stake'
+        }, {
+          activeAccRequired: true,
+          to: '/verto/custom-transactions',
+          icon: 'tune',
+          title: 'Transact'
+        }]
+      },
       drawer: false,
+      chainTools: {
+        show: true,
+        send: false
+      },
       str: {},
       miniState: false
-
+    }
+  },
+  watch: {
+    '$store.state.settings.defaultChainData': function () {
+      if (this.$store.state.settings.defaultChainData) {
+        this.chainTools.show = true
+      }
     }
   },
   methods: {
+    sendTokens () {
+      this.toggleView = false
+      this.$router.push({
+        name: 'send-tokens',
+        params: {
+          tab: 'assets',
+          label: 'Select asset to send'
+        }
+      })
+      this.toggleView = true
+    },
     goToAccounts () {
       this.$router.push('/verto/manage/accounts')
     },
@@ -154,20 +309,18 @@ export default {
   },
   mixins: [Formatter]
 }
-
 </script>
 <style scoped>
-
 h2 {
-    line-height: initial !important ;
-  }
- /deep/ .q-page-container {
-    padding-top: 40px;
+  line-height: initial !important ;
+}
+/deep/ .q-page-container {
+  padding-top: 40px;
 }
 .center-element {
-      margin: 0 auto;
-    text-align: center;
-    display: block;
+  margin: 0 auto;
+  text-align: center;
+  display: block;
 }
 .wrapper {
   width: 100%;
@@ -179,33 +332,31 @@ h2 {
   width: 21.5%;
   background: #f2f2f2;
   float: left;
-
 }
 .breadcrumbs {
-           margin-top: 20px;
-    padding: 9px 0px 9px 10px;
-    }
+  margin-top: 20px;
+  padding: 9px 0px 9px 10px;
+}
 .top /deep/ .account_selector {
- width: 170px  !important;
+  width: 170px !important;
 }
 .left {
   background: #f5f6fa;
-
 }
 .left ul {
   padding: 20px;
-   padding-right: 0px;
-  }
+  padding-right: 0px;
+}
 .left .img {
   padding: 5px 20px;
-      max-width: 300px;
-    float: right;
+  max-width: 300px;
+  float: right;
 }
 
 .left ul {
   margin: 0px 0 0px;
-      max-width: 300px;
-    float: right;
+  max-width: 300px;
+  float: right;
 }
 
 .left ul li {
@@ -232,13 +383,15 @@ h2 {
   transition: all 0.3s ease;
 }
 
-.left ul li a:hover , .active a {
-    background: white  !important ;
-    color: #b6b6b6  !important
+.left ul li a:hover,
+.active a {
+  background: white !important ;
+  color: #b6b6b6 !important;
 }
 
-.left ul li a:hover .change-c , .active .change-c  {
-  color: #b6b6b6  !important
+.left ul li a:hover .change-c,
+.active .change-c {
+  color: #b6b6b6 !important;
 }
 
 .left .upgrade {
@@ -656,56 +809,69 @@ h2 {
     width: 100%;
   }
 }
-/deep/ .q-page-container , /deep/  .q-header{
-    background: #f2f2f2 !important;
+/deep/ .q-page-container,
+/deep/ .q-header {
+  background: #f2f2f2 !important;
 }
 /deep/ .desktop-version {
-    padding-left: 0vh  !important;
-    padding-top:0vh  !important;
+  padding-left: 0vh !important;
+  padding-top: 0vh !important;
 }
-.top /deep/ .account_selector  .q-btn__content { font-size: 12px; }
+.top /deep/ .account_selector .q-btn__content {
+  font-size: 12px;
+}
 .app-logo a {
-    font-weight: 700;
-    text-transform: uppercase;
-    font-family: Libre Franklin,sans-serif;
-    font-size: 32px;
-    color: #333;
-    text-decoration: none;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-family: Libre Franklin, sans-serif;
+  font-size: 32px;
+  color: #333;
+  text-decoration: none;
 }
 /deep/ .menu-top-wrapper {
-
-    background: #ffffff;
-    }
+  background: #ffffff;
+}
 .img.app-logo {
-
-    padding: 20px;
-    padding-top:0px;
-    border-bottom-left-radius: 12px;
+  padding: 20px;
+  padding-top: 0px;
+  border-bottom-left-radius: 12px;
 }
 .q-tab--active {
-    background: #f2f2f2;
-    border-top-right-radius: 10px;
-    border-top-left-radius: 10px;
+  background: #f2f2f2;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
 }
 .balance {
-      background: #f8f8f8;
-    padding-right: 20px;
-    padding-left: 20px;
-    box-shadow: 0px 0px 10px 10px white;
-        margin-top: 19px;
+  background: #f8f8f8;
+  padding-right: 20px;
+  padding-left: 20px;
+  box-shadow: 0px 0px 10px 10px white;
+  margin-top: 19px;
 }
 ul.left-menu {
-    background: #f2f2f2;
+  background: #f2f2f2;
 }
 
 .left-area {
-    background: url(https://i.ibb.co/vm1BbxN/Screen-Shot-2021-08-04-at-4-04-09-PM.png);
-    background-size: cover;
-    background-position-x: -50px;
-    background-repeat: no-repeat;
+  background: url(https://i.ibb.co/vm1BbxN/Screen-Shot-2021-08-04-at-4-04-09-PM.png);
+  background-size: cover;
+  background-position-x: -50px;
+  background-repeat: no-repeat;
 }
 .total {
-      font-size: 2rem;
-    color: #333333;
+  font-size: 2rem;
+  color: #333333;
+  text-shadow: 10px 10px 20px #cbbbeb;
+}
+.tools {
+    background: #e5e5e5;
+    }
+    .tools-label {
+        display: contents !important;
+        }
+        li.tools img {
+    margin-right: 30px;
+    width: 20px;
+    height: auto;
 }
 </style>

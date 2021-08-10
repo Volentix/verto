@@ -3,14 +3,14 @@
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
       <div class="desktop-version full-height" v-if="$q.screen.width > 1024" style="height: 100vh;">
         <div class="row full-height">
-          <div class="col col-md-3">
+          <div class="col col-md-3" v-if="false">
             <div class="wallets-container" style="height: 100%">
               <profile-header :isMobile="false" class="marg" version="type2222" :fetchCurrentWalletFromState="true" />
               <wallets :isMobile="false" class="full-height max-height" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
               <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
             </div>
           </div>
-          <div class="col col-md-9">
+          <div class="col col-md-12">
             <div class="desktop-card-style apps-section q-mb-sm">
               <div class="standard-content">
                 <div class="standard-content--body">
@@ -275,10 +275,12 @@ export default {
     }
 
     this.rewards = await this.getRewards()
+    console.log(this.rewards, 'his.rewards')
     // look into checking current reward allocations
-    this.rewards[0].value = 100
+    if (this.rewards && this.rewards.length) { this.rewards[0].value = 100 }
 
     let voter = await this.getVoter()
+    console.log(voter, 'his.voter')
     if (voter[0].owner === this.walletName) {
       this.voted = true
       this.proxyModel = true
@@ -292,11 +294,13 @@ export default {
     })
 
     let proxies = await this.getProxies()
-    proxies.forEach((proxy) => {
-      if (proxy.active === 1) {
-        this.proxy = proxy.proxy
-      }
-    })
+    if (proxies && proxies.length) {
+      proxies.forEach((proxy) => {
+        if (proxy.active === 1) {
+          this.proxy = proxy.proxy
+        }
+      })
+    }
   },
   methods: {
     monitor (val) {

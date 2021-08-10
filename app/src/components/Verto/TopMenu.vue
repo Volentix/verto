@@ -26,7 +26,7 @@
 
    </div>
       <div class="col-md-2">
-        <q-input  :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="searchVal" style="width:280px" class="float-right  full-width q-mt-sm" icon-right="search" label="Search token by symbol"  >
+        <q-input  :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="searchVal" style="width:280px" class="float-right  full-width q-mt-sm" icon-right="search" label="Search 8000+ tokens"  >
             <template v-slot:append>
               <q-icon v-if="searchVal !== ''" name="close" @click="searchVal = ''" class="cursor-pointer" />
               <q-icon name="search" />
@@ -35,6 +35,7 @@
           </div>
 
     <div class="col col-3 flex items-center date-scrolling-msg">
+
         <div class="flex items-center main_portfolio" :class="{'text-white': $store.state.settings.lightMode === 'true'}" v-if="$router.currentRoute.path === '/verto/defi'">
           <h3 class="">Main Portfolio</h3> <span class="q-ml-sm q-mr-sm q-mb-xs">|</span> <h2 class="">${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }} USD</h2>
         </div>

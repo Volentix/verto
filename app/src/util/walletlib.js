@@ -138,7 +138,7 @@ class Lib {
   }
 
   getAllCoins (dex) {
-    let coins = store.state.settings.coins.coinswitch.concat(store.state.settings.coins.oneinch).concat(store.state.settings.coins.defibox)
+    let coins = store.state.settings.coins.godex.concat(store.state.settings.coins.oneinch).concat(store.state.settings.coins.defibox)
 
     coins = this.getUniqueTokens(coins).filter(o => !(store.state.wallets.tokens.filter(x => x.chain === 'eos').map(w => w.type.toLowerCase()).includes(o.value.toLowerCase())))
 
@@ -880,7 +880,7 @@ class Lib {
 
   send = async (chain, token, from, to, value, memo, key, contract, data) => {
     const self = this
-    // //console.log(chain, token, from, to, value, memo, key, contract, data, 'chain, token, from, to, value, memo, key, contract, data')
+    console.log(chain, token, from, to, value, memo, contract, data, 'chain, token, from, to, value, memo, key, contract, data')
     const wallet = {
       async btc (token, from, to, value, memo, key) {
         const bitcoin = require('bitcoinjs-lib')
@@ -1219,7 +1219,8 @@ class Lib {
           }
         }
 
-        let web3Value = !value.toString().includes('0x') ? web3.utils.toHex(value * 10 ** toToken.decimals) : value
+        let web3Value = !value.toString().includes('0x') ? web3.utils.toHex((value * 10 ** toToken.decimals).toString()) : value
+
         // let transactionHash = ''
         let sendTo = to
 

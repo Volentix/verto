@@ -3,7 +3,7 @@
       <q-btn class="account_selector" dense v-if="accountOption" :dark="$store.state.settings.lightMode === 'true'" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" >
             <q-menu>
               <q-list bordered separator>
-                <q-expansion-item  style="width:308px;"  dense-toggle class="chains" default-opened v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index" clickable  >
+                <q-expansion-item  style="width:308px;"  dense-toggle class="chains" :class="{'singleChain' : chainsData.filter(o => checkChain(o)).length == 1}" default-opened v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index" clickable  >
                               <template v-slot:header>
                                   <q-item-section avatar>
                                       <img class="coin-icon" width="25px" :src="tokChain.icon"  />
@@ -268,25 +268,18 @@ export default {
 
             this.$store.commit('investment/setAccountTokens', tokens)
 
-            if (
-              this.$store.state.currentwallet.wallet.chain &&
-              this.$store.state.currentwallet.wallet.name !==
-                this.accountOption.name &&
-              this.$store.state.currentwallet.wallet.key !==
-                this.accountOption.key
-            ) {
-              this.$store.commit('currentwallet/updateParams', {
-                chainID: this.accountOption.chain,
-                tokenID: this.accountOption.type,
-                accountName: this.accountOption.name
-              })
-              this.$store.state.currentwallet.wallet = this.$store.state.wallets.tokens.find(
-                (w) =>
-                  w.chain === this.accountOption.chain &&
+            this.$store.commit('currentwallet/updateParams', {
+              chainID: this.accountOption.chain,
+              tokenID: this.accountOption.type,
+              accountName: this.accountOption.name
+            })
+            this.$store.state.currentwallet.wallet = this.$store.state.wallets.tokens.find(
+              (w) =>
+                w.chain === this.accountOption.chain &&
                   w.type === this.accountOption.type &&
                   w.name.toLowerCase() === this.accountOption.name.toLowerCase()
-              )
-            }
+            )
+            console.log(this.$store.state.currentwallet, 'this.$store.state.currentwallet.wallet 4')
           }
           if (['matic', 'bsc'].includes(this.accountOption.chain)) {
             this.$store.commit('settings/setDex', {
@@ -309,7 +302,7 @@ export default {
         }
       }
     },
-    '$store.state.currentwallet.wallet': function () {
+    /*  '$store.state.currentwallet.wallet': function () {
       let item = this.accountOptions.find(
         (a) =>
           a.key === this.$store.state.currentwallet.wallet.key &&
@@ -324,7 +317,7 @@ export default {
         this.accountOption = item
         this.setAccount()
       }
-    },
+    }, */
     '$store.state.investment.defaultAccount': function (val) {
       if (!val || val.origin !== 'defi') return
 
@@ -395,7 +388,7 @@ export default {
 .item-info {
     max-width: 40px !important;
 }
-.chains:hover .accounts {
+.chains:hover .accounts , .singleChain  .accounts  {
 display: block;
 background: #e7e8e8;
 }
