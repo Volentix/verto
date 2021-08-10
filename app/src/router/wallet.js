@@ -222,11 +222,17 @@ export default [
           authRequired: true
         }
       },
-
       {
         name: 'stake',
         path: '/verto/stake',
         component: () => import('pages/Verto/Stake.vue'),
+        meta: {
+          authRequired: true
+        }
+      }, {
+        name: 'stake-vtx',
+        path: '/verto/stake/vtx',
+        component: () => import('components/Verto/Testnet/VTXStakeStepper.vue'),
         meta: {
           authRequired: true
         }
@@ -371,6 +377,14 @@ export default [
         name: 'history',
         path: '/verto/history',
         component: () => import('pages/Verto/History.vue'),
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        name: 'send-tokens',
+        path: '/verto/dashboard/send',
+        component: () => import('pages/Verto/DashboardNewUI.vue'),
         meta: {
           authRequired: true
         }

@@ -500,6 +500,7 @@ class Crosschaindex {
               let nonce = await web3.eth.getTransactionCount(fromAddress, 'latest')
               let txObject = result.data.tx
               txObject.nonce = nonce
+              txObject.value = web3.utils.toHex(txObject.value)
               txObject.chainId = evmData.network_id
               resolve(txObject)
             })

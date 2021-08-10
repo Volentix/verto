@@ -3,6 +3,7 @@ export default {
   rightOrder: false,
   network: 'mainnet',
   devMode: false,
+  defaultChainData: null,
   globalSettings: {},
   activityBar: false,
   coins: {

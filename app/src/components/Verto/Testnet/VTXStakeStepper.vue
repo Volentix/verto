@@ -471,6 +471,7 @@ export default {
   },
   methods: {
     initAccount () {
+      console.log(this.$store.state.currentwallet, 'this.$store.state.currentwallet')
       if (this.$store.state.settings.globalSettings.stakingPeriod) {
         this.period_duration = parseFloat(this.$store.state.settings.globalSettings.stakingPeriod)
       }
@@ -488,12 +489,12 @@ export default {
         this.currentAccount = this.wallet
         this.params = {
           chainID: this.currentAccount.chain,
-          tokenID: this.currentAccount.type,
+          tokenID: 'vtx',
           accountName: this.currentAccount.name
         }
       } else {
         this.params = this.$store.state.currentwallet.params
-        this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+        this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === 'vtx' && (
           w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
         )
       }
@@ -808,7 +809,7 @@ export default {
     max-width: 600px;
 }
   .chain-tools-wrapper{
-    padding: 0px 6%;
+    padding: 0px 0%;
     &--list{
       &__hide-chain-tools{
         text-transform: initial !important;

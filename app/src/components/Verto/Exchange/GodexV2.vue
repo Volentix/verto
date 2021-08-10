@@ -1499,6 +1499,7 @@
         </tr>
       </thead>
       <tbody class="AssetTable__AssetTableBody-sc-1hzgxt1-0 gcVqXC">
+
         <tr
           v-for="(path, index) in paths"
           :key="index"
@@ -1793,13 +1794,14 @@
   </div>
 </template>
 <script>
+// Insuficient BTC balance (BITCOIN chain). Import your wallet into Verto // Or Deposit bitcoin into this account
 import CrosschainDex from '@/util/CrosschainDex'
 import Formatter from '@/mixins/Formatter'
 import SendComponent from '@/pages/Verto/Send'
 import Exchange from '../../../pages/Verto/Exchange.vue'
 import GasSelector from '../../../components/Verto/ETH/GasSelector.vue'
 // import transactEOS from '../transactEOS'
-let defaults = ['eos', 'eth', 'vtx']
+let defaults = ['eos', 'eth', 'btc']
 const txStatus = {
   error:
     'Transaction has failed. In most cases, the amount was sent differs from specified one when creating the transaction.',
@@ -1958,6 +1960,19 @@ export default {
         )
         this.getSwapInfo()
       }
+    },
+    destinationCoin: function () {
+      if (
+        this.depositCoin.value.toLowerCase() ===
+        this.destinationCoin.value.toLowerCase()
+      ) {
+        this.depositCoin = this.depositCoinUnfilter.find(
+          (o) =>
+            defaults.includes(o.value.toLowerCase()) &&
+            this.destinationCoin.value.toLowerCase() !== o.value.toLowerCase()
+        )
+        this.getSwapInfo()
+      }
     }
   },
   computed: {
@@ -2027,7 +2042,7 @@ export default {
       }
       this.spinner.tx = true
       let account = this.fromAccountSelected[this.swapData.fromChosenChain]
-
+      console.log(this.swapData.transferObject, 'this.swapData.transferObject')
       Lib.send(
         this.swapData.fromChosenChain,
         this.destinationCoin.value.toLowerCase(),
@@ -2672,6 +2687,7 @@ export default {
             this.destinationCoin.value.toLowerCase(),
             o.amount
           )
+          console.log(values, 'values')
 
           if (values.length) {
             values.map((a) => {
@@ -2697,17 +2713,19 @@ export default {
 
             if (values.length) {
               allPaths = allPaths.concat(
-                values.filter((o) => o.toAmount && o.toAmount > 0.00001)
+                values.filter((o) => o.toAmount)
               )
+              console.log(allPaths, 'allPaths')
               if (allPaths.length) {
                 let path = allPaths.find(
                   (o) => o.fromToken === this.depositCoin.value.toLowerCase()
                 )
                 if (path) {
-                  allPaths = allPaths.filter(
+                  /* allPaths = allPaths.filter(
                     (o) => o.fromToken !== this.depositCoin.value.toLowerCase()
                   )
                   allPaths.unshift(path)
+                  */
                   this.swapData.toAmount = path.toAmount
                 } else {
                   this.swapData.toAmount = 0
@@ -3262,7 +3280,24 @@ export default {
         })
     },
     isPathInvalid (path) {
-      return null
+      let message = null
+      if (path && !path.walletToken && path.dex !== 'godex') {
+        message =
+          'You do not own this token in your ' + path.fChainLabel + ' wallet.'
+      } else if (
+        path &&
+        path.walletToken &&
+        path.dex !== 'godex' &&
+        path.walletToken.amount < path.fromAmount
+      ) {
+        message =
+          'Insuficient ' +
+          path.fromToken.toUpperCase() +
+          ' balance (' +
+          path.fChainLabel.toUpperCase() +
+          ' chain)'
+      }
+      return message
     },
     setPathTransaction (path) {
       let errorMessage = this.isPathInvalid(path)
