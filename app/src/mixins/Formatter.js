@@ -4,17 +4,40 @@ import { scroll } from 'quasar'
 
 export default {
   methods: {
+    getImportLink (chain) {
+      let to = '/verto/import-wallet/' + chain
+      let routes = {
+        eth: '/verto/import-private-key/eth',
+        eos: '/verto/eos-account/import',
+        btc: '/verto/import-wallet/btc'
+      }
+      if (routes[chain]) {
+        to = routes[chain]
+      }
+      return to
+    },
     getAccountLabel (w) {
       let label = this.getKeyFormat(w.key)
       if (w.chain === 'eos') {
         label = w.name
+      } else if (w.isEvm) {
+        label = !w.name.toLowerCase().includes('coin') ? (w.name) + ' ' + label.substring(6) : label
       }
       return label
     },
-    getKeyFormat (key) {
-      return key.substring(0, 6).toLowerCase() +
+    getKeyFormat (key, last = 5) {
+      return key.substring(0, 5).toLowerCase() +
       '...' +
-      key.substr(key.length - 5).toLowerCase()
+      key.substr(key.length - last).toLowerCase()
+    },
+    getPageName (name) {
+      let pages = {
+        token: ['token-page', 'single-token-page']
+      }
+      if (pages[name]) {
+        name = pages[name].find(a => a !== this.$route.name)
+      }
+      return name
     },
     scrollToElement (id) {
       const { getScrollTarget, setScrollPosition } = scroll
@@ -199,7 +222,7 @@ export default {
 
       // this.setRessourcesInfos()
     },
-    formatNumber (num, decimals = 4) {
+    formatNumber (num, decimals = 4, scientific = true) {
       num = isNaN(num) ? 0 : num
       if (num && decimals !== 2 && decimals !== 0) {
         decimals = (parseFloat(num) - parseInt(num)) === 0 ? 0 : decimals
@@ -214,11 +237,15 @@ export default {
       let amount = isNaN(value) ? '0.00' : formatter.format(value)
       if (parseFloat(num) >= 1000000) amount = this.nFormatter2(num)
       if (parseFloat(amount) === 0 && parseFloat(num) !== 0 && !isNaN(amount) && decimals !== 0 && Math.abs(parseFloat(num)) < 0.00001) {
-        amount = parseFloat(num).toExponential().replace(/e\+?/, ' x10^')
-        let a = amount.toString().split('x')
-        amount = parseFloat(a).toFixed(0).toString() + 'x' + a[1]
+        if (scientific) {
+          amount = parseFloat(num).toExponential().replace(/e\+?/, ' x10^')
+          let a = amount.toString().split('x')
+          amount = parseFloat(a).toFixed(0).toString() + 'x' + a[1]
+        } else {
+          amount = parseFloat(num)
+        }
       }
-      return amount
+      return amount.toString()
     },
     convertTimestamp (timestamp) {
       let d = isNaN(timestamp) ? new Date(timestamp) : new Date(timestamp * 1000),

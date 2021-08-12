@@ -120,6 +120,13 @@ export default [
           authRequired: true
         }
       }, {
+        name: 'single-token-page',
+        path: '/verto/token',
+        component: () => import('components/Verto/SingleToken.vue'),
+        meta: {
+          authRequired: true
+        }
+      }, {
         name: 'import-eth-private-key',
         path: '/verto/import-private-key/eth',
         component: () => import('pages/Verto/ImportETHPrivateKey.vue'),

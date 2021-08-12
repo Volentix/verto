@@ -7,6 +7,7 @@ import EosWrapper from '@/util/EosWrapper'
 
 class Wallets2Tokens {
   constructor (walletName = null) {
+    walletName = null
     let data = this.getWalletFromCache()
     let existingWallet = null
     let ethWallet = null
@@ -322,7 +323,7 @@ class Wallets2Tokens {
                     type: t.contract_ticker_symbol
                       ? t.contract_ticker_symbol.toLowerCase()
                       : '',
-                    name: t.contract_name,
+                    name: wallet.name,
                     tokenPrice: t.quote_rate,
                     key: wallet.key.toLowerCase(),
                     privateKey: wallet.privateKey,

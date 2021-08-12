@@ -1772,22 +1772,30 @@
 
         <q-card-section class="text-body1">
           {{ popupData.msg }}
-          <q-input
-            v-if="popupData.key"
+
+          <div>
+          <div class="text-body1 q-pt-sm">
+         <div class="text-bold q-pb-sm"> Click here to import a wallet</div>
+          <q-btn label="Import BTC wallet" :to="popupData.to" rounded outline/>
+          </div>
+          <div class="text-body1 q-pt-md" v-if="popupData.key">
+            <div class="text-bold">or deposit funds in your Verto wallet</div>
+        <q-input
+
             v-model="popupData.key"
             :dark="$store.state.settings.lightMode === 'true'"
             :light="$store.state.settings.lightMode === 'false'"
             color="green"
-            label="Minimum Amount:"
+            label="Key"
+             style="max-width:300px"
             readonly
           >
-            <template v-slot:append>
-              <q-icon
-                name="file_copy"
-                @click="copyToClipboard(popupData.key, 'Key')"
-              />
+            <template v-slot:prepend>
+              <q-btn icon="file_copy" label="Copy key" outline rounded @click="copyToClipboard(popupData.key, 'Key')" />
             </template>
           </q-input>
+          </div>
+          </div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -3318,10 +3326,8 @@ export default {
 */
         this.popupData.msg = errorMessage
         this.popupData.msg +=
-          '\nFund your wallet or go to your profile to import a new ' +
-          path.fChainLabel +
-          ' account.'
-        this.popupData.to = '/verto/profile'
+          ''
+        this.popupData.to = this.getImportLink(path.fromChain)
         this.popupData.key = isDefault
           ? isDefault.chain === 'eos'
             ? isDefault.name
@@ -3532,17 +3538,7 @@ export default {
 .light-mode .gdx-input .gdx-input-label {
   color: black !important;
 }
-a,
-div,
-img,
-label,
-span,
-ul {
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline;
-}
+
 ul {
   list-style: none;
 }
@@ -4264,5 +4260,8 @@ span.priceLabel {
 .cPqKDE {
   padding: var(--spacing-1) var(--spacing-2);
   white-space: nowrap;
+}
+.q-field__native.row.items-center:hover  .gdx-coin-code {
+    display: none;
 }
 </style>

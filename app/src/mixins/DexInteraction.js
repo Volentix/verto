@@ -164,8 +164,6 @@ export default {
 
       if (!this.destinationCoin || !this.depositCoin) return
 
-      console.log(this.destinationCoin, this.depositCoin, this.$store.state.investment.defaultAccount, '76')
-
       // let from = this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.depositCoin.value.toLowerCase())
       // let to = this.$store.state.settings.coins.defibox.find(o => o.value.toLowerCase() === this.destinationCoin.value.toLowerCase())
 
