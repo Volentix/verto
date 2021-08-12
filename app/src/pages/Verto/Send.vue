@@ -103,7 +103,8 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'full-height': screenSize > 1024 && !miniMode}">
+
+    <div v-show="currentAccount" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'full-height': screenSize > 1024 && !miniMode}">
 
       <div :class="{'desktop-version': screenSize > 1024 && !miniMode}" v-if="screenSize">
         <div class="row ">
@@ -213,7 +214,7 @@
                               </q-item-section>
                               <q-item-section>
                                 <q-item-label v-html="currentToken.label"/>
-                                <q-item-label caption class="ellipsis mw200">{{ getKeyFormat( currentToken.value ) }}</q-item-label>
+                                <q-item-label caption class="ellipsis mw200" v-if="currentToken && currentToken.value">{{ getKeyFormat( currentToken.value ) }}</q-item-label>
 
                               </q-item-section>
                             </q-item>
@@ -308,7 +309,7 @@
                  <q-input outlined label="Gas Price (GWEI)"  @input="isBalanceEnough(); setCustomGas()" v-model="gasPriceGwei" dense   class="col-6"/>
                  <q-input outlined label="Gas limit" @input="isBalanceEnough(); setCustomGas()"  v-model="gasLimit" dense  class="col-6" />
                 </div>
-                <span v-if="gasOptions.length && currentAccount.isEvm">
+                <span v-if="gasOptions.length && currentAccount.isEvm && (!miniMode || miniStep == 2)">
                 <span class="q-pl-md cursor-pointer"  @click="showGasOptions = true" v-if="!showGasOptions"><q-icon name="add" /> Advanced </span>
                 <span class="cursor-pointer q-pt-xs" @click="showGasOptions = false" v-else>Hide </span>
                 </span>

@@ -12,7 +12,7 @@
               <div class="row q-pb-xl flex items-center">
                 <h2>
 
-                  <img :src="asset.icon" style="max-width: 40px" alt="image" />
+                  <img v-if="asset.icon" :src="asset.icon" style="max-width: 40px" alt="image" />
                   <img
                     v-if="false"
                     style="max-width: 0px"
@@ -24,9 +24,9 @@
                     alt=""
                   />
                 </h2>
-                <h3  class="q-pl-lg q-pr-md">
-                  ${{ $store.state.tokens.historicalPrice ? parseInt($store.state.tokens.historicalPrice) : parseInt(asset.rateUsd)
-                  }}<span
+                <h3   class="q-pl-lg q-pr-md">
+                 <span class="historicalPrice"> ${{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice,0) : formatNumber(asset.rateUsd, 0)
+                  }} </span><span
                   class="g-txt"
                     style="
                       font-size: 35px;
@@ -34,7 +34,7 @@
                       font-weight: 600;
                       letter-spacing: normal;
                     "
-                    >.{{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice, 3).split(".")[1] : formatNumber(asset.rateUsd, 3).split(".")[1] }}</span
+                    >.{{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice, 3, false).split(".")[1] : formatNumber(asset.rateUsd, 3 , false).split(".")[1] }}</span
                   >
                   <span class="q-pl-md text-h6" v-if="!$store.state.tokens.historicalPrice" :class="asset.color">{{
                     asset.change24hPercentage
@@ -119,7 +119,7 @@
                       >{{ formatNumber(asset.percentage, 2) }}% of Portfolio</span
                     >
                   <h2>
-                    ${{ parseInt(asset.usd)}}.<span>{{
+                    ${{ formatNumber(asset.usd, 0)}}.<span>{{
                       formatNumber(asset.usd, 2).split(".")[1]
                     }}</span>
                   </h2>
@@ -271,14 +271,17 @@
                 mobile-arrows
                 :set="show1inch = ['bsc','matic','eth'].includes(asset.chain)"
               >
-                <q-tab name="send" label="Send" />
+
+               <q-tab v-if="!$store.state.wallets.portfolioTotal" name="import" label="Import" />
+                <q-tab v-if="$store.state.wallets.portfolioTotal" name="send" label="Send" />
            <!--     <q-tab name="swap" v-if="asset.chain != 'eos'  && show1inch" label="Swap" />-->
-                <q-tab name="buy" @click="exchangeToken({to:asset.type})"  label="Buy" />
-                <q-tab name="sell" @click="exchangeToken({from:asset.type})" label="Sell" />
+                <q-tab name="buy" v-if="$store.state.wallets.portfolioTotal" @click="exchangeToken({to:asset.type})"  label="Buy" />
+                <q-tab v-if="$store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key && $store.state.wallets.portfolioTotal" name="sell" @click="exchangeToken({from:asset.type})" label="Sell" />
               </q-tabs>
 
-              <div class="text-center">
-                   <AccountSelector :chains="asset.isEvm ? ['bsc','matic','eth','avaxc'] : [asset.chain]"  v-show="tab != 'swap' && !fromPreview" :showAllWallets="true"  :chain="asset.chain" class="q-pt-lg" />
+              <ImportView class="q-pa-md" v-if="!$store.state.wallets.portfolioTotal" :chain="asset.chain" :key="asset.chain" />
+              <div class="text-center " v-if="tab != 'import'" >
+                   <AccountSelector :withTokenBalance="asset.type" :chains="asset.isEvm ? ['bsc','matic','eth','avaxc'] : [asset.chain]"  v-show="tab != 'swap' && !fromPreview" :showAllWallets="true"  :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
               </div>
 
               <div v-if="tab == 'send' && asset.chain != 'eos'" class="q-px-md">
@@ -289,7 +292,7 @@
                <Oneinch :miniMode="true" :tokenType="asset.type"  :chain="asset.chain" class="oneinch-wrapper"></Oneinch>
               </div>
 
-              <div v-else-if="tab != 'send' || (tab == 'send' && asset.chain == 'eos')" class="q-pa-md">
+              <div v-else-if="tab != 'send' && tab != 'import' || (tab == 'send' && asset.chain == 'eos')" class="q-pa-md">
               <p class="q-pt-md text-purple-12" v-if="tab != 'send' && !['bsc','matic','eth','eos'].includes(asset.chain)"> Buying and selling {{asset.type.toLowerCase()}} will be available very soon</p>
               <div class="row" v-if="!fromPreview ">
               .
@@ -573,6 +576,7 @@
 import transactEOS from './transactEOS'
 import Oneinch from '../../components/Verto/Exchange/Oneinch'
 import Formatter from '@/mixins/Formatter'
+import ImportView from './Token/ImportView.vue'
 // import History from '../../components/Verto/History'
 import SendComponent from '../../pages/Verto/Send'
 import PriceChart from '../../components/Verto/Token/PriceChart'
@@ -589,6 +593,7 @@ export default {
 
     Oneinch,
     AccountSelector,
+    ImportView,
     // AssetBalancesTable,
     // History,
     PriceChart,
@@ -599,7 +604,7 @@ export default {
   },
   watch: {
     '$route': function () {
-      console.log(this.$route, 'this.$route 2')
+      if (this.$route.params.asset) { this.setAsset(this.$route.params.asset) }
     },
     '$store.state.investment.accountTokens': function () {
       this.setPaymentOptions()
@@ -648,13 +653,14 @@ export default {
     }
   },
   async created () {
-    console.log(this.$route, 'this.$route')
     this.setAssetData()
   },
   methods: {
     setAsset (asset) {
-      let data = this.$route.params.assets.find(o => o.type === asset.type && o.chain === asset.chainID)
-      if (data) { this.setAssetData(data) }
+      let data = (this.$route.params.assets || []).find(o => o.type === asset.type && o.chain === asset.chainID)
+      if (data) { this.setAssetData(data) } else {
+        this.setAssetData(asset)
+      }
     },
     async setAssetData (data) {
       this.asset = data || this.assetData
@@ -713,6 +719,9 @@ export default {
           (o) => o.value.toLowerCase() !== this.depositCoin.value
         )
       }
+      if (!this.$store.state.wallets.tokens.find(o => o.chain === this.asset.chain && o.type !== 'verto') || !this.$store.state.wallets.portfolioTotal) {
+        this.tab = 'import'
+      }
       this.setPaymentOptions()
       this.getHistoriclPrice()
     },
@@ -723,7 +732,7 @@ export default {
       })
     },
     getEchangeData () {
-      const self = this
+    /*  const self = this
       let exchange = {
         eos () {
           let from = this.tab === 'buy' ? this.asset.type : this.destinationCoin.value.toLowerCase()
@@ -736,7 +745,8 @@ export default {
           )
         }
       }
-      console.log(exchange[this.asset.chain]())
+      // console.log(exchange[this.asset.chain]())
+      */
     },
     getTxData () {
       let transactionObject = {
@@ -769,17 +779,22 @@ export default {
 
       return transactionObject
     },
-    getMarketData (token) {
+    getMarketData (id) {
       this.marketData = null
       this.$axios
         .get(
           process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=' +
-          token.id +
+          id +
           '&price_change_percentage=24h,7d,30d,200d,1y'
         ).then(res => {
           if (res && res.data && res.data[0]) {
             let data = res.data[0]
-
+            if (!this.asset.icon) {
+              this.asset.icon = data.image
+            }
+            if (!this.asset.rateUsd) {
+              this.asset.rateUsd = data.current_price
+            }
             this.marketData = {
               change_24h: this.formatNumberWithSign(data.price_change_percentage_24h, 1),
               change_30d: this.formatNumberWithSign(data.price_change_percentage_30d_in_currency, 1),
@@ -796,28 +811,36 @@ export default {
     async getHistoriclPrice (days = 30) {
       this.chartData = false
       this.chartAvailable = true
-      let token = this.$store.state.tokens.list.find(
-        (t) =>
-          t.symbol.toLowerCase() === this.asset.type &&
+      let id = this.asset.coinGeckoId
+      console.log(id, 'id 34')
+      if (!id) {
+        let token = this.$store.state.tokens.list.find(
+          (t) =>
+            t.symbol.toLowerCase() === this.asset.type &&
           ((!t.platforms.hasOwnProperty('eos') &&
             !t.platforms.hasOwnProperty('ethereum')) ||
             this.asset.chain ===
               (t.platforms.hasOwnProperty('eos')
                 ? 'eos'
-                : t.platforms.hasOwnProperty('ethereum')
-                  ? 'eth'
+                : (t.platforms.hasOwnProperty('ethereum') || t.platforms.hasOwnProperty('binance-smart-chain'))
+                  ? ['eth', 'bsc', 'ftm', 'matic', 'avaxc'].includes(this.asset.chain)
                   : this.asset.chain))
-      )
-      if (token) {
-        this.getMarketData(token)
+
+        )
+        id = token ? token.id : null
+        console.log(id, 'id 34', token)
+      }
+      if (id) {
+        this.getMarketData(id)
         let response = await this.$axios.get(
           process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/' +
-            token.id +
+            id +
             '/market_chart?vs_currency=usd&days=' +
             days
         )
         this.chartData = response.data
         this.intervalHistory = days
+
         if (response.data.prices && !this.asset.rateUsd) {
           this.asset.rateUsd =
             response.data.prices[response.data.prices.length - 1][1]
@@ -915,6 +938,9 @@ export default {
         this.error = 'unswappable'
       }
     }
+  },
+  destroyed () {
+    this.$store.state.wallets.customTotal.show = false
   },
   data () {
     return {
