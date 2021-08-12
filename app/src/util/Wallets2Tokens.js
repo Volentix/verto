@@ -301,7 +301,7 @@ class Wallets2Tokens {
           }
           this.getEOSTokens(wallet, balances)
         } else if (wallet.type === 'eth') {
-          // wallet.key = '0xf4dcb9ca53b74e039f5fcfccd4f0548547a25772'
+          // wallet.key = '0x181717bab64928669f606ee8b266502aaa2f6608'
           Lib.evms.filter(m =>
             m.network_id !== 1 // Until eth is integrated into covalent api
           ).forEach(e => {
@@ -328,6 +328,7 @@ class Wallets2Tokens {
                     privateKey: wallet.privateKey,
                     amount: t.balance / 10 ** t.contract_decimals,
                     usd: amount,
+                    decimals: t.contract_decimals,
                     contract: t.contract_address,
                     chain: e.chain,
                     to:
@@ -362,7 +363,7 @@ class Wallets2Tokens {
                 .map(eth => {
                   eth.amount = ethplorer.ETH.balance
                   eth.isEvm = true
-
+                  eth.decimals = 18
                   eth.key = wallet.key.toLowerCase()
                   eth.usd = ethplorer.ETH.balance * ethplorer.ETH.price.rate
                   eth.tokenPrice = ethplorer.ETH.price.rate
@@ -438,6 +439,7 @@ class Wallets2Tokens {
                             name: wallet.name,
                             tokenPrice: t.tokenInfo.price.rate,
                             key: wallet.key.toLowerCase(),
+                            decimals: parseInt(t.tokenInfo.decimals),
                             privateKey: wallet.privateKey,
                             amount: t.balance / 10 ** t.tokenInfo.decimals,
                             usd: amount,
@@ -719,6 +721,7 @@ class Wallets2Tokens {
   }
 
   getEthBalanceFromZapper (wallet) {
+    // not working currently
     axios
       .get(
         process.env[store.state.settings.network].CACHE +

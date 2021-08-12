@@ -3,14 +3,14 @@
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
-          <div class="col col-md-3">
+          <div class="col col-md-3" v-if="false">
             <div class="wallets-container">
               <profile-header :isMobile="false" class="marg" version="type2222" />
               <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
               <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
             </div>
           </div>
-          <div class="col col-md-9">
+          <div class="col col-md-12">
             <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
               <div class="standard-content">
                 <h2 class="standard-content--title flex justify-start">Profile</h2>
@@ -133,7 +133,7 @@ export default {
     padding-top: 13vh;
     padding-left: 18vh;
     padding-bottom: 50px;
-    padding-right: 2%;
+
     @media screen and (min-width: 768px) {
       padding-top: 11vh;
       padding-bottom: 0px;
@@ -192,7 +192,7 @@ export default {
     min-height: 100vh !important;
     padding-bottom: 100px;
     @media screen and (min-width: 768px) {
-      padding: 2%;
+
       flex-direction: column;
       justify-content: flex-start;
       min-height: unset !important;

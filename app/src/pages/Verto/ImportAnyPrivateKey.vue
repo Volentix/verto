@@ -3,18 +3,18 @@
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
         <div class="desktop-version full-height" v-if="screenSize > 1024">
             <div class="row full-height">
-            <div class="col col-md-3">
+            <div class="col col-md-3" v-if="false">
                 <div class="wallets-container" style="height: 100%">
                 <profile-header :isMobile="false" class="marg" version="type2222" />
                 <wallets :isMobile="false" class="full-height max-height" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
                 <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
                 </div>
             </div>
-            <div class="col col-md-9">
+            <div class="col col-md-12">
                 <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                     <div class="chain-tools-wrapper">
                         <div class="standard-content">
-                            <h2 v-show="showMainSteps" class="standard-content--title flex">Import {{currentChain}} wallet</h2>
+                            <h2 v-show="showMainSteps" class="standard-content--title flex">Import {{getChainLabel(currentChain)}} wallet</h2>
                             <h2 v-show="!showMainSteps" class="standard-content--title flex">Save Private Key</h2>
                         </div>
                         <div class="chain-tools-wrapper--list open">
@@ -366,10 +366,11 @@
 <script>
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
-
+import Formatter from '@/mixins/Formatter'
 const Web3 = require('web3')
 let web3 = new Web3('https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63')
 export default {
+  mixins: [Formatter],
   components: {
     // desktop components
     ProfileHeader,
@@ -414,6 +415,7 @@ export default {
   created () {
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
+    this.currentChain = this.$route.params.chain.toUpperCase()
     this.currentChain = this.$route.params.chain.toUpperCase()
   },
   methods: {

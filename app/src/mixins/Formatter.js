@@ -26,6 +26,7 @@ export default {
       setScrollPosition(target, offset, duration)
     },
     getChainLabel (chain) {
+      chain = chain.toLowerCase()
       let isEvm = Lib.evms.find(a => a.chain === chain)
       let chainLabel = HD.names.find(a => a.value === chain)
 
@@ -100,6 +101,9 @@ export default {
       let arrayColors = colors.split(' ')
       return arrayColors[randomNumber(0, arrayColors.length - 1)] + '-' + randomNumber(1, 4)
     },
+    formatNumberWithSign (change) {
+      return (change > 0 ? '+' : '-') + '$' + this.formatNumber(Math.abs(change), 2)
+    },
     nFormatter2 (num, digits) {
       if (isNaN(num)) {
         return 0
@@ -108,7 +112,7 @@ export default {
         { value: 1, symbol: '' },
         { value: 1E3, symbol: 'k' },
         { value: 1E6, symbol: 'M' },
-        { value: 1E9, symbol: 'G' },
+        { value: 1E9, symbol: 'B' },
         { value: 1E12, symbol: 'T' },
         { value: 1E15, symbol: 'P' },
         { value: 1E18, symbol: 'E' }
@@ -181,14 +185,40 @@ export default {
         })
       return chains.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
     },
+
+    async setCurrentWallet (chain) {
+      this.$store.state.currentwallet.wallet = chain
+
+      this.selectedCoin = chain
+
+      this.$store.commit('currentwallet/updateParams', {
+        chainID: this.$route.params.chainID || this.selectedCoin.chain,
+        tokenID: this.$route.params.tokenID || this.selectedCoin.type,
+        accountName: this.$route.params.accountName || this.selectedCoin.name.toLowerCase()
+      })
+
+      // this.setRessourcesInfos()
+    },
     formatNumber (num, decimals = 4) {
+      num = isNaN(num) ? 0 : num
+      if (num && decimals !== 2 && decimals !== 0) {
+        decimals = (parseFloat(num) - parseInt(num)) === 0 ? 0 : decimals
+      }
       decimals = decimals < 0 ? 0 : decimals
+
       let value = parseFloat(num ? num.toString().split(',').join('') : num).toFixed(decimals)
       const formatter = new Intl.NumberFormat('en-US', {
         minimumFractionDigits: decimals
       })
 
-      return isNaN(value) ? '0.00' : formatter.format(value)
+      let amount = isNaN(value) ? '0.00' : formatter.format(value)
+      if (parseFloat(num) >= 1000000) amount = this.nFormatter2(num)
+      if (parseFloat(amount) === 0 && parseFloat(num) !== 0 && !isNaN(amount) && decimals !== 0 && Math.abs(parseFloat(num)) < 0.00001) {
+        amount = parseFloat(num).toExponential().replace(/e\+?/, ' x10^')
+        let a = amount.toString().split('x')
+        amount = parseFloat(a).toFixed(0).toString() + 'x' + a[1]
+      }
+      return amount
     },
     convertTimestamp (timestamp) {
       let d = isNaN(timestamp) ? new Date(timestamp) : new Date(timestamp * 1000),

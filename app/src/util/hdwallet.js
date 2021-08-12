@@ -1,4 +1,5 @@
 import store from '@/store'
+import Lib from '@/util/walletlib'
 import { Keyring } from '@polkadot/api'
 import nacl from 'tweetnacl'
 import { derivePath } from 'ed25519-hd-key'
@@ -18,7 +19,7 @@ class HD {
       'label': 'Ethereum'
     },
     {
-      'value': 'plg',
+      'value': 'matic',
       'label': 'Polygon'
     },
     {
@@ -28,6 +29,7 @@ class HD {
     {
       'value': 'bsc',
       'label': 'Binance Smart Chain'
+
     },
     {
       'value': 'ltc',
@@ -38,11 +40,12 @@ class HD {
       'label': 'DASH'
     },
     {
+      'icon': 'https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png',
       'value': 'avax',
       'label': 'Avalanche X-Chain'
     },
     {
-      'value': 'acc',
+      'value': 'avaxc',
       'label': 'Avalanche C-Chain'
     },
     {
@@ -57,7 +60,7 @@ class HD {
       'value': 'eos',
       'label': 'EOS'
     },
-    {
+    { 'icon': 'https://assets.coingecko.com/coins/images/9568/small/m4zRhP5e_400x400.jpg',
       'value': 'ksm',
       'label': 'Kusama'
     },
@@ -65,7 +68,7 @@ class HD {
       'value': 'xlm',
       'label': 'Stellar Lumens'
     },
-    {
+    { 'icon': 'https://assets.coingecko.com/coins/images/4128/small/coinmarketcap-solana-200.png',
       'value': 'sol',
       'label': 'Solana'
     },
@@ -74,6 +77,27 @@ class HD {
       'label': 'Tezos'
     }
     ]
+  }
+  getVertoChains () {
+    let chains = this.names.filter(e => !Lib.evms.find(v => v.chain === e.value))
+    let order = ['eth', 'btc', 'eos', 'bsc', 'matic'].reverse()
+    chains.map(o => {
+      if (!o.icon) {
+        o.icon = 'https://files.coinswitch.co/public/coins/' + o.value + '.png'
+      }
+    })
+    Lib.evms.forEach(o => {
+      chains.unshift({
+        icon: o.icon,
+        value: o.chain,
+        label: o.name
+      })
+    })
+    chains.map(c => {
+      c.index = order.indexOf(c.value)
+      c.chain = c.value
+    })
+    return chains.sort((a, b) => b.index - a.index)
   }
 
   Wallet = async (walletType, addressIndex = 0) => {

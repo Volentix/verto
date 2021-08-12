@@ -74,7 +74,7 @@
         </q-toolbar>
         <q-card-section class="text-h6">
           <div class="text-h6 q-mb-md q-pl-sm">{{transStatus  && ( transStatus == 'pending' || isExchange ) ? 'Transaction submitted' : 'Transaction done Successfully.'}}</div>
-          <p v-if="isExchange && transSuccessDialog" class="text-body1"> Your coins are on the way: This transaction might take from 10 to 30 minutes to be fully completed. </p>
+          <p v-if="isExchange && transSuccessDialog" class="text-body1"> Your coins are on the way </p>
           <p class="text-body1" v-if=" transStatus == 'pending' "> Follow this link to check its status</p>
           <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" readonly class="input-input" rounded outlined color="purple" v-model="transactionLink">
             <template v-slot:append>
@@ -118,7 +118,7 @@
           <div :class="[ embedded ? 'col-md-10 offset-md-1' : (miniMode ? 'col-md-12' : ' col-md-8' ), 'col']">
             <div class="apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'desktop-card-style': screenSize > 1024 && !miniMode }">
               <div class="standard-content">
-                <h2 class="standard-content--title flex justify-start items-center" v-if="!miniMode">Send <img :src="currentToken.image" class="max40 q-ml-sm" alt=""></h2>
+                <h2 class="standard-content--title flex justify-start items-center" v-if="!miniMode">Send <img :src="currentToken.icon" class="max40 q-ml-sm" alt=""></h2>
                 <div class="standard-content--body" v-show="miniStep != 2">
                   <div class="standard-content--body__form">
 
@@ -132,7 +132,7 @@
                             rounded
                             outlined
                             class="select-input"
-                            @input="checkGas()"
+                            @input="checkGas() ; $emit('setAsset', currentToken)"
                             v-model="currentToken"
                             :options="options.filter( o => o.chainID == selectedCoin.chain && ((selectedCoin.isEvm && o.key.toLowerCase() == currentAccount.key.toLowerCase()) || (!selectedCoin.isEvm && o.label.toLowerCase() == selectedCoin.name.toLowerCase())))"
                         >
@@ -143,7 +143,7 @@
                               v-on="scope.itemEvents"
                             >
                               <q-item-section avatar>
-                                <q-icon class="option--avatar" :name="`img:${scope.opt.image}`" />
+                                <q-icon class="option--avatar" :name="`img:${scope.opt.icon}`" />
                               </q-item-section>
                               <q-item-section dark>
                                 <q-item-label v-html="scope.opt.type.toUpperCase()" />
@@ -156,7 +156,7 @@
                               v-if="currentToken && currentToken.type"
                             >
                               <q-item-section avatar>
-                                <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
+                                <q-icon class="option--avatar" :name="`img:${currentToken.icon}`" />
                               </q-item-section>
                               <q-item-section>
                                 <q-item-label v-html="currentToken.type.toUpperCase()" />
@@ -187,7 +187,7 @@
                             class="select-input"
                             @input="changeAccount()"
                             v-model="currentToken"
-                            :options="options"
+                            :options="options.filter( o => o.value == currentAccount.chain)"
                         >
                           <template v-slot:option="scope">
                             <q-item
@@ -196,7 +196,7 @@
                               v-on="scope.itemEvents"
                             >
                               <q-item-section avatar>
-                                <q-icon class="option--avatar" :name="`img:${scope.opt.image}`" />
+                                <q-icon class="option--avatar" :name="`img:${scope.opt.icon}`" />
                               </q-item-section>
                               <q-item-section dark>
                                 <q-item-label v-html="scope.opt.label + ' - ' + scope.opt.type.toUpperCase()" />
@@ -209,11 +209,12 @@
                               v-if="currentToken"
                             >
                               <q-item-section avatar>
-                                <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
+                                <q-icon class="option--avatar" :name="`img:${currentToken.icon}`" />
                               </q-item-section>
                               <q-item-section>
                                 <q-item-label v-html="currentToken.label"/>
-                                <q-item-label caption class="ellipsis mw200">{{ currentToken.value }}</q-item-label>
+                                <q-item-label caption class="ellipsis mw200">{{ getKeyFormat( currentToken.value ) }}</q-item-label>
+
                               </q-item-section>
                             </q-item>
                             <q-item
@@ -231,7 +232,7 @@
 
                       </div>
                       <div class="col col-4" :class="{'col-md-12 col-12': screenSize < 1024 || miniMode}">
-                        <span class="lab-input" >Amount</span>
+                        <span class="lab-input" @click="isTest = true" >Amount</span>
                         <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentToken.amount) ? ( miniMode ?  sendAmount :  parseFloat(currentToken.amount) ) : parseFloat(sendAmount) ; checkGas(); " :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                           <template v-slot:append>
                             <div class="flex justify-end">
@@ -242,7 +243,7 @@
                         </q-input>
                       </div>
                     </div>
-                    <div class="row">
+                    <div class="row" v-if="parseFloat(sendAmount) || !miniMode">
                       <div class="col col-12">
                         <span class="lab-input">To</span>
                         <q-input
@@ -311,9 +312,14 @@
                 <span class="q-pl-md cursor-pointer"  @click="showGasOptions = true" v-if="!showGasOptions"><q-icon name="add" /> Advanced </span>
                 <span class="cursor-pointer q-pt-xs" @click="showGasOptions = false" v-else>Hide </span>
                 </span>
+               <span v-if="isTest">{{!currentToken.amount? '!currentToken.amount' :9 }}
+                {{ currentAccount.isEvm ? 'currentAccount.isEvm ' : '5'}}
+                {{ gasOptions.length == 0 ? 'gasOptions.length == 0 ' : 4}}
+                {{!sendToResolved ? ' !sendToResolve':'6'}}{{ currentAccount.chain}}
+                </span>
                 <q-linear-progress v-if="!params.sendTransaction && sendAmount !== 0 && sendToResolved  && currentAccount.isEvm &&  gasOptions.length == 0 " indeterminate rounded  color="deep-purple-12" class="q-my-sm" />
                  <div class="standard-content--footer" v-if="!params.sendTransaction && (!isExchange || !transSuccessDialog)">
-                   <q-btn flat :loading="openModalProgress" class="action-link next" :disable="!currentToken.amount || currentAccount.isEvm &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="(!miniMode || !currentAccount.isEvm) ? openModalFun() :  ( miniStep == 2 ? openModalFun() : miniStep = 2 )" text-color="white"  :label="currentAccount.isEvm && miniMode && miniStep == 1 ? 'Set Gas' : 'Transfer'" />
+                   <q-btn flat :loading="openModalProgress" class="action-link next" :disable="!currentToken.amount || currentAccount.isEvm &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="(!miniMode || !(currentAccount.isEvm || currentAccount.chain == 'btc') ) ? openModalFun() :  ( miniStep == 2 ? openModalFun() : miniStep = 2 )" text-color="white"  :label="(currentAccount.isEvm || currentAccount.chain == 'btc' )  && miniMode && miniStep == 1 ? 'Set Gas' : 'Transfer'" />
                 </div>
               </div>
             </div>
@@ -391,6 +397,7 @@ import { osName } from 'mobile-device-detect'
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EOSContract from '../../mixins/EOSContract'
+import Formatter from '../../mixins/Formatter'
 import ETHContract from '../../mixins/EthContract'
 import initWallet from '@/util/Wallets2Tokens'
 import {
@@ -404,7 +411,7 @@ export default {
     ProfileHeader,
     Wallets
   },
-  props: ['embedded', 'miniMode', 'isExchange'],
+  props: ['embedded', 'miniMode', 'isExchange', 'token'],
   data () {
     return {
       osName: '',
@@ -430,6 +437,7 @@ export default {
       fetchCurrentWalletFromState: true,
       from: '',
       isPwd: true,
+      isTest: false,
       sendAmount: 0,
       formatedAmount: '',
       options: [],
@@ -449,7 +457,7 @@ export default {
       walletClientName: 'verto', // should be 'verto' when in prod
       cruxKey: {},
       currentToken: {
-        image: ''
+        icon: ''
       },
       sendToResolved: null,
       memoError: false,
@@ -611,7 +619,7 @@ export default {
           this.options.push({
             label: token.name.toLowerCase(),
             value: token.key + ' - ' + token.type.toUpperCase(),
-            image: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+            icon: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
             type: token.type,
             contract: token.contract,
             key: token.key,
@@ -629,7 +637,7 @@ export default {
           this.currentToken = {
             label: this.selectedCoin.name,
             value: this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.key + ' - ' + this.selectedCoin.type.toUpperCase(),
-            image: this.selectedCoin.type !== 'usdt' ? this.selectedCoin.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+            icon: this.selectedCoin.type !== 'usdt' ? this.selectedCoin.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
             type: this.selectedCoin.type,
             contract: this.selectedCoin.contract,
             precision: this.selectedCoin.precision,
@@ -644,6 +652,13 @@ export default {
       } else {
         let updatedToken = this.options.find(o => o.type.toLowerCase() === this.currentToken.type.toLowerCase() && o.key.toLowerCase() === this.currentToken.key.toLowerCase() && o.name.toLowerCase() === this.currentToken.name.toLowerCase() && o.chainID === this.currentToken.chainID)
         if (updatedToken) this.currentToken = updatedToken
+      }
+
+      if (this.token && this.options.length) {
+        let found = this.options.find(o => o.type === this.token)
+        if (found) {
+          this.currentToken = found
+        }
       }
     },
     setCustomGas () {
@@ -662,19 +677,24 @@ export default {
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
     isBalanceEnough () {
-      if (!this.gasSelected || this.currentToken.chainID !== 'eth') return
+      if (!this.gasSelected || !this.currentAccount.isEvm) return
 
-      let ethValue = Web3.utils.fromWei(Math.round(((+this.gasPriceGwei) * 1000000000 * (+this.gasLimit))).toString(), 'ether')
+      let evmData = Lib.evms.find(o => o.chain === this.currentAccount.chain)
 
-      this.sendAmount = parseFloat(this.sendAmount) === 0 && parseFloat(this.currentToken.amount) !== 0 ? this.currentToken.amount : this.sendAmount
-      if ((parseFloat(this.sendAmount) + parseFloat(ethValue)) > parseFloat(this.currentToken.amount)) {
-        this.sendAmount = parseFloat(this.currentToken.amount) - parseFloat(ethValue).toFixed(8)
+      if (evmData.nativeToken === this.currentToken.type) {
+        let ethValue = Web3.utils.fromWei(Math.round(((+this.gasPriceGwei) * 1000000000 * (+this.gasLimit))).toString(), 'ether')
 
-        if (this.sendAmount <= 0) {
-          this.ErrorMessage = 'Insufficient balance'
-          this.sendAmount = 0
+        this.sendAmount = parseFloat(this.sendAmount) === 0 && parseFloat(this.currentToken.amount) !== 0 ? this.currentToken.amount : this.sendAmount
+        if ((parseFloat(this.sendAmount) + parseFloat(ethValue)) > parseFloat(this.currentToken.amount)) {
+          this.sendAmount = parseFloat(this.currentToken.amount) - parseFloat(ethValue).toFixed(8)
+
+          if (this.sendAmount <= 0) {
+            this.ErrorMessage = 'Insufficient balance'
+            this.sendAmount = 0
+          }
         }
       }
+      this.checkGas()
     },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
@@ -942,7 +962,7 @@ export default {
       this.openModalProgress = false
     }
   },
-  mixins: [EOSContract, ETHContract]
+  mixins: [EOSContract, ETHContract, Formatter]
 }
 </script>
 <style lang="scss" scoped>
