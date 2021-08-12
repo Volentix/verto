@@ -134,6 +134,7 @@ export default {
         this.currentToken ? this.currentToken.tokenPrice : false
       ).then((res) => {
         this.gasOptions = res
+
         if (!this.gasSelected) {
           this.gasSelected = res.length > 1 ? res[1] : res[0]
           this.$emit('setGas', { chain: this.currentAccount.chain, value: this.gasSelected })

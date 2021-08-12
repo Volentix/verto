@@ -5,6 +5,29 @@
       <div class="chain-tools-wrapper--list open">
         <div class="list-wrapper">
           <div class="list-wrapper--chain__eos-to-vtx-convertor">
+           <q-tabs
+                v-model="tab"
+                align="left"
+                inline-label
+
+                :class="{
+                  'text-white': $store.state.settings.lightMode === 'true',
+                }"
+                class="text-grey-8 flex"
+              >
+                <q-tab
+                  name="import"
+                  icon="call_received"
+                  label="Import"
+                  @click="$router.push('/verto/eos-account/import')"
+                />
+                 <q-tab
+                  name="create"
+                  icon="add"
+                  @click="$router.push('/verto/eos-account/create')"
+                  label="Create new account"
+                />
+           </q-tabs>
             <div v-if="step >= 0" class="">
               <div>
                 <q-stepper

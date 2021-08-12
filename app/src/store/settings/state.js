@@ -3,6 +3,7 @@ export default {
   rightOrder: false,
   network: 'mainnet',
   devMode: false,
+  defaultChainData: null,
   globalSettings: {},
   activityBar: false,
   coins: {
@@ -10,6 +11,12 @@ export default {
     oneinch: [],
     defibox: [],
     godex: []
+  },
+  show: {
+    exchange: false,
+    tokens: false,
+    vtxstaking: false,
+    tab: 'dashboard'
   },
   chainsSendEnabled: ['eos', 'eth', 'dot', 'ksm', 'bsc', 'avax', 'avaxc', 'matic', 'ftm', 'btc'],
   backupConfig: false,
