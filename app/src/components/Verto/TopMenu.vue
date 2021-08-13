@@ -252,7 +252,7 @@ import initWallet from '@/util/Wallets2Tokens'
 import EosRPC from '@/util/EosWrapper'
 import Formatter from '@/mixins/Formatter'
 import configManager from '@/util/ConfigManager'
-// import Lib from '@/util/walletlib'
+import Lib from '@/util/walletlib'
 export default {
   name: 'TopMenu',
   mixins: [Formatter],
@@ -361,6 +361,7 @@ export default {
       })
     },
     getTokens () {
+      let top20 = ['btc', 'eth', 'ada', 'usdt', 'bnb', 'xrp', 'doge', 'usdc', 'dot', 'uni', 'sol', 'ltc', 'bch', 'busd', 'link', 'matic', 'icp', 'wbtc', 'xlm', 'etc'].reverse()
       let options = [{
         label: 'Bitcoin',
         value: 'btc',
@@ -369,36 +370,29 @@ export default {
         coinGeckoId: 'bitcoin'
         // image: 'https://files.coinswitch.co/public/coins/btc.png'
       }]
-      let nameToChain = {
-        ethereum: 'eth',
-        binancesmartchain: 'bsc',
-        fantom: 'ftm',
-        polkadot: 'dot',
-        avalanche: 'avax',
-        binancecoin: 'bnb',
-        eos: 'eos',
-        solana: 'sol'
 
-      }
       this.$store.state.tokens.list.filter(t => {
         let chains = Object.keys(t.platforms)
         if (chains && chains.length) {
           let chain = chains.find(a => a === 'ethereum')
           chain = chain || chains[0]
-          if (nameToChain[chain.replace(/-/g, '')]) {
+          chain = Lib.getCoingeckoChain(chain)
+          if (chain) {
             // let image = null /// Lib.getTokenImage(t.symbol.toLowerCase())
 
             options.push({
               label: t.name,
               value: t.symbol.toLowerCase(),
-              chain: nameToChain[chain.replace(/-/g, '')],
+              chain: chain,
               coinGeckoId: t.id,
               type: t.symbol.toLowerCase()
             })
           }
         }
       })
-      options = options.filter((e, i, a) => a.findIndex(j => j.value === e.value) === i)
+      options = options.filter((e, i, a) => a.findIndex(j => j.value === e.value) === i).sort(function (a, b) {
+        return top20.indexOf(b.type) - top20.indexOf(a.type)
+      })
       this.options = options
       this.optionsUnfiltered = options
       /*

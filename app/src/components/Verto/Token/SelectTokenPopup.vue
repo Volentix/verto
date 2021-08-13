@@ -170,7 +170,9 @@ export default {
   },
   computed: {
     tokens () {
-      return this.$store.state.wallets.tokens.filter(o => !isNaN(o.amount) && o.amount !== 0 && (this.searchVal.length === 0 || o.type.includes(this.searchVal))).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))
+      return this.$store.state.wallets.tokens.filter(o => !isNaN(o.amount) && o.amount !== 0 && (this.searchVal.length === 0 || o.type.includes(this.searchVal))).sort(function (a, b) {
+        return a.type.length - b.type.length
+      })
     }
   },
   methods: {

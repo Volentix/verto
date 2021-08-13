@@ -222,9 +222,9 @@ export default {
 
       // this.setRessourcesInfos()
     },
-    formatNumber (num, decimals = 4, scientific = true) {
+    formatNumber (num, decimals = 4, scientific = true, removeZero = false) {
       num = isNaN(num) ? 0 : num
-      if (num && decimals !== 2 && decimals !== 0) {
+      if (num && decimals !== 2 && decimals !== 0 && !removeZero) {
         decimals = (parseFloat(num) - parseInt(num)) === 0 ? 0 : decimals
       }
       decimals = decimals < 0 ? 0 : decimals

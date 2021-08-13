@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!chain || chains" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+    <div v-if="!chain || chains || showAllWallets" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
 
       <q-btn class="account_selector" dense v-if="accountOption" :dark="$store.state.settings.lightMode === 'true'" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" >
             <q-menu>
@@ -110,7 +110,7 @@ export default {
       }
     },
     checkChain (o) {
-      return (!this.chains && (o.chain === this.chain || !this.chain)) || (this.chains && this.chains.includes(o.chain)) || (!this.chain && !this.chains)
+      return (this.showAllWallets) || (!this.chains && (o.chain === this.chain || !this.chain)) || (this.chains && this.chains.includes(o.chain)) || (!this.chain && !this.chains)
     },
     init (updateDefaultAccount = true) {
       let tableData = this.$store.state.wallets.tokens
@@ -236,7 +236,7 @@ export default {
       if (!this.accountOption && this.accountOptions.length) {
         this.accountOption = this.accountOptions[0]
       }
-
+      console.log(this.accountOption, this, this.accountOptions)
       this.setAccount()
     },
     setAccount (time = 0) {
