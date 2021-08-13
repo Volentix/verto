@@ -624,6 +624,7 @@ export default {
             type: token.type,
             contract: token.contract,
             key: token.key,
+            isEvm: token.isEvm,
             name: token.name,
             precision: token.precision,
             amount: token.amount,
@@ -643,6 +644,7 @@ export default {
             contract: this.selectedCoin.contract,
             precision: this.selectedCoin.precision,
             chainID: this.selectedCoin.chain,
+            isEvm: this.selectedCoin.isEvm,
             key: this.selectedCoin.key,
             name: this.selectedCoin.name,
             amount: this.selectedCoin.amount
@@ -656,8 +658,10 @@ export default {
       }
 
       if (this.token && this.options.length) {
-        let found = this.options.find(o => o.type === this.token)
+        let found = this.options.find(o => o.type === this.token && o.chainID === this.selectedCoin.chain && o.key === this.selectedCoin.key)
+
         if (found) {
+          this.$emit('setAsset', found)
           this.currentToken = found
         }
       }
@@ -968,7 +972,7 @@ export default {
 </script>
 <style lang="scss" scoped>
   @import "~@/assets/styles/variables.scss";
-.full-height {
+.gt-sm .full-height {
 height: 100vh  !important;
 }
 .gasfield {
