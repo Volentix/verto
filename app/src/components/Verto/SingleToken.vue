@@ -9,7 +9,10 @@
           <div class="left q-ml-md q-py-md">
 
             <span class="z-max">
+             <div class="text-h6 text-bold">
+              {{marketData && marketData.tokenName ? marketData && marketData.tokenName:  asset.type.toUpperCase()}}</div>
               <div class="row q-pb-xl flex items-center">
+
                 <h2>
 
                   <img v-if="asset.icon" :src="asset.icon" style="max-width: 40px" alt="image" />
@@ -25,7 +28,8 @@
                   />
                 </h2>
                 <h3   class="q-pl-lg q-pr-md">
-                 <span class="historicalPrice"> ${{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice,0) : formatNumber(asset.rateUsd, 0)
+
+                 <span class="historicalPrice"> ${{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice,18).split(".")[0] : formatNumber(asset.rateUsd, 18).split(".")[0]
                   }} </span><span
                   class="g-txt"
                     style="
@@ -34,10 +38,10 @@
                       font-weight: 600;
                       letter-spacing: normal;
                     "
-                    >.{{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice, 3, false).split(".")[1] : formatNumber(asset.rateUsd, 3 , false).split(".")[1] }}</span
+                    >.{{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice, 3, false, true).split(".")[1] : formatNumber(asset.rateUsd, 3 , false, true).split(".")[1] }}</span
                   >
-                  <span class="q-pl-md text-h6" v-if="!$store.state.tokens.historicalPrice" :class="asset.color">{{
-                    asset.change24hPercentage
+                  <span class="q-pl-md text-h6" v-if="!$store.state.tokens.historicalPrice && marketData" :class="marketData.color">{{
+                    marketData.change_24h
                   }}</span>
                 </h3>
               </div>
@@ -119,12 +123,12 @@
                       >{{ formatNumber(asset.percentage, 2) }}% of Portfolio</span
                     >
                   <h2>
-                    ${{ formatNumber(asset.usd, 0)}}.<span>{{
-                      formatNumber(asset.usd, 2).split(".")[1]
+                    ${{ formatNumber(asset.usd, 18).split(".")[0]}}.<span>{{
+                      formatNumber(asset.usd, 3).split(".")[1]
                     }}</span>
                   </h2>
                   <h4>
-                    {{ formatNumber(asset.amount, 2) }}
+                    {{ formatNumber(asset.amount, 3) }}
                     {{ asset.type.toUpperCase() }}
                   </h4>
                 </td>
@@ -284,8 +288,8 @@
                    <AccountSelector :withTokenBalance="asset.type" :chains="asset.isEvm ? ['bsc','matic','eth','avaxc'] : [asset.chain]"  v-show="tab != 'swap' && !fromPreview" :showAllWallets="true"  :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
               </div>
 
-              <div v-if="tab == 'send' && asset.chain != 'eos'" class="q-px-md">
-                <SendComponent @setAsset="setAsset" :token="asset.type" :miniMode="true" :key="$store.state.investment.defaultAccount.key+$store.state.investment.defaultAccount.name" v-if="$store.state.investment.defaultAccount" />
+              <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount" class="q-px-md" >
+                <SendComponent @setAsset="setAsset" :token="asset.type" :miniMode="true" :key="$store.state.investment.defaultAccount.key+$store.state.investment.defaultAccount.name+$store.state.investment.defaultAccount.chain"  />
               </div>
 
               <div v-if="show1inch && tab == 'swap'" >
@@ -611,6 +615,7 @@ export default {
     },
     asset () {
       if (this.asset) {
+        this.$route.params.asset = this.asset
         this.$store.state.wallets.customTotal.usd = this.asset.usd
         this.$store.state.wallets.customTotal.show = true
         this.$store.state.wallets.customTotal.label = this.asset.type.toUpperCase() + ' balance'
@@ -658,15 +663,22 @@ export default {
   methods: {
     setAsset (asset) {
       let data = (this.$route.params.assets || []).find(o => o.type === asset.type && o.chain === asset.chainID)
-      if (data) { this.setAssetData(data) } else {
+
+      if (data) {
+        this.setAssetData(data)
+      } else if (asset) {
         this.setAssetData(asset)
       }
     },
     async setAssetData (data) {
-      this.asset = data || this.assetData
-
-      if (!this.asset && this.$route.params.asset) {
+      let asset = data || this.assetData
+      if (asset && asset.chainID) {
+        asset.chain = asset.chainID
+      }
+      if (!asset && this.$route.params.asset) {
         this.asset = this.$route.params.asset
+      } else {
+        this.asset = asset
       }
 
       this.depositCoin = {
@@ -803,7 +815,9 @@ export default {
               high_24h: this.formatNumberWithSign(data.high_24h),
               total_volume: this.nFormatter2(data.total_volume),
               total_supply: this.nFormatter2(data.total_supply),
-              market_cap: this.nFormatter2(data.market_cap)
+              market_cap: this.nFormatter2(data.market_cap),
+              // tokenName: data.name,
+              color: data.price_change_percentage_24h >= 0 ? 'text-green-6' : 'text-pink-12'
             }
           }
         })
@@ -812,7 +826,7 @@ export default {
       this.chartData = false
       this.chartAvailable = true
       let id = this.asset.coinGeckoId
-      console.log(id, 'id 34')
+
       if (!id) {
         let token = this.$store.state.tokens.list.find(
           (t) =>
@@ -822,11 +836,8 @@ export default {
             this.asset.chain ===
               (t.platforms.hasOwnProperty('eos')
                 ? 'eos'
-                : (t.platforms.hasOwnProperty('ethereum') || t.platforms.hasOwnProperty('binance-smart-chain'))
-                  ? ['eth', 'bsc', 'ftm', 'matic', 'avaxc'].includes(this.asset.chain)
-                  : this.asset.chain))
+                : this.asset.chain)))
 
-        )
         id = token ? token.id : null
         console.log(id, 'id 34', token)
       }
