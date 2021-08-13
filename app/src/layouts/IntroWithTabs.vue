@@ -79,17 +79,17 @@
             </div>
 
             <ul class="left-menu">
-            <li class="q-pb-md flex text-center cursor-pointer" v-if="$store.state.settings.defaultChainData" >
+            <li class="q-pb-md flex text-center cursor-pointer" v-if="$store.state.settings.defaultChainData && tools[$store.state.settings.defaultChainData.chain]" >
                 <a @click="chainTools.show = !chainTools.show" class=" tools-label">
                   <q-icon size="md"  class="q-pr-md" :name="'img:'+$store.state.settings.defaultChainData.icon" /><span>Chains Tools <q-icon  class="q-pl-md" :name="!chainTools.show  ? 'expand_more' : 'expand_less' " /></span></a
                 >
-                <AccountSelector
+              <!--  <AccountSelector
                   class="top q-pt-md"
                   v-show="chainTools.show"
                   :showAllWallets="true"
                   :key="$store.state.settings.defaultChainData.chain"
                   :chains="[$store.state.settings.defaultChainData.chain]"
-                />
+                /> -->
               </li>
             <li  v-show="chainTools.show && $store.state.settings.defaultChainData && tools[$store.state.settings.defaultChainData.chain]" v-for="(path, index) in ( $store.state.settings.defaultChainData ? tools[$store.state.settings.defaultChainData.chain] : [])" :key="index" class="tools" :class="{ active: $route.path == path.to }">
                 <router-link :to="path.to">
@@ -176,7 +176,7 @@
         <TopMenu />
 
         <q-breadcrumbs
-          class="text-deep-purple-8 breadcrumbs"
+          class="text-deep-purple-12 breadcrumbs"
           v-if="$route.path != '/verto/dashboard'"
         >
           <template v-slot:separator>
@@ -189,12 +189,19 @@
             to="/verto/dashboard"
           />
           <q-breadcrumbs-el
-            @click="goToTab('assets')"
-            label="Assets"
+            v-if="$route.name.includes('token')"
+            @click="goToTab('assets', $route.params.asset && !['btc'].includes($route.params.asset.chain) ? $route.params.asset.chain : null)"
+            :label="$route.params.asset && !['btc'].includes($route.params.asset.chain) ?  getChainLabel($route.params.asset.chain) + ' assets' : 'Assets'"
             class="cursor-pointer"
-            icon="circle"
+
           />
-          <q-breadcrumbs-el class="text-capitalize" :label="$route.name" />
+           <q-breadcrumbs-el
+            v-if="$route.name.includes('token')"
+            :icon="'img:'+$route.params.asset.icon"
+            :label="$route.params.asset.type.toUpperCase()"
+            class="cursor-pointer"
+          />
+          <q-breadcrumbs-el  v-else class="text-capitalize" :label="$route.name" />
         </q-breadcrumbs>
         <router-view class="main-container" v-if="toggleView" />
       </q-page-container>
@@ -285,11 +292,13 @@ export default {
     goToAccounts () {
       this.$router.push('/verto/manage/accounts')
     },
-    goToTab (tab) {
+    goToTab (tab, chain) {
+      tab = chain ? 'chains' : tab
       this.$router.push({
         name: 'dashboard',
         params: {
-          tab: tab
+          tab: tab,
+          selectChain: chain
         }
       })
     },

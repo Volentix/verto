@@ -1,5 +1,6 @@
 <template>
-    <div v-if="!chain || chains" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+    <div v-if="!chain || chains || showAllWallets" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+
       <q-btn class="account_selector" dense v-if="accountOption" :dark="$store.state.settings.lightMode === 'true'" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" >
             <q-menu>
               <q-list bordered separator>
@@ -76,6 +77,9 @@
               </q-list>
             </q-menu>
           </q-btn>
+          <div v-else-if="false">
+          <span>No account found {{chain}}</span>
+          </div>
 
   </div>
 
@@ -84,7 +88,7 @@
 import Formatter from '@/mixins/Formatter'
 import DexInteraction from '@/mixins/DexInteraction'
 export default {
-  props: ['chain', 'showAllWallets', 'autoSelectChain', 'chains'],
+  props: ['chain', 'showAllWallets', 'autoSelectChain', 'chains', 'withTokenBalance'],
   data () {
     return {
       accountOptions: [],
@@ -96,7 +100,6 @@ export default {
     this.init()
     this.chainsData = this.setChains()
     this.chainsData = this.chainsData.filter(o => this.checkChain(o))
-    console.log(this.chainsData, 'this.chainsData ')
   },
   methods: {
     getAccount (item) {
@@ -107,7 +110,7 @@ export default {
       }
     },
     checkChain (o) {
-      return (!this.chains && (o.chain === this.chain || !this.chain)) || (this.chains && this.chains.includes(o.chain)) || (!this.chain && !this.chains)
+      return (this.showAllWallets) || (!this.chains && (o.chain === this.chain || !this.chain)) || (this.chains && this.chains.includes(o.chain)) || (!this.chain && !this.chains)
     },
     init (updateDefaultAccount = true) {
       let tableData = this.$store.state.wallets.tokens
@@ -182,16 +185,10 @@ export default {
       )
 
       if (!updateDefaultAccount) return
-      console.log(this.$store.state.currentwallet.wallet, ' this.$store.state.currentwallet.wallet', this.accountOptions.find(
-        (a) =>
-          a.key === this.$store.state.currentwallet.wallet.key &&
-            a.chain === this.$store.state.currentwallet.wallet.chain &&
-            a.name.toLowerCase() ===
-              this.$store.state.currentwallet.wallet.name.toLowerCase()
-      ), this.accountOptions)
-      if (
+
+      /*  if (
         this.$store.state.currentwallet.wallet &&
-        this.$store.state.currentwallet.wallet.type
+        this.$store.state.currentwallet.wallet.type && !this.withTokenBalance
       ) {
         this.accountOption = this.accountOptions.find(
           (a) =>
@@ -200,8 +197,8 @@ export default {
             a.name.toLowerCase() ===
               this.$store.state.currentwallet.wallet.name.toLowerCase()
         )
-      } else if (
-        this.$store.state.investment.defaultAccount &&
+      } else */ if (
+        !this.withTokenBalance && this.$store.state.investment.defaultAccount &&
         this.$store.state.investment.defaultAccount !== undefined &&
         this.$store.state.investment.defaultAccount.name &&
         (!this.chain ||
@@ -218,15 +215,14 @@ export default {
       } else {
         let item = this.accountOptions.find(
           (o) =>
-            (this.autoSelectChain && o.chain === this.autoSelectChain) ||
+            ((this.autoSelectChain && o.chain === this.autoSelectChain) ||
             (this.chain && o.chain === this.chain) ||
-            o.chain === 'eos'
+            o.chain === 'eos') && (!this.withTokenBalance || ((this.withTokenBalance === o.type && o.amount > 0) || !this.$store.state.wallets.portfolioTotal))
         )
 
         if (!item) {
           item = this.accountOptions.find(
-            (o) => (this.chain && o.chain === this.chain) || o.chain === 'eth'
-          )
+            (o) => ((this.chain && o.chain === this.chain) || o.chain === 'eth') && ((this.withTokenBalance === o.type && o.amount > 0) || !this.$store.state.wallets.portfolioTotal))
         }
 
         this.accountOption = item
@@ -240,8 +236,7 @@ export default {
       if (!this.accountOption && this.accountOptions.length) {
         this.accountOption = this.accountOptions[0]
       }
-
-      console.log(this.autoSelectChain, 'this.autoSelectChain', this.accountOption)
+      console.log(this.accountOption, this, this.accountOptions)
       this.setAccount()
     },
     setAccount (time = 0) {
@@ -279,7 +274,6 @@ export default {
                   w.type === this.accountOption.type &&
                   w.name.toLowerCase() === this.accountOption.name.toLowerCase()
             )
-            console.log(this.$store.state.currentwallet, 'this.$store.state.currentwallet.wallet 4')
           }
           if (['matic', 'bsc'].includes(this.accountOption.chain)) {
             this.$store.commit('settings/setDex', {

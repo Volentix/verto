@@ -24,7 +24,13 @@ Vue.use(VueRouter)
  * If not building with SSR mode, you can
  * directly export the Router instantiation
  */
-
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push (location) {
+  return originalPush.call(this, location).catch(err => {
+    console.log(err, 'err')
+    if (err.name !== 'NavigationDuplicated') throw err
+  })
+}
 export default function (/* { store, ssrContext } */) {
   const Router = new VueRouter({
     scrollBehavior: () => ({ y: 0 }),

@@ -205,6 +205,20 @@ class Lib {
     }
     localStorage.setItem('walletDataExpiration', now)
   }
+  getCoingeckoChain (chain) {
+    let nameToChain = {
+      ethereum: 'eth',
+      binancesmartchain: 'bsc',
+      fantom: 'ftm',
+      polkadot: 'dot',
+      avalanche: 'avax',
+      binancecoin: 'bnb',
+      eos: 'eos',
+      solana: 'sol'
+    }
+
+    return nameToChain[chain.replace(/-/g, '')]
+  }
   getTokenImage (type) {
     let token = this.getAllCoins().find((o) => o.value.toLowerCase() === type.toLowerCase())
     return token ? (type.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : token.image) : 'https://etherscan.io/images/main/empty-token.png'

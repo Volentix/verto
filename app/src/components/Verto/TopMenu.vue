@@ -26,12 +26,52 @@
 
    </div>
       <div class="col-md-2">
-        <q-input  :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="searchVal" style="width:280px" class="float-right  full-width q-mt-sm" icon-right="search" label="Search 8000+ tokens"  >
-            <template v-slot:append>
+        <q-input v-if="false"  dense filled v-model="searchVal" style="width:280px" class="float-right  full-width q-mt-sm" icon-right="search"   >
+
+          </q-input>
+          <q-select
+        filled
+        v-model="searchVal"
+        :dark="$store.state.settings.lightMode === 'true'"
+        use-input
+        input-debounce="0"
+        class="select-token"
+        dense
+        :label="options.length == optionsUnfiltered.length ? 'Search '+options.length+'+ tokens' : 'Result: '+options.length+' tokens'"
+        :options="options"
+        @filter="filterFn"
+        style="width: 250px"
+      >
+      <template v-slot:option="scope">
+                        <q-item
+                          class="custom-menu"
+                          v-bind="scope.itemProps"
+                          v-on="scope.itemEvents"
+                          @click="selectToken(scope.opt) ; "
+                        >
+                          <q-item-section v-if="scope.opt.image" avatar>
+                            <q-icon :name="`img:${scope.opt.image}`" />
+                          </q-item-section>
+                          <q-item-section>
+                            <q-item-label
+                              v-html="scope.opt.value.length > 20 ? scope.opt.value.substring(0,20).toUpperCase()+'...' : scope.opt.value.toUpperCase()"
+                            />
+                          </q-item-section>
+                        </q-item>
+                      </template>
+       <template v-slot:append>
               <q-icon v-if="searchVal !== ''" name="close" @click="searchVal = ''" class="cursor-pointer" />
               <q-icon name="search" />
             </template>
-          </q-input>
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey">
+              No results
+            </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
+
           </div>
 
     <div class="col col-3 flex items-center date-scrolling-msg">
@@ -210,22 +250,26 @@ import Vue from 'vue'
 import VDexNodeConfigManager from '@/util/VDexNodeConfigManager'
 import initWallet from '@/util/Wallets2Tokens'
 import EosRPC from '@/util/EosWrapper'
+import Formatter from '@/mixins/Formatter'
 import configManager from '@/util/ConfigManager'
-
+import Lib from '@/util/walletlib'
 export default {
   name: 'TopMenu',
+  mixins: [Formatter],
   components: {
 
   },
   data () {
     return {
       lightMode: true,
+      optionsUnfiltered: [],
       temp: false,
       animate: true,
       searchVal: '',
       interval: null,
       key: 0,
       network: null,
+      options: [],
       networks: [
         {
           label: 'Mainnet',
@@ -246,6 +290,7 @@ export default {
     this.network = this.networks.find(
       (o) => o.value.toLowerCase() === this.$store.state.settings.network
     )
+    // this.options = CrosschainDex.getAllCoins()
     window.localStorage.setItem(
       'skin',
       window.localStorage.getItem('skin') !== null
@@ -258,8 +303,29 @@ export default {
         : false
     // console.log('this.$store.state.settings.lightMode', this.$store.state.settings.lightMode)
     this.lightMode = window.localStorage.getItem('skin') !== 'false'
+
+    this.getTokens()
+  },
+  watch: {
+    '$store.state.tokens.list': function () {
+      this.getTokens()
+    }
   },
   methods: {
+    selectToken (asset) {
+      setTimeout(() => {
+        this.options = this.optionsUnfiltered
+        this.searchVal = ''
+
+        this.$router.push({
+          name: this.getPageName('token'),
+          path: '/verto/token/' + asset.chain + '/' + asset.value,
+          params: {
+            asset: asset
+          }
+        })
+      }, 300)
+    },
     nFormatter2 (num, digits) {
       var si = [
         { value: 1, symbol: '' },
@@ -278,6 +344,59 @@ export default {
         }
       }
       return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol
+    },
+    filterFn (val, update) {
+      if (val === '') {
+        update(() => {
+          this.options = this.optionsUnfiltered
+        })
+        return
+      }
+
+      update(() => {
+        const needle = val.toLowerCase()
+        this.options = this.optionsUnfiltered.filter(v => v.value.toLowerCase().indexOf(needle) > -1).sort(function (a, b) {
+          return a.value.length - b.value.length
+        })
+      })
+    },
+    getTokens () {
+      let top20 = ['btc', 'eth', 'ada', 'usdt', 'bnb', 'xrp', 'doge', 'usdc', 'dot', 'uni', 'sol', 'ltc', 'bch', 'busd', 'link', 'matic', 'icp', 'wbtc', 'xlm', 'etc'].reverse()
+      let options = [{
+        label: 'Bitcoin',
+        value: 'btc',
+        chain: 'btc',
+        type: 'btc',
+        coinGeckoId: 'bitcoin'
+        // image: 'https://files.coinswitch.co/public/coins/btc.png'
+      }]
+
+      this.$store.state.tokens.list.filter(t => {
+        let chains = Object.keys(t.platforms)
+        if (chains && chains.length) {
+          let chain = chains.find(a => a === 'ethereum')
+          chain = chain || chains[0]
+          chain = Lib.getCoingeckoChain(chain)
+          if (chain) {
+            // let image = null /// Lib.getTokenImage(t.symbol.toLowerCase())
+
+            options.push({
+              label: t.name,
+              value: t.symbol.toLowerCase(),
+              chain: chain,
+              coinGeckoId: t.id,
+              type: t.symbol.toLowerCase()
+            })
+          }
+        }
+      })
+      options = options.filter((e, i, a) => a.findIndex(j => j.value === e.value) === i).sort(function (a, b) {
+        return top20.indexOf(b.type) - top20.indexOf(a.type)
+      })
+      this.options = options
+      this.optionsUnfiltered = options
+      /*
+      console.log(a, 'a', this.$store.state.tokens.list) */
     },
     async switchNetwork () {
       this.$store.dispatch('settings/toggleNetwork', this.network.value)
@@ -350,7 +469,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
-
+.select-token /deep/ .q-menu {
+max-width: 100px !important;
+min-width: 50px !important;
+}
 .menu-top-wrapper {
   position: fixed;
   left: 0px;

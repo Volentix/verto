@@ -7,6 +7,7 @@ import EosWrapper from '@/util/EosWrapper'
 
 class Wallets2Tokens {
   constructor (walletName = null) {
+    walletName = null
     let data = this.getWalletFromCache()
     let existingWallet = null
     let ethWallet = null
@@ -322,7 +323,7 @@ class Wallets2Tokens {
                     type: t.contract_ticker_symbol
                       ? t.contract_ticker_symbol.toLowerCase()
                       : '',
-                    name: t.contract_name,
+                    name: wallet.name,
                     tokenPrice: t.quote_rate,
                     key: wallet.key.toLowerCase(),
                     privateKey: wallet.privateKey,
@@ -495,7 +496,7 @@ class Wallets2Tokens {
   getTokenImage (chain, type) {
     let image = 'https://i.ibb.co/hYhjV1j/empty-token.png'
 
-    if (Lib.evms.find(o => o.chain === chain)) {
+    if (Lib.evms.find(o => o.chain === chain) && store.state.tokens.evmTokens[chain]) {
       let token = store.state.tokens.evmTokens[chain].find(o => o.symbol.toLowerCase() === type.toLowerCase())
       if (token) image = token.logoURI
       // Set bnb token image temp

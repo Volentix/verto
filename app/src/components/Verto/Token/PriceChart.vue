@@ -3,7 +3,9 @@
 import { Line } from 'vue-chartjs'
 import Formatter from '@/mixins/Formatter'
 import store from '@/store'
-
+const updatePrice = (data) => {
+  store.commit('tokens/updateState', { key: 'historicalPrice', value: data })
+}
 export default {
   extends: Line,
   props: ['dataType', 'data'],
@@ -56,7 +58,7 @@ export default {
         onHover: (e, item) => {
           if (item.length) {
             const data = item[0]._chart.config.data.datasets[0].data[item[0]._index]
-            store.commit('tokens/updateState', { key: 'historicalPrice', value: data })
+            updatePrice(data)
           }
         }
       },

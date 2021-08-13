@@ -12,7 +12,7 @@
       :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
       style="height: 100vh"
     >
-      <div class="desktop-version full-height" v-if="screenSize > 1024">
+      <div class="desktop-version full-height" >
         <div class="row full-height">
           <div class="col col-md-3" v-if="false">
             <div class="wallets-container" style="height: 100%">
@@ -156,7 +156,7 @@
           </div>
         </div>
       </div>
-      <div class="mobile-version" v-else>
+      <div class="mobile-version" v-if="false">
         <!-- <profile-header class="marg" version="type2222" /> -->
         <!-- <q-btn color="white" flat text-color="black" class="full-width" label="Public Proposals" to="/verto/card-wps/public-proposals" /> -->
         <!-- <wallets :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" /> -->
