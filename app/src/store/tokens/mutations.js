@@ -15,6 +15,7 @@ export const setWalletTokensData = (state, data) => {
       }
     }
   })
+  if (store.state.wallets.tokens && store.state.wallets.tokens.length) { store.commit('wallets/updateTokens', store.state.wallets.tokens) }
 }
 export const updateState = (state, payload) => {
   state[payload.key] = payload.value

@@ -190,10 +190,10 @@
           />
           <q-breadcrumbs-el
             v-if="$route.name.includes('token')"
-            @click="goToTab('assets')"
-            label="Assets"
+            @click="goToTab('assets', $route.params.asset && !['btc'].includes($route.params.asset.chain) ? $route.params.asset.chain : null)"
+            :label="$route.params.asset && !['btc'].includes($route.params.asset.chain) ?  getChainLabel($route.params.asset.chain) + ' assets' : 'Assets'"
             class="cursor-pointer"
-            icon="circle"
+
           />
            <q-breadcrumbs-el
             v-if="$route.name.includes('token')"
@@ -292,11 +292,13 @@ export default {
     goToAccounts () {
       this.$router.push('/verto/manage/accounts')
     },
-    goToTab (tab) {
+    goToTab (tab, chain) {
+      tab = chain ? 'chains' : tab
       this.$router.push({
         name: 'dashboard',
         params: {
-          tab: tab
+          tab: tab,
+          selectChain: chain
         }
       })
     },

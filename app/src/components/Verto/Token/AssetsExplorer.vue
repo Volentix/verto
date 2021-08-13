@@ -3,14 +3,37 @@
   <div class="wrap" :class="{'account-tabs': $route.params.accounts,'assets-tabs': !$route.params.accounts }">
 <div class="row">
 <div class="col">
- <ul class="tabs group">
+ <q-dialog v-model="alertSecurity">
+        <q-card style="width: 100%; max-width: 400px" :dark="$store.state.settings.lightMode === 'true'">
+            <q-card-section>
+            <q-icon name="close" class="absolute-top-right q-pa-md" size="sm" v-close-popup />
+                <div class="icon-alert flex flex-center text-bold text-h6">
+                   <q-icon name="warning" size="md" /> Security alert
+                </div>
+            </q-card-section>
+
+            <q-card-section class=" text-body1">
+                The private key is confidential. Please make sure you do not share it with anyone. Your private keys control your funds.
+                <br/> <br/>
+                <span class="text-caption">Enter your Verto password to access this section</span>
+                <q-input @keyup.enter="verifyPassword" error-message="Invalid password" :error="passHasError" v-model="password" label="Enter Verto password" class="q-pt-md" filled type="password" >
+                 <template v-slot:append>
+         <span @click="verifyPassword()" class="text-body1 cursor-pointer">Verify</span> <q-btn :loaling="spinnerVisible" @click="verifyPassword()" round dense flat icon="send" />
+        </template>
+                </q-input>
+               <span class="text-red"> Your private keys will be partially exposed </span>
+            </q-card-section>
+
+        </q-card>
+    </q-dialog>
+ <ul class="tabs group" >
 
     <li  :class="{'manage' : $store.state.wallets.portfolioTotal , 'read' : !$store.state.wallets.portfolioTotal && !$route.params.accounts  }"><a  @click="tab = 'receive'; getChains()" :class="{'active' : tab == 'receive'}" href="javascript:void(0)"><q-icon name="file_download" /> Receive</a></li>
     <li  :class="{'manage' : $store.state.wallets.portfolioTotal , 'read' :  !$store.state.wallets.portfolioTotal && !$route.params.accounts}"><a  @click="tab = 'import' ; getChains()" :class="{'active' : tab == 'import'}" href="javascript:void(0)"><q-icon name="arrow_downward" /> Import</a></li>
       <li v-if="false" class="manage"><a  @click="tab = 'create'" :class="{'active' : tab == 'create'}" href="javascript:void(0)"><q-icon name="link" /> Create new account</a></li>
-       <li class="read" v-if="$store.state.wallets.portfolioTotal"><a  @click="tab = 'chains' ; selectedChain = null ; initTable() ; $store.state.settings.defaultChainData = null" :class="{'active' : tab == 'chains'}" href="javascript:void(0)"><q-icon name="link" />  Chains</a></li>
-      <li class="read"><a @click="tab = 'assets' ; $store.state.wallets.customTotal.show = false ; initTable() ;" :class="{'active' : tab == 'assets'}" href="javascript:void(0)"><q-icon name="lens" />{{this.selectedChain ? this.selectedChain.label :''}} Assets</a></li>
-     <li class="manage"><a @click="tab = 'privateKeys' ; getChains() ; $store.state.wallets.customTotal.show = false ;" :class="{'active' : tab == 'privateKeys'}" href="javascript:void(0)"><q-icon name="lock" /> Private Keys</a></li>
+       <li class="read" v-if="$store.state.wallets.portfolioTotal"><a  @click="tab = 'chains' ; selectedChain = null ;$store.state.settings.defaultChainData = null ;  $store.state.wallets.customTotal.show = false ; initTable() ; " :class="{'active' : tab == 'chains'}" href="javascript:void(0)"><q-icon name="link" />  Chains</a></li>
+      <li class="read"><a @click="tab = 'assets' ; $store.state.wallets.customTotal.show = false ; initTable() ;" :class="{'active' : tab == 'assets'}" href="javascript:void(0)"><q-icon :name="this.selectedChain ? 'img:'+this.selectedChain.icon : 'lens'" class="q-pr-sm"/>{{this.selectedChain ? this.selectedChain.label :''}} Assets</a></li>
+     <li class="manage"><a @click="showPrivateKeys ? tab = 'privateKeys' :  alertSecurity = true ;  ; getChains() ; $store.state.wallets.customTotal.show = false ;" :class="{'active' : tab == 'privateKeys'}" href="javascript:void(0)"><q-icon name="lock" /> Private Keys</a></li>
 
     <li class="read" v-if="$store.state.wallets.portfolioTotal"><a @click="tab = 'investments'; $store.state.wallets.customTotal.show = false ;" :class="{'active' : tab == 'investments'}" href="javascript:void(0)"><q-icon name="trending_up" /> Investments</a></li>
        <li v-if="false"><a @click="tab = 'nfts'" :class="{'active' : tab == 'nfts'}" href="javascript:void(0)"><q-icon name="trending_up" /> Nfts</a></li>
@@ -66,6 +89,9 @@
               </div>
               <div class="text-h6 q-pb-sm" v-else-if="tab == 'receive'">
                Select chain to copy or view your receiving account
+              </div>
+               <div class="text-h6 q-pb-sm" v-else-if="tab == 'privateKeys'">
+               Select chain to copy private keys
               </div>
      <div v-show="!allAssets && false">
         <div class="sub-top row gt-sm">
@@ -342,23 +368,26 @@ import ExchangeSection from '@/components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '@/components/Verto/Defi/LiquidityPoolsTable'
 import PriceChart from '@/components/Verto/Token/PriceChart'
 import AssetBalancesTable from '@/components/Verto/AssetBalancesTable'
+import configManager from '@/util/ConfigManager'
 export default {
   components: {
-    ShowKeys,
     ExchangeSection,
     AssetBalancesTable,
     MakeVTXSection,
     liquidityPoolsTable,
-    PriceChart
+    PriceChart,
+    ShowKeys
   },
   props: ['rowsPerPage'],
   data () {
     return {
       chartData: false,
+      showPrivateKeys: false,
       listViewMode: 'card',
       chainSelected: false,
       tab: 'chains',
       uniqueKey: 1235878,
+      alertSecurity: false,
       keys: {
         chain: null,
         field: '',
@@ -417,6 +446,9 @@ export default {
       loaded: true,
       assets: [],
       tokenSearchVal: '',
+      spinnerVisible: false,
+      password: '',
+      passHasError: false,
       poolsData: [],
       screenSize: 0,
       filter: '',
@@ -491,6 +523,12 @@ export default {
     if (this.$route.params.tab) {
       this.tab = this.$route.params.tab
     }
+    console.log(this.$route.params, 'this.$route.params', this.tab)
+    if (this.$route.params.selectChain) {
+      this.getChains()
+      let chain = this.chains.find(o => o.chain === this.$route.params.selectChain)
+      this.chainAction(chain)
+    }
 
     this.initTable()
 
@@ -562,9 +600,31 @@ export default {
     }, 1000)
   },
   methods: {
+    async verifyPassword () {
+      this.passHasError = false
+      if (!this.password) {
+        this.passHasError = true
+        return
+      }
+
+      this.spinnerVisible = true
+      const results = await configManager.login(this.password)
+
+      if (results.success) {
+        this.showPrivateKeys = true
+        this.password = ''
+        this.tab = 'privateKeys'
+        this.alertSecurity = false
+      } else {
+        this.passHasError = true
+      }
+
+      this.spinnerVisible = false
+    },
     chainAction (chain) {
     //  this.$store.state.settings.defaultChainData = chain
       const self = this
+      console.log(this.$route.params, 'this.$route.params', this.tab)
       let actions = {
         import () {
           self.$router.push(self.getImportLink(chain.chain))
@@ -713,10 +773,10 @@ export default {
         eth () {
           self.$store.state.investment.investments = []
 
-          let account = {
+        /*   let account = {
             value: wallet.key
           }
-          account.platform = 'uniswap-v2'
+         account.platform = 'uniswap-v2'
           self.$store.dispatch('investment/getInvestments', account)
           account.platform = 'uniswap'
           self.$store.dispatch('investment/getInvestments', account)
@@ -725,7 +785,7 @@ export default {
           account.platform = 'curve'
           self.$store.dispatch('investment/getInvestments', account)
           account.platform = 'yearn'
-          self.$store.dispatch('investment/getInvestments', account)
+          self.$store.dispatch('investment/getInvestments', account) */
         }
       }
       investment[wallet.chain]()
@@ -1013,7 +1073,9 @@ export default {
     //   height: 69vh !important;
     // }
 }
-
+ul.tabs.group {
+    height: 80px !important ;
+}
 .top-4part {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, auto));

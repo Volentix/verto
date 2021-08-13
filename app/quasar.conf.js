@@ -103,7 +103,8 @@ module.exports = function (ctx) {
         'QSpinnerDots',
         'QTimeline',
         'QTimelineEntry',
-        'QMenu'
+        'QMenu',
+        'QScrollArea'
       ],
 
       directives: [
