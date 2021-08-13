@@ -103,7 +103,8 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'full-height': screenSize > 1024 && !miniMode}">
+
+    <div v-show="currentAccount" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'full-height': screenSize > 1024 && !miniMode}">
 
       <div :class="{'desktop-version': screenSize > 1024 && !miniMode}" v-if="screenSize">
         <div class="row ">
@@ -213,7 +214,7 @@
                               </q-item-section>
                               <q-item-section>
                                 <q-item-label v-html="currentToken.label"/>
-                                <q-item-label caption class="ellipsis mw200">{{ getKeyFormat( currentToken.value ) }}</q-item-label>
+                                <q-item-label caption class="ellipsis mw200" v-if="currentToken && currentToken.value">{{ getKeyFormat( currentToken.value ) }}</q-item-label>
 
                               </q-item-section>
                             </q-item>
@@ -308,7 +309,7 @@
                  <q-input outlined label="Gas Price (GWEI)"  @input="isBalanceEnough(); setCustomGas()" v-model="gasPriceGwei" dense   class="col-6"/>
                  <q-input outlined label="Gas limit" @input="isBalanceEnough(); setCustomGas()"  v-model="gasLimit" dense  class="col-6" />
                 </div>
-                <span v-if="gasOptions.length && currentAccount.isEvm">
+                <span v-if="gasOptions.length && currentAccount.isEvm && (!miniMode || miniStep == 2)">
                 <span class="q-pl-md cursor-pointer"  @click="showGasOptions = true" v-if="!showGasOptions"><q-icon name="add" /> Advanced </span>
                 <span class="cursor-pointer q-pt-xs" @click="showGasOptions = false" v-else>Hide </span>
                 </span>
@@ -623,6 +624,7 @@ export default {
             type: token.type,
             contract: token.contract,
             key: token.key,
+            isEvm: token.isEvm,
             name: token.name,
             precision: token.precision,
             amount: token.amount,
@@ -642,6 +644,7 @@ export default {
             contract: this.selectedCoin.contract,
             precision: this.selectedCoin.precision,
             chainID: this.selectedCoin.chain,
+            isEvm: this.selectedCoin.isEvm,
             key: this.selectedCoin.key,
             name: this.selectedCoin.name,
             amount: this.selectedCoin.amount
@@ -655,8 +658,10 @@ export default {
       }
 
       if (this.token && this.options.length) {
-        let found = this.options.find(o => o.type === this.token)
+        let found = this.options.find(o => o.type === this.token && o.chainID === this.selectedCoin.chain && o.key === this.selectedCoin.key)
+
         if (found) {
+          this.$emit('setAsset', found)
           this.currentToken = found
         }
       }
@@ -967,7 +972,7 @@ export default {
 </script>
 <style lang="scss" scoped>
   @import "~@/assets/styles/variables.scss";
-.full-height {
+.gt-sm .full-height {
 height: 100vh  !important;
 }
 .gasfield {

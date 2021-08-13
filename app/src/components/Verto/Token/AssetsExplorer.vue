@@ -3,15 +3,39 @@
   <div class="wrap" :class="{'account-tabs': $route.params.accounts,'assets-tabs': !$route.params.accounts }">
 <div class="row">
 <div class="col">
- <ul class="tabs group">
+ <q-dialog v-model="alertSecurity">
+        <q-card style="width: 100%; max-width: 400px" :dark="$store.state.settings.lightMode === 'true'">
+            <q-card-section>
+            <q-icon name="close" class="absolute-top-right q-pa-md" size="sm" v-close-popup />
+                <div class="icon-alert flex flex-center text-bold text-h6">
+                   <q-icon name="warning" size="md" /> Security alert
+                </div>
+            </q-card-section>
 
-    <li class="manage"><a  @click="tab = 'receive'; getChains()" :class="{'active' : tab == 'receive'}" href="javascript:void(0)"><q-icon name="link" /> Receive</a></li>
-    <li class="manage"><a  @click="tab = 'import' ; getChains()" :class="{'active' : tab == 'import'}" href="javascript:void(0)"><q-icon name="link" /> Import</a></li>
-      <li class="manage"><a  @click="tab = 'create'" :class="{'active' : tab == 'create'}" href="javascript:void(0)"><q-icon name="link" /> Create new account</a></li>
-       <li class="read"><a  @click="tab = 'chains' ; selectedChain = null ; $store.state.settings.defaultChainData = null" :class="{'active' : tab == 'chains'}" href="javascript:void(0)"><q-icon name="link" /> Chains</a></li>
-    <li class="read"><a @click="tab = 'assets' ; $store.state.wallets.customTotal.show = false ;" :class="{'active' : tab == 'assets'}" href="javascript:void(0)"><q-icon name="lens" /> Assets</a></li>
+            <q-card-section class=" text-body1">
+                The private key is confidential. Please make sure you do not share it with anyone. Your private keys control your funds.
+                <br/> <br/>
+                <span class="text-caption">Enter your Verto password to access this section</span>
+                <q-input @keyup.enter="verifyPassword" error-message="Invalid password" :error="passHasError" v-model="password" label="Enter Verto password" class="q-pt-md" filled type="password" >
+                 <template v-slot:append>
+         <span @click="verifyPassword()" class="text-body1 cursor-pointer">Verify</span> <q-btn :loaling="spinnerVisible" @click="verifyPassword()" round dense flat icon="send" />
+        </template>
+                </q-input>
+               <span class="text-red"> Your private keys will be partially exposed </span>
+            </q-card-section>
 
-    <li class="read"><a @click="tab = 'investments'; $store.state.wallets.customTotal.show = false ;" :class="{'active' : tab == 'investments'}" href="javascript:void(0)"><q-icon name="trending_up" /> Investments</a></li>
+        </q-card>
+    </q-dialog>
+ <ul class="tabs group" >
+
+    <li  :class="{'manage' : $store.state.wallets.portfolioTotal , 'read' : !$store.state.wallets.portfolioTotal && !$route.params.accounts  }"><a  @click="tab = 'receive'; getChains()" :class="{'active' : tab == 'receive'}" href="javascript:void(0)"><q-icon name="file_download" /> Receive</a></li>
+    <li  :class="{'manage' : $store.state.wallets.portfolioTotal , 'read' :  !$store.state.wallets.portfolioTotal && !$route.params.accounts}"><a  @click="tab = 'import' ; getChains()" :class="{'active' : tab == 'import'}" href="javascript:void(0)"><q-icon name="arrow_downward" /> Import</a></li>
+      <li v-if="false" class="manage"><a  @click="tab = 'create'" :class="{'active' : tab == 'create'}" href="javascript:void(0)"><q-icon name="link" /> Create new account</a></li>
+       <li class="read" v-if="$store.state.wallets.portfolioTotal"><a  @click="tab = 'chains' ; selectedChain = null ;$store.state.settings.defaultChainData = null ;  $store.state.wallets.customTotal.show = false ; initTable() ; " :class="{'active' : tab == 'chains'}" href="javascript:void(0)"><q-icon name="link" />  Chains</a></li>
+      <li class="read"><a @click="tab = 'assets' ; $store.state.wallets.customTotal.show = false ; initTable() ;" :class="{'active' : tab == 'assets'}" href="javascript:void(0)"><q-icon :name="this.selectedChain ? 'img:'+this.selectedChain.icon : 'lens'" class="q-pr-sm"/>{{this.selectedChain ? this.selectedChain.label :''}} Assets</a></li>
+     <li class="manage"><a @click="showPrivateKeys ? tab = 'privateKeys' :  alertSecurity = true ;  ; getChains() ; $store.state.wallets.customTotal.show = false ;" :class="{'active' : tab == 'privateKeys'}" href="javascript:void(0)"><q-icon name="lock" /> Private Keys</a></li>
+
+    <li class="read" v-if="$store.state.wallets.portfolioTotal"><a @click="tab = 'investments'; $store.state.wallets.customTotal.show = false ;" :class="{'active' : tab == 'investments'}" href="javascript:void(0)"><q-icon name="trending_up" /> Investments</a></li>
        <li v-if="false"><a @click="tab = 'nfts'" :class="{'active' : tab == 'nfts'}" href="javascript:void(0)"><q-icon name="trending_up" /> Nfts</a></li>
   </ul>
  </div>
@@ -64,7 +88,10 @@
                Select chain to import
               </div>
               <div class="text-h6 q-pb-sm" v-else-if="tab == 'receive'">
-               Select the chain of the receiving account
+               Select chain to copy or view your receiving account
+              </div>
+               <div class="text-h6 q-pb-sm" v-else-if="tab == 'privateKeys'">
+               Select chain to copy private keys
               </div>
      <div v-show="!allAssets && false">
         <div class="sub-top row gt-sm">
@@ -91,7 +118,7 @@
         </div>
       </div>
 
-      <div :class="{'chains q-pt-md': !$route.params.accounts}"  v-if="tab == 'chains' || $route.params.accounts">
+      <div :class="{'chains q-pt-md': !$route.params.accounts}"  v-if="( $route.params.accounts || !$store.state.wallets.portfolioTotal) &&  !['assets','investments'].includes(tab) || tab == 'chains'">
       <div class="sub-top sub-top-chart"  >
           <div class="subt-text " v-if="!allChains && false">
             <p class="q-ma-none text-bold text-body1">Chain overview <span class="text-body2 gt-sm">| Summary by chain</span></p>
@@ -127,7 +154,7 @@
 
         <div class="row q-col-gutter-md " :class="{'q-pr-lg': $q.screen.width > 500}">
 
-          <div :class="[ tab == 'receive' ||  tab == 'import' ? ' col-md-2 ' : 'col-md-3']" v-show="!allChains" @click="chainAction(chain)" v-for="(chain, i) in chains" :key="i">
+          <div :class="[ tab == 'receive' ||  tab == 'import' ||  tab == 'privateKeys' ? ' col-md-2 ' : 'col-md-3']" v-show="!allChains" @click="chainAction(chain)" v-for="(chain, i) in chains" :key="i">
             <div class="main cursor-pointer">
              <div class="q-pb-md text-capitalize ellipsis text-h6">{{chain.label}}</div>
               <div class="main-top">
@@ -145,18 +172,30 @@
               <span class="q-my-none text-body1">
               <svg  v-if="false" class="q-ml-md" viewBox="0 0 32 32" fill="none" style="width: 20px; height: 20px; vertical-align: middle; margin-left: 0px;"><path d="M15.705 4.215a.5.5 0 01.59 0l2.725 1.988a.5.5 0 00.296.096l3.373-.007a.5.5 0 01.477.347l1.036 3.21a.5.5 0 00.182.251l2.733 1.978a.5.5 0 01.182.56l-1.048 3.207a.5.5 0 000 .31l1.048 3.206a.5.5 0 01-.182.561L24.384 21.9a.5.5 0 00-.182.251l-1.037 3.21a.5.5 0 01-.476.346l-3.373-.006a.5.5 0 00-.296.096l-2.725 1.988a.5.5 0 01-.59 0l-2.725-1.988a.5.5 0 00-.296-.096l-3.373.006a.5.5 0 01-.476-.346l-1.037-3.21a.5.5 0 00-.182-.251l-2.733-1.978a.5.5 0 01-.182-.56l1.048-3.207a.5.5 0 000-.31l-1.048-3.207a.5.5 0 01.182-.56L7.616 10.1a.5.5 0 00.182-.251l1.037-3.21a.5.5 0 01.476-.347l3.373.007a.5.5 0 00.296-.096l2.725-1.988z" fill="url(#verified_svg__paint0_linear)"></path><path opacity="0.5" d="M16 4.619l2.725 1.988a1 1 0 00.591.192l3.374-.007 1.036 3.21a1 1 0 00.365.503l2.733 1.978-1.048 3.206a.999.999 0 000 .622l1.048 3.206-2.733 1.977a1 1 0 00-.365.503l-1.036 3.21-3.374-.006a1 1 0 00-.59.192L16 27.381l-2.725-1.988a1 1 0 00-.591-.192l-3.374.006-1.036-3.21a1 1 0 00-.365-.503l-2.733-1.977 1.048-3.206a1 1 0 000-.622l-1.048-3.206 2.733-1.978-.293-.405.293.405a1 1 0 00.365-.502l1.036-3.21 3.374.006a1 1 0 00.59-.192L16 4.619z" stroke="url(#verified_svg__paint1_linear)"></path><g filter="url(#verified_svg__filter0_d)"><path d="M21.506 11.464a.677.677 0 00-.948.001l-6.745 6.636-2.378-2.334a.675.675 0 00-.946.963L13.813 20l7.695-7.57a.677.677 0 00-.002-.966z" fill="#fff"></path><path d="M21.506 11.464a.677.677 0 00-.948.001l-6.745 6.636-2.378-2.334a.675.675 0 00-.946.963L13.813 20l7.695-7.57a.677.677 0 00-.002-.966z" stroke="#fff" stroke-width="0.5"></path></g><defs><linearGradient id="verified_svg__paint0_linear" x1="6.4" y1="5.2" x2="25.6" y2="26.2" gradientUnits="userSpaceOnUse"><stop stop-color="#376DF3"></stop><stop offset="1" stop-color="#1E56E0"></stop></linearGradient><linearGradient id="verified_svg__paint1_linear" x1="7" y1="4" x2="24.4" y2="26.8" gradientUnits="userSpaceOnUse"><stop stop-color="#2D61E1"></stop><stop offset="1" stop-color="#1549CA"></stop></linearGradient><filter id="verified_svg__filter0_d" x="8.037" y="10.021" width="15.922" height="13.33" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"></feColorMatrix><feOffset dy="1"></feOffset><feGaussianBlur stdDeviation="1"></feGaussianBlur><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0"></feColorMatrix><feBlend in2="BackgroundImageFix" result="effect1_dropShadow"></feBlend><feBlend in="SourceGraphic" in2="effect1_dropShadow" result="shape"></feBlend></filter></defs></svg>
                <!-- <span v-if="parseInt(chain.usd).toString().length <= 5" class="g-txt">.{{formatNumber(chain.usd,2).split('.')[1]}}</span> -->
-                <span  class="sr-txt absolute-top-right ">+ 4 assets</span>
+                <span v-if="false"  class="sr-txt absolute-top-right ">+ 4 assets</span>
 
               </span>
-                <div class="row q-pt-md" v-if="!$route.params.accounts" >
+                <div class="row q-pt-md" v-if="!$route.params.accounts && tab == 'chains'" >
                  <q-btn  align="left" size="sm" class="col-12 q-mb-sm text-left" v-for="(item,index) in assetsOptions[0].data.filter(o => o.chain === chain.chain).slice(0, 1)" :key="index" :icon="'img:'+item.icon" :label="item.type.toUpperCase()" flat dense >
                  <span  class="q-pl-sm text-grey">${{formatNumber(item.usd, 0 )}}</span>
                  </q-btn>
                  <span  class="text-caption" v-if="false">3 accounts</span><br/>
                  <span class="text-caption" v-if="false">2 tokens</span>
                 </div>
-              <div class="text-body1 q-pt-md copy-key" v-if="tab == 'receive' && chain.accounts && chain.accounts.length >= 1" >
+              <div class="text-body1 q-pt-md copy-key" v-if="tab == 'receive' && chain.accounts && chain.accounts.length == 1" >
                {{chain.chain == 'eos' ? chain.name : getKeyFormat(chain.key)}} <q-icon name="o_file_copy"  />
+              </div>
+              <div class="text-body1 q-pt-md copy-key" v-else-if="tab == 'privateKeys'" >
+              <div v-if="chain.accounts && chain.accounts.length == 1 && chain.accounts[0].privateKey">
+              {{ getKeyFormat(chain.privateKey)}} <q-icon name="o_file_copy"  />
+              </div>
+              <div v-else-if="tab == 'privateKeys' && chain.accounts && chain.accounts.length > 1">
+               {{chain.accounts.length}} private keys <q-icon name="arrow_forward_ios"  />
+              </div>
+
+              </div>
+              <div  class="text-body1 q-pt-md copy-key" v-else-if="tab == 'receive' && chain.accounts && chain.accounts.length > 1" >
+               {{chain.accounts.length}} accounts <q-icon name="arrow_forward_ios"  />
               </div>
                 <div class="text-caption q-pt-md" v-else-if="tab == 'import'">
               Import <q-icon name="arrow_right_alt" />
@@ -164,7 +203,10 @@
               <span v-else-if="tab == 'chains' && chain.chain == 'eos' && chain.type == 'verto'">
                 <q-btn  label="Get EOS account" outline rounded/>
                 </span>
-              <div class="text-caption q-pt-md" v-else>
+                <div v-else-if="tab == 'receive' && chain.accounts && chain.accounts.length > 1">
+               {{chain.accounts.length}} accounts <q-icon name="arrow_forward_ios"  />
+              </div>
+              <div class="text-caption q-pt-md" v-else-if="!$route.params.accounts">
               Select <q-icon name="arrow_right_alt" />
               </div>
 
@@ -188,7 +230,7 @@
             <p>
               <q-breadcrumbs class="col-12  breadcrumbs"  v-if="allAssets">
                 <q-breadcrumbs-el  class="cursor-pointer" :class="{'text-white':$store.state.settings.lightMode === 'true'}" @click="allAssets = null" label="Back"  icon="keyboard_backspace" />
-                <q-breadcrumbs-el  class="cursor-pointer"  :label="'Showing '+filterTokens(item).length+ ' ' + item.title"  />
+                <q-breadcrumbs-el  class="cursor-pointer"  :label="'Showing '+filterTokens.length+ ' ' + item.title"  />
               </q-breadcrumbs>
             </p>
 
@@ -198,13 +240,13 @@
             <p>
               <q-breadcrumbs class="col-12  breadcrumbs"  v-if="allAssets">
                 <q-breadcrumbs-el  class="cursor-pointer" :class="{'text-white':$store.state.settings.lightMode === 'true'}" @click="allAssets = null" label="Back"  icon="keyboard_backspace" />
-                <q-breadcrumbs-el  class="cursor-pointer"  :label="'Showing '+filterTokens(item).length+ ' ' + item.title"  />
+                <q-breadcrumbs-el  class="cursor-pointer"  :label="'Showing '+filterTokens.length+ ' ' + item.title"  />
               </q-breadcrumbs>
             </p>
           </div>
 
           <div v-if="!allAssets && false" class="see-text q-mr-lg cursor-pointer" @click="allAssets = item">
-          See all (<span class="text-deep-purple-12">{{filterTokens(item).length}}</span>) <q-icon name="arrow_forward_ios" />
+          See all (<span class="text-deep-purple-12">{{filterTokens.length}}</span>) <q-icon name="arrow_forward_ios" />
           </div>
 
           <div  class="see-text col flex  justify-end" v-else>
@@ -219,7 +261,7 @@
         </div>
         <div class="row q-col-gutter-md" :class="{'q-pr-lg': $q.screen.width > 500}">
 
-          <div class=" col-md-3 " v-show="!allAssets || item.id == 'investments' || listViewMode == 'card' " @click="showTokenPage(asset)" v-for="(asset, i) in filterTokens(item)" :key="i">
+          <div class=" col-md-3 " v-show="!allAssets || item.id == 'investments' || listViewMode == 'card' " @click="showTokenPage(asset)" v-for="(asset, i) in filterTokens" :key="i">
             <div class="main cursor-pointer">
               <div class="main-top">
                 <div class="mt-img">
@@ -246,10 +288,11 @@
             </div>
 
           </div>
-          <p v-if="!filterTokens(item).length"> No assets found {{ tokenSearchVal ? '' :  'for this chain'}}</p>
+          <p v-if="!filterTokens.length"> No assets found {{ tokenSearchVal ? '' :  'for this chain'}}</p>
         <AssetBalancesTable @setAsset="showTokenPage" data-title="Asset balances" data-intro="Here you can see the asset balances" :rowsPerPage="8"  v-if="allAssets && listViewMode == 'list'" class="full-width" :tableData="filterTokens(allAssets)" />
     </div>
 </div>
+<ShowKeys :key="keys.keying" v-if="keys.chain" :chain="keys.chain" :field="keys.field" />
  <liquidityPoolsTable v-if="$store.state.settings.show.tab == 'history' "  :key="4 + uniqueKey" data-title="Liquidity pools" class="q-pt-md" data-intro="Here you can click the ADD button to add liquidity to any pools" :chain="currentChain" :rowsPerPage="10"  />
 
     <div class="small-grid" v-if="false">
@@ -312,73 +355,12 @@
         </h2>
       </div>
     </div>
-    <div class="sub-top" v-if="false">
-      <div class="subt-text">
-        <h3>All Tags</h3>
-      </div>
-    </div>
-    <div class="tags-wrap" v-if="false" >
-      <a href="#"><span>#</span>1inch</a>
-      <a href="#"><span>#</span>Aave</a>
-      <a href="#"><span>#</span>Balancer</a>
-      <a href="#"><span>#</span>Bancor</a>
-      <a href="#"><span>#</span>Bitcoin</a>
-      <a href="#"><span>#</span>Compound</a>
-      <a href="#"><span>#</span>Curve</a>
-      <a href="#"><span>#</span>DODO</a>
-      <a href="#"><span>#</span>Bancor</a>
-      <a href="#"><span>#</span>Bitcoin</a>
-      <a href="#"><span>#</span>Compound</a>
-      <a href="#"><span>#</span>Curve</a>
-      <a href="#"><span>#</span>DODO</a>
 
-      <a href="#"><span>#</span>1inch</a>
-      <a href="#"><span>#</span>Aave</a>
-      <a href="#"><span>#</span>Balancer</a>
-      <a href="#"><span>#</span>Bancor</a>
-      <a href="#"><span>#</span>Bitcoin</a>
-      <a href="#"><span>#</span>Compound</a>
-      <a href="#"><span>#</span>Curve</a>
-      <a href="#"><span>#</span>DODO</a>
-      <a href="#"><span>#</span>Bancor</a>
-      <a href="#"><span>#</span>Bitcoin</a>
-      <a href="#"><span>#</span>Compound</a>
-      <a href="#"><span>#</span>Curve</a>
-      <a href="#"><span>#</span>DODO</a>
-
-      <a href="#"><span>#</span>1inch</a>
-      <a href="#"><span>#</span>Aave</a>
-      <a href="#"><span>#</span>Balancer</a>
-      <a href="#"><span>#</span>Bancor</a>
-      <a href="#"><span>#</span>Bitcoin</a>
-      <a href="#"><span>#</span>Compound</a>
-      <a href="#"><span>#</span>Curve</a>
-      <a href="#"><span>#</span>DODO</a>
-      <a href="#"><span>#</span>Bancor</a>
-      <a href="#"><span>#</span>Bitcoin</a>
-      <a href="#"><span>#</span>Compound</a>
-      <a href="#"><span>#</span>Curve</a>
-      <a href="#"><span>#</span>DODO</a>
-
-      <a href="#"><span>#</span>1inch</a>
-      <a href="#"><span>#</span>Aave</a>
-      <a href="#"><span>#</span>Balancer</a>
-      <a href="#"><span>#</span>Bancor</a>
-      <a href="#"><span>#</span>Bitcoin</a>
-      <a href="#"><span>#</span>Compound</a>
-      <a href="#"><span>#</span>Curve</a>
-      <a href="#"><span>#</span>DODO</a>
-      <a href="#"><span>#</span>Bancor</a>
-      <a href="#"><span>#</span>Bitcoin</a>
-      <a href="#"><span>#</span>Compound</a>
-      <a href="#"><span>#</span>Curve</a>
-      <a href="#"><span>#</span>DODO</a>
-    </div>
   </div>
 </template>
 
 <script>
-
+import ShowKeys from '@/components/Verto/ShowKeys'
 import Formatter from '@/mixins/Formatter'
 import HD from '@/util/hdwallet'
 import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
@@ -386,23 +368,31 @@ import ExchangeSection from '@/components/Verto/ExchangeSection3'
 import liquidityPoolsTable from '@/components/Verto/Defi/LiquidityPoolsTable'
 import PriceChart from '@/components/Verto/Token/PriceChart'
 import AssetBalancesTable from '@/components/Verto/AssetBalancesTable'
+import configManager from '@/util/ConfigManager'
 export default {
   components: {
-
     ExchangeSection,
     AssetBalancesTable,
     MakeVTXSection,
     liquidityPoolsTable,
-    PriceChart
+    PriceChart,
+    ShowKeys
   },
   props: ['rowsPerPage'],
   data () {
     return {
       chartData: false,
+      showPrivateKeys: false,
       listViewMode: 'card',
       chainSelected: false,
       tab: 'chains',
       uniqueKey: 1235878,
+      alertSecurity: false,
+      keys: {
+        chain: null,
+        field: '',
+        keying: 1
+      },
       allAssets: null,
       currentChain: false,
       platformOptions: [{
@@ -456,6 +446,9 @@ export default {
       loaded: true,
       assets: [],
       tokenSearchVal: '',
+      spinnerVisible: false,
+      password: '',
+      passHasError: false,
       poolsData: [],
       screenSize: 0,
       filter: '',
@@ -530,6 +523,12 @@ export default {
     if (this.$route.params.tab) {
       this.tab = this.$route.params.tab
     }
+    console.log(this.$route.params, 'this.$route.params', this.tab)
+    if (this.$route.params.selectChain) {
+      this.getChains()
+      let chain = this.chains.find(o => o.chain === this.$route.params.selectChain)
+      this.chainAction(chain)
+    }
 
     this.initTable()
 
@@ -541,7 +540,7 @@ export default {
 
     this.$store.state.investment.allEosWalletsInvestments = []
     this.$store.dispatch('investment/getAllEOSInvestments', eosWallets)
-
+    /*
     this.$bus.$on('selectedChain', () => {
       let chain = localStorage.getItem('selectedChain')
       if (chain !== 'vtx') {
@@ -551,13 +550,19 @@ export default {
       } else {
         this.setVtxData()
       }
-    })
+    }) */
     this.getVTXHistoriclPrice()
   },
   watch: {
-    '$store.state.wallets.tokens': function () {
-      this.initTable()
-      this.$emit('assetsChanged', this.assetsOptions[0].data)
+    '$store.state.wallets.tokens': {
+      deep: true,
+      handler () {
+        if (!this.$store.state.wallets.portfolioTotal) {
+          this.tab = 'receive'
+        } else if (!this.$route.params.accounts && !['assets', 'chains', 'investments'].includes(this.tab)) {
+          this.tab = 'chains'
+        }
+      }
     },
     '$store.state.investment.investments': function (investments) {
       this.getInvestedTokens(investments)
@@ -569,35 +574,78 @@ export default {
       this.initTable()
       this.getInvestedEosTokens(this.$store.state.investment.allEosWalletsInvestments)
       this.uniqueKey++
-    },
-    '$store.state.currentwallet.wallet': function (val) {
-      this.initTable()
     }
   },
   computed: {
     allInvestments () {
       return Object.keys(this.assetsOptions[1].data).reduce((all, chain) => this.assetsOptions[1].data[chain] && this.assetsOptions[1].data[chain].length ? all.concat(this.assetsOptions[1].data[chain].filter(o => this.$store.state.currentwallet.wallet.chain ? (chain === 'eos' && o.owner === this.$store.state.currentwallet.wallet.name) || (chain === 'eth' && o.owner === this.$store.state.currentwallet.wallet.name) : true)) : [], [])
+    },
+    filterTokens () {
+      let tokens = this.tab === 'investments' ? this.allInvestments.filter(o => !this.selectedChain || o.chain === this.selectedChain.chain) : this.assets
+      if (this.tokenSearchVal.trim().length) {
+        tokens = tokens.filter(o => o.type.toLowerCase().includes(this.tokenSearchVal.toLowerCase()))
+      }
+      return tokens
     }
   },
+  destroyed () {
+    this.$store.state.wallets.customTotal.show = false
+  },
+  mounted () {
+    if (!this.$store.state.wallets.portfolioTotal) {
+      this.tab = 'receive'
+    }
+    setTimeout(() => {
+      this.initTable()
+    }, 1000)
+  },
   methods: {
+    async verifyPassword () {
+      this.passHasError = false
+      if (!this.password) {
+        this.passHasError = true
+        return
+      }
+
+      this.spinnerVisible = true
+      const results = await configManager.login(this.password)
+
+      if (results.success) {
+        this.showPrivateKeys = true
+        this.password = ''
+        this.tab = 'privateKeys'
+        this.alertSecurity = false
+      } else {
+        this.passHasError = true
+      }
+
+      this.spinnerVisible = false
+    },
     chainAction (chain) {
-      this.$store.state.settings.defaultChainData = chain
+    //  this.$store.state.settings.defaultChainData = chain
       const self = this
+      console.log(this.$route.params, 'this.$route.params', this.tab)
       let actions = {
         import () {
-          let routes = {
-            eth: '/verto/import-private-key/eth',
-            eos: '/verto/eos-account/import',
-            btc: '/verto/import-wallet/btc'
-          }
-          if (routes[chain.chain]) {
-            self.$router.push(routes[chain.chain])
-          } else {
-            self.$router.push('/verto/import-wallet/' + chain.chain)
-          }
+          self.$router.push(self.getImportLink(chain.chain))
         },
         receive () {
-          self.copyToClipboard(chain.key, chain.chain + ' account')
+          if (chain.accounts.length === 1) {
+            self.copyToClipboard(chain.key, chain.chain.toUpperCase() + ' account')
+          } else {
+            self.keys.keying++
+            self.keys.field = 'key'
+            self.keys.chain = chain
+          }
+        },
+        privateKeys () {
+          if (chain.accounts.length === 1) {
+            self.copyToClipboard(chain.privateKey, chain.chain.toUpperCase() + ' private key')
+          } else {
+            self.keys.keying++
+            self.keys.field = 'privateKey'
+            self.keys.chain = chain
+          }
         },
         chains () {
           self.$store.state.wallets.customTotal.usd = chain.chainTotal
@@ -606,6 +654,7 @@ export default {
 
           if (chain.isEvm || chain.chain === 'eos') {
             self.selectedChain = chain
+            self.initTable(chain.chain)
             self.tab = 'assets'
           } else {
             self.showTokenPage(chain, self.assetsOptions[0].data)
@@ -616,7 +665,7 @@ export default {
     },
     showTokenPage (asset) {
       this.$router.push({
-        name: 'token-page',
+        name: this.getPageName('token'),
         path: '/verto/token/' + asset.chain + '/' + asset.type,
         params: {
           asset: asset,
@@ -724,10 +773,10 @@ export default {
         eth () {
           self.$store.state.investment.investments = []
 
-          let account = {
+        /*   let account = {
             value: wallet.key
           }
-          account.platform = 'uniswap-v2'
+         account.platform = 'uniswap-v2'
           self.$store.dispatch('investment/getInvestments', account)
           account.platform = 'uniswap'
           self.$store.dispatch('investment/getInvestments', account)
@@ -736,7 +785,7 @@ export default {
           account.platform = 'curve'
           self.$store.dispatch('investment/getInvestments', account)
           account.platform = 'yearn'
-          self.$store.dispatch('investment/getInvestments', account)
+          self.$store.dispatch('investment/getInvestments', account) */
         }
       }
       investment[wallet.chain]()
@@ -764,39 +813,34 @@ export default {
           // console.log(res)
         })
     },
-    filterTokens (item) {
-      let tokens = item.id === 'investments' ? this.allInvestments.filter(o => !this.currentChain || o.chain === this.currentChain) : item.data
-      if (this.tokenSearchVal.trim().length) {
-        tokens = tokens.filter(o => o.type.toLowerCase().includes(this.tokenSearchVal.toLowerCase()))
-      }
-      tokens = tokens.filter(o => !this.selectedChain || o.chain === this.selectedChain.chain)
-      return tokens
-    },
     getSectionTitle (item) {
       return this.chainSelected && item.id === 'assets' ? item.title.replace(' ', ' ' + this.chainSelected + ' ') : item.title
     },
     getChains () {
-      this.chains = ['new', 'import'].includes(this.tab) ? HD.getVertoChains() : this.setChains().filter(o => o.accounts && o.accounts.length && (this.$route.params.accounts || o.accounts.find(a => (parseFloat(o.chainTotal) && !isNaN(o.chainTotal)) || (parseFloat(o.usd) && !isNaN(o.usd)) || ['eos'].includes(o.chain))))
-      console.log(this.chains, ' this.chains ')
+      this.chains = ['new', 'import'].includes(this.tab) ? HD.getVertoChains() : this.setChains().filter(o => o.accounts && o.accounts.length && (this.$route.params.accounts || o.accounts.find(a => (parseFloat(o.chainTotal) && !isNaN(o.chainTotal)) || this.tab === 'receive' || (parseFloat(o.usd) && !isNaN(o.usd)) || ['eos'].includes(o.chain))))
     },
-    initTable (chain) {
+    initTable (chain = null) {
       let account = null
       // this.chains = (this.$route.params.accounts) ? HD.getVertoChains() :
       this.getChains()
       // console.log(this.chains, 'this.chains = ')
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.name) {
-        account = this.$store.state.currentwallet.wallet
-        this.getChainLabel(account.chain)
+        // account = this.$store.state.currentwallet.wallet
+        // this.getChainLabel(account.chain)
       } else {
-        this.chainSelected = chain && chain !== 'vtx' ? this.getChainLabel(chain) : false
+      //  this.chainSelected = chain && chain !== 'vtx' ? this.getChainLabel(chain) : false
       }
+      chain = chain || this.selectedChain ? this.selectedChain.chain : chain
+
       this.assets = []
 
-      JSON.parse(JSON.stringify(this.$store.state.wallets.tokens)).filter(o => (!account && !chain) || (chain && o.chain === chain && !account) || (account && o.chain === account.chain && ((account.isEvm && o.key === account.key) || (!account.isEvm && o.name === account.name)))).forEach((token, i) => {
+      this.$store.state.wallets.tokens.filter(o => (!account && !chain) || (chain && o.chain === chain && !account) || (account && o.chain === account.chain && ((account.isEvm && o.key === account.key) || (!account.isEvm && o.name === account.name)))).forEach((asset, i) => {
+        let token = Object.assign({}, asset)
+
         token.amount = parseFloat(token.amount)
         token.usd = parseFloat(token.usd)
 
-        if ((!isNaN(token.amount) && token.amount !== 0) || token.isEvm) {
+        if ((!isNaN(token.amount) && token.amount !== 0) || token.isEvm || !this.$store.state.wallets.portfolioTotal) {
           let index = this.assets.findIndex(o => o.type === token.type && o.chain === token.chain && (token.chain !== 'eos' || o.contract === token.contract))
 
           if (index !== -1) {
@@ -1029,7 +1073,9 @@ export default {
     //   height: 69vh !important;
     // }
 }
-
+ul.tabs.group {
+    height: 80px !important ;
+}
 .top-4part {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, auto));
@@ -1334,7 +1380,7 @@ export default {
   }
 }
 .chains {
-    border: 1px #dddada solid;
+   /* border: 1px #dddada solid; */
     padding: 20px;
     border-bottom-left-radius: 15px;
     border-top-right-radius: 15px;

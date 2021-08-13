@@ -78,7 +78,7 @@
                 "
                 @click="selectToken(token)"
                 :key="index"
-                v-for="(token , index) in $store.state.wallets.tokens.filter( o => !isNaN(o.amount) && o.amount !== 0 && (searchVal.length == 0 || o.type.includes(searchVal))).sort((a, b) => parseFloat(b.usd) - parseFloat(a.usd))"
+                v-for="(token , index) in tokens"
               >
                 <div class="shared__HStack-sc-1qg837v-1 icuFOW">
                   <div class="shared__HStack-sc-1qg837v-1 iXubSr">
@@ -129,6 +129,7 @@
                   </div>
                 </div></button
               >
+              <p v-if="tokens.length == 0" class="q-pl-md">No assets found</p>
             </div>
             <div
               height="16px"
@@ -167,10 +168,17 @@ export default {
       searchVal: ''
     }
   },
+  computed: {
+    tokens () {
+      return this.$store.state.wallets.tokens.filter(o => !isNaN(o.amount) && o.amount !== 0 && (this.searchVal.length === 0 || o.type.includes(this.searchVal))).sort(function (a, b) {
+        return a.type.length - b.type.length
+      })
+    }
+  },
   methods: {
     selectToken (asset) {
       this.$router.push({
-        name: 'token-page',
+        name: this.getPageName('token'),
         path: '/verto/token/' + asset.chain + '/' + asset.type,
         params: {
           asset: asset,
