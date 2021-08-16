@@ -39,7 +39,7 @@
        <li v-if="false"><a @click="tab = 'nfts'" :class="{'active' : tab == 'nfts'}" href="javascript:void(0)"><q-icon name="trending_up" /> Nfts</a></li>
   </ul>
  </div>
-<div class="col-md-4">
+<div class="col-md-4" v-if="!$route.params.accounts">
    <q-input @input="tab = 'assets'" :dark="$store.state.settings.lightMode === 'true'" dense filled v-model="tokenSearchVal" style="width:280px" class="float-left q-mr-md bg-white" icon-right="search" label="Search token by symbol"  >
               <template v-slot:append>
                 <q-icon v-if="tokenSearchVal !== ''" name="close" @click="tokenSearchVal = ''" class="cursor-pointer" />
@@ -622,7 +622,6 @@ export default {
       this.spinnerVisible = false
     },
     chainAction (chain) {
-    //  this.$store.state.settings.defaultChainData = chain
       const self = this
       console.log(this.$route.params, 'this.$route.params', this.tab)
       let actions = {
@@ -648,10 +647,7 @@ export default {
           }
         },
         chains () {
-          self.$store.state.wallets.customTotal.usd = chain.chainTotal
-          self.$store.state.wallets.customTotal.show = true
-          self.$store.state.wallets.customTotal.label = chain.label + ' balance'
-
+          self.setChainWalletData(chain)
           if (chain.isEvm || chain.chain === 'eos') {
             self.selectedChain = chain
             self.initTable(chain.chain)
@@ -662,6 +658,17 @@ export default {
         }
       }
       actions[self.tab]()
+    },
+    setChainWalletData (chain) {
+      const self = this
+      self.$store.state.settings.defaultChainData = chain
+      self.$store.state.wallets.customTotal.usd = chain.chainTotal
+      self.$store.state.wallets.customTotal.show = true
+      self.$store.state.wallets.customTotal.label = chain.label + ' balance'
+      if (chain.accounts.length) {
+        self.$store.state.currentwallet.wallet = chain.accounts[0]
+        self.$store.state.investment.defaultAccount = self.formatAccoountOption(chain.accounts[0])
+      }
     },
     showTokenPage (asset) {
       this.$router.push({

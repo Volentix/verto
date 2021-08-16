@@ -116,7 +116,7 @@ export default {
       oldVersion = oldVersion.substring(4)
 
       if (+oldVersion <= 237 && +(version.substring(4)) > 327) {
-        localStorage.removeItem('walletPublicData')
+        localStorage.removeItem('walletPublicDatav2')
       }
     }
 

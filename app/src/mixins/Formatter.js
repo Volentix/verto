@@ -75,6 +75,9 @@ export default {
         label: this.getAccountLabel(w),
         color: this.getRandomColor()
       }
+      for (let key in w) {
+        if (!account[key]) { account[key] = w[key] }
+      }
       return account
     },
     groupday (values, key) {

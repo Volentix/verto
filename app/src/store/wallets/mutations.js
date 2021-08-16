@@ -84,7 +84,7 @@ export const updateTokens = (state, updatedtokens) => {
   state.tokens = updatedtokens
 
   localStorage.setItem(
-    'walletPublicData',
+    'walletPublicDatav2',
     JSON.stringify(removePrivateData(updatedtokens))
   )
 

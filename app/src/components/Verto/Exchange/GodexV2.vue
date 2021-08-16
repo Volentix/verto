@@ -352,7 +352,7 @@
         v-if="step == 1"
       >
         <template v-slot:before>
-          <q-tabs v-model="tab" align="left" vertical class="text-teal">
+          <q-tabs v-model="tab" align="left" vertical class="text-teal" v-if="swapData.dex !== 'renbridge'">
             <q-tab
               name="deposit"
               label="Deposit"
@@ -3497,6 +3497,9 @@ export default {
 <style scoped>
 /deep/ .q-tab-panel {
   max-width: 550px;
+}
+.renbridge-dex  /deep/ .q-splitter__panel {
+    width: 10% !important;
 }
 .oneinch-dex /deep/ .q-splitter__before {
   display: none;

@@ -12,9 +12,9 @@
           </div>
           <div class="col col-md-12">
             <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-              <div class="standard-content">
+              <div class="standard-content-x q-pt-md">
                 <h2 class="standard-content--title flex justify-start">Profile</h2>
-                <profile />
+                <profile style="max-width:900px;" />
               </div>
             </div>
           </div>
