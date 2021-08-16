@@ -38,10 +38,10 @@ class ConfigManager {
         const config = JSON.parse(sjcl.decrypt(password, configData))
         let defaultKey
         try {
-          console.log(config.keys, 'try', config)
+          // console.log(config.keys, 'try', config)
           defaultKey = config.keys.filter(k => k.defaultKey)[0].key
         } catch (e) {
-          console.log(config.keys, 'catch')
+          // console.log(config.keys, 'catch')
           defaultKey = config.keys[0].key
           config.keys = config.keys.map((k, i) => ({ ...k, defaultKey: !i }))
         }
@@ -51,7 +51,7 @@ class ConfigManager {
         store.commit('currentwallet/updateConfig', config)
         return config
       } catch (e) {
-        console.log(e, 'restoreConfigManager error')
+        // console.log(e, 'restoreConfigManager error')
         return new Error('bad_password')
       }
     }
@@ -216,7 +216,7 @@ class ConfigManager {
         return { success: true }
       } catch (e) {
         devError(e)
-        console.log(e)
+        // console.log(e)
       }
     }
 
@@ -269,8 +269,8 @@ class ConfigManager {
           return value.name.toLowerCase() !== walletName.toLowerCase()
         })
 
-        let cacheData = JSON.parse(localStorage.getItem('walletPublicData'))
-        localStorage.setItem('walletPublicData', JSON.stringify(cacheData.filter(o => o.name.toLowerCase() !== walletName.toLowerCase())))
+        let cacheData = JSON.parse(localStorage.getItem('walletPublicDatav2'))
+        localStorage.setItem('walletPublicDatav2', JSON.stringify(cacheData.filter(o => o.name.toLowerCase() !== walletName.toLowerCase())))
 
         configInfo.config.keys = keys
 

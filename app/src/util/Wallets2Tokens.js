@@ -2,7 +2,7 @@ import axios from 'axios'
 import store from '@/store'
 import Lib from '@/util/walletlib'
 // import coinsNames from '@/util/coinsNames'
-import Web3 from 'web3'
+
 import EosWrapper from '@/util/EosWrapper'
 
 class Wallets2Tokens {
@@ -342,7 +342,10 @@ class Wallets2Tokens {
                 })
                 this.updateWallet()
               }).catch(e => {
-                console.log(e, 'Errors')
+                this.$q.notify({
+                  color: 'negative',
+                  message: e
+                })
               })
           })
 
@@ -389,9 +392,6 @@ class Wallets2Tokens {
                       ethplorer.tokens
                         .filter(t => t.balance > 0 && t.tokenInfo.symbol)
                         .map(async (t, index) => {
-                          const csa = Web3.utils.toChecksumAddress(
-                            t.tokenInfo.address
-                          )
                           let token = tokenSets.find(
                             s =>
                               s.address.toLowerCase() ===
@@ -420,12 +420,10 @@ class Wallets2Tokens {
                                   }
                                 })
                             } catch (error) {
-                              console.log(
-                                'eth token not on 1inch',
-                                t.tokenInfo.image,
-                                csa,
-                                error
-                              )
+                              if (error) {
+                                t.tokenInfo.image =
+                                  'https://etherscan.io/images/main/empty-token.png'
+                              }
                             }
                           }
                           let amount =
@@ -676,7 +674,7 @@ class Wallets2Tokens {
       })
   }
   getWalletFromCache () {
-    let data = localStorage.getItem('walletPublicData')
+    let data = localStorage.getItem('walletPublicDatav2')
 
     if (data) {
       data = JSON.parse(data)

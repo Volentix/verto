@@ -18,8 +18,10 @@
                   <div class="standard-content--body">
                     <div class="standard-content--body__form">
 
-                      <VTXStakeStepper v-if="$store.state.currentwallet.params.tokenID == 'vtx'" />
-                      <EosStakeStepper v-else-if="$store.state.currentwallet.params.tokenID == 'eos'"/>
+                      <VTXStakeStepper v-if="$route.params.chain == 'eos' && $route.params.type == 'vtx'" />
+
+                      <EosStakeStepper v-if="$route.params.chain == 'eos' && $route.params.type == 'eos'"/>
+
                     </div>
                   </div>
                 </div>
@@ -30,8 +32,10 @@
       </div>
       <div v-else class="mobile-version">
         <profile-header version="type2" :fetchCurrentWalletFromState="true" />
-        <VTXStakeStepper v-if="$store.state.currentwallet.params.tokenID == 'vtx'" />
-        <EosStakeStepper v-else-if="$store.state.currentwallet.params.tokenID == 'eos'"/>
+        <VTXStakeStepper v-if="$route.params.chain == 'eos' && $route.params.type == 'vtx'" />
+
+        <EosStakeStepper v-if="$route.params.chain == 'eos' && $route.params.type == 'eos'"/>
+
       </div>
     </div>
   </q-page>

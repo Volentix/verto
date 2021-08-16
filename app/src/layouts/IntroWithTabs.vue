@@ -81,7 +81,7 @@
             <ul class="left-menu">
             <li class="q-pb-md flex text-center cursor-pointer" v-if="$store.state.settings.defaultChainData && tools[$store.state.settings.defaultChainData.chain]" >
                 <a @click="chainTools.show = !chainTools.show" class=" tools-label">
-                  <q-icon size="md"  class="q-pr-md" :name="'img:'+$store.state.settings.defaultChainData.icon" /><span>Chains Tools <q-icon  class="q-pl-md" :name="!chainTools.show  ? 'expand_more' : 'expand_less' " /></span></a
+                  <q-icon size="md"  class="q-pr-sm" :name="'img:'+$store.state.settings.defaultChainData.icon" /><span>Chains Tools <q-icon  class="q-pl-md" :name="!chainTools.show  ? 'expand_more' : 'expand_less' " /></span></a
                 >
               <!--  <AccountSelector
                   class="top q-pt-md"
@@ -238,7 +238,7 @@ export default {
           icon: 'img:https://www.api.bloks.io/image-proxy/display?w=100&h=100&url=https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/volentixgsys/VTX.png&op=resize',
           title: 'Stake VTX',
           activeAccRequired: true,
-          to: '/verto/stake/vtx'
+          to: '/verto/stake/eos/vtx'
         }, {
           icon: 'battery_charging_full',
           title: 'Buy / Sell Ram',
@@ -253,7 +253,7 @@ export default {
           icon: 'swap_vert',
           title: 'Stake EOS',
           activeAccRequired: true,
-          to: '/verto/stake'
+          to: '/verto/stake/eos/eos'
         }, {
           activeAccRequired: true,
           to: '/verto/custom-transactions',
@@ -307,7 +307,7 @@ export default {
         this.$store.state.tokens.walletTokensData = []
         this.$store.state.tokens.pending = []
         this.singleWalletRefresh = null
-        localStorage.removeItem('walletPublicData')
+        localStorage.removeItem('walletPublicDatav2')
       }
 
       return initWallet(name)

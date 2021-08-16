@@ -361,6 +361,7 @@ export default {
       })
     },
     getTokens () {
+      if (!this.$store.state.tokens.list || !this.$store.state.tokens.list.length) return
       let top20 = ['btc', 'eth', 'ada', 'usdt', 'bnb', 'xrp', 'doge', 'usdc', 'dot', 'uni', 'sol', 'ltc', 'bch', 'busd', 'link', 'matic', 'icp', 'wbtc', 'xlm', 'etc'].reverse()
       let options = [{
         label: 'Bitcoin',

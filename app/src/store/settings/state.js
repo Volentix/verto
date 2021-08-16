@@ -31,5 +31,5 @@ export default {
   eos: {
     swapSlippage: 3
   },
-  lightMode: true
+  lightMode: false
 }

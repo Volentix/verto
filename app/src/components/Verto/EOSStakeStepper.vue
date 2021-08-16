@@ -251,7 +251,7 @@ export default {
     if (exchangeNotif !== null) {
       exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click'))
     }
-    // console.log('---this.wallet---', this.wallet)
+    console.log('---this.wallet---', this.wallet)
     if (this.wallet) {
       this.currentAccount = this.wallet
       this.params = {

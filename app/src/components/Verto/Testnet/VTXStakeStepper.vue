@@ -471,7 +471,6 @@ export default {
   },
   methods: {
     initAccount () {
-      console.log(this.$store.state.currentwallet, 'this.$store.state.currentwallet')
       if (this.$store.state.settings.globalSettings.stakingPeriod) {
         this.period_duration = parseFloat(this.$store.state.settings.globalSettings.stakingPeriod)
       }
@@ -482,11 +481,14 @@ export default {
         o.value = o.name
         return o
       })
+
       let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
       // console.log('---this.wallet---', this.wallet)
 
-      if (this.wallet) {
-        this.currentAccount = this.wallet
+      if (this.tableData && this.tableData.length) {
+        this.currentAccount = this.tableData[0]
+        this.currentAccount.label = this.currentAccount.name
+        this.currentAccount.value = this.currentAccount.name
         this.params = {
           chainID: this.currentAccount.chain,
           tokenID: 'vtx',

@@ -64,7 +64,7 @@
 
 <script>
 import HD from '@/util/hdwallet'
-const localStorageKeysToDelete = ['walletPublicData', 'hideEosSetup', 'disableIntros_home', 'disableIntro_defi', 'closewizard', 'disable_freeospopup']
+const localStorageKeysToDelete = ['walletPublicDatav2', 'hideEosSetup', 'disableIntros_home', 'disableIntro_defi', 'closewizard', 'disable_freeospopup']
 // I have setup your symbols into a sandbox wallet named testwallet.
 // You can proceed with development with this as your walletName.
 // IDs will be created as foo@testwallet.crux
