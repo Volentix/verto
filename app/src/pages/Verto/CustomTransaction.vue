@@ -173,7 +173,7 @@
                             </div>
                             </template>
                         </q-input>
-                        <a v-if="transactionLink" :href="transactionLink" target="_blank" class="text-body2 text-black"> More infos</a>
+                        <a v-if="transactionLink" :href="transactionLink" target="_blank" class="text-body2 text-black"> More info</a>
 
                        <div class="preFormatted q-pt-md">{{ transaction }}</div>
                        </div>
