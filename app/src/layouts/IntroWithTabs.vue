@@ -174,7 +174,6 @@
 
       <q-page-container>
         <TopMenu />
-
         <q-breadcrumbs
           class="text-deep-purple-12 breadcrumbs"
           v-if="$route.path != '/verto/dashboard'"
@@ -184,14 +183,15 @@
           </template>
 
           <q-breadcrumbs-el
-            label="Chains"
-            icon="dashboard"
-            to="/verto/dashboard"
+            label="Back"
+            icon="keyboard_backspace"
+            class="cursor-pointer"
+            @click="$route.name.includes('token') && $route.params.asset && !['btc'].includes($route.params.asset.chain) && $route.params.asset.name ? goToTab('assets', $route.params.asset.chain) : $router.go(-1)"
           />
           <q-breadcrumbs-el
             v-if="$route.name.includes('token')"
             @click="goToTab('assets', $route.params.asset && !['btc'].includes($route.params.asset.chain) ? $route.params.asset.chain : null)"
-            :label="$route.params.asset && !['btc'].includes($route.params.asset.chain) ?  getChainLabel($route.params.asset.chain) + ' assets' : 'Assets'"
+            :label="$route.params.asset && $route.params.asset.amount && !['btc'].includes($route.params.asset.chain) ?  getChainLabel($route.params.asset.chain) + ' assets' : 'Assets'"
             class="cursor-pointer"
 
           />

@@ -113,7 +113,7 @@ class Wallets2Tokens {
                 // }
 
                 let usdValue = 0
-
+                let usd = Lib.findInExchangeList('eos', type, t.code)
                 this.getUSD(t.code, type).then(result => {
                   usdValue = result
                   // console.log('this.eosUSD $$$$$ ', usdValue)
@@ -126,8 +126,8 @@ class Wallets2Tokens {
                     privateKey: wallet.privateKey,
                     privateKeyEncrypted: wallet.privateKeyEncrypted,
                     amount: t.amount,
-                    tokenPrice: usdValue,
-                    usd: usdValue * t.amount,
+                    tokenPrice: usd ? usdValue : usd,
+                    usd: usd ? usdValue * t.amount : 0,
                     contract: t.code,
                     precision: t.amount ? t.amount.split('.')[1].length : 0,
                     chain: 'eos',
@@ -426,6 +426,7 @@ class Wallets2Tokens {
                               }
                             }
                           }
+                          let usd = t.tokenInfo.symbol ? Lib.findInExchangeList('eth', t.tokenInfo.symbol.toLowerCase(), t.tokenInfo.address) : false
                           let amount =
                             (t.balance / 10 ** t.tokenInfo.decimals) *
                             t.tokenInfo.price.rate
@@ -436,12 +437,12 @@ class Wallets2Tokens {
                               ? t.tokenInfo.symbol.toLowerCase()
                               : '',
                             name: wallet.name,
-                            tokenPrice: t.tokenInfo.price.rate,
+                            tokenPrice: usd ? t.tokenInfo.price.rate : 0,
                             key: wallet.key.toLowerCase(),
                             decimals: parseInt(t.tokenInfo.decimals),
                             privateKey: wallet.privateKey,
                             amount: t.balance / 10 ** t.tokenInfo.decimals,
-                            usd: amount,
+                            usd: usd ? amount : 0,
                             contract: t.tokenInfo.address,
                             chain: 'eth',
                             to:
@@ -551,7 +552,7 @@ class Wallets2Tokens {
                   usdValue = vtxData.current_price
                 }
               }
-
+              let usd = Lib.findInExchangeList('eos', type, t.code)
               self.tableData.push({
                 disabled: false,
                 type,
@@ -561,8 +562,8 @@ class Wallets2Tokens {
                 privateKey: wallet.privateKey,
                 privateKeyEncrypted: wallet.privateKeyEncrypted,
                 amount: t.amount,
-                tokenPrice: usdValue,
-                usd: usdValue * t.amount,
+                tokenPrice: usd ? usdValue : usd,
+                usd: usd ? usdValue * t.amount : 0,
                 contract: t.code,
                 precision: t.decimals ? t.decimals : (t.amount.toString().split('.')[1]
                   ? t.amount.split('.')[1].length
@@ -640,6 +641,7 @@ class Wallets2Tokens {
                 ).price
               }
             }
+            let usd = Lib.findInExchangeList('eos', token.currency, token.contract)
             this.tableData.push({
               disabled: false,
               type: token.currency.toLowerCase(),
@@ -648,7 +650,7 @@ class Wallets2Tokens {
               privateKey: wallet.privateKey,
               privateKeyEncrypted: wallet.privateKeyEncrypted,
               amount: token.amount,
-              usd: token.amount * data.tokenPrice,
+              usd: usd ? token.amount * data.tokenPrice : 0,
               tokenPrice: data.tokenPrice,
               contract: token.contract,
               precision: token.decimals,
@@ -718,7 +720,6 @@ class Wallets2Tokens {
         this.eosUSD = res.data.data.price
       })
   }
-
   getEthBalanceFromZapper (wallet) {
     // not working currently
     axios

@@ -260,6 +260,7 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   created () {
+    this.$store.state.settings.defaultChainData = false
     window.localStorage.setItem('skin', window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false)
     this.$store.state.settings.lightMode = window.localStorage.getItem('skin') !== null ? window.localStorage.getItem('skin') : false
     // console.log('this.$store.state.settings.lightMode', this.$store.state.settings.lightMode)

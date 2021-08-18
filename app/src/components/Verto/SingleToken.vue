@@ -123,8 +123,8 @@
                       >{{ formatNumber(asset.percentage, 2) }}% of Portfolio</span
                     >
                   <h2>
-                    ${{ formatNumber(asset.usd, 18).split(".")[0]}}.<span>{{
-                      formatNumber(asset.usd, 3).split(".")[1]
+                    ${{ formatNumber(asset.usd, 18).split(".")[0]}}<span>{{
+                      formatNumber(asset.usd, 3).split(".")[1] ? '.'+formatNumber(asset.usd, 3).split(".")[1] : ''
                     }}</span>
                   </h2>
                   <h4>
@@ -285,7 +285,7 @@
 
               <ImportView class="q-pa-md" v-if="!$store.state.wallets.portfolioTotal" :chain="asset.chain" :key="asset.chain" />
               <div class="text-center " v-if="tab != 'import'" >
-                   <AccountSelector :withTokenBalance="asset.type" :chains="asset.isEvm ? ['bsc','matic','eth','avaxc'] : [asset.chain]"  v-show="tab != 'swap' && !fromPreview" :showAllWallets="true"  :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
+                   <AccountSelector  :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
               </div>
 
               <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount" class="q-px-md" >
@@ -304,10 +304,13 @@
                   :dark="$store.state.settings.lightMode === 'true'"
                   bottom-slots
                   :label="asset.type.toUpperCase() + ' amount to '+tab"
-                  class="col-12 q-px-md q-pt-md"
+                  class="col-12 q-px-md q-pt-md q-pb-lg from-input"
                   v-show="asset.chain == 'eos'"
                   v-model="depositQuantity"
                 >
+                 <template v-slot:hint>
+                  <q-btn class="set-max" label="Set max" @click="depositQuantity = parseFloat(assetBalance)" dense flat />
+                  </template>
                   <template v-slot:append>
                     <q-icon
                       size="1rem"
@@ -330,7 +333,8 @@
                     {{ formatNumber(assetBalance, 2) }}
                     {{ asset.type.toUpperCase() }}
                   </template>
-                </q-input>
+                </q-input><br/>
+
                 <q-select
                   v-if="
                     (tab == 'sell' || tab == 'buy' || tab == 'add liquidity') &&
@@ -402,13 +406,16 @@
                 </q-select>
 
                 <q-input
+
                   :dark="$store.state.settings.lightMode === 'true'"
                   v-if="tab == 'send'"
-                  label="To"
+                  label="To : Enter account name"
                   v-show="asset.chain == 'eos'"
                   class="col-12 q-px-md"
                   v-model="sendTo"
-                />
+                >
+
+                </q-input>
                 <q-input
                   :dark="$store.state.settings.lightMode === 'true'"
                   v-if="
@@ -993,7 +1000,13 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-
+ .set-max {
+                margin-top: -10px;
+                font-size: 12px;
+                }
+ .from-input {
+ margin-bottom: 15px !important;
+ }
 /deep/ .gasSelector * {
     font-size: 11px;
 }

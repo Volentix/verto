@@ -1916,6 +1916,7 @@ export default {
     }
   },
   async created () {
+    this.$store.state.settings.defaultChainData = false
     let coins = CrosschainDex.getAllCoins()
     this.setDefaulValue()
     if (

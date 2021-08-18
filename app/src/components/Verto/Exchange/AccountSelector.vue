@@ -160,15 +160,14 @@ export default {
           })
       )
 
-      if (this.showAllWallets) {
-        tableData.filter(
-          (w, i, a) =>
-            ((w.chain !== 'eth' && w.chain !== 'eos')) &&
+      tableData.filter(
+        (w, i, a) =>
+          ((w.chain !== 'eth' && w.chain !== 'eos')) &&
              this.checkChain(w) &&
             a.findIndex((t) => t.key === w.key && t.chain === w.chain) === i &&
             this.accountOptions.push(this.formatAccoountOption(w))
-        )
-      }
+      )
+
       this.accountOptions = this.accountOptions.filter((o) => o && o.name)
       if (this.$store.state.wallets.metamask.accounts.length) {
         this.accountOptions.push(
@@ -236,7 +235,7 @@ export default {
       if (!this.accountOption && this.accountOptions.length) {
         this.accountOption = this.accountOptions[0]
       }
-      console.log(this.accountOption, this, this.accountOptions)
+      console.log(this, '99')
       this.setAccount()
     },
     setAccount (time = 0) {
