@@ -14,7 +14,7 @@
       }"
     >
       <div class="row">
-        <div class="col">
+        <div class="col-md-6">
           <q-dialog v-model="alertSecurity">
             <q-card
               style="width: 100%; max-width: 400px"
@@ -192,15 +192,16 @@
             </li>
           </ul>
         </div>
-        <div class="col-md-4" v-if="!$route.params.accounts">
-          <q-input
+        <div class="col-md-7 row justify-end" v-if="!$route.params.accounts">
+           <TokenByAccount @filterTokensByAccount="filterTokensByAccount" v-if="tab == 'assets' && selectedChain" :mode="'select'"     :chain="selectedChain.chain" class="justify-end q-mr-md" />
+           <q-input
             @input="tab = 'assets'"
             :dark="$store.state.settings.lightMode === 'true'"
             dense
             filled
             v-model="tokenSearchVal"
             style="width: 280px"
-            class="float-left q-mr-md bg-white"
+            class="float-left q-mr-lg bg-white col-md-6"
             icon-right="search"
             label="Search token by symbol"
           >
@@ -697,7 +698,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-3 flex flex-center text-body1 cursor-pointer" v-if="!showAllChains && tab == 'chains' " @click="showAllChains = true ; getChains()">
+        <div class="col-md-12 flex flex-center text-body1 cursor-pointer" v-if="!showAllChains && tab == 'chains' " @click="showAllChains = true ; getChains()">
         <span>Show all chains</span>
         </div>
       </div>
@@ -1037,6 +1038,7 @@
 import ShowKeys from '@/components/Verto/ShowKeys'
 import Formatter from '@/mixins/Formatter'
 import HD from '@/util/hdwallet'
+import TokenByAccount from './TokenByAccount.vue'
 import Vue from 'vue'
 import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
 import ExchangeSection from '@/components/Verto/ExchangeSection3'
@@ -1045,11 +1047,14 @@ import PriceChart from '@/components/Verto/Token/PriceChart'
 import AssetBalancesTable from '@/components/Verto/AssetBalancesTable'
 import configManager from '@/util/ConfigManager'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
+import EosWrapper from '@/util/EosWrapper'
+const eos = new EosWrapper()
 Vue.component(VueQrcode.name, VueQrcode)
 export default {
   components: {
     ExchangeSection,
     AssetBalancesTable,
+    TokenByAccount,
     MakeVTXSection,
     liquidityPoolsTable,
     PriceChart,
@@ -1316,9 +1321,49 @@ export default {
     }
     setTimeout(() => {
       this.initTable()
+      this.getVTXStakingInvestment()
     }, 1000)
   },
   methods: {
+    getVTXStakingInvestment () {
+      let stakedAmounts = 0
+
+      this.$store.state.wallets.tokens.forEach(async (f) => {
+        if (f.type === 'vtx' && f.chain === 'eos') {
+          let stakes = await eos.getTable('vertostaking', f.name, 'accountstake')
+          if (stakes.length) {
+            stakes.forEach(s => {
+              s.stake_amount = Math.round(+s.amount.split(' ')[0] * 10000) / 10000
+              // s.subsidy = Math.round(+s.subsidy.split(' ')[0] * 10000) / 10000
+              stakedAmounts += +s.stake_amount
+            })
+          }
+        }
+
+        if (stakedAmounts) {
+          let a = {
+            usd: f.tokenPrice * stakedAmounts,
+            rateUsd: f.tokenPrice,
+            type: 'vtx',
+            chain: 'eos',
+            poolsCount: false,
+            owner: f.name,
+            poolName: 'Staked',
+            staked: true,
+            amount: stakedAmounts,
+            icon: f.icon
+          }
+
+          let index = this.assetsOptions[1].data.eos.findIndex(o => o.staked && o.type === 'vtx')
+
+          if (index >= 0) {
+            this.assetsOptions[1].data.eos[index] = a
+          } else {
+            this.assetsOptions[1].data.eos.push(a)
+          }
+        }
+      })
+    },
     async verifyPassword () {
       this.passHasError = false
       if (!this.password) {
@@ -1400,14 +1445,20 @@ export default {
       }
     },
     showTokenPage (asset) {
-      this.$router.push({
-        name: this.getPageName('token'),
-        path: '/verto/token/' + asset.chain + '/' + asset.type,
-        params: {
-          asset: asset,
-          assets: this.assetsOptions[0].data
-        }
-      })
+      if (this.tab === 'investments' && asset.type === 'vtx' && asset.staked) {
+        this.$router.push({
+          path: '/verto/stake/eos/vtx'
+        })
+      } else {
+        this.$router.push({
+          name: this.getPageName('token'),
+          path: '/verto/token/' + asset.chain + '/' + asset.type,
+          params: {
+            asset: asset,
+            assets: this.assetsOptions[0].data
+          }
+        })
+      }
       // this.$emit('setAsset', asset)
     },
     setVtxData () {
@@ -1468,7 +1519,7 @@ export default {
         })
       })
       this.$store.dispatch('tokens/getTokensMarketsData', assets)
-      this.assetsOptions[1].data.eos = assets
+      this.assetsOptions[1].data.eos = this.assetsOptions[1].data.eos.filter(o => o.staked && o.type === 'vtx').concat(assets)
     },
     async getVTXHistoriclPrice (days = 30) {
       let response = await this.$axios.get(
@@ -1594,8 +1645,11 @@ export default {
             (o) => !this.$store.state.settings.disableChains.includes(o.chain)
           )
     },
-    initTable (chain = null) {
-      let account = null
+    filterTokensByAccount (account) {
+      this.initTable(null, account)
+    },
+    initTable (chain = null, account = null) {
+    //  let account = null
       // this.chains = (this.$route.params.accounts) ? HD.getVertoChains() :
       this.getChains()
       // console.log(this.chains, 'this.chains = ')

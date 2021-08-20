@@ -169,7 +169,7 @@
                               </q-badge>
                               <q-slider
                                 v-model="slider"
-                                :label-value="slider + '%'"
+                                :label-value="(isNaN(slider) ? 0 : slider)  + '%'"
                                 :min="0"
                                 :max="100"
                                 :step="1"
@@ -410,7 +410,7 @@ export default {
       period_duration: 30,
       timers: [],
       condition: 3,
-      currentAccount: {},
+      currentAccount: null,
       stakePeriod: 10,
       estimatedReward: 0,
       options: [],
@@ -486,9 +486,11 @@ export default {
       // console.log('---this.wallet---', this.wallet)
 
       if (this.tableData && this.tableData.length) {
-        this.currentAccount = this.tableData[0]
-        this.currentAccount.label = this.currentAccount.name
-        this.currentAccount.value = this.currentAccount.name
+        if (!this.currentAccount) {
+          this.currentAccount = this.tableData[0]
+          this.currentAccount.label = this.currentAccount.name
+          this.currentAccount.value = this.currentAccount.name
+        }
         this.params = {
           chainID: this.currentAccount.chain,
           tokenID: 'vtx',
@@ -496,7 +498,7 @@ export default {
         }
       } else {
         this.params = this.$store.state.currentwallet.params
-        this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === 'vtx' && (
+        this.currentAccount = this.currentAccount ? this.currentAccount : this.tableData.find(w => w.chain === this.params.chainID && w.type === 'vtx' && (
           w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
         )
       }

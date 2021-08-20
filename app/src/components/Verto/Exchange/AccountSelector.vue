@@ -77,6 +77,7 @@
               </q-list>
             </q-menu>
           </q-btn>
+
           <div v-else-if="false">
           <span>No account found {{chain}}</span>
           </div>
@@ -235,7 +236,7 @@ export default {
       if (!this.accountOption && this.accountOptions.length) {
         this.accountOption = this.accountOptions[0]
       }
-      console.log(this, '99')
+      // console.log(this.accountOptions, this.accountOption, this)
       this.setAccount()
     },
     setAccount (time = 0) {
@@ -312,7 +313,8 @@ export default {
       }
     }, */
     '$store.state.investment.defaultAccount': function (val) {
-      if (!val || val.origin !== 'defi') return
+      console.log(val, 'val')
+      if (!val || !['defi', 'set'].includes(val.origin)) return
 
       let w = this.$store.state.investment.defaultAccount
 
