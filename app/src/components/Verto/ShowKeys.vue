@@ -9,7 +9,7 @@
         <q-card-section class="q-pt-none" v-for="(account , index) in chain.accounts" :key="index">
          <span class="q-pb-sm">{{account.name}}  <q-btn v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" :label="!showQr[account.name.split(' ')[0]] ?  'Show QR Code' : 'Hide'" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat size="sm" class="float-right q-mb-sm" icon-right="img:https://image.flaticon.com/icons/png/512/107/107072.png" /></span><br/>
          <qrcode v-if="(account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]]" dark :value="decryptedKeys[index] ? decryptedKeys[index] : account[field]" :options="{size: 100}"></qrcode>
-         <div class="text-body1 q-pt-md copy-key cursor-pointer q-mt-sm" @click="copyToClipboard(account[field],'Copied')"  v-if="account[field] || (showPrivateKeys[index] && decryptedKeys[index])" >
+         <div class="text-body1 q-pt-md copy-key cursor-pointer q-mt-sm" @click="copyToClipboard(account[field])"  v-if="account[field] || (showPrivateKeys[index] && decryptedKeys[index])" >
                {{getKeyFormat(decryptedKeys[index] ? decryptedKeys[index] : account[field], 18)}} <q-icon name="o_file_copy"  />
           </div>
 

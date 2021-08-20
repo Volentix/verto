@@ -7,7 +7,11 @@ import EosWrapper from '@/util/EosWrapper'
 
 class Wallets2Tokens {
   constructor (walletName = null) {
-    walletName = null
+    if (walletName) {
+      walletName = null
+      localStorage.removeItem('walletPublicDatav2')
+    }
+
     let data = this.getWalletFromCache()
     let existingWallet = null
     let ethWallet = null

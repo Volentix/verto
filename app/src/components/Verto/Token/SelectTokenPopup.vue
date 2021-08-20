@@ -78,7 +78,7 @@
                 "
                 @click="selectToken(token)"
                 :key="index"
-                v-for="(token , index) in tokens"
+                v-for="(token , index) in tokens.filter(o => o.type.includes(searchVal.trim()) || !searchVal.trim().length)"
               >
                 <div class="shared__HStack-sc-1qg837v-1 icuFOW">
                   <div class="shared__HStack-sc-1qg837v-1 iXubSr">
@@ -129,7 +129,7 @@
                   </div>
                 </div></button
               >
-              <p v-if="tokens.length == 0" class="q-pl-md">No assets found</p>
+              <p v-if="tokens.filter(o => o.type.includes(searchVal.trim()) || !searchVal.trim().length).length == 0" class="q-pl-md">No assets found</p>
             </div>
             <div
               height="16px"
@@ -165,15 +165,12 @@ export default {
   data () {
     return {
       alert: true,
-      searchVal: ''
+      searchVal: '',
+      tokens: []
     }
   },
-  computed: {
-    tokens () {
-      return this.$store.state.wallets.tokens.filter(o => !isNaN(o.amount) && o.amount !== 0 && (this.searchVal.length === 0 || o.type.includes(this.searchVal))).sort(function (a, b) {
-        return a.type.length - b.type.length
-      })
-    }
+  mounted () {
+    this.tokens = this.getAssets()
   },
   methods: {
     selectToken (asset) {

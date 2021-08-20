@@ -8,7 +8,7 @@
       </q-banner>
 
       <div class="q-pa-md loading-table" v-else-if="loading">
-      <span class="text-body1">We are loading your transaction history: this may think a moment</span>
+      <span class="text-body1">We are loading your transaction history. This may take a moment</span>
         <q-markup-table flat>
           <thead>
             <tr>

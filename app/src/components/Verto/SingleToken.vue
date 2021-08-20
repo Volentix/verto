@@ -171,6 +171,50 @@
               </tr>
             </table>
           </div>
+             <div
+          class="col col-12 history-container"
+
+        >
+
+         <div class="left q-pl-lg left3" v-if="marketData">
+            <h3 class="text-body text-bold">Stats</h3>
+
+            <table>
+              <tr>
+                <td>
+                  <h5>1 Day</h5>
+                  <span :class="[marketData.change_24h && marketData.change_24h.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_24h}}%</span>
+                  <h5>Market Cap</h5>
+                  <p>${{nFormatter2(marketData.market_cap)}}</p>
+                </td>
+
+                <td>
+                  <h5>1 Week</h5>
+                  <span :class="[marketData.change_7d && marketData.change_7d.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_7d}}%</span>
+                  <h5>High 24h</h5>
+                  <p>{{marketData.high_24h}}</p>
+                </td>
+
+                <td>
+                  <h5>1 Month</h5>
+                  <span :class="[marketData.change_30d && marketData.change_30d.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_30d}}%</span>
+                  <h5>Total Supply</h5>
+                  <p>{{marketData.total_supply}}</p>
+                </td>
+
+                <td>
+                  <h5>1 Year</h5>
+                  <span :class="[marketData.change_1y && marketData.change_1y.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400"
+                    >{{marketData.change_1y}}</span
+                  >
+                  <h5>Total volume</h5>
+                  <p>{{marketData.total_volume}}</p>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+        </div>
 
           <div class="left left3" style="border: none" v-if="false">
             <h3>Tags</h3>
@@ -248,6 +292,7 @@
             </div>
           </div>
         </div>
+
         <div class="right-area q-pr-lg col" >
           <transition name="fade" mode="out-in">
             <div
@@ -534,51 +579,10 @@
             <!-- <AssetBalancesTable v-if="tokenTabOption == 'assets'" @setAsset="setAsset" :rowsPerPage="6"/>
           <liquidityPoolsTable  v-else-if="tokenTabOption == 'opportunities'"  :asset="asset" :rowsPerPage="7"   /> -->
           </div>
+
+ <TokenByAccount :type="asset.type" :chain="asset.chain" class="right-area q-mt-lg col" />
         </div>
-        <div
-          class="col col-12 history-container"
 
-        >
-
-         <div class="left q-pl-lg left3" v-if="marketData">
-            <h3 class="text-body text-bold">Stats</h3>
-
-            <table>
-              <tr>
-                <td>
-                  <h5>1 Day</h5>
-                  <span :class="[marketData.change_24h && marketData.change_24h.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_24h}}%</span>
-                  <h5>Market Cap</h5>
-                  <p>${{nFormatter2(marketData.market_cap)}}</p>
-                </td>
-
-                <td>
-                  <h5>1 Week</h5>
-                  <span :class="[marketData.change_7d && marketData.change_7d.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_7d}}%</span>
-                  <h5>High 24h</h5>
-                  <p>{{marketData.high_24h}}</p>
-                </td>
-
-                <td>
-                  <h5>1 Month</h5>
-                  <span :class="[marketData.change_30d && marketData.change_30d.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_30d}}%</span>
-                  <h5>Total Supply</h5>
-                  <p>{{marketData.total_supply}}</p>
-                </td>
-
-                <td>
-                  <h5>1 Year</h5>
-                  <span :class="[marketData.change_1y && marketData.change_1y.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400"
-                    >{{marketData.change_1y}}</span
-                  >
-                  <h5>Total volume</h5>
-                  <p>{{marketData.total_volume}}</p>
-                </td>
-              </tr>
-            </table>
-          </div>
-
-        </div>
       </div>
 
   </div>
@@ -588,6 +592,7 @@ import transactEOS from './transactEOS'
 import Oneinch from '../../components/Verto/Exchange/Oneinch'
 import Formatter from '@/mixins/Formatter'
 import ImportView from './Token/ImportView.vue'
+import TokenByAccount from './Token/TokenByAccount'
 // import History from '../../components/Verto/History'
 import SendComponent from '../../pages/Verto/Send'
 import PriceChart from '../../components/Verto/Token/PriceChart'
@@ -601,7 +606,7 @@ import { JsonRpc } from 'eosjs'
 
 export default {
   components: {
-
+    TokenByAccount,
     Oneinch,
     AccountSelector,
     ImportView,
@@ -687,7 +692,9 @@ export default {
       } else {
         this.asset = asset
       }
-
+      if (this.asset.type === 'vtx') {
+        this.$store.state.settings.defaultChainData = this.asset
+      }
       this.depositCoin = {
         label: this.asset.type.toUpperCase(),
         value: this.asset.type,
