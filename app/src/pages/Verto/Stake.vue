@@ -21,7 +21,7 @@
                       <VTXStakeStepper v-if="$route.params.chain == 'eos' && $route.params.type == 'vtx'" />
 
                       <EosStakeStepper v-if="$route.params.chain == 'eos' && $route.params.type == 'eos'"/>
-
+                      <StakeHex v-else-if="$route.params.chain == 'eth' && $route.params.type == 'hex'"/>
                     </div>
                   </div>
                 </div>
@@ -34,7 +34,9 @@
         <profile-header version="type2" :fetchCurrentWalletFromState="true" />
         <VTXStakeStepper v-if="$route.params.chain == 'eos' && $route.params.type == 'vtx'" />
 
-        <EosStakeStepper v-if="$route.params.chain == 'eos' && $route.params.type == 'eos'"/>
+        <EosStakeStepper v-else-if="$route.params.chain == 'eos' && $route.params.type == 'eos'"/>
+
+        <StakeHex v-else-if="$route.params.chain == 'eth' && $route.params.type == 'hex'"/>
 
       </div>
     </div>
@@ -45,6 +47,7 @@
 import EosStakeStepper from '../../components/Verto/EOSStakeStepper'
 // import StakeStepper from '../../components/Verto/StakeStepper'
 import VTXStakeStepper from '../../components/Verto/Testnet/VTXStakeStepper'
+import StakeHex from '../../components/Verto/Stake/StakeHex.vue'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import { osName } from 'mobile-device-detect'
 import Wallets from '../../components/Verto/Wallets'
@@ -57,7 +60,8 @@ export default {
     Wallets,
     EosStakeStepper,
     VTXStakeStepper,
-    QScrollArea
+    QScrollArea,
+    StakeHex
   },
   data () {
     return {
