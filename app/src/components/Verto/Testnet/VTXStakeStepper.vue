@@ -99,8 +99,8 @@
                           </template>
                         </q-select>
                       </div>
-                      <div class="col-md-6 q-pl-lg">
-                        <div class="row current-stake-balanca">
+                      <div class="col-md-6 q-pl-lg flex justify-end">
+                        <div class="row current-stake-balanca full-width">
                               <div class="">
                                 <span class="--title row text-h6"> Current Balance<br>{{ params.tokenID.toUpperCase() }} (Liquid) </span>
                                 <span class="--amount row text-h4"> {{ formatNumber(currentAccount.amount, 0) }} {{ params.tokenID.toUpperCase() }} </span>
@@ -201,7 +201,7 @@
                         <q-btn @click="step = 2" v-if="condition === 3" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
                       </div>
                             </div>
-                            <div  class="col-md-6 q-pa-md flex flex-center">
+                            <div  class="col-md-6 q-pa-md flex justify-end">
                             <div class="summary-wrapper row full-width shadow-1 q-ma-lg q-pa-lg rounded-borders" style="max-width:300px;">
                               <div class="full-width">
                                 <span class="--title row text-h6"> Amount to stake </span>
