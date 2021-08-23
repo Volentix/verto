@@ -154,13 +154,13 @@
                   </a>
                 </li>
               </ul>
-              <span class="version full-width text-center column">
-                <span class="">{{version}}</span>
-                <span class="q-pa-sm text-grey">
-                  This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-deep-purple-12c" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
-                </span>
-              </span>
             </div>
+            <span class="version full-width text-center column">
+              <span class="text-grey">{{version}}</span>
+              <span class="q-pa-sm text-grey">
+                This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-deep-purple-12c" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
+              </span>
+            </span>
           </div>
         </q-scroll-area>
         <!--
@@ -169,16 +169,16 @@
           to mini-mode
         -->
         <div
+        v-if="false"
           class="q-mini-drawer-hide "
           style="margin-top: -95px; right: -17px"
         >
-           <span class="version full-width text-center column">
-        <span class="q-mb-md text-grey">{{version}}</span>
-        <span class="q-pa-sm text-grey">
-          This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-deep-purple-12c" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
-        </span>
-
-      </span>
+          <span class="version full-width text-center column">
+            <span class="q-mb-md text-grey">{{version}}</span>
+            <span class="q-pa-sm text-grey">
+              This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-deep-purple-12c" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
+            </span>
+          </span>
         </div>
       </q-drawer>
 
@@ -239,7 +239,6 @@ export default {
     return {
       version: {},
       toggleView: true,
-      version: {},
       keys: {
         send: 1
       },
