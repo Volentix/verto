@@ -169,18 +169,16 @@
           to mini-mode
         -->
         <div
-          class="q-mini-drawer-hide absolute"
-          style="top: 15px; right: -17px"
+          class="q-mini-drawer-hide "
+          style="margin-top: -95px; right: -17px"
         >
-          <q-btn
-            dense
-            round
-            unelevated
-            v-if="false"
-            color="accent"
-            icon="chevron_left"
-            @click="miniState = true"
-          />
+           <span class="version full-width text-center column">
+        <span class="q-mb-md text-grey">{{version}}</span>
+        <span class="q-pa-sm text-grey">
+          This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-deep-purple-12c" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
+        </span>
+
+      </span>
         </div>
       </q-drawer>
 
@@ -203,7 +201,7 @@
           <q-breadcrumbs-el
             v-if="$route.name.includes('token')"
             @click="goToTab('assets', $route.params.asset && !['btc'].includes($route.params.asset.chain) ? $route.params.asset.chain : null)"
-            :label="$route.params.asset && $route.params.asset.amount && !['btc'].includes($route.params.asset.chain) ?  getChainLabel($route.params.asset.chain) + ' assets' : 'Assets'"
+            :label="$route.params.asset && $route.params.asset.type && $route.params.asset.isEvm && !['btc'].includes($route.params.asset.chain) ?  getChainLabel($route.params.asset.chain) + ' assets' : 'Assets'"
             class="cursor-pointer"
 
           />
@@ -241,10 +239,17 @@ export default {
     return {
       version: {},
       toggleView: true,
+      version: {},
       keys: {
         send: 1
       },
       tools: {
+        eth: [{
+          icon: 'img:https://zapper.fi/images/HEX-icon.png',
+          to: '/verto/stake/eth/hex',
+          title: 'Stake HEX',
+          activeAccRequired: true
+        }],
         eos: [{
           icon: 'bolt',
           to: '/verto/wallet/eos/powerup',
@@ -309,7 +314,7 @@ export default {
       this.$router.push('/verto/manage/accounts')
     },
     goToTab (tab, chain) {
-      tab = chain ? 'chains' : tab
+    //  tab = chain ? 'chains' : tab
       this.$router.push({
         name: 'dashboard',
         params: {
@@ -359,7 +364,7 @@ h2 {
   float: left;
 }
 .breadcrumbs {
-  margin-top: 20px;
+  margin-top: 60px;
   padding: 9px 0px 9px 10px;
 }
 .top /deep/ .account_selector {
