@@ -632,7 +632,7 @@ export default {
         this.$store.state.wallets.customTotal.show = true
         this.$store.state.wallets.customTotal.label = this.asset.type.toUpperCase() + ' balance'
       }
-    },
+    }/*
     '$store.state.currentwallet.wallet': function (val) {
       let assets = this.initAssetTable()
       if (val.chain !== this.asset.chain) {
@@ -648,7 +648,7 @@ export default {
         this.asset.usd = 0
         this.asset.amount = 0
       }
-    }
+    } */
   },
   computed: {
     isTxValid () {
