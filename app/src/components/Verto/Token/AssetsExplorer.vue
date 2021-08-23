@@ -387,10 +387,11 @@
                 : 'col-md-3',
             ]"
             v-show="!allChains"
-            @click="
-              tab !== 'receive' && tab !== 'privateKeys' ? chainAction(chain) : ''
-            "
-            v-for="(chain, i) in chains"
+             @click="
+            tab !== 'receive' && tab !== 'privateKeys' ? chainAction(chain) : ''
+          "
+          v-for="(chain, i) in chains.filter(a => tab !== 'privateKeys' || (a.accounts && a.accounts.length))"
+
             :key="i"
           >
             <div class="main cursor-pointer">
@@ -607,10 +608,10 @@
                 </div>
                 <div
                   @click="chainAction(chain)"
-                  v-else-if="
-                    tab == 'privateKeys' &&
-                    chain.accounts &&
-                    (chain.accounts.length > 1 || !chain.accounts[0].privateKey)
+                   v-else-if="
+                  tab == 'privateKeys' &&
+                  chain.accounts &&
+                  (chain.accounts.length > 1 || (chain.accounts.length && !chain.accounts[0].privateKey))
                   "
                 >
                   {{ chain.accounts.length }} private keys
@@ -648,6 +649,14 @@
               >
                 <q-btn label="Get EOS account" outline rounded />
               </span>
+               <div
+            @click="$router.push(getImportLink('eos'))"
+              class="text-caption q-pt-md"
+              v-else-if="chain.type == 'verto'"
+            >
+              Setup account <q-icon name="arrow_right_alt" />
+            </div>
+
               <div
                 class="text-caption q-pt-md"
                 v-else-if="!$route.params.accounts"
@@ -900,6 +909,7 @@
                 >
                 <a href="javascript:void(0)">Trade</a>
               </h2>
+
               <q-item-label
                 :class="{
                   'text-white': $store.state.settings.lightMode === 'true',
@@ -1217,10 +1227,11 @@ export default {
       this.tab = this.$route.params.tab
     }
     if (this.$route.params.selectChain) {
-      this.getChains()
-      let chain = this.chains.find(
+      let allChains = this.getChains()
+      let chain = allChains.find(
         (o) => o.chain === this.$route.params.selectChain
       )
+      this.tab = 'chains'
       this.chainAction(chain)
     }
     this.initTable()
@@ -1372,6 +1383,7 @@ export default {
         this.password = ''
         this.tab = 'privateKeys'
         this.alertSecurity = false
+        this.getChains()
       } else {
         this.passHasError = true
       }
@@ -1409,7 +1421,9 @@ export default {
         },
         chains () {
           self.setChainWalletData(chain)
-          if (chain.isEvm || chain.chain === 'eos') {
+          if (chain.type === 'verto') {
+            self.$router.push(self.getImportLink('eos'))
+          } else if (chain.isEvm || chain.chain === 'eos') {
             self.selectedChain = chain
             self.initTable(chain.chain)
             self.tab = 'assets'
@@ -1423,16 +1437,18 @@ export default {
       }
     },
     setChainWalletData (chain) {
-      const self = this
-      self.$store.state.settings.defaultChainData = chain
-      self.$store.state.wallets.customTotal.usd = chain.chainTotal
-      self.$store.state.wallets.customTotal.show = true
-      self.$store.state.wallets.customTotal.label = chain.label + ' balance'
-      if (chain.accounts.length) {
-        self.$store.state.currentwallet.wallet = chain.accounts[0]
-        self.$store.state.investment.defaultAccount = self.formatAccoountOption(
-          chain.accounts[0]
-        )
+      if (chain) {
+        const self = this
+        self.$store.state.settings.defaultChainData = chain
+        self.$store.state.wallets.customTotal.usd = chain.chainTotal
+        self.$store.state.wallets.customTotal.show = true
+        self.$store.state.wallets.customTotal.label = chain.label + ' balance'
+        if (chain.accounts.length) {
+          self.$store.state.currentwallet.wallet = chain.accounts[0]
+          self.$store.state.investment.defaultAccount = self.formatAccoountOption(
+            chain.accounts[0]
+          )
+        }
       }
     },
     showTokenPage (asset) {
@@ -1608,12 +1624,12 @@ export default {
         : item.title
     },
     getChains () {
-      this.chains = ['new', 'import'].includes(this.tab)
-        ? HD.getVertoChains()
-        : this.setChains()
-          .filter(
-            (o) =>
-              o.accounts &&
+      let all = null
+      if (!['new', 'import'].includes(this.tab)) {
+        all = this.setChains()
+        this.chains = all.filter(
+          (o) =>
+            o.type === 'verto' || (o.accounts &&
                 o.accounts.length &&
                 (this.showAllChains || this.$route.params.accounts ||
                   o.accounts.find(
@@ -1623,10 +1639,15 @@ export default {
                       (parseFloat(o.usd) && !isNaN(o.usd)) ||
                       ['eos', 'btc', 'eth', 'bsc'].includes(o.chain)
                   ))
-          )
+            ))
           .filter(
             (o) => !this.$store.state.settings.disableChains.includes(o.chain)
           )
+      } else {
+        all = HD.getVertoChains()
+        this.chains = all
+      }
+      return all
     },
     filterTokensByAccount (account) {
       this.initTable(null, account)
