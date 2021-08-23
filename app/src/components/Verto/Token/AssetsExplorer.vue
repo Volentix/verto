@@ -119,7 +119,7 @@
                 ><q-icon name="link" /> Create new account</a
               >
             </li>
-            <li class="read" v-if="$store.state.wallets.portfolioTotal">
+            <li class="read" >
               <a
                 @click="
                   tab = 'chains';
@@ -192,7 +192,7 @@
             </li>
           </ul>
         </div>
-        <div class="col-md-7 row justify-end" v-if="!$route.params.accounts">
+        <div class="col-md-6 row justify-end" v-if="!$route.params.accounts">
            <TokenByAccount @filterTokensByAccount="filterTokensByAccount" v-if="tab == 'assets' && selectedChain" :mode="'select'"     :chain="selectedChain.chain" class="justify-end q-mr-md" />
            <q-input
             @input="tab = 'assets'"
@@ -389,7 +389,7 @@
           @click="
             tab !== 'receive' && tab !== 'privateKeys' ? chainAction(chain) : ''
           "
-          v-for="(chain, i) in chains"
+          v-for="(chain, i) in chains.filter(a => tab !== 'privateKeys' || (a.accounts && a.accounts.length))"
           :key="i"
         >
           <div class="main cursor-pointer">
@@ -609,7 +609,7 @@
                 v-else-if="
                   tab == 'privateKeys' &&
                   chain.accounts &&
-                  (chain.accounts.length > 1 || !chain.accounts[0].privateKey)
+                  (chain.accounts.length > 1 || (chain.accounts.length && !chain.accounts[0].privateKey))
                 "
               >
                 {{ chain.accounts.length }} private keys
@@ -647,6 +647,13 @@
             >
               <q-btn label="Get EOS account" outline rounded />
             </span>
+            <div
+            @click="$router.push(getImportLink('eos'))"
+              class="text-caption q-pt-md"
+              v-else-if="chain.type == 'verto'"
+            >
+              Setup account <q-icon name="arrow_right_alt" />
+            </div>
             <div
               class="text-caption q-pt-md"
               v-else-if="!$route.params.accounts"
@@ -909,6 +916,9 @@
                 formatNumber(asset.amount, 6)
               }}</span></q-item-label
             >
+             <div class="q-py-sm" v-if="asset.staked && asset.type == 'vtx'">
+              Total staked
+            </div>
             <div class="q-pt-sm">
               Price:
               <span class="text-grey q-pl-xs"
@@ -922,6 +932,7 @@
                 :name="'img:' + asset.protocolIcon"
               />{{ asset.protocol }}:
             </div>
+
             <span class="text-grey" v-if="asset.poolsCount == 1"
               >{{ asset.poolName }} pool</span
             >
@@ -1214,10 +1225,12 @@ export default {
     }
 
     if (this.$route.params.selectChain) {
-      this.getChains()
-      let chain = this.chains.find(
+      let allChains = this.getChains()
+
+      let chain = allChains.find(
         (o) => o.chain === this.$route.params.selectChain
       )
+      this.tab = 'chains'
       this.chainAction(chain)
     }
 
@@ -1246,6 +1259,7 @@ export default {
         this.setVtxData()
       }
     }) */
+
     this.getVTXHistoriclPrice()
   },
   watch: {
@@ -1418,7 +1432,9 @@ export default {
         },
         chains () {
           self.setChainWalletData(chain)
-          if (chain.isEvm || chain.chain === 'eos') {
+          if (chain.type === 'verto') {
+            self.$router.push(self.getImportLink('eos'))
+          } else if (chain.isEvm || chain.chain === 'eos') {
             self.selectedChain = chain
             self.initTable(chain.chain)
             self.tab = 'assets'
@@ -1432,16 +1448,18 @@ export default {
       }
     },
     setChainWalletData (chain) {
-      const self = this
-      self.$store.state.settings.defaultChainData = chain
-      self.$store.state.wallets.customTotal.usd = chain.chainTotal
-      self.$store.state.wallets.customTotal.show = true
-      self.$store.state.wallets.customTotal.label = chain.label + ' balance'
-      if (chain.accounts.length) {
-        self.$store.state.currentwallet.wallet = chain.accounts[0]
-        self.$store.state.investment.defaultAccount = self.formatAccoountOption(
-          chain.accounts[0]
-        )
+      if (chain) {
+        const self = this
+        self.$store.state.settings.defaultChainData = chain
+        self.$store.state.wallets.customTotal.usd = chain.chainTotal
+        self.$store.state.wallets.customTotal.show = true
+        self.$store.state.wallets.customTotal.label = chain.label + ' balance'
+        if (chain.accounts.length) {
+          self.$store.state.currentwallet.wallet = chain.accounts[0]
+          self.$store.state.investment.defaultAccount = self.formatAccoountOption(
+            chain.accounts[0]
+          )
+        }
       }
     },
     showTokenPage (asset) {
@@ -1625,12 +1643,13 @@ export default {
         : item.title
     },
     getChains () {
-      this.chains = ['new', 'import'].includes(this.tab)
-        ? HD.getVertoChains()
-        : this.setChains()
-          .filter(
-            (o) =>
-              o.accounts &&
+      let all = null
+
+      if (!['new', 'import'].includes(this.tab)) {
+        all = this.setChains()
+        this.chains = all.filter(
+          (o) =>
+            o.type === 'verto' || (o.accounts &&
                 o.accounts.length &&
                 (this.showAllChains || this.$route.params.accounts ||
                   o.accounts.find(
@@ -1640,10 +1659,16 @@ export default {
                       (parseFloat(o.usd) && !isNaN(o.usd)) ||
                       ['eos', 'btc', 'eth', 'bsc'].includes(o.chain)
                   ))
-          )
+            ))
           .filter(
             (o) => !this.$store.state.settings.disableChains.includes(o.chain)
           )
+      } else {
+        all = HD.getVertoChains()
+        this.chains = all
+      }
+
+      return all
     },
     filterTokensByAccount (account) {
       this.initTable(null, account)
@@ -1955,7 +1980,9 @@ export default {
   // }
 }
 ul.tabs.group {
-  height: 80px !important ;
+min-height: 80px;
+    max-height: 80px;
+
 }
 .top-4part {
   display: grid;

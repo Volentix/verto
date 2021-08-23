@@ -251,7 +251,7 @@ export default {
            ....,
         ]
       */
-      let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || !['eos', 'eth'].includes(v.chain)) && a.findIndex(t => (t.chain === v.chain)) === i)))
+      let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || v.type === 'verto' || !['eos', 'eth'].includes(v.chain)) && a.findIndex(t => (t.chain === v.chain)) === i)))
         .map(o => {
           let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
           o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)

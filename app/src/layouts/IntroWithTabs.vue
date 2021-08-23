@@ -191,7 +191,7 @@
           <q-breadcrumbs-el
             v-if="$route.name.includes('token')"
             @click="goToTab('assets', $route.params.asset && !['btc'].includes($route.params.asset.chain) ? $route.params.asset.chain : null)"
-            :label="$route.params.asset && $route.params.asset.amount && !['btc'].includes($route.params.asset.chain) ?  getChainLabel($route.params.asset.chain) + ' assets' : 'Assets'"
+            :label="$route.params.asset && $route.params.asset.type && $route.params.asset.isEvm && !['btc'].includes($route.params.asset.chain) ?  getChainLabel($route.params.asset.chain) + ' assets' : 'Assets'"
             class="cursor-pointer"
 
           />
@@ -229,6 +229,12 @@ export default {
         send: 1
       },
       tools: {
+        eth: [{
+          icon: 'img:https://zapper.fi/images/HEX-icon.png',
+          to: '/verto/stake/eth/hex',
+          title: 'Stake HEX',
+          activeAccRequired: true
+        }],
         eos: [{
           icon: 'bolt',
           to: '/verto/wallet/eos/powerup',
@@ -293,7 +299,7 @@ export default {
       this.$router.push('/verto/manage/accounts')
     },
     goToTab (tab, chain) {
-      tab = chain ? 'chains' : tab
+    //  tab = chain ? 'chains' : tab
       this.$router.push({
         name: 'dashboard',
         params: {
