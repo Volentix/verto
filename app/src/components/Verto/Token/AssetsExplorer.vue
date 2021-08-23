@@ -192,7 +192,7 @@
             </li>
           </ul>
         </div>
-        <div class="col-md-6 row justify-end" v-if="!$route.params.accounts">
+        <div class="col-md-6 row justify-end q-pr-lg" v-if="!$route.params.accounts">
            <TokenByAccount @filterTokensByAccount="filterTokensByAccount" v-if="tab == 'assets' && selectedChain" :mode="'select'"     :chain="selectedChain.chain" class="justify-end q-mr-md" />
            <q-input
             @input="tab = 'assets'"
@@ -201,6 +201,7 @@
             dense filled v-model="tokenSearchVal"
             style="width:280px"
             class="float-left q-mr-md"
+            rounded
             icon-right="search"
             label="Search token by symbol"
           >
@@ -263,7 +264,7 @@
         <div class="see-text col col-12"></div>
       </div>
       <div
-        class="row q-col-gutter-md q-pr-lg"
+        class="row q-col-gutter-md q-pr-lg q-mb-lg"
         v-show="
           !tokenSearchVal.length && !$store.state.currentwallet.wallet.chain
         "
@@ -297,7 +298,7 @@
         tab == 'chains'
       "
     >
-      <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" class="" style="margin-left: -15px !important; height: 80vh;">
+      <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" class="" style="margin-left: -15px !important; height: 78vh;">
         <div class="sub-top sub-top-chart">
           <div class="subt-text" v-if="!allChains && false">
             <p class="q-ma-none text-bold text-body1">
@@ -723,7 +724,7 @@
       )"
       :key="index + uniqueKey"
     >
-      <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" class="" style="margin-left: -15px !important; height: 80vh;">
+      <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" class="" style="margin-left: -15px !important; height: 78vh;">
         <div class="sub-top sub-top-chart">
           <!-- <div class="subt-text " v-if="!allAssets" >
               <p>
@@ -1928,7 +1929,7 @@ export default {
   margin-top: 20px;
 }
 .wrapper {
-  height: 85.5vh;
+  height: 91.5vh;
   padding-bottom: 10px;
   // overflow: auto;
   @media screen and (min-height: 700px) {
