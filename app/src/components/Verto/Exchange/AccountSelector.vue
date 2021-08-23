@@ -77,6 +77,7 @@
               </q-list>
             </q-menu>
           </q-btn>
+
           <div v-else-if="false">
           <span>No account found {{chain}}</span>
           </div>
@@ -160,15 +161,14 @@ export default {
           })
       )
 
-      if (this.showAllWallets) {
-        tableData.filter(
-          (w, i, a) =>
-            ((w.chain !== 'eth' && w.chain !== 'eos')) &&
+      tableData.filter(
+        (w, i, a) =>
+          ((w.chain !== 'eth' && w.chain !== 'eos')) &&
              this.checkChain(w) &&
             a.findIndex((t) => t.key === w.key && t.chain === w.chain) === i &&
             this.accountOptions.push(this.formatAccoountOption(w))
-        )
-      }
+      )
+
       this.accountOptions = this.accountOptions.filter((o) => o && o.name)
       if (this.$store.state.wallets.metamask.accounts.length) {
         this.accountOptions.push(
@@ -236,7 +236,7 @@ export default {
       if (!this.accountOption && this.accountOptions.length) {
         this.accountOption = this.accountOptions[0]
       }
-      console.log(this.accountOption, this, this.accountOptions)
+      // console.log(this.accountOptions, this.accountOption, this)
       this.setAccount()
     },
     setAccount (time = 0) {
@@ -313,7 +313,8 @@ export default {
       }
     }, */
     '$store.state.investment.defaultAccount': function (val) {
-      if (!val || val.origin !== 'defi') return
+      console.log(val, 'val')
+      if (!val || !['defi', 'set'].includes(val.origin)) return
 
       let w = this.$store.state.investment.defaultAccount
 

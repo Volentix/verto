@@ -12,9 +12,9 @@
           </div>
           <div class="col col-md-12">
             <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-              <div class="standard-content">
+              <div class="standard-content-x q-pt-md">
                 <h2 class="standard-content--title flex justify-start">Profile</h2>
-                <profile />
+                <profile style="max-width:900px;" />
               </div>
             </div>
           </div>
@@ -211,5 +211,21 @@ export default {
         font-size: 25px;
       }
     }
+  }
+  .desktop-card-style {
+    border-radius: 0px;
+  }
+  .desktop-version {
+    padding-top: 0vh !important;
+    margin-bottom: -100px;
+  }
+  .desktop-card-style.dark-theme {
+    border: none;
+    padding-left: 20px;
+    border-radius: 0px;
+  }
+  .desktop-card-style{
+    box-shadow: none;
+    padding-left: 20px;
   }
 </style>

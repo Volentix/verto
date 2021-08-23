@@ -83,7 +83,7 @@
               </div>
             </template>
           </q-input>
-          <a :href="transactionLink" target="_blank" class="text-body2 text-black"> More infos</a>
+          <a :href="transactionLink" target="_blank" class="text-body2 text-black"> More info</a>
         </q-card-section>
         <q-card-actions align="right" class="q-pr-sm">
           <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/>

@@ -269,15 +269,20 @@ export const getETHTransactions = async (context, address) => {
 }
 
 export const getInvestments = (context, payload) => {
-  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/balances/' + payload.platform + '?addresses%5B%5D=' + payload.value + '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
+  let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/protocols/' + payload.platform + '/balances?addresses%5B%5D=' + payload.value + '&network=ethereum&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
+  // let transactionEndpoint = process.env[context.rootState.settings.network].CACHE + 'https://api.zapper.fi/v1/balances/' + payload.platform + '?addresses%5B%5D=' + payload.value + '&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88'
 
   axios.get(transactionEndpoint, config)
     .then(function (result) {
-      result.data[payload.value.toLowerCase()] = result.data[payload.value.toLowerCase()].map(o => {
-        o.owner = payload.value.toLowerCase()
-        return o
-      })
-      context.commit('setInvestments', result.data[payload.value.toLowerCase()])
+      let a = result.data[payload.value.toLowerCase()]
+
+      if (a && a.products.length && a.products[0] && a.products[0].assets) {
+        a.products[0].assets = a.products[0].assets.map(o => {
+          o.owner = payload.value.toLowerCase()
+          return o
+        })
+        context.commit('setInvestments', a.products[0].assets)
+      }
     }).catch(error => {
       console.log(error, 'Cannot get market Investments')
     })
