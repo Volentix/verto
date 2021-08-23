@@ -212,4 +212,20 @@ export default {
       }
     }
   }
+  .desktop-card-style {
+    border-radius: 0px;
+  }
+  .desktop-version {
+    padding-top: 0vh !important;
+    margin-bottom: -100px;
+  }
+  .desktop-card-style.dark-theme {
+    border: none;
+    padding-left: 20px;
+    border-radius: 0px;
+  }
+  .desktop-card-style{
+    box-shadow: none;
+    padding-left: 20px;
+  }
 </style>
