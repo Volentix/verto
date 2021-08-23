@@ -5,7 +5,7 @@
       view="hHh Lpr lff"
       container
       style="height: 100vh"
-      class="shadow-2 rounded-borders"
+      class="shadow-2"
     >
       <q-drawer
         v-model="drawer"
@@ -13,144 +13,151 @@
         :mini="!drawer || miniState"
         :width="250"
         :breakpoint="500"
-        content-class="bg-grey-3"
+        :content-class="$store.state.settings.lightMode === 'false' ? 'bg-grey-3':'drawer-dark-theme'"
       >
-        <div class="left-area gt-sm full-width" v-if="!$q.screen.lt.sm">
-          <div class="left">
-            <div class="img app-logo q-pt-md flex flex-center">
-              <div class="balance flex flex-center">
-                <svg
-                  class="svg_logo q-mr-sm"
-                  width="20"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 20.58"
-                >
-                  <path
-                    d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z"
-                    transform="translate(-183 -18.21)"
-                  ></path>
-                </svg>
-                <router-link to="/verto/dashboard">VERTO</router-link>
+        <q-scroll-area :dark="$store.state.settings.lightMode === 'true'" :visible="true" class="" style="margin-left: -15px !important; height: 100vh;">
+          <div class="left-area gt-sm full-width" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" v-if="!$q.screen.lt.sm">
+            <div class="left">
+              <div class="img app-logo q-pt-md flex flex-center">
+                <div class="balance flex flex-center">
+                  <svg
+                    class="svg_logo q-mr-sm"
+                    width="20"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 16 20.58"
+                    v-if="false"
+                  >
+                    <path
+                      d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z"
+                      transform="translate(-183 -18.21)"
+                    ></path>
+                  </svg>
+                  <img src="statics/icons/ms-icon-144x144.png" width="32" class="png_logo q-mr-sm" alt="">
+                  <router-link to="/verto/dashboard">VERTO</router-link>
 
-                <div class="text-caption full-width text-center">
-                 <span v-if="$store.state.wallets.customTotal.show">{{$store.state.wallets.customTotal.label}}</span>
-                 <span v-else>Total Balance</span>
-                  <q-btn
-                    dense
-                    flat
-                    icon-right="cached"
-                    color="grey"
-                    @click="refreshWallet()"
-                  />
-                </div>
-                <div class="text-h3 total" v-if="$store.state.wallets.customTotal.show">
-                  ${{ nFormatter2($store.state.wallets.customTotal.usd, 3) }}
-                </div>
-                <div class="text-h3 total" v-else>
-                  ${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }}
-                </div>
+                  <div class="text-caption full-width text-center">
+                  <span v-if="$store.state.wallets.customTotal.show">{{$store.state.wallets.customTotal.label}}</span>
+                  <span v-else>Total Balance</span>
+                    <q-btn
+                      dense
+                      flat
+                      icon-right="cached"
+                      color="grey"
+                      @click="refreshWallet()"
+                    />
+                  </div>
+                  <div class="text-h3 total" v-if="$store.state.wallets.customTotal.show">
+                    ${{ nFormatter2($store.state.wallets.customTotal.usd, 3) }}
+                  </div>
+                  <div class="text-h3 total" v-else>
+                    ${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }}
+                  </div>
 
-                <div class="row flex flex-center q-pt-md q-pb-sm">
-                  <q-btn
-                    size="sm"
-                    label="Send"
-                    @click="keys.send++ ; chainTools.send = true "
-                    icon="file_upload"
-                    outline
-                    rounded
+                  <div class="row flex flex-center q-pt-md q-pb-sm">
+                    <q-btn
+                      size="sm"
+                      label="Send"
+                      @click="keys.send++ ; chainTools.send = true "
+                      icon="file_upload"
+                      outline
+                      rounded
+                    />
+                    <q-btn
+                      size="sm"
+                      label=""
+                      icon="file_download"
+                      outline
+                      rounded
+                      class="q-ml-sm"
+                      to="/verto/manage/receive"
+                    />
+                    <div></div>
+                  </div>
+                  <AccountSelector
+                    class="top q-pt-md"
+                    :showAllWallets="true"
+                    v-if="false"
                   />
-                  <q-btn
-                    size="sm"
-                    label=""
-                    icon="file_download"
-                    outline
-                    rounded
-                    class="q-ml-sm"
-                    to="/verto/manage/receive"
-                  />
-                  <div></div>
                 </div>
-                <AccountSelector
-                  class="top q-pt-md"
-                  :showAllWallets="true"
-                  v-if="false"
-                />
               </div>
+
+              <ul class="left-menu">
+                <li><a href="#"> </a></li>
+                <li class="q-pb-md flex text-center cursor-pointer tools-label-li" v-if="$store.state.settings.defaultChainData && tools[$store.state.settings.defaultChainData.chain]" >
+                  <a @click="chainTools.show = !chainTools.show" class="tools-label">
+                    <q-icon size="md"  class="q-pr-sm" :name="'img:'+$store.state.settings.defaultChainData.icon" />
+                    <span>Chains Tools
+                      <q-icon  class="q-pl-md" :name="!chainTools.show  ? 'expand_more' : 'expand_less' " />
+                    </span>
+                  </a>
+                <!--  <AccountSelector
+                    class="top q-pt-md"
+                    v-show="chainTools.show"
+                    :showAllWallets="true"
+                    :key="$store.state.settings.defaultChainData.chain"
+                    :chains="[$store.state.settings.defaultChainData.chain]"
+                  /> -->
+                </li>
+                <li v-show="chainTools.show && $store.state.settings.defaultChainData && tools[$store.state.settings.defaultChainData.chain]" v-for="(path, index) in ( $store.state.settings.defaultChainData ? tools[$store.state.settings.defaultChainData.chain] : [])" :key="index" class="tools" :class="{ active: $route.path == path.to }">
+                  <router-link :to="path.to">
+                    <q-icon :name="path.icon"/><span>{{path.title}}</span></router-link
+                  >
+                </li>
+                <li :class="{ active: $route.path == '/verto/dashboard' }">
+                  <router-link to="/verto/dashboard">
+                    <i class="fas fa-columns change-c"></i
+                    ><span>Dashboard</span></router-link
+                  >
+                </li>
+                <li
+                  :class="{ active: $route.path == '/verto/crosschain-exchange' }"
+                >
+                  <router-link to="/verto/crosschain-exchange"
+                    ><i class="fas fa-exchange-alt change-c"></i
+                    ><span>Exchange</span></router-link
+                  >
+                </li>
+                <li :class="{ active: $route.path == '/verto/history' }">
+                  <router-link to="/verto/history"
+                    ><i class="fas fa-stream change-c"></i
+                    ><span>History</span></router-link
+                  >
+                </li>
+                <li
+                  v-if="false"
+                  :class="{ active: $route.path == '/verto/stake' }"
+                >
+                  <router-link to="/verto/stake"
+                    ><i class="fas fa-stream change-c"></i
+                    ><span>Stake</span></router-link
+                  >
+                </li>
+                <li
+                  v-if="false"
+                  :class="{ active: $route.path == '/verto/explorer' }"
+                >
+                  <router-link to="/verto/explorer"
+                    ><i class="fas fa-stream change-c"></i
+                    ><span>Explorer</span></router-link
+                  >
+                </li>
+                <li :class="{ active: $route.path == '/verto/profile' }">
+                  <router-link to="/verto/profile"
+                    ><i class="far fa-user change-c"></i><span>Profile</span>
+                  </router-link>
+                </li>
+                <li
+                  @click="goToAccounts()"
+                  :class="{ active: $route.path.includes('accounts') }"
+                >
+                  <a href="javascript:void(0)"
+                    ><i class="fas fa-plus change-c"></i><span>Accounts </span>
+                  </a>
+                </li>
+              </ul>
             </div>
-
-            <ul class="left-menu">
-            <li class="q-pb-md flex text-center cursor-pointer" v-if="$store.state.settings.defaultChainData && tools[$store.state.settings.defaultChainData.chain]" >
-                <a @click="chainTools.show = !chainTools.show" class=" tools-label">
-                  <q-icon size="md"  class="q-pr-sm" :name="'img:'+$store.state.settings.defaultChainData.icon" /><span>Chains Tools <q-icon  class="q-pl-md" :name="!chainTools.show  ? 'expand_more' : 'expand_less' " /></span></a
-                >
-              <!--  <AccountSelector
-                  class="top q-pt-md"
-                  v-show="chainTools.show"
-                  :showAllWallets="true"
-                  :key="$store.state.settings.defaultChainData.chain"
-                  :chains="[$store.state.settings.defaultChainData.chain]"
-                /> -->
-              </li>
-            <li  v-show="chainTools.show && $store.state.settings.defaultChainData && tools[$store.state.settings.defaultChainData.chain]" v-for="(path, index) in ( $store.state.settings.defaultChainData ? tools[$store.state.settings.defaultChainData.chain] : [])" :key="index" class="tools" :class="{ active: $route.path == path.to }">
-                <router-link :to="path.to">
-                  <q-icon :name="path.icon"/><span>{{path.title}}</span></router-link
-                >
-              </li>
-              <li :class="{ active: $route.path == '/verto/dashboard' }">
-                <router-link to="/verto/dashboard">
-                  <i class="fas fa-columns change-c"></i
-                  ><span>Dashboard</span></router-link
-                >
-              </li>
-              <li
-                :class="{ active: $route.path == '/verto/crosschain-exchange' }"
-              >
-                <router-link to="/verto/crosschain-exchange"
-                  ><i class="fas fa-exchange-alt change-c"></i
-                  ><span>Exchange</span></router-link
-                >
-              </li>
-              <li :class="{ active: $route.path == '/verto/history' }">
-                <router-link to="/verto/history"
-                  ><i class="fas fa-stream change-c"></i
-                  ><span>History</span></router-link
-                >
-              </li>
-              <li
-                v-if="false"
-                :class="{ active: $route.path == '/verto/stake' }"
-              >
-                <router-link to="/verto/stake"
-                  ><i class="fas fa-stream change-c"></i
-                  ><span>Stake</span></router-link
-                >
-              </li>
-              <li
-                v-if="false"
-                :class="{ active: $route.path == '/verto/explorer' }"
-              >
-                <router-link to="/verto/explorer"
-                  ><i class="fas fa-stream change-c"></i
-                  ><span>Explorer</span></router-link
-                >
-              </li>
-              <li :class="{ active: $route.path == '/verto/profile' }">
-                <router-link to="/verto/profile"
-                  ><i class="far fa-user change-c"></i><span>Profile</span>
-                </router-link>
-              </li>
-              <li
-                @click="goToAccounts()"
-                :class="{ active: $route.path.includes('accounts') }"
-              >
-                <a href="javascript:void(0)"
-                  ><i class="fas fa-plus change-c"></i><span>Accounts </span>
-                </a>
-              </li>
-            </ul>
           </div>
-        </div>
-
+        </q-scroll-area>
         <!--
           in this case, we use a button (can be anything)
           so that user can switch back
@@ -172,7 +179,7 @@
         </div>
       </q-drawer>
 
-      <q-page-container id="main-container">
+      <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}">
         <TopMenu />
         <q-breadcrumbs
           class="text-deep-purple-12 breadcrumbs"
@@ -216,11 +223,13 @@ import Formatter from '@/mixins/Formatter'
 import AccountSelector from '@/components/Verto/Exchange/AccountSelector.vue'
 import TopMenu from '../components/Verto/TopMenu'
 import SelectTokenPopup from '../components/Verto/Token/SelectTokenPopup.vue'
+import { QScrollArea } from 'quasar'
 export default {
   components: {
     AccountSelector,
     TopMenu,
-    SelectTokenPopup
+    SelectTokenPopup,
+    QScrollArea
   },
   data () {
     return {
@@ -330,7 +339,7 @@ h2 {
   line-height: initial !important ;
 }
 /deep/ .q-page-container {
-  padding-top: 40px;
+  padding-top: 0px;
 }
 .center-element {
   margin: 0 auto;
@@ -361,17 +370,21 @@ h2 {
 .left ul {
   padding: 20px;
   padding-right: 0px;
+  padding-left: 0px;
 }
 .left .img {
   padding: 5px 20px;
   max-width: 300px;
   float: right;
+  clear: both;
+  margin-bottom: 50px;
 }
 
 .left ul {
   margin: 0px 0 0px;
   max-width: 300px;
-  float: right;
+  /* float: right; */
+  margin: auto;
 }
 
 .left ul li {
@@ -389,6 +402,10 @@ h2 {
   border-bottom-left-radius: 10px;
   text-decoration: none;
   transition: all 0.3s ease;
+}
+.left ul li.tools a{
+  font-size: 14px;
+  padding: 10px 20px;
 }
 
 .left ul li a i {
@@ -828,9 +845,17 @@ h2 {
 /deep/ .q-header {
   background: #f2f2f2 !important;
 }
+/deep/ .q-page-container.dark-theme,
+/deep/ .q-header.dark-theme {
+  background: #04111f !important;
+}
+/deep/ .q-page-container.dark-theme{
+  min-height: 100vh;
+  overflow-y: hidden;
+}
 /deep/ .desktop-version {
   padding-left: 0vh !important;
-  padding-top: 0vh !important;
+  padding-top: 5vh !important;
 }
 .top /deep/ .account_selector .q-btn__content {
   font-size: 12px;
@@ -879,14 +904,94 @@ ul.left-menu {
   text-shadow: 10px 10px 20px #cbbbeb;
 }
 .tools {
-    background: #e5e5e5;
-    }
-    .tools-label {
-        display: contents !important;
-        }
-        li.tools img {
-    margin-right: 30px;
-    width: 20px;
-    height: auto;
+  background: #e5e5e5;
+}
+.drawer-dark-theme .tools {
+  background: #040e1a;
+}
+.tools-label {
+  display: contents !important;
+}
+li.tools img {
+  margin-right: 30px;
+  width: 20px;
+  height: auto;
+}
+
+</style>
+<style>
+.drawer-dark-theme{
+  /* background: #04111f; */
+  background: #040e1a;
+}
+.wrapper .left-area.dark-theme {
+  background: #040e1a;
+  /* border-right: 1px solid rgba(255,255,255, .4); */
+}
+.drawer-dark-theme ul.left-menu {
+  background: #040e1a;
+  min-height: 66vh;
+  /* border-right: 1px solid rgba(255,255,255, .4); */
+}
+ul.left-menu {
+  max-width: 100% !important;
+}
+.left ul{
+  /* padding-top: 50px; */
+}
+.drawer-dark-theme .left ul li a:hover,
+.drawer-dark-theme .active a {
+  background: #04111f !important;
+  color: #b6b6b6 !important;
+}
+.drawer-dark-theme .left ul li.tools a:hover{
+  background: #04111f !important;
+  color: #b6b6b6 !important;
+}
+.drawer-dark-theme .tools.active a {
+  background: #04111f !important;
+  color: #b6b6b6 !important;
+  box-shadow: none !important;
+}
+.drawer-dark-theme .active {
+  clear: both;
+  height: fit-content;
+  border-radius: 0px;
+}
+.drawer-dark-theme .left ul li {
+  padding-left: 30px;
+}
+.drawer-dark-theme .left ul li {
+  border-radius: 0px !important;
+}
+.drawer-dark-theme .active a {
+  box-shadow: 0px 0px 10px 0px #0f335f;
+  height: fit-content;
+  border-radius: 0px !important;
+}
+.drawer-dark-theme .balance{
+  background: #040e1a;
+  box-shadow: none;
+  color: #FFF;
+  width: 100%;
+}
+.drawer-dark-theme .app-logo a{
+  color: #FFF;
+}
+.drawer-dark-theme .img.app-logo {
+  padding: 0px;
+}
+.drawer-dark-theme .total {
+  color: #FFF;
+  text-shadow: 10px 10px 20px #cbbbeb;
+}
+.drawer-dark-theme .png_logo{
+  max-width: 32px;
+}
+.drawer-dark-theme .left {
+  background: #040e1a;
+}
+.drawer-dark-theme .wrapper .left-area {
+  background: #040e1a;
 }
 </style>

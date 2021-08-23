@@ -39,7 +39,7 @@ export default {
           description: `
             A VNode operator with a stake = or > 3,000 VTX can vote for other Nodes or on proposals for the Volentixtrez
             <br>
-            Subsidy: 
+            Subsidy:
             <br>
             8 VTX/day of uptime
             <br>
@@ -56,7 +56,7 @@ export default {
           description: `
             A VNode operator with a stake = or > 3,000 VTX can vote for other Nodes or on proposals for the Volentixtrez
             <br>
-            Subsidy: 
+            Subsidy:
             <br>
             8 VTX/day of uptime
             <br>
