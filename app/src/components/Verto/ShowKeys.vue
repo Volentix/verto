@@ -1,6 +1,6 @@
 <template>
-    <q-dialog v-model="alert">
-      <q-card >
+    <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="alert">
+      <q-card :dark="$store.state.settings.lightMode === 'true'">
         <q-card-section>
           <div class="text-body1 text-bold"><q-icon :name="'img:'+chain.icon" class="q-pr-sm" />{{chain.label}} accounts: {{(field == 'key' ? 'Public keys' : (field == 'privateKey' ? 'Private keys' : '' )) }}</div>
         </q-card-section>
@@ -103,5 +103,14 @@ export default {
     padding: 10px;
     border-radius: 5px;
     font-size: 13px;
+  }
+  .q-icon{
+    width: 30px;
+    height: 30px;
+  }
+  .q-dialog .q-card.q-card--dark.q-dark{
+    .copy-key {
+      background: #0e1829;
+    }
   }
 </style>

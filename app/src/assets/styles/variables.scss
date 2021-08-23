@@ -34,8 +34,11 @@ $mainColor: #7900FF;
     overflow: hidden;
     &.dark-theme{
         background-color: #04111F;
-        border: 1px solid #627797;
+        // border: 1px solid #627797;
         color: #FFF;
+        border: none;
+        padding-left: 20px;
+        border-radius: 0px;
     }
 }
 .shad{

@@ -278,4 +278,10 @@ export default {
       height: 93vh !important;
     }
   }
+  .desktop-card-style.dark-theme {
+    border: none;
+    margin-left: 40px;
+    margin-top: 40px;
+    border-radius: 0px;
+  }
 </style>
