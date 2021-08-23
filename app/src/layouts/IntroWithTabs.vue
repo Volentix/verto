@@ -164,18 +164,16 @@
           to mini-mode
         -->
         <div
-          class="q-mini-drawer-hide absolute"
-          style="top: 15px; right: -17px"
+          class="q-mini-drawer-hide "
+          style="margin-top: -95px; right: -17px"
         >
-          <q-btn
-            dense
-            round
-            unelevated
-            v-if="false"
-            color="accent"
-            icon="chevron_left"
-            @click="miniState = true"
-          />
+           <span class="version full-width text-center column">
+        <span class="q-mb-md text-grey">{{version}}</span>
+        <span class="q-pa-sm text-grey">
+          This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-deep-purple-12c" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
+        </span>
+
+      </span>
         </div>
       </q-drawer>
 
@@ -218,6 +216,7 @@
 </template>
 
 <script>
+import { version } from '../../package.json'
 import initWallet from '@/util/Wallets2Tokens'
 import Formatter from '@/mixins/Formatter'
 import AccountSelector from '@/components/Verto/Exchange/AccountSelector.vue'
@@ -234,6 +233,7 @@ export default {
   data () {
     return {
       toggleView: true,
+      version: {},
       keys: {
         send: 1
       },
@@ -329,7 +329,7 @@ export default {
     }
   },
   created () {
-
+    this.version = version
   },
   mixins: [Formatter]
 }
@@ -358,7 +358,7 @@ h2 {
   float: left;
 }
 .breadcrumbs {
-  margin-top: 20px;
+  margin-top: 60px;
   padding: 9px 0px 9px 10px;
 }
 .top /deep/ .account_selector {
