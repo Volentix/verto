@@ -4,7 +4,7 @@
           <p class="text-h6 text-bold" v-if="transactionObject && !decryptPrivateKey && !transactionLink && !hideLabels">Click button below to process</p>
           <p class="text-red text-body2" v-if="ErrorMessage">{{ErrorMessage}}</p>
           <p class="text-green text-body2" v-if="SuccessMessage">{{SuccessMessage}}</p>
-          <div v-if="decryptPrivateKey" >
+          <div v-if="decryptPrivateKey && !transactionLink" >
             <q-card-section>
               <div class="">
                 <q-item-section>
@@ -25,7 +25,7 @@
               </div>
             </q-card-section>
           </div>
-          <q-btn label="Process" :disable="!transactionObject" :loading="spinnervisible" @click="process()"  v-if="transactionObject && !decryptPrivateKey && !transactionLink && (!hideLabels || hideLabels && !ErrorMessage)" outline />
+          <q-btn  label="Process" :disable="!transactionObject" :loading="spinnervisible" @click="process()"  v-if="transactionObject && !decryptPrivateKey && !transactionLink && (!hideLabels || hideLabels && !ErrorMessage)" outline />
           <q-input v-if="transactionLink" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" readonly class="input-input" rounded outlined color="purple" v-model="transactionLink">
             <template v-slot:append>
               <div class="flex justify-end">

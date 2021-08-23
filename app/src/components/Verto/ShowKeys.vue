@@ -1,16 +1,19 @@
 <template>
-    <q-dialog v-model="alert">
-      <q-card >
+    <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="alert">
+      <q-card :dark="$store.state.settings.lightMode === 'true'">
         <q-card-section>
           <div class="text-body1 text-bold"><q-icon :name="'img:'+chain.icon" class="q-pr-sm" />{{chain.label}} accounts: {{(field == 'key' ? 'Public keys' : (field == 'privateKey' ? 'Private keys' : '' )) }}</div>
         </q-card-section>
         <q-scroll-area style="height: 300px; ">
+
         <q-card-section class="q-pt-none" v-for="(account , index) in chain.accounts" :key="index">
-         <span class="q-pb-sm">{{account.name}}</span><br/>
-         <div class="text-body1 q-pt-md copy-key cursor-pointer" @click="copyToClipboard(account[field],'Copied')"  v-if="account[field] || showPrivateKeys[index]" >
-               {{getKeyFormat(account[field], 20)}} <q-icon name="o_file_copy"  />
+         <span class="q-pb-sm">{{account.name}}  <q-btn v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" :label="!showQr[account.name.split(' ')[0]] ?  'Show QR Code' : 'Hide'" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat size="sm" class="float-right q-mb-sm" icon-right="img:https://image.flaticon.com/icons/png/512/107/107072.png" /></span><br/>
+         <qrcode v-if="(account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]]" dark :value="decryptedKeys[index] ? decryptedKeys[index] : account[field]" :options="{size: 100}"></qrcode>
+         <div class="text-body1 q-pt-md copy-key cursor-pointer q-mt-sm" @click="copyToClipboard(account[field])"  v-if="account[field] || (showPrivateKeys[index] && decryptedKeys[index])" >
+               {{getKeyFormat(decryptedKeys[index] ? decryptedKeys[index] : account[field], 18)}} <q-icon name="o_file_copy"  />
           </div>
-           <div class="text-body1 q-pt-md copy-key cursor-pointer" v-if="!account.privateKeyEncrypted && field == 'privateKey' &&  !showPrivateKeys[index] " >
+
+           <div class="text-body1 q-pt-md copy-key cursor-pointer" v-if="account.privateKeyEncrypted && field == 'privateKey' &&  !showPrivateKeys[index] " >
                <q-input
                   dense
                         v-model="privateKeyPassword[index]"
@@ -42,6 +45,9 @@
     </q-dialog>
 </template>
 <script>
+import Vue from 'vue'
+import VueQrcode from '@chenfengyuan/vue-qrcode'
+Vue.component(VueQrcode.name, VueQrcode)
 import Formatter from '@/mixins/Formatter'
 export default {
   props: ['chain', 'field'],
@@ -49,6 +55,9 @@ export default {
   data () {
     return {
       alert: true,
+      showQr: {
+
+      },
       showPrivateKeys: {
 
       },
@@ -94,5 +103,14 @@ export default {
     padding: 10px;
     border-radius: 5px;
     font-size: 13px;
+  }
+  .q-icon{
+    width: 30px;
+    height: 30px;
+  }
+  .q-dialog .q-card.q-card--dark.q-dark{
+    .copy-key {
+      background: #0e1829;
+    }
   }
 </style>

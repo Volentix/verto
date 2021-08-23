@@ -1,162 +1,163 @@
 <template>
- <q-dialog v-model="alert">
-      <q-card style="width:350px;"> <div
-    id="id-svk40f"
-    role="dialog"
-    tabindex="-1"
-    aria-modal="true"
-    data-dialog="true"
-    class="_2ml_U"
-    aria-label="Select token to send"
-    style="
-      height: 470px;
-      max-width: 450px;
-      border-radius: 12px;
-      overflow: hidden;
-    "
-  >
-    <div class="_1_oPM">
+  <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="alert">
+    <q-card :dark="$store.state.settings.lightMode === 'true'" style="width:380px;">
       <div
-        kind="h/5_sb"
-        color="currentColor"
-        class="UIText-sc-96tl0y-0 iwPgYG"
-        style="text-align: center"
+        id="id-svk40f"
+        role="dialog"
+        tabindex="-1"
+        aria-modal="true"
+        data-dialog="true"
+        class="_2ml_U"
+        aria-label="Select token to send"
+        style="
+          height: 470px;
+          max-width: 450px;
+          border-radius: 12px;
+          overflow: hidden;
+        "
       >
-        Select token
-      </div>
-      <button
-        type="button"
-        aria-label="close"
-        @click="alert = false"
-        class="UnstyledButton-sc-1d365uh-0 iiKClY"
-        style="position: absolute; right: 20px; top: 20px"
-      >
-        <svg viewBox="0 0 24 24" fill="none" style="width: 24px">
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M19.66 4.34a1.16 1.16 0 00-1.642 0l-6.02 6.02-6.016-6.017A1.16 1.16 0 104.34 5.984l6.017 6.018-6.017 6.017a1.16 1.16 0 001.641 1.642L12 13.643l6.02 6.02a1.16 1.16 0 001.641-1.642l-6.02-6.02 6.02-6.019a1.16 1.16 0 000-1.641z"
-            fill="currentColor"
-          ></path>
-        </svg>
-      </button>
-    </div>
-    <div class="_149f3"></div>
-    <div style="display: flex; flex-direction: column; flex-grow: 1">
-      <div class="AssetSelect__Padding-sc-2uja83-0 fAsUxA">
-        <div
-          height="12px"
-          width="auto"
-          class="Spacer__SpacerElement-sc-6ie5tt-0 jIsCjR"
-        ></div>
-        <div class="SearchInput__Wr-sc-15wgvpl-3 kfsUqO">
-          <q-input v-model="searchVal" label="Search assets" dense filled >
-          <template v-slot:prepend>
-          <q-icon name="search" />
-        </template>
-          </q-input>
-        </div>
-        <div
-          height="20px"
-          width="auto"
-          class="Spacer__SpacerElement-sc-6ie5tt-0 cOuiNY"
-        ></div>
-      </div>
-      <div class="Scrollable__Wr-sc-1haiovs-0 RUBUj">
-        <div class="Scrollable__ContainerWr-sc-1haiovs-1 kfPoNl">
+        <div class="_1_oPM">
           <div
-            class="Scrollable__Container-sc-1haiovs-2 hnbMXD ps ps--active-y"
-            style="height: 320px; padding-right: 14px"
+            kind="h/5_sb"
+            color="currentColor"
+            class="UIText-sc-96tl0y-0 iwPgYG"
+            style="text-align: center"
           >
-            <div class="VStack-sc-1vdo21d-0 iPFffM">
-              <button
-                class="
-                  UnstyledButton-sc-1d365uh-0
-                  AssetSelect__AssetOption-sc-2uja83-1
-                  gAlxcT
-                  _34zH_
-                "
-                @click="selectToken(token)"
-                :key="index"
-                v-for="(token , index) in tokens"
+            Select token
+          </div>
+          <button
+            type="button"
+            aria-label="close"
+            @click="alert = false"
+            class="UnstyledButton-sc-1d365uh-0 iiKClY"
+            style="position: absolute; right: 20px; top: 20px"
+          >
+            <svg viewBox="0 0 24 24" fill="none" style="width: 24px">
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M19.66 4.34a1.16 1.16 0 00-1.642 0l-6.02 6.02-6.016-6.017A1.16 1.16 0 104.34 5.984l6.017 6.018-6.017 6.017a1.16 1.16 0 001.641 1.642L12 13.643l6.02 6.02a1.16 1.16 0 001.641-1.642l-6.02-6.02 6.02-6.019a1.16 1.16 0 000-1.641z"
+                fill="currentColor"
+              ></path>
+            </svg>
+          </button>
+        </div>
+        <div class="_149f3"></div>
+        <div style="display: flex; flex-direction: column; flex-grow: 1">
+          <div class="AssetSelect__Padding-sc-2uja83-0 fAsUxA">
+            <div
+              height="12px"
+              width="auto"
+              class="Spacer__SpacerElement-sc-6ie5tt-0 jIsCjR"
+            ></div>
+            <div class="SearchInput__Wr-sc-15wgvpl-3 kfsUqO">
+              <q-input :dark="$store.state.settings.lightMode === 'true'" v-model="searchVal" label="Search assets" dense filled >
+                <template v-slot:prepend>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </div>
+            <div
+              height="20px"
+              width="auto"
+              class="Spacer__SpacerElement-sc-6ie5tt-0 cOuiNY"
+            ></div>
+          </div>
+          <div class="Scrollable__Wr-sc-1haiovs-0 RUBUj">
+            <div class="Scrollable__ContainerWr-sc-1haiovs-1 kfPoNl">
+              <div
+                class="Scrollable__Container-sc-1haiovs-2 hnbMXD ps ps--active-y"
+                style="height: 320px; padding-right: 14px"
               >
-                <div class="shared__HStack-sc-1qg837v-1 icuFOW">
-                  <div class="shared__HStack-sc-1qg837v-1 iXubSr">
-                    <div size="36" class="TokenIcon__Wr-sc-1tdh4mp-0 ehgTIN">
-                      <q-img   :src="token.icon" class="rounded" />
-                    </div>
-                    <div class="VStack-sc-1vdo21d-0 iPFffQ">
+               <div class="VStack-sc-1vdo21d-0 iPFffM">
+                <button
+                  class="
+                    UnstyledButton-sc-1d365uh-0
+                    AssetSelect__AssetOption-sc-2uja83-1
+                    gAlxcT
+                    _34zH_
+                  "
+                  @click="selectToken(token)"
+                  :key="index"
+                  v-for="(token , index) in tokens.filter(o => o.type.includes(searchVal.trim()) || !searchVal.trim().length)"
+                  >
+                    <div class="shared__HStack-sc-1qg837v-1 icuFOW">
+                      <div class="shared__HStack-sc-1qg837v-1 iXubSr">
+                        <div size="36" class="TokenIcon__Wr-sc-1tdh4mp-0 ehgTIN">
+                          <q-img   :src="token.icon" class="rounded" />
+                        </div>
+                        <div class="VStack-sc-1vdo21d-0 iPFffQ">
+                          <div
+                            kind="subtitle/m_med"
+                            color="currentColor"
+                            class="
+                              UIText-sc-96tl0y-0
+                              BreakWordText-sc-1s64evs-0
+                              cqCjKr
+                            "
+                          >
+                            <span style="white-space: nowrap" class="text-bold"
+                              >{{token.type.toUpperCase()}} <span style="vertical-align: middle"></span
+                            ></span>
+                          </div>
+                          <div
+                            kind="subtitle/m_reg"
+                            color="var(--zeric60)"
+                            class="
+                              UIText-sc-96tl0y-0
+                              BreakWordText-sc-1s64evs-0
+                              fzDPir
+                            "
+                          >
+                            <span  class="text-caption" style="cursor: pointer"
+                              ><span class="TokenValue__Value-sc-1yym8iz-0 bhdSQn"
+                                >{{formatNumber(token.amount, 2)}}</span
+                              >&nbsp;<span
+                                class="TokenValue__Text-sc-1yym8iz-1 jYYAZx "
+                                >{{token.type.toUpperCase()}}</span
+                              ></span
+                            >
+                            · ${{formatNumber(token.tokenPrice, 2)}}
+                          </div>
+                        </div>
+                      </div>
                       <div
                         kind="subtitle/m_med"
                         color="currentColor"
-                        class="
-                          UIText-sc-96tl0y-0
-                          BreakWordText-sc-1s64evs-0
-                          cqCjKr
-                        "
-                      >
-                        <span style="white-space: nowrap" class="text-bold"
-                          >{{token.type.toUpperCase()}} <span style="vertical-align: middle"></span
-                        ></span>
+                        class="UIText-sc-96tl0y-0 khcNgA"
+                      ><span class="text-caption">{{getChainLabel(token.chain)}}</span><br/>
+                        ${{nFormatter2(token.usd, 2)}}
                       </div>
-                      <div
-                        kind="subtitle/m_reg"
-                        color="var(--zeric60)"
-                        class="
-                          UIText-sc-96tl0y-0
-                          BreakWordText-sc-1s64evs-0
-                          fzDPir
-                        "
-                      >
-                        <span  class="text-caption" style="cursor: pointer"
-                          ><span class="TokenValue__Value-sc-1yym8iz-0 bhdSQn"
-                            >{{formatNumber(token.amount, 2)}}</span
-                          >&nbsp;<span
-                            class="TokenValue__Text-sc-1yym8iz-1 jYYAZx "
-                            >{{token.type.toUpperCase()}}</span
-                          ></span
-                        >
-                        · ${{formatNumber(token.tokenPrice, 2)}}
-                      </div>
-                    </div>
-                  </div>
+                    </div></button
+                  >
+                  <p v-if="tokens.filter(o => o.type.includes(searchVal.trim()) || !searchVal.trim().length).length == 0" class="q-pl-md">No assets found</p>
+                </div>
+                <div
+                  height="16px"
+                  width="auto"
+                  class="Spacer__SpacerElement-sc-6ie5tt-0 IaLFF"
+                ></div>
+                <div class="ps__rail-x" style="left: 0px; bottom: -269px">
                   <div
-                    kind="subtitle/m_med"
-                    color="currentColor"
-                    class="UIText-sc-96tl0y-0 khcNgA"
-                  ><span class="text-caption">{{getChainLabel(token.chain)}}</span><br/>
-                    ${{nFormatter2(token.usd, 2)}}
-                  </div>
-                </div></button
-              >
-              <p v-if="tokens.length == 0" class="q-pl-md">No assets found</p>
-            </div>
-            <div
-              height="16px"
-              width="auto"
-              class="Spacer__SpacerElement-sc-6ie5tt-0 IaLFF"
-            ></div>
-            <div class="ps__rail-x" style="left: 0px; bottom: -269px">
-              <div
-                class="ps__thumb-x"
-                tabindex="0"
-                style="left: 0px; width: 0px"
-              ></div>
-            </div>
+                    class="ps__thumb-x"
+                    tabindex="0"
+                    style="left: 0px; width: 0px"
+                  ></div>
+                </div>
 
+              </div>
+            </div>
           </div>
         </div>
+        <div class="_1BCaw" style="background-color: var(--zeric10)"></div>
+        <div
+          height="16px"
+          width="auto"
+          class="Spacer__SpacerElement-sc-6ie5tt-0 IaLFF"
+        ></div>
       </div>
-    </div>
-    <div class="_1BCaw" style="background-color: var(--zeric10)"></div>
-    <div
-      height="16px"
-      width="auto"
-      class="Spacer__SpacerElement-sc-6ie5tt-0 IaLFF"
-    ></div>
-  </div>
-      </q-card>
- </q-dialog>
+    </q-card>
+  </q-dialog>
 </template>
 <script>
 import Formatter from '@/mixins/Formatter'
@@ -165,15 +166,12 @@ export default {
   data () {
     return {
       alert: true,
-      searchVal: ''
+      searchVal: '',
+      tokens: []
     }
   },
-  computed: {
-    tokens () {
-      return this.$store.state.wallets.tokens.filter(o => !isNaN(o.amount) && o.amount !== 0 && (this.searchVal.length === 0 || o.type.includes(this.searchVal))).sort(function (a, b) {
-        return a.type.length - b.type.length
-      })
-    }
+  mounted () {
+    this.tokens = this.getAssets()
   },
   methods: {
     selectToken (asset) {
@@ -420,7 +418,7 @@ export default {
 .RUBUj .ps {
   overflow-anchor: none;
   touch-action: auto;
-  overflow: scroll !important;
+  overflow: auto !important;
 }
 .RUBUj .ps__rail-x {
   display: none;
@@ -558,6 +556,10 @@ export default {
 border-radius: 50%;
 }
 button:hover {
-    background: #f2f2f2 !important;
+  background: #f2f2f2 !important;
+}
+
+.q-dialog .q-card.q-card--dark.q-dark button:hover {
+  background: #0e1829 !important;
 }
 </style>

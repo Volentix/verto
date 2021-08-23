@@ -231,7 +231,7 @@ export default [
       },
       {
         name: 'stake',
-        path: '/verto/stake',
+        path: '/verto/stake/:chain/:type',
         component: () => import('pages/Verto/Stake.vue'),
         meta: {
           authRequired: true

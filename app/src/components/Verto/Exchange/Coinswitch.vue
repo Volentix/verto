@@ -604,7 +604,7 @@
                                                                     </div>
                                                                 </template>
                                                             </q-input>
-                                                             <a :href="'https://etherscan.io/tx/'+ globalTx.hash" target="_blank" class="text-body2 text-black"> More infos</a>
+                                                             <a :href="'https://etherscan.io/tx/'+ globalTx.hash" target="_blank" class="text-body2 text-black"> More info</a>
 
                                                         </div>
                                                     </div>

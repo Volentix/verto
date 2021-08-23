@@ -70,7 +70,7 @@ import VideoBg from 'vue-videobg'
 import Lib from '@/util/walletlib'
 Vue.component('video-bg', VideoBg)
 import HD from '@/util/hdwallet'
-// const localStorageKeysToDelete = ['walletPublicData', 'hideEosSetup', 'disableIntros_home', 'disableIntro_defi', 'closewizard', 'disable_freeospopup']
+// const localStorageKeysToDelete = ['walletPublicDatav2', 'hideEosSetup', 'disableIntros_home', 'disableIntro_defi', 'closewizard', 'disable_freeospopup']
 // I have setup your symbols into a sandbox wallet named testwallet.
 // You can proceed with development with this as your walletName.
 // IDs will be created as foo@testwallet.crux
@@ -151,7 +151,7 @@ export default {
   async mounted () {
     this.step = 2
     this.putAddress()
-    // console.log('addressMap', this.addressMap, 'show?', this.showMap)
+    // //console.log('addressMap', this.addressMap, 'show?', this.showMap)
   },
   computed: {},
   methods: {
@@ -193,7 +193,7 @@ export default {
         })
       }
 
-      // console.log('map', map)
+      // //console.log('map', map)
       // this.mapped = true
       this.step = 3
     },
@@ -211,7 +211,10 @@ export default {
             this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
           }
         }).catch((err) => {
-          console.log('There was a problem getting account names', err)
+          this.$q.notify({
+            color: 'negative',
+            message: err
+          })
         })
     },
     async dataRefresh (to = '/verto/dashboard') {
@@ -226,7 +229,7 @@ export default {
         */
         this.associateEOSAccount()
       } catch (error) {
-        console.log('initWallet error', error)
+        // console.log('initWallet error', error)
       }
 
       this.$q.notify({

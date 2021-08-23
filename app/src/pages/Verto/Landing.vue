@@ -116,7 +116,7 @@ export default {
       oldVersion = oldVersion.substring(4)
 
       if (+oldVersion <= 237 && +(version.substring(4)) > 327) {
-        localStorage.removeItem('walletPublicData')
+        localStorage.removeItem('walletPublicDatav2')
       }
     }
 
@@ -349,10 +349,6 @@ export default {
     &--body {
         margin-top: 35%;
         margin-bottom: 5%;
-        @media screen and (max-width: 768px) {
-          margin-top: 5%;
-          margin-bottom: 5%;
-        }
 
         @media screen and (min-width: 768px) {
             margin-top: 5%;
@@ -460,9 +456,6 @@ export default {
   border-radius: 20px;
   width: 100%;
   max-width: 500px;
-  @media screen and (max-width: 768px) {
-    max-width: 90%;
-  }
 }
 /deep/ .VideoBg {
     overflow: hidden;

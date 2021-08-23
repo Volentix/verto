@@ -123,8 +123,8 @@
                       >{{ formatNumber(asset.percentage, 2) }}% of Portfolio</span
                     >
                   <h2>
-                    ${{ formatNumber(asset.usd, 18).split(".")[0]}}.<span>{{
-                      formatNumber(asset.usd, 3).split(".")[1]
+                    ${{ formatNumber(asset.usd, 18).split(".")[0]}}<span>{{
+                      formatNumber(asset.usd, 3).split(".")[1] ? '.'+formatNumber(asset.usd, 3).split(".")[1] : ''
                     }}</span>
                   </h2>
                   <h4>
@@ -171,6 +171,50 @@
               </tr>
             </table>
           </div>
+             <div
+          class="col col-12 history-container"
+
+        >
+
+         <div class="left q-pl-lg left3" v-if="marketData">
+            <h3 class="text-body text-bold">Stats</h3>
+
+            <table>
+              <tr>
+                <td>
+                  <h5>1 Day</h5>
+                  <span :class="[marketData.change_24h && marketData.change_24h.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_24h}}%</span>
+                  <h5>Market Cap</h5>
+                  <p>${{nFormatter2(marketData.market_cap)}}</p>
+                </td>
+
+                <td>
+                  <h5>1 Week</h5>
+                  <span :class="[marketData.change_7d && marketData.change_7d.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_7d}}%</span>
+                  <h5>High 24h</h5>
+                  <p>{{marketData.high_24h}}</p>
+                </td>
+
+                <td>
+                  <h5>1 Month</h5>
+                  <span :class="[marketData.change_30d && marketData.change_30d.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_30d}}%</span>
+                  <h5>Total Supply</h5>
+                  <p>{{marketData.total_supply}}</p>
+                </td>
+
+                <td>
+                  <h5>1 Year</h5>
+                  <span :class="[marketData.change_1y && marketData.change_1y.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400"
+                    >{{marketData.change_1y}}</span
+                  >
+                  <h5>Total volume</h5>
+                  <p>{{marketData.total_volume}}</p>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+        </div>
 
           <div class="left left3" style="border: none" v-if="false">
             <h3>Tags</h3>
@@ -248,6 +292,7 @@
             </div>
           </div>
         </div>
+
         <div class="right-area q-pr-lg col" >
           <transition name="fade" mode="out-in">
             <div
@@ -285,7 +330,7 @@
 
               <ImportView class="q-pa-md" v-if="!$store.state.wallets.portfolioTotal" :chain="asset.chain" :key="asset.chain" />
               <div class="text-center " v-if="tab != 'import'" >
-                   <AccountSelector :withTokenBalance="asset.type" :chains="asset.isEvm ? ['bsc','matic','eth','avaxc'] : [asset.chain]"  v-show="tab != 'swap' && !fromPreview" :showAllWallets="true"  :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
+                   <AccountSelector  :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
               </div>
 
               <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount" class="q-px-md" >
@@ -304,10 +349,13 @@
                   :dark="$store.state.settings.lightMode === 'true'"
                   bottom-slots
                   :label="asset.type.toUpperCase() + ' amount to '+tab"
-                  class="col-12 q-px-md q-pt-md"
+                  class="col-12 q-px-md q-pt-md q-pb-lg from-input"
                   v-show="asset.chain == 'eos'"
                   v-model="depositQuantity"
                 >
+                 <template v-slot:hint>
+                  <q-btn class="set-max" label="Set max" @click="depositQuantity = parseFloat(assetBalance)" dense flat />
+                  </template>
                   <template v-slot:append>
                     <q-icon
                       size="1rem"
@@ -330,7 +378,8 @@
                     {{ formatNumber(assetBalance, 2) }}
                     {{ asset.type.toUpperCase() }}
                   </template>
-                </q-input>
+                </q-input><br/>
+
                 <q-select
                   v-if="
                     (tab == 'sell' || tab == 'buy' || tab == 'add liquidity') &&
@@ -402,13 +451,16 @@
                 </q-select>
 
                 <q-input
+
                   :dark="$store.state.settings.lightMode === 'true'"
                   v-if="tab == 'send'"
-                  label="To"
+                  label="To : Enter account name"
                   v-show="asset.chain == 'eos'"
                   class="col-12 q-px-md"
                   v-model="sendTo"
-                />
+                >
+
+                </q-input>
                 <q-input
                   :dark="$store.state.settings.lightMode === 'true'"
                   v-if="
@@ -527,51 +579,10 @@
             <!-- <AssetBalancesTable v-if="tokenTabOption == 'assets'" @setAsset="setAsset" :rowsPerPage="6"/>
           <liquidityPoolsTable  v-else-if="tokenTabOption == 'opportunities'"  :asset="asset" :rowsPerPage="7"   /> -->
           </div>
+
+ <TokenByAccount :type="asset.type" :chain="asset.chain" class="right-area q-mt-lg col" />
         </div>
-        <div
-          class="col col-12 history-container"
 
-        >
-
-         <div class="left q-pl-lg left3" v-if="marketData">
-            <h3 class="text-body text-bold">Stats</h3>
-
-            <table>
-              <tr>
-                <td>
-                  <h5>1 Day</h5>
-                  <span :class="[marketData.change_24h && marketData.change_24h.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_24h}}%</span>
-                  <h5>Market Cap</h5>
-                  <p>${{nFormatter2(marketData.market_cap)}}</p>
-                </td>
-
-                <td>
-                  <h5>1 Week</h5>
-                  <span :class="[marketData.change_7d && marketData.change_7d.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_7d}}%</span>
-                  <h5>High 24h</h5>
-                  <p>{{marketData.high_24h}}</p>
-                </td>
-
-                <td>
-                  <h5>1 Month</h5>
-                  <span :class="[marketData.change_30d && marketData.change_30d.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_30d}}%</span>
-                  <h5>Total Supply</h5>
-                  <p>{{marketData.total_supply}}</p>
-                </td>
-
-                <td>
-                  <h5>1 Year</h5>
-                  <span :class="[marketData.change_1y && marketData.change_1y.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400"
-                    >{{marketData.change_1y}}</span
-                  >
-                  <h5>Total volume</h5>
-                  <p>{{marketData.total_volume}}</p>
-                </td>
-              </tr>
-            </table>
-          </div>
-
-        </div>
       </div>
 
   </div>
@@ -581,6 +592,7 @@ import transactEOS from './transactEOS'
 import Oneinch from '../../components/Verto/Exchange/Oneinch'
 import Formatter from '@/mixins/Formatter'
 import ImportView from './Token/ImportView.vue'
+import TokenByAccount from './Token/TokenByAccount'
 // import History from '../../components/Verto/History'
 import SendComponent from '../../pages/Verto/Send'
 import PriceChart from '../../components/Verto/Token/PriceChart'
@@ -594,7 +606,7 @@ import { JsonRpc } from 'eosjs'
 
 export default {
   components: {
-
+    TokenByAccount,
     Oneinch,
     AccountSelector,
     ImportView,
@@ -680,7 +692,9 @@ export default {
       } else {
         this.asset = asset
       }
-
+      if (this.asset.type === 'vtx') {
+        this.$store.state.settings.defaultChainData = this.asset
+      }
       this.depositCoin = {
         label: this.asset.type.toUpperCase(),
         value: this.asset.type,
@@ -993,7 +1007,13 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-
+ .set-max {
+                margin-top: -10px;
+                font-size: 12px;
+                }
+ .from-input {
+ margin-bottom: 15px !important;
+ }
 /deep/ .gasSelector * {
     font-size: 11px;
 }

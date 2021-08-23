@@ -16,6 +16,70 @@ export default {
       }
       return to
     },
+    getAssets (chain = null, account = null) {
+      let assets = []
+
+      this.$store.state.wallets.tokens
+        .filter(
+          (o) =>
+            (!account && !chain) ||
+            (chain && o.chain === chain && !account) ||
+            (account &&
+              o.chain === account.chain &&
+              ((account.isEvm && o.key === account.key) ||
+                (!account.isEvm && o.name === account.name)))
+        )
+        .forEach((asset, i) => {
+          let token = Object.assign({}, asset)
+
+          token.amount = parseFloat(token.amount)
+          token.usd = parseFloat(token.usd)
+
+          if (
+            (!isNaN(token.amount) && token.amount !== 0) ||
+            token.isEvm ||
+            !this.$store.state.wallets.portfolioTotal
+          ) {
+            let index = assets.findIndex(
+              (o) =>
+                o.type === token.type &&
+                o.chain === token.chain &&
+                (token.chain !== 'eos' || o.contract === token.contract)
+            )
+
+            if (index !== -1) {
+              assets[index].amount += token.amount
+              assets[index].usd += isNaN(token.usd) ? 0 : token.usd
+              assets[index].rateUsd = isNaN(token.tokenPrice)
+                ? 0
+                : token.tokenPrice
+              assets[index].percentage =
+                (assets[index].usd /
+                  parseFloat(this.$store.state.wallets.portfolioTotal)) *
+                100
+            } else {
+              token.percentage =
+                (token.usd /
+                  parseFloat(this.$store.state.wallets.portfolioTotal)) *
+                100
+              token.index = assets.length
+              token.rateUsd = isNaN(token.tokenPrice) ? 0 : token.tokenPrice
+              token.friendlyType =
+                token.type.length > 6
+                  ? token.type.substring(0, 6) + '...'
+                  : token.type
+              token.chainLabel = this.getChainLabel(token.chain)
+              assets.push(token)
+            }
+            assets.sort(
+              (a, b) =>
+                (isNaN(parseFloat(b.usd)) ? 0 : parseFloat(b.usd)) -
+                (isNaN(parseFloat(a.usd)) ? 0 : parseFloat(a.usd))
+            )
+          }
+        })
+      return assets
+    },
     getAccountLabel (w) {
       let label = this.getKeyFormat(w.key)
       if (w.chain === 'eos') {
@@ -60,7 +124,7 @@ export default {
     },
     formatAccoountOption (w) {
       let account = {
-        value: w.key + '-' + w.chain,
+        value: w.key + '-' + w.chain + (w.name),
         key: w.key,
         isEvm: w.isEvm,
         chain: w.chain,
@@ -74,6 +138,9 @@ export default {
         name: w.name,
         label: this.getAccountLabel(w),
         color: this.getRandomColor()
+      }
+      for (let key in w) {
+        if (!account[key]) { account[key] = w[key] }
       }
       return account
     },
@@ -108,11 +175,11 @@ export default {
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({
-        message: copied ? copied + ' Copied' : 'Key Copied',
+        message: copied ? copied + ' Copied' : 'Copied',
         timeout: 2000,
         icon: 'check',
         textColor: 'white',
-        type: 'warning',
+        type: 'primary',
         position: 'top'
       })
     },

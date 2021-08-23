@@ -137,6 +137,15 @@ class Lib {
     }).filter(o => o != null)
   }
 
+  findInExchangeList (chain, type, contract) {
+    let found = false
+    if (chain === 'eos' || chain === 'eth') {
+      found = store.state.settings.coins[chain === 'eos' ? 'defibox' : 'oneinch'].find(o => o.value.toLowerCase() === type.toLowerCase() /* && o.contract === contract */)
+    } else {
+      found = true
+    }
+    return found
+  }
   getAllCoins (dex) {
     let coins = store.state.settings.coins.godex.concat(store.state.settings.coins.oneinch).concat(store.state.settings.coins.defibox)
 
