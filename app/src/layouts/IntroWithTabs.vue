@@ -80,7 +80,6 @@
                   />
                 </div>
               </div>
-
               <ul class="left-menu">
                 <li><a href="#"> </a></li>
                 <li class="q-pb-md flex text-center cursor-pointer tools-label-li" v-if="$store.state.settings.defaultChainData && tools[$store.state.settings.defaultChainData.chain]" >
@@ -155,6 +154,12 @@
                   </a>
                 </li>
               </ul>
+              <span class="version full-width text-center column">
+                <span class="">{{version}}</span>
+                <span class="q-pa-sm text-grey">
+                  This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-deep-purple-12c" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
+                </span>
+              </span>
             </div>
           </div>
         </q-scroll-area>
@@ -218,6 +223,7 @@
 </template>
 
 <script>
+import { version } from '../../package.json'
 import initWallet from '@/util/Wallets2Tokens'
 import Formatter from '@/mixins/Formatter'
 import AccountSelector from '@/components/Verto/Exchange/AccountSelector.vue'
@@ -233,6 +239,7 @@ export default {
   },
   data () {
     return {
+      version: {},
       toggleView: true,
       keys: {
         send: 1
@@ -323,7 +330,7 @@ export default {
     }
   },
   created () {
-
+    this.version = version
   },
   mixins: [Formatter]
 }
@@ -987,5 +994,17 @@ ul.left-menu {
 }
 .drawer-dark-theme .wrapper .left-area {
   background: #040e1a;
+}
+.version{
+  position: relative;
+  left: 0px;
+  bottom: 0px;
+  padding: 5px 20px;
+  text-align: center;
+  color: #333;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Libre Franklin', sans-serif;
+  width: 100%;
 }
 </style>
