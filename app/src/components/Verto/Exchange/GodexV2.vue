@@ -4416,6 +4416,11 @@ export default {
     opacity: .5;
     background: #CCC;
   }
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-item__section--avatar{
+    border-right: 1px solid rgba(182, 182, 182, 0.1);
+    margin-right: 20px !important;
+    padding-right: 0px !important;
+  }
   .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-item__label{
     color: #000 !important;
   }
