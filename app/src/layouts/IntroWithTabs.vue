@@ -203,15 +203,16 @@
             @click="goToTab('assets', $route.params.asset && !['btc'].includes($route.params.asset.chain) ? $route.params.asset.chain : null)"
             :label="$route.params.asset && $route.params.asset.type && $route.params.asset.isEvm && !['btc'].includes($route.params.asset.chain) ?  getChainLabel($route.params.asset.chain) + ' assets' : 'Assets'"
             class="cursor-pointer"
-
+            :class="{'text-white': $store.state.settings.lightMode === 'true'}"
           />
            <q-breadcrumbs-el
             v-if="$route.name.includes('token')"
             :icon="'img:'+$route.params.asset.icon"
             :label="$route.params.asset.type.toUpperCase()"
             class="cursor-pointer"
+            :class="{'text-white': $store.state.settings.lightMode === 'true'}"
           />
-          <q-breadcrumbs-el  v-else class="text-capitalize" :label="$route.name" />
+          <q-breadcrumbs-el v-else class="text-capitalize" :class="{'text-white': $store.state.settings.lightMode === 'true'}" :label="$route.name" />
         </q-breadcrumbs>
         <router-view class="main-container" v-if="toggleView" />
       </q-page-container>
@@ -866,7 +867,7 @@ h2 {
 }
 /deep/ .desktop-version {
   padding-left: 0vh !important;
-  padding-top: 5vh !important;
+  padding-top: 0vh !important;
 }
 .top /deep/ .account_selector .q-btn__content {
   font-size: 12px;

@@ -91,7 +91,7 @@
                         </q-input>
                         <a v-if="transactionLink" :href="transactionLink" target="_blank" class="text-body2 text-black"> More info</a>
 
-                       </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -352,12 +352,12 @@ export default {
 }
 .desktop-version {
   background: #e7e8e8;
-  padding-top: 13vh;
-  padding-left: 20vh;
+  padding-top: 0vh;
+  padding-left: 0vh;
   padding-bottom: 50px;
-  padding-right: 18px;
+  padding-right: 0px;
   @media screen and (min-width: 768px) {
-    padding-top: 11vh;
+    padding-top: 0vh;
     padding-bottom: 0px;
   }
 }
