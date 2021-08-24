@@ -199,7 +199,7 @@
             :dark="$store.state.settings.lightMode === 'true'"
             :class="{'bg-white': $store.state.settings.lightMode === 'false'}"
             dense filled v-model="tokenSearchVal"
-            style="width:280px"
+            style="width:200px"
             class="float-left q-mr-md"
             rounded
             icon-right="search"
@@ -298,7 +298,7 @@
         tab == 'chains'
       "
     >
-      <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" class="" style="margin-left: -15px !important; height: 78vh;">
+      <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" class="" style="margin-left: -15px !important; height: 77vh;">
         <div class="sub-top sub-top-chart">
           <div class="subt-text" v-if="!allChains && false">
             <p class="q-ma-none text-bold text-body1">
@@ -724,7 +724,7 @@
       )"
       :key="index + uniqueKey"
     >
-      <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" class="" style="margin-left: -15px !important; height: 78vh;">
+      <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" class="" style="margin-left: -15px !important; height: 77vh;">
         <div class="sub-top sub-top-chart">
           <!-- <div class="subt-text " v-if="!allAssets" >
               <p>
