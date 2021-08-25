@@ -1423,4 +1423,7 @@ height: 100vh  !important;
         max-height: 90.15%;
     }
 }
+.dark-theme .standard-content--body__form .lab-input{
+  color: #FFF;
+}
 </style>

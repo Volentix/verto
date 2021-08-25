@@ -1332,3 +1332,10 @@ export default {
     }
   }
 </style>
+<style>
+  .q-stepper{border-radius: 0px !important;}
+  .dark-theme .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .q-stepper--vertical .q-stepper__dot:before,
+  .dark-theme .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .q-stepper--vertical .q-stepper__dot:after {
+    background: #071d35;
+  }
+</style>
