@@ -33,12 +33,14 @@ $mainColor: #7900FF;
     border-radius: 0px;
     position: relative;
     overflow: hidden;
+    padding-right: 20px;
     &.dark-theme{
         background-color: #04111F;
         // border: 1px solid #627797;
         color: #FFF;
         border: none;
         padding-left: 20px;
+        padding-right: 20px;
         border-radius: 0px;
     }
 }

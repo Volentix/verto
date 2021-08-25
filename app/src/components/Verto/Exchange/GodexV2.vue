@@ -4174,7 +4174,7 @@ export default {
 
   .eprtwk {
     width: 100%;
-    text-align: right;
+    text-align: left;
     font-variant-numeric: tabular-nums;
   }
 
@@ -4390,13 +4390,14 @@ export default {
 <style>
   .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll{
     margin-top: 20px !important;
+    margin-left: 7.5vw !important;
     min-width: unset !important;
     width: 100% !important;
-    max-width: 430px !important;
+    max-width: 28vw !important;
     /* left: 59% !important; */
     left: 50% !important;
     /* top: 51% !important; */
-    top: 50% !important;
+    top: 340px !important;
     max-height: 190px;
     transform: translate(-50%, -50%) scale(1.2) !important;
     z-index: 9;

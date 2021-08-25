@@ -19,7 +19,8 @@
           <div class="left-area gt-sm full-width" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" v-if="!$q.screen.lt.sm">
             <div class="left">
               <div class="img app-logo flex flex-center">
-                <div class="balance flex flex-center">
+                <div class="balance column justify-center items-center">
+                  <span>
                   <svg
                     class="svg_logo q-mr-sm"
                     width="20"
@@ -34,6 +35,7 @@
                   </svg>
                   <img src="statics/icons/ms-icon-144x144.png" width="32" class="png_logo q-mr-sm" alt="">
                   <router-link to="/verto/dashboard">VERTO</router-link>
+                  </span>
 
                   <div class="text-caption full-width text-center">
                   <span v-if="$store.state.wallets.customTotal.show">{{$store.state.wallets.customTotal.label}}</span>
@@ -862,7 +864,8 @@ h2 {
   background: #04111f !important;
 }
 /deep/ .q-page-container{
-  min-height: 100vh;
+  height: 100vh;
+  /* min-height: 100vh; */
   overflow-y: hidden;
 }
 /deep/ .desktop-version {
