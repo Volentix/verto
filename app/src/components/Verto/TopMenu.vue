@@ -22,7 +22,7 @@
         </div>
       </div>
       <div class="col-2 q-pt-sm" style="width: 150px;"></div>
-      <div class="col-md-2 q-pt-sm q-pl-xs">
+      <div class="col-md-2 q-pt-md q-pb-sm q-pl-sm">
         <q-input v-if="false" dense filled v-model="searchVal" style="width:280px" class="float-right  full-width q-mt-sm" icon-right="search"></q-input>
         <q-select
           filled
@@ -69,7 +69,7 @@
         </q-select>
     </div>
 
-    <div class="col col-3 flex items-center date-scrolling-msg">
+      <div class="col col-3 flex items-center date-scrolling-msg">
         <div class="flex items-center main_portfolio" :class="{'text-white': $store.state.settings.lightMode === 'true'}" v-if="$router.currentRoute.path === '/verto/defi'">
           <h3 class="">Main Portfolio</h3> <span class="q-ml-sm q-mr-sm q-mb-xs">|</span> <h2 class="">${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }} USD</h2>
         </div>
@@ -491,7 +491,7 @@ export default {
       height: $height;
       &.menu {
         position: relative;
-        right: -60px;
+        right: -45px;
         a {
           font-weight: $regular;
           font-family: $Titillium;

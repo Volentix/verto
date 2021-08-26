@@ -40,6 +40,7 @@
                       "
                       @blur="hideDeposit = false"
                       class="select-input gdx-coin_wrapper"
+                      popup-content-class="gdx_coin_wrapper_popup"
                       :dark="$store.state.settings.lightMode === 'true'"
                       :light="$store.state.settings.lightMode === 'false'"
                       separator
@@ -188,6 +189,7 @@
                         "
                         @blur="hideDestination = false"
                         class="select-input"
+                        popup-content-class="gdx_coin_wrapper_popup"
                         :dark="$store.state.settings.lightMode === 'true'"
                         :light="$store.state.settings.lightMode === 'false'"
                         separator
@@ -4172,7 +4174,7 @@ export default {
 
   .eprtwk {
     width: 100%;
-    text-align: right;
+    text-align: left;
     font-variant-numeric: tabular-nums;
   }
 
@@ -4386,40 +4388,73 @@ export default {
   }
 </style>
 <style>
-  .q-menu.q-position-engine.scroll{
-    margin-left: -16px !important;
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll{
+    margin-top: 20px !important;
+    margin-left: 7.5vw !important;
     min-width: unset !important;
     width: 100% !important;
-    max-width: 400px !important;
+    max-width: 28vw !important;
     /* left: 59% !important; */
     left: 50% !important;
     /* top: 51% !important; */
-    top: 50% !important;
+    top: 340px !important;
     max-height: 190px;
-    transform: translate(-50%, -50%) !important;
+    transform: translate(-50%, -50%) scale(1.2) !important;
+    z-index: 9;
+  }
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll{
+    background: #fff !important;
+    box-shadow: 0px 20px 50px 0px #ccc;
+    border: 2px solid #ececec;
+  }
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll.q-menu--dark.q-dark{
     background: #04111f !important;
     box-shadow: 0px 10px 30px 0px #0b294b;
-    z-index: 9;
     border: 1px solid #0a294b;
   }
-  .q-menu.q-position-engine.scroll .q-focusable:focus > .q-focus-helper,
-  .q-menu.q-position-engine.scroll .q-manual-focusable--focused > .q-focus-helper {
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-focusable:focus > .q-focus-helper,
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-manual-focusable--focused > .q-focus-helper {
+    opacity: .5;
+    background: #CCC;
+  }
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-item__section--avatar{
+    border-right: 1px solid rgba(182, 182, 182, 0.1);
+    margin-right: 20px !important;
+    padding-right: 0px !important;
+  }
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-item__label{
+    color: #000 !important;
+  }
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-focusable:focus > .q-focus-helper:before,
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-manual-focusable--focused > .q-focus-helper:before,
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-focusable:focus > .q-focus-helper:after,
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-manual-focusable--focused > .q-focus-helper:after {
+    opacity: .5;
+    background: #CCC;
+  }
+  .q-menu--dark.q-dark.gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-focusable:focus > .q-focus-helper,
+  .q-menu--dark.q-dark.gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-manual-focusable--focused > .q-focus-helper {
     opacity: .5;
     background: #0b294b;
   }
-  .q-menu.q-position-engine.scroll .q-item__label{
+  .q-menu--dark.q-dark.gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-item__label{
     color: #FFF !important;
   }
-  .q-menu.q-position-engine.scroll .q-focusable:focus > .q-focus-helper:before,
-  .q-menu.q-position-engine.scroll .q-manual-focusable--focused > .q-focus-helper:before,
-  .q-menu.q-position-engine.scroll .q-focusable:focus > .q-focus-helper:after,
-  .q-menu.q-position-engine.scroll .q-manual-focusable--focused > .q-focus-helper:after {
+  .q-menu--dark.q-dark.gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-focusable:focus > .q-focus-helper:before,
+  .q-menu--dark.q-dark.gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-manual-focusable--focused > .q-focus-helper:before,
+  .q-menu--dark.q-dark.gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-focusable:focus > .q-focus-helper:after,
+  .q-menu--dark.q-dark.gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll .q-manual-focusable--focused > .q-focus-helper:after {
     opacity: .5;
     background: #0b294b;
   }
-  .q-menu.q-position-engine.scroll::-webkit-scrollbar-track { -webkit-box-shadow: inset 0 0 10px rgba(0,0,0,0.05); border-radius: 10px; background-color: #919191; }
-  .q-menu.q-position-engine.scroll::-webkit-scrollbar-thumb { border-radius: 10px; -webkit-box-shadow: inset 0 0 15px rgba(0,0,0,0.2); background-color: #f5f5f5; }
-  .q-menu.q-position-engine.scroll::-webkit-scrollbar { width: 10px; background-color: #000000; }
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll::-webkit-scrollbar-track { -webkit-box-shadow: inset 0 0 10px rgba(233, 233, 233, 0.05); border-radius: 10px; background-color: #e6e6e6; }
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll::-webkit-scrollbar-thumb { border-radius: 10px; -webkit-box-shadow: inset 0 0 15px rgba(212, 212, 212, 0.2); background-color: #a7a7a7; }
+  .gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll::-webkit-scrollbar { width: 10px; background-color: #e4e4e4; }
+
+  .q-menu--dark.q-dark.gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll::-webkit-scrollbar-track { -webkit-box-shadow: inset 0 0 10px rgba(0,0,0,0.05); border-radius: 10px; background-color: #0c2a4a; }
+  .q-menu--dark.q-dark.gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll::-webkit-scrollbar-thumb { border-radius: 10px; -webkit-box-shadow: inset 0 0 15px rgba(0,0,0,0.2); background-color: #05111f; }
+  .q-menu--dark.q-dark.gdx_coin_wrapper_popup.q-menu.q-position-engine.scroll::-webkit-scrollbar { width: 10px; background-color: #05111f; }
+
   .info-tooltip{
     max-width: 310px;
     display: block;

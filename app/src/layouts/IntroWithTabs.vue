@@ -18,8 +18,9 @@
         <q-scroll-area :dark="$store.state.settings.lightMode === 'true'" :visible="true" class="" style="margin-left: -15px !important; height: 100vh;">
           <div class="left-area gt-sm full-width" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" v-if="!$q.screen.lt.sm">
             <div class="left">
-              <div class="img app-logo q-pt-md flex flex-center">
-                <div class="balance flex flex-center">
+              <div class="img app-logo flex flex-center">
+                <div class="balance column justify-center items-center">
+                  <span>
                   <svg
                     class="svg_logo q-mr-sm"
                     width="20"
@@ -34,6 +35,7 @@
                   </svg>
                   <img src="statics/icons/ms-icon-144x144.png" width="32" class="png_logo q-mr-sm" alt="">
                   <router-link to="/verto/dashboard">VERTO</router-link>
+                  </span>
 
                   <div class="text-caption full-width text-center">
                   <span v-if="$store.state.wallets.customTotal.show">{{$store.state.wallets.customTotal.label}}</span>
@@ -80,9 +82,7 @@
                   />
                 </div>
               </div>
-
               <ul class="left-menu">
-                <li><a href="#"> </a></li>
                 <li class="q-pb-md flex text-center cursor-pointer tools-label-li" v-if="$store.state.settings.defaultChainData && tools[$store.state.settings.defaultChainData.chain]" >
                   <a @click="chainTools.show = !chainTools.show" class="tools-label">
                     <q-icon size="md"  class="q-pr-sm" :name="'img:'+$store.state.settings.defaultChainData.icon" />
@@ -156,6 +156,12 @@
                 </li>
               </ul>
             </div>
+            <span class="version full-width text-center column">
+              <span class="text-grey">{{version}}</span>
+              <span class="q-pa-sm text-grey">
+                This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-deep-purple-12c" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
+              </span>
+            </span>
           </div>
         </q-scroll-area>
         <!--
@@ -164,16 +170,16 @@
           to mini-mode
         -->
         <div
+        v-if="false"
           class="q-mini-drawer-hide "
           style="margin-top: -95px; right: -17px"
         >
-           <span class="version full-width text-center column">
-        <span class="q-mb-md text-grey">{{version}}</span>
-        <span class="q-pa-sm text-grey">
-          This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-deep-purple-12c" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
-        </span>
-
-      </span>
+          <span class="version full-width text-center column">
+            <span class="q-mb-md text-grey">{{version}}</span>
+            <span class="q-pa-sm text-grey">
+              This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-deep-purple-12c" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
+            </span>
+          </span>
         </div>
       </q-drawer>
 
@@ -184,13 +190,14 @@
           v-if="$route.path != '/verto/dashboard'"
         >
           <template v-slot:separator>
-            <q-icon size="1.5em" name="chevron_right" color="primary" />
+            <q-icon size="1.5em" name="chevron_right" :color="$store.state.settings.lightMode === 'true' ? 'white':'primary'" />
           </template>
 
           <q-breadcrumbs-el
             label="Back"
             icon="keyboard_backspace"
-            class="cursor-pointer"
+            :class="{'text-white': $store.state.settings.lightMode === 'true'}"
+            class="cursor-pointer q-ml-md"
             @click="$route.name.includes('token') && $route.params.asset && !['btc'].includes($route.params.asset.chain) && $route.params.asset.name ? goToTab('assets', $route.params.asset.chain) : $router.go(-1)"
           />
           <q-breadcrumbs-el
@@ -198,15 +205,16 @@
             @click="goToTab('assets', $route.params.asset && !['btc'].includes($route.params.asset.chain) ? $route.params.asset.chain : null)"
             :label="$route.params.asset && $route.params.asset.type && $route.params.asset.isEvm && !['btc'].includes($route.params.asset.chain) ?  getChainLabel($route.params.asset.chain) + ' assets' : 'Assets'"
             class="cursor-pointer"
-
+            :class="{'text-white': $store.state.settings.lightMode === 'true'}"
           />
            <q-breadcrumbs-el
             v-if="$route.name.includes('token')"
             :icon="'img:'+$route.params.asset.icon"
             :label="$route.params.asset.type.toUpperCase()"
             class="cursor-pointer"
+            :class="{'text-white': $store.state.settings.lightMode === 'true'}"
           />
-          <q-breadcrumbs-el  v-else class="text-capitalize" :label="$route.name" />
+          <q-breadcrumbs-el v-else class="text-capitalize" :class="{'text-white': $store.state.settings.lightMode === 'true'}" :label="$route.name" />
         </q-breadcrumbs>
         <router-view class="main-container" v-if="toggleView" />
       </q-page-container>
@@ -232,8 +240,8 @@ export default {
   },
   data () {
     return {
-      toggleView: true,
       version: {},
+      toggleView: true,
       keys: {
         send: 1
       },
@@ -358,8 +366,12 @@ h2 {
   float: left;
 }
 .breadcrumbs {
-  margin-top: 60px;
   padding: 9px 0px 9px 10px;
+  margin-top: 70px;
+  background: rgba(0,0,0, .02);
+}
+.dark-theme .breadcrumbs {
+  background: rgba(255,255,255, .05);
 }
 .top /deep/ .account_selector {
   width: 170px !important;
@@ -375,9 +387,9 @@ h2 {
 .left .img {
   padding: 5px 20px;
   max-width: 300px;
-  float: right;
-  clear: both;
-  margin-bottom: 50px;
+  /* float: right; */
+  /* clear: both; */
+  margin-bottom: 10px;
 }
 
 .left ul {
@@ -419,6 +431,8 @@ h2 {
 .active a {
   background: white !important ;
   color: #b6b6b6 !important;
+  height: fit-content;
+  border-radius: 0px !important;
 }
 
 .left ul li a:hover .change-c,
@@ -843,19 +857,20 @@ h2 {
 }
 /deep/ .q-page-container,
 /deep/ .q-header {
-  background: #f2f2f2 !important;
+  background: #FFFFFF !important;
 }
 /deep/ .q-page-container.dark-theme,
 /deep/ .q-header.dark-theme {
   background: #04111f !important;
 }
-/deep/ .q-page-container.dark-theme{
-  min-height: 100vh;
+/deep/ .q-page-container{
+  height: 100vh;
+  /* min-height: 100vh; */
   overflow-y: hidden;
 }
 /deep/ .desktop-version {
   padding-left: 0vh !important;
-  padding-top: 5vh !important;
+  padding-top: 0vh !important;
 }
 .top /deep/ .account_selector .q-btn__content {
   font-size: 12px;
@@ -872,9 +887,9 @@ h2 {
   background: #ffffff;
 }
 .img.app-logo {
-  padding: 20px;
-  padding-top: 0px;
-  border-bottom-left-radius: 12px;
+  padding: 0px;
+  padding-top: 20px;
+  /* border-bottom-left-radius: 12px; */
 }
 .q-tab--active {
   background: #f2f2f2;
@@ -883,13 +898,14 @@ h2 {
 }
 .balance {
   background: #f8f8f8;
-  padding-right: 20px;
-  padding-left: 20px;
-  box-shadow: 0px 0px 10px 10px white;
-  margin-top: 19px;
+  padding-right: 0px;
+  padding-left: 0px;
+  /* box-shadow: 0px 0px 10px 10px white; */
+  margin-top: 0px;
+  width: 100%;
 }
 ul.left-menu {
-  background: #f2f2f2;
+  background: #f5f6fa;
 }
 
 .left-area {
@@ -930,11 +946,11 @@ li.tools img {
 }
 .drawer-dark-theme ul.left-menu {
   background: #040e1a;
-  min-height: 66vh;
   /* border-right: 1px solid rgba(255,255,255, .4); */
 }
 ul.left-menu {
   max-width: 100% !important;
+  min-height: 57vh;
 }
 .left ul{
   /* padding-top: 50px; */
@@ -958,16 +974,12 @@ ul.left-menu {
   height: fit-content;
   border-radius: 0px;
 }
-.drawer-dark-theme .left ul li {
+.left ul li {
   padding-left: 30px;
-}
-.drawer-dark-theme .left ul li {
   border-radius: 0px !important;
 }
 .drawer-dark-theme .active a {
   box-shadow: 0px 0px 10px 0px #0f335f;
-  height: fit-content;
-  border-radius: 0px !important;
 }
 .drawer-dark-theme .balance{
   background: #040e1a;
@@ -980,6 +992,7 @@ ul.left-menu {
 }
 .drawer-dark-theme .img.app-logo {
   padding: 0px;
+  padding-top: 20px;
 }
 .drawer-dark-theme .total {
   color: #FFF;
@@ -993,5 +1006,17 @@ ul.left-menu {
 }
 .drawer-dark-theme .wrapper .left-area {
   background: #040e1a;
+}
+.version{
+  position: relative;
+  left: 0px;
+  bottom: 0px;
+  padding: 5px 20px;
+  text-align: center;
+  color: #333;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Libre Franklin', sans-serif;
+  width: 100%;
 }
 </style>
