@@ -1,6 +1,6 @@
 <template>
   <q-page class="column stake-page" :class="{'desktop-marg':screenSize > 1024, 'mobile-pad': screenSize < 1024,'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-grey-12': $store.state.settings.lightMode === 'false'}">
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 84vh;">
       <div class="desktop-version full-height" v-if="screenSize > 1024">
         <div class="row full-height">
           <div class="col col-md-3" v-if="false">
@@ -13,7 +13,7 @@
           <div class="col col-md-12">
             <div class="desktop-card-style apps-section" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
               <q-scroll-area :visible="true" class="q-pr-md" style="height: 98%;">
-                <div class="standard-content">
+                <div class="standard-content q-pr-md">
                   <h2  v-if="false" class="standard-content--title flex justify-start">{{$store.state.currentwallet.params.tokenID == 'eos' ? 'Staking / Unstaking' :  'Staking' }}</h2>
                   <div class="standard-content--body">
                     <div class="standard-content--body__form">
@@ -110,7 +110,7 @@ export default {
     padding-top: 13vh;
     padding-left: 18vh;
     padding-bottom: 0px;
-    padding-right: 18px;
+    // padding-right: 18px;
     position: relative;
     overflow: hidden;
     @media screen and (min-width: 768px) {
@@ -152,7 +152,7 @@ export default {
     .desktop-version{
         background: #04111F;
         padding-bottom: 8px;
-        min-height: 102vh;
+        height: 84vh !important;
         overflow: hidden;
         position: relative;
         scrollbar-width: 0px;
