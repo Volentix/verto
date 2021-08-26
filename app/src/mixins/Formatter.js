@@ -194,6 +194,16 @@ export default {
     formatNumberWithSign (change) {
       return (change > 0 ? '+' : '-') + '$' + this.formatNumber(Math.abs(change), 2)
     },
+    toFormData: function (data) {
+      var form_data = new FormData()
+
+      for (var key in data) {
+        if (data[key] != null) {
+          form_data.append(key, data[key])
+        }
+      }
+      return form_data
+    },
     nFormatter2 (num, digits) {
       if (isNaN(num)) {
         return 0

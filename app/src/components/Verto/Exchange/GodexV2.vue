@@ -1784,7 +1784,7 @@
           <div>
             <div class="text-body1 q-pt-sm">
               <div class="text-bold q-pb-sm"> Click here to import a wallet</div>
-              <q-btn no-caps :color="$store.state.settings.lightMode === 'true' ? 'white':'black'" label="Import BTC wallet" :to="popupData.to" rounded outline/>
+              <q-btn no-caps :color="$store.state.settings.lightMode === 'true' ? 'white':'black'" :label="'Import '+popupData.chain.toUpperCase()+' wallet'" :to="popupData.to" rounded outline/>
             </div>
             <div class="text-body1 q-pt-md" v-if="popupData.key">
               <div class="text-bold">or deposit funds in your Verto wallet</div>
@@ -1853,7 +1853,8 @@ export default {
       popupData: {
         msg: null,
         to: null,
-        key: false
+        key: false,
+        chain: ''
       },
       currentDex: null,
       error: null,
@@ -2264,7 +2265,6 @@ export default {
           //  .on('target', (confs, target) => depositLog((target || 0) + '/6 confirmations', confs, target))
           .on('confirmation', (confs, target) => {
             depositLog(`Confirmation check : ${confs}/6 confirmations`, confs)
-            console.log(deposit, mint, 'mint', 266)
           })
         console.log(deposit, mint, 'mint', 3)
         self.swapData.mint = CrosschainDex.getRenMintTx(
@@ -3331,7 +3331,7 @@ export default {
           message: this.isPathInvalid(path),
           timeout: 3000
         })
-*/
+*/ this.popupData.chain = path.fromChain
         this.popupData.msg = errorMessage
         this.popupData.msg +=
           ''
