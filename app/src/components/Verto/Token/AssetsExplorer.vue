@@ -3,6 +3,8 @@
     :class="{
       'q-pt-lg': !allAssets,
       'dark-theme': $store.state.settings.lightMode === 'true',
+      'receive_wrapper_class': tab == 'receive',
+      'import_wrapper_class': tab == 'import'
     }"
     class="wrapper q-px-lg full-width assets_explorer_container"
   >
@@ -192,15 +194,16 @@
             </li>
           </ul>
         </div>
-        <div class="col-md-6 row justify-end" v-if="!$route.params.accounts">
+        <div class="col-md-6 row justify-end q-pr-lg" v-if="!$route.params.accounts">
            <TokenByAccount @filterTokensByAccount="filterTokensByAccount" v-if="tab == 'assets' && selectedChain" :mode="'select'"     :chain="selectedChain.chain" class="justify-end q-mr-md" />
            <q-input
             @input="tab = 'assets'"
             :dark="$store.state.settings.lightMode === 'true'"
             :class="{'bg-white': $store.state.settings.lightMode === 'false'}"
             dense filled v-model="tokenSearchVal"
-            style="width:280px"
+            style="width:200px"
             class="float-left q-mr-md"
+            rounded
             icon-right="search"
             label="Search token by symbol"
           >
@@ -263,7 +266,7 @@
         <div class="see-text col col-12"></div>
       </div>
       <div
-        class="row q-col-gutter-md q-pr-lg"
+        class="row q-col-gutter-md q-pr-lg q-mb-lg"
         v-show="
           !tokenSearchVal.length && !$store.state.currentwallet.wallet.chain
         "
@@ -297,7 +300,7 @@
         tab == 'chains'
       "
     >
-      <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" class="" style="margin-left: -15px !important; height: 80vh;">
+      <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" :class="{'receive_wrapper_class_scroll': tab == 'receive', 'import_wrapper_class_scroll': tab == 'import'}" style="margin-left: -15px; height: 77vh;">
         <div class="sub-top sub-top-chart">
           <div class="subt-text" v-if="!allChains && false">
             <p class="q-ma-none text-bold text-body1">
@@ -324,7 +327,6 @@
               </q-breadcrumbs>
             </p>
           </div>
-
           <div
             v-if="!allChains && false"
             class="see-text q-mr-lg cursor-pointer"
@@ -335,7 +337,6 @@
             }}</span
             >) <q-icon name="arrow_forward_ios" />
           </div>
-
           <div class="see-text col flex justify-end" v-else-if="false">
             <span class="flex flex-center">
               <span class="text-body2 q-pr-sm">List view</span>
@@ -723,7 +724,7 @@
       )"
       :key="index + uniqueKey"
     >
-      <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" class="" style="margin-left: -15px !important; height: 80vh;">
+      <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'"  :class="{'receive_wrapper_class_scroll':tab == 'import'}" style="margin-left: -15px; height: 77vh;">
         <div class="sub-top sub-top-chart">
           <!-- <div class="subt-text " v-if="!allAssets" >
               <p>
@@ -1928,20 +1929,20 @@ export default {
   margin-top: 20px;
 }
 .wrapper {
-  height: 85.5vh;
+  height: 89.5vh;
   padding-bottom: 10px;
   // overflow: auto;
   @media screen and (min-height: 700px) {
-    height: 86vh;
+    height: 91.5vh;
   }
   @media screen and (min-height: 760px) {
-    height: 83vh;
+    height: 91.5vh;
   }
   @media screen and (min-height: 800px) {
-    height: 83vh;
+    height: 91.5vh;
   }
   @media screen and (min-height: 870px) {
-    height: 82vh;
+    height: 91.5vh;
   }
 }
 .wrapper /deep/ .q-scrollarea.desktop-size {
@@ -2406,5 +2407,15 @@ ul.tabs li a.active {
       background: #0e1829;
     }
   }
+}
+.receive_wrapper_class,
+.import_wrapper_class{
+  margin-top: 0px !important;
+  height: 82vh;
+}
+.receive_wrapper_class_scroll,
+.import_wrapper_class_scroll{
+  height: 60vh !important;
+  margin-left: 0px !important;
 }
 </style>

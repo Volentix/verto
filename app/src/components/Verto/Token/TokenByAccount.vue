@@ -1,7 +1,7 @@
 <template>
 <div>
-     <div v-if="mode == 'select'" class="row flex flex-center">
-     <q-select @input="$emit('filterTokensByAccount', accountOption)" borderless v-model="accountOption" style="max-width:200px" outline dense :options="accounts"  >
+     <div v-if="mode == 'select'" class="row flex flex-center q-mt-md">
+     <q-select :dark="$store.state.settings.lightMode === 'true'" @input="$emit('filterTokensByAccount', accountOption)" borderless v-model="accountOption" style="max-width:200px" outline dense :options="accounts">
       <template v-slot:option="scope">
         <q-item
           class="custom-menu"
