@@ -344,7 +344,7 @@
               <div v-else-if="tab != 'send' && tab != 'import' || (tab == 'send' && asset.chain == 'eos')" class="q-pa-md">
               <p class="q-pt-md text-purple-12" v-if="tab != 'send' && !['bsc','matic','eth','eos'].includes(asset.chain)"> Buying and selling {{asset.type.toLowerCase()}} will be available very soon</p>
               <div class="row" v-if="!fromPreview ">
-              .
+
                 <q-input
                   :dark="$store.state.settings.lightMode === 'true'"
                   bottom-slots
@@ -580,7 +580,7 @@
           <liquidityPoolsTable  v-else-if="tokenTabOption == 'opportunities'"  :asset="asset" :rowsPerPage="7"   /> -->
           </div>
 
- <TokenByAccount :type="asset.type" :chain="asset.chain" class="right-area q-mt-lg col" />
+          <TokenByAccount :type="asset.type" :chain="asset.chain" class="right-area q-mt-lg col" />
         </div>
 
       </div>

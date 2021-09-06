@@ -1,10 +1,12 @@
 <template>
+<div>
   <div
     :class="{
       'q-pt-lg': !allAssets,
       'dark-theme': $store.state.settings.lightMode === 'true',
     }"
     class="wrapper q-px-lg full-width"
+    v-if="!$q.platform.is.mobile"
   >
     <div
       class="wrap"
@@ -72,6 +74,7 @@
               </q-card-section>
             </q-card>
           </q-dialog>
+
           <ul class="tabs group">
             <li
               :class="{
@@ -379,6 +382,7 @@
         class="row q-col-gutter-md"
         :class="{ 'q-pr-lg': $q.screen.width > 500 }"
       >
+      <!-- CHAIN LOOP START  -->
         <div
           :class="[
             tab == 'receive' || tab == 'import' || tab == 'privateKeys'
@@ -704,6 +708,7 @@
       </div>
     </div>
 
+     <!-- ASSET LOOP SECTION  -->
     <div
       class="q-pt-md chains"
       v-show="tab == item.id"
@@ -778,6 +783,7 @@
         class="row q-col-gutter-md"
         :class="{ 'q-pr-lg': $q.screen.width > 500 }"
       >
+
         <div
           class="col-md-3"
           v-show="
@@ -955,12 +961,13 @@
         />
       </div>
     </div>
-    <ShowKeys
+
+    <!-- <ShowKeys
       :key="keys.keying"
       v-if="keys.chain"
       :chain="keys.chain"
       :field="keys.field"
-    />
+    /> -->
     <liquidityPoolsTable
       v-if="$store.state.settings.show.tab == 'history'"
       :key="4 + uniqueKey"
@@ -1032,6 +1039,20 @@
       </div>
     </div>
   </div>
+
+  <ShowKeys
+    :key="keys.keying"
+    v-if="keys.chain"
+    :chain="keys.chain"
+    :field="keys.field"
+  />
+  <!-- MOBILE SECTION STARTED -->
+  <div  style="background: #f2f2f2 !important" v-if="$q.platform.is.mobile">
+    <TabAssetsExplorer  :chains="chains" :tab.sync="tab" :chainAction='chainAction' :formatNumber='formatNumber' :showQr.sync='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage='showTokenPage' :initTable="initTable" :selectedChain.sync="selectedChain" :keys="keys" :showPrivateKeys="showPrivateKeys" :alertSecurity.sync="alertSecurity" />
+  </div>
+  <!-- MOBILE SECTION END -->
+
+</div>
 </template>
 
 <script>
@@ -1048,6 +1069,9 @@ import AssetBalancesTable from '@/components/Verto/AssetBalancesTable'
 import configManager from '@/util/ConfigManager'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import EosWrapper from '@/util/EosWrapper'
+// MOOBILE TAB UI
+import TabAssetsExplorer from '../MobileUI/TabAssetsExplorer.vue'
+
 const eos = new EosWrapper()
 Vue.component(VueQrcode.name, VueQrcode)
 export default {
@@ -1058,7 +1082,8 @@ export default {
     MakeVTXSection,
     liquidityPoolsTable,
     PriceChart,
-    ShowKeys
+    ShowKeys,
+    TabAssetsExplorer
   },
   props: ['rowsPerPage'],
   data () {
@@ -1205,6 +1230,7 @@ export default {
   created () {
     this.$store.state.settings.defaultChainData = false
     this.getWindowWidth()
+
     if (this.$route.params.accounts) {
       this.tab = 'receive'
     }
@@ -1387,6 +1413,7 @@ export default {
     },
     chainAction (chain) {
       const self = this
+      console.log('chainAction FUNCTION  ... ')
 
       let actions = {
         import () {
@@ -1418,10 +1445,12 @@ export default {
         },
         chains () {
           self.setChainWalletData(chain)
+          console.log('CHAIN---> ', chain)
           if (chain.isEvm || chain.chain === 'eos') {
             self.selectedChain = chain
             self.initTable(chain.chain)
             self.tab = 'assets'
+            console.log('seting tab ass')
           } else {
             self.showTokenPage(chain, self.assetsOptions[0].data)
           }
