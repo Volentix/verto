@@ -262,6 +262,9 @@
                             </div>
                         </q-item-section>
                     </q-item>
+                    <p v-if="!filterTokens.length">
+                    No assets found {{ tokenSearchVal ? "" : "for this chain" }}
+                    </p>
                 </q-list>
             </div>
 
@@ -273,7 +276,7 @@
 
 export default {
   name: 'ChainItem',
-  props: ['chains', 'tab', 'chainAction', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'showAllChainData'],
+  props: ['chains', 'tab', 'chainAction', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'showAllChainData', 'tokenSearchVal'],
   data () {
     return {
       lightMode: true
