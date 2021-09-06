@@ -1,6 +1,6 @@
 <template>
- <q-dialog v-model="alert">
-      <q-card style="width:350px;"> <div
+ <q-dialog v-model="alert" :maximized="$q.platform.is.mobile">
+      <q-card :style="!$q.platform.is.mobile ? 'width:350px;': ''"> <div
     id="id-svk40f"
     role="dialog"
     tabindex="-1"
