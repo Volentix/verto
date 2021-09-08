@@ -1,39 +1,38 @@
 <template>
 <div>
-     <div v-if="mode == 'select'" class="row flex flex-center">
-     <q-select @input="$emit('filterTokensByAccount', accountOption)" borderless v-model="accountOption" style="max-width:200px" outline dense :options="accounts"  >
-     <template v-slot:option="scope">
-                          <q-item
-                            class="custom-menu"
-                            v-bind="scope.itemProps"
-                            v-on="scope.itemEvents"
-                          >
-                            <q-item-section avatar>
-                              <q-icon class="option--avatar" :name="`img:${scope.opt.icon}`" />
-                            </q-item-section>
-                            <q-item-section dark>
-                              <q-item-label v-html="scope.opt.name" />
-                              <q-item-label caption class="ellipsis">{{ getKeyFormat(scope.opt.key) }}</q-item-label>
-                            </q-item-section>
-                          </q-item>
-                        </template>
-                        <template v-if="accountOption.value" v-slot:selected>
-                          <q-item
+     <div v-if="mode == 'select'" class="row flex flex-center q-mt-md">
+     <q-select :dark="$store.state.settings.lightMode === 'true'" @input="$emit('filterTokensByAccount', accountOption)" borderless v-model="accountOption" style="max-width:200px" outline dense :options="accounts">
+      <template v-slot:option="scope">
+        <q-item
+          class="custom-menu"
+          v-bind="scope.itemProps"
+          v-on="scope.itemEvents"
+        >
+          <q-item-section avatar>
+            <q-icon class="option--avatar" :name="`img:${scope.opt.icon}`" />
+          </q-item-section>
+          <q-item-section dark>
+            <q-item-label v-html="scope.opt.name" />
+            <q-item-label caption class="ellipsis">{{ getKeyFormat(scope.opt.key) }}</q-item-label>
+          </q-item-section>
+        </q-item>
+      </template>
+      <template v-if="accountOption.value" v-slot:selected>
+        <q-item>
+          <q-item-section avatar>
+            <q-icon class="option--avatar" :name="`img:${accountOption.icon}`" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label v-html="accountOption.name" />
+            <q-item-label caption class="ellipsis ellipsis_important">{{ getKeyFormat(accountOption.key) }}</q-item-label>
+          </q-item-section>
 
-                          >
-                            <q-item-section avatar>
-                              <q-icon class="option--avatar" :name="`img:${accountOption.icon}`" />
-                            </q-item-section>
-                            <q-item-section>
-                              <q-item-label v-html="accountOption.name" />
-                              <q-item-label caption class="ellipsis ellipsis_important">{{ getKeyFormat(accountOption.key) }}</q-item-label>
-                            </q-item-section>
-
-                          </q-item>
-                        </template>
-     </q-select><q-item-section @click="copyToClipboard(accountOption.chain == 'eos' ? accountOption.name : accountOption.key)" v-if="accountOption.value" side top>
-                            <q-icon name="content_copy"  size="sm"/>
-                              </q-item-section>
+        </q-item>
+      </template>
+     </q-select>
+      <q-item-section @click="copyToClipboard(accountOption.chain == 'eos' ? accountOption.name : accountOption.key)" v-if="accountOption.value" side top>
+        <q-icon name="content_copy"  size="sm"/>
+      </q-item-section>
 </div>
      <q-list bordered class="rounded-borders" style="max-width: 350px" v-else>
       <q-item-label v-if="type" header>{{accounts.length}} accounts with {{type.toUpperCase()}}</q-item-label>

@@ -775,6 +775,8 @@ class Lib {
       // Return gas price in USD if tokenPrice is valid, otherwise return the value in native token unit
       gasObj.isUsd = nativeTokenPrice || tokenPrice
       gasObj.value = web3.utils.fromWei(parseInt(gasObj.gasPrice).toString(), 'ether') * gasObj.gas * (gasObj.isUsd ? gasObj.isUsd : 1)
+      gasObj.requiredNativeAmount = web3.utils.fromWei(parseInt(gasObj.gasPrice).toString(), 'ether') * gasObj.gas
+      gasObj.nativeToken = evmData.nativeToken
       return gasObj
     }
 
@@ -818,7 +820,7 @@ class Lib {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
         }
-
+        console.log(chain, transaction, type, tokenPrice, gasLimit, 'chain, transaction, type, tokenPrice, gasLimit')
         if (!response.data) {
           gasData.gasPrice = await web3.eth.getGasPrice()
           gasData.label = 'Fee'
@@ -828,7 +830,7 @@ class Lib {
           if (!gasStationData) {
             gasStationData = response.data.sources.find(o => o.name.toLowerCase().includes('poa'))
           }
-          ['slow', 'standard', 'fast'].forEach((option) => {
+          ['standard', 'fast', 'instant'].forEach((option) => {
             let gasOption = Object.assign({}, gasData)
             gasOption.gasPrice = gasStationData[option] * 1000000000 // To wei
             gasOption.label = option

@@ -406,6 +406,12 @@ export default {
     }
   }
   .dark-theme{
+    .darkmode-option{
+      /deep/ .q-btn__content{
+        color: #FFF;
+      }
+      // background-color: #627797;
+    }
     &.q-card{
       border: 1px solid #627797;
     }

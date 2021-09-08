@@ -6,7 +6,7 @@
                 !['assets', 'investments'].includes(tab)) ||
                 tab == 'chains'
             " class="q-pb-lg">
-                <q-list separator class="rounded-borders bg-white q-pb-lg" >
+                <q-list separator class="rounded-borders bg-grey-2  q-pb-lg" >
 
                     <q-item clickable v-ripple v-for="(chain, i) in chains" :key="i"
                         v-show="!allChains"

@@ -211,7 +211,7 @@
                     </h2> -->
                     <div class="privatekey_bg flex flex-center"><img height="200" src="statics/privatekey_bg.svg" alt=""></div>
                 </div>
-                <div class="chain-tools-wrapper--list open">
+                <div class="chain-tools-wrapper--list_ open">
                     <div class="list-wrapper">
                         <div class="list-wrapper--chain__eos-to-vtx-convertor">
                             <div v-show="showMainSteps">

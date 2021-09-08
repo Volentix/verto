@@ -1,6 +1,6 @@
 <template>
 <div>
-     <q-list :class="{'q-pt-md': miniMode}" v-if="gasOptions.length && (currentAccount.isEvm || currentAccount.chain == 'btc' )" class="gasfield q-mb-md"  separator>
+     <q-list :class="{'q-pt-md': miniMode}" v-if="gasOptions.length && (currentAccount.isEvm || currentAccount.chain == 'btc' )" class="gasfield q-mb-sm"  separator>
               <span>{{gasOptions.length ==1 ? 'Gas fee' : 'Select gas'}} <span v-if="txData.title">({{txData.title}})</span></span>
                     <div dense class="gasSelector row q-pt-sm" >
                         <div class="col-md-4" :class="{'col-md-12 q-mb-sm': miniMode}" v-for="(gas, index) in gasOptions" :key="index">
@@ -36,6 +36,7 @@
 
                 </q-list>
                   <p class="text-red" v-if="error">{{error}}</p>
+                   <p class="text-caption"  v-else-if="gasSelected && gasSelected.requiredNativeAmount">{{parseFloat(gasSelected.requiredNativeAmount).toFixed(5)}} {{gasSelected.nativeToken.toUpperCase()}} required</p>
                 </div>
 </template>
 <script>

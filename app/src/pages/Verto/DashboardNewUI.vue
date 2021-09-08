@@ -35,7 +35,9 @@
               />
             </div>
           </div>
-          <div class="col col-md-12 q-pr-md bg-white">
+          <div :class="{
+              'bg-white': $store.state.settings.lightMode === 'false'
+            }" class="col col-md-12 q-pr-md">
             <div class="row dashboard-ui-tokens">
               <q-tabs
                 v-model="tab"
@@ -637,7 +639,7 @@ export default {
   background: #04111f !important;
 }
 .q-page {
-  background: #e7e8e8 !important;
+  background: #FFFFFF !important;
 }
 </style>
 <style lang="scss" scoped>
@@ -649,7 +651,7 @@ export default {
   padding-left: 18vh;
   padding-bottom: 50px;
   @media screen and (min-width: 768px) {
-    padding-top: 11vh;
+    padding-top: 40px !important;
     padding-bottom: 0px;
   }
 }
@@ -1038,7 +1040,8 @@ export default {
   }
   .desktop-version {
     background: #04111f;
-    padding-bottom: 8px;
+    padding-bottom: 0px;
+    padding-top: 50px;
     min-height: 100vh;
     overflow: hidden;
     position: relative;
@@ -1124,6 +1127,11 @@ export default {
 // .max-height2{
 //     max-height: 50.5%;
 // }
+.dark-theme{
+  .dashboard-ui-tokens{
+    border: none;
+  }
+}
 </style>
 <style>
 .q-scrollarea__bar--v,
@@ -1142,4 +1150,5 @@ export default {
 .full-height-desktop {
   height: 100vh !important;
 }
+
 </style>

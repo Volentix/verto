@@ -1,6 +1,6 @@
 <template>
     <div>
-        <q-toolbar style="margin-top:-40px;">
+        <q-toolbar >
             <!-- <q-btn flat round dense icon="menu" class="q-mr-sm" /> -->
             <q-avatar>
                 <svg class="svg_logo q-mr-sm" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58">
