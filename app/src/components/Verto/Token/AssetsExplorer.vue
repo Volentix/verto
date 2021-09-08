@@ -1,5 +1,63 @@
 <template>
 <div>
+  <q-dialog v-model="alertSecurity">
+    <q-card
+      style="width: 100%; max-width: 400px"
+      :dark="$store.state.settings.lightMode === 'true'"
+    >
+      <q-card-section>
+        <q-icon
+          name="close"
+          class="absolute-top-right q-pa-md"
+          size="sm"
+          v-close-popup
+        />
+        <div class="icon-alert flex flex-center text-bold text-h6">
+          <q-icon name="warning" size="md" /> Security alert
+        </div>
+      </q-card-section>
+
+      <q-card-section class="text-body1">
+        The private key is confidential. Please make sure you do not
+        share it with anyone. Your private keys control your funds.
+        <br />
+        <br />
+        <span class="text-caption"
+          >Enter your Verto password to access this section</span
+        >
+        <q-input
+          @keyup.enter="verifyPassword"
+          error-message="Invalid password"
+          :error="passHasError"
+          v-model="password"
+          label="Enter Verto password"
+          class="q-pt-md"
+          filled
+          type="password"
+        >
+          <template v-slot:append>
+            <span
+              @click="verifyPassword()"
+              class="text-body1 cursor-pointer"
+              >Verify</span
+            >
+            <q-btn
+              :loaling="spinnerVisible"
+              @click="verifyPassword()"
+              round
+              dense
+              flat
+              icon="send"
+            />
+          </template>
+        </q-input>
+        <span class="text-red">
+          Your private keys will be partially exposed
+        </span>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+
   <div
     :class="{
       'q-pt-lg': !allAssets,
@@ -19,63 +77,7 @@
     >
       <div class="row">
         <div class="col-md-6">
-          <q-dialog v-model="alertSecurity">
-            <q-card
-              style="width: 100%; max-width: 400px"
-              :dark="$store.state.settings.lightMode === 'true'"
-            >
-              <q-card-section>
-                <q-icon
-                  name="close"
-                  class="absolute-top-right q-pa-md"
-                  size="sm"
-                  v-close-popup
-                />
-                <div class="icon-alert flex flex-center text-bold text-h6">
-                  <q-icon name="warning" size="md" /> Security alert
-                </div>
-              </q-card-section>
-
-              <q-card-section class="text-body1">
-                The private key is confidential. Please make sure you do not
-                share it with anyone. Your private keys control your funds.
-                <br />
-                <br />
-                <span class="text-caption"
-                  >Enter your Verto password to access this section</span
-                >
-                <q-input
-                  @keyup.enter="verifyPassword"
-                  error-message="Invalid password"
-                  :error="passHasError"
-                  v-model="password"
-                  label="Enter Verto password"
-                  class="q-pt-md"
-                  filled
-                  type="password"
-                >
-                  <template v-slot:append>
-                    <span
-                      @click="verifyPassword()"
-                      class="text-body1 cursor-pointer"
-                      >Verify</span
-                    >
-                    <q-btn
-                      :loaling="spinnerVisible"
-                      @click="verifyPassword()"
-                      round
-                      dense
-                      flat
-                      icon="send"
-                    />
-                  </template>
-                </q-input>
-                <span class="text-red">
-                  Your private keys will be partially exposed
-                </span>
-              </q-card-section>
-            </q-card>
-          </q-dialog>
+          <!-- RELOCATED ALERT DIALOG TO TOP FROM HERE FOR COMMON USE-->
 
           <ul class="tabs group">
             <li

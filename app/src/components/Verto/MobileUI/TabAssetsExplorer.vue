@@ -32,6 +32,7 @@
                   !$store.state.wallets.portfolioTotal &&
                   !$route.params.accounts,
               }" />
+            <q-tab name="create" icon="arrow_downward" label="Create new account" :class="{ active: tab == 'create', manage: true, }" />
             <q-tab name="chains" icon="link" label="Chains" class="read" v-if="$store.state.wallets.portfolioTotal"/>
             <q-tab name="assets" icon="adjust" label="Assets" class="read"/>
             <q-tab name="privateKeys" icon="vpn_key" label="Private Keys" class="manage"/>
@@ -71,10 +72,9 @@ export default {
   },
   methods: {
     updateTab (value) {
-      console.log('update tab', value)
-      this.$emit('update:tab', value)
+      console.log('VAlue of tab', value)
+      if (value !== 'privateKeys') { this.$emit('update:tab', value) }
       if (value === 'import' || value === 'receive') {
-        console.log('TAA-import ', value)
         this.getChains()
         this.$emit('update:showQr', {})
       } else if (value === 'chains') {
@@ -87,6 +87,7 @@ export default {
         this.initTable()
         this.openAssetDialog()
       } else if (value === 'privateKeys') {
+        console.log('showPrivateKeys ', this.showPrivateKeys)
         this.showPrivateKeys ? (this.$emit('update:tab', value)) : (this.$emit('update:alertSecurity', true))
         this.$emit('update:showQr', {})
         this.getChains()

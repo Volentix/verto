@@ -147,7 +147,7 @@
 
                         <q-item-section side top>
                             <!-- CHAIN / RECEIVE / IMPORT COMMON SECTION -->
-                            <div class="text-bold text-h7 text-black" v-if="!$route.params.accounts || !(tab == 'receive' || tab == 'privateKeys' || tab == 'import' )" >${{ nFormatter2(chain.chainTotal, chain.chainTotal > 10 ? 0 : 2) }} </div >
+                            <div class="text-bold text-h7 text-black" v-if="!$route.params.accounts || !(tab == 'receive' || tab == 'privateKeys' || tab == 'import' || tab == 'create' )" >${{ nFormatter2(chain.chainTotal, chain.chainTotal > 10 ? 0 : 2) }} </div >
 
                             <!-- COMMON SECTION END  -->
                         </q-item-section>

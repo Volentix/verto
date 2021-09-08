@@ -16,10 +16,14 @@
 
             <q-card-section>
                 <q-tabs
+                  style="max-width: initial"
                     v-model="tabIndex"
                     dense
+                    no-caps
+                    outside-arrows
+                    mobile-arrows
                     class="bg-grey-2 text-green q-pb-md"
-                    @click="updateTab(tabIndex)"
+                    @input="handleTab(tabIndex)"
                     :class="{
                         'account-tabs': $route.params.accounts,
                         'assets-tabs': !$route.params.accounts,
@@ -37,9 +41,10 @@
                         !$store.state.wallets.portfolioTotal &&
                         !$route.params.accounts,
                     }" />
+                    <q-tab name="create" icon="arrow_downward" label="Create new account" :class="{ active: tab == 'create', manage: true, }" />
                     <q-tab name="chains" icon="link" label="Chains" class="read" v-if="$store.state.wallets.portfolioTotal"/>
                     <q-tab name="assets" icon="adjust" label="Assets" class="read"/>
-                    <q-tab name="privateKeys" icon="vpn_key" label="Private Keys" class="manage"/>
+                    <q-tab name="privateKeys" icon="vpn_key" label="Private Keys" class="manage" @click="handlePrivateKey(tabIndex)"/>
                     <q-tab name="investments" icon="trending_up" label="Investments" class="read"/>
                 </q-tabs>
             </q-card-section>
@@ -73,12 +78,12 @@ export default {
     return {
       maximizedToggle: true,
       open: false,
-      tabIndex: 'assets'
+      tabIndex: 'assets',
+      previousTab: ''
     }
   },
   watch: {
     tab (val) {
-      console.log('watch tab >>', val)
       this.tabIndex = val
     }
   },
@@ -89,6 +94,15 @@ export default {
       this.$router.push({
         path: '/verto/dashboard'
       })
+    },
+    handleTab (index) {
+      this.updateTab(index)
+      if (index === 'privateKeys') {
+        this.tabIndex = this.previousTab
+      }
+    },
+    handlePrivateKey (value) {
+      this.previousTab = value
     }
   }
 
