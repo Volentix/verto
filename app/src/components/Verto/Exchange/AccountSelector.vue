@@ -1,31 +1,28 @@
 <template>
 <div v-if="!chain || chains || showAllWallets" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
   <q-btn class="account_selector" dense v-if="accountOption" :dark="$store.state.settings.lightMode === 'true'" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" >
-    <q-menu>
-      <q-list bordered separator>
-        <q-expansion-item  style="width:308px;"  dense-toggle class="chains" :class="{'singleChain' : chainsData.filter(o => checkChain(o)).length == 1}" default-opened v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index" clickable  >
+    <q-menu :dark="$store.state.settings.lightMode === 'true'">
+      <q-list class="coins_menu_wrapper_popup" bordered separator>
+        <q-expansion-item :dark="$store.state.settings.lightMode === 'true'" style="width:308px;"  dense-toggle class="chains" :class="{'singleChain' : chainsData.filter(o => checkChain(o)).length == 1}" default-opened v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index" clickable  >
           <template v-slot:header>
-              <q-item-section avatar>
-                  <img class="coin-icon" width="25px" :src="tokChain.icon"  />
+              <q-item-section :dark="$store.state.settings.lightMode === 'true'" avatar>
+                <img class="coin-icon" width="25px" :src="tokChain.icon"  />
               </q-item-section>
-              <q-item-section  class="item-name" >
-              <span class="item-name--name"> {{tokChain.label}}</span>
-              <q-item-label caption>
-              <span  class="item-name--staked" v-if="tokChain.count > 1">{{tokChain.count}} accounts</span>
-              <span   class="item-name--staked" v-else-if="tokChain.count == 1">{{getAccountLabel(tokChain)}}</span>
-              </q-item-label>
-
+              <q-item-section :dark="$store.state.settings.lightMode === 'true'"  class="item-name" >
+                <span class="item-name--name"> {{tokChain.label}}</span>
+                <q-item-label caption>
+                  <span class="item-name--staked" v-if="tokChain.count > 1">{{tokChain.count}} accounts</span>
+                  <span class="item-name--staked" v-else-if="tokChain.count == 1">{{getAccountLabel(tokChain)}}</span>
+                </q-item-label>
               </q-item-section>
-
-              <q-item-section class="item-info col" side>
-              <div class="row items-center text-bold">
-
-              <span> ${{nFormatter2(tokChain.chainTotal ? tokChain.chainTotal.toFixed(0) : 0 , 0)}}</span>
-                  </div>
+              <q-item-section :dark="$store.state.settings.lightMode === 'true'" class="item-info col" side>
+                <div class="row items-center text-bold">
+                  <span> ${{nFormatter2(tokChain.chainTotal ? tokChain.chainTotal.toFixed(0) : 0 , 0)}}</span>
+                </div>
               </q-item-section>
           </template>
           <q-card class="accounts" :dark="$store.state.settings.lightMode === 'true'" dense>
-            <q-card-section>
+            <q-card-section :dark="$store.state.settings.lightMode === 'true'">
                 <q-item  @click="getAccount(item) ; setAccount(300) ;" :key="Math.random()+index"  v-for="(item, index) in tokChain.accounts"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                 <div class="header-wallet-wrapper culumn full-width">
                     <div   class="header-wallet full-width flex justify-between">
@@ -446,4 +443,25 @@ display: none;
     }
   }
 }
+.chains:hover .accounts.q-dark ,
+.singleChain  .accounts.q-dark  {
+  background: #04111f;
+}
+</style>
+<style>
+  .q-menu--dark.q-dark .coins_menu_wrapper_popup .q-focusable:focus > .q-focus-helper,
+  .q-menu--dark.q-dark .coins_menu_wrapper_popup .q-manual-focusable--focused > .q-focus-helper,
+  .q-menu--dark.q-dark .coins_menu_wrapper_popup .q-hoverable:hover > .q-focus-helper {
+    background: #061b31;
+    opacity: .2;
+  }
+  .q-menu--dark.q-dark .coins_menu_wrapper_popup .q-item.q-item-type.row{
+    background: #04111f;
+  }
+  body.desktop .q-focusable:focus > .q-focus-helper:after,
+  body.desktop .q-manual-focusable--focused > .q-focus-helper:after,
+  body.desktop .q-hoverable:hover > .q-focus-helper:after {
+    background: #061a30;
+    opacity: .3;
+  }
 </style>
