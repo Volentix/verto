@@ -13,7 +13,7 @@
         <q-tabs
             v-model="tabIndex"
             dense
-            class="bg-grey-2 text-green q-pb-md"
+            class="text-green q-pb-md"
             @click="updateTab(tabIndex)"
             :class="{
                 'account-tabs': $route.params.accounts,

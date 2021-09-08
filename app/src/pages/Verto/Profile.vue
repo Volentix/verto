@@ -14,7 +14,7 @@
             <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
               <div class="standard-content-x q-pt-md">
                 <h2 class="standard-content--title flex justify-start">Profile</h2>
-                <profile style="max-width:900px;" />
+                <profile />
               </div>
             </div>
           </div>
@@ -129,7 +129,7 @@ export default {
     }
   }
   .desktop-version{
-    background: #E7E8E8;
+    background: #FFF;
     padding-top: 13vh;
     padding-left: 18vh;
     padding-bottom: 50px;
@@ -141,6 +141,7 @@ export default {
   }
   .dark-theme{
     background: #04111F;
+    height: fit-content;
     /deep/ .mobile-version{
       background: #04111F;
     }
@@ -160,7 +161,7 @@ export default {
     .desktop-version{
       background: #04111F;
       padding-bottom: 8px;
-      min-height: 102vh;
+      min-height: unset;
       overflow: hidden;
       position: relative;
       scrollbar-width: 0px;
@@ -211,5 +212,22 @@ export default {
         font-size: 25px;
       }
     }
+  }
+  .desktop-card-style {
+    border-radius: 0px;
+  }
+  .desktop-version {
+    padding-top: 20px !important;
+    padding-left: 15px !important;
+    margin-bottom: 0px !important;
+  }
+  .desktop-card-style.dark-theme {
+    border: none;
+    padding-left: 20px;
+    border-radius: 0px;
+  }
+  .desktop-card-style{
+    box-shadow: none;
+    padding-left: 20px;
   }
 </style>

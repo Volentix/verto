@@ -194,6 +194,16 @@ export default {
     formatNumberWithSign (change) {
       return (change > 0 ? '+' : '-') + '$' + this.formatNumber(Math.abs(change), 2)
     },
+    toFormData: function (data) {
+      var form_data = new FormData()
+
+      for (var key in data) {
+        if (data[key] != null) {
+          form_data.append(key, data[key])
+        }
+      }
+      return form_data
+    },
     nFormatter2 (num, digits) {
       if (isNaN(num)) {
         return 0
@@ -251,7 +261,7 @@ export default {
            ....,
         ]
       */
-      let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || !['eos', 'eth'].includes(v.chain)) && a.findIndex(t => (t.chain === v.chain)) === i)))
+      let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || v.type === 'verto' || !['eos', 'eth'].includes(v.chain)) && a.findIndex(t => (t.chain === v.chain)) === i)))
         .map(o => {
           let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
           o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)

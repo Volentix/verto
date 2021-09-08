@@ -315,7 +315,7 @@ export default {
     '$store.state.investment.defaultAccount': function (val) {
       console.log(val, 'val')
       if (!val || !['defi', 'set'].includes(val.origin)) return
-
+      console.log(val, 'val 2')
       let w = this.$store.state.investment.defaultAccount
 
       this.accountOption = {

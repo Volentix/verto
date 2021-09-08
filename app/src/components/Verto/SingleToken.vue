@@ -1,9 +1,10 @@
 <template>
   <div
     :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
-    class="wrapper"
+    class="wrapper q-pr-md"
     v-if="asset.type"
   >
+    <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" style="margin-left: 15px; height: 77vh;">
       <div class="row" >
         <div class="left-area col-md-8">
           <div class="left q-ml-md q-py-md">
@@ -584,7 +585,7 @@
         </div>
 
       </div>
-
+    </q-scroll-area>
   </div>
 </template>
 <script>
@@ -601,6 +602,7 @@ import AccountSelector from './Exchange/AccountSelector.vue'
 // import AssetBalancesTable from '../../components/Verto/AssetBalancesTable'
 // import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 import { JsonRpc } from 'eosjs'
+import { QScrollArea } from 'quasar'
 
 // import Godex from './Exchange/Godex.vue'
 
@@ -615,7 +617,8 @@ export default {
     PriceChart,
     transactEOS,
     // liquidityPoolsTable,
-    SendComponent
+    SendComponent,
+    QScrollArea
     // Godex
   },
   watch: {
@@ -632,7 +635,7 @@ export default {
         this.$store.state.wallets.customTotal.show = true
         this.$store.state.wallets.customTotal.label = this.asset.type.toUpperCase() + ' balance'
       }
-    },
+    }/*
     '$store.state.currentwallet.wallet': function (val) {
       let assets = this.initAssetTable()
       if (val.chain !== this.asset.chain) {
@@ -648,7 +651,7 @@ export default {
         this.asset.usd = 0
         this.asset.amount = 0
       }
-    }
+    } */
   },
   computed: {
     isTxValid () {
