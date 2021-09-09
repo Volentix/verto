@@ -16,7 +16,10 @@
       }"
     >
       <div class="row">
-        <div class="col-md-6">
+        <div :class="{ 'col-md-6' : !$route.params.accounts , 'col-md-8': $route.params.accounts}">
+        <q-dialog v-model="createPopup.show">
+        <NewAccounts :chain="createPopup.chain" />
+        </q-dialog>
           <q-dialog v-model="alertSecurity">
             <q-card
               style="width: 100%; max-width: 400px"
@@ -113,7 +116,14 @@
                 ><q-icon name="arrow_downward" /> Import</a
               >
             </li>
-            <li v-if="false" class="manage">
+            <li
+             v-if="$route.params.accounts"
+             :class="{
+                'manage': $store.state.wallets.portfolioTotal,
+                'read':
+                  !$store.state.wallets.portfolioTotal &&
+                  !$route.params.accounts,
+              }">
               <a
                 @click="tab = 'create'"
                 :class="{ active: tab == 'create' }"
@@ -383,7 +393,7 @@
         >
           <div
             :class="[
-              tab == 'receive' || tab == 'import' || tab == 'privateKeys'
+              tab == 'receive' || tab == 'import' || tab == 'create' || tab == 'privateKeys'
                 ? ' col-md-2 '
                 : 'col-md-3',
             ]"
@@ -640,8 +650,10 @@
                 {{ chain.accounts.length }} accounts
                 <q-icon name="arrow_forward_ios" />
               </div>
-              <div class="text-caption q-pt-md" v-else-if="tab == 'import'">
-                Import <q-icon name="arrow_right_alt" />
+              <div class="text-caption q-pt-md" v-else-if="tab == 'import' || tab == 'create'">
+               <span class="text-capitalize">
+               {{tab}}
+               </span>  <q-icon name="arrow_right_alt" />
               </div>
               <span
                 v-else-if="
@@ -1056,6 +1068,7 @@ import TokenByAccount from './TokenByAccount.vue'
 import Vue from 'vue'
 import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
 import ExchangeSection from '@/components/Verto/ExchangeSection3'
+import NewAccounts from '@/components/Verto/Accounts/NewAccounts'
 import liquidityPoolsTable from '@/components/Verto/Defi/LiquidityPoolsTable'
 import PriceChart from '@/components/Verto/Token/PriceChart'
 import AssetBalancesTable from '@/components/Verto/AssetBalancesTable'
@@ -1074,11 +1087,16 @@ export default {
     liquidityPoolsTable,
     PriceChart,
     ShowKeys,
+    NewAccounts,
     QScrollArea
   },
   props: ['rowsPerPage'],
   data () {
     return {
+      createPopup: {
+        chain: null,
+        show: false
+      },
       chartData: false,
       showPrivateKeys: false,
       showQr: {},
@@ -1395,6 +1413,14 @@ export default {
       let actions = {
         import () {
           self.$router.push(self.getImportLink(chain.chain))
+        },
+        create () {
+          if (chain.chain === 'eos') {
+            self.$router.push(self.getImportLink(chain.chain))
+          } else {
+            self.createPopup.show = true
+            self.createPopup.chain = chain
+          }
         },
         receive () {
           if (chain.accounts.length === 1) {

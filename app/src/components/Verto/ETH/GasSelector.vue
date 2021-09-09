@@ -35,7 +35,7 @@
       </q-item>
 
                 </q-list>
-                  <p class="text-red" v-if="error">{{error}}</p>
+                  <p class="text-red" v-if="error">{{parseError(error)}}</p>
                    <p class="text-caption"  v-else-if="gasSelected && gasSelected.requiredNativeAmount">{{parseFloat(gasSelected.requiredNativeAmount).toFixed(5)}} {{gasSelected.nativeToken.toUpperCase()}} required</p>
                 </div>
 </template>
@@ -74,9 +74,14 @@ export default {
     } else {
       this.checkGasForTransfer()
     }
-    console.log(this.txObject, 'this.txObject', this.txData)
   },
   methods: {
+    parseError (error) {
+      if (error.toString().includes('newStakedHearts must be at least minimum') || error.toString().includes('Returned error: execution reverted: ERC20: burn amoun')) {
+        error = 'Insuficient HEX balance'
+      }
+      return error
+    },
     /* Getting the cost for a mint transaction on the renbrige contract without passing the user params - being used in function where you don't know some of these params yet */
     async getDemoGasMintForRen () {
       this.error = null
