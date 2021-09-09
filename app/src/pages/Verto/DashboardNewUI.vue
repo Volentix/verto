@@ -37,6 +37,7 @@
               'bg-white': $store.state.settings.lightMode === 'false'
             }" class="col col-md-12 q-pr-md">
             <div class="row dashboard-ui-tokens">
+            <HexChart style="width:100%" v-if="false" />
               <q-tabs
                 v-model="tab"
                 v-if="false"
@@ -241,6 +242,7 @@ import MakeVTXSection2 from '../../components/Verto/MakeVTXSection2'
 // import ExchangeSection from '../../components/Verto/ExchangeSection'
 // import ExchangeSection3 from '../../components/Verto/ExchangeSection3'
 //
+import HexChart from '../../components/Verto/Stake/HexChart'
 import SingleToken from '../../components/Verto/SingleToken'
 import GodexV2 from '../../components/Verto/Exchange/GodexV2'
 import VTXStakeState from '../../components/Verto/EOS/StakingState'
@@ -275,6 +277,7 @@ export default {
     // ConvertAnyCoin,
     VTXStakeState,
     MultiTransaction,
+    HexChart,
     // NftsExplorer,
     ProfileHeader,
     Wallets,

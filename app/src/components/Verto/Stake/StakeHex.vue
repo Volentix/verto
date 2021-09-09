@@ -68,7 +68,7 @@
                       :done="step > 1"
                     >
                       <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                           <span class="text-body2">Switch account here</span>
                           <q-select
                             :dark="$store.state.settings.lightMode === 'true'"
@@ -145,9 +145,7 @@
                               />
                             </template>
                           </q-select>
-                        </div>
-                        <div class="col-md-6 q-pl-lg">
-                          <div class="row current-stake-balanca">
+                            <div class="row current-stake-balanca">
                             <div class="">
                               <span class="--title row text-h6">
                                 Current Balance<br />{{
@@ -184,6 +182,7 @@
                             </div>
                           </div>
                         </div>
+
                       </div>
 
                       <div class="text-black">
@@ -221,7 +220,7 @@
                                     summary-wrapper
                                     row
                                     full-width
-                                    q-ma-lg q-pa-lg
+                                    q-mx-lg q-px-lg
                                     rounded-borders
                                   "
 
@@ -765,12 +764,12 @@ export default {
   },
   async mounted () {
     this.sendAmount = this.currentAccount.amount
-    this.getStakingData()
-    this.getStakingObject()
-    this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://go.hex.com/data/event-batch-7-3.hxb')
+
+    /* this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://go.hex.com/data/event-batch-7-3.hxb')
       .then(res => {
         console.log(res, ' res')
       })
+      */
   },
   methods: {
     getStakingObject () {
@@ -857,6 +856,8 @@ export default {
                 w.key === this.wallet.key
           )
       }
+      this.getStakingData()
+      this.getStakingObject()
     },
     async initData () {
       this.currentAccount.amount = this.currentAccount.amount
@@ -1145,12 +1146,12 @@ export default {
 .q-tabs {
   display: none;
 }
-.summary-data /deep/ h1 {
+.summary-data /deep/ h1 , .summary-data /deep/ h3 , .summary-data /deep/ h2 {
     font-size:20px;
         line-height: 1rem;
 }
 .summary-data {
-    margin-top:20px
+    margin-top:-200px
 }
 .summary-data /deep/  h1  {
     font-weight:700

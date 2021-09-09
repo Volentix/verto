@@ -6,6 +6,7 @@
     }"
     class="full-width"
   >
+  <UI v-if="false"/>
     <q-btn label="test" v-if="false" @click="testData()" />
     <div class="gdx-exchange-form q-px-md" v-show="step != 2">
       <div class="text-h6 full-width q-py-md">Exchange any to any</div>
@@ -1744,6 +1745,7 @@
               leZMkh
             "
           >
+         <span v-show="false">{{path}}</span>
             <button
               @click="setPathTransaction(path)"
               aria-label="Comprar Bitcoin"
@@ -1816,6 +1818,7 @@ import CrosschainDex from '@/util/CrosschainDex'
 import Formatter from '@/mixins/Formatter'
 import SendComponent from '@/pages/Verto/Send'
 import Exchange from '../../../pages/Verto/Exchange.vue'
+import UI from './NewUI'
 import GasSelector from '../../../components/Verto/ETH/GasSelector.vue'
 // import transactEOS from '../transactEOS'
 let defaults = ['eos', 'eth', 'btc']
@@ -1842,7 +1845,8 @@ export default {
   components: {
     SendComponent,
     Exchange,
-    GasSelector
+    GasSelector,
+    UI
     // transactEOS
   },
   props: ['fromAssetData', 'toAssetData'],

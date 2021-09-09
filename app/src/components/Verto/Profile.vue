@@ -5,7 +5,7 @@
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="profile-wrapper--list">
       <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator>
-        <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="(item.to !== 'backup' && item.to !== 'logout' && item.to !== 'restore' && item.to !== 'share') ? item.to : ''" @click="item.to === 'backup' ? backupConfig() : item.to === 'logout' ? logout() : item.to === 'restore' ? startRestoreConfig() : item.to === 'share' ? toggleShare() : empty()">
+        <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="(item.to !== 'backup' && item.to !== 'logout' && item.to !== 'restore' && item.to !== 'share') ? item.to : ''" @click="item.to === 'backup' ? backupConfig() : item.to === 'logout' ? logout() : item.to === 'restore' ? startRestoreConfig() : item.to === 'share' ? toggleShare() : item.id === 'debug' ? saveDebugData() : empty()">
           <q-item-section avatar>
             <q-icon class="icons" :class="{'reverse' : item.icon === 'exit_to_app'}" v-if="item.icon !== 'vtx'" :name="item.icon" />
             <img v-else class="vtx_logo" width="15px" :src="$store.state.settings.lightMode === 'true' ? 'statics/vtx.png' : 'statics/vtx_black.svg'" alt="">
@@ -280,6 +280,7 @@ export default {
       { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
       { name: 'Network', to: '', icon: 'public_off', info: 'darkmode' },
       { name: 'Dev Mode', to: '', icon: 'public_off', info: 'darkmode' },
+      { name: 'Download debug data', id: 'debug', icon: 'o_get_app' },
       //  { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'soon' },
       { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' }
     ]
@@ -323,6 +324,15 @@ export default {
         name: 'restoreWallet',
         params: { returnto: 'profile' }
       })
+    },
+    async saveDebugData () {
+      try {
+        await configManager.saveDebugData()
+
+        this.$q.notify({ color: 'positive', message: 'Debug Data Saved' })
+      } catch (e) {
+        // TODO: Exception handling
+      }
     },
     async backupConfig () {
       try {
