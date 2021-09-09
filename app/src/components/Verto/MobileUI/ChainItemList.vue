@@ -8,7 +8,9 @@
             " class="q-pb-lg">
                 <q-list separator class="rounded-borders bg-grey-2  q-pb-lg" >
 
-                    <q-item clickable v-ripple v-for="(chain, i) in chains" :key="i"
+                    <q-item clickable v-ripple
+                        v-for="(chain, i) in chains.filter(a => tab !== 'privateKeys' || (a.accounts && a.accounts.length))"
+                        :key="i"
                         v-show="!allChains"
                         @click="tab !=='receive' ? openAssetDialog (chain) : '' "
                         class="q-pt-md"
@@ -132,12 +134,21 @@
                             >
                                 {{ chain.accounts.length }} accounts <q-icon name="arrow_forward_ios" />
                             </div>
-                            <div class="text-caption q-pt-md" v-else-if="tab == 'import'">
-                                Import <q-icon name="arrow_right_alt" />
+                            <div class="text-caption q-pt-md" v-else-if="tab == 'import' || tab == 'create'">
+                                <span class="text-capitalize">
+                                {{tab}}
+                                </span>  <q-icon name="arrow_right_alt" />
                             </div>
                             <span v-else-if="tab == 'chains' && chain.chain == 'eos' && chain.type == 'verto' ">
                                 <q-btn label="Get EOS account" outline rounded />
                             </span>
+                            <div
+                                @click="$router.push(getImportLink('eos'))"
+                                class="text-caption q-pt-md"
+                                v-else-if="chain.type == 'verto'"
+                                >
+                                Setup account <q-icon name="arrow_right_alt" />
+                            </div>
                             <!-- <div class="text-caption q-pt-md" v-else-if="!$route.params.accounts" >
                                 Select <q-icon name="arrow_right_alt" />
                             </div> -->

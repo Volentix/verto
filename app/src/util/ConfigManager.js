@@ -31,6 +31,11 @@ class ConfigManager {
       return platformTools.downloadFile(configData, fileName)
     }
 
+    async saveDebugData () {
+      const fileName = `support-verto-${(new Date()).getTime()}.debug`
+      return platformTools.downloadFile(localStorage.getItem('walletPublicDatav2'), fileName)
+    }
+
     async restoreConfig (configData, password) {
       // if (typeof configData !== 'string') configData = JSON.stringify(configData)
       try {

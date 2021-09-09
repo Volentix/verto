@@ -17,12 +17,10 @@ export default {
     }
   }),
   async mounted () {
-    // this.chartdata.labels = this.stakingData[0]
-    console.log(this.chartdata, this.stakingData, 'this.chartdata')
     this.chartdata.labels = [].concat(this.stakingData[0]).map(o => o.x)
     this.chartdata.datasets[0].data = [].concat(this.stakingData[0]).map(o => o.y)
     // this.chartdata.datasets[1].data = this.stakingData[1]
-    console.log(this.chartdata, 123, 'wer')
+
     const self = this
     this.renderChart(this.chartdata, { responsive: true,
       maintainAspectRatio: false,
