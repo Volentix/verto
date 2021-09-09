@@ -90,9 +90,9 @@ export default {
       return label
     },
     getKeyFormat (key, last = 5) {
-      return key.substring(0, 5).toLowerCase() +
+      return key ? key.substring(0, 5).toLowerCase() +
       '...' +
-      key.substr(key.length - last).toLowerCase()
+      key.substr(key.length - last).toLowerCase() : ''
     },
     getPageName (name) {
       let pages = {

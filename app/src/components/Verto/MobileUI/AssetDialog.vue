@@ -49,13 +49,13 @@
                 </q-tabs>
             </q-card-section>
 
-            <div class=" q-pl-md q-pb-md" v-if="tab == 'import'">
+            <div class=" q-pl-md q-pb-md" v-if="tabIndex == 'import'">
                 Select chain to import
             </div>
-            <div class="q-pl-md q-pb-md" v-else-if="tab == 'receive'">
+            <div class="q-pl-md q-pb-md" v-else-if="tabIndex == 'receive'">
                 Select chain to copy or view your receiving account
             </div>
-            <div class=" q-pl-md q-pb-md" v-else-if="tab == 'privateKeys'">
+            <div class=" q-pl-md q-pb-md" v-else-if="tabIndex == 'privateKeys'">
                 Select chain to copy private keys
             </div>
 
