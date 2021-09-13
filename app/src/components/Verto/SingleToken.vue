@@ -1780,4 +1780,13 @@ export default {
     height: 76.7vh !important;
   }
 }
+/deep/ .tokenbyaccount .q-item__label--header {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.dark-theme /deep/ .tokenbyaccount .q-item__label--header {
+  color: #FFF;
+}
 </style>
