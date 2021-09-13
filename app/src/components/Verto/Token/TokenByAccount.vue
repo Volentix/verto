@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="tokenbyaccount">
      <div v-if="mode == 'select'" class="row flex flex-center q-mt-md">
      <q-select :dark="$store.state.settings.lightMode === 'true'" @input="$emit('filterTokensByAccount', accountOption)" borderless v-model="accountOption" style="max-width:200px" outline dense :options="accounts">
       <template v-slot:option="scope">
@@ -35,7 +35,7 @@
       </q-item-section>
 </div>
      <q-list bordered class="rounded-borders" style="max-width: 350px" v-else>
-      <q-item-label v-if="type" header>{{accounts.length}} accounts with {{type.toUpperCase()}}</q-item-label>
+      <q-item-label class="accounts_title_with" v-if="type" header>{{accounts.length}} accounts with {{type.toUpperCase()}}</q-item-label>
 
       <q-item @click=" setAccount(account)" clickable v-ripple v-for="(account, index) in accounts" :key="index">
         <q-item-section avatar>

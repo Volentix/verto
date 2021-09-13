@@ -183,7 +183,7 @@
         </div>
       </q-drawer>
 
-      <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}" style="overflow:scroll;">
+      <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}" :style="$q.platform.is.mobile ? 'overflow:scroll; background: #f2f2f2 !important' : 'overflow:scroll;' " >
         <TopMenu v-if="!$q.screen.lt.sm"/>
         <TopMenuMobile v-if="$q.platform.is.mobile" :chainTools.sync="chainTools" :keys.sync="keys" />
 
