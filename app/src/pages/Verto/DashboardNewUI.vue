@@ -7,7 +7,7 @@
       'desktop-marg': screenSize > 1024,
       'mobile-pad': screenSize < 1024 && !$q.platform.is.mobile,
     }"
-    :style=" $q.platform.is.mobile? 'position: static' : '' "
+    :style=" $q.platform.is.mobile? 'position: static; background: #f2f2f2 !important' : '' "
   >
     <div
       :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"

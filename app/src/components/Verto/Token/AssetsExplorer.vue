@@ -1,5 +1,14 @@
 <template>
-<div>
+<div
+  :class="{
+      'q-pt-lg': !allAssets,
+      'dark-theme': $store.state.settings.lightMode === 'true',
+      'receive_wrapper_class': tab == 'receive',
+      'import_wrapper_class': tab == 'import'
+    }"
+    class="wrapper q-px-lg full-width assets_explorer_container"
+    :style=" $q.platform.is.mobile? 'background: #f2f2f2 !important' : '' "
+>
   <q-dialog v-model="alertSecurity">
     <q-card
       style="width: 100%; max-width: 400px"
@@ -62,13 +71,6 @@
   </q-dialog>
 
   <div
-    :class="{
-      'q-pt-lg': !allAssets,
-      'dark-theme': $store.state.settings.lightMode === 'true',
-      'receive_wrapper_class': tab == 'receive',
-      'import_wrapper_class': tab == 'import'
-    }"
-    class="wrapper q-px-lg full-width assets_explorer_container"
      v-if="!$q.platform.is.mobile"
   >
     <div
@@ -990,6 +992,7 @@
       </q-scroll-area>
     </div>
 
+    <!-- RELOCATED ShowKeys COMPONENT FROM HERE TO BOTTOM FOR COMMON USE  -->
     <!-- <ShowKeys
       :key="keys.keying"
       v-if="keys.chain"
