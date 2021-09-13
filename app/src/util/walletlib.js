@@ -23,7 +23,7 @@ class Lib {
       icon: 'https://zapper.fi/images/ETH-icon.png',
       provider: 'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63',
       explorer: 'https://etherscan.io/tx/',
-      gas: 'http://ethgas.watch/api/gas',
+      gas: 'https://ethgas.watch/api/gas',
       network_id: 1
     }, {
       name: 'Binance Smart Chain',
@@ -820,7 +820,7 @@ class Lib {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
         }
-        console.log(chain, transaction, type, tokenPrice, gasLimit, 'chain, transaction, type, tokenPrice, gasLimit')
+
         if (!response.data) {
           gasData.gasPrice = await web3.eth.getGasPrice()
           gasData.label = 'Fee'
@@ -905,7 +905,7 @@ class Lib {
 
   send = async (chain, token, from, to, value, memo, key, contract, data) => {
     const self = this
-    console.log(chain, token, from, to, value, memo, contract, data, 'chain, token, from, to, value, memo, key, contract, data')
+
     const wallet = {
       async btc (token, from, to, value, memo, key) {
         const bitcoin = require('bitcoinjs-lib')
@@ -1105,14 +1105,10 @@ class Lib {
             message = 'https://explorer.binance.org/tx/' + result.result[0].hash
             success = true
           } else {
-            console.error('error else', result.message)
-
             message = result.message
             success = false
           }
         } catch (error) {
-          console.error('error catch', error)
-
           message = error
           success = false
         }
