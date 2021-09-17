@@ -67,6 +67,7 @@
     "bip39": "^3.0.2",
     "bitcoinjs-lib": "^5.1.6",
     "bitcore-explorers": "^1.0.1",
+    "bitgo-utxo-lib": "^1.8.0",
     "bn": "^1.0.5",
     "chart.js": "^2",
     "clipboard-polyfill": "^2.8.0",

@@ -126,8 +126,8 @@ module.exports = function (ctx) {
 
     build: {
       uglifyOptions: {
-        keep_fnames: true ,
-        compress: { /* drop_console: true */  }
+        keep_fnames: true,
+        compress: { /* drop_console: true */ }
       },
       scopeHoisting: true,
       vueRouterMode: 'history',
@@ -146,7 +146,7 @@ module.exports = function (ctx) {
           loader: 'eslint-loader',
           exclude: /node_modules/,
           options: {
-            cache: true,
+            // cache: true,
             fix: true
           }
         })
