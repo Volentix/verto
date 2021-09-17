@@ -183,8 +183,10 @@
         </div>
       </q-drawer>
 
-      <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}">
-        <TopMenu />
+      <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}" :style="$q.platform.is.mobile ? 'overflow:scroll; background: #f2f2f2 !important' : 'overflow:scroll;' " >
+        <TopMenu v-if="!$q.screen.lt.sm"/>
+        <TopMenuMobile v-if="$q.platform.is.mobile" :chainTools.sync="chainTools" :keys.sync="keys" />
+
         <q-breadcrumbs
           class="text-deep-purple-12 breadcrumbs"
           v-if="$route.path != '/verto/dashboard'"
@@ -216,7 +218,7 @@
           />
           <q-breadcrumbs-el v-else class="text-capitalize" :class="{'text-white': $store.state.settings.lightMode === 'true'}" :label="$route.name" />
         </q-breadcrumbs>
-        <router-view class="main-container" v-if="toggleView" />
+        <router-view class="main-container" v-if="toggleView " />
       </q-page-container>
       <SelectTokenPopup :key="keys.send" v-if="chainTools.send" />
     </q-layout>
@@ -230,12 +232,14 @@ import Formatter from '@/mixins/Formatter'
 import AccountSelector from '@/components/Verto/Exchange/AccountSelector.vue'
 import TopMenu from '../components/Verto/TopMenu'
 import SelectTokenPopup from '../components/Verto/Token/SelectTokenPopup.vue'
+import TopMenuMobile from '../components/Verto/TopMenuMobile.vue'
 import { QScrollArea } from 'quasar'
 export default {
   components: {
     AccountSelector,
     TopMenu,
     SelectTokenPopup,
+    TopMenuMobile,
     QScrollArea
   },
   data () {
