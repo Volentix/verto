@@ -1,8 +1,8 @@
 <template>
   <div >
-        <AppBar :callChainTools="callChainTools"/>
+        <AppBar :callChainTools="callChainTools" v-if="$route.path != '/verto/crosschain-exchange' "/>
         <!-- <AccountPanel :chainTools.sync="chainTools"/> -->
-        <div class="q-pa-md">
+        <div class="q-pa-md" v-if="$route.path != '/verto/crosschain-exchange' ">
             <div class="q-pb-md">
                 <div class="text-h4 text-bold" v-if="$store.state.wallets.customTotal.show">
                   US${{ nFormatter2($store.state.wallets.customTotal.usd, 3) }}
@@ -59,11 +59,11 @@
                 active-color="primary"
                 class="bg-white text-grey-7 shadow-2 text-bold"
             >
-                <q-tab name="summery" icon="pie_chart" label="Summery" no-caps/>
-                <q-tab name="invest" icon="stacked_line_chart" label="Invest" no-caps/>
-                <q-tab name="mails" icon="swap_horizontal_circle" label="" />
-                <q-tab name="fav" icon="favorite" label="Fav" no-caps/>
-                <q-tab name="settings" icon="settings" label="Settings" no-caps/>
+                <q-tab name="exchange" icon="sync" label="Exchange" no-caps/>
+                <q-tab name="history" icon="history" label="History" no-caps/>
+                <q-tab name="dashboard" icon="dashboard" label="" />
+                <q-tab name="account" icon="account_balance" label="Accounts" no-caps/>
+                <q-tab name="profile" icon="person" label="Profile" no-caps/>
             </q-tabs>
         </div>
 
@@ -83,7 +83,7 @@ export default {
   data () {
     return {
       lightMode: true,
-      tab: 'mails',
+      tab: 'dashboard',
       tabIndex: 'chains',
       qrSelect: false
     }

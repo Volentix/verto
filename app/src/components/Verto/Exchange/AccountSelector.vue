@@ -1,78 +1,162 @@
 <template>
 <div v-if="!chain || chains || showAllWallets" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-  <q-btn class="account_selector" dense v-if="accountOption" :dark="$store.state.settings.lightMode === 'true'" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" >
-    <q-menu :dark="$store.state.settings.lightMode === 'true'">
-      <q-list class="coins_menu_wrapper_popup" bordered separator>
-        <q-expansion-item :dark="$store.state.settings.lightMode === 'true'" style="width:308px;"  dense-toggle class="chains" :class="{'singleChain' : chainsData.filter(o => checkChain(o)).length == 1}" default-opened v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index" clickable  >
-          <template v-slot:header>
-              <q-item-section :dark="$store.state.settings.lightMode === 'true'" avatar>
-                <img class="coin-icon" width="25px" :src="tokChain.icon"  />
-              </q-item-section>
-              <q-item-section :dark="$store.state.settings.lightMode === 'true'"  class="item-name" >
-                <span class="item-name--name"> {{tokChain.label}}</span>
-                <q-item-label caption>
-                  <span class="item-name--staked" v-if="tokChain.count > 1">{{tokChain.count}} accounts</span>
-                  <span class="item-name--staked" v-else-if="tokChain.count == 1">{{getAccountLabel(tokChain)}}</span>
-                </q-item-label>
-              </q-item-section>
-              <q-item-section :dark="$store.state.settings.lightMode === 'true'" class="item-info col" side>
-                <div class="row items-center text-bold">
-                  <span> ${{nFormatter2(tokChain.chainTotal ? tokChain.chainTotal.toFixed(0) : 0 , 0)}}</span>
-                </div>
-              </q-item-section>
-          </template>
-          <q-card class="accounts" :dark="$store.state.settings.lightMode === 'true'" dense>
-            <q-card-section :dark="$store.state.settings.lightMode === 'true'">
-                <q-item  @click="getAccount(item) ; setAccount(300) ;" :key="Math.random()+index"  v-for="(item, index) in tokChain.accounts"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
-                <div class="header-wallet-wrapper culumn full-width">
-                    <div   class="header-wallet full-width flex justify-between">
-                        <q-item-section avatar>
-                          <q-icon name="fiber_manual_record" :color="item.color"/>
-                        </q-item-section>
-                        <q-item-section class="item-name">
-                            <span class="item-name--name" v-if="item.isEvm"> {{getAccountLabel(item)}}</span>
-                            <span class="item-name--name" v-else> {{item.name}}</span>
-                            <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
-                            <span  class="item-name--staked" v-if="item.tokenList">{{item.tokenList.length}} token{{ item.tokenList.length > 1 ? 's' : '' }}</span>
-                        </q-item-section>
-                        <q-item-section   side>
-                            <span class="item-info--amountUSD" v-if="item.total">${{nFormatter2(new Number(isNaN(item.total) ? 0 : item.total).toFixed(2),0)}}</span>
-                            <span class="item-info--amountUSD" v-else>${{nFormatter2(new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2),0)}}</span>
-                        </q-item-section>
+  <div v-if="!$q.platform.is.mobile">
+    <q-btn class="account_selector" dense v-if="accountOption" :dark="$store.state.settings.lightMode === 'true'" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" >
+      <q-menu :dark="$store.state.settings.lightMode === 'true'">
+        <q-list class="coins_menu_wrapper_popup" bordered separator>
+          <q-expansion-item :dark="$store.state.settings.lightMode === 'true'" style="width:308px;"  dense-toggle class="chains" :class="{'singleChain' : chainsData.filter(o => checkChain(o)).length == 1}" default-opened v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index" clickable  >
+            <template v-slot:header>
+                <q-item-section :dark="$store.state.settings.lightMode === 'true'" avatar>
+                  <img class="coin-icon" width="25px" :src="tokChain.icon"  />
+                </q-item-section>
+                <q-item-section :dark="$store.state.settings.lightMode === 'true'"  class="item-name" >
+                  <span class="item-name--name"> {{tokChain.label}}</span>
+                  <q-item-label caption>
+                    <span class="item-name--staked" v-if="tokChain.count > 1">{{tokChain.count}} accounts</span>
+                    <span class="item-name--staked" v-else-if="tokChain.count == 1">{{getAccountLabel(tokChain)}}</span>
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section :dark="$store.state.settings.lightMode === 'true'" class="item-info col" side>
+                  <div class="row items-center text-bold">
+                    <span> ${{nFormatter2(tokChain.chainTotal ? tokChain.chainTotal.toFixed(0) : 0 , 0)}}</span>
+                  </div>
+                </q-item-section>
+            </template>
+            <q-card class="accounts" :dark="$store.state.settings.lightMode === 'true'" dense>
+              <q-card-section :dark="$store.state.settings.lightMode === 'true'">
+                  <q-item  @click="getAccount(item) ; setAccount(300) ;" :key="Math.random()+index"  v-for="(item, index) in tokChain.accounts"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                  <div class="header-wallet-wrapper culumn full-width">
+                      <div   class="header-wallet full-width flex justify-between">
+                          <q-item-section avatar>
+                            <q-icon name="fiber_manual_record" :color="item.color"/>
+                          </q-item-section>
+                          <q-item-section class="item-name">
+                              <span class="item-name--name" v-if="item.isEvm"> {{getAccountLabel(item)}}</span>
+                              <span class="item-name--name" v-else> {{item.name}}</span>
+                              <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
+                              <span  class="item-name--staked" v-if="item.tokenList">{{item.tokenList.length}} token{{ item.tokenList.length > 1 ? 's' : '' }}</span>
+                          </q-item-section>
+                          <q-item-section   side>
+                              <span class="item-info--amountUSD" v-if="item.total">${{nFormatter2(new Number(isNaN(item.total) ? 0 : item.total).toFixed(2),0)}}</span>
+                              <span class="item-info--amountUSD" v-else>${{nFormatter2(new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2),0)}}</span>
+                          </q-item-section>
 
-                    </div>
+                      </div>
 
-                </div>
-            </q-item>
+                  </div>
+              </q-item>
 
-            <q-item  v-if="!tokChain.accounts || !tokChain.accounts.length" clickable active-class="bg-teal-1 text-grey-8">
-                <div class="header-wallet-wrapper culumn full-width">
-                    <div   class="header-wallet full-width flex justify-between">
+              <q-item  v-if="!tokChain.accounts || !tokChain.accounts.length" clickable active-class="bg-teal-1 text-grey-8">
+                  <div class="header-wallet-wrapper culumn full-width">
+                      <div   class="header-wallet full-width flex justify-between">
 
-                        <q-item-section class="item-name">
-                            <span class="item-name--name" v-if="item.isEvm"> {{getAccountLabel(item)}}</span>
-                            <span>No {{ tokChain.chain.toUpperCase() }} account found</span>
-                            <div class="q-mt-md"   v-if=" tokChain.chain == 'eos' && $store.state.wallets.tokens.find( o => o.chain == 'eos' && o.type == 'verto')">
-                            You need to setup your EOS account.<br/>
-                              <q-btn class="q-mt-md" outline label="Setup EOS account" @click="$router.push('/verto/eos-account/create')"/>
-                            </div>
+                          <q-item-section class="item-name">
+                              <span class="item-name--name" v-if="item.isEvm"> {{getAccountLabel(item)}}</span>
+                              <span>No {{ tokChain.chain.toUpperCase() }} account found</span>
+                              <div class="q-mt-md"   v-if=" tokChain.chain == 'eos' && $store.state.wallets.tokens.find( o => o.chain == 'eos' && o.type == 'verto')">
+                              You need to setup your EOS account.<br/>
+                                <q-btn class="q-mt-md" outline label="Setup EOS account" @click="$router.push('/verto/eos-account/create')"/>
+                              </div>
+                                </q-item-section>
+
+                      </div>
+
+                  </div>
+              </q-item>
+
+              </q-card-section>
+              <q-separator />
+            </q-card>
+          </q-expansion-item>
+        </q-list>
+      </q-menu>
+    </q-btn>
+    <div v-else-if="false">
+      <span>No account found {{chain}}</span>
+    </div>
+  </div>
+
+  <div v-if="$q.platform.is.mobile" class="row justify-center">
+      <q-btn class="account_selector" dense v-if="accountOption" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" @click="dialog=true" />
+      <q-dialog v-model="dialog"  :maximized="true">
+        <q-card>
+          <q-toolbar >
+                <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="dialog=false"/>
+            </q-toolbar>
+
+          <div class="text-h6 q-pa-md">Select An Account</div>
+          <q-card-section class="row items-center no-wrap">
+            <q-list class="coins_menu_wrapper_popup" bordered separator style="width:100%;">
+              <q-expansion-item :dark="$store.state.settings.lightMode === 'true'" style="width:100%;"  dense-toggle class="chains" :class="{'singleChain' : chainsData.filter(o => checkChain(o)).length == 1}" default-opened v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index" clickable  >
+                <template v-slot:header>
+                    <q-item-section :dark="$store.state.settings.lightMode === 'true'" avatar>
+                      <img class="coin-icon" width="25px" :src="tokChain.icon"  />
+                    </q-item-section>
+                    <q-item-section :dark="$store.state.settings.lightMode === 'true'"  class="item-name" >
+                      <span class="item-name--name"> {{tokChain.label}}</span>
+                      <q-item-label caption>
+                        <span class="item-name--staked" v-if="tokChain.count > 1">{{tokChain.count}} accounts</span>
+                        <span class="item-name--staked" v-else-if="tokChain.count == 1">{{getAccountLabel(tokChain)}}</span>
+                      </q-item-label>
+                    </q-item-section>
+                    <q-item-section :dark="$store.state.settings.lightMode === 'true'" class="item-info col" side>
+                      <div class="row items-center text-bold">
+                        <span> ${{nFormatter2(tokChain.chainTotal ? tokChain.chainTotal.toFixed(0) : 0 , 0)}}</span>
+                      </div>
+                    </q-item-section>
+                </template>
+                <q-card class="accounts" :dark="$store.state.settings.lightMode === 'true'" dense>
+                  <q-card-section :dark="$store.state.settings.lightMode === 'true'">
+                      <q-item  @click="getAccount(item) ; setAccount(300) ; dialog=false" :key="Math.random()+index"  v-for="(item, index) in tokChain.accounts"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
+                      <div class="header-wallet-wrapper culumn full-width">
+                          <div   class="header-wallet full-width flex justify-between">
+                              <q-item-section avatar>
+                                <q-icon name="fiber_manual_record" :color="item.color"/>
+                              </q-item-section>
+                              <q-item-section class="item-name">
+                                  <span class="item-name--name" v-if="item.isEvm"> {{getAccountLabel(item)}}</span>
+                                  <span class="item-name--name" v-else> {{item.name}}</span>
+                                  <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
+                                  <span  class="item-name--staked" v-if="item.tokenList">{{item.tokenList.length}} token{{ item.tokenList.length > 1 ? 's' : '' }}</span>
+                              </q-item-section>
+                              <q-item-section   side>
+                                  <span class="item-info--amountUSD" v-if="item.total">${{nFormatter2(new Number(isNaN(item.total) ? 0 : item.total).toFixed(2),0)}}</span>
+                                  <span class="item-info--amountUSD" v-else>${{nFormatter2(new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2),0)}}</span>
                               </q-item-section>
 
-                    </div>
+                          </div>
 
-                </div>
-            </q-item>
+                      </div>
+                  </q-item>
 
-            </q-card-section>
-            <q-separator />
-          </q-card>
-        </q-expansion-item>
-      </q-list>
-    </q-menu>
-  </q-btn>
-  <div v-else-if="false">
-    <span>No account found {{chain}}</span>
+                  <q-item  v-if="!tokChain.accounts || !tokChain.accounts.length" clickable active-class="bg-teal-1 text-grey-8">
+                      <div class="header-wallet-wrapper culumn full-width">
+                          <div   class="header-wallet full-width flex justify-between">
+
+                              <q-item-section class="item-name">
+                                  <span class="item-name--name" v-if="item.isEvm"> {{getAccountLabel(item)}}</span>
+                                  <span>No {{ tokChain.chain.toUpperCase() }} account found</span>
+                                  <div class="q-mt-md"   v-if=" tokChain.chain == 'eos' && $store.state.wallets.tokens.find( o => o.chain == 'eos' && o.type == 'verto')">
+                                  You need to setup your EOS account.<br/>
+                                    <q-btn class="q-mt-md" outline label="Setup EOS account" @click="$router.push('/verto/eos-account/create')"/>
+                                  </div>
+                                    </q-item-section>
+
+                          </div>
+
+                      </div>
+                  </q-item>
+
+                  </q-card-section>
+                  <q-separator />
+                </q-card>
+              </q-expansion-item>
+            </q-list>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
   </div>
+
 </div>
 </template>
 <script>
@@ -84,7 +168,8 @@ export default {
     return {
       accountOptions: [],
       accountOption: null,
-      chainsData: []
+      chainsData: [],
+      dialog: false
     }
   },
   created () {

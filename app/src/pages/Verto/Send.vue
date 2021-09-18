@@ -118,7 +118,7 @@
           </div>
           <div :class="[ embedded ? 'col-md-10 offset-md-1' : (miniMode ? 'col-md-12' : ' col-md-8' ), 'col']">
             <div class="apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'desktop-card-style': screenSize > 1024 && !miniMode }">
-              <div class="standard-content">
+              <div class="standard-content_">
                 <h2 class="standard-content--title flex justify-start items-center" v-if="!miniMode">Send <img :src="currentToken.icon" class="max40 q-ml-sm" alt=""></h2>
                 <div class="standard-content--body" v-show="miniStep != 2">
                   <div class="standard-content--body__form">
