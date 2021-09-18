@@ -1,5 +1,5 @@
 <template>
-    <div class="q-pa-md">
+    <div>
         <div class="row justify-between">
             <div>
                 <div class="text-h6 text-bold">DeFi indexes</div>
@@ -13,6 +13,10 @@
         <q-tabs
             v-model="tabIndex"
             dense
+            style="max-width: initial"
+            no-caps
+            outside-arrows
+            mobile-arrows
             class="text-green q-pb-md"
             @click="updateTab(tabIndex)"
             :class="{
