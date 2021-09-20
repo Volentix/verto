@@ -22,6 +22,16 @@ export default [
         component: () => import('pages/Verto/ConnectToVerto.vue')
       },
       {
+        name: 'connect',
+        path: '/connect/:session',
+        component: () => import('pages/Verto/ConnectToVerto.vue')
+      },
+      {
+        name: 'sign',
+        path: '/sign/:txId/:session',
+        component: () => import('pages/Verto/ConnectToVerto.vue')
+      },
+      {
         name: 'create-password',
         path: '/create-password',
         component: () => import('pages/Verto/CreateVertoPassword.vue')

@@ -1,6 +1,6 @@
 {
   "name": "verto",
-  "version": "0.9.260.13",
+  "version": "0.9.260.14",
   "description": "A multi-currency cryptocurrency wallet",
   "productName": "Verto",
   "cordovaId": "org.cordova.verto",
@@ -92,6 +92,7 @@
     "mobile-device-detect": "^0.4.3",
     "node-sass": "4.14.1",
     "oip-hdmw": "^1.3.27",
+    "parse": "^3.3.0",
     "quasar": "^1.14.3",
     "quasar-app-extension-ual-vuejs-renderer-ae": "^0.1.2",
     "ripple-bip32": "^0.0.3",
