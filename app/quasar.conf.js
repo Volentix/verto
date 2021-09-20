@@ -11,7 +11,8 @@ module.exports = function (ctx) {
       'documentationManger',
       'i18n',
       'eventBus',
-      'vuelidate'
+      'vuelidate',
+      'bexSetup'
     ],
 
     css: [
