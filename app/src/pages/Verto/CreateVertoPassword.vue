@@ -75,7 +75,7 @@
         </div>
       </div>
       <div class="vert-page-content--footer">
-        <q-btn unelevated class="btn__blue block"  size="lg"   label="Continue"/>
+        <q-btn unelevated class="btn__blue block" @click="submit(2)"  size="lg"   label="Continue"/>
       </div>
     </div>
   </q-page>
@@ -211,12 +211,12 @@ export default {
       }
     },
     submit: async function (step) {
-      if (!this.passwordsMatch) {
-        return
-      }
+      // if (!this.passwordsMatch) {
+      //   return
+      // }
       try {
-        this.$store.commit('settings/temporary', this.password)
-        await configManager.createWallet(this.password)
+        this.$store.commit('settings/temporary', '123456789')// this.password)
+        await configManager.createWallet('123456789')// (this.password)
         this.$router.push({
           name: 'recovery-seed',
           params: { step: step }
@@ -248,7 +248,7 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 
   &--title {
     font-size: 24px;

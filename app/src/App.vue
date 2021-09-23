@@ -15,15 +15,12 @@ export default {
     bexStyles () {
       if (this.$isbex) {
         return {
-          // minWidth: '456px',
-          // minHeight: '750px'
+          minWidth: '456px',
+          height: '700px'
         }
       }
       return {}
     }
-  },
-  beforeCreate () {
-    console.log('Working')
   }
 }
 </script>

@@ -3,9 +3,9 @@
   <div class="words-order-wrapper">
     <div class="words-order-wrapper--list">
       <div class="words-order-wrapper--list__empty">
-        <p class="text-body1 text-white">Choose the first and the last word from the precedent list. We just want to make sure you didn't forget to save it</p>
-        <q-select dark rounded :set="valid = isChoiceInvalid(0, first)" :error="!valid.success && valid.message != null" :error-message="valid.message"  outlined class="q-pb-lg" v-model="first" :options="arrayAlphabericallyOrdered" label="Select the first word" />
-        <q-select dark rounded :set="valid = isChoiceInvalid(arrayMnemonic.length - 1, last)" :error="!valid.success && valid.message != null"  :error-message="valid.message"  outlined v-model="last" :options="arrayAlphabericallyOrdered" label="Select the last word" />
+        <p class="text-body1">Choose the first and the last word from the precedent list. We just want to make sure you didn't forget to save it</p>
+        <q-select :set="valid = isChoiceInvalid(0, first)" :error="!valid.success && valid.message != null" :error-message="valid.message"  outlined class="q-pb-lg" v-model="first" :options="arrayAlphabericallyOrdered" label="Select the first word" />
+        <q-select :set="valid = isChoiceInvalid(arrayMnemonic.length - 1, last)" :error="!valid.success && valid.message != null"  :error-message="valid.message"  outlined v-model="last" :options="arrayAlphabericallyOrdered" label="Select the last word" />
         <ul v-if="false">
         <li v-for="(word, index) in arrayOrdered" :key="index">
           <q-input
@@ -194,6 +194,42 @@ export default {
             }
           }
         }
+      }
+
+      /deep/ .q-field--focused .q-field__label {
+      }
+
+      /deep/ .q-field--outlined .q-field__control {
+        background-color: #fff
+      }
+
+      /deep/ .q-field--outlined .q-field__control:after {
+        border: 2px solid #E1E1E9;
+        //background-color: #fff;
+        //box-shadow: 0px 0px 10px 0px #E1E1E9;
+      }
+
+      /deep/ .q-field--outlined .q-field__control:before {
+        border: 2px solid #E1E1E9;
+        //background-color: #fff;
+        //box-shadow: 0px 0px 10px 0px #E1E1E9;
+      }
+
+      /deep/ .q-field--outlined.q-field--focused .q-field__control:after {
+        border: 2px solid #c4c4c6;
+        //background-color: #fff;
+        //box-shadow: 0px 0px 10px 0px #d4d4db;
+      }
+
+      /deep/ .q-field--outlined.q-field--focused .q-field__control:before {
+        border: 2px solid #c4c4c6;
+        //background-color: #fff;
+        //box-shadow: 0px 0px 10px 0px #d4d4db;
+      }
+
+      /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
+      /deep/ .q-field--dark .q-field__marginal,
+      /deep/ .q-field--dark .q-field__bottom {
       }
     }
 </style>
