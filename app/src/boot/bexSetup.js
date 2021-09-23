@@ -1,4 +1,4 @@
 
 export default ({ Vue }) => {
-  Vue.prototype.$isbex = true
+  Vue.prototype.$isbex = process.env.MODE === 'bex'
 }

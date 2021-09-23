@@ -114,8 +114,14 @@ export default {
       }
     },
     async startRestoreConfig () {
+      // this.$router.push({
+      //   name: 'restoreWallet',
+      //   params: {
+      //     returnto: 'settings'
+      //   }
+      // })
       this.$router.push({
-        name: 'restoreWallet',
+        name: 'import-restore',
         params: {
           returnto: 'settings'
         }
@@ -328,7 +334,7 @@ export default {
     padding: 0 70px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-evenly;
 
     &.auto {
       min-height: unset;
