@@ -22,6 +22,11 @@ export default [
         component: () => import('pages/Verto/ConnectToVerto.vue')
       },
       {
+        name: 'setup',
+        path: '/setup',
+        component: () => import('pages/Verto/Setup.vue')
+      },
+      {
         name: 'create-password',
         path: '/create-password',
         component: () => import('pages/Verto/CreateVertoPassword.vue')

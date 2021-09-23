@@ -15,8 +15,8 @@ export default {
     bexStyles () {
       if (this.$isbex) {
         return {
-          minWidth: '700px',
-          minHeight: '700px'
+          // minWidth: '456px',
+          // minHeight: '750px'
         }
       }
       return {}
