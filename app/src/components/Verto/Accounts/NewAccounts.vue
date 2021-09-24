@@ -48,8 +48,10 @@
       />
     </div>
     <div v-else>
+    <p>Adding Wallet to Verto...</p>
     <q-input
     counter
+    outlined
     autocomplete="off"
     v-model="accountName"
     :dark="$store.state.settings.lightMode === 'true'"
@@ -79,6 +81,14 @@
         />
     </template>
     </q-input>
+    <q-btn
+        @click="addAcount()"
+        :disable="accountName.trim().length == 0 || vertoPassword.trim().length == 0 || vertoPasswordWrong"
+        outline
+        rounded
+        label="Add to Verto"
+        class="q-mt-sm"
+      />
     </div>
   </div>
 </template>
@@ -93,6 +103,10 @@ export default {
     return {
       publicKey: null,
       privateKey: null,
+      vertoPassword: '',
+      vertoPasswordWrong: false,
+      accountNameError: false,
+      vertoPassordValid: false,
       index: 0,
       isPwd: true,
       addToVerto: false,
@@ -171,7 +185,13 @@ export default {
       this.currentAccount.type = this.chain.chain
       this.currentAccount.name = this.accountName
       this.currentAccount.icon = this.chain.icon
-
+      console.log(this.currentAccount.name,
+        this.vertoPassword,
+        this.privateKeyPassword,
+        this.currentAccount.key,
+        this.currentAccount.privateKey,
+        this.currentAccount.chain,
+        origin)
       const result = await this.$configManager.saveWalletAndKey(
         this.currentAccount.name,
         this.vertoPassword,

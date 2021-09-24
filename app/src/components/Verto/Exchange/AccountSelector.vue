@@ -25,7 +25,7 @@
             <q-card class="accounts" :dark="$store.state.settings.lightMode === 'true'" dense>
               <q-card-section :dark="$store.state.settings.lightMode === 'true'">
                   <q-item  @click="getAccount(item) ; setAccount(300) ;" :key="Math.random()+index"  v-for="(item, index) in tokChain.accounts"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
-                  <div class="header-wallet-wrapper culumn full-width">
+                  <div class="header-wallet-wrapper culumn full-width" v-if="item">
                       <div   class="header-wallet full-width flex justify-between">
                           <q-item-section avatar>
                             <q-icon name="fiber_manual_record" :color="item.color"/>
@@ -51,7 +51,7 @@
                       <div   class="header-wallet full-width flex justify-between">
 
                           <q-item-section class="item-name">
-                              <span class="item-name--name" v-if="item.isEvm"> {{getAccountLabel(item)}}</span>
+                              <span class="item-name--name" v-if="item && item.isEvm"> {{getAccountLabel(item)}}</span>
                               <span>No {{ tokChain.chain.toUpperCase() }} account found</span>
                               <div class="q-mt-md"   v-if=" tokChain.chain == 'eos' && $store.state.wallets.tokens.find( o => o.chain == 'eos' && o.type == 'verto')">
                               You need to setup your EOS account.<br/>
