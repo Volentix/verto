@@ -191,9 +191,7 @@
             <q-btn flat v-show="passHasError" @click="restoreFromWords = true" outline class="back" text-color="deep-purple-14" label="Restore from 24 Words" />
             <span></span>
         </div>
-        <div class="landing--volentix-logo">
-            <a href="https://www.volentix.io" target="_blank"><img src="statics/vtx_black.svg" class="svg" /></a>
-        </div>
+
       </div>
       </div>
       <div v-if="!transactionHash && !loggedIn" class="standard-content--footer full-width flex justify-end">
@@ -400,7 +398,7 @@ export default {
       // user can read data
       acl.setReadAccess(Parse.User.current(), true)
       // user can write data
-      acl.setWriteAccess(Parse.User.current(), true)
+      // acl.setWriteAccess(Parse.User.current(), true)
 
       account.setACL(acl)
       account.save()
@@ -448,7 +446,7 @@ export default {
           if (this.accounts.length === 1) {
             this.accountValue = this.accounts[0]
           }
-
+          console.log(this.$route.params.session, 'this.$route.params.session')
           this.currentUser = await Parse.User.become(this.$route.params.session)
         } else {
           await initWallet()

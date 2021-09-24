@@ -1,12 +1,77 @@
 <template>
-  <div
-    :class="{
+<div
+  :class="{
       'q-pt-lg': !allAssets,
       'dark-theme': $store.state.settings.lightMode === 'true',
       'receive_wrapper_class': tab == 'receive',
       'import_wrapper_class': tab == 'import'
     }"
     class="wrapper q-px-lg full-width assets_explorer_container"
+    :style=" $q.platform.is.mobile? 'background: #f2f2f2 !important' : '' "
+>
+  <q-dialog v-model="alertSecurity">
+    <q-card
+      style="width: 100%; max-width: 400px"
+      :dark="$store.state.settings.lightMode === 'true'"
+    >
+      <q-card-section>
+        <q-icon
+          name="close"
+          class="absolute-top-right q-pa-md"
+          size="sm"
+          v-close-popup
+        />
+        <div class="icon-alert flex flex-center text-bold text-h6">
+          <q-icon name="warning" size="md" /> Security alert
+        </div>
+      </q-card-section>
+
+      <q-card-section class="text-body1">
+        The private key is confidential. Please make sure you do not
+        share it with anyone. Your private keys control your funds.
+        <br />
+        <br />
+        <span class="text-caption"
+          >Enter your Verto password to access this section</span
+        >
+        <q-input
+          @keyup.enter="verifyPassword"
+          error-message="Invalid password"
+          :error="passHasError"
+          v-model="password"
+          label="Enter Verto password"
+          class="q-pt-md"
+          filled
+          type="password"
+        >
+          <template v-slot:append>
+            <span
+              @click="verifyPassword()"
+              class="text-body1 cursor-pointer"
+              >Verify</span
+            >
+            <q-btn
+              :loaling="spinnerVisible"
+              @click="verifyPassword()"
+              round
+              dense
+              flat
+              icon="send"
+            />
+          </template>
+        </q-input>
+        <span class="text-red">
+          Your private keys will be partially exposed
+        </span>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+  <q-dialog v-model="createPopup.show">
+    <NewAccounts :chain="createPopup.chain" />
+  </q-dialog>
+
+  <div
+     v-if="!$q.platform.is.mobile"
   >
     <div
       class="wrap"
@@ -17,66 +82,9 @@
     >
       <div class="row">
         <div :class="{ 'col-md-6' : !$route.params.accounts , 'col-md-8': $route.params.accounts}">
-        <q-dialog v-model="createPopup.show">
-        <NewAccounts :chain="createPopup.chain" />
-        </q-dialog>
-          <q-dialog v-model="alertSecurity">
-            <q-card
-              style="width: 100%; max-width: 400px"
-              :dark="$store.state.settings.lightMode === 'true'"
-            >
-              <q-card-section>
-                <q-icon
-                  name="close"
-                  class="absolute-top-right q-pa-md"
-                  size="sm"
-                  v-close-popup
-                />
-                <div class="icon-alert flex flex-center text-bold text-h6">
-                  <q-icon name="warning" size="md" /> Security alert
-                </div>
-              </q-card-section>
 
-              <q-card-section class="text-body1">
-                The private key is confidential. Please make sure you do not
-                share it with anyone. Your private keys control your funds.
-                <br />
-                <br />
-                <span class="text-caption"
-                  >Enter your Verto password to access this section</span
-                >
-                <q-input
-                  @keyup.enter="verifyPassword"
-                  error-message="Invalid password"
-                  :error="passHasError"
-                  v-model="password"
-                  label="Enter Verto password"
-                  class="q-pt-md"
-                  filled
-                  type="password"
-                >
-                  <template v-slot:append>
-                    <span
-                      @click="verifyPassword()"
-                      class="text-body1 cursor-pointer"
-                      >Verify</span
-                    >
-                    <q-btn
-                      :loaling="spinnerVisible"
-                      @click="verifyPassword()"
-                      round
-                      dense
-                      flat
-                      icon="send"
-                    />
-                  </template>
-                </q-input>
-                <span class="text-red">
-                  Your private keys will be partially exposed
-                </span>
-              </q-card-section>
-            </q-card>
-          </q-dialog>
+          <!-- RELOCATED ALERT & ACCOUNT DIALOG TO TOP FROM HERE FOR COMMON USE-->
+
           <ul class="tabs group">
             <li
               :class="{
@@ -310,6 +318,7 @@
         tab == 'chains'
       "
     >
+    <!-- CHAIN LOOP START  -->
       <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" :class="{'receive_wrapper_class_scroll': tab == 'receive', 'import_wrapper_class_scroll': tab == 'import'}" style="margin-left: -15px; height: 77vh;">
         <div class="sub-top sub-top-chart">
           <div class="subt-text" v-if="!allChains && false">
@@ -728,6 +737,7 @@
       </q-scroll-area>
     </div>
 
+     <!-- ASSET LOOP SECTION  -->
     <div
       class="q-pt-md chains"
       v-show="tab == item.id"
@@ -981,12 +991,14 @@
         </div>
       </q-scroll-area>
     </div>
-    <ShowKeys
+
+    <!-- RELOCATED ShowKeys COMPONENT FROM HERE TO BOTTOM FOR COMMON USE  -->
+    <!-- <ShowKeys
       :key="keys.keying"
       v-if="keys.chain"
       :chain="keys.chain"
       :field="keys.field"
-    />
+    /> -->
     <liquidityPoolsTable
       v-if="$store.state.settings.show.tab == 'history'"
       :key="4 + uniqueKey"
@@ -1058,6 +1070,21 @@
       </div>
     </div>
   </div>
+
+  <ShowKeys
+    :key="keys.keying"
+    v-if="keys.chain"
+    :chain="keys.chain"
+    :field="keys.field"
+  />
+  <div> </div>
+  <!-- MOBILE SECTION STARTED -->
+  <div   v-if="$q.platform.is.mobile">
+    <TabAssetsExplorer  :chains="chains" :tab.sync="tab" :chainAction='chainAction' :formatNumber='formatNumber' :showQr.sync='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage='showTokenPage' :initTable="initTable" :selectedChain.sync="selectedChain" :keys="keys" :showPrivateKeys="showPrivateKeys" :alertSecurity.sync="alertSecurity" :tokenSearchVal="tokenSearchVal"/>
+  </div>
+  <!-- MOBILE SECTION END -->
+
+</div>
 </template>
 
 <script>
@@ -1075,6 +1102,9 @@ import AssetBalancesTable from '@/components/Verto/AssetBalancesTable'
 import configManager from '@/util/ConfigManager'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import EosWrapper from '@/util/EosWrapper'
+// MOOBILE TAB UI
+import TabAssetsExplorer from '../MobileUI/TabAssetsExplorer.vue'
+
 import { QScrollArea } from 'quasar'
 const eos = new EosWrapper()
 Vue.component(VueQrcode.name, VueQrcode)
@@ -1087,6 +1117,7 @@ export default {
     liquidityPoolsTable,
     PriceChart,
     ShowKeys,
+    TabAssetsExplorer,
     NewAccounts,
     QScrollArea
   },
@@ -1239,6 +1270,7 @@ export default {
   created () {
     this.$store.state.settings.defaultChainData = false
     this.getWindowWidth()
+
     if (this.$route.params.accounts) {
       this.tab = 'receive'
     }
@@ -1454,6 +1486,7 @@ export default {
             self.selectedChain = chain
             self.initTable(chain.chain)
             self.tab = 'assets'
+            console.log('seting tab ass')
           } else {
             self.showTokenPage(chain, self.assetsOptions[0].data)
           }

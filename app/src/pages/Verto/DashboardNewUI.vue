@@ -1,18 +1,20 @@
 <template>
   <q-page
     class="column"
-    :class="{
+    :class=" {
       'dark-theme': $store.state.settings.lightMode === 'true',
       'text-black bg-white': $store.state.settings.lightMode === 'false',
       'desktop-marg': screenSize > 1024,
-      'mobile-pad': screenSize < 1024,
+      'mobile-pad': screenSize < 1024 && !$q.platform.is.mobile,
     }"
+    :style=" $q.platform.is.mobile? 'position: static; background: #f2f2f2 !important' : '' "
   >
     <div
       :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
       style="height: 100vh"
+      v-if="!$q.platform.is.mobile"
     >
-      <div class="desktop-version full-height" >
+      <div class="desktop-version full-height"  >
         <div class="row full-height">
           <div class="col col-md-3" v-if="false">
             <div class="wallets-container" style="height: 100%">
@@ -217,7 +219,18 @@
           </q-card-section>
         </q-card>
       </q-dialog>
+
     </div>
+    <!-- MOBILE SECTION STARTED  -->
+    <div v-if="$q.platform.is.mobile">
+      <AssetsExplorer
+        @assetsChanged="assetsChanged"
+        ref="assetsComponent2"
+        v-show="!assetSelected && tab == 'dashboard'"
+        @setAsset="setAsset"
+      />
+    </div>
+    <!-- MOBILE SECTION END  -->
   </q-page>
 </template>
 
