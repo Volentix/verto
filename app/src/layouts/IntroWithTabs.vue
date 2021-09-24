@@ -189,7 +189,7 @@
 
         <q-breadcrumbs
           class="text-deep-purple-12 breadcrumbs"
-          v-if="$route.path != '/verto/dashboard'"
+          v-if="$route.path != '/verto/dashboard' && $route.path != '/verto/crosschain-exchange' "
         >
           <template v-slot:separator>
             <q-icon size="1.5em" name="chevron_right" :color="$store.state.settings.lightMode === 'true' ? 'white':'primary'" />
