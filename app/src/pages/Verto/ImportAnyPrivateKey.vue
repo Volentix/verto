@@ -183,20 +183,35 @@
             </div>
             </div>
         </div>
-        <div v-else class="mobile-version">
+        <q-dialog
+            v-model="$q.platform.is.mobile"
+            persistent
+            :maximized="true"
+            transition-show="slide-up"
+            transition-hide="slide-down"
+        >
+
+        <q-card class="mobile-version">
+            <q-toolbar >
+                <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/manage/receive"/>
+                <q-toolbar-title> Import Current Account  </q-toolbar-title>
+                <q-btn flat round dense icon="close" v-close-popup to="/verto/manage/receive"/>
+            </q-toolbar>
+
             <div class="chain-tools-wrapper">
                 <div class="standard-content">
-                    <h2 v-show="showMainSteps" class="standard-content--title flex justify-center">
+
+                    <!-- <h2 v-show="showMainSteps" class="standard-content--title flex justify-center">
                         <q-btn flat unelevated class="btn-align-left" to="/verto/profile" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
                         Import Current Account
                     </h2>
                     <h2 v-show="!showMainSteps" class="standard-content--title flex justify-center">
                         <q-btn flat unelevated class="btn-align-left" to="/verto/profile" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
                         Save Private Key
-                    </h2>
-                    <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
+                    </h2> -->
+                    <div class="privatekey_bg flex flex-center"><img height="200" src="statics/privatekey_bg.svg" alt=""></div>
                 </div>
-                <div class="chain-tools-wrapper--list open">
+                <div class="chain-tools-wrapper--list_ open">
                     <div class="list-wrapper">
                         <div class="list-wrapper--chain__eos-to-vtx-convertor">
                             <div v-show="showMainSteps">
@@ -206,7 +221,7 @@
                                             -->
                                     <q-step title="Private Key" :name="1" prefix="1" order="10" :done="step > 1">
                                         <div class="text-black">
-                                            <div class="text-h4 --subtitle">
+                                            <div class="text-h4_ --subtitle">
                                                 <ul>
                                                     <li>
                                                         <span>
@@ -358,7 +373,8 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </q-card>
+        </q-dialog>
     </div>
 </q-page>
 </template>

@@ -22,9 +22,27 @@
         </div>
       </div>
       <div v-else>
-        <profile-header version="type4" />
-       <CreateEOSAccount  v-if="$store.state.settings.network == 'mainnet' "/>
-        <CreateTesnetEOSAccount v-else />
+        <!-- MOBILE VERSION UI -->
+        <q-dialog
+            v-model="$q.platform.is.mobile"
+            persistent
+            :maximized="true"
+            transition-show="slide-up"
+            transition-hide="slide-down"
+        >
+          <q-card >
+            <q-toolbar >
+                  <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/manage/receive"/>
+                  <q-toolbar-title> Import EOS Account  </q-toolbar-title>
+                  <q-btn flat round dense icon="close" v-close-popup to="/verto/manage/receive"/>
+              </q-toolbar>
+
+            <profile-header version="type4" />
+            <CreateEOSAccount  v-if="$store.state.settings.network == 'mainnet' "/>
+            <CreateTesnetEOSAccount v-else />
+          </q-card>
+        </q-dialog>
+
       </div>
     </div>
   </q-page>
