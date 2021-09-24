@@ -53,12 +53,16 @@
     counter
     outlined
     autocomplete="off"
+    @input="nameAlreadyUsed = false"
     v-model="accountName"
     :dark="$store.state.settings.lightMode === 'true'"
     :light="$store.state.settings.lightMode === 'false'"
     color="green"
     label="Enter wallet Name"
+    :error="nameAlreadyUsed"
+    error-message="Wallet name already used"
     />
+
     <q-input
     v-model="vertoPassword"
     :dark="$store.state.settings.lightMode === 'true'"
@@ -67,6 +71,7 @@
     outlined
     label="Enter Verto Password"
     debounce="500"
+    autocomplete="off"
     :class="{'q-pt-sm':accountNameError}"
     :error="vertoPasswordWrong"
     error-message="The password is incorrect"
@@ -83,7 +88,7 @@
     </q-input>
     <q-btn
         @click="addAcount()"
-        :disable="accountName.trim().length == 0 || vertoPassword.trim().length == 0 || vertoPasswordWrong"
+        :disable="accountName.trim().length == 0 || (!vertoPassword ||  vertoPassword.trim().length == 0) || vertoPasswordWrong"
         outline
         rounded
         label="Add to Verto"
@@ -185,39 +190,38 @@ export default {
       this.currentAccount.type = this.chain.chain
       this.currentAccount.name = this.accountName
       this.currentAccount.icon = this.chain.icon
-      console.log(this.currentAccount.name,
-        this.vertoPassword,
-        this.privateKeyPassword,
-        this.currentAccount.key,
-        this.currentAccount.privateKey,
-        this.currentAccount.chain,
-        origin)
-      const result = await this.$configManager.saveWalletAndKey(
-        this.currentAccount.name,
-        this.vertoPassword,
-        this.privateKeyPassword,
-        this.currentAccount.key,
-        this.currentAccount.privateKey,
-        this.currentAccount.chain,
-        origin
-      )
-      if (result && result.success) {
-        this.walletName = ''
-        this.vertoPassword = ''
-        this.publicKey = ''
-        this.privateKey = ''
-        this.$q.notify({ color: 'positive', message: 'Wallet created' })
-        this.$router.push('wallet')
-      } else {
-        if (result && result.message === 'name_already_used') {
-          this.nameAlreadyUsed = true
+      try {
+        const result = await this.$configManager.saveWalletAndKey(
+          this.currentAccount.name,
+          this.vertoPassword,
+          this.privateKeyPassword,
+          this.currentAccount.key,
+          this.currentAccount.privateKey,
+          this.currentAccount.chain,
+          origin
+        )
+        if (result && result.success) {
+          this.walletName = ''
+          this.vertoPassword = ''
+          this.publicKey = ''
+          this.privateKey = ''
+          this.$q.notify({ color: 'positive', message: 'Wallet created' })
+          this.$router.push('wallet')
         } else {
-          this.passwordInvalid = true
+          if (result && result.message === 'name_already_used') {
+            this.nameAlreadyUsed = true
+          } else {
+            this.passwordInvalid = true
+          }
         }
-      }
-      this.vertoPassword = null
+        this.vertoPassword = null
 
-      initWallet()
+        initWallet()
+      } catch (err) {
+        console.log(err, 'err')
+        this.vertoPasswordWrong = true
+        this.error = err
+      }
     }
   }
 }
