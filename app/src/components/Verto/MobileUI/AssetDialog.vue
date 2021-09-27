@@ -22,7 +22,7 @@
                     no-caps
                     outside-arrows
                     mobile-arrows
-                    class="bg-grey-2 text-green q-pb-md"
+                    class="bg-grey-2 text-primary q-pb-md"
                     @input="handleTab(tabIndex)"
                     :class="{
                         'account-tabs': $route.params.accounts,

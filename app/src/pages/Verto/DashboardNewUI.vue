@@ -1,3 +1,4 @@
+
 <template>
   <q-page
     class="column"
@@ -9,6 +10,7 @@
     }"
     :style=" $q.platform.is.mobile? 'position: static; background: #f2f2f2 !important' : '' "
   >
+  <!-- :style=" $q.platform.is.mobile? 'position: static; background: #f2f2f2 !important' : '' " -->
     <div
       :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
       style="height: 100vh"

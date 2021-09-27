@@ -104,7 +104,9 @@ module.exports = function (ctx) {
         'QTimeline',
         'QTimelineEntry',
         'QMenu',
-        'QScrollArea'
+        'QScrollArea',
+        'QPullToRefresh',
+        'QFooter'
       ],
 
       directives: [

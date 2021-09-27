@@ -12,7 +12,7 @@
           <div class="chain-tools-wrapper">
             <div class="standard-content">
                 <h2 class="standard-content--title flex justify-center">
-                  <q-btn flat unelevated class="btn-align-left" @click="returnto === 'profile' ? $router.push('/verto/profile') : $router.go(-1)" text-color="white" icon="keyboard_backspace" />
+                  <q-btn flat unelevated class="btn-align-left" @click="returnto === 'profile' ? ($q.platform.is.mobile ?  $router.go(-1) : $router.push('/verto/dashboard') ) : $router.go(-1)" text-color="white" icon="keyboard_backspace" />
                   <span class="text-white">{{$t('SettingsView.restore_config')}}</span>
                 </h2>
                 <div class="privatekey_bg flex flex-center" v-if="false">

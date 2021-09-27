@@ -135,7 +135,7 @@
                             </q-card>
 
                         </q-expansion-item>
-                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': !$q.platform.is.mobile && chain.count }" :key="Math.random()+index" clickable  >
                     <template v-slot:header>
 
                             <q-item-section avatar>
@@ -505,7 +505,7 @@
 
                         </q-expansion-item>
 
-                                       <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
+                                       <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': !$q.platform.is.mobile && chain.count }" :key="Math.random()+index" clickable  >
                     <template v-slot:header>
 
                             <q-item-section avatar>
@@ -569,12 +569,19 @@
                 <span class="add-remove-wrapper--desc text-black">Main chains and balances above zero will show in this list</span>
             </div> -->
         </div>
-        <div v-if="isMobile" class="is-mobile wallets-wrapper--list" :class="{'open': !walletShowHide}">
+
+        <div class="fit row  justify-center items-stretch q-gutter-lg q-mb-md">
+            <q-btn outline rounded to="/verto/wallets/send" class="" color="primary"  label="Send" style="width:100px;"/>
+            <q-btn outline rounded to="/verto/wallets/receive" class="" color="primary" label="Receive" />
+        </div>
+        <q-item-label caption> Plese select an account from the lsit. </q-item-label>
+
+        <div v-if="isMobile"  :class="{'open': !walletShowHide, 'is-mobile wallets-wrapper--list': !$q.platform.is.mobile}">
             <mobileAssets v-if="false" />
-            <q-scroll-area :visible="true" class="scrollarea" :class="{'height' : '100vh'}">
+            <q-scroll-area :visible="true" class="scrollarea_" :style="{'height' : '100vh'}">
 
                 <br>
-                <div v-if="$store.state.currentwallet.wallet.empty" class="header-list-table">
+                <div v-if="!$q.platform.is.mobile && $store.state.currentwallet.wallet.empty" class="header-list-table">
                     <div class="row q-pl-sm q-pr-sm">
                         <div class="col col-6 q-pl-sm " :class="{'active' : directionAccount}">
                             <span class="sort">Account name</span>
@@ -585,155 +592,164 @@
                         </div>
                     </div>
                 </div>
+                <!-- DETAILS SECTION  -->
+                <div v-if="!$q.platform.is.mobile">
                     <q-item v-if="$store.state.currentwallet.wallet.chain"  class="selected selected22222" clickable active-class="bg-teal-1 text-grey-8">
-                            <div class="header-wallet-wrapper culumn full-width">
-                                <div class="menu-wallet">
-                                    <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
-                                        <!-- <q-separator style="margin-top: -20px" /> -->
+                        <div class="header-wallet-wrapper culumn full-width">
+                            <div class="menu-wallet">
+                                <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="sub-list-menu">
+                                    <!-- <q-separator style="margin-top: -20px" /> -->
 
-                                        <q-item data-name='Create EOS account' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">Create EOS account
-                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                            </q-item>
-                                            <q-item data-name='Import EOS account' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative bold-btn">Import EOS account
-                                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                            </q-item>
-                                        <!-- <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
+                                    <q-item data-name='Create EOS account' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">Create EOS account
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item> -->
-                                        <!-- <q-item v-if="$store.state.currentwallet.wallet.type === 'eos' || $store.state.currentwallet.wallet.type === 'vtx'" data-name='Staking / Unstaking CPU' clickable v-ripple class="p-relative" to="/verto/stake">{{$store.state.currentwallet.wallet.type === 'eos' ? 'Staking / Unstaking CPU' : 'Staking'}}
+                                        </q-item>
+                                        <q-item data-name='Import EOS account' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative bold-btn">Import EOS account
                                             <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item> -->
-                                        <!-- <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Stake Proxy EOS
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item> -->
-                                        <div class="row text-center q-pb-md" v-if="$store.state.currentwallet.wallet.type === 'eos'" >
-                                         <div class="row col-4  flex flex-center ">
-                                          <q-circular-progress
-                                            show-value
-                                            font-size="12px"
-                                            :value="circularProgress.cpu"
-                                            size="70px"
-                                            :thickness="0.22"
-                                            color="deep-purple-2"
-                                            track-color="grey-3"
-                                            class="q-ma-md"
-                                            >
-                                            {{ circularProgress.cpu }}%
-                                            </q-circular-progress>
-                                            <span class="accountInfos">{{circularProgress.cpuInfos}} µs</span>
-                                           <div class="col-12">CPU</div>
-                                        </div>
-                                         <div class="row col-4  flex flex-center ">
-                                          <q-circular-progress
-                                            show-value
-                                            font-size="12px"
-                                            :value="circularProgress.net"
-                                            size="70px"
-                                            :thickness="0.22"
-                                            color="deep-purple-2"
-                                            track-color="grey-3"
-                                            class="q-ma-md"
-                                            >
-                                            {{ circularProgress.net }}%
-                                            </q-circular-progress>
-                                            <span class="accountInfos">{{circularProgress.netInfos}} KB</span>
-                                           <div class="col-12">NET</div>
-                                        </div>
-
+                                        </q-item>
+                                    <!-- <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item> -->
+                                    <!-- <q-item v-if="$store.state.currentwallet.wallet.type === 'eos' || $store.state.currentwallet.wallet.type === 'vtx'" data-name='Staking / Unstaking CPU' clickable v-ripple class="p-relative" to="/verto/stake">{{$store.state.currentwallet.wallet.type === 'eos' ? 'Staking / Unstaking CPU' : 'Staking'}}
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item> -->
+                                    <!-- <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Stake Proxy EOS
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item> -->
+                                    <div class="row text-center q-pb-md" v-if="$store.state.currentwallet.wallet.type === 'eos'" >
                                         <div class="row col-4  flex flex-center ">
-                                          <q-circular-progress
-                                            show-value
-                                            font-size="12px"
-                                            :value="circularProgress.ram"
-                                            size="70px"
-                                            :thickness="0.22"
-                                            color="deep-purple-2"
-                                            track-color="grey-3"
-                                            class="q-ma-md"
-                                            >
-                                            {{ circularProgress.ram }}%
-                                            </q-circular-progress>
-                                            <span class="accountInfos">{{circularProgress.ramInfos}} KB</span>
-                                           <div class="col-12">RAM</div>
+                                        <q-circular-progress
+                                        show-value
+                                        font-size="12px"
+                                        :value="circularProgress.cpu"
+                                        size="70px"
+                                        :thickness="0.22"
+                                        color="deep-purple-2"
+                                        track-color="grey-3"
+                                        class="q-ma-md"
+                                        >
+                                        {{ circularProgress.cpu }}%
+                                        </q-circular-progress>
+                                        <span class="accountInfos">{{circularProgress.cpuInfos}} µs</span>
+                                        <div class="col-12">CPU</div>
+                                    </div>
+                                        <div class="row col-4  flex flex-center ">
+                                        <q-circular-progress
+                                        show-value
+                                        font-size="12px"
+                                        :value="circularProgress.net"
+                                        size="70px"
+                                        :thickness="0.22"
+                                        color="deep-purple-2"
+                                        track-color="grey-3"
+                                        class="q-ma-md"
+                                        >
+                                        {{ circularProgress.net }}%
+                                        </q-circular-progress>
+                                        <span class="accountInfos">{{circularProgress.netInfos}} KB</span>
+                                        <div class="col-12">NET</div>
+                                    </div>
+
+                                    <div class="row col-4  flex flex-center ">
+                                        <q-circular-progress
+                                        show-value
+                                        font-size="12px"
+                                        :value="circularProgress.ram"
+                                        size="70px"
+                                        :thickness="0.22"
+                                        color="deep-purple-2"
+                                        track-color="grey-3"
+                                        class="q-ma-md"
+                                        >
+                                        {{ circularProgress.ram }}%
+                                        </q-circular-progress>
+                                        <span class="accountInfos">{{circularProgress.ramInfos}} KB</span>
+                                        <div class="col-12">RAM</div>
+                                    </div>
+
                                         </div>
-
-                                            </div>
-                                         <q-expansion-item
-                                            v-if="$store.state.currentwallet.wallet.type === 'vtx'" data-name='VTX tools'
-                                            expand-separator
-                                            icon="select_all"
-                                            label="VTX tools"
-                                            @click="focusOnChainTools"
-                                            caption="Staking, node & more"
-                                            class="q-pt-sm chain-tools"
-                                            default-opened
-                                        >
-                                        <q-item  data-name='Staking' clickable v-ripple class="p-relative" to="/verto/stake">Stake VTX
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                         <a href="https://volentix.io/node/" target="_blank">
-                                        <q-item  data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" >
-                                           Run a node
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                        </a>
-                                        </q-expansion-item>
                                         <q-expansion-item
-                                            v-if="$store.state.currentwallet.wallet.chain === 'eos'" data-name='Chain tools'
-                                            expand-separator
-                                            class="chain-tools"
-                                            icon="select_all"
-                                            label="Chain tools"
-                                            @click="focusOnChainTools"
-                                            caption="Staking, CPU & more"
-                                            :default-opened="$store.state.currentwallet.wallet.type === 'eos'"
-                                        >
-                                        <q-item v-if="$store.state.currentwallet.wallet.chain === 'eos'" data-name='Stake / Unstake CPU' clickable v-ripple class="p-relative" to="/verto/stake">Stake / Unstake CPU
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                         <q-item v-if="$store.state.currentwallet.wallet.chain === 'eos'" data-name='Buy/Sell Ram' clickable v-ripple class="p-relative" to="/verto/ram-market">Buy / Sell Ram
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                         <q-item v-if="$store.state.currentwallet.wallet.chain === 'eos'" data-name='Power up' clickable v-ripple class="p-relative" to="/verto/wallet/eos/powerup">Power up
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
+                                        v-if="$store.state.currentwallet.wallet.type === 'vtx'" data-name='VTX tools'
+                                        expand-separator
+                                        icon="select_all"
+                                        label="VTX tools"
+                                        @click="focusOnChainTools"
+                                        caption="Staking, node & more"
+                                        class="q-pt-sm chain-tools"
+                                        default-opened
+                                    >
+                                    <q-item  data-name='Staking' clickable v-ripple class="p-relative" to="/verto/stake">Stake VTX
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                        <a href="https://volentix.io/node/" target="_blank">
+                                    <q-item  data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" >
+                                        Run a node
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                    </a>
+                                    </q-expansion-item>
+                                    <q-expansion-item
+                                        v-if="$store.state.currentwallet.wallet.chain === 'eos'" data-name='Chain tools'
+                                        expand-separator
+                                        class="chain-tools"
+                                        icon="select_all"
+                                        label="Chain tools"
+                                        @click="focusOnChainTools"
+                                        caption="Staking, CPU & more"
+                                        :default-opened="$store.state.currentwallet.wallet.type === 'eos'"
+                                    >
+                                    <q-item v-if="$store.state.currentwallet.wallet.chain === 'eos'" data-name='Stake / Unstake CPU' clickable v-ripple class="p-relative" to="/verto/stake">Stake / Unstake CPU
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                        <q-item v-if="$store.state.currentwallet.wallet.chain === 'eos'" data-name='Buy/Sell Ram' clickable v-ripple class="p-relative" to="/verto/ram-market">Buy / Sell Ram
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                        <q-item v-if="$store.state.currentwallet.wallet.chain === 'eos'" data-name='Power up' clickable v-ripple class="p-relative" to="/verto/wallet/eos/powerup">Power up
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
 
-                                        <q-item v-if="$store.state.currentwallet.wallet.chain === 'eos'" data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Stake Proxy EOS
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                        <q-item data-name='Create new account' v-if="$store.state.currentwallet.wallet.type !== 'verto' && $store.state.currentwallet.wallet.chain === 'eos'" to="/verto/eos-account/create" clickable v-ripple class="p-relative ">Create account
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                        <q-item data-name='Import  account' v-if="$store.state.currentwallet.wallet.type !== 'verto' && $store.state.currentwallet.wallet.chain === 'eos'" to="/verto/eos-account/import" clickable v-ripple class="p-relative">Import another account
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                        <q-item v-if="$store.state.currentwallet.wallet.chain === 'eos'" data-name='Custom Transaction' clickable v-ripple class="p-relative" to="/verto/custom-transactions">Custom Transaction
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                        </q-expansion-item>
+                                    <q-item v-if="$store.state.currentwallet.wallet.chain === 'eos'" data-name='Stake Proxy EOS' clickable v-ripple class="p-relative" to="/verto/stakeproxy">Stake Proxy EOS
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                    <q-item data-name='Create new account' v-if="$store.state.currentwallet.wallet.type !== 'verto' && $store.state.currentwallet.wallet.chain === 'eos'" to="/verto/eos-account/create" clickable v-ripple class="p-relative ">Create account
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                    <q-item data-name='Import  account' v-if="$store.state.currentwallet.wallet.type !== 'verto' && $store.state.currentwallet.wallet.chain === 'eos'" to="/verto/eos-account/import" clickable v-ripple class="p-relative">Import another account
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                    <q-item v-if="$store.state.currentwallet.wallet.chain === 'eos'" data-name='Custom Transaction' clickable v-ripple class="p-relative" to="/verto/custom-transactions">Custom Transaction
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                    </q-expansion-item>
 
-                                        <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                        <q-item data-name='History' clickable to="/verto/history" v-ripple class="p-relative">History
-                                            <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
-                                        </q-item>
-                                        <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
-                                            <q-item-section>
-                                                <q-item-label>{{$store.state.currentwallet.wallet.hidden ? 'Reveal' : 'Hide'}} Currency Chain</q-item-label>
-                                            </q-item-section>
-                                            <q-item-section avatar>
-                                                <q-toggle class="p-abs" color="blue" @input="hideCurrency()" v-model="$store.state.currentwallet.wallet.hidden" />
-                                            </q-item-section>
-                                        </q-item>
-                                    </q-list>
-                                </div>
+                                    <q-item data-name='Security' clickable @click="alertSecurity = true" v-ripple class="p-relative">Security
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                    <q-item data-name='History' clickable to="/verto/history" v-ripple class="p-relative">History
+                                        <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                                    </q-item>
+                                    <q-item tag="label" data-name='Hide Currency Chain' v-ripple class="p-relative">
+                                        <q-item-section>
+                                            <q-item-label>{{$store.state.currentwallet.wallet.hidden ? 'Reveal' : 'Hide'}} Currency Chain</q-item-label>
+                                        </q-item-section>
+                                        <q-item-section avatar>
+                                            <q-toggle class="p-abs" color="blue" @input="hideCurrency()" v-model="$store.state.currentwallet.wallet.hidden" />
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
                             </div>
-                        </q-item>
-             <div class="wallet-list q-pa-sm text-body1 q-mt-md text-grey-9" v-if="$store.state.currentwallet.wallet.chain" >
+                        </div>
+                    </q-item>
+                </div>
+                <!-- MOBILE VIEW COMPONENT - DETAILS SECTION  -->
+                <div v-if="$q.platform.is.mobile">
+                    <WalletsAccountDetailsDialog :dialog.sync="dialog" :circularProgress="circularProgress" :focusOnChainTools="focusOnChainTools" :alertSecurity.sync="alertSecurity" :hideCurrency="hideCurrency" :selectedCoin="selectedITEM" :formatNumber="formatNumber"/>
+                </div>
+
+                <div class="wallet-list q-pa-sm text-body1 q-mt-md text-grey-9" v-if="!$q.platform.is.mobile && $store.state.currentwallet.wallet.chain" >
                    <q-icon name="add" /> More wallets and accounts
                 </div>
-                                     <q-expansion-item    :style="setPosition(99999999)" @click="vtxAccounts.length == 1 ? showMenu(vtxAccounts[0]) : showChainAccounts('', 'vtx')"  :key="Math.random()" clickable  >
+                <q-list  class="rounded-borders "  bordered >
+                    <q-expansion-item    :style="setPosition(99999999)" @click="vtxAccounts.length == 1 ? showMenu(vtxAccounts[0]) : showChainAccounts('', 'vtx')"  :key="Math.random()" clickable  >
                         <template v-slot:header>
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" src="statics/icons/favicon-32x32.png"  />
@@ -783,9 +799,9 @@
 
                             </q-card>
 
-                        </q-expansion-item>
-                                      <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': chain.count }" :key="Math.random()+index" clickable  >
-                    <template v-slot:header>
+                    </q-expansion-item>
+                    <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': !$q.platform.is.mobile && chain.count }" :key="Math.random()+index" clickable  >
+                        <template v-slot:header>
 
                             <q-item-section avatar>
                                 <img class="coin-icon" width="35px" :src="chain.icon"  />
@@ -842,6 +858,7 @@
                             </q-card>
 
                         </q-expansion-item>
+                </q-list>
             </q-scroll-area>
             <div v-if="false" class="add-remove-wrapper flex column flex-center item-center content-center">
                 <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Hide Currencies' : 'Show Currencies'" :class="showText ? 'open': 'hide'" />
@@ -885,10 +902,13 @@ import {
   mapState
 } from 'vuex'
 
+import WalletsAccountDetailsDialog from './MobileUI/WalletsAccountDetailsDialog.vue'
+
 export default {
   components: {
     QScrollArea,
-    mobileAssets
+    mobileAssets,
+    WalletsAccountDetailsDialog
   },
   name: 'Wallets',
   props: {
@@ -991,7 +1011,9 @@ export default {
         chain: '',
         to: '',
         icon: ''
-      }
+      },
+      dialog: false, // for mobile version [account details info ]
+      selectedITEM: { total: '', usd: '' }
     }
   },
   async mounted () {
@@ -1189,6 +1211,10 @@ export default {
         this.$store.state.currentwallet.wallet = this.selectedCoin
         this.loadingIndex = false
         if (this.$refs.walletsScrollArea) { this.$refs.walletsScrollArea.setScrollPosition(0, 50) }
+
+        // account details dialog prop
+        this.selectedITEM = menu
+        this.dialog = true
       }, 200)
       this.removeClassSelected()
       menu.selected = true
