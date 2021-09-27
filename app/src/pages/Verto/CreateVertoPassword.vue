@@ -116,7 +116,8 @@ export default {
       confirmColor: 'white',
       passwordsMatch: false,
       file: null,
-      contractable: true
+      contractable: true,
+      isRecovering: false
     }
   },
   watch: {
@@ -128,9 +129,10 @@ export default {
       }
     }
   },
-  created () {
-  },
   async mounted () {
+    if (this.$route.params.recover && this.$route.params.recover === 'recover') {
+      this.isRecovering = true
+    }
     this.hasConfig = !!await configManager.hasVertoConfig()
   },
   methods: {
@@ -211,9 +213,9 @@ export default {
       }
     },
     submit: async function (step) {
-      // if (!this.passwordsMatch) {
-      //   return
-      // }
+      if (this.isRecovering) {
+        step = 4
+      }
       try {
         this.$store.commit('settings/temporary', '123456789')// this.password)
         await configManager.createWallet('123456789')// (this.password)
