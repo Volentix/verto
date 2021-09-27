@@ -29,60 +29,8 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
+@import "~@/assets/styles/auth_page.scss";
 .setup-page{
   background: #F5F5FE
-}
-.vert-page-content{
-  padding: 0 5% 10% 5%;
-  flex-grow: 1;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-
-  &--title {
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 24px;
-    font-family: $Franklin;
-    position: relative;
-    margin-left: 0%;
-    margin-top: 0px;
-    text-align: center;
-    &__sub {
-      font-size: 18px;
-      font-weight: 400;
-      text-align: center;
-      line-height: 30px;
-      margin-top: 0px;
-    }
-  }
-  &--body {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    margin-top: 5%;
-    margin-bottom: 5%;
-
-    @media screen and (min-width: 768px) {
-      margin-top: 5%;
-      margin-bottom: 0%;
-      max-width: 400px;
-      margin-left: auto !important;
-      margin-right: auto !important;
-    }
-    &.extra__px{
-      padding: 0 70px;
-    }
-  }
-
-  &--footer {
-    padding: 0 70px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
 }
 </style>
