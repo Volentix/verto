@@ -6,12 +6,6 @@
     }"
     class="full-width"
   >
-    <q-toolbar v-if="$q.platform.is.mobile">
-        <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)"/>
-        <q-toolbar-title> Token Exchange </q-toolbar-title>
-        <q-btn flat round dense icon="close" v-close-popup @click="$router.go(-1)"/>
-    </q-toolbar>
-
     <div>
       <UI v-if="false"/>
       <q-btn label="test" v-if="false" @click="testData()" />

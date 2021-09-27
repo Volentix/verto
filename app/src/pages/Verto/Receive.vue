@@ -1,6 +1,10 @@
 <template>
   <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 99vh;">
+      <q-toolbar v-if="$q.platform.is.mobile">
+          <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)"/>
+          <q-toolbar-title :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" > Token Receive </q-toolbar-title>
+      </q-toolbar>
       <div class="desktop-version full-height" v-if="screenSize > 1024" style="height: 100vh;">
         <div class="row full-height">
           <div class="col col-md-3">
@@ -97,11 +101,11 @@
           </div>
         </div>
       </div>
-      <div v-else class="standard-content mobile-version">
-        <h2 class="standard-content--title flex justify-center">
+      <div v-else class="standard-content_ mobile-version q-pa-lg">
+        <!-- <h2 class="standard-content--title flex justify-center">
           <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="keyboard_backspace" />
           Receive
-        </h2>
+        </h2> -->
         <div class="standard-content--body">
           <div class="standard-content--body__form">
             <span class="lab-input">To</span>

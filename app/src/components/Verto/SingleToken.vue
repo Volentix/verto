@@ -630,7 +630,6 @@ export default {
   },
   watch: {
     '$route': function () {
-      console.log('watch >>>>')
       if (this.$route.params.asset) { this.setAsset(this.$route.params.asset) }
     },
     '$store.state.investment.accountTokens': function () {

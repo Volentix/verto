@@ -169,15 +169,20 @@
         </div>
       </div>
       <div v-else>
-        <div class="chain-tools-wrapper">
+        <div class="chain-tools-wrapper_">
+          <q-toolbar  class="">
+              <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'"/>
+              <q-toolbar-title> {{ currentWallet.privateKey ?  'Show private key' : 'Add private key' }}  </q-toolbar-title>
+              <!-- <q-btn flat round dense icon="close" v-close-popup to="/verto/dashboard"/> -->
+          </q-toolbar>
           <div class="standard-content">
-              <h2 class="standard-content--title flex justify-center">
+              <!-- <div class="standard-content--title flex justify-center">
                   <q-btn flat unelevated class="btn-align-left" :to="goBack" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
                     {{ currentWallet.privateKey ?  'Show private key' : 'Add private key' }}
-              </h2>
-              <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
+              </div> -->
+              <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" height="130px;" alt=""></div>
           </div>
-          <div class="chain-tools-wrapper--list open">
+          <div class="chain-tools-wrapper--list_ open">
               <div class="list-wrapper">
                   <div class="list-wrapper--chain__eos-to-vtx-convertor">
                     <q-stepper  v-if="currentWallet.privateKey" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="step2" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
@@ -201,7 +206,7 @@
                         -->
                         <q-step title="Choose File" :name="1" prefix="1" :done="step > 1">
                             <div class="text-black">
-                                <div class="text-h4 --subtitle">
+                                <div class="text-h4_ --subtitle">
                                     <ul>
                                         <li><span>Choose Private Key Encrypted File</span></li>
                                     </ul>
