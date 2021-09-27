@@ -1,15 +1,20 @@
 <template>
   <q-page class="column items-center justify-start setup-page">
-    <div class="q-pa-lg">
-      <img src="statics/icons/icon-256x256.png" class="q-mr-sm" width="200" alt="logo"/>
+    <div class="q-pa-md">
+      <img src="statics/icons/icon-256x256.png" width="150" alt="logo"/>
     </div>
     <div class="vert-page-content">
       <h2 class="vert-page-content--title">
         Please choose recovery method
       </h2>
       <div class="vert-page-content--body full-width extra__px">
-        <q-btn unelevated class="btn__blue block" @click="$router.push({name:'create-password'})"  size="lg"  label="Import recovery phrase"/>
-        <q-btn unelevated class="btn__blue block" size="lg" @click="restoreConfig" label="Restore config"/>
+        <div class="flex column justify-center">
+          <q-btn unelevated class="btn__blue block" @click="$router.push({name:'create-password'})"  size="md"  label="Import recovery phrase"/>
+          <span class="q-pa-xs"/>
+          <q-btn unelevated class="btn__blue block" size="md" @click="restoreConfig" label="Restore config"/>
+          <span class="q-pa-xs"/>
+          <q-btn outline unelevated size="md" class="btn--outline__blue"  label="Back" @click="$router.back()"/>
+        </div>
       </div>
     </div>
   </q-page>
@@ -45,7 +50,7 @@ export default {
   justify-content: flex-start;
 
 &--title {
-   font-size: 24px;
+   font-size: 18px;
    font-weight: 600;
    line-height: 24px;
    font-family: $Franklin;
@@ -77,7 +82,7 @@ export default {
   margin-right: auto !important;
 }
 &.extra__px{
-   padding: 0 20px;
+   padding: 0 60px;
  }
 }
 
