@@ -1,16 +1,16 @@
 <template>
 <q-page  class="column items-center justify-start create-keys-page">
-  <div class="q-pa-lg">
-    <img src="statics/icons/icon-256x256.png" class="q-mr-sm" width="200" alt="logo"/>
+  <div class="q-pa-md">
+    <img src="statics/icons/icon-256x256.png"  width="150" alt="logo"/>
   </div>
-    <div style="flex-grow: 1;display: flex;flex-direction: column">
+    <div style="flex-grow: 1;display: flex;flex-direction: column; width: 100%">
         <div v-if="step===2" class="vert-page-content" style="padding-bottom: 0px">
             <div class="vert-page-content--body">
                 <h2 class="vert-page-content--title"> Creating keys... </h2>
                 <!-- <p class="diclaimer"> {{ status }} </p> -->
-                <div class="standard-content--body__form">
+                <div class="standard-content--body">
                     <div class="send-modal__content--body column flex-center">
-                        <q-circular-progress :value="progress" size="170px" :thickness="0.05" color="blue" track-color="blue-1" class="q-ma-md" show-value font-size="20px" />
+                        <q-circular-progress :value="progress" size="120px" :thickness="0.05" color="blue" track-color="blue-1" class="q-ma-md" show-value font-size="20px" />
 <!--                        <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58">-->
 <!--                            <path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path>-->
 <!--                        </svg>-->
@@ -18,7 +18,7 @@
                     </div>
                     <div class="send-modal__content--footer" v-if="status">
                         <div class="text-h6 q-mb-none --status">Creating keys for: </div>
-                        <div class="text-h6 text-center">
+                        <div class="text-h6 text-center --name">
                           <q-icon class="q-pr-sm" size="sm" :name="'img:'+ (status.icon ?  status.icon : 'https://files.coinswitch.co/public/coins/'+status.value+'.png')"/>{{status.label}}
                         </div>
                     </div>
@@ -29,30 +29,31 @@
             </div>
         </div>
         <div v-if="step===3" class="vert-page-content" style="">
-            <div class="vert-page-content--body">
+<!--            <div class="vert-page-content&#45;&#45;body">-->
                 <h2 class="vert-page-content--title  text-center">Congratulations!</h2>
-                <p class="vert-page-content--desc">
-                    Disclaimer
-                    <br/>
-                    <span v-if="$store.state.settings.backupConfig">
+          <div class="vert-page-content--body">
+            <p class="vert-page-content--desc">
+              Disclaimer
+              <br/>
+              <span v-if="$store.state.settings.backupConfig">
                       Download your new config. <br>
                       It contains your old config accounts and your newly created accounts.
                       Save your 24 words and your new config. If you restore your wallet without using this new config, it will not include the newly created accounts.
                       <br>
                       <q-btn @click="backupConfig" label="Click to Download" icon="file_download" class="q-mt-md" color="red" flat/>
                     </span>
-                     <span v-else>
+              <span v-else>
                     Your 24 words are very important! <br>
                     Keep them stored somewhere safe. <br>
                     The position of each word is critical and should be stored in the correct sequence.<br><br>
                     Anyone with access to these 24 words will be able to recover this Verto app and the private keys it is associated with,
                     so keep in a safe place that only you have access to.
                     </span>
-                </p>
+            </p>
                 <p  class="q-py-sm text-bold" v-if="$store.state.settings.dexData.depositCoin && $store.state.settings.dexData.depositCoin && false"> Click go to exchange to swap {{$store.state.settings.dexData.fromAmount}}  {{$store.state.settings.dexData.depositCoin.value.toUpperCase()}} to {{$store.state.settings.dexData.destinationCoin.value.toUpperCase()}}</p>
             </div>
           <div class="vert-page-content--footer">
-            <q-btn class="btn__blue" size="lg" unelevated label="Start Trading"/>
+            <q-btn class="btn__blue" size="md" @click="dataRefresh" unelevated label="Start Trading"/>
           </div>
         </div>
     </div>
@@ -229,6 +230,7 @@ export default {
 
       this.$q.notify({
         color: 'positive',
+        position: 'top',
         message: 'Application refreshing'
       })
 
@@ -248,104 +250,106 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
+@import "~@/assets/styles/auth_page.scss";
+
 .create-keys-page{
   background: #F5F5FE
 }
-.vert-page-content {
-  padding: 0 5% 10% 5%;
-  flex-grow: 1;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-
-  &--title {
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 24px;
-    font-family: $Franklin;
-    position: relative;
-    margin-left: 0%;
-    margin-top: 0px;
-    text-align: center;
-
-    &__sub {
-      font-size: 18px;
-      font-weight: 400;
-      text-align: center;
-      line-height: 30px;
-      margin-top: 0px;
-    }
-  }
-
-  &--desc {
-    font-size: 14px;
-    font-weight: $regular;
-    line-height: 16px;
-    font-family: $Titillium;
-  }
-
-  &--body {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    margin-top: 5%;
-    margin-bottom: 5%;
-
-    @media screen and (min-width: 768px) {
-      margin-top: 5%;
-      margin-bottom: 0%;
-      max-width: 400px;
-      margin-left: auto !important;
-      margin-right: auto !important;
-    }
-
-    &.extra__px {
-      padding: 0 70px;
-    }
-  }
-
-  &--footer {
-    padding: 0 70px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  /deep/ .q-field--focused .q-field__label {
-  }
-  /deep/ .q-field--outlined .q-field__control{
-    background-color: #fff
-  }
-  /deep/ .q-field--outlined .q-field__control:after {
-    border: 2px solid #E1E1E9;
-    //background-color: #fff;
-    //box-shadow: 0px 0px 10px 0px #E1E1E9;
-  }
-
-  /deep/ .q-field--outlined .q-field__control:before {
-    border: 2px solid #E1E1E9;
-    //background-color: #fff;
-    //box-shadow: 0px 0px 10px 0px #E1E1E9;
-  }
-
-  /deep/ .q-field--outlined.q-field--focused .q-field__control:after {
-    border: 2px solid #c4c4c6;
-    //background-color: #fff;
-    //box-shadow: 0px 0px 10px 0px #d4d4db;
-  }
-
-  /deep/ .q-field--outlined.q-field--focused .q-field__control:before {
-    border: 2px solid #c4c4c6;
-    //background-color: #fff;
-    //box-shadow: 0px 0px 10px 0px #d4d4db;
-  }
-
-  /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
-  /deep/ .q-field--dark .q-field__marginal,
-  /deep/ .q-field--dark .q-field__bottom {
-  }
-}
+//.vert-page-content {
+//  padding: 0 10% 10% 10%;
+//  flex-grow: 1;
+//  width: 100%;
+//  display: flex;
+//  flex-direction: column;
+//  justify-content: flex-start;
+//
+//  &--title {
+//    font-size: 18px;
+//    font-weight: 600;
+//    line-height: 24px;
+//    font-family: $Franklin;
+//    position: relative;
+//    margin-left: 0%;
+//    margin-top: 0px;
+//    text-align: center;
+//
+//    &__sub {
+//      font-size: 14px;
+//      font-weight: 400;
+//      text-align: center;
+//      line-height: 14px;
+//      margin-top: 0px;
+//    }
+//  }
+//
+//  &--desc {
+//    font-size: 14px;
+//    font-weight: $regular;
+//    line-height: 16px;
+//    font-family: $Titillium;
+//  }
+//
+//  &--body {
+//    flex-grow: 1;
+//    display: flex;
+//    flex-direction: column;
+//    justify-content: space-evenly;
+//    margin-top: 5%;
+//    margin-bottom: 5%;
+//
+//    @media screen and (min-width: 768px) {
+//      margin-top: 5%;
+//      margin-bottom: 0%;
+//      max-width: 400px;
+//      margin-left: auto !important;
+//      margin-right: auto !important;
+//    }
+//
+//    &.extra__px {
+//      padding: 0 70px;
+//    }
+//  }
+//
+//  &--footer {
+//    padding: 0 70px;
+//    display: flex;
+//    flex-direction: column;
+//    justify-content: center;
+//  }
+//  /deep/ .q-field--focused .q-field__label {
+//  }
+//  /deep/ .q-field--outlined .q-field__control{
+//    background-color: #fff
+//  }
+//  /deep/ .q-field--outlined .q-field__control:after {
+//    border: 2px solid #E1E1E9;
+//    //background-color: #fff;
+//    //box-shadow: 0px 0px 10px 0px #E1E1E9;
+//  }
+//
+//  /deep/ .q-field--outlined .q-field__control:before {
+//    border: 2px solid #E1E1E9;
+//    //background-color: #fff;
+//    //box-shadow: 0px 0px 10px 0px #E1E1E9;
+//  }
+//
+//  /deep/ .q-field--outlined.q-field--focused .q-field__control:after {
+//    border: 2px solid #c4c4c6;
+//    //background-color: #fff;
+//    //box-shadow: 0px 0px 10px 0px #d4d4db;
+//  }
+//
+//  /deep/ .q-field--outlined.q-field--focused .q-field__control:before {
+//    border: 2px solid #c4c4c6;
+//    //background-color: #fff;
+//    //box-shadow: 0px 0px 10px 0px #d4d4db;
+//  }
+//
+//  /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
+//  /deep/ .q-field--dark .q-field__marginal,
+//  /deep/ .q-field--dark .q-field__bottom {
+//  }
+//}
 .row {
     .col {
       &.menu {
@@ -535,7 +539,7 @@ export default {
             }
 
             .--label {
-                font-size: 20px;
+                font-size: 18px;
                 font-weight: $light;
                 font-family: $Titillium;
                 position: absolute;
@@ -545,11 +549,14 @@ export default {
 
         &--footer {
             .--status {
-                font-size: 20px;
+                font-size: 18px;
                 font-family: $Titillium;
                 margin-top: 40px;
                 text-align: center;
 
+            }
+            .--name{
+              font-size: 18px;
             }
         }
     }
@@ -585,60 +592,6 @@ export default {
     position: absolute !important;
     left: 0px;
     z-index: 9;
-  }
-}
-/deep/ .video-page-wrapper{
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
-  background-color: rgba(black, .5);
-  border-radius: 20px;
-  width: 100%;
-  max-width: 500px;
-}
-/deep/ .VideoBg__content{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  img{}
-  h1{
-    font-family: $Franklin;
-    color: #FFF;
-    font-weight: 100;
-    font-size: 45px;
-    text-align: center;
-    line-height: 55px;
-  }
-}
-.video-page-wrapper{
-  .or-text{
-    margin-left: 10px;
-    font-size: 16px;
-    // margin-top: -10px;
-    // margin-bottom: 10px;
-  }
-  /deep/ .q-field--focused .q-field__label{
-    color: #FFF !important;
-  }
-  .next {
-    box-shadow: 0px 0px 10px 0px #6200ea;
-    border: 1px solid #B0B0B0 !important;
-  }
-  .back {
-    box-shadow: 0px 0px 10px 0px #4caf50;
-  }
-  /deep/ .q-field--outlined.q-field--focused .q-field__control:after{
-    border: 1px solid #FFF;
-    box-shadow: 0px 0px 10px 0px #6200ea;
-  }
-  /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
-  /deep/ .q-field--dark .q-field__marginal,
-  /deep/ .q-field--dark .q-field__bottom{
-    color: #FFF !important;
-  }
-  .perpleGlow{
-    text-shadow: 2px 2px 2px #6200ea;
   }
 }
 </style>
