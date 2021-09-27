@@ -53,7 +53,7 @@
                 <p  class="q-py-sm text-bold" v-if="$store.state.settings.dexData.depositCoin && $store.state.settings.dexData.depositCoin && false"> Click go to exchange to swap {{$store.state.settings.dexData.fromAmount}}  {{$store.state.settings.dexData.depositCoin.value.toUpperCase()}} to {{$store.state.settings.dexData.destinationCoin.value.toUpperCase()}}</p>
             </div>
           <div class="vert-page-content--footer">
-            <q-btn class="btn__blue" size="md" unelevated label="Start Trading"/>
+            <q-btn class="btn__blue" size="md" @click="dataRefresh" unelevated label="Start Trading"/>
           </div>
         </div>
     </div>
@@ -230,6 +230,7 @@ export default {
 
       this.$q.notify({
         color: 'positive',
+        position: 'top',
         message: 'Application refreshing'
       })
 

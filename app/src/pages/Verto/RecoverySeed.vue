@@ -222,7 +222,7 @@ export default {
   watch: {},
   computed: {
     hasError () {
-      return this.verifyingWords && ((this.goodPassword && (this.$store.state.settings.rightOrder || this.step === 4)) || this.downloaded === true)
+      return this.verifyingWords && ((this.goodPassword && (!this.$store.state.settings.rightOrder || this.step === 4)) || this.downloaded === true)
     },
     errorMessage () {
       return 'The words are not yet in the right order'
