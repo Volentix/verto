@@ -93,12 +93,12 @@
           <q-btn outline unelevated size="md" class="btn--outline__blue"  label="Back" @click="step=2"/>
         </div>
       </div>
-      <div v-if="step===4" class="standard-content">
+      <div v-if="step===4" style="flex-grow: 1" class="flex column">
         <div>
-          <h2 class="standard-content--title text-white">Paste your recovery seed phrase.</h2>
-          <h2 class="standard-content--desc text-white perpleGlow q-pt-sm">If you do not have a recovery seed, go back
+          <h2 class="vert-page-content--title">Paste your recovery seed phrase.</h2>
+          <h2 class="vert-page-content--desc">If you do not have a recovery seed, go back
             and choose create.</h2>
-          <ul class="text-white">
+          <ul class="">
             <li v-for="(word, index) in wordOptions" :key="index" class=""> {{ word.label }}</li>
           </ul>
           <!-- q-option-group
@@ -109,29 +109,36 @@
             inline
           / -->
         </div>
-        <div class="standard-content--body">
-          <div class="standard-content--body__mnemonic">
-            <h4 class="standard-content--body__mnemonic--title flex justify-between">
+        <div class="vert-page-content--body">
+          <div style="flex-grow: 1">
+            <h4 class="mnemonic--heading">
               Mnemonic
             </h4>
             <q-input
 
               ref="mnemonic"
               type="textarea"
+              class="mnemonic--field"
               color="black"
               @input="validateMnemonic()"
               v-model="mnemonic"
               autofocus
+              outlined
               error-message="The mnemonic seed is invalid"
               :error="!mnemonicValidated"
             />
           </div>
         </div>
-        <div class="standard-content--footer">
-          <q-btn class="action-link back" rounded flat outline color="black" text-color="white" label="Back"
-                 to="/create-password"/>
-          <q-btn class="action-link next" rounded flat outline color="deep-purple-14" text-color="white" label="Next"
-                 @click="saveMnemonic(true)" :disable="!mnemonicValidated"/>
+        <div class="vert-page-content--footer">
+          <q-btn class="btn__blue" size="md" unelevated  :loading="spinnervisible"
+                 label="Next"
+                 :disable="!mnemonicValidated"
+                 @click="saveMnemonic(true)" />
+          <span class="q-pa-sm"></span>
+          <q-btn class="btn--outline__blue" size="md" outline  unelevated label="Back"
+                 @click="$router.back()"/>
+<!--          <q-btn class="action-link next" rounded flat outline color="deep-purple-14" text-color="white" label="Next"-->
+<!--                 @click="saveMnemonic(true)" :disable="!mnemonicValidated"/>-->
         </div>
       </div>
     </div>
@@ -306,6 +313,7 @@ export default {
       this.$clipboardWrite(value)
       this.$q.notify({
         message: this.$t('Main.copied'),
+        position: 'top',
         color: 'positive'
       })
     }
@@ -337,6 +345,22 @@ export default {
 
 /deep/ .q-textarea .q-field__native {
   max-height: 132px;
+}
+
+.mnemonic--heading{
+  font-size: 14px;
+  line-height: 16px;
+  font-weight: 600;
+  font-family: $Franklin;
+  padding: 0;
+  margin: 5px;
+}
+.mnemonic--field /deep/ textarea {
+  padding-top: 10px;
+  line-height: 16px !important;
+  font-size: 14px;
+  height: 100px !important;
+  //color: #FFF !important;
 }
 
 //.app-logo-row {

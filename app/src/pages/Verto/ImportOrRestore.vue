@@ -9,7 +9,7 @@
       </h2>
       <div class="vert-page-content--body full-width px-50">
         <div class="flex column justify-center">
-          <q-btn unelevated class="btn__blue block" @click="$router.push({name:'create-password'})"  size="md"  label="Import recovery phrase"/>
+          <q-btn unelevated class="btn__blue block" @click="$router.push({name:'create--password-recover',params: { recover: 'recover' }})"  size="md"  label="Import recovery phrase"/>
           <span class="q-pa-xs"/>
           <q-btn unelevated class="btn__blue block" size="md" @click="restoreConfig" label="Restore config"/>
           <span class="q-pa-xs"/>

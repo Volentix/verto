@@ -37,6 +37,11 @@ export default [
         component: () => import('pages/Verto/CreateVertoPassword.vue')
       },
       {
+        name: 'create--password-recover',
+        path: '/create-password/:recover',
+        component: () => import('pages/Verto/CreateVertoPassword.vue')
+      },
+      {
         name: 'recovery-seed',
         path: '/recovery-seed',
         component: () => import('pages/Verto/RecoverySeed.vue'),
