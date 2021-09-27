@@ -30,6 +30,15 @@ export default [
         name: 'sign',
         path: '/sign/:txId/:session',
         component: () => import('pages/Verto/ConnectToVerto.vue')
+      }, {
+        name: 'import-restore',
+        path: '/import-restore',
+        component: () => import('pages/Verto/ImportOrRestore.vue')
+      },
+      {
+        name: 'setup',
+        path: '/setup',
+        component: () => import('pages/Verto/Setup.vue')
       },
       {
         name: 'create-password',

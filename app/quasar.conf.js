@@ -105,7 +105,8 @@ module.exports = function (ctx) {
         'QTimeline',
         'QTimelineEntry',
         'QMenu',
-        'QScrollArea'
+        'QScrollArea',
+        'QFile'
       ],
 
       directives: [
@@ -141,6 +142,7 @@ module.exports = function (ctx) {
           ...cfg.resolve.alias,
           '@': path.resolve(__dirname, './src')
         }
+        /*
         cfg.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
@@ -150,7 +152,7 @@ module.exports = function (ctx) {
             // cache: true,
             fix: true
           }
-        })
+        }) */
       }
     },
 

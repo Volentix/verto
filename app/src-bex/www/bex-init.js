@@ -113,7 +113,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "3879f47b9c9b1e0b35ef";
+/******/ 	var hotCurrentHash = "a02eba0d3f4171c873e9";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -974,12 +974,12 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _con
 
 /***/ 18:
 /*!*************************************************************************************************************************!*\
-  !*** multi (webpack)-dev-server/client?http://10.11.29.43:8081 (webpack)/hot/dev-server.js ./.quasar/bex/init/index.js ***!
+  !*** multi (webpack)-dev-server/client?http://10.11.29.43:8080 (webpack)/hot/dev-server.js ./.quasar/bex/init/index.js ***!
   \*************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/berthony/Documents/Verto/app/node_modules/webpack-dev-server/client/index.js?http://10.11.29.43:8081 */"./node_modules/webpack-dev-server/client/index.js?http://10.11.29.43:8081");
+__webpack_require__(/*! /Users/berthony/Documents/Verto/app/node_modules/webpack-dev-server/client/index.js?http://10.11.29.43:8080 */"./node_modules/webpack-dev-server/client/index.js?http://10.11.29.43:8080");
 __webpack_require__(/*! /Users/berthony/Documents/Verto/app/node_modules/webpack/hot/dev-server.js */"./node_modules/webpack/hot/dev-server.js");
 module.exports = __webpack_require__(/*! /Users/berthony/Documents/Verto/app/.quasar/bex/init/index.js */"./.quasar/bex/init/index.js");
 
