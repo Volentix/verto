@@ -1,7 +1,7 @@
 <template>
   <q-page class="column items-center justify-start login-page">
-    <div class="q-pa-lg">
-      <img src="statics/icons/icon-256x256.png" class="q-mr-sm" width="250" alt="logo"/>
+    <div class="q-pa-md">
+      <img src="statics/icons/icon-256x256.png" width="170" alt="logo"/>
     </div>
     <div class="standard-content col-grow">
       <h2 class="landing--title">
@@ -22,9 +22,9 @@
         </div>
       </div>
       <div class="standard-content--footer full-width justify-end">
-        <q-btn unelevated class="btn__blue block"  size="lg"  :loading="spinnerVisible" label="Login"/>
+        <q-btn unelevated class="btn__blue block"  size="md"  :loading="spinnerVisible" label="Login"/>
         <span class="q-pa-xs"></span>
-        <q-btn flat class="action-link btn-flat__blue" label="import or Restore" @click="startRestoreConfig"/>
+        <q-btn flat class="btn-flat__blue" label="import or Restore" @click="startRestoreConfig"/>
       </div>
     </div>
   </q-page>
@@ -105,7 +105,12 @@ export default {
     this.$store.dispatch('tokens/getEvmsTokensData')
   },
   methods: {
-
+    pageStyle () {
+      return {
+        minWidth: '400px',
+        minHeight: '700px'
+      }
+    },
     checkPassword () {
       if (this.password.length > 1) {
         this.showSubmit = true
@@ -311,7 +316,7 @@ export default {
 }
 
 .standard-content {
-  padding: 0 5% 10% 5%;
+  padding: 0 10% 10% 10%;
   width: 100%;
   display: flex;
   flex-direction: column;

@@ -1,7 +1,7 @@
 <template>
   <q-page class="column items-center justify-start recovery-seed-page">
-    <div class="q-pa-lg">
-      <img src="statics/icons/icon-256x256.png" class="q-mr-sm" width="200" alt="logo"/>
+    <div class="q-pa-xs q-pt-lg">
+      <img src="statics/icons/icon-256x256.png" width="150" alt="logo"/>
     </div>
     <div class="vert-page-content">
       <div v-if="step===0" class="standard-content">
@@ -19,7 +19,7 @@
                  @click="createMnemonic()"/>
         </div>
       </div>
-      <div v-if="step===2">
+      <div style="flex-grow: 1" class="flex column" v-if="step===2">
         <div>
           <h2 class="vert-page-content--title">Recovery seed phrase.</h2>
           <p class="vert-page-content--desc">This list of words is used to generate all your HD wallets.
@@ -58,9 +58,9 @@
         <div class="vert-page-content--body">
           <div class="">
             <div class="flex justify-between">
-              <q-btn flat  label="Download" class="btn-flat__blue"
+              <q-btn flat size="sm"  label="Download" class="btn-flat__blue"
                      @click="downloadMnemonic()" icon="get_app"/>
-              <q-btn flat unelevated label="Copy" class="btn-flat__blue"
+              <q-btn flat size="sm" unelevated label="Copy" class="btn-flat__blue"
                      @click="copy2clip(mnemonic)" icon="o_file_copy"/>
             </div>
             <q-input
@@ -72,19 +72,19 @@
               v-model="mnemonic"
               @focus="$event.target.select()"
             />
-            <q-btn label="Regenerate" flat @click="createMnemonic" icon="cached"
+            <q-btn size="sm" label="Regenerate" flat @click="createMnemonic" icon="cached"
                    class="btn-flat__blue"/>
 <!--            <q-btn rounded flat unelevated text-color="grey" label="Import" @click="mnemonic = ''; step = 4"-->
 <!--                   icon="publish" class="q-mt-md"/>-->
           </div>
         </div>
         <div class="vert-page-content--footer">
-          <q-btn class="btn__blue" size="lg" unelevated :loading="spinnervisible"
+          <q-btn class="btn__blue" size="md" unelevated :loading="spinnervisible"
                  :label="downloaded ? 'Next': 'Verify'"
                  @click="downloaded ? saveMnemonic() : step=3"/>
           <span class="q-pa-sm"></span>
-          <q-btn class="btn--outline__blue" size="lg" outline  unelevated label="Back"
-                 to="/create-password"/>
+          <q-btn class="btn--outline__blue" size="md" outline  unelevated label="Back"
+                 @click="$router.back()"/>
         </div>
       </div>
       <div v-if="step===3">
@@ -114,10 +114,10 @@
           </div>
         </div>
         <div class="vert-page-content--footer">
-          <q-btn class="btn__blue" size="lg" unelevated label="Next"
+          <q-btn class="btn__blue" size="md" unelevated label="Next"
                  @click="saveMnemonic()"/>
           <span class="q-pa-xs"></span>
-          <q-btn outline unelevated size="lg" class="btn--outline__blue"  label="Back" @click="step=2"/>
+          <q-btn outline unelevated size="md" class="btn--outline__blue"  label="Back" @click="step=2"/>
         </div>
       </div>
       <div v-if="step===4" class="standard-content">
@@ -333,113 +333,15 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
+@import "~@/assets/styles/auth_page.scss";
 
 .recovery-seed-page {
   background: #F5F5FE
 }
 
-.vert-page-content {
-  padding: 0 5% 10% 5%;
-  flex-grow: 1;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-
-  &--title {
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 24px;
-    font-family: $Franklin;
-    position: relative;
-    margin-left: 0%;
-    margin-top: 0px;
-    text-align: center;
-
-    &__sub {
-      font-size: 18px;
-      font-weight: 400;
-      text-align: center;
-      line-height: 30px;
-      margin-top: 0px;
-    }
-  }
-
-  &--desc {
-    font-size: 14px;
-    font-weight: $regular;
-    line-height: 16px;
-    font-family: $Titillium;
-  }
-
-  &--body {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    margin-top: 5%;
-    margin-bottom: 5%;
-
-    @media screen and (min-width: 768px) {
-      margin-top: 5%;
-      margin-bottom: 0%;
-      max-width: 400px;
-      margin-left: auto !important;
-      margin-right: auto !important;
-    }
-
-    &.extra__px {
-      padding: 0 70px;
-    }
-  }
-
-  &--footer {
-    padding: 0 70px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  /deep/ .q-field--focused .q-field__label {
-  }
-
-  /deep/ .q-field--outlined .q-field__control {
-    background-color: #fff
-  }
-
-  /deep/ .q-field--outlined .q-field__control:after {
-    border: 2px solid #E1E1E9;
-    //background-color: #fff;
-    //box-shadow: 0px 0px 10px 0px #E1E1E9;
-  }
-
-  /deep/ .q-field--outlined .q-field__control:before {
-    border: 2px solid #E1E1E9;
-    //background-color: #fff;
-    //box-shadow: 0px 0px 10px 0px #E1E1E9;
-  }
-
-  /deep/ .q-field--outlined.q-field--focused .q-field__control:after {
-    border: 2px solid #c4c4c6;
-    //background-color: #fff;
-    //box-shadow: 0px 0px 10px 0px #d4d4db;
-  }
-
-  /deep/ .q-field--outlined.q-field--focused .q-field__control:before {
-    border: 2px solid #c4c4c6;
-    //background-color: #fff;
-    //box-shadow: 0px 0px 10px 0px #d4d4db;
-  }
-
-  /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
-  /deep/ .q-field--dark .q-field__marginal,
-  /deep/ .q-field--dark .q-field__bottom {
-  }
-}
-
 /deep/ .q-field__native {
-  font-size: 18px;
-  line-height: 2;
+  font-size: 12px;
+  line-height: 14px;
   padding: 2px;
 }
 
@@ -486,8 +388,10 @@ export default {
 }
 
 .mnemonic /deep/ textarea {
-  line-height: 32px !important;
-  height: 140px !important;
+  padding-top: 5px;
+  line-height: 16px !important;
+  font-size: 14px;
+  height: 80px !important;
   //color: #FFF !important;
 }
 

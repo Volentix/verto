@@ -2,18 +2,15 @@
   <q-page
     class="column items-center justify-start create-password-page"
   >
-    <div class="q-pa-lg">
-      <img src="statics/icons/icon-256x256.png" class="q-mr-sm" width="200" alt="logo"/>
+    <div class="q-pa-xs q-pt-lg">
+      <img src="statics/icons/icon-256x256.png" class="q-mr-sm" width="150" alt="logo"/>
     </div>
     <div class="vert-page-content">
-      <!--          <h2 class="vert-page-content&#45;&#45;title">-->
-      <!--            Verto-->
-      <!--          </h2>-->
       <h2 class="vert-page-content--title">
         Create your Verto Password
       </h2>
       <h2
-        class="vert-page-content--desc q-pb-md"
+        class="vert-page-content--desc"
       >
         Please write down your password and store it somewhere safe. Only
         you know your password. There is no way to recover a Verto
@@ -74,8 +71,11 @@
          </div>
         </div>
       </div>
+      <span class="q-pa-xs"/>
       <div class="vert-page-content--footer">
-        <q-btn unelevated class="btn__blue block" @click="submit(2)"  size="lg"   label="Continue"/>
+        <q-btn unelevated class="btn__blue block" @click="submit(2)"  size="md"   label="Continue"/>
+        <span class="q-pa-xs"/>
+        <q-btn outline unelevated size="md" class="btn--outline__blue"  label="Back" @click="$router.back()"/>
       </div>
     </div>
   </q-page>
@@ -237,106 +237,108 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
-
+@import "~@/assets/styles/auth_page.scss";
 .create-password-page {
   background: #F5F5FE
 }
-
-.vert-page-content {
-  padding: 0 5% 10% 5%;
-  flex-grow: 1;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-
-  &--title {
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 24px;
-    font-family: $Franklin;
-    position: relative;
-    margin-left: 0%;
-    margin-top: 0px;
-    text-align: center;
-
-    &__sub {
-      font-size: 18px;
-      font-weight: 400;
-      text-align: center;
-      line-height: 30px;
-      margin-top: 0px;
-    }
-  }
-
-  &--desc {
-    font-size: 14px;
-    font-weight: $regular;
-    line-height: 16px;
-    font-family: $Titillium;
-  }
-
-  &--body {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    margin-top: 5%;
-    margin-bottom: 5%;
-
-    @media screen and (min-width: 768px) {
-      margin-top: 5%;
-      margin-bottom: 0%;
-      max-width: 400px;
-      margin-left: auto !important;
-      margin-right: auto !important;
-    }
-
-    &.extra__px {
-      padding: 0 70px;
-    }
-  }
-
-  &--footer {
-    padding: 0 70px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  /deep/ .q-field--focused .q-field__label {
-  }
-  /deep/ .q-field--outlined .q-field__control{
-    background-color: #fff
-  }
-  /deep/ .q-field--outlined .q-field__control:after {
-    border: 2px solid #E1E1E9;
-    //background-color: #fff;
-    //box-shadow: 0px 0px 10px 0px #E1E1E9;
-  }
-
-  /deep/ .q-field--outlined .q-field__control:before {
-    border: 2px solid #E1E1E9;
-    //background-color: #fff;
-    //box-shadow: 0px 0px 10px 0px #E1E1E9;
-  }
-
-  /deep/ .q-field--outlined.q-field--focused .q-field__control:after {
-    border: 2px solid #c4c4c6;
-    //background-color: #fff;
-    //box-shadow: 0px 0px 10px 0px #d4d4db;
-  }
-
-  /deep/ .q-field--outlined.q-field--focused .q-field__control:before {
-    border: 2px solid #c4c4c6;
-    //background-color: #fff;
-    //box-shadow: 0px 0px 10px 0px #d4d4db;
-  }
-
-  /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
-  /deep/ .q-field--dark .q-field__marginal,
-  /deep/ .q-field--dark .q-field__bottom {
-  }
+.vert-page-content--title{
+  margin-bottom: 0;
 }
+//.vert-page-content {
+//  padding: 0 8% 5% 8%;
+//  flex-grow: 1;
+//  width: 100%;
+//  display: flex;
+//  flex-direction: column;
+//  justify-content: flex-start;
+//
+//  &--title {
+//    font-size: 18px;
+//    font-weight: 600;
+//    line-height: 24px;
+//    font-family: $Franklin;
+//    position: relative;
+//    margin-left: 0%;
+//    margin-top: 0px;
+//    text-align: center;
+//
+//    &__sub {
+//      font-size: 14px;
+//      font-weight: 400;
+//      text-align: center;
+//      line-height: 14px;
+//      margin-top: 0px;
+//    }
+//  }
+//
+//  &--desc {
+//    font-size: 14px;
+//    font-weight: $regular;
+//    line-height: 16px;
+//    font-family: $Titillium;
+//  }
+//
+//  &--body {
+//    flex-grow: 1;
+//    display: flex;
+//    flex-direction: column;
+//    justify-content: space-evenly;
+//    margin-top: 5%;
+//    margin-bottom: 5%;
+//
+//    @media screen and (min-width: 768px) {
+//      margin-top: 5%;
+//      margin-bottom: 0%;
+//      max-width: 400px;
+//      margin-left: auto !important;
+//      margin-right: auto !important;
+//    }
+//
+//    &.extra__px {
+//      padding: 0 70px;
+//    }
+//  }
+//
+//  &--footer {
+//    padding: 0 70px;
+//    display: flex;
+//    flex-direction: column;
+//    justify-content: center;
+//  }
+//  /deep/ .q-field--focused .q-field__label {
+//  }
+//  /deep/ .q-field--outlined .q-field__control{
+//    background-color: #fff
+//  }
+//  /deep/ .q-field--outlined .q-field__control:after {
+//    border: 2px solid #E1E1E9;
+//    //background-color: #fff;
+//    //box-shadow: 0px 0px 10px 0px #E1E1E9;
+//  }
+//
+//  /deep/ .q-field--outlined .q-field__control:before {
+//    border: 2px solid #E1E1E9;
+//    //background-color: #fff;
+//    //box-shadow: 0px 0px 10px 0px #E1E1E9;
+//  }
+//
+//  /deep/ .q-field--outlined.q-field--focused .q-field__control:after {
+//    border: 2px solid #c4c4c6;
+//    //background-color: #fff;
+//    //box-shadow: 0px 0px 10px 0px #d4d4db;
+//  }
+//
+//  /deep/ .q-field--outlined.q-field--focused .q-field__control:before {
+//    border: 2px solid #c4c4c6;
+//    //background-color: #fff;
+//    //box-shadow: 0px 0px 10px 0px #d4d4db;
+//  }
+//
+//  /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
+//  /deep/ .q-field--dark .q-field__marginal,
+//  /deep/ .q-field--dark .q-field__bottom {
+//  }
+//}
 
 .config-restore {
   border-left: 1px solid #ababab;

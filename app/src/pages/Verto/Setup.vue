@@ -1,7 +1,7 @@
 <template>
   <q-page class="column items-center justify-start setup-page">
-    <div class="q-pa-lg">
-      <img src="statics/icons/icon-256x256.png" class="q-mr-sm" width="200" alt="logo"/>
+    <div class="q-pa-md">
+      <img src="statics/icons/icon-256x256.png"  width="150" alt="logo"/>
     </div>
     <div class="vert-page-content">
       <h2 class="vert-page-content--title">
@@ -11,8 +11,11 @@
         <span class="">Multi-chain wallet manager</span>
       </h2>
       <div class="vert-page-content--body full-width extra__px">
-        <q-btn unelevated class="btn__blue block" @click="$router.push({name:'create-password'})"  size="lg"  label="Create Vallet"/>
-        <q-btn unelevated class="btn__blue block" size="lg" label="Import Vallet"/>
+        <div class="flex column justify-center">
+          <q-btn unelevated class="btn__blue block" @click="$router.push({name:'create-password'})"  size="md"  label="Create Vallet"/>
+          <span class="q-pa-xs"/>
+          <q-btn to="/import-restore" unelevated class="btn__blue block" size="md" label="Import Vallet"/>
+        </div>
       </div>
     </div>
   </q-page>
