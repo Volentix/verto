@@ -1,28 +1,26 @@
 <template>
-<q-page :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-white': $store.state.settings.lightMode === 'false'}">
-    <div class="row app-logo-row">
-      <div class="col col-md-12 app-logo flex q-pl-lg q-ml-sm q-mt-lg items-center justify-start">
-        <img src="statics/icons/vtx-logo-1024x1024.png" class="q-mr-sm" width="40" alt="logo"/>
-        <router-link to="/verto/dashboard">VERTO</router-link>
-      </div>
-    </div>
-    <video-bg :sources="['statics/mp4/create-keys2.mp4']" img="">
-      <div class="video-page-wrapper q-pt-md q-pb-md">
-        <div v-if="step===2" class="standard-content" style="padding-bottom: 0px">
-            <div class="standard-content--body">
-                <h2 class="standard-content--title text-center text-white"> Creating keys... </h2>
+<q-page  class="column items-center justify-start create-keys-page">
+  <div class="q-pa-lg">
+    <img src="statics/icons/icon-256x256.png" class="q-mr-sm" width="200" alt="logo"/>
+  </div>
+    <div style="flex-grow: 1;display: flex;flex-direction: column">
+        <div v-if="step===2" class="vert-page-content" style="padding-bottom: 0px">
+            <div class="vert-page-content--body">
+                <h2 class="vert-page-content--title"> Creating keys... </h2>
                 <!-- <p class="diclaimer"> {{ status }} </p> -->
                 <div class="standard-content--body__form">
                     <div class="send-modal__content--body column flex-center">
-                        <q-circular-progress :value="progress" size="170px" :thickness="0.05" color="cyan-5" track-color="grey-3" class="q-ma-md" show-value font-size="20px" />
-                        <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58">
-                            <path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path>
-                        </svg>
-                        <div class="--label text-cyan-5 text-h6">{{ progress }} %</div>
+                        <q-circular-progress :value="progress" size="170px" :thickness="0.05" color="blue" track-color="blue-1" class="q-ma-md" show-value font-size="20px" />
+<!--                        <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58">-->
+<!--                            <path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path>-->
+<!--                        </svg>-->
+                        <div class="--label text-h6">{{ progress }} %</div>
                     </div>
                     <div class="send-modal__content--footer" v-if="status">
-                        <div class="text-h4 text-h4 q-mb-none text-white --status">Creating keys for: </div>
-                        <div class="text-h6 text-center text-white"><q-icon class="q-pr-sm" size="sm" :name="'img:'+ (status.icon ?  status.icon : 'https://files.coinswitch.co/public/coins/'+status.value+'.png')"/>{{status.label}}</div>
+                        <div class="text-h6 q-mb-none --status">Creating keys for: </div>
+                        <div class="text-h6 text-center">
+                          <q-icon class="q-pr-sm" size="sm" :name="'img:'+ (status.icon ?  status.icon : 'https://files.coinswitch.co/public/coins/'+status.value+'.png')"/>{{status.label}}
+                        </div>
                     </div>
                     <div class="flex-end flex justify-end" v-if="false">
                         <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="step=3" :disable="!mapped" />
@@ -30,12 +28,12 @@
                 </div>
             </div>
         </div>
-        <div v-if="step===3" class="standard-content" style="padding-bottom: 0px">
-            <div class="standard-content--body">
-                <h2 class="standard-content--title text-white perpleGlow text-center">Congratulations !<br>Launch your VERTO ...</h2>
-                <br>
-                <p class="diclaimer text-white">
-                    <strong class="perpleGlow">Disclaimer</strong>
+        <div v-if="step===3" class="vert-page-content" style="">
+            <div class="vert-page-content--body">
+                <h2 class="vert-page-content--title  text-center">Congratulations!</h2>
+                <p class="vert-page-content--desc">
+                    Disclaimer
+                    <br/>
                     <span v-if="$store.state.settings.backupConfig">
                       Download your new config. <br>
                       It contains your old config accounts and your newly created accounts.
@@ -52,15 +50,12 @@
                     </span>
                 </p>
                 <p  class="q-py-sm text-bold" v-if="$store.state.settings.dexData.depositCoin && $store.state.settings.dexData.depositCoin && false"> Click go to exchange to swap {{$store.state.settings.dexData.fromAmount}}  {{$store.state.settings.dexData.depositCoin.value.toUpperCase()}} to {{$store.state.settings.dexData.destinationCoin.value.toUpperCase()}}</p>
-                <div class="standard-content--body__form">
-                    <div class="flex-end flex justify-center q-pt-md q-mb-md">
-                        <q-btn class="action-link next" rounded flat outline color="deep-purple-14" text-color="white" label="Start Trading" @click="dataRefresh()" />
-                    </div>
-                </div>
             </div>
+          <div class="vert-page-content--footer">
+            <q-btn class="btn__blue" size="lg" unelevated label="Start Trading"/>
+          </div>
         </div>
-      </div>
-    </video-bg>
+    </div>
 </q-page>
 </template>
 
@@ -253,6 +248,104 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
+.create-keys-page{
+  background: #F5F5FE
+}
+.vert-page-content {
+  padding: 0 5% 10% 5%;
+  flex-grow: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  &--title {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 24px;
+    font-family: $Franklin;
+    position: relative;
+    margin-left: 0%;
+    margin-top: 0px;
+    text-align: center;
+
+    &__sub {
+      font-size: 18px;
+      font-weight: 400;
+      text-align: center;
+      line-height: 30px;
+      margin-top: 0px;
+    }
+  }
+
+  &--desc {
+    font-size: 14px;
+    font-weight: $regular;
+    line-height: 16px;
+    font-family: $Titillium;
+  }
+
+  &--body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    margin-top: 5%;
+    margin-bottom: 5%;
+
+    @media screen and (min-width: 768px) {
+      margin-top: 5%;
+      margin-bottom: 0%;
+      max-width: 400px;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    &.extra__px {
+      padding: 0 70px;
+    }
+  }
+
+  &--footer {
+    padding: 0 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  /deep/ .q-field--focused .q-field__label {
+  }
+  /deep/ .q-field--outlined .q-field__control{
+    background-color: #fff
+  }
+  /deep/ .q-field--outlined .q-field__control:after {
+    border: 2px solid #E1E1E9;
+    //background-color: #fff;
+    //box-shadow: 0px 0px 10px 0px #E1E1E9;
+  }
+
+  /deep/ .q-field--outlined .q-field__control:before {
+    border: 2px solid #E1E1E9;
+    //background-color: #fff;
+    //box-shadow: 0px 0px 10px 0px #E1E1E9;
+  }
+
+  /deep/ .q-field--outlined.q-field--focused .q-field__control:after {
+    border: 2px solid #c4c4c6;
+    //background-color: #fff;
+    //box-shadow: 0px 0px 10px 0px #d4d4db;
+  }
+
+  /deep/ .q-field--outlined.q-field--focused .q-field__control:before {
+    border: 2px solid #c4c4c6;
+    //background-color: #fff;
+    //box-shadow: 0px 0px 10px 0px #d4d4db;
+  }
+
+  /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
+  /deep/ .q-field--dark .q-field__marginal,
+  /deep/ .q-field--dark .q-field__bottom {
+  }
+}
 .row {
     .col {
       &.menu {
@@ -446,14 +539,13 @@ export default {
                 font-weight: $light;
                 font-family: $Titillium;
                 position: absolute;
-                bottom: -20px;
+                //bottom: -20px;
             }
         }
 
         &--footer {
             .--status {
                 font-size: 20px;
-                font-weight: $bold;
                 font-family: $Titillium;
                 margin-top: 40px;
                 text-align: center;
