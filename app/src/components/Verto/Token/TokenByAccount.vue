@@ -34,7 +34,7 @@
         <q-icon name="content_copy"  size="sm"/>
       </q-item-section>
 </div>
-     <q-list bordered class="rounded-borders" style="max-width: 350px" v-else>
+     <q-list bordered class="rounded-borders"  v-else>
       <q-item-label class="accounts_title_with" v-if="type" header>{{accounts.length}} accounts with {{type.toUpperCase()}}</q-item-label>
 
       <q-item @click=" setAccount(account)" clickable v-ripple v-for="(account, index) in accounts" :key="index">

@@ -11,11 +11,11 @@
                     </svg>
             </q-avatar>
 
-            <q-toolbar-title style="color:green;">VERTO</q-toolbar-title>
+            <q-toolbar-title class="primary">VERTO</q-toolbar-title>
             <div class="q-gutter-sm">
-                <q-btn style="color:green;" dense icon="search" @click="callChainTools" />
-                <q-btn style="color:green;" dense icon="qr_code" @click="qrSelect = true" />
-                <q-btn style="color:green;" dense icon="notifications">
+                <q-btn class="primary" dense icon="search" @click="callChainTools" />
+                <q-btn class="primary" dense icon="qr_code" @click="qrSelect = true" />
+                <q-btn class="primary" dense icon="notifications">
                     <q-menu transition-show="flip-right" transition-hide="flip-left" auto-close>
                         <q-list separator style="min-width: 100px">
                             <q-item>
@@ -77,7 +77,7 @@
             <q-card class="my-card" style="min-width: 300px;">
                 <q-img src="https://www.imgonline.com.ua/examples/qr-code-url.png" />
                 <q-card-section>
-                    <q-btn fab color="green" icon="qr_code" class="absolute" style="top: 0; right: 12px; transform: translateY(-50%);" @click="qrSelect = false" />
+                    <q-btn fab color="primary" icon="qr_code" class="absolute" style="top: 0; right: 12px; transform: translateY(-50%);" @click="qrSelect = false" />
 
                     <div class="row no-wrap items-center">
                         <div class="col text-h6 ellipsis">

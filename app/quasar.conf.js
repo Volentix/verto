@@ -106,6 +106,8 @@ module.exports = function (ctx) {
         'QTimelineEntry',
         'QMenu',
         'QScrollArea',
+        'QPullToRefresh',
+        'QFooter',
         'QFile'
       ],
 
@@ -129,7 +131,7 @@ module.exports = function (ctx) {
     build: {
       uglifyOptions: {
         keep_fnames: true,
-        compress: { /* drop_console: true */ }
+        compress: { drop_console: true }
       },
       scopeHoisting: true,
       vueRouterMode: 'history',
@@ -142,6 +144,7 @@ module.exports = function (ctx) {
           ...cfg.resolve.alias,
           '@': path.resolve(__dirname, './src')
         }
+        /*
         cfg.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
@@ -151,7 +154,7 @@ module.exports = function (ctx) {
             // cache: true,
             fix: true
           }
-        })
+        }) */
       }
     },
 
@@ -213,7 +216,7 @@ module.exports = function (ctx) {
     },
 
     cordova: {
-      // id: 'org.cordova.quasar.app'
+      id: 'org.cordova.vertoapp'
       // noIosLegacyBuildFlag: true // uncomment only if you know what you are doing
     },
 

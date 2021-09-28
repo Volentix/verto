@@ -32,14 +32,16 @@
         >
           <q-card >
             <q-toolbar >
-                  <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/manage/receive"/>
+                  <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/profile"/>
                   <q-toolbar-title> Import EOS Account  </q-toolbar-title>
-                  <q-btn flat round dense icon="close" v-close-popup to="/verto/manage/receive"/>
+                  <q-btn flat round dense icon="close" v-close-popup to="/verto/profile"/>
               </q-toolbar>
 
-            <profile-header version="type4" />
-            <CreateEOSAccount  v-if="$store.state.settings.network == 'mainnet' "/>
-            <CreateTesnetEOSAccount v-else />
+            <!-- <profile-header version="type4" /> -->
+            <div class="q-mt-md">
+              <CreateEOSAccount  v-if="$store.state.settings.network == 'mainnet' "/>
+              <CreateTesnetEOSAccount v-else />
+            </div>
           </q-card>
         </q-dialog>
 

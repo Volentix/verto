@@ -1,8 +1,9 @@
 <template>
+<div>
   <div
     :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
     class="wrapper q-pr-md"
-    v-if="asset.type"
+    v-if="asset.type && !$q.platform.is.mobile"
   >
     <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" style="margin-left: 15px; height: 77vh;">
       <div class="row" >
@@ -587,6 +588,10 @@
       </div>
     </q-scroll-area>
   </div>
+  <div v-if="$q.platform.is.mobile">
+    <SignleTokenDialog :marketData="marketData" :asset="asset" :formatNumber="formatNumber" :chartData="chartData" :chartAvailable="chartAvailable" :intervalHistory="intervalHistory" :getHistoriclPrice="getHistoriclPrice" :nFormatter2="nFormatter2" :tab.sync="tab" :success.sync="success" :error.sync="error" :exchangeToken="exchangeToken" :setAsset.sync="setAsset" :fromPreview.sync="fromPreview" :depositQuantity.sync="depositQuantity" :assetBalance="assetBalance" :destinationCoin.sync="destinationCoin" :destinationCoinOptions="destinationCoinOptions" :sendTo.sync="sendTo" :memo.sync="memo" :isTxValid="isTxValid" :triggerAction="triggerAction" :goToExchange="goToExchange" :spinnerVisible.sync="spinnerVisible" :filterDestinationCoin="filterDestinationCoin" :setSuccessData="setSuccessData" />
+  </div>
+</div>
 </template>
 <script>
 import transactEOS from './transactEOS'
@@ -603,6 +608,7 @@ import AccountSelector from './Exchange/AccountSelector.vue'
 // import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 import { JsonRpc } from 'eosjs'
 import { QScrollArea } from 'quasar'
+import SignleTokenDialog from './MobileUI/SingleTokenDialog.vue'
 
 // import Godex from './Exchange/Godex.vue'
 
@@ -618,7 +624,8 @@ export default {
     transactEOS,
     // liquidityPoolsTable,
     SendComponent,
-    QScrollArea
+    QScrollArea,
+    SignleTokenDialog
     // Godex
   },
   watch: {
@@ -840,6 +847,7 @@ export default {
         })
     },
     async getHistoriclPrice (days = 30) {
+      console.log('getHistoriclPrice called')
       this.chartData = false
       this.chartAvailable = true
       let id = this.asset.coinGeckoId
