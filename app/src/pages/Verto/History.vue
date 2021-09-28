@@ -1,6 +1,7 @@
 <template>
   <q-page class="" :class="{'desktop-marg': screenSize > 1024, 'mobile-pad': screenSize < 1024, 'text-black bg-white': $store.state.settings.lightMode === 'false'}">
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" class="history-main-top-wrapper" style="height: 100vh;">
+      <!-- class="history-main-top-wrapper_" style="height: 100vh;" -->
       <div class="desktop-version full-height" v-if="screenSize > 1024">
         <div class="row full-height">
           <div class="col col-md-3" v-if="false">
@@ -25,21 +26,26 @@
           </div>
         </div>
       </div>
-       <div class="mobile-version full-height" v-else>
-        <div class="desktop-card-style apps-section history-card" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100%;">
+       <div class="mobile-version full-height" v-else>&nbsp;
+         <q-toolbar  id="scrollToID3">
+            <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/dashboard"/>
+            <q-toolbar-title> History  </q-toolbar-title>
+            <!-- <q-btn flat round dense icon="close" v-close-popup to="/verto/dashboard"/> -->
+        </q-toolbar>
+        <div class=" apps-section history-card" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100%;">
           <q-banner inline-actions class="text-white bg-red q-my-md " v-if="false">
             Section currently in development: currently showing ETH wallets history
           </q-banner>
-          <div class="row items-center q-pl-md q-mt-lg">
-            <div class="standard-content--title col-md-4 flex items-center" >
-              History
-              <q-icon name="cached"  @click="refresh++" class="refresh-history q-pl-sm"/>
-            </div>
-            <div class="col flex justify-end">
+          <div class=" items-center q-pl-md q-mt-lg">
+            <div class="col flex justify-center q-mb-sm">
               <AccountSelector  :autoSelectChain="'eos'" class="q-mr-md" :showAllWallets="true"/>
             </div>
+            <!-- <div class=" text-h5 text-bold col-md-4 flex items-center" >
+              History
+              <q-icon name="cached"  @click="refresh++" class="refresh-history q-pl-sm"/>
+            </div> -->
           </div>
-          <div class="standard-content--body" style="height: 100%;">
+          <div class="standard-content--body" style="height: 100%">
             <History :refresh="refresh" :key="refresh" :isMobile="true" />
           </div>
         </div>
@@ -80,6 +86,8 @@ export default {
     }
   },
   mounted () {
+    if (this.$q.platform.is.mobile) document.getElementById('scrollToID3').scrollIntoView()
+
     this.version = version
     this.setupPlatformPath()
     this.getWindowWidth()
