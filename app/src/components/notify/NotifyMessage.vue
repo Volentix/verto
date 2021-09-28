@@ -29,4 +29,7 @@ export default {
 .error{
   color: #ff333f;
 }
+.banner{
+  color: purple;
+}
 </style>

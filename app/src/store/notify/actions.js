@@ -8,12 +8,13 @@ export function notify (context, payload) {
   setTimeout(() => context.commit('setMessage', {
     message: '',
     type: ''
-  }), 2000)
+  }), payload.timeout ? payload.timeout : 2000)
 }
 export function success (context, payload) {
   context.dispatch('notify', {
     message: payload,
-    type: 'success'
+    type: 'success',
+    timeout: 3000
   })
 }
 
@@ -21,5 +22,12 @@ export function error (context, payload) {
   context.dispatch('notify', {
     message: payload,
     type: 'error'
+  })
+}
+
+export function banner (context, payload) {
+  context.dispatch('notify', {
+    message: payload,
+    type: 'banner'
   })
 }
