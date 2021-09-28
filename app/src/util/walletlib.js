@@ -820,7 +820,7 @@ class Lib {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
         }
-        console.log(chain, transaction, type, tokenPrice, gasLimit, 'chain, transaction, type, tokenPrice, gasLimit')
+        // console.log(chain, transaction, type, tokenPrice, gasLimit, 'chain, transaction, type, tokenPrice, gasLimit')
         if (!response.data) {
           gasData.gasPrice = await web3.eth.getGasPrice()
           gasData.label = 'Fee'
@@ -905,7 +905,7 @@ class Lib {
 
   send = async (chain, token, from, to, value, memo, key, contract, data) => {
     const self = this
-    console.log(chain, token, from, to, value, memo, contract, data, 'chain, token, from, to, value, memo, key, contract, data')
+    // console.log(chain, token, from, to, value, memo, contract, data, 'chain, token, from, to, value, memo, key, contract, data')
     const wallet = {
       async btc (token, from, to, value, memo, key) {
         const bitcoin = require('bitcoinjs-lib')
@@ -1105,13 +1105,13 @@ class Lib {
             message = 'https://explorer.binance.org/tx/' + result.result[0].hash
             success = true
           } else {
-            console.error('error else', result.message)
+            // console.error('error else', result.message)
 
             message = result.message
             success = false
           }
         } catch (error) {
-          console.error('error catch', error)
+          // console.error('error catch', error)
 
           message = error
           success = false

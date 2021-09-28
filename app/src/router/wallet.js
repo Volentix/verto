@@ -6,7 +6,7 @@ let shared_wallet_urls = [
     meta: {}
   }
 ]
-if (process.env.MODE === 'bex') {
+if (process.env.MODE !== 'bex') {
   shared_wallet_urls = [
     {
       name: 'restoreWallet',
