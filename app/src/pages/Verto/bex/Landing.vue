@@ -3,6 +3,7 @@
     <div class="q-pa-md">
       <img src="statics/icons/icon-256x256.png" width="170" alt="logo"/>
     </div>
+    <notify-message/>
     <div class="standard-content col-grow">
       <h2 class="landing--title">
         Verto
@@ -22,7 +23,7 @@
         </div>
       </div>
       <div class="standard-content--footer full-width justify-end">
-        <q-btn unelevated class="btn__blue block"  size="lg"  :loading="spinnerVisible" label="Login"/>
+        <q-btn unelevated class="btn__blue block"  size="lg"  :loading="spinnerVisible" @click="login" label="Login"/>
         <span class="q-pa-xs"></span>
         <q-btn flat size="lg" class="btn-flat__blue" label="import or Restore" @click="startRestoreConfig"/>
       </div>
@@ -40,10 +41,12 @@ import initWallet from '@/util/Wallets2Tokens'
 import DexInteraction from '../../../mixins/DexInteraction'
 import Vue from 'vue'
 import VideoBg from 'vue-videobg'
+import NotifyMessage from '../../../components/notify/NotifyMessage'
 
 Vue.component('video-bg', VideoBg)
 export default {
   name: 'Login',
+  components: { NotifyMessage },
   data () {
     return {
       hasConfig: false,

@@ -10,9 +10,9 @@
       <div class="vert-page-content--body full-width p-0">
         <div class="flex column justify-center">
           <q-btn unelevated class="btn__blue block" @click="$router.push({name:'create--password-recover',params: { recover: 'recover' }})"  size="lg"  label="Import recovery phrase"/>
-          <span class="q-pa-xs"/>
+          <span class="q-pa-md"/>
           <q-btn unelevated class="btn__blue block" size="lg" @click="restoreConfig" label="Restore config"/>
-          <span class="q-pa-xs"/>
+          <span class="q-pa-md"/>
           <q-btn outline unelevated size="lg" class="btn--outline__blue"  label="Back" @click="$router.back()"/>
         </div>
       </div>

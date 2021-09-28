@@ -821,7 +821,7 @@ class Lib {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
         }
-
+        console.log(chain, transaction, type, tokenPrice, gasLimit, 'chain, transaction, type, tokenPrice, gasLimit')
         if (!response.data) {
           gasData.gasPrice = await web3.eth.getGasPrice()
           gasData.label = 'Fee'
