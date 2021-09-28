@@ -24,7 +24,9 @@ export default {
     }
   },
   mounted () {
-    document.querySelector('#preloader').style.display = 'none'
+    this.$nextTick(() => {
+      document.querySelector('#preloader').style.display = 'none'
+    })
   }
 }
 </script>
