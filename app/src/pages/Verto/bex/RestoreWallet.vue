@@ -1,7 +1,7 @@
 <template>
   <q-page class="column  items-center justify-start  restore-wallet">
     <div class="q-pa-md">
-      <img src="statics/icons/icon-256x256.png"  width="100" alt="logo"/>
+      <img src="statics/icons/icon-256x256.png"  width="80" alt="logo"/>
     </div>
     <notify-message/>
     <div v-if="step==1" class="vert-page-content">
@@ -18,7 +18,7 @@
         <!-- </div> -->
         <div class="standard-content--body__form">
           <div>
-            <q-file dense outlined v-model="file" label="Select your config file">
+            <q-file outlined v-model="file" label="Select your config file">
               <template v-slot:append>
                 <q-icon name="attach_file" />
               </template>
@@ -48,7 +48,6 @@
             </label>
             <q-input
               ref="psswrd"
-              dense
               v-model="addWallet.vertoPassword"
               @input="showSubmitKey"
               @keyup.enter="restoreConfig"

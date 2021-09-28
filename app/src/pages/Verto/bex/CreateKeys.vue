@@ -31,7 +31,7 @@
         </div>
         <div v-if="step===3" class="vert-page-content" style="">
 <!--            <div class="vert-page-content&#45;&#45;body">-->
-                <h2 class="vert-page-content--title  text-center">Congratulations!</h2>
+                <h2 v-if="$store.getters['notify/message']==''" class="vert-page-content--title  text-center">Congratulations!</h2>
           <div class="vert-page-content--body" style="justify-content: start">
             <p class="vert-page-content--desc">
               Disclaimer
