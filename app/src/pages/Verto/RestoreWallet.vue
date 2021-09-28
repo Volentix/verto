@@ -1,87 +1,148 @@
 <template>
-  <q-page class="column restore-wallet dark-theme">
-    <div class="row app-logo-row">
-      <div class="col col-md-12 app-logo flex q-pl-lg q-ml-sm q-mt-lg items-center justify-start">
-        <img src="statics/icons/vtx-logo-1024x1024.png" class="q-mr-sm" width="40" alt="logo"/>
-        <router-link to="/verto/dashboard">VERTO</router-link>
+  <q-page class="column  items-center justify-start  restore-wallet">
+    <div class="q-pa-md">
+      <img src="statics/icons/icon-256x256.png"  width="150" alt="logo"/>
+    </div>
+    <div v-if="step==1" class="vert-page-content">
+      <!--          <h2 class="vert-page-content&#45;&#45;title">-->
+      <!--            Verto-->
+      <!--          </h2>-->
+      <h2 class="vert-page-content--title">
+        Select your config file
+      </h2>
+      <!-- The seed phrase will now be added to your config after confirming the password. -->
+      <div class="vert-page-content--body">
+        <!-- <div class="standard-content--body__img column flex-center gt-xs" v-if="!passwordsMatch"> -->
+        <!-- <img src="statics/password_bg.svg" alt=""> -->
+        <!-- </div> -->
+        <div class="standard-content--body__form">
+          <div>
+            <q-file outlined v-model="file" label="Select your config file">
+              <template v-slot:append>
+                <q-icon name="attach_file" />
+              </template>
+            </q-file>
+          </div>
+        </div>
+      </div>
+      <div class="vert-page-content--footer">
+        <q-btn unelevated class="btn__blue block" @click="step=2"  size="md"   label="Continue"/>
+        <span class="q-pa-xs"/>
+        <q-btn outline unelevated size="md" class="btn--outline__blue"  label="Back" @click="$router.back()"/>
       </div>
     </div>
-    <video-bg :sources="['statics/mp4/restore.mp4']" img="">
-      <div class="video-page-wrapper q-pt-md q-pb-md">
-        <!-- <div class="standard-content" style="padding-bottom: 0px"> -->
-          <div class="chain-tools-wrapper">
-            <div class="standard-content">
-                <h2 class="standard-content--title flex justify-center">
-                  <q-btn flat unelevated class="btn-align-left" @click="returnto === 'profile' ? ($q.platform.is.mobile ?  $router.go(-1) : $router.push('/verto/dashboard') ) : $router.go(-1)" text-color="white" icon="keyboard_backspace" />
-                  <span class="text-white">{{$t('SettingsView.restore_config')}}</span>
-                </h2>
-                <div class="privatekey_bg flex flex-center" v-if="false">
-                  <img src="statics/restore_config.svg" alt="">
-                </div>
-            </div>
-            <div class="chain-tools-wrapper--list open">
-                <div class="list-wrapper">
-                    <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                      <q-stepper dark v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
-                        <q-step title="Select Config File" :name="1" prefix="1" :done="step > 1">
-                            <div class="flex full-width file-select-wrapper flex-center q-pa-sm">
-                              <FileSelect @input="checks" @keyup.enter="showThePasswordScreen" v-model="file" />
-                              <q-icon name="cloud_upload" class="icon-upload" />
-                            </div>
-                          <q-stepper-navigation v-show="showNextButtonToPassword" class="flex justify-end">
-                            <q-btn @click="showThePasswordScreen" flat text-color="white" color="transparent" class="--next-btn next" rounded label="Next" />
-                          </q-stepper-navigation>
-                        </q-step>
-                        <q-step title="Verto Password" :name="2" prefix="1" :done="step > 2">
-                          <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn"/>
-                          <q-card-section class="text-white text-center"  >
-                            <div>
-                                <q-input
-                                  dark
-                                  v-model="addWallet.vertoPassword"
-                                  @input="showSubmitKey"
-                                  @keyup.enter="restoreConfig"
-                                  :type="isPwd ? 'password' : 'text'"
-                                  rounded outlined color="purple"
-                                  label="Config Verto password"
-                                  hint="*Minimum of 8 characters">
-                                  <template v-slot:append>
-                                    <q-icon
-                                      :name="isPwd ? 'visibility_off' : 'visibility'"
-                                      class="cursor-pointer"
-                                      @click="isPwd = !isPwd"
-                                    />
-                                  </template>
-                                </q-input>
-                            </div>
-                            <div v-show="incorrectPassword" class="text-h6 text-uppercase text-red q-pa-lg">
-                              {{ $t('Welcome.incorrect') }}
-                            </div>
-                            <div v-show="fileEmpty" class="text-h6 text-uppercase text-red q-pa-lg">
-                              You have to select a config file
-                            </div>
-                            <div v-show="unknownError" class="text-h6 text-uppercase text-red q-pa-lg">
-                              Unknown Error
-                            </div>
-                            <q-stepper-navigation v-show="submitKey" class="flex justify-end">
-                              <q-btn @click="restoreConfig" flat color="white" class="--next-btn next" rounded label="Next" />
-                            </q-stepper-navigation>
-                          </q-card-section>
-                        </q-step>
-                      </q-stepper>
-                    </div>
-                    <br><br><br>
-                </div>
-            </div>
-          </div>
+    <div v-if="step==2" class="vert-page-content">
+      <h2 class="vert-page-content--title">
+        Enter your config password
+      </h2>
+      <!-- The seed phrase will now be added to your config after confirming the password. -->
+      <div class="vert-page-content--body">
+        <!-- <div class="standard-content--body__img column flex-center gt-xs" v-if="!passwordsMatch"> -->
+        <!-- <img src="statics/password_bg.svg" alt=""> -->
         <!-- </div> -->
+        <div class="standard-content--body__form">
+          <div>
+            <label class="ver-label">
+              Enter your password
+            </label>
+            <q-input
+              ref="psswrd"
+              v-model="addWallet.vertoPassword"
+              @input="showSubmitKey"
+              @keyup.enter="restoreConfig"
+              autofocus
+              outlined
+              :type="isPwd ? 'password' : 'text'"
+              class="q-mt-sm"
+            >
+              <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+            </q-input>
+          </div>
+        </div>
       </div>
-    </video-bg>
+      <div class="vert-page-content--footer">
+        <q-btn unelevated class="btn__blue block"  size="md"   label="Continue"/>
+        <span class="q-pa-xs"/>
+        <q-btn outline unelevated size="md" class="btn--outline__blue"  label="Back" @click="step=1"/>
+      </div>
+    </div>
+        <!-- <div class="standard-content" style="padding-bottom: 0px"> -->
+<!--          <div class="chain-tools-wrapper full-width">-->
+<!--&lt;!&ndash;            <div class="standard-content">&ndash;&gt;-->
+<!--&lt;!&ndash;                <h2 class="standard-content&#45;&#45;title flex justify-center">&ndash;&gt;-->
+<!--&lt;!&ndash;                  <q-btn flat unelevated class="btn-align-left" @click="returnto === 'profile' ? $router.push('/verto/profile') : $router.go(-1)" text-color="white" icon="keyboard_backspace" />&ndash;&gt;-->
+<!--&lt;!&ndash;                  <span class="text-white">{{$t('SettingsView.restore_config')}}</span>&ndash;&gt;-->
+<!--&lt;!&ndash;                </h2>&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="privatekey_bg flex flex-center" v-if="false">&ndash;&gt;-->
+<!--&lt;!&ndash;                  <img src="statics/restore_config.svg" alt="">&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--            <div class="chain-tools-wrapper&#45;&#45;list full-width open">-->
+<!--                <div class="list-wrapper">-->
+<!--                    <div class="list-wrapper&#45;&#45;chain__eos-to-vtx-convertor">-->
+<!--                      <q-stepper dark v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >-->
+<!--                        <q-step title="Select Config File" :name="1" prefix="1" :done="step > 1">-->
+<!--                            <div class="flex full-width file-select-wrapper flex-center q-pa-sm">-->
+<!--                              <FileSelect @input="checks" @keyup.enter="showThePasswordScreen" v-model="file" />-->
+<!--                              <q-icon name="cloud_upload" class="icon-upload" />-->
+<!--                            </div>-->
+<!--                          <q-stepper-navigation v-show="showNextButtonToPassword" class="flex justify-end">-->
+<!--                            <q-btn @click="showThePasswordScreen" flat text-color="white" color="transparent" class="&#45;&#45;next-btn next" rounded label="Next" />-->
+<!--                          </q-stepper-navigation>-->
+<!--                        </q-step>-->
+<!--                        <q-step title="Verto Password" :name="2" prefix="1" :done="step > 2">-->
+<!--                          <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="&#45;&#45;back-btn"/>-->
+<!--                          <q-card-section class="text-white text-center"  >-->
+<!--                            <div>-->
+<!--                                <q-input-->
+<!--                                  dark-->
+<!--                                  v-model="addWallet.vertoPassword"-->
+<!--                                  @input="showSubmitKey"-->
+<!--                                  @keyup.enter="restoreConfig"-->
+<!--                                  :type="isPwd ? 'password' : 'text'"-->
+<!--                                  rounded outlined color="purple"-->
+<!--                                  label="Config Verto password"-->
+<!--                                  hint="*Minimum of 8 characters">-->
+<!--                                  <template v-slot:append>-->
+<!--                                    <q-icon-->
+<!--                                      :name="isPwd ? 'visibility_off' : 'visibility'"-->
+<!--                                      class="cursor-pointer"-->
+<!--                                      @click="isPwd = !isPwd"-->
+<!--                                    />-->
+<!--                                  </template>-->
+<!--                                </q-input>-->
+<!--                            </div>-->
+<!--                            <div v-show="incorrectPassword" class="text-h6 text-uppercase text-red q-pa-lg">-->
+<!--                              {{ $t('Welcome.incorrect') }}-->
+<!--                            </div>-->
+<!--                            <div v-show="fileEmpty" class="text-h6 text-uppercase text-red q-pa-lg">-->
+<!--                              You have to select a config file-->
+<!--                            </div>-->
+<!--                            <div v-show="unknownError" class="text-h6 text-uppercase text-red q-pa-lg">-->
+<!--                              Unknown Error-->
+<!--                            </div>-->
+<!--                            <q-stepper-navigation v-show="submitKey" class="flex justify-end">-->
+<!--                              <q-btn @click="restoreConfig" flat color="white" class="&#45;&#45;next-btn next" rounded label="Next" />-->
+<!--                            </q-stepper-navigation>-->
+<!--                          </q-card-section>-->
+<!--                        </q-step>-->
+<!--                      </q-stepper>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--          </div>-->
+        <!-- </div> -->
   </q-page>
 </template>
 
 <script>
-import FileSelect from '@/components/FileSelect.vue'
+// import FileSelect from '@/components/FileSelect.vue'
 import configManager from '@/util/ConfigManager'
 import { userError } from '@/util/errorHandler'
 import Vue from 'vue'
@@ -90,7 +151,7 @@ Vue.component('video-bg', VideoBg)
 export default {
   name: 'RestoreConfig',
   components: {
-    FileSelect
+    // FileSelect
   },
   data () {
     return {
@@ -192,10 +253,106 @@ export default {
 
 <style scoped lang="scss">
   @import "~@/assets/styles/variables.scss";
+  @import "~@/assets/styles/auth_page.scss";
   .restore-wallet{
-    padding-bottom: 0px;
-    // background: #f3f3f3 !important
+    //padding-bottom: 0px;
+     background: #F5F5FE
   }
+  //.vert-page-content {
+  //  padding: 0 5% 10% 5%;
+  //  flex-grow: 1;
+  //  width: 100%;
+  //  display: flex;
+  //  flex-direction: column;
+  //  justify-content: flex-start;
+  //
+  //  &--title {
+  //    font-size: 24px;
+  //    font-weight: 600;
+  //    line-height: 24px;
+  //    font-family: $Franklin;
+  //    position: relative;
+  //    margin-left: 0%;
+  //    margin-top: 0px;
+  //    text-align: center;
+  //
+  //    &__sub {
+  //      font-size: 18px;
+  //      font-weight: 400;
+  //      text-align: center;
+  //      line-height: 30px;
+  //      margin-top: 0px;
+  //    }
+  //  }
+  //
+  //  &--desc {
+  //    font-size: 14px;
+  //    font-weight: $regular;
+  //    line-height: 16px;
+  //    font-family: $Titillium;
+  //  }
+  //
+  //  &--body {
+  //    flex-grow: 1;
+  //    display: flex;
+  //    flex-direction: column;
+  //    justify-content: space-evenly;
+  //    margin-top: 5%;
+  //    margin-bottom: 5%;
+  //
+  //    @media screen and (min-width: 768px) {
+  //      margin-top: 5%;
+  //      margin-bottom: 0%;
+  //      max-width: 400px;
+  //      margin-left: auto !important;
+  //      margin-right: auto !important;
+  //    }
+  //
+  //    &.extra__px {
+  //      padding: 0 70px;
+  //    }
+  //  }
+  //
+  //  &--footer {
+  //    padding: 0 70px;
+  //    display: flex;
+  //    flex-direction: column;
+  //    justify-content: center;
+  //  }
+  //  /deep/ .q-field--focused .q-field__label {
+  //  }
+  //  /deep/ .q-field--outlined .q-field__control{
+  //    background-color: #fff
+  //  }
+  //  /deep/ .q-field--outlined .q-field__control:after {
+  //    border: 2px solid #E1E1E9;
+  //    //background-color: #fff;
+  //    //box-shadow: 0px 0px 10px 0px #E1E1E9;
+  //  }
+  //
+  //  /deep/ .q-field--outlined .q-field__control:before {
+  //    border: 2px solid #E1E1E9;
+  //    //background-color: #fff;
+  //    //box-shadow: 0px 0px 10px 0px #E1E1E9;
+  //  }
+  //
+  //  /deep/ .q-field--outlined.q-field--focused .q-field__control:after {
+  //    border: 2px solid #c4c4c6;
+  //    //background-color: #fff;
+  //    //box-shadow: 0px 0px 10px 0px #d4d4db;
+  //  }
+  //
+  //  /deep/ .q-field--outlined.q-field--focused .q-field__control:before {
+  //    border: 2px solid #c4c4c6;
+  //    //background-color: #fff;
+  //    //box-shadow: 0px 0px 10px 0px #d4d4db;
+  //  }
+  //
+  //  /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
+  //  /deep/ .q-field--dark .q-field__marginal,
+  //  /deep/ .q-field--dark .q-field__bottom {
+  //  }
+  //}
   .chain-tools-wrapper{
     // padding: 0px 6%;
     @media screen and (min-width: 768px) {

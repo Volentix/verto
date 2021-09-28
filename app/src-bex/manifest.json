@@ -10,7 +10,7 @@
   },
   "browser_action": {
     "default_title": "verto-browser-extension",
-	 "default_popup": "www/iframe.html" 
+	 "default_popup": "www/index.html"
   },
   "background": {
     "scripts": [
