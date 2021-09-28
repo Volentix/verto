@@ -26,7 +26,7 @@ let shared_auth_urls = [
     }
   }
 ]
-if (process.env.MODE !== 'bex') {
+if (process.env.MODE === 'bex') {
   shared_auth_urls = [
     {
       name: 'login',
