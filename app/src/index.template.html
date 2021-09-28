@@ -24,7 +24,54 @@
 <!--  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);-->
 <!--  })(window,document,'script','dataLayer','GTM-P437ZDP');</script>-->
 <!--  &lt;!&ndash; End Google Tag Manager &ndash;&gt;-->
+  <style>
+    #preloader{
+      height: 600px;
+      width: 356px;
+      background-color: #F5F5FE;
+      position: relative;
+    }
+    .loading-container{
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+    }
+    .loading {
+      justify-content: center;
+      align-items: center;
+      width: 150px;
+      height: 150px;
+      display: flex;
+    }
+    .loading-img{
+      padding-top: 28px;
+      padding-left: 18px;
+    }
+    .loading:after {
+      content: " ";
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      width: 150px;
+      height: 150px;
+      margin: 8px;
+      border-radius: 50%;
+      border: 6px solid #000;
+      border-color: #000 transparent #000 transparent;
+      animation: lds-dual-ring 1.2s linear infinite;
+    }
+    @keyframes lds-dual-ring {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform:  rotate(360deg);
+      }
+    }
 
+  </style>
 
   </head>
   <body>
@@ -35,11 +82,21 @@
   <!-- End Google Tag Manager (noscript) -->
 
     <!-- DO NOT touch the following DIV -->
-    <div id="preloader" style="height: 600px;width: 356px;background-color: #F5F5FE">
-
+    <div id="preloader">
+      <div class="loading-container">
+        <div class="loading">
+          <img class="loading-img" width="100" src="statics/icons/icon-256x256.png">
+        </div>
+      </div>
     </div>
     <div id="q-app" style="width: 300px;height: 600px"></div>
   </body>
 </html>
 
 
+<script>
+  import Stake from "./pages/Verto/Stake";
+  export default {
+    components: {Stake}
+  }
+</script>
