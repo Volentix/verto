@@ -22,6 +22,7 @@
     "android": "QENV=development quasar dev -m cordova -T android",
     "electron": "QENV=development quasar dev -m electron",
     "pwa": "QENV=development quasar dev -m pwa",
+    "bex": "cross-env QENV=development quasar dev -m bex",
     "build": "QENV=production quasar build -m electron",
     "build-electron": "QENV=production quasar build -m electron --target all",
     "build-pwa": "QENV=production quasar build -m pwa",
