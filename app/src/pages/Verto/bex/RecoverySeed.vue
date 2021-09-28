@@ -1,7 +1,7 @@
 <template>
   <q-page class="column items-center justify-start recovery-seed-page">
     <div class="q-pa-xs q-pt-lg">
-      <img src="statics/icons/icon-256x256.png" width="100" alt="logo"/>
+      <img src="statics/icons/icon-256x256.png" width="80" alt="logo"/>
     </div>
     <notify-message/>
     <div class="vert-page-content">
