@@ -3,6 +3,7 @@
   <div class="q-pa-md">
     <img src="statics/icons/icon-256x256.png"  width="150" alt="logo"/>
   </div>
+  <notify-message/>
     <div style="flex-grow: 1;display: flex;flex-direction: column; width: 100%">
         <div v-if="step===2" class="vert-page-content" style="padding-bottom: 0px">
             <div class="vert-page-content--body">
@@ -71,8 +72,10 @@ import HD from '@/util/hdwallet'
 // You can proceed with development with this as your walletName.
 // IDs will be created as foo@testwallet.crux
 import EosWrapper from '@/util/EosWrapper'
+import NotifyMessage from '../../../components/notify/NotifyMessage'
 const eos = new EosWrapper()
 export default {
+  components: { NotifyMessage },
   data () {
     return {
       step: 2,
@@ -140,7 +143,9 @@ export default {
         'value': 'xtz',
         'label': 'Tezos'
       }
-      ]
+      ],
+      message: '',
+      messageType: 'success'
     }
   },
   created () {},
@@ -156,7 +161,8 @@ export default {
       try {
         await this.$configManager.backupConfig()
         if (this.$q.platform.is.android) {
-          this.$q.notify({ color: 'positive', message: 'Config Saved' })
+          this.$store.dispatch('notify/success', 'Config Saved')
+          // this.$q.notify({ color: 'positive', message: 'Config Saved' })
         }
       } catch (e) {
         // TODO: Exception handling
@@ -164,14 +170,15 @@ export default {
     },
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
-      this.$q.notify({
-        message: copied ? copied + ' Copied' : 'Key Copied',
-        timeout: 2000,
-        icon: 'check',
-        textColor: 'white',
-        type: 'warning',
-        position: 'top'
-      })
+      this.$store.dispatch('notify/success', copied ? copied + ' Copied' : 'Key Copied')
+      // this.$q.notify({
+      //   message: copied ? copied + ' Copied' : 'Key Copied',
+      //   timeout: 2000,
+      //   icon: 'check',
+      //   textColor: 'white',
+      //   type: 'warning',
+      //   position: 'top'
+      // })
     },
     async putAddress () {
       const self = this
@@ -207,6 +214,7 @@ export default {
             this.$configManager.updateConfig(this.vertoPassword, this.$store.state.currentwallet.config)
           }
         }).catch((err) => {
+          this.$store.dispatch('notify/error', err)
           this.$q.notify({
             color: 'negative',
             message: err
@@ -227,12 +235,12 @@ export default {
       } catch (error) {
         // console.log('initWallet error', error)
       }
-
-      this.$q.notify({
-        color: 'positive',
-        position: 'top',
-        message: 'Application refreshing'
-      })
+      this.$store.dispatch('notify/success', 'Application refreshing')
+      // this.$q.notify({
+      //   color: 'positive',
+      //   position: 'top',
+      //   message: 'Application refreshing'
+      // })
 
       this.$store.state.currentwallet.wallet = {
         empty: true

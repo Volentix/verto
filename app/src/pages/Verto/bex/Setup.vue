@@ -3,16 +3,20 @@
     <div class="q-pa-md">
       <img src="statics/icons/icon-256x256.png" width="150" alt="logo"/>
     </div>
+    <notify-message/>
     <div class="vert-page-content">
-      <div class="vert-page-content--body full-width extra__px">
+      <div class="vert-page-content--body q-my-xl full-width">
         <h2 class="vert-page-content--title">
           Verto
         </h2>
         <h2 class="vert-page-content--title__sub">
           <span class="">Multi-chain wallet manager</span>
         </h2>
+      </div>
+      <div class="vert-page-content--footer">
         <q-btn unelevated class="btn__blue block" @click="$router.push({name:'create-password'})" size="lg"
                label="Create Vallet"/>
+        <span class="q-pa-md"/>
         <q-btn to="/import-restore" unelevated class="btn__blue block" size="lg" label="Import Vallet"/>
       </div>
     </div>
@@ -20,8 +24,10 @@
 </template>
 
 <script>
+import NotifyMessage from '../../../components/notify/NotifyMessage'
 export default {
-  name: 'Setup'
+  name: 'Setup',
+  components: { NotifyMessage }
 }
 </script>
 
@@ -32,7 +38,11 @@ export default {
 .setup-page {
   background: #F5F5FE
 }
-
+.vert-page-content--footer{
+  padding-bottom: 30px;
+  padding-left: 40px;
+  padding-right: 40px
+}
 .vert-page-content--title {
   font-size: 30px;
   line-height: 30px;

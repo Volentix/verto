@@ -9,6 +9,7 @@ import wallets from './wallets'
 import investment from './investment'
 import vdexnode from './vdexnode'
 import tokens from './tokens'
+import notify from './notify'
 
 Vue.use(Vuex)
 
@@ -20,7 +21,8 @@ const store = new Vuex.Store({
     wallets,
     highestVTXAccount,
     investment,
-    tokens
+    tokens,
+    notify
   }
 })
 

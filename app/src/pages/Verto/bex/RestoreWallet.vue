@@ -3,6 +3,7 @@
     <div class="q-pa-md">
       <img src="statics/icons/icon-256x256.png"  width="100" alt="logo"/>
     </div>
+    <notify-message/>
     <div v-if="step==1" class="vert-page-content">
       <!--          <h2 class="vert-page-content&#45;&#45;title">-->
       <!--            Verto-->
@@ -17,7 +18,7 @@
         <!-- </div> -->
         <div class="standard-content--body__form">
           <div>
-            <q-file outlined v-model="file" label="Select your config file">
+            <q-file dense outlined v-model="file" label="Select your config file">
               <template v-slot:append>
                 <q-icon name="attach_file" />
               </template>
@@ -25,9 +26,9 @@
           </div>
         </div>
       </div>
-      <div class="vert-page-content--footer">
+      <div class="vert-page-content--footer q-mb-lg">
         <q-btn unelevated class="btn__blue block" @click="step=2"  size="lg"   label="Continue"/>
-        <span class="q-pa-xs"/>
+        <span class="q-pa-sm"/>
         <q-btn outline unelevated size="lg" class="btn--outline__blue"  label="Back" @click="$router.back()"/>
       </div>
     </div>
@@ -47,6 +48,7 @@
             </label>
             <q-input
               ref="psswrd"
+              dense
               v-model="addWallet.vertoPassword"
               @input="showSubmitKey"
               @keyup.enter="restoreConfig"
@@ -66,9 +68,9 @@
           </div>
         </div>
       </div>
-      <div class="vert-page-content--footer">
+      <div class="vert-page-content--footer q-mb-lg">
         <q-btn unelevated class="btn__blue block"  size="lg"   label="Continue"/>
-        <span class="q-pa-xs"/>
+        <span class="q-pa-sm"/>
         <q-btn outline unelevated size="lg" class="btn--outline__blue"  label="Back" @click="step=1"/>
       </div>
     </div>
@@ -81,10 +83,12 @@ import configManager from '@/util/ConfigManager'
 import { userError } from '@/util/errorHandler'
 import Vue from 'vue'
 import VideoBg from 'vue-videobg'
+import NotifyMessage from '../../../components/notify/NotifyMessage'
 Vue.component('video-bg', VideoBg)
 export default {
   name: 'RestoreConfig',
   components: {
+    NotifyMessage
     // FileSelect
   },
   data () {
