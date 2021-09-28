@@ -2,12 +2,12 @@
     <div>
         <div class="row justify-between">
             <div>
-                <div class="text-h6 text-bold">DeFi indexes</div>
+                <div class="text-h6 text-bold">Wallets</div>
             </div>
             <div>
                 <q-btn flat color="primary" class="text-bold" @click="goImport" >Add/Import</q-btn>
             </div>
-            <div  class="row text-grey">tokenized baskets of high quality DeFi project </div>
+            <div  class="row text-grey">Click on a chain to see assets. </div>
         </div>
 
         <q-tabs
@@ -17,7 +17,7 @@
             no-caps
             outside-arrows
             mobile-arrows
-            class="text-green q-pb-md"
+            class="text-primary q-pb-md"
             @click="updateTab(tabIndex)"
             :class="{
                 'account-tabs': $route.params.accounts,

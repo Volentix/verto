@@ -204,7 +204,7 @@
                     <TokenByAccount :type="asset.type" :chain="asset.chain" class="right-area q-mt-lg col" />
                 </div>
 
-                <q-page-sticky expand position="bottom">
+                <q-page-sticky expand position="bottom" style="margin-bottom: -55px;">
                     <q-toolbar class="bg-transparent text-white">
                         <q-btn rounded icon-right="send" color="primary" label="SEND" class="full-width" @click="dialogSend = true"/>
                     </q-toolbar>
@@ -409,30 +409,30 @@
                                     <div v-else>
                                         <q-item-label class="q-pt-md"> <q-btn @click="$emit('update:fromPreview', false); $emit('update:success', false)" flat dense size="sm" class="q-pr-sm" icon="keyboard_backspace" label="Back" />| Transaction summary</q-item-label>
                                         <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator  style="max-width: 318px" class="q-mt-md rounded-borders">
-                                        <q-item clickable v-ripple>
-                                            <q-item-section>
-                                            <q-item-label overline>From</q-item-label>
-                                            <q-item-label>{{$store.state.investment.defaultAccount.name}}</q-item-label>
-                                            </q-item-section>
-                                        </q-item>
-                                        <q-item clickable v-ripple>
-                                            <q-item-section>
-                                            <q-item-label overline>To</q-item-label>
-                                            <q-item-label>{{sendTo}}</q-item-label>
-                                            </q-item-section>
-                                        </q-item>
-                                        <q-item clickable v-ripple>
-                                            <q-item-section>
-                                            <q-item-label overline>Amount</q-item-label>
-                                            <q-item-label>{{depositQuantity}} {{asset.type.toUpperCase()}}</q-item-label>
-                                            </q-item-section>
-                                        </q-item>
-                                        <q-item clickable v-ripple>
-                                            <q-item-section>
-                                            <q-item-label overline>Memo</q-item-label>
-                                            <q-item-label caption>{{memo.trim().length ? memo : '(Empty)'}}</q-item-label>
-                                            </q-item-section>
-                                        </q-item>
+                                            <q-item clickable v-ripple>
+                                                <q-item-section>
+                                                <q-item-label overline></q-item-label>
+                                                <q-item-label>{{$store.state.investment.defaultAccount.name}}</q-item-label>
+                                                </q-item-section>
+                                            </q-item>
+                                            <q-item clickable v-ripple>
+                                                <q-item-section>
+                                                <q-item-label overline>To</q-item-label>
+                                                <q-item-label>{{sendTo}}</q-item-label>
+                                                </q-item-section>
+                                            </q-item>
+                                            <q-item clickable v-ripple>
+                                                <q-item-section>
+                                                <q-item-label overline>Amount</q-item-label>
+                                                <q-item-label>{{depositQuantity}} {{asset.type.toUpperCase()}}</q-item-label>
+                                                </q-item-section>
+                                            </q-item>
+                                            <q-item clickable v-ripple>
+                                                <q-item-section>
+                                                <q-item-label overline>Memo</q-item-label>
+                                                <q-item-label caption>{{memo.trim().length ? memo : '(Empty)'}}</q-item-label>
+                                                </q-item-section>
+                                            </q-item>
                                         </q-list>
                                     </div>
                                     <form action="#" method="#" v-if="tab == 'send'" v->
