@@ -1,5 +1,5 @@
 <template>
-  <div id="q-app">
+  <div id="q-app" :style="bexStyles">
     <router-view :keys='network' />
   </div>
 </template>
@@ -11,6 +11,14 @@ export default {
   computed: {
     network () {
       return this.$store.state.settings.network
+    },
+    bexStyles () {
+      if (this.$isbex) {
+        return {
+          minWidth: '400px'
+        }
+      }
+      return {}
     }
   }
 }

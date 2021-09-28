@@ -22,8 +22,32 @@ export default [
         component: () => import('pages/Verto/ConnectToVerto.vue')
       },
       {
+        name: 'connect',
+        path: '/connect/:session',
+        component: () => import('pages/Verto/ConnectToVerto.vue')
+      },
+      {
+        name: 'sign',
+        path: '/sign/:txId/:session',
+        component: () => import('pages/Verto/ConnectToVerto.vue')
+      }, {
+        name: 'import-restore',
+        path: '/import-restore',
+        component: () => import('pages/Verto/ImportOrRestore.vue')
+      },
+      {
+        name: 'setup',
+        path: '/setup',
+        component: () => import('pages/Verto/Setup.vue')
+      },
+      {
         name: 'create-password',
         path: '/create-password',
+        component: () => import('pages/Verto/CreateVertoPassword.vue')
+      },
+      {
+        name: 'create--password-recover',
+        path: '/create-password/:recover',
         component: () => import('pages/Verto/CreateVertoPassword.vue')
       },
       {
