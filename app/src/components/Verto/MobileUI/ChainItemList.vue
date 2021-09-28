@@ -1,5 +1,5 @@
 <template>
-    <div class="q-pb-lg">
+    <div class="q-pb-xl">
         <div class="q-pb-lg">
             <div v-if="
                 (($route.params.accounts || !$store.state.wallets.portfolioTotal) &&

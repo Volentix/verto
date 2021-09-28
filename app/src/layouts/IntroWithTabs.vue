@@ -183,13 +183,37 @@
         </div>
       </q-drawer>
 
+      <q-footer v-if="$q.platform.is.mobile">
+        <q-tabs
+          v-model="tabRoute"
+          indicator-color="primary"
+          active-color="primary"
+          class="bg-white text-grey-7 shadow-2 text-bold"
+        >
+          <q-tab name="exchange" icon="sync" label=" " no-caps @click="goTo('crosschain-exchange')" />
+          <q-tab name="history" icon="history" label="" no-caps @click="goTo('history')"  />
+          <q-tab name="dashboard" icon="dashboard" label="" @click="goTo('dashboard')"/>
+          <q-tab name="account" icon="account_balance" label="" no-caps @click="goTo('wallets')" />
+          <q-tab name="profile" icon="person" label="" no-caps @click="goTo('profile')"/>
+        </q-tabs>
+      </q-footer>
+
       <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}" :style="$q.platform.is.mobile ? 'overflow:scroll; background: #f2f2f2 !important' : 'overflow:scroll;' " >
-        <TopMenu v-if="!$q.screen.lt.sm"/>
-        <TopMenuMobile v-if="$q.platform.is.mobile" :chainTools.sync="chainTools" :keys.sync="keys" />
+        <div v-if="$q.platform.is.mobile">
+          <div id ="scrollID8"></div>
+          <q-pull-to-refresh @refresh="refresh" >
+            <TopMenu v-if="!$q.screen.lt.sm"/>
+            <TopMenuMobile v-if="$q.platform.is.mobile" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" />
+          </q-pull-to-refresh>
+        </div>
+        <div v-else>
+           <TopMenu v-if="!$q.screen.lt.sm"/>
+          <TopMenuMobile v-if="$q.platform.is.mobile" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" />
+        </div>
 
         <q-breadcrumbs
           class="text-deep-purple-12 breadcrumbs"
-          v-if="$route.path != '/verto/dashboard'"
+          v-if="$route.path != '/verto/dashboard'   && !$q.platform.is.mobile"
         >
           <template v-slot:separator>
             <q-icon size="1.5em" name="chevron_right" :color="$store.state.settings.lightMode === 'true' ? 'white':'primary'" />
@@ -221,6 +245,7 @@
         <router-view class="main-container" v-if="toggleView " />
       </q-page-container>
       <SelectTokenPopup :key="keys.send" v-if="chainTools.send" />
+
     </q-layout>
   </div>
 </template>
@@ -294,17 +319,45 @@ export default {
         send: false
       },
       str: {},
-      miniState: false
+      miniState: false,
+      showPanelStatus: true,
+      tabRoute: 'dashboard'
     }
+  },
+  mounted () {
+    if (this.$q.platform.is.mobile) { this.checkRoute() }
   },
   watch: {
     '$store.state.settings.defaultChainData': function () {
       if (this.$store.state.settings.defaultChainData) {
         this.chainTools.show = true
       }
+    },
+    '$route': function () {
+      // console.log('route change ', this.$route)
+      if (this.$q.platform.is.mobile) { this.checkRoute() }
     }
   },
   methods: {
+    goTo (path) {
+      this.$router.push(`/verto/${path}`)
+    },
+    checkRoute () {
+      if (this.$route.name === 'dashboard') {
+        this.showPanelStatus = true
+        document.getElementById('scrollID8').scrollIntoView()
+      } else {
+        this.showPanelStatus = false
+      }
+      // set tab
+      if (this.$route.name === 'dashboard') { this.tabRoute = 'dashboard' }
+      if (this.$route.name === 'profile') {
+        this.tabRoute = 'profile'
+        this.showPanelStatus = false
+      }
+      if (this.$route.name === 'history') { this.tabRoute = 'history' }
+      if (this.$route.name === 'crosschain-exchange') { this.tabRoute = 'exchange' }
+    },
     sendTokens () {
       this.toggleView = false
       this.$router.push({
@@ -338,6 +391,12 @@ export default {
       }
 
       return initWallet(name)
+    },
+    refresh (done) {
+      setTimeout(() => {
+        this.refreshWallet()
+        done()
+      }, 1000)
     }
   },
   created () {

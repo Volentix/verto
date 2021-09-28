@@ -6,190 +6,42 @@
     }"
     class="full-width"
   >
-  <UI v-if="false"/>
-    <q-btn label="test" v-if="false" @click="testData()" />
-    <div class="gdx-exchange-form q-px-md" v-show="step != 2">
-      <div class="text-h6 full-width q-py-md">Exchange any to any</div>
-      <div class="coins">
-        <div class="gdx-exchange-coin" id="tx-tab">
-          <div
-            dir="auto"
-            blockedvalue="BTC,ETH"
-            data-fetch-key="GdxCoinSelect:0"
-            class="
-              v-select
-              gdx-select gdx-coin-select gdx-exchange-coin-select
-              vs--single vs--searchable
-            "
-          >
+    <div>
+      <UI v-if="false"/>
+      <q-btn label="test" v-if="false" @click="testData()" />
+      <div class="gdx-exchange-form q-px-md" v-show="step != 2">
+        <div class="text-h6 full-width q-py-md">Exchange any to any</div>
+        <div class="coins">
+          <div class="gdx-exchange-coin" id="tx-tab">
             <div
-              id="vs4__combobox"
-              role="combobox"
-              aria-expanded="false"
-              aria-owns="vs4__listbox"
-              aria-label="Search for option"
-              class="vs__dropdown-toggle"
-            >
-              <div class="vs__selected-options">
-                <span class="vs__selected"
-                  ><div class="gdx-select__selected-option">
-                    <q-select
-                      @input="
-                        hideDeposit = false;
-                        setMinimum();
-                        getSwapInfo();
-                      "
-                      @blur="hideDeposit = false"
-                      class="select-input gdx-coin_wrapper"
-                      popup-content-class="gdx_coin_wrapper_popup"
-                      :dark="$store.state.settings.lightMode === 'true'"
-                      :light="$store.state.settings.lightMode === 'false'"
-                      separator
-                      use-input
-                      borderless
-                      rounded
-                      v-model="depositCoin"
-                      @filter="filterDepositCoin"
-                      :disabled="!depositCoinOptions"
-                      :loading="!depositCoinOptions"
-                      :options="depositCoinOptions"
-                    >
-                      <template v-slot:option="scope">
-                        <q-item
-                          class="custom-menu"
-                          v-bind="scope.itemProps"
-                          v-on="scope.itemEvents"
-                        >
-                          <q-item-section avatar>
-                            <q-icon :name="`img:${scope.opt.image}`" />
-                          </q-item-section>
-                          <q-item-section>
-                            <q-item-label
-                              v-html="scope.opt.value.toUpperCase()"
-                            />
-                          </q-item-section>
-                        </q-item>
-                      </template>
-                      <template v-slot:selected>
-                        <div>
-                          <span
-                            class="gdx-coin"
-                            v-if="
-                              depositCoin && !hideDeposit && depositCoin.value
-                            "
-                            @click="hideDeposit = true"
-                            ><span class="gdx-coin-icon icon-BTC">
-                              <q-img
-                                style="width: 30px"
-                                :src="depositCoin.image"
-                              />
-                            </span>
-                            <span class="gdx-coin-name"></span>
-                            <span class="gdx-coin-code">{{
-                              depositCoin.value.toUpperCase()
-                            }}</span></span
-                          >
-                        </div>
-                      </template>
-                    </q-select>
-                  </div>
-                  <!----></span
-                >
-                <input
-                  aria-autocomplete="list"
-                  aria-labelledby="vs4__combobox"
-                  aria-controls="vs4__listbox"
-                  type="search"
-                  autocomplete="off"
-                  value=""
-                  class="vs__search"
-                />
-              </div>
-              <div class="vs__actions">
-                <button
-                  type="button"
-                  title="Clear Selected"
-                  aria-label="Clear Selected"
-                  class="vs__clear"
-                  style="display: none"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="10"
-                    height="10"
-                  >
-                    <path
-                      d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"
-                    ></path>
-                  </svg>
-                </button>
-                <img
-                  src="https://godex.io/.nuxt_next/affcbccb20f94c6df96042f8d146a5a7.svg"
-                  alt="arrow-bottom"
-                  role="presentation"
-                  class="gdx-image vs__open-indicator"
-                />
-                <div class="vs__spinner" style="display: none">Loading...</div>
-              </div>
-            </div>
-          </div>
-          <div class="gdx-exchange-coin-input gdx-input">
-            <input
-              id="ccb64da7-24eb-4aa2-8a1a-e399d74a9dcc"
-              placeholder="Type amount"
-              name="exchange_inputs_y_send"
-              v-model="swapData.fromAmount"
-              @input="getSwapInfo()"
-              class="gdx-input-field no-border"
-            />
-            <label
-              for="0b8fcb69-5046-4761-b565-fd45f501c3c4"
-              class="gdx-input-label"
-              >You Send</label
-            >
-            <span
-              v-if="
-                depositCoin &&
-                depositCoin.minimum &&
-                currentDex &&
-                currentDex.dex == 'godex'
+              dir="auto"
+              blockedvalue="BTC,ETH"
+              data-fetch-key="GdxCoinSelect:0"
+              class="
+                v-select
+                gdx-select gdx-coin-select gdx-exchange-coin-select
+                vs--single vs--searchable
               "
-              class="gdx-input-error absolute-top-right text-body2"
-              >Min: {{ depositCoin.minimum }}
-            </span>
-          </div>
-        </div>
-
-        <div class="gdx-exchange-coin">
-          <div
-            dir="auto"
-            blockedvalue="BTC,ETH"
-            data-fetch-key="GdxCoinSelect:1"
-            class="
-              v-select
-              gdx-select gdx-coin-select gdx-exchange-coin-select
-              vs--single vs--searchable
-            "
-          >
-            <div
-              id="vs5__combobox"
-              role="combobox"
-              aria-expanded="false"
-              aria-owns="vs5__listbox"
-              aria-label="Search for option"
-              class="vs__dropdown-toggle"
             >
-              <div class="vs__selected-options">
-                <span class="vs__selected"
-                  ><div class="gdx-select__selected-option">
-                    <div>
+              <div
+                id="vs4__combobox"
+                role="combobox"
+                aria-expanded="false"
+                aria-owns="vs4__listbox"
+                aria-label="Search for option"
+                class="vs__dropdown-toggle"
+              >
+                <div class="vs__selected-options">
+                  <span class="vs__selected"
+                    ><div class="gdx-select__selected-option">
                       <q-select
                         @input="
-                          hideDestination = false;
+                          hideDeposit = false;
+                          setMinimum();
                           getSwapInfo();
                         "
-                        @blur="hideDestination = false"
-                        class="select-input"
+                        @blur="hideDeposit = false"
+                        class="select-input gdx-coin_wrapper"
                         popup-content-class="gdx_coin_wrapper_popup"
                         :dark="$store.state.settings.lightMode === 'true'"
                         :light="$store.state.settings.lightMode === 'false'"
@@ -197,11 +49,11 @@
                         use-input
                         borderless
                         rounded
-                        v-model="destinationCoin"
-                        @filter="filterDestinationCoin"
-                        :disabled="!destinationCoinOptions"
-                        :loading="!destinationCoinOptions"
-                        :options="destinationCoinOptions"
+                        v-model="depositCoin"
+                        @filter="filterDepositCoin"
+                        :disabled="!depositCoinOptions"
+                        :loading="!depositCoinOptions"
+                        :options="depositCoinOptions"
                       >
                         <template v-slot:option="scope">
                           <q-item
@@ -223,694 +75,134 @@
                           <div>
                             <span
                               class="gdx-coin"
-                              v-if="destinationCoin && !hideDestination"
-                              @click="hideDestination = true"
+                              v-if="
+                                depositCoin && !hideDeposit && depositCoin.value
+                              "
+                              @click="hideDeposit = true"
                               ><span class="gdx-coin-icon icon-BTC">
                                 <q-img
                                   style="width: 30px"
-                                  :src="destinationCoin.image"
+                                  :src="depositCoin.image"
                                 />
                               </span>
                               <span class="gdx-coin-name"></span>
                               <span class="gdx-coin-code">{{
-                                destinationCoin.value.toUpperCase()
+                                depositCoin.value.toUpperCase()
                               }}</span></span
                             >
                           </div>
                         </template>
                       </q-select>
                     </div>
-                  </div>
-                  <!----></span
-                >
-                <q-spinner-dots v-if="spinner.amount" size="2em" />
-                <input
-                  v-else
-                  aria-autocomplete="list"
-                  aria-labelledby="vs5__combobox"
-                  aria-controls="vs5__listbox"
-                  type="search"
-                  autocomplete="off"
-                  v-model="swapData.toAmount"
-                  class="vs__search"
-                />
-              </div>
-              <div class="vs__actions">
-                <button
-                  type="button"
-                  title="Clear Selected"
-                  aria-label="Clear Selected"
-                  class="vs__clear"
-                  style="display: none"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="10"
-                    height="10"
+                    <!----></span
                   >
-                    <path
-                      d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"
-                    ></path>
-                  </svg>
-                </button>
-                <img
-                  src="https://godex.io/.nuxt_next/affcbccb20f94c6df96042f8d146a5a7.svg"
-                  alt="arrow-bottom"
-                  role="presentation"
-                  class="gdx-image vs__open-indicator"
-                />
-                <div class="vs__spinner" style="display: none">Loading...</div>
+                  <input
+                    aria-autocomplete="list"
+                    aria-labelledby="vs4__combobox"
+                    aria-controls="vs4__listbox"
+                    type="search"
+                    autocomplete="off"
+                    value=""
+                    class="vs__search"
+                  />
+                </div>
+                <div class="vs__actions">
+                  <button
+                    type="button"
+                    title="Clear Selected"
+                    aria-label="Clear Selected"
+                    class="vs__clear"
+                    style="display: none"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      height="10"
+                    >
+                      <path
+                        d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"
+                      ></path>
+                    </svg>
+                  </button>
+                  <img
+                    src="https://godex.io/.nuxt_next/affcbccb20f94c6df96042f8d146a5a7.svg"
+                    alt="arrow-bottom"
+                    role="presentation"
+                    class="gdx-image vs__open-indicator"
+                  />
+                  <div class="vs__spinner" style="display: none">Loading...</div>
+                </div>
               </div>
             </div>
-            <ul
-              id="vs5__listbox"
-              role="listbox"
-              style="display: none; visibility: hidden"
-            ></ul>
-          </div>
-          <div class="gdx-exchange-coin-input gdx-input">
-            <input
-              id="5c16fa25-44bf-4c1c-9ad7-b90babb59f5c"
-              placeholder="Type amount"
-              name="exchange_inputs_y_get"
-              v-model="swapData.toAmount"
-              class="gdx-input-field no-border"
-            />
-            <label
-              for="2dd3c157-34e2-406d-9f62-7cc3c7bf320c"
-              class="gdx-input-label"
-              ><q-spinner-dots
-                color="white"
-                size="2em"
-                v-if="spinner.amount"
-              /><span v-else>You Get</span>
-            </label>
-            <!---->
-          </div>
-        </div>
-        <button
-          type="default"
-          class="gdx-replace-button gdx-button"
-          @click="switchAmounts()"
-        >
-          <div class="box">
-            <img
-              src="https://godex.io/.nuxt_next/80dfd238ff9fbd794aae9ada0f9fcb5f.svg"
-              alt="arrow-blue"
-              class="gdx-image"
-            />
-            <img
-              src="https://godex.io/.nuxt_next/d184a0be7e04a5c7f6b4bb9468fc8c0c.svg"
-              alt="arrow-white"
-              class="gdx-image"
-            />
-          </div>
-        </button>
-      </div>
-
-      <a
-        href="javascript:void(0)"
-        :class="{
-          'mask-section': step != 0,
-          'inactive-btn': !swapData.toAmount || spinner.tx || spinner.amount,
-        }"
-        @click="
-          swapData.toAmount && !spinner.amount && !spinner.tx
-            ? setPathTransaction(
-                paths.find(
-                  (o) => o.fromToken === depositCoin.value.toLowerCase()
-                )
-              )
-            : ''
-        "
-        class="gdx-link theme-2"
-        >Exchange</a
-      >
-      <p @click="getDepositTxData()" v-if="false">Test</p>
-
-      <q-splitter
-        v-model="splitterModel"
-        class="full-width"
-        :class="[swapData.dex + '-dex', 'full-width']"
-        v-if="step == 1"
-      >
-        <template v-slot:before>
-          <q-tabs dark v-model="tab" align="left" vertical class="q-tab-wrapper text-teal" v-if="swapData.dex !== 'renbridge'">
-            <q-tab
-              name="deposit"
-              label="Deposit"
-              class="flex_start"
-              no-caps
-              align="left"
-              v-if="swapData.fromChains.length != 1"
-            />
-            <q-tab no-caps class="flex_start" name="destination" label="Destination" />
-            <q-tab no-caps class="flex_start" name="tosend" label="Sending" />
-
-            <q-tab no-caps
-              name="waiting"
-              class="waiting_tab flex_start"
-              :icon=" tab == 'waiting' ? 'img:https://i.stack.imgur.com/qq8AE.gif' : ''"
-              label="Waiting"
-            />
-            <q-tab no-caps
-              :class="{'text-black': $store.state.settings.lightMode === 'false'}"
-              name="reset"
-              class="flex_start"
-              dark
-              @click="step = 0"
-              label="Reset"
-            />
-          </q-tabs>
-        </template>
-
-        <template v-slot:after>
-          <q-btn
-            icon="close"
-            dense
-            rounded
-            class="absolute-top-right q-mt-sm q-mr-sm z_index"
-            @click="switchAmounts()"
-            flat
-          />
-          <q-tab-panels
-            v-model="tab"
-            animated
-            swipeable
-            vertical
-            :dark="$store.state.settings.lightMode === 'true'"
-            transition-prev="jump-up"
-            transition-next="jump-up"
-          >
-            <q-tab-panel name="deposit">
-              <q-item-label
-                v-if="path.length > 1 && innerStep.deposit == 1"
-                header
-                >Choose the network you are sending
-                {{ depositCoin.value.toUpperCase() }} from</q-item-label
+            <div class="gdx-exchange-coin-input gdx-input">
+              <input
+                id="ccb64da7-24eb-4aa2-8a1a-e399d74a9dcc"
+                placeholder="Type amount"
+                name="exchange_inputs_y_send"
+                v-model="swapData.fromAmount"
+                @input="getSwapInfo()"
+                class="gdx-input-field no-border"
+              />
+              <label
+                for="0b8fcb69-5046-4761-b565-fd45f501c3c4"
+                class="gdx-input-label"
+                >You Send</label
               >
+              <span
+                v-if="
+                  depositCoin &&
+                  depositCoin.minimum &&
+                  currentDex &&
+                  currentDex.dex == 'godex'
+                "
+                class="gdx-input-error absolute-top-right text-body2"
+                >Min: {{ depositCoin.minimum }}
+              </span>
+            </div>
+          </div>
 
-              <q-list separator>
-                <q-item
-                  v-show="
-                    swapData.fromChains.length > 1 && innerStep.deposit == 1
-                  "
-                  v-for="(path, index) in paths"
-                  :key="index"
-                  :dark="$store.state.settings.lightMode === 'true'"
-                  tag="label"
-                  v-ripple
-                  @click="setPathData(path)"
-                >
-                  <q-item-section
-                    v-if="swapData.fromChains.length != 1"
-                    side
-                    top
-                  >
-                    <q-radio
-                      v-model="swapData.fromChosenChain"
-                      :val="path.fromChain"
-                      label=""
-                    />
-                  </q-item-section>
-
-                  <q-item-section>
-                    <q-item-label
-                      >Send from {{ path.fromChain.toUpperCase() }}
-                      {{
-                        path.fromChain == path.toChain
-                          ? ""
-                          : " to " + path.toChain
-                      }}
-                      network</q-item-label
-                    >
-                  </q-item-section>
-                </q-item>
-                <q-btn
-                  v-if="
-                    innerStep.deposit == 2 && swapData.fromChains.length > 1
-                  "
-                  icon="arrow_back"
-                  label="Back"
-                  class="q-mb-md"
-                  flat
-                  @click="innerStep.deposit = 1"
-                />
-                <div
-                  v-if="
-                    swapData.fromChosenChain &&
-                    chainData &&
-                    chainData.accounts.length &&
-                    innerStep.deposit == 2
-                  "
-                >
-                  Select {{ swapData.fromChosenChain.toUpperCase() }}
-                  {{
-                    swapData.fromChosenChain == "eos" ? "account" : "address"
-                  }}
-                  to send
-                  {{ swapData.fromAmount }}
-                  {{ depositCoin.value.toUpperCase() }}
-                  <q-select
-                    :dark="$store.state.settings.lightMode === 'true'"
-                    :light="$store.state.settings.lightMode === 'false'"
-                    separator
-                    rounded
-                    @input="
-                      approvalCheckRun(
-                        depositCoin.value,
-                        destinationCoin.value,
-                        swapData.fromAmount
-                      )
-                    "
-                    outlined
-                    style="max-width: 300px"
-                    class="select-input accountDropdown q-my-md"
-                    v-model="fromAccountSelected[swapData.fromChosenChain]"
-                    :options="chainData.accounts"
-                  >
-                    <template v-slot:option="scope">
-                      <q-item
-                        class="custom-menu"
-                        v-bind="scope.itemProps"
-                        v-on="scope.itemEvents"
-                      >
-                        <q-item-section avatar>
-                          <q-icon
-                            class="option--avatar"
-                            :name="`img:${scope.opt.icon}`"
-                          />
-                        </q-item-section>
-                        <q-item-section
-                          :dark="$store.state.settings.lightMode === 'true'"
-                        >
-                          <q-item-label v-html="scope.opt.name" />
-                          <q-item-label caption class="ellipsis mw200">{{
-                            scope.opt.key
-                          }}</q-item-label>
-                        </q-item-section>
-                      </q-item>
-                    </template>
-                    <template
-                      v-if="
-                        fromAccountSelected[swapData.fromChosenChain] &&
-                        fromAccountSelected[swapData.fromChosenChain].icon
-                      "
-                      v-slot:selected
-                    >
-                      <q-item>
-                        <q-item-section avatar>
-                          <q-icon
-                            class="option--avatar"
-                            :name="`img:${
-                              fromAccountSelected[swapData.fromChosenChain].icon
-                            }`"
-                          />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label
-                            v-html="
-                              fromAccountSelected[swapData.fromChosenChain].name
-                            "
-                          />
-                          <q-item-label
-                            caption
-                            class="ellipsis mw200"
-                            :class="{
-                              'text-white':
-                                $store.state.settings.lightMode === 'true',
-                            }"
-                            >{{
-                              getKeyFormat(
-                                fromAccountSelected[swapData.fromChosenChain]
-                                  .key
-                              )
-                            }}</q-item-label
-                          >
-                        </q-item-section>
-                      </q-item>
-                    </template>
-                  </q-select>
-                  <span
-                    class="text-green"
-                    v-if="
-                      swapData.mint &&
-                      swapData.mint.status == 'Success' &&
-                      !(
-                        swapData.transferObject &&
-                        swapData.transferObject.status == 'Success'
-                      )
-                    "
-                    >Minting successful. You have received renBTC. Now you can
-                    process the swap<br
-                  /></span>
-
-                  <GasSelector
-                    ref="gas_global"
-                    :key="'gas_global'"
-                    v-if="
-                      swapData.dex != 'oneinch' &&
-                      swapData.approvalCheck &&
-                      swapData.approval &&
-                      !swapData.approval.required
-                    "
-                    @setGas="setSelectedGas"
-                    :currentAccount="
-                      fromAccountSelected[swapData.fromChosenChain]
-                        ? fromAccountSelected[swapData.fromChosenChain]
-                        : $store.state.wallets.tokens.find(
-                            (o) => o.chain === swapData.fromChosenChain
-                          )
-                    "
-                    :txData="{ amount: swapData.fromAmount }"
-                    :type="depositCoin.value"
-                  />
-                  <GasSelector
-                    ref="gas_approval"
-                    :key="'gas_approval'"
-                    :txObject="swapData.approval.transactionObject"
-                    v-else-if="
-                      swapData.dex == 'oneinch' &&
-                      swapData.approvalCheck &&
-                      swapData.approval &&
-                      swapData.approval.required &&
-                      swapData.approval.status != 'Success'
-                    "
-                    @setGas="setSelectedGas"
-                    :currentAccount="
-                      fromAccountSelected[swapData.fromChosenChain]
-                    "
-                    :txData="{
-                      amount: swapData.fromAmount,
-                      title: 'Approval',
-                      method: 'txObject',
-                    }"
-                    :type="depositCoin.value"
-                  />
-                  <GasSelector
-                    ref="gas_transfert"
-                    :key="'gas_transfert'"
-                    :txObject="swapData.transferObject"
-                    v-else-if="
-                      (swapData.dex == 'oneinch' &&
-                        swapData.approvalCheck &&
-                        swapData.transferObject) ||
-                      (swapData.approval &&
-                        swapData.approval.required &&
-                        swapData.approval.status == 'Success')
-                    "
-                    @setGas="setSelectedGas"
-                    :currentAccount="
-                      fromAccountSelected[swapData.fromChosenChain]
-                    "
-                    :txData="{
-                      amount: swapData.fromAmount,
-                      title: 'Swap',
-                      method: 'txObject',
-                    }"
-                    :type="depositCoin.value"
-                  />
-
-                  <span
-                    v-if="
-                      swapData.dex == 'oneinch' &&
-                      swapData.mint &&
-                      swapData.mint.status
-                    "
-                  >
-                    <span
-                      class="text-deep-purple-12"
-                      v-if="
-                        swapData.approval &&
-                        swapData.approval.required &&
-                        swapData.approval.status != 'Success'
-                      "
-                      >Proceed first with the approval transaction</span
-                    >
-                    <span
-                      class="text-green"
-                      v-else-if="
-                        swapData.approval &&
-                        swapData.approval.required &&
-                        swapData.approval.status == 'Success'
-                      "
-                      >Approval successful. Click confirm to swap<br
-                    /></span>
-                    <span
-                      class="text-grey cursor-pointer"
-                      v-if="swapData.approval && swapData.approval.hash"
-                      ><span class="text-deep-pruple-12">Approval</span> Tx
-                      Hash: {{ getKeyFormat(swapData.approval.hash) }}<br
-                    /></span>
-                    <span
-                      class="text-grey cursor-pointer"
-                      v-if="
-                        swapData.transferObject && swapData.transferObject.hash
-                      "
-                    >
-                      <span class="text-deep-pruple-12">Tx Hash:</span>
-                      {{ getKeyFormat(swapData.transferObject.hash) }}</span
-                    >
-                  </span>
-                  <p
-                    v-if="
-                      swapData.dex == 'godex' &&
-                      fromAccountSelected[swapData.fromChosenChain]
-                    "
-                    class="text-body2 q-my-sm"
-                  >
-                    We set this address as the return address in case the
-                    transaction <br />needs to be refunded.
-                  </p>
-                </div>
-                <div v-else-if="chainData">
-                  <p
-                    v-if="
-                      $store.state.settings.chainsSendEnabled.includes(
-                        swapData.fromChosenChain.toLowerCase()
-                      ) &&
-                      chainData &&
-                      (!chainData.accounts || !chainData.accounts.length)
-                    "
-                  >
-                    No {{ swapData.fromChosenChain.toUpperCase() }} wallet
-                    found. Import this wallet and start using it inside Verto.
-                    If you decide to continue with this exchange without having
-                    your wallet in Verto, you will need an external wallet to
-                    make the deposit
-                  </p>
-
-                  <div
-                    v-else-if="
-                      chainData &&
-                      !$store.state.settings.chainsSendEnabled.includes(
-                        swapData.fromChosenChain.toLowerCase()
-                      )
-                    "
-                  >
-                    Verto will support asset transfer for this chain Very soon.
-                    You will need an external wallet to make the deposit to
-                    finalize this exchange
-                  </div>
-                </div>
-                <div v-else-if="swapData.fromChosenChain">
-                  Verto will support this chain very soon. You will need an
-                  external wallet to make the deposit to finalize this exchange
-                </div>
-                <p v-if="swapData.error" class="text-red">
-                  {{ swapData.error }}
-                </p>
-                <q-btn
-                  outline
-                  :loading="spinner.tx"
-                  rounded
-                  @click="processApproval()"
-                  v-if="
-                    swapData.approval &&
-                    swapData.approval.required &&
-                    swapData.approval.transactionObject &&
-                    swapData.approval.status != 'Success'
-                  "
-                  label="Approve"
-                />
-                <q-btn
-                  outline
-                  :loading="spinner.tx"
-                  rounded
-                  @click="swapTokens()"
-                  v-else-if="
-                    swapData.approvalCheck &&
-                   swapData.approval && (swapData.approval.status == 'Success' ||
-                      !swapData.approval.required) &&
-                    swapData.transferObject &&
-                    swapData.transferObject.status != 'Success'
-                  "
-                  label="Swap"
-                />
-                <q-list
-                  bordered
-                  separator
-                  v-if="swapData.dex == 'oneinch'"
-                  class="q-mt-md"
-                >
-                  <q-item
-                    clickable
-                    v-ripple
-                    active-class="text-orange"
-                    v-if="swapData.approval && swapData.approval.required"
-                  >
-                    <q-item-section avatar>
-                      <q-spinner-dots
-                        size="2em"
-                        v-if="swapData.approval.status == 'Submitted'"
-                      />
-                      <q-icon name="lock" v-else />
-                    </q-item-section>
-
-                    <q-item-section
-                      ><q-item-label>Approval transaction</q-item-label>
-                      <q-item-label caption
-                        >Status:
-                        <span
-                          :class="{
-                            'text-green':
-                              swapData.approval &&
-                              swapData.approval.status == 'Success',
-                          }"
-                          >{{
-                            swapData.approval.status
-                              ? swapData.approval.status
-                              : "To be sent"
-                          }}</span
-                        ></q-item-label
-                      >
-                      <q-item-label v-if="swapData.approval &&
-                              swapData.approval.hash">{{getKeyFormat(swapData.approval.hash)}}</q-item-label>
-                    </q-item-section>
-                    <q-item-section side></q-item-section>
-                  </q-item>
-
-                  <q-item
-                    clickable
-                    v-ripple
-                    v-if="swapData.transferObject"
-                    active-class="bg-teal-1 text-grey-8"
-                  >
-                    <q-item-section avatar>
-                      <q-spinner-dots
-                        size="2em"
-                        v-if="swapData.transferObject.status == 'Submitted'"
-                      />
-                      <q-icon name="swap_horiz" v-else />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>Swap</q-item-label>
-                      <q-item-label caption
-                        >Status:
-                        <span
-                          :class="{
-                            'text-green':
-                              swapData.transferObject &&
-                              swapData.transferObject.status == 'Success',
-                          }"
-                          >{{
-                            swapData.approval &&
-                            swapData.approval.required &&
-                            swapData.approval.status != "Success"
-                              ? "Approval pending"
-                              : swapData.transferObject.status
-                          }}</span
-                        ></q-item-label
-                      >
-                         <q-item-label v-if="swapData.transferObject &&
-                              swapData.transferObject.hash">{{getKeyFormat(swapData.transferObject.hash)}}</q-item-label>
-                    </q-item-section>
-
-                    <q-item-section side></q-item-section>
-                  </q-item>
-                </q-list>
-                <q-btn
-                  :loading="spinner.tx"
-                  v-if="
-                    swapData.dex != 'oneinch' &&
-                    ((swapData.fromChosenChain &&
-                      (!chainData ||
-                        !$store.state.settings.chainsSendEnabled.includes(
-                          swapData.fromChosenChain.toLowerCase()
-                        ) ||
-                        !chainData.accounts ||
-                        !chainData.accounts.length)) ||
-                      fromAccountSelected[swapData.fromChosenChain])
-                  "
-                  :disable="!swapData.fromChosenChain"
-                  label="Next"
-                  outline
-                  @click="tab = 'destination'"
-                  rounded
-                  class="q-mt-sm"
-                />
-              </q-list>
-            </q-tab-panel>
-            <q-tab-panel name="destination">
-              <q-item-label v-if="swapData.toChains.length > 1" header
-                >Choose a network to receive your coins</q-item-label
+          <div class="gdx-exchange-coin">
+            <div
+              dir="auto"
+              blockedvalue="BTC,ETH"
+              data-fetch-key="GdxCoinSelect:1"
+              class="
+                v-select
+                gdx-select gdx-coin-select gdx-exchange-coin-select
+                vs--single vs--searchable
+              "
+            >
+              <div
+                id="vs5__combobox"
+                role="combobox"
+                aria-expanded="false"
+                aria-owns="vs5__listbox"
+                aria-label="Search for option"
+                class="vs__dropdown-toggle"
               >
-              <q-list separator>
-                <q-item
-                  v-for="chain in swapData.toChains"
-                  :key="chain"
-                  :dark="$store.state.settings.lightMode === 'true'"
-                >
-                  <q-item-section v-if="swapData.toChains.length != 1" side top>
-                    <q-radio
-                      v-model="swapData.toChosenChain"
-                      :val="chain"
-                      label=""
-                    />
-                  </q-item-section>
-
-                  <q-item-section>
-                    <q-item-label class="q-pb-sm"
-                      ><b>To network:</b>
-                      {{ swapData.toChosenChain.toUpperCase() }}
-                    </q-item-label>
-                    <div
-                      v-if="
-                        swapData.toChosenChain === chain ||
-                        swapData.toChains.length == 1
-                      "
-                    >
-                      <div
-                        v-if="
-                          chains.find((o) => o.chain == chain) &&
-                          chains.find((o) => o.chain == chain).accounts.length
-                        "
-                      >
-                        Select {{ chain.toUpperCase() }}
-                        {{ chain == "eos" ? "account" : "address" }} to receive
-                        {{ swapData.toAmount }}
-                        {{ destinationCoin.value.toUpperCase() }}
-
+                <div class="vs__selected-options">
+                  <span class="vs__selected"
+                    ><div class="gdx-select__selected-option">
+                      <div>
                         <q-select
+                          @input="
+                            hideDestination = false;
+                            getSwapInfo();
+                          "
+                          @blur="hideDestination = false"
+                          class="select-input"
+                          popup-content-class="gdx_coin_wrapper_popup"
                           :dark="$store.state.settings.lightMode === 'true'"
                           :light="$store.state.settings.lightMode === 'false'"
                           separator
+                          use-input
+                          borderless
                           rounded
-                          outlined
-                          style="max-width: 300px"
-                          class="select-input accountDropdown q-my-md"
-                          @input="
-                            swapData.toDestinationAddresses[chain] =
-                              toAccountSelected[chain]
-                                ? chain == 'eos'
-                                  ? toAccountSelected[chain].name
-                                  : toAccountSelected[chain].key
-                                : {}
-                          "
-                          v-model="toAccountSelected[chain]"
-                          :options="
-                            chains.find((o) => o.chain == chain).accounts
-                          "
+                          v-model="destinationCoin"
+                          @filter="filterDestinationCoin"
+                          :disabled="!destinationCoinOptions"
+                          :loading="!destinationCoinOptions"
+                          :options="destinationCoinOptions"
                         >
                           <template v-slot:option="scope">
                             <q-item
@@ -919,692 +211,1481 @@
                               v-on="scope.itemEvents"
                             >
                               <q-item-section avatar>
-                                <q-icon
-                                  class="option--avatar"
-                                  :name="`img:${scope.opt.icon}`"
-                                />
-                              </q-item-section>
-                              <q-item-section
-                                :dark="
-                                  $store.state.settings.lightMode === 'true'
-                                "
-                              >
-                                <q-item-label v-html="scope.opt.label" />
-                                <q-item-label caption class="ellipsis mw200">{{
-                                  scope.opt[
-                                    chain == "eos" ? "key" : "value"
-                                  ].substring(0, 10) + "..."
-                                }}</q-item-label>
-                              </q-item-section>
-                            </q-item>
-                          </template>
-                          <template
-                            v-if="
-                              toAccountSelected[chain] &&
-                              toAccountSelected[chain].icon
-                            "
-                            v-slot:selected
-                          >
-                            <q-item>
-                              <q-item-section avatar>
-                                <q-icon
-                                  class="option--avatar"
-                                  :name="`img:${toAccountSelected[chain].icon}`"
-                                />
+                                <q-icon :name="`img:${scope.opt.image}`" />
                               </q-item-section>
                               <q-item-section>
                                 <q-item-label
-                                  v-html="toAccountSelected[chain].name"
+                                  v-html="scope.opt.value.toUpperCase()"
                                 />
-                                <q-item-label
-                                  caption
-                                  class="ellipsis mw200"
-                                  :class="{
-                                    'text-white':
-                                      $store.state.settings.lightMode ===
-                                      'true',
-                                  }"
-                                  >{{
-                                    getKeyFormat(toAccountSelected[chain].key)
-                                  }}</q-item-label
-                                >
                               </q-item-section>
                             </q-item>
                           </template>
+                          <template v-slot:selected>
+                            <div>
+                              <span
+                                class="gdx-coin"
+                                v-if="destinationCoin && !hideDestination"
+                                @click="hideDestination = true"
+                                ><span class="gdx-coin-icon icon-BTC">
+                                  <q-img
+                                    style="width: 30px"
+                                    :src="destinationCoin.image"
+                                  />
+                                </span>
+                                <span class="gdx-coin-name"></span>
+                                <span class="gdx-coin-code">{{
+                                  destinationCoin.value.toUpperCase()
+                                }}</span></span
+                              >
+                            </div>
+                          </template>
                         </q-select>
-
-                        <GasSelector
-                          v-if="
-                            swapData.dex == 'renbridge' && !swapData.order_id
-                          "
-                          @setGas="setSelectedGas"
-                          :currentAccount="
-                            $store.state.wallets.tokens.find(
-                              (o) => o.chain === swapData.toChosenChain
-                            )
-                          "
-                          :txData="{
-                            amount: swapData.toAmount,
-                            method: 'mint',
-                            info:
-                              'Fees to be paid for minting your ' +
-                              destinationCoin.value.toUpperCase() +
-                              ' on the ' +
-                              swapData.toChosenChain.toUpperCase() +
-                              ' network',
-                          }"
-                        />
-                        <p v-if="swapData.error" class="text-red">
-                          {{ swapData.error }}
-                        </p>
-                        <p v-if="swapData.status">
-                          Transaction status:
-                          <span class="text-deep-purple">{{
-                            swapData.status
-                          }}</span>
-                        </p>
-                        <p
-                          v-if="
-                            swapData.dex == 'renbridge' &&
-                            swapData.fromChosenChain == 'btc'
-                          "
-                        >
-                          Each transaction to this deposit address takes about
-                          about 60 minutes to complete. For security reasons,
-                          you will need to wait for 6 block confirmations
-                        </p>
-                        <div
-                          v-if="swapData.dex == 'renbridge' && swapData.status"
-                        >
-                          <span
-                            class="text-grey cursor-pointer"
-                            v-if="swapData.hash"
-                            >Tx Hash: {{ getKeyFormat(swapData.hash) }}</span
-                          ><br />
-
-                          <p
-                            v-if="
-                              exchangeDetails[swapData.order_id] &&
-                              exchangeDetails[swapData.order_id].bridgeStatus
-                            "
-                          >
-                            {{
-                              exchangeDetails[swapData.order_id].bridgeStatus
-                                .msg
-                            }}
-                          </p>
-                          <q-linear-progress
-                            v-if="!swapData.error"
-                            indeterminate
-                            color="grey"
-                            class="q-mt-sm"
-                          />
-                        </div>
-                        <span
-                          v-if="
-                            swapData.dex == 'renbridge' && swapData.mint.status
-                          "
-                        >
-                          <span
-                            class="text-deep-purple-12"
-                            v-if="
-                              swapData.mint &&
-                              swapData.mint.status == 'Submitted'
-                            "
-                          >
-                            <q-spinner-dots v-if="spinner.amount" size="2em" />
-                            Minting process started. Please wait... </span
-                          ><br />
-                          <span
-                            class="text-green"
-                            v-if="
-                              swapData.mint &&
-                              swapData.mint.status == 'Submitted'
-                            "
-                            >Approval successful. Click confirm to swap</span
-                          ><br />
-                          <span
-                            class="text-green"
-                            v-if="
-                              swapData.mint && swapData.mint.status == 'Success'
-                            "
-                            >Minting successful. You have received renBTC. Now
-                            you can process the swap</span
-                          ><br />
-                          <span
-                            class="text-grey cursor-pointer"
-                            v-if="swapData.mint && swapData.mint.hash"
-                            >Tx Hash:
-                            {{ getKeyFormat(swapData.mint.hash) }}</span
-                          ><br />
-                        </span>
-
-                        <SendComponent
-                          :isExchange="true"
-                          :miniMode="true"
-                          @setTransactionStatus="setTransactionStatus"
-                          @setTab="setTab"
-                          :key="
-                            $store.state.investment.defaultAccount.key +
-                            $store.state.investment.defaultAccount.name
-                          "
-                          v-if="
-                            exchangeDetails &&
-                            exchangeDetails[swapData.order_id] &&
-                            exchangeDetails[swapData.order_id].status ==
-                              'wait' &&
-                            showSendComponent &&
-                            $store.state.investment.defaultAccount &&
-                            $store.state.investment.defaultAccount.key
-                          "
-                        />
-
-                        <span
-                          v-if="swapData.bridge && swapData.bridge == 'eos'"
-                          class="text-red"
-                        >
-                          This is a multi path transaction. ({{
-                            depositCoin.value.toUpperCase()
-                          }}
-                          -> {{ swapData.bridge.toUpperCase() }} ->
-                          {{ destinationCoin.value.toUpperCase() }}). You might
-                          need to convert manually the received
-                          {{ swapData.bridge.toUpperCase() }}
-                          if you leave this screen.
-                        </span>
-                      </div>
-                      <div v-else>
-                        <q-item-label class="q-py-sm" caption>
-                          {{ chain.toUpperCase() }} address to receive
-                          {{ swapData.toAmount }}
-                          {{ destinationCoin.value.toUpperCase() }}.
-                        </q-item-label>
-                        <q-input
-                          style="max-width: 400px"
-                          filled
-                          :dark="$store.state.settings.lightMode === 'true'"
-                          :label="'Paste your ' + chain + ' address'"
-                          v-model="swapData.toDestinationAddresses[chain]"
-                        />
-                      </div>
-                      <span v-if="error" class="text-red">{{ error }}</span>
-                      <q-btn
-                        v-if="
-                          !(swapData.dex == 'renbridge' && swapData.order_id)
-                        "
-                        :loading="spinner.tx"
-                        :disable="
-                          !swapData.toDestinationAddresses[chain] &&
-                          (!toAccountSelected[chain] ||
-                            !toAccountSelected[chain].key)
-                        "
-                        label="Confirm"
-                        outline
-                        @click="
-                          swapData.toDestinationAddresses[chain] =
-                            chain == 'eos'
-                              ? toAccountSelected[chain].name
-                              : toAccountSelected[chain].key;
-                          createTransaction();
-                        "
-                        rounded
-                        class="q-mt-sm"
-                      />
-                      <div
-                        class="q-pt-md"
-                        v-if="
-                          swapData.dex == 'renbridge' &&
-                          swapData.fromChosenChain == 'btc' &&
-                          !exchangeDetails[swapData.order_id]
-                        "
-                      >
-                        If you cannot complete this transaction within the
-                        required time, please return at a later date.<br /><br />
-
-                        If you do not finish your transactions within this
-                        period/session/time frame, you risk losing the deposits
                       </div>
                     </div>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-tab-panel>
-            <q-tab-panel
-              name="tosend"
-              style="max-width: 500px"
-              v-if="exchangeDetails[swapData.order_id]"
-            >
-              <q-item-label header>
-                <span class="text-subtitle2">
-                  <span class="text-bold text-body1">Status: </span>
-                  <span
-                    class="text-capitalize"
-                    :class="{
-                      'text-deep-purple-12': validStatus(
-                        exchangeDetails[swapData.order_id].status
-                      ),
-                      'text-grey': !validStatus(
-                        exchangeDetails[swapData.order_id].status
-                      ),
-                    }"
-                    >{{ exchangeDetails[swapData.order_id].status }}</span
+                    <!----></span
                   >
-                </span>
-              </q-item-label>
-              <p>{{ exchangeDetails[swapData.order_id].description }}</p>
-              <!--<transactEOS
-                  :hideLabels="true"
-                  :key="$store.state.investment.defaultAccount.key"
-                  v-if="swapData.fromChosenChain === 'eos' && showSendComponent && $store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key"
-                  @setSuccessData="setSuccessData"
-                  ref="transact"
-                  class="q-py-md"
-                /> -->
-
-              />
-            </q-tab-panel>
-            <q-tab-panel
-              name="waiting"
-              style="max-width: 500px"
-              v-if="exchangeDetails[swapData.order_id]"
-            >
-              <q-item-label header>
-                <span class="text-subtitle2">
-                  <span class="text-bold text-body1">Status: </span>
-                  <span
-                    class="text-capitalize"
-                    :class="{
-                      'text-deep-purple-12': validStatus(
-                        exchangeDetails[swapData.order_id].status
-                      ),
-                      'text-grey': !validStatus(
-                        exchangeDetails[swapData.order_id].status
-                      ),
-                    }"
-                    >{{ exchangeDetails[swapData.order_id].status }}</span
-                  >
-                </span>
-              </q-item-label>
-              <q-item-label
-                >SEND {{ swapData.fromAmount }}
-                {{ depositCoin.value.toUpperCase() }} TO THE DEPOSIT
-                ADDRESS</q-item-label
-              >
-              <p class="q-pt-md">
-                The exchange will start automatically when the deposit arrives
-                to the address specified below
-              </p>
-              <q-input
-                :dark="$store.state.settings.lightMode === 'true'"
-                v-model="exchangeDetails[swapData.order_id].depositAddress"
-                readonly
-                rounded
-                class="input-input pr80"
-                outlined
-                type="text"
-              >
-                <template v-slot:append>
-                  <div class="flex justify-end">
-                    <q-btn
-                      filled
-                      unelevated
-                      @click="
-                        copyToClipboard(
-                          exchangeDetails[swapData.order_id].depositAddress,
-                          'Exchange Address'
-                        )
-                      "
-                      round
-                      class="btn-copy"
-                      icon="file_copy"
-                    />
-                  </div>
-                </template>
-              </q-input>
-              <p class="q-pt-sm">
-                Order ID:
-                <span
-                  @click="
-                    copyToClipboard(
-                      exchangeDetails[swapData.order_id].order_id,
-                      'Order ID'
-                    )
-                  "
-                  class="cursor-pointer text-deep-purple-12"
-                  >{{ exchangeDetails[swapData.order_id].order_id }}</span
-                >
-              </p>
-
-              <q-input
-                v-if="exchangeDetails[swapData.order_id].memo"
-                :dark="$store.state.settings.lightMode === 'true'"
-                v-model="exchangeDetails[swapData.order_id].memo"
-                label="Mandatory memo"
-                readonly
-                rounded
-                class="input-input pr80"
-                outlined
-                type="text"
-              >
-                <template v-slot:append>
-                  <div class="flex justify-end">
-                    <q-btn
-                      filled
-                      unelevated
-                      @click="
-                        copyToClipboard(
-                          exchangeDetails[swapData.order_id].memo,
-                          'Memo'
-                        )
-                      "
-                      round
-                      class="btn-copy"
-                      icon="file_copy"
-                    />
-                  </div>
-                </template>
-              </q-input>
-            </q-tab-panel>
-          </q-tab-panels>
-        </template>
-      </q-splitter>
-    </div>
-    <div class="q-pa-lg" v-if="transactions.length && step != 2">
-      <div class="q-pb-md">Recent orders:</div>
-      <div class="row full-width q-col-gutter-md">
-      <div class="col-md-3" v-for="(tx, index) in transactions" :key="index">
-          <q-card
-            :dark="$store.state.settings.lightMode === 'true'"
-            flat
-            bordered
-            class="shadow-1 ongoing-orders"
-          >
-            <q-card-section>
-              <div class="row items-center no-wrap">
-                <div class="col text-bdoy1">
-                  <q-btn
-                    icon="close"
-                    dense
-                    rounded
-                    @click="removeLocalStorage(tx.order_id)"
-                    class="absolute-top-right q-mt-sm q-mr-sm"
-                    flat
+                  <q-spinner-dots v-if="spinner.amount" size="2em" />
+                  <input
+                    v-else
+                    aria-autocomplete="list"
+                    aria-labelledby="vs5__combobox"
+                    aria-controls="vs5__listbox"
+                    type="search"
+                    autocomplete="off"
+                    v-model="swapData.toAmount"
+                    class="vs__search"
                   />
-                  <p class="q-pt-sm">
-                    ID:
-                    <span
-                      @click="copyToClipboard(tx.order_id, 'Order ID')"
-                      class="cursor-pointer text-deep-purple-12"
-                      >{{ tx.order_id }}</span
+                </div>
+                <div class="vs__actions">
+                  <button
+                    type="button"
+                    title="Clear Selected"
+                    aria-label="Clear Selected"
+                    class="vs__clear"
+                    style="display: none"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      height="10"
                     >
-                  </p>
-
-                  <span class="text-body2">
-                    From: {{ parseFloat(tx.depositQuantity).toFixed(8) }}
-                    {{ tx.from.toUpperCase() }} <br />
-                    To:
-                    {{
-                      tx.mintObject
-                        ? tx.mintObject.toAmount + " " + tx.mintObject.toToken
-                        : tx.destinationQuantity +
-                          " " +
-                          (tx.toEosToken ? tx.toEosToken.toUpperCase() : tx.to)
-                    }}<br />
-                  </span>
+                      <path
+                        d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"
+                      ></path>
+                    </svg>
+                  </button>
+                  <img
+                    src="https://godex.io/.nuxt_next/affcbccb20f94c6df96042f8d146a5a7.svg"
+                    alt="arrow-bottom"
+                    role="presentation"
+                    class="gdx-image vs__open-indicator"
+                  />
+                  <div class="vs__spinner" style="display: none">Loading...</div>
                 </div>
               </div>
-            </q-card-section>
+              <ul
+                id="vs5__listbox"
+                role="listbox"
+                style="display: none; visibility: hidden"
+              ></ul>
+            </div>
+            <div class="gdx-exchange-coin-input gdx-input">
+              <input
+                id="5c16fa25-44bf-4c1c-9ad7-b90babb59f5c"
+                placeholder="Type amount"
+                name="exchange_inputs_y_get"
+                v-model="swapData.toAmount"
+                class="gdx-input-field no-border"
+              />
+              <label
+                for="2dd3c157-34e2-406d-9f62-7cc3c7bf320c"
+                class="gdx-input-label"
+                ><q-spinner-dots
+                  color="white"
+                  size="2em"
+                  v-if="spinner.amount"
+                /><span v-else>You Get</span>
+              </label>
+              <!---->
+            </div>
+          </div>
+          <button
+            type="default"
+            class="gdx-replace-button gdx-button"
+            @click="switchAmounts()"
+          >
+            <div class="box">
+              <img
+                src="https://godex.io/.nuxt_next/80dfd238ff9fbd794aae9ada0f9fcb5f.svg"
+                alt="arrow-blue"
+                class="gdx-image"
+              />
+              <img
+                src="https://godex.io/.nuxt_next/d184a0be7e04a5c7f6b4bb9468fc8c0c.svg"
+                alt="arrow-white"
+                class="gdx-image"
+              />
+            </div>
+          </button>
+        </div>
 
-            <q-separator />
+        <a
+          href="javascript:void(0)"
+          :class="{
+            'mask-section': step != 0,
+            'inactive-btn': !swapData.toAmount || spinner.tx || spinner.amount,
+          }"
+          @click="
+            swapData.toAmount && !spinner.amount && !spinner.tx
+              ? setPathTransaction(
+                  paths.find(
+                    (o) => o.fromToken === depositCoin.value.toLowerCase()
+                  )
+                )
+              : ''
+          "
+          class="gdx-link theme-2"
+          >Exchange</a
+        >
+        <p @click="getDepositTxData()" v-if="false">Test</p>
 
-            <q-card-actions v-if="!tx.mintObject">
-              <div class="text-subtitle2 q-pb-md q-pl-sm">
-                <span class="text-bold text-body1">Status: </span>
-                <span
-                  class="text-capitalize"
-                  :class="{
-                    'text-deep-purple-12': validStatus(tx.status),
-                    'text-grey': !validStatus(tx.status),
-                    'text-green': tx.status == 'success',
-                  }"
-                  >{{ tx.status }}
-                  <q-icon name="info">
-                    <q-tooltip>
-                      <span class="text-body1 info-tooltip">
-                        {{ getStatusDesc(tx.status) }}
-                      </span>
-                    </q-tooltip>
-                  </q-icon></span
+        <q-splitter
+          v-model="splitterModel"
+          class="full-width"
+          :class="[swapData.dex + '-dex', 'full-width']"
+          v-if="step == 1"
+        >
+          <template v-slot:before>
+            <q-tabs dark v-model="tab" align="left" vertical class="q-tab-wrapper text-teal" v-if="swapData.dex !== 'renbridge'">
+              <q-tab
+                name="deposit"
+                label="Deposit"
+                class="flex_start"
+                no-caps
+                align="left"
+                v-if="swapData.fromChains.length != 1"
+              />
+              <q-tab no-caps class="flex_start" name="destination" label="Destination" />
+              <q-tab no-caps class="flex_start" name="tosend" label="Sending" />
+
+              <q-tab no-caps
+                name="waiting"
+                class="waiting_tab flex_start"
+                :icon=" tab == 'waiting' ? 'img:https://i.stack.imgur.com/qq8AE.gif' : ''"
+                label="Waiting"
+              />
+              <q-tab no-caps
+                :class="{'text-black': $store.state.settings.lightMode === 'false'}"
+                name="reset"
+                class="flex_start"
+                dark
+                @click="step = 0"
+                label="Reset"
+              />
+            </q-tabs>
+          </template>
+
+          <template v-slot:after>
+            <q-btn
+              icon="close"
+              dense
+              rounded
+              class="absolute-top-right q-mt-sm q-mr-sm z_index"
+              @click="switchAmounts()"
+              flat
+            />
+            <q-tab-panels
+              v-model="tab"
+              animated
+              swipeable
+              vertical
+              :dark="$store.state.settings.lightMode === 'true'"
+              transition-prev="jump-up"
+              transition-next="jump-up"
+            >
+              <q-tab-panel name="deposit">
+                <q-item-label
+                  v-if="path.length > 1 && innerStep.deposit == 1"
+                  header
+                  >Choose the network you are sending
+                  {{ depositCoin.value.toUpperCase() }} from</q-item-label
                 >
-              </div>
-            </q-card-actions>
-            <q-card-actions v-else>
-              <div class="text-subtitle2 q-pb-md q-pl-sm">
-                <span class="text-bold text-body1">Action: </span>
-                <span
-                  class="text-capitalize"
-                  :class="{
-                    'text-deep-purple-12': validStatus(tx.status),
-                    'text-grey': !validStatus(tx.status),
-                    'text-green': tx.status == 'success',
-                  }"
-                >
+
+                <q-list separator>
+                  <q-item
+                    v-show="
+                      swapData.fromChains.length > 1 && innerStep.deposit == 1
+                    "
+                    v-for="(path, index) in paths"
+                    :key="index"
+                    :dark="$store.state.settings.lightMode === 'true'"
+                    tag="label"
+                    v-ripple
+                    @click="setPathData(path)"
+                  >
+                    <q-item-section
+                      v-if="swapData.fromChains.length != 1"
+                      side
+                      top
+                    >
+                      <q-radio
+                        v-model="swapData.fromChosenChain"
+                        :val="path.fromChain"
+                        label=""
+                      />
+                    </q-item-section>
+
+                    <q-item-section>
+                      <q-item-label
+                        >Send from {{ path.fromChain.toUpperCase() }}
+                        {{
+                          path.fromChain == path.toChain
+                            ? ""
+                            : " to " + path.toChain
+                        }}
+                        network</q-item-label
+                      >
+                    </q-item-section>
+                  </q-item>
+                  <q-btn
+                    v-if="
+                      innerStep.deposit == 2 && swapData.fromChains.length > 1
+                    "
+                    icon="arrow_back"
+                    label="Back"
+                    class="q-mb-md"
+                    flat
+                    @click="innerStep.deposit = 1"
+                  />
+                  <div
+                    v-if="
+                      swapData.fromChosenChain &&
+                      chainData &&
+                      chainData.accounts.length &&
+                      innerStep.deposit == 2
+                    "
+                  >
+                    Select {{ swapData.fromChosenChain.toUpperCase() }}
+                    {{
+                      swapData.fromChosenChain == "eos" ? "account" : "address"
+                    }}
+                    to send
+                    {{ swapData.fromAmount }}
+                    {{ depositCoin.value.toUpperCase() }}
+                    <q-select
+                      :dark="$store.state.settings.lightMode === 'true'"
+                      :light="$store.state.settings.lightMode === 'false'"
+                      separator
+                      rounded
+                      @input="
+                        approvalCheckRun(
+                          depositCoin.value,
+                          destinationCoin.value,
+                          swapData.fromAmount
+                        )
+                      "
+                      outlined
+                      style="max-width: 300px"
+                      class="select-input accountDropdown q-my-md"
+                      v-model="fromAccountSelected[swapData.fromChosenChain]"
+                      :options="chainData.accounts"
+                    >
+                      <template v-slot:option="scope">
+                        <q-item
+                          class="custom-menu"
+                          v-bind="scope.itemProps"
+                          v-on="scope.itemEvents"
+                        >
+                          <q-item-section avatar>
+                            <q-icon
+                              class="option--avatar"
+                              :name="`img:${scope.opt.icon}`"
+                            />
+                          </q-item-section>
+                          <q-item-section
+                            :dark="$store.state.settings.lightMode === 'true'"
+                          >
+                            <q-item-label v-html="scope.opt.name" />
+                            <q-item-label caption class="ellipsis mw200">{{
+                              scope.opt.key
+                            }}</q-item-label>
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                      <template
+                        v-if="
+                          fromAccountSelected[swapData.fromChosenChain] &&
+                          fromAccountSelected[swapData.fromChosenChain].icon
+                        "
+                        v-slot:selected
+                      >
+                        <q-item>
+                          <q-item-section avatar>
+                            <q-icon
+                              class="option--avatar"
+                              :name="`img:${
+                                fromAccountSelected[swapData.fromChosenChain].icon
+                              }`"
+                            />
+                          </q-item-section>
+                          <q-item-section>
+                            <q-item-label
+                              v-html="
+                                fromAccountSelected[swapData.fromChosenChain].name
+                              "
+                            />
+                            <q-item-label
+                              caption
+                              class="ellipsis mw200"
+                              :class="{
+                                'text-white':
+                                  $store.state.settings.lightMode === 'true',
+                              }"
+                              >{{
+                                getKeyFormat(
+                                  fromAccountSelected[swapData.fromChosenChain]
+                                    .key
+                                )
+                              }}</q-item-label
+                            >
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
+                    <span
+                      class="text-green"
+                      v-if="
+                        swapData.mint &&
+                        swapData.mint.status == 'Success' &&
+                        !(
+                          swapData.transferObject &&
+                          swapData.transferObject.status == 'Success'
+                        )
+                      "
+                      >Minting successful. You have received renBTC. Now you can
+                      process the swap<br
+                    /></span>
+
+                    <GasSelector
+                      ref="gas_global"
+                      :key="'gas_global'"
+                      v-if="
+                        swapData.dex != 'oneinch' &&
+                        swapData.approvalCheck &&
+                        swapData.approval &&
+                        !swapData.approval.required
+                      "
+                      @setGas="setSelectedGas"
+                      :currentAccount="
+                        fromAccountSelected[swapData.fromChosenChain]
+                          ? fromAccountSelected[swapData.fromChosenChain]
+                          : $store.state.wallets.tokens.find(
+                              (o) => o.chain === swapData.fromChosenChain
+                            )
+                      "
+                      :txData="{ amount: swapData.fromAmount }"
+                      :type="depositCoin.value"
+                    />
+                    <GasSelector
+                      ref="gas_approval"
+                      :key="'gas_approval'"
+                      :txObject="swapData.approval.transactionObject"
+                      v-else-if="
+                        swapData.dex == 'oneinch' &&
+                        swapData.approvalCheck &&
+                        swapData.approval &&
+                        swapData.approval.required &&
+                        swapData.approval.status != 'Success'
+                      "
+                      @setGas="setSelectedGas"
+                      :currentAccount="
+                        fromAccountSelected[swapData.fromChosenChain]
+                      "
+                      :txData="{
+                        amount: swapData.fromAmount,
+                        title: 'Approval',
+                        method: 'txObject',
+                      }"
+                      :type="depositCoin.value"
+                    />
+                    <GasSelector
+                      ref="gas_transfert"
+                      :key="'gas_transfert'"
+                      :txObject="swapData.transferObject"
+                      v-else-if="
+                        (swapData.dex == 'oneinch' &&
+                          swapData.approvalCheck &&
+                          swapData.transferObject) ||
+                        (swapData.approval &&
+                          swapData.approval.required &&
+                          swapData.approval.status == 'Success')
+                      "
+                      @setGas="setSelectedGas"
+                      :currentAccount="
+                        fromAccountSelected[swapData.fromChosenChain]
+                      "
+                      :txData="{
+                        amount: swapData.fromAmount,
+                        title: 'Swap',
+                        method: 'txObject',
+                      }"
+                      :type="depositCoin.value"
+                    />
+
+                    <span
+                      v-if="
+                        swapData.dex == 'oneinch' &&
+                        swapData.mint &&
+                        swapData.mint.status
+                      "
+                    >
+                      <span
+                        class="text-deep-purple-12"
+                        v-if="
+                          swapData.approval &&
+                          swapData.approval.required &&
+                          swapData.approval.status != 'Success'
+                        "
+                        >Proceed first with the approval transaction</span
+                      >
+                      <span
+                        class="text-green"
+                        v-else-if="
+                          swapData.approval &&
+                          swapData.approval.required &&
+                          swapData.approval.status == 'Success'
+                        "
+                        >Approval successful. Click confirm to swap<br
+                      /></span>
+                      <span
+                        class="text-grey cursor-pointer"
+                        v-if="swapData.approval && swapData.approval.hash"
+                        ><span class="text-deep-pruple-12">Approval</span> Tx
+                        Hash: {{ getKeyFormat(swapData.approval.hash) }}<br
+                      /></span>
+                      <span
+                        class="text-grey cursor-pointer"
+                        v-if="
+                          swapData.transferObject && swapData.transferObject.hash
+                        "
+                      >
+                        <span class="text-deep-pruple-12">Tx Hash:</span>
+                        {{ getKeyFormat(swapData.transferObject.hash) }}</span
+                      >
+                    </span>
+                    <p
+                      v-if="
+                        swapData.dex == 'godex' &&
+                        fromAccountSelected[swapData.fromChosenChain]
+                      "
+                      class="text-body2 q-my-sm"
+                    >
+                      We set this address as the return address in case the
+                      transaction <br />needs to be refunded.
+                    </p>
+                  </div>
+                  <div v-else-if="chainData">
+                    <p
+                      v-if="
+                        $store.state.settings.chainsSendEnabled.includes(
+                          swapData.fromChosenChain.toLowerCase()
+                        ) &&
+                        chainData &&
+                        (!chainData.accounts || !chainData.accounts.length)
+                      "
+                    >
+                      No {{ swapData.fromChosenChain.toUpperCase() }} wallet
+                      found. Import this wallet and start using it inside Verto.
+                      If you decide to continue with this exchange without having
+                      your wallet in Verto, you will need an external wallet to
+                      make the deposit
+                    </p>
+
+                    <div
+                      v-else-if="
+                        chainData &&
+                        !$store.state.settings.chainsSendEnabled.includes(
+                          swapData.fromChosenChain.toLowerCase()
+                        )
+                      "
+                    >
+                      Verto will support asset transfer for this chain Very soon.
+                      You will need an external wallet to make the deposit to
+                      finalize this exchange
+                    </div>
+                  </div>
+                  <div v-else-if="swapData.fromChosenChain">
+                    Verto will support this chain very soon. You will need an
+                    external wallet to make the deposit to finalize this exchange
+                  </div>
+                  <p v-if="swapData.error" class="text-red">
+                    {{ swapData.error }}
+                  </p>
+                  <q-btn
+                    outline
+                    :loading="spinner.tx"
+                    rounded
+                    @click="processApproval()"
+                    v-if="
+                      swapData.approval &&
+                      swapData.approval.required &&
+                      swapData.approval.transactionObject &&
+                      swapData.approval.status != 'Success'
+                    "
+                    label="Approve"
+                  />
+                  <q-btn
+                    outline
+                    :loading="spinner.tx"
+                    rounded
+                    @click="swapTokens()"
+                    v-else-if="
+                      swapData.approvalCheck &&
+                    swapData.approval && (swapData.approval.status == 'Success' ||
+                        !swapData.approval.required) &&
+                      swapData.transferObject &&
+                      swapData.transferObject.status != 'Success'
+                    "
+                    label="Swap"
+                  />
+                  <q-list
+                    bordered
+                    separator
+                    v-if="swapData.dex == 'oneinch'"
+                    class="q-mt-md"
+                  >
+                    <q-item
+                      clickable
+                      v-ripple
+                      active-class="text-orange"
+                      v-if="swapData.approval && swapData.approval.required"
+                    >
+                      <q-item-section avatar>
+                        <q-spinner-dots
+                          size="2em"
+                          v-if="swapData.approval.status == 'Submitted'"
+                        />
+                        <q-icon name="lock" v-else />
+                      </q-item-section>
+
+                      <q-item-section
+                        ><q-item-label>Approval transaction</q-item-label>
+                        <q-item-label caption
+                          >Status:
+                          <span
+                            :class="{
+                              'text-green':
+                                swapData.approval &&
+                                swapData.approval.status == 'Success',
+                            }"
+                            >{{
+                              swapData.approval.status
+                                ? swapData.approval.status
+                                : "To be sent"
+                            }}</span
+                          ></q-item-label
+                        >
+                        <q-item-label v-if="swapData.approval &&
+                                swapData.approval.hash">{{getKeyFormat(swapData.approval.hash)}}</q-item-label>
+                      </q-item-section>
+                      <q-item-section side></q-item-section>
+                    </q-item>
+
+                    <q-item
+                      clickable
+                      v-ripple
+                      v-if="swapData.transferObject"
+                      active-class="bg-teal-1 text-grey-8"
+                    >
+                      <q-item-section avatar>
+                        <q-spinner-dots
+                          size="2em"
+                          v-if="swapData.transferObject.status == 'Submitted'"
+                        />
+                        <q-icon name="swap_horiz" v-else />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label>Swap</q-item-label>
+                        <q-item-label caption
+                          >Status:
+                          <span
+                            :class="{
+                              'text-green':
+                                swapData.transferObject &&
+                                swapData.transferObject.status == 'Success',
+                            }"
+                            >{{
+                              swapData.approval &&
+                              swapData.approval.required &&
+                              swapData.approval.status != "Success"
+                                ? "Approval pending"
+                                : swapData.transferObject.status
+                            }}</span
+                          ></q-item-label
+                        >
+                          <q-item-label v-if="swapData.transferObject &&
+                                swapData.transferObject.hash">{{getKeyFormat(swapData.transferObject.hash)}}</q-item-label>
+                      </q-item-section>
+
+                      <q-item-section side></q-item-section>
+                    </q-item>
+                  </q-list>
                   <q-btn
                     :loading="spinner.tx"
-                    flat
-                    label="Resume"
-                    @click="resumeMinting(tx)"
-                /></span>
-              </div>
-            </q-card-actions>
-            <q-card-actions v-if="false">
-              <q-btn flat v-if="validStatus(tx.status)">View details</q-btn>
-            </q-card-actions>
-          </q-card>
+                    v-if="
+                      swapData.dex != 'oneinch' &&
+                      ((swapData.fromChosenChain &&
+                        (!chainData ||
+                          !$store.state.settings.chainsSendEnabled.includes(
+                            swapData.fromChosenChain.toLowerCase()
+                          ) ||
+                          !chainData.accounts ||
+                          !chainData.accounts.length)) ||
+                        fromAccountSelected[swapData.fromChosenChain])
+                    "
+                    :disable="!swapData.fromChosenChain"
+                    label="Next"
+                    outline
+                    @click="tab = 'destination'"
+                    rounded
+                    class="q-mt-sm"
+                  />
+                </q-list>
+              </q-tab-panel>
+              <q-tab-panel name="destination">
+                <q-item-label v-if="swapData.toChains.length > 1" header
+                  >Choose a network to receive your coins</q-item-label
+                >
+                <q-list separator>
+                  <q-item
+                    v-for="chain in swapData.toChains"
+                    :key="chain"
+                    :dark="$store.state.settings.lightMode === 'true'"
+                  >
+                    <q-item-section v-if="swapData.toChains.length != 1" side top>
+                      <q-radio
+                        v-model="swapData.toChosenChain"
+                        :val="chain"
+                        label=""
+                      />
+                    </q-item-section>
+
+                    <q-item-section>
+                      <q-item-label class="q-pb-sm"
+                        ><b>To network:</b>
+                        {{ swapData.toChosenChain.toUpperCase() }}
+                      </q-item-label>
+                      <div
+                        v-if="
+                          swapData.toChosenChain === chain ||
+                          swapData.toChains.length == 1
+                        "
+                      >
+                        <div
+                          v-if="
+                            chains.find((o) => o.chain == chain) &&
+                            chains.find((o) => o.chain == chain).accounts.length
+                          "
+                        >
+                          Select {{ chain.toUpperCase() }}
+                          {{ chain == "eos" ? "account" : "address" }} to receive
+                          {{ swapData.toAmount }}
+                          {{ destinationCoin.value.toUpperCase() }}
+
+                          <q-select
+                            :dark="$store.state.settings.lightMode === 'true'"
+                            :light="$store.state.settings.lightMode === 'false'"
+                            separator
+                            rounded
+                            outlined
+                            style="max-width: 300px"
+                            class="select-input accountDropdown q-my-md"
+                            @input="
+                              swapData.toDestinationAddresses[chain] =
+                                toAccountSelected[chain]
+                                  ? chain == 'eos'
+                                    ? toAccountSelected[chain].name
+                                    : toAccountSelected[chain].key
+                                  : {}
+                            "
+                            v-model="toAccountSelected[chain]"
+                            :options="
+                              chains.find((o) => o.chain == chain).accounts
+                            "
+                          >
+                            <template v-slot:option="scope">
+                              <q-item
+                                class="custom-menu"
+                                v-bind="scope.itemProps"
+                                v-on="scope.itemEvents"
+                              >
+                                <q-item-section avatar>
+                                  <q-icon
+                                    class="option--avatar"
+                                    :name="`img:${scope.opt.icon}`"
+                                  />
+                                </q-item-section>
+                                <q-item-section
+                                  :dark="
+                                    $store.state.settings.lightMode === 'true'
+                                  "
+                                >
+                                  <q-item-label v-html="scope.opt.label" />
+                                  <q-item-label caption class="ellipsis mw200">{{
+                                    scope.opt[
+                                      chain == "eos" ? "key" : "value"
+                                    ].substring(0, 10) + "..."
+                                  }}</q-item-label>
+                                </q-item-section>
+                              </q-item>
+                            </template>
+                            <template
+                              v-if="
+                                toAccountSelected[chain] &&
+                                toAccountSelected[chain].icon
+                              "
+                              v-slot:selected
+                            >
+                              <q-item>
+                                <q-item-section avatar>
+                                  <q-icon
+                                    class="option--avatar"
+                                    :name="`img:${toAccountSelected[chain].icon}`"
+                                  />
+                                </q-item-section>
+                                <q-item-section>
+                                  <q-item-label
+                                    v-html="toAccountSelected[chain].name"
+                                  />
+                                  <q-item-label
+                                    caption
+                                    class="ellipsis mw200"
+                                    :class="{
+                                      'text-white':
+                                        $store.state.settings.lightMode ===
+                                        'true',
+                                    }"
+                                    >{{
+                                      getKeyFormat(toAccountSelected[chain].key)
+                                    }}</q-item-label
+                                  >
+                                </q-item-section>
+                              </q-item>
+                            </template>
+                          </q-select>
+
+                          <GasSelector
+                            v-if="
+                              swapData.dex == 'renbridge' && !swapData.order_id
+                            "
+                            @setGas="setSelectedGas"
+                            :currentAccount="
+                              $store.state.wallets.tokens.find(
+                                (o) => o.chain === swapData.toChosenChain
+                              )
+                            "
+                            :txData="{
+                              amount: swapData.toAmount,
+                              method: 'mint',
+                              info:
+                                'Fees to be paid for minting your ' +
+                                destinationCoin.value.toUpperCase() +
+                                ' on the ' +
+                                swapData.toChosenChain.toUpperCase() +
+                                ' network',
+                            }"
+                          />
+                          <p v-if="swapData.error" class="text-red">
+                            {{ swapData.error }}
+                          </p>
+                          <p v-if="swapData.status">
+                            Transaction status:
+                            <span class="text-deep-purple">{{
+                              swapData.status
+                            }}</span>
+                          </p>
+                          <p
+                            v-if="
+                              swapData.dex == 'renbridge' &&
+                              swapData.fromChosenChain == 'btc'
+                            "
+                          >
+                            Each transaction to this deposit address takes about
+                            about 60 minutes to complete. For security reasons,
+                            you will need to wait for 6 block confirmations
+                          </p>
+                          <div
+                            v-if="swapData.dex == 'renbridge' && swapData.status"
+                          >
+                            <span
+                              class="text-grey cursor-pointer"
+                              v-if="swapData.hash"
+                              >Tx Hash: {{ getKeyFormat(swapData.hash) }}</span
+                            ><br />
+
+                            <p
+                              v-if="
+                                exchangeDetails[swapData.order_id] &&
+                                exchangeDetails[swapData.order_id].bridgeStatus
+                              "
+                            >
+                              {{
+                                exchangeDetails[swapData.order_id].bridgeStatus
+                                  .msg
+                              }}
+                            </p>
+                            <q-linear-progress
+                              v-if="!swapData.error"
+                              indeterminate
+                              color="grey"
+                              class="q-mt-sm"
+                            />
+                          </div>
+                          <span
+                            v-if="
+                              swapData.dex == 'renbridge' && swapData.mint.status
+                            "
+                          >
+                            <span
+                              class="text-deep-purple-12"
+                              v-if="
+                                swapData.mint &&
+                                swapData.mint.status == 'Submitted'
+                              "
+                            >
+                              <q-spinner-dots v-if="spinner.amount" size="2em" />
+                              Minting process started. Please wait... </span
+                            ><br />
+                            <span
+                              class="text-green"
+                              v-if="
+                                swapData.mint &&
+                                swapData.mint.status == 'Submitted'
+                              "
+                              >Approval successful. Click confirm to swap</span
+                            ><br />
+                            <span
+                              class="text-green"
+                              v-if="
+                                swapData.mint && swapData.mint.status == 'Success'
+                              "
+                              >Minting successful. You have received renBTC. Now
+                              you can process the swap</span
+                            ><br />
+                            <span
+                              class="text-grey cursor-pointer"
+                              v-if="swapData.mint && swapData.mint.hash"
+                              >Tx Hash:
+                              {{ getKeyFormat(swapData.mint.hash) }}</span
+                            ><br />
+                          </span>
+
+                          <SendComponent
+                            :isExchange="true"
+                            :miniMode="true"
+                            @setTransactionStatus="setTransactionStatus"
+                            @setTab="setTab"
+                            :key="
+                              $store.state.investment.defaultAccount.key +
+                              $store.state.investment.defaultAccount.name
+                            "
+                            v-if="
+                              exchangeDetails &&
+                              exchangeDetails[swapData.order_id] &&
+                              exchangeDetails[swapData.order_id].status ==
+                                'wait' &&
+                              showSendComponent &&
+                              $store.state.investment.defaultAccount &&
+                              $store.state.investment.defaultAccount.key
+                            "
+                          />
+
+                          <span
+                            v-if="swapData.bridge && swapData.bridge == 'eos'"
+                            class="text-red"
+                          >
+                            This is a multi path transaction. ({{
+                              depositCoin.value.toUpperCase()
+                            }}
+                            -> {{ swapData.bridge.toUpperCase() }} ->
+                            {{ destinationCoin.value.toUpperCase() }}). You might
+                            need to convert manually the received
+                            {{ swapData.bridge.toUpperCase() }}
+                            if you leave this screen.
+                          </span>
+                        </div>
+                        <div v-else>
+                          <q-item-label class="q-py-sm" caption>
+                            {{ chain.toUpperCase() }} address to receive
+                            {{ swapData.toAmount }}
+                            {{ destinationCoin.value.toUpperCase() }}.
+                          </q-item-label>
+                          <q-input
+                            style="max-width: 400px"
+                            filled
+                            :dark="$store.state.settings.lightMode === 'true'"
+                            :label="'Paste your ' + chain + ' address'"
+                            v-model="swapData.toDestinationAddresses[chain]"
+                          />
+                        </div>
+                        <span v-if="error" class="text-red">{{ error }}</span>
+                        <q-btn
+                          v-if="
+                            !(swapData.dex == 'renbridge' && swapData.order_id)
+                          "
+                          :loading="spinner.tx"
+                          :disable="
+                            !swapData.toDestinationAddresses[chain] &&
+                            (!toAccountSelected[chain] ||
+                              !toAccountSelected[chain].key)
+                          "
+                          label="Confirm"
+                          outline
+                          @click="
+                            swapData.toDestinationAddresses[chain] =
+                              chain == 'eos'
+                                ? toAccountSelected[chain].name
+                                : toAccountSelected[chain].key;
+                            createTransaction();
+                          "
+                          rounded
+                          class="q-mt-sm"
+                        />
+                        <div
+                          class="q-pt-md"
+                          v-if="
+                            swapData.dex == 'renbridge' &&
+                            swapData.fromChosenChain == 'btc' &&
+                            !exchangeDetails[swapData.order_id]
+                          "
+                        >
+                          If you cannot complete this transaction within the
+                          required time, please return at a later date.<br /><br />
+
+                          If you do not finish your transactions within this
+                          period/session/time frame, you risk losing the deposits
+                        </div>
+                      </div>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-tab-panel>
+              <q-tab-panel
+                name="tosend"
+                style="max-width: 500px"
+                v-if="exchangeDetails[swapData.order_id]"
+              >
+                <q-item-label header>
+                  <span class="text-subtitle2">
+                    <span class="text-bold text-body1">Status: </span>
+                    <span
+                      class="text-capitalize"
+                      :class="{
+                        'text-deep-purple-12': validStatus(
+                          exchangeDetails[swapData.order_id].status
+                        ),
+                        'text-grey': !validStatus(
+                          exchangeDetails[swapData.order_id].status
+                        ),
+                      }"
+                      >{{ exchangeDetails[swapData.order_id].status }}</span
+                    >
+                  </span>
+                </q-item-label>
+                <p>{{ exchangeDetails[swapData.order_id].description }}</p>
+                <!--<transactEOS
+                    :hideLabels="true"
+                    :key="$store.state.investment.defaultAccount.key"
+                    v-if="swapData.fromChosenChain === 'eos' && showSendComponent && $store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key"
+                    @setSuccessData="setSuccessData"
+                    ref="transact"
+                    class="q-py-md"
+                  /> -->
+
+                />
+              </q-tab-panel>
+              <q-tab-panel
+                name="waiting"
+                style="max-width: 500px"
+                v-if="exchangeDetails[swapData.order_id]"
+              >
+                <q-item-label header>
+                  <span class="text-subtitle2">
+                    <span class="text-bold text-body1">Status: </span>
+                    <span
+                      class="text-capitalize"
+                      :class="{
+                        'text-deep-purple-12': validStatus(
+                          exchangeDetails[swapData.order_id].status
+                        ),
+                        'text-grey': !validStatus(
+                          exchangeDetails[swapData.order_id].status
+                        ),
+                      }"
+                      >{{ exchangeDetails[swapData.order_id].status }}</span
+                    >
+                  </span>
+                </q-item-label>
+                <q-item-label
+                  >SEND {{ swapData.fromAmount }}
+                  {{ depositCoin.value.toUpperCase() }} TO THE DEPOSIT
+                  ADDRESS</q-item-label
+                >
+                <p class="q-pt-md">
+                  The exchange will start automatically when the deposit arrives
+                  to the address specified below
+                </p>
+                <q-input
+                  :dark="$store.state.settings.lightMode === 'true'"
+                  v-model="exchangeDetails[swapData.order_id].depositAddress"
+                  readonly
+                  rounded
+                  class="input-input pr80"
+                  outlined
+                  type="text"
+                >
+                  <template v-slot:append>
+                    <div class="flex justify-end">
+                      <q-btn
+                        filled
+                        unelevated
+                        @click="
+                          copyToClipboard(
+                            exchangeDetails[swapData.order_id].depositAddress,
+                            'Exchange Address'
+                          )
+                        "
+                        round
+                        class="btn-copy"
+                        icon="file_copy"
+                      />
+                    </div>
+                  </template>
+                </q-input>
+                <p class="q-pt-sm">
+                  Order ID:
+                  <span
+                    @click="
+                      copyToClipboard(
+                        exchangeDetails[swapData.order_id].order_id,
+                        'Order ID'
+                      )
+                    "
+                    class="cursor-pointer text-deep-purple-12"
+                    >{{ exchangeDetails[swapData.order_id].order_id }}</span
+                  >
+                </p>
+
+                <q-input
+                  v-if="exchangeDetails[swapData.order_id].memo"
+                  :dark="$store.state.settings.lightMode === 'true'"
+                  v-model="exchangeDetails[swapData.order_id].memo"
+                  label="Mandatory memo"
+                  readonly
+                  rounded
+                  class="input-input pr80"
+                  outlined
+                  type="text"
+                >
+                  <template v-slot:append>
+                    <div class="flex justify-end">
+                      <q-btn
+                        filled
+                        unelevated
+                        @click="
+                          copyToClipboard(
+                            exchangeDetails[swapData.order_id].memo,
+                            'Memo'
+                          )
+                        "
+                        round
+                        class="btn-copy"
+                        icon="file_copy"
+                      />
+                    </div>
+                  </template>
+                </q-input>
+              </q-tab-panel>
+            </q-tab-panels>
+          </template>
+        </q-splitter>
+      </div>
+      <div class="q-pa-lg" v-if="transactions.length && step != 2">
+        <div class="q-pb-md">Recent orders:</div>
+        <div class="row full-width q-col-gutter-md">
+        <div class="col-md-3" v-for="(tx, index) in transactions" :key="index">
+            <q-card
+              :dark="$store.state.settings.lightMode === 'true'"
+              flat
+              bordered
+              class="shadow-1 ongoing-orders"
+            >
+              <q-card-section>
+                <div class="row items-center no-wrap">
+                  <div class="col text-bdoy1">
+                    <q-btn
+                      icon="close"
+                      dense
+                      rounded
+                      @click="removeLocalStorage(tx.order_id)"
+                      class="absolute-top-right q-mt-sm q-mr-sm"
+                      flat
+                    />
+                    <p class="q-pt-sm">
+                      ID:
+                      <span
+                        @click="copyToClipboard(tx.order_id, 'Order ID')"
+                        class="cursor-pointer text-deep-purple-12"
+                        >{{ tx.order_id }}</span
+                      >
+                    </p>
+
+                    <span class="text-body2">
+                      From: {{ parseFloat(tx.depositQuantity).toFixed(8) }}
+                      {{ tx.from.toUpperCase() }} <br />
+                      To:
+                      {{
+                        tx.mintObject
+                          ? tx.mintObject.toAmount + " " + tx.mintObject.toToken
+                          : tx.destinationQuantity +
+                            " " +
+                            (tx.toEosToken ? tx.toEosToken.toUpperCase() : tx.to)
+                      }}<br />
+                    </span>
+                  </div>
+                </div>
+              </q-card-section>
+
+              <q-separator />
+
+              <q-card-actions v-if="!tx.mintObject">
+                <div class="text-subtitle2 q-pb-md q-pl-sm">
+                  <span class="text-bold text-body1">Status: </span>
+                  <span
+                    class="text-capitalize"
+                    :class="{
+                      'text-deep-purple-12': validStatus(tx.status),
+                      'text-grey': !validStatus(tx.status),
+                      'text-green': tx.status == 'success',
+                    }"
+                    >{{ tx.status }}
+                    <q-icon name="info">
+                      <q-tooltip>
+                        <span class="text-body1 info-tooltip">
+                          {{ getStatusDesc(tx.status) }}
+                        </span>
+                      </q-tooltip>
+                    </q-icon></span
+                  >
+                </div>
+              </q-card-actions>
+              <q-card-actions v-else>
+                <div class="text-subtitle2 q-pb-md q-pl-sm">
+                  <span class="text-bold text-body1">Action: </span>
+                  <span
+                    class="text-capitalize"
+                    :class="{
+                      'text-deep-purple-12': validStatus(tx.status),
+                      'text-grey': !validStatus(tx.status),
+                      'text-green': tx.status == 'success',
+                    }"
+                  >
+                    <q-btn
+                      :loading="spinner.tx"
+                      flat
+                      label="Resume"
+                      @click="resumeMinting(tx)"
+                  /></span>
+                </div>
+              </q-card-actions>
+              <q-card-actions v-if="false">
+                <q-btn flat v-if="validStatus(tx.status)">View details</q-btn>
+              </q-card-actions>
+            </q-card>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div v-if="step == 2">
-      <Exchange :miniMode="true" @setStep="setStep" />
-    </div>
+      <div v-if="step == 2">
+        <Exchange :miniMode="true" @setStep="setStep" />
+      </div>
+      <!-- TABLE SECTION  -->
+      <table
+        v-if="!$q.platform.is.mobile && paths.length && step != 2"
+        class="AssetTable__Table-sc-1hzgxt1-1 hkPLhL"
+      >
+        <colgroup>
+          <col style="width: 32px" />
+        </colgroup>
+        <thead class="AssetTableHelpers__Head-sc-1o9oxiy-0 igjkkt">
+          <tr class="AssetTableHelpers__Row-sc-1o9oxiy-7 bOnkOC">
+            <th v-if="false" class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR">
+              <div class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO">
+                <label
+                  class="
+                    TextElement__Spacer-hxkcw5-0
+                    kFFKOl
+                    Label__StyledLabel-sc-15jxzvg-0
+                    gzXJpq
+                    AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
+                    ftxqkW
+                  "
+                  >#</label
+                >
+              </div>
+            </th>
+            <th class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR">
+              <div class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO">
+                <label
+                  class="
+                    TextElement__Spacer-hxkcw5-0
+                    kFFKOl
+                    Label__StyledLabel-sc-15jxzvg-0
+                    gzXJpq
+                    AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
+                    ftxqkW
+                  "
+                  >You send</label
+                >
+              </div>
+            </th>
+            <th class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR">
+              <div class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO">
+                <label
+                  class="
+                    TextElement__Spacer-hxkcw5-0
+                    kFFKOl
+                    Label__StyledLabel-sc-15jxzvg-0
+                    gzXJpq
+                    AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
+                    ftxqkW
+                  "
+                  >Your receive</label
+                >
+              </div>
+            </th>
+            <th class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR">
+              <div class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO">
+                <label
+                  class="
+                    TextElement__Spacer-hxkcw5-0
+                    kFFKOl
+                    Label__StyledLabel-sc-15jxzvg-0
+                    gzXJpq
+                    AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
+                    ftxqkW
+                  "
+                  >Price</label
+                >
+              </div>
+            </th>
+            <th class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR">
+              <div class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO">
+                <label
+                  class="
+                    TextElement__Spacer-hxkcw5-0
+                    kFFKOl
+                    Label__StyledLabel-sc-15jxzvg-0
+                    gzXJpq
+                    AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
+                    ftxqkW
+                  "
+                  >Chains</label
+                >
+              </div>
+            </th>
+            <th class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR">
+              <div class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO">
+                <label
+                  class="
+                    TextElement__Spacer-hxkcw5-0
+                    kFFKOl
+                    Label__StyledLabel-sc-15jxzvg-0
+                    gzXJpq
+                    AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
+                    ftxqkW
+                  "
+                  >Exchange</label
+                >
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="AssetTable__AssetTableBody-sc-1hzgxt1-0 gcVqXC">
 
-    <table
-      v-if="paths.length && step != 2"
-      class="AssetTable__Table-sc-1hzgxt1-1 hkPLhL"
-    >
-      <colgroup>
-        <col style="width: 32px" />
-      </colgroup>
-      <thead class="AssetTableHelpers__Head-sc-1o9oxiy-0 igjkkt">
-        <tr class="AssetTableHelpers__Row-sc-1o9oxiy-7 bOnkOC">
-          <th v-if="false" class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR">
-            <div class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO">
-              <label
-                class="
-                  TextElement__Spacer-hxkcw5-0
-                  kFFKOl
-                  Label__StyledLabel-sc-15jxzvg-0
-                  gzXJpq
-                  AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
-                  ftxqkW
-                "
-                >#</label
-              >
-            </div>
-          </th>
-          <th class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR">
-            <div class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO">
-              <label
-                class="
-                  TextElement__Spacer-hxkcw5-0
-                  kFFKOl
-                  Label__StyledLabel-sc-15jxzvg-0
-                  gzXJpq
-                  AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
-                  ftxqkW
-                "
-                >You send</label
-              >
-            </div>
-          </th>
-          <th class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR">
-            <div class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO">
-              <label
-                class="
-                  TextElement__Spacer-hxkcw5-0
-                  kFFKOl
-                  Label__StyledLabel-sc-15jxzvg-0
-                  gzXJpq
-                  AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
-                  ftxqkW
-                "
-                >Your receive</label
-              >
-            </div>
-          </th>
-          <th class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR">
-            <div class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO">
-              <label
-                class="
-                  TextElement__Spacer-hxkcw5-0
-                  kFFKOl
-                  Label__StyledLabel-sc-15jxzvg-0
-                  gzXJpq
-                  AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
-                  ftxqkW
-                "
-                >Price</label
-              >
-            </div>
-          </th>
-          <th class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR">
-            <div class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO">
-              <label
-                class="
-                  TextElement__Spacer-hxkcw5-0
-                  kFFKOl
-                  Label__StyledLabel-sc-15jxzvg-0
-                  gzXJpq
-                  AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
-                  ftxqkW
-                "
-                >Chains</label
-              >
-            </div>
-          </th>
-          <th class="AssetTableHelpers__Th-sc-1o9oxiy-4 jfBtrR">
-            <div class="AssetTableHelpers__Column-sc-1o9oxiy-1 hBIYtO">
-              <label
-                class="
-                  TextElement__Spacer-hxkcw5-0
-                  kFFKOl
-                  Label__StyledLabel-sc-15jxzvg-0
-                  gzXJpq
-                  AssetTableHelpers__ColumnLabel-sc-1o9oxiy-2
-                  ftxqkW
-                "
-                >Exchange</label
-              >
-            </div>
-          </th>
-        </tr>
-      </thead>
-      <tbody class="AssetTable__AssetTableBody-sc-1hzgxt1-0 gcVqXC">
-
-        <tr
-          v-for="(path, index) in paths"
-          :key="index"
-          data-element-handle="asset-table-row"
-          data-slug="bitcoin"
-          class="styles__Row-sc-4x2924-0 hqjdOn"
-        >
-          <td
-            v-if="false"
-            class="
-              styles__Column-sc-4x2924-1
-              AssetTableRow__AssetColumn-bzcx4v-1
-              AssetTableRow__IndexColumn-bzcx4v-2
-              cxfONy
-            "
+          <tr
+            v-for="(path, index) in paths"
+            :key="index"
+            data-element-handle="asset-table-row"
+            data-slug="bitcoin"
+            class="styles__Row-sc-4x2924-0 hqjdOn"
           >
-            <span
+            <td
+              v-if="false"
               class="
-                TextElement__Spacer-hxkcw5-0
-                cicsNy
-                Header__StyledHeader-sc-1xiyexz-0
-                bjBkPh
-                AssetTableRow__StyledHeader-bzcx4v-12
-                AssetTableRow__StyledHeaderLight-bzcx4v-13
-                jauJqX
-              "
-              >{{ index + 1 }}</span
-            >
-            <div
-              class="AssetTableRow__ReorderListIconContainer-bzcx4v-17 hiXhZK"
-            >
-              <svg
-                viewBox="0 0 448 512"
-                data-element-handle="asset-table-row-drag-handle"
-                class="AssetTableRow__ReorderListIcon-bzcx4v-18 bowWEV"
-              >
-                <path
-                  d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"
-                  fill="#becada"
-                ></path>
-              </svg>
-            </div>
-          </td>
-          <td
-            class="
-              q-ml-lg
-              styles__Column-sc-4x2924-1
-              AssetTableRow__AssetColumn-bzcx4v-1
-              AssetTableRow__NameColumn-bzcx4v-3
-              jwbgUu
-            "
-          >
-            <div
-              class="
-                Flex-l69ttv-0
-                AssetTableRow__NameColumnInner-bzcx4v-4
-                fWxga-D
+                styles__Column-sc-4x2924-1
+                AssetTableRow__AssetColumn-bzcx4v-1
+                AssetTableRow__IndexColumn-bzcx4v-2
+                cxfONy
               "
             >
-              <q-input
-                flat
-                :dark="$store.state.settings.lightMode === 'true'"
-                v-model="paths[index].fromAmount"
-                style="max-width: 300px"
+              <span
+                class="
+                  TextElement__Spacer-hxkcw5-0
+                  cicsNy
+                  Header__StyledHeader-sc-1xiyexz-0
+                  bjBkPh
+                  AssetTableRow__StyledHeader-bzcx4v-12
+                  AssetTableRow__StyledHeaderLight-bzcx4v-13
+                  jauJqX
+                "
+                >{{ index + 1 }}</span
               >
-                <template v-slot:before>
-                  <q-avatar>
-                    <img :src="path.icon" />
-                  </q-avatar>
-                </template>
-                <template v-slot:append>
-                  <span class="kwgTEs kwgTEs_navigate_next">
-                    {{ path.fromToken.toUpperCase() }}
-                    <q-icon name="navigate_next" />
-                  </span>
-                </template>
-              </q-input>
-
-              <picture v-if="false"
-                ><source :srcset="path.icon" />
-                <img
-                  :src="path.icon"
-                  loading="lazy"
-                  height="36"
-                  width="36"
-                  class="AssetTableRow__Icon-bzcx4v-19 fgsiwR"
-              /></picture>
               <div
-                v-if="false"
+                class="AssetTableRow__ReorderListIconContainer-bzcx4v-17 hiXhZK"
+              >
+                <svg
+                  viewBox="0 0 448 512"
+                  data-element-handle="asset-table-row-drag-handle"
+                  class="AssetTableRow__ReorderListIcon-bzcx4v-18 bowWEV"
+                >
+                  <path
+                    d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"
+                    fill="#becada"
+                  ></path>
+                </svg>
+              </div>
+            </td>
+            <td
+              class="
+                q-ml-lg
+                styles__Column-sc-4x2924-1
+                AssetTableRow__AssetColumn-bzcx4v-1
+                AssetTableRow__NameColumn-bzcx4v-3
+                jwbgUu
+              "
+            >
+              <div
                 class="
                   Flex-l69ttv-0
-                  AssetTableRow__NameColumnRow-bzcx4v-5
-                  fjfeyD
+                  AssetTableRow__NameColumnInner-bzcx4v-4
+                  fWxga-D
+                "
+              >
+                <q-input
+                  flat
+                  :dark="$store.state.settings.lightMode === 'true'"
+                  v-model="paths[index].fromAmount"
+                  style="max-width: 300px"
+                >
+                  <template v-slot:before>
+                    <q-avatar>
+                      <img :src="path.icon" />
+                    </q-avatar>
+                  </template>
+                  <template v-slot:append>
+                    <span class="kwgTEs kwgTEs_navigate_next">
+                      {{ path.fromToken.toUpperCase() }}
+                      <q-icon name="navigate_next" />
+                    </span>
+                  </template>
+                </q-input>
+
+                <picture v-if="false"
+                  ><source :srcset="path.icon" />
+                  <img
+                    :src="path.icon"
+                    loading="lazy"
+                    height="36"
+                    width="36"
+                    class="AssetTableRow__Icon-bzcx4v-19 fgsiwR"
+                /></picture>
+                <div
+                  v-if="false"
+                  class="
+                    Flex-l69ttv-0
+                    AssetTableRow__NameColumnRow-bzcx4v-5
+                    fjfeyD
+                  "
+                >
+                  <span
+                    class="
+                      TextElement__Spacer-hxkcw5-0
+                      cicsNy
+                      Header__StyledHeader-sc-1xiyexz-0
+                      kwgTEs
+                      AssetTableRow__StyledHeader-bzcx4v-12
+                      AssetTableRow__StyledHeaderDark-bzcx4v-14
+                      hfJTMn
+                    "
+                    >$1,200<br /> </span
+                  ><span
+                    v-if="false"
+                    class="
+                      TextElement__Spacer-hxkcw5-0
+                      cicsNy
+                      Header__StyledHeader-sc-1xiyexz-0
+                      bjBkPh
+                      AssetTableRow__StyledHeader-bzcx4v-12
+                      AssetTableRow__StyledHeaderLight-bzcx4v-13
+                      jauJqX
+                    "
+                    >BTC</span
+                  >
+                </div>
+              </div>
+            </td>
+            <td
+              class="
+                styles__Column-sc-4x2924-1
+                AssetTableRow__AssetColumn-bzcx4v-1
+                AssetTableRow__PriceColumn-bzcx4v-6
+                bkmkHF
+              "
+            >
+              <div
+                class="
+                  Flex-l69ttv-0
+                  AssetTableRow__PriceColumnInner-bzcx4v-7
+                  hzLOxv
+                "
+              >
+                <div class="q-pr-sm">
+                  <span class="gdx-coin" v-if="destinationCoin"
+                    ><span class="gdx-coin-icon icon-BTC">
+                      <q-img style="width: 20px" :src="destinationCoin.image" />
+                    </span>
+                  </span>
+                </div>
+                <span
+                  class="
+                    TextElement__Spacer-hxkcw5-0
+                    cicsNy
+                    Header__StyledHeader-sc-1xiyexz-0
+                    kwgTEs
+                    AssetTableRow__StyledHeader-bzcx4v-12
+                    AssetTableRow__StyledHeaderDark-bzcx4v-14
+                    hfJTMn
+                    hfJTMn_destinationCoin
+                  "
+                  >{{ formatNumber(path.toAmount, 5) }}
+                  {{ destinationCoin.value.toUpperCase() }}</span
+                >
+              </div>
+            </td>
+            <td
+              class="
+                styles__Column-sc-4x2924-1
+                AssetTableRow__AssetColumn-bzcx4v-1
+                AssetTableRow__PriceColumn-bzcx4v-6
+                bkmkHF
+              "
+            >
+              <div
+                class="
+                  Flex-l69ttv-0
+                  AssetTableRow__PriceColumnInner-bzcx4v-7
+                  hzLOxv
                 "
               >
                 <span
@@ -1615,166 +1696,90 @@
                     kwgTEs
                     AssetTableRow__StyledHeader-bzcx4v-12
                     AssetTableRow__StyledHeaderDark-bzcx4v-14
-                    hfJTMn
-                  "
-                  >$1,200<br /> </span
-                ><span
-                  v-if="false"
-                  class="
-                    TextElement__Spacer-hxkcw5-0
-                    cicsNy
-                    Header__StyledHeader-sc-1xiyexz-0
-                    bjBkPh
-                    AssetTableRow__StyledHeader-bzcx4v-12
-                    AssetTableRow__StyledHeaderLight-bzcx4v-13
-                    jauJqX
-                  "
-                  >BTC</span
-                >
+                    hfJTMn">
+                    <span class="priceLabel">{{ path.fromToken.toUpperCase() }} to USD</span>
+                    <br />
+                    <span class="hfJTMn_tokenPrice">
+                      {{ path.tokenPrice ? "$" + formatNumber(path.tokenPrice, 2) : "NAN" }}
+                    </span>
+                  </span>
               </div>
-            </div>
-          </td>
-          <td
-            class="
-              styles__Column-sc-4x2924-1
-              AssetTableRow__AssetColumn-bzcx4v-1
-              AssetTableRow__PriceColumn-bzcx4v-6
-              bkmkHF
-            "
-          >
-            <div
+            </td>
+            <td
               class="
-                Flex-l69ttv-0
-                AssetTableRow__PriceColumnInner-bzcx4v-7
-                hzLOxv
+                styles__Column-sc-4x2924-1
+                AssetTableRow__AssetColumn-bzcx4v-1
+                AssetTableRow__PercentChangeColumn-bzcx4v-16
+                gDZxaI
               "
             >
-              <div class="q-pr-sm">
-                <span class="gdx-coin" v-if="destinationCoin"
-                  ><span class="gdx-coin-icon icon-BTC">
-                    <q-img style="width: 20px" :src="destinationCoin.image" />
-                  </span>
-                </span>
-              </div>
               <span
                 class="
                   TextElement__Spacer-hxkcw5-0
                   cicsNy
                   Header__StyledHeader-sc-1xiyexz-0
-                  kwgTEs
+                  iOKVsz
                   AssetTableRow__StyledHeader-bzcx4v-12
-                  AssetTableRow__StyledHeaderDark-bzcx4v-14
-                  hfJTMn
-                  hfJTMn_destinationCoin
+                  AssetTableRow__TabularNumeric-bzcx4v-15
+                  eprtwk
+                  asset-table-percent-change
                 "
-                >{{ formatNumber(path.toAmount, 5) }}
-                {{ destinationCoin.value.toUpperCase() }}</span
+                >{{ path.txChainLabel }}</span
               >
-            </div>
-          </td>
-          <td
-            class="
-              styles__Column-sc-4x2924-1
-              AssetTableRow__AssetColumn-bzcx4v-1
-              AssetTableRow__PriceColumn-bzcx4v-6
-              bkmkHF
-            "
-          >
-            <div
+            </td>
+            <td
               class="
-                Flex-l69ttv-0
-                AssetTableRow__PriceColumnInner-bzcx4v-7
-                hzLOxv
+                styles__Column-sc-4x2924-1
+                AssetTableRow__AssetColumn-bzcx4v-1
+                AssetTableRow__ChartColumn-bzcx4v-8
+                jymnha
               "
             >
-              <span
+            <span class="dex_name">{{path.dex}}</span>
+              <q-img v-if="false" style="max-width: 80px" :src="path.dexLogo" />
+            </td>
+            <td
+              class="
+                styles__Column-sc-4x2924-1
+                AssetTableRow__AssetColumn-bzcx4v-1
+                AssetTableRow__TradeColumn-bzcx4v-10
+                leZMkh
+              "
+            >
+          <span v-show="false">{{path}}</span>
+              <button
+                @click="setPathTransaction(path)"
+                aria-label="Comprar Bitcoin"
                 class="
-                  TextElement__Spacer-hxkcw5-0
-                  cicsNy
-                  Header__StyledHeader-sc-1xiyexz-0
-                  kwgTEs
-                  AssetTableRow__StyledHeader-bzcx4v-12
-                  AssetTableRow__StyledHeaderDark-bzcx4v-14
-                  hfJTMn">
-                  <span class="priceLabel">{{ path.fromToken.toUpperCase() }} to USD</span>
-                  <br />
-                  <span class="hfJTMn_tokenPrice">
-                    {{ path.tokenPrice ? "$" + formatNumber(path.tokenPrice, 2) : "NAN" }}
-                  </span>
-                </span>
-            </div>
-          </td>
-          <td
-            class="
-              styles__Column-sc-4x2924-1
-              AssetTableRow__AssetColumn-bzcx4v-1
-              AssetTableRow__PercentChangeColumn-bzcx4v-16
-              gDZxaI
-            "
-          >
-            <span
-              class="
-                TextElement__Spacer-hxkcw5-0
-                cicsNy
-                Header__StyledHeader-sc-1xiyexz-0
-                iOKVsz
-                AssetTableRow__StyledHeader-bzcx4v-12
-                AssetTableRow__TabularNumeric-bzcx4v-15
-                eprtwk
-                asset-table-percent-change
-              "
-              >{{ path.txChainLabel }}</span
-            >
-          </td>
-          <td
-            class="
-              styles__Column-sc-4x2924-1
-              AssetTableRow__AssetColumn-bzcx4v-1
-              AssetTableRow__ChartColumn-bzcx4v-8
-              jymnha
-            "
-          >
-          <span class="dex_name">{{path.dex}}</span>
-            <q-img v-if="false" style="max-width: 80px" :src="path.dexLogo" />
-          </td>
-          <td
-            class="
-              styles__Column-sc-4x2924-1
-              AssetTableRow__AssetColumn-bzcx4v-1
-              AssetTableRow__TradeColumn-bzcx4v-10
-              leZMkh
-            "
-          >
-         <span v-show="false">{{path}}</span>
-            <button
-              @click="setPathTransaction(path)"
-              aria-label="Comprar Bitcoin"
-              class="
-                flex flex-center
-                Button__Container-opcph8-0
-                vioLp
-                PricesTable__TradeButton-sc-1uwln1z-0
-                cPqKDE
-              "
-            >
-              <span class="Button__Content-opcph8-1 emQNZK"
-                >Buy {{ destinationCoin.value.toUpperCase() }}
-              </span>
-              <q-icon
-                flat
-                v-if="isPathInvalid(path)"
-                name="info"
-                class="q-pl-sm"
+                  flex flex-center
+                  Button__Container-opcph8-0
+                  vioLp
+                  PricesTable__TradeButton-sc-1uwln1z-0
+                  cPqKDE
+                "
               >
-                <q-tooltip>
-                  {{ isPathInvalid(path) }}
-                </q-tooltip>
-              </q-icon>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+                <span class="Button__Content-opcph8-1 emQNZK"
+                  >Buy {{ destinationCoin.value.toUpperCase() }}
+                </span>
+                <q-icon
+                  flat
+                  v-if="isPathInvalid(path)"
+                  name="info"
+                  class="q-pl-sm"
+                >
+                  <q-tooltip>
+                    {{ isPathInvalid(path) }}
+                  </q-tooltip>
+                </q-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- MOBILE VIEW ONLY  -->
+      <ExchangeRowItem v-if="$q.platform.is.mobile" :paths="paths" :formatNumber="formatNumber" :destinationCoin="destinationCoin" :setPathTransaction="setPathTransaction" :isPathInvalid="isPathInvalid" />
+    </div>
     <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="showMessage">
       <q-card :dark="$store.state.settings.lightMode === 'true'">
         <q-card-section class="row items-center q-pb-none">
@@ -1810,6 +1815,7 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
   </div>
 </template>
 <script>
@@ -1821,6 +1827,9 @@ import Exchange from '../../../pages/Verto/Exchange.vue'
 import UI from './NewUI'
 import GasSelector from '../../../components/Verto/ETH/GasSelector.vue'
 // import transactEOS from '../transactEOS'
+
+import ExchangeRowItem from '../MobileUI/ExchangeRowItem.vue'
+
 let defaults = ['eos', 'eth', 'btc']
 const txStatus = {
   error:
@@ -1846,7 +1855,8 @@ export default {
     SendComponent,
     Exchange,
     GasSelector,
-    UI
+    UI,
+    ExchangeRowItem
     // transactEOS
   },
   props: ['fromAssetData', 'toAssetData'],

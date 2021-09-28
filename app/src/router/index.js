@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 
 import store from '../store/index.js'
 import otherRoutes from './routes'
-import login from './login'
+import login from './_login'
 import getVtx from './getVtx'
 import wallet from './wallet'
 
