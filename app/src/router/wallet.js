@@ -1,10 +1,4 @@
 let shared_wallet_urls = [
-  {
-    name: 'restoreWallet',
-    path: '/verto/restore-wallet/:returnto',
-    component: () => import('pages/Verto/RestoreWallet.vue'),
-    meta: {}
-  }
 ]
 if (process.env.MODE === 'bex') {
   shared_wallet_urls = [
@@ -14,6 +8,15 @@ if (process.env.MODE === 'bex') {
       component: () => import('pages/Verto/bex/RestoreWallet.vue'),
       meta: {}
     }]
+}else{
+  shared_wallet_urls = [
+    {
+      name: 'restoreWallet',
+      path: '/verto/restore-wallet/:returnto',
+      component: () => import('pages/Verto/RestoreWallet.vue'),
+      meta: {}
+    }
+  ]
 }
 export default [
   {

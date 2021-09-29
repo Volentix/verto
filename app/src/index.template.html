@@ -82,6 +82,7 @@
   <!-- End Google Tag Manager (noscript) -->
 
     <!-- DO NOT touch the following DIV -->
+    <% if (htmlWebpackPlugin.options.ctx.mode.bex) { %>
     <div id="preloader">
       <div class="loading-container">
         <div class="loading">
@@ -90,13 +91,14 @@
       </div>
     </div>
     <div id="q-app" style="width: 300px;height: 600px"></div>
+    <% } %>
+    <% if (!htmlWebpackPlugin.options.ctx.mode.bex) { %>
+    <div id="q-app"></div>
+    <% } %>
+
   </body>
 </html>
 
 
 <script>
-  import Stake from "./pages/Verto/Stake";
-  export default {
-    components: {Stake}
-  }
 </script>
