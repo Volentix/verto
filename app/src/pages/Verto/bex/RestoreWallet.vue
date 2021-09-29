@@ -18,7 +18,7 @@
         <!-- </div> -->
         <div class="standard-content--body__form">
           <div>
-            <q-file outlined v-model="file" label="Select your config file">
+            <q-file accept=".txt" outlined v-model="file" label="Select your config file">
               <template v-slot:append>
                 <q-icon name="attach_file" />
               </template>
@@ -68,7 +68,7 @@
         </div>
       </div>
       <div class="vert-page-content--footer q-mb-lg">
-        <q-btn unelevated class="btn__blue block"  size="lg"   label="Continue"/>
+        <q-btn @click="restoreConfig" unelevated class="btn__blue block"  size="lg"   label="Continue"/>
         <span class="q-pa-sm"/>
         <q-btn outline unelevated size="lg" class="btn--outline__blue"  label="Back" @click="step=1"/>
       </div>
