@@ -6,7 +6,7 @@
         <router-link to="/verto/dashboard">VERTO</router-link>
       </div>
     </div>
-    <video-bg :sources="['statics/mp4/create-keys2.mp4']" img="">
+    <video-bg :sources="[require('assets/mp4/create-keys2.mp4')]" img="">
       <div class="video-page-wrapper q-pt-md q-pb-md">
         <div v-if="step===2" class="standard-content" style="padding-bottom: 0px">
           <div class="standard-content--body">

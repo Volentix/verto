@@ -1,30 +1,4 @@
 let shared_auth_urls = [
-  {
-    name: 'login',
-    path: '/login',
-    component: () => import('pages/Verto/Landing.vue')
-  },
-  {
-    name: 'create-password',
-    path: '/create-password',
-    component: () => import('pages/Verto/CreateVertoPassword.vue')
-  },
-  {
-    name: 'recovery-seed',
-    path: '/recovery-seed',
-    component: () => import('pages/Verto/RecoverySeed.vue'),
-    meta: {
-      authRequired: true
-    }
-  },
-  {
-    name: 'create-keys',
-    path: '/create-keys',
-    component: () => import('pages/Verto/CreateKeys.vue'),
-    meta: {
-      authRequired: true
-    }
-  }
 ]
 if (process.env.MODE === 'bex') {
   shared_auth_urls = [
@@ -65,6 +39,35 @@ if (process.env.MODE === 'bex') {
       name: 'create-keys',
       path: '/create-keys',
       component: () => import('pages/Verto/bex/CreateKeys.vue'),
+      meta: {
+        authRequired: true
+      }
+    }
+  ]
+}else{
+  shared_auth_urls = [
+    {
+      name: 'login',
+      path: '/login',
+      component: () => import('pages/Verto/Landing.vue')
+    },
+    {
+      name: 'create-password',
+      path: '/create-password',
+      component: () => import('pages/Verto/CreateVertoPassword.vue')
+    },
+    {
+      name: 'recovery-seed',
+      path: '/recovery-seed',
+      component: () => import('pages/Verto/RecoverySeed.vue'),
+      meta: {
+        authRequired: true
+      }
+    },
+    {
+      name: 'create-keys',
+      path: '/create-keys',
+      component: () => import('pages/Verto/CreateKeys.vue'),
       meta: {
         authRequired: true
       }

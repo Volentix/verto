@@ -24,9 +24,11 @@ export default {
     }
   },
   mounted () {
-    this.$nextTick(() => {
-      document.querySelector('#preloader').style.display = 'none'
-    })
+    if (this.$isbex) {
+      this.$nextTick(() => {
+        document.querySelector('#preloader').style.display = 'none'
+      })
+    }
   }
 }
 </script>
