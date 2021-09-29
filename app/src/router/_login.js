@@ -42,9 +42,52 @@ if (process.env.MODE === 'bex') {
       meta: {
         authRequired: true
       }
+    },
+
+    {
+      name: 'import-restore',
+      path: '/import-restore',
+      component: () => import('pages/Verto/bex/ImportOrRestore.vue')
+    },
+    {
+      name: 'setup',
+      path: '/setup',
+      component: () => import('pages/Verto/bex/Setup.vue')
+    },
+    {
+      name: 'create-password',
+      path: '/create-password',
+      component: () => import('pages/Verto/bex/CreateVertoPassword.vue')
+    },
+    {
+      name: 'create--password-recover',
+      path: '/create-password/:recover',
+      component: () => import('pages/Verto/bex/CreateVertoPassword.vue')
+    },
+    {
+      name: 'recovery-seed',
+      path: '/recovery-seed',
+      component: () => import('pages/Verto/bex/RecoverySeed.vue'),
+      meta: {
+        authRequired: true
+      }
+    },
+    {
+      name: 'create-keys',
+      path: '/create-keys',
+      component: () => import('pages/Verto/bex/CreateKeys.vue'),
+      meta: {
+        authRequired: true
+      }
+    },
+    {
+      name: 'verto',
+      path: '/verto',
+      component: () => import('pages/Verto/bex/CreateVertoPassword.vue'),
+      meta: {}
     }
   ]
-}else{
+} else {
   shared_auth_urls = [
     {
       name: 'login',
@@ -71,6 +114,38 @@ if (process.env.MODE === 'bex') {
       meta: {
         authRequired: true
       }
+    },
+    {
+      name: 'create-password',
+      path: '/create-password',
+      component: () => import('pages/Verto/CreateVertoPassword.vue')
+    },
+    {
+      name: 'create--password-recover',
+      path: '/create-password/:recover',
+      component: () => import('pages/Verto/CreateVertoPassword.vue')
+    },
+    {
+      name: 'recovery-seed',
+      path: '/recovery-seed',
+      component: () => import('pages/Verto/RecoverySeed.vue'),
+      meta: {
+        authRequired: true
+      }
+    },
+    {
+      name: 'create-keys',
+      path: '/create-keys',
+      component: () => import('pages/Verto/CreateKeys.vue'),
+      meta: {
+        authRequired: true
+      }
+    },
+    {
+      name: 'verto',
+      path: '/verto',
+      component: () => import('pages/Verto/CreateVertoPassword.vue'),
+      meta: {}
     }
   ]
 }
@@ -104,41 +179,6 @@ export default [
         name: 'sign',
         path: '/sign/:txId/:session',
         component: () => import('pages/Verto/ConnectToVerto.vue')
-      }, {
-        name: 'import-restore',
-        path: '/import-restore',
-        component: () => import('pages/Verto/ImportOrRestore.vue')
-      },
-      {
-        name: 'setup',
-        path: '/setup',
-        component: () => import('pages/Verto/Setup.vue')
-      },
-      {
-        name: 'create-password',
-        path: '/create-password',
-        component: () => import('pages/Verto/CreateVertoPassword.vue')
-      },
-      {
-        name: 'create--password-recover',
-        path: '/create-password/:recover',
-        component: () => import('pages/Verto/CreateVertoPassword.vue')
-      },
-      {
-        name: 'recovery-seed',
-        path: '/recovery-seed',
-        component: () => import('pages/Verto/RecoverySeed.vue'),
-        meta: {
-          authRequired: true
-        }
-      },
-      {
-        name: 'create-keys',
-        path: '/create-keys',
-        component: () => import('pages/Verto/CreateKeys.vue'),
-        meta: {
-          authRequired: true
-        }
       },
       {
         name: 'cruxpay',
@@ -203,12 +243,7 @@ export default [
           authRequired: true
         }
       },
-      {
-        name: 'verto',
-        path: '/verto',
-        component: () => import('pages/Verto/CreateVertoPassword.vue'),
-        meta: {}
-      },
+
       {
         name: 'restore-wallet',
         path: 'restore-wallet/:returnto',
