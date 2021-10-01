@@ -6,7 +6,7 @@
         <router-link to="/verto/dashboard">VERTO</router-link>
       </div>
     </div>
-    <video-bg :sources="['statics/mp4/recovery-seed.mp4']" img="">
+    <video-bg :sources="[require('assets/mp4/recovery-seed.mp4')]" img="">
       <div class="video-page-wrapper q-pt-md q-pb-md">
         <div v-if="step===0" class="standard-content">
           <h2 class="standard-content--desc"></h2>

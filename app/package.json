@@ -28,6 +28,7 @@
     "build-pwa": "QENV=production quasar build -m pwa",
     "build-ios": "QENV=production quasar build -m cordova -T ios",
     "build-android": "QENV=production quasar build -m cordova -T android",
+    "build-bex": "cross-env  QENV=production quasar build -m bex",
     "deploy-dev": "aws s3 sync dist/pwa/ s3://verto-dev",
     "deploy-prod": "aws s3 sync dist/pwa/ s3://verto-prod",
     "lint": "./node_modules/eslint/bin/eslint.js --fix --ext .js,.vue src",

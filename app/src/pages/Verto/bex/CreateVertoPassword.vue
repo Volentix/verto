@@ -3,7 +3,7 @@
     class="column items-center justify-start create-password-page"
   >
     <div class="q-pa-md">
-      <img src="statics/icons/icon-256x256.png" width="100" alt="logo"/>
+      <img src="statics/icons/icon-256x256.png" width="80" alt="logo"/>
     </div>
     <notify-message/>
     <div class="vert-page-content">
@@ -14,9 +14,7 @@
         class="vert-page-content--desc"
       >
         Please write down your password and store it somewhere safe. Only
-        you know your password. There is no way to recover a Verto
-        password yet, we are working on an exciting new solution for you
-        that's coming soon.
+        you know your password.
       </h2>
       <!-- The seed phrase will now be added to your config after confirming the password. -->
       <div class="vert-page-content--body">
@@ -35,7 +33,6 @@
               @keyup.enter="gotoSecondScreen"
               autofocus
               outlined
-              dense
               :error="passHasError"
               :error-message="passwordError"
               :type="isPwd ? 'password' : 'text'"
@@ -57,7 +54,6 @@
             <q-input
               ref="psswrdConfirm"
               v-model="confirmPassword"
-              dense
               @input="confirmPasswordCheck"
               @keyup.enter="submit"
               outlined
@@ -79,7 +75,7 @@
         </div>
       </div>
       <span class="q-pa-xs"/>
-      <div class="vert-page-content--footer q-mb-xs">
+      <div class="vert-page-content--footer q-mb-md">
         <q-btn unelevated class="btn__blue block" @click="submit(2)" size="lg" label="Continue"/>
         <span class="q-pa-xs"/>
         <q-btn outline unelevated size="lg" class="btn--outline__blue" label="Back" @click="$router.back()"/>
