@@ -256,7 +256,7 @@ export default {
       // console.log('existingCruxID', this.existingCruxID)
     }
     */
-    console.log(this.devMode, 'devMode')
+
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
@@ -273,6 +273,7 @@ export default {
       // { name: 'Trade', to: '/verto/exchange', icon: 'compare_arrows', info: '' },
       // { name: 'Personalize your wallet', to: '', icon: 'o_perm_media', info: 'soon' },
       { name: 'Backup Config', to: 'backup', icon: 'o_get_app', info: '' },
+      { name: 'Sync with Verto chrome Extension', to: 'sync', icon: 'sync', info: '' },
       { name: 'Restore Config', to: 'restore', icon: 'cloud_upload', info: '' },
       //   { name: 'Import EOS Account', to: '/verto/eos-account/import', icon: 'label', info: '' },
       { name: 'Create new EOS Account', to: '/verto/eos-account/create', icon: 'label', info: '' },
