@@ -185,7 +185,7 @@ export default {
       }
     },
     triggerCustomRegisteredType1 () {
-      this.$store.dispatch('notify/banner', `This app is in beta, use at your own risk.`)
+      // this.$store.dispatch('notify/banner', `This app is in beta, use at your own risk.`)
       // this.$q.notify({
       //   type: 'my-notif',
       //   message: `This app is in beta, use at your own risk.`
