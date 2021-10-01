@@ -135,7 +135,7 @@ class HD {
       },
       sol () {
         const solanaWeb3 = require('@solana/web3.js')
-        const path = "m/44'/501'/0'"
+        const path = "m/44'/501'/" + addressIndex.toString() + "'"
         const derivedSeed = derivePath(path, seed).key
         const account = new solanaWeb3.Account(nacl.sign.keyPair.fromSeed(derivedSeed).secretKey)
         const publicKey = account.publicKey.toString()

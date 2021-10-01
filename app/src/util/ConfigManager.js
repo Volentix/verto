@@ -208,7 +208,9 @@ class ConfigManager {
         }
 
         // const privateWallet = JSON.stringify({name: keyname, publickey: publicAddress, privatekey: privateAddress})
+        
         config.keys.push(key)
+      
         this.currentConfig = config
         if (defaultKey) { this.currentWallet = key }
 
@@ -218,6 +220,7 @@ class ConfigManager {
           await platformTools.downloadFile(encryptedData, fileName)
         }
         await this.saveConfig(vertoPassword, key, config)
+      
         return { success: true }
       } catch (e) {
         devError(e)
