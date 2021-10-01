@@ -1,6 +1,7 @@
 import EosWrapper from '@/util/EosWrapper'
 import axios from 'axios'
 import store from '@/store'
+import * as solanaWeb3 from '@solana/web3.js'
 
 import {
   userError
@@ -29,7 +30,7 @@ class Lib {
       name: 'Binance Smart Chain',
       chain: 'bsc',
       nativeToken: 'bnb',
-      icon: 'https://nownodes.io/images/binance-smart-chain/bsc-logo.png',
+      icon: 'https://cryptologos.cc/logos/binance-coin-bnb-logo.png',
       provider: 'https://bsc-dataseed1.binance.org:443',
       explorer: 'https://bscscan.com/tx/',
       gas: 'https://api.bscscan.com/api?module=proxy&action=eth_gasPrice&apikey=JK2Z5XQYR1FMCAQFQDBFNS5FJM6XC7ETTB',
@@ -546,6 +547,24 @@ class Lib {
 
   balance = async (chain, key, token) => {
     const wallet = {
+      async sol (key, token) {
+        let connection = new solanaWeb3.Connection(
+          solanaWeb3.clusterApiUrl('mainnet-beta'),
+          'confirmed'
+        )
+        let Pkey = new solanaWeb3.PublicKey(key)
+        console.log(key, 'key', Pkey, 'Pkey')
+        let amount = await connection.getBalance(Pkey)
+        let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd')).data.solana.usd
+        amount = amount * 0.000000001
+        const usd = amount * tokenPrice
+
+        return {
+          amount,
+          usd,
+          tokenPrice
+        }
+      },
       async eos (key, token) {
         let float = 0
         const tokenContract = {
@@ -907,6 +926,46 @@ class Lib {
     const self = this
 
     const wallet = {
+      async sol (token, from, to, value, memo, key) {
+        let account = solanaWeb3.Account(key)
+        // Connect to cluster
+        var connection = new solanaWeb3.Connection(
+          solanaWeb3.clusterApiUrl('mainnet-beta'),
+          'confirmed'
+        )
+        let tx = solanaWeb3.SystemProgram.transfer({
+          fromPubkey: from,
+          toPubkey: to,
+          lamports: solanaWeb3.LAMPORTS_PER_SOL * value
+        })
+        // Add transfer instruction to transaction
+        var transaction = new solanaWeb3.Transaction().add(
+          tx
+        )
+
+        // Sign transaction, broadcast, and confirm
+        var signature = await solanaWeb3.sendAndConfirmTransaction(
+          connection,
+          transaction,
+          [account]
+        )
+        console.log('SIGNATURE', signature)
+
+        return new Promise((resolve, reject) =>
+          account.send(to, value, 'BTC', { fee: fee })
+            .on('transactionHash', (tx_hash) => {
+              resolve({
+                message: `https://www.blockchain.com/btc/tx/${tx_hash}`,
+                success: true,
+                transaction_id: tx_hash
+              })
+            })
+            .on('confirmation', confirmations => {
+              // console.log(confirmations, 'confirmations')
+            })
+            .catch(reject)
+        )
+      },
       async btc (token, from, to, value, memo, key) {
         const bitcoin = require('bitcoinjs-lib')
         const CryptoAccount = require('send-crypto').default
