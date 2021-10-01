@@ -14,7 +14,7 @@
       <div class="standard-content--body full-width">
         <div class="standard-content--body__form">
           <label class="ver-label">Enter your password</label>
-          <q-input bg-color="white" ref="psswrd" v-model="password" @keyup.enter="login" @input="checkPassword" :error="passHasError"
+          <q-input bg-color="white" ref="psswrd" v-model="password" @keyup.enter="login" error-message="Your password is wrong" @input="checkPassword" :error="passHasError"
                    outlined :type="isPwd ? 'password' : 'text'">
             <template v-slot:append>
               <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd"/>
