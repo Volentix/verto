@@ -43,7 +43,9 @@ function sortByKey (array, key) {
     return x < y ? -1 : x > y ? 1 : 0
   })
 }
-
+function sleep (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
 function getUniqueLocations (locations) {
   let data = []
   for (let i = 0; i < locations.length; i++) {
@@ -191,6 +193,7 @@ export {
   getInstaller,
   getVersion,
   getTime,
+  sleep,
   copyToClipboard,
   checkEosEndpoint,
   checkNodeApi

@@ -1596,6 +1596,8 @@ export default {
     getInvestedTokens (investments) {
       let assets = []
       investments.forEach((t) => {
+        if (!t || !t.tokens) return
+
         t.tokens.forEach((a) => {
           let protocolData = this.platformOptions.find(
             (o) => o.label.toLowerCase() === t.protocolDisplay.toLowerCase()
