@@ -2,7 +2,7 @@
   <div :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }">
     <div class="chain-tools-wrapper q-pa-none">
       <!-- <q-toggle v-model="active" label="Active" /> -->
-      <div :class="!$q.platform.is.mobile ? 'chain-tools-wrapper--list open' : 'open' ">
+      <div :class="!($q.platform.is.mobile||$isbex) ? 'chain-tools-wrapper--list open' : 'open' ">
         <div class="list-wrapper">
           <div class="list-wrapper--chain__eos-to-vtx-convertor">
            <q-tabs
@@ -371,7 +371,7 @@
                       </q-tab>
                     </q-tabs>
                     <div class="text-black" v-if="tab == 'new'">
-                      <div :class="!$q.platform.is.mobile ? 'text-h4 --subtitle q-pt-md q-pb-none' : 'q-pt-md q-pb-none text-bold'">
+                      <div :class="!($q.platform.is.mobile||$isbex) ? 'text-h4 --subtitle q-pt-md q-pb-none' : 'q-pt-md q-pb-none text-bold'">
                         <ul>
                           <li>
                             <span

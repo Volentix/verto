@@ -184,7 +184,7 @@
             </div>
         </div>
         <q-dialog
-            v-model="$q.platform.is.mobile"
+            v-model="$q.platform.is.mobile||$isbex"
             persistent
             :maximized="true"
             transition-show="slide-up"

@@ -444,14 +444,14 @@ export default [
           authRequired: true
         }
       },
-      {
-        name: 'dashboardNewUI',
-        path: '/verto/dashboardNewUI',
-        component: () => import('pages/Verto/DashboardNewUI.vue'),
-        meta: {
-          authRequired: true
-        }
-      },
+      // {
+      //   name: 'dashboardNewUI',
+      //   path: '/verto/dashboardNewUI',
+      //   component: () => import('pages/Verto/DashboardNewUI.vue'),
+      //   meta: {
+      //     authRequired: true
+      //   }
+      // },
       {
         name: 'profile',
         path: '/verto/profile',

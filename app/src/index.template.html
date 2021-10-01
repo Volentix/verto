@@ -58,8 +58,8 @@
       height: 150px;
       margin: 8px;
       border-radius: 50%;
-      border: 6px solid #000;
-      border-color: #000 transparent #000 transparent;
+      border: 3px solid #4A88EE;
+      border-color: #4A88EE transparent #4A88EE transparent;
       animation: lds-dual-ring 1.2s linear infinite;
     }
     @keyframes lds-dual-ring {
@@ -70,11 +70,27 @@
         transform:  rotate(360deg);
       }
     }
+    /*This part is required for navigation to work properly*/
+    <% if (htmlWebpackPlugin.options.ctx.mode.bex) { %>
+      html{
+      position: relative;
+        width: 357px !important;
+        height: 600px !important;
+      }
+      .q-body--fullscreen-mixin, q-body--prevent-scroll{
+        position: relative !important;
+      }
+    <% } %>
 
   </style>
+    <% if (process.env.NODE_ENV === 'development') { %>
+      <!-- Load Vue Devtools remote ONLY in development -->
+       <script src="http://localhost:8098"></script>
+    <% } %>
 
   </head>
-  <body>
+  <body
+  >
 
     <!-- Google Tag Manager (noscript) -->
 <!--<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P437ZDP"-->
@@ -90,7 +106,9 @@
         </div>
       </div>
     </div>
-    <div id="q-app" style="width: 300px;height: 600px"></div>
+    <div style="position: relative;">
+      <div id="q-app" style="width: 300px;height: 600px"></div>
+    </div>
     <% } %>
     <% if (!htmlWebpackPlugin.options.ctx.mode.bex) { %>
     <div id="q-app"></div>

@@ -88,7 +88,7 @@
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-else>${{ nFormatter2( chainData ?  chainData.total : $store.state.wallets.portfolioTotal , 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <!-- {{$store.state.wallets.portfolioTotal}} -->
-      <div class="profile-wrapper--header__action" v-if="!$q.platform.is.mobile">
+      <div class="profile-wrapper--header__action" v-if="!($q.platform.is.mobile||$isbex)">
 
         <q-btn unelevated v-if="screenSize <= 1024"
           :disable="$store.getters['currentwallet/getWallet'].type === 'verto' || !($store.state.settings.chainsSendEnabled.includes($store.getters['currentwallet/getWallet'].chain))"
