@@ -31,7 +31,7 @@
         </div>
         <div v-if="step===3" class="vert-page-content" style="">
 <!--            <div class="vert-page-content&#45;&#45;body">-->
-                <h2 class="vert-page-content--title  text-center">Congratulations!</h2>
+                <h2 v-if="$store.getters['notify/message']==''" class="vert-page-content--title  text-center">Congratulations!</h2>
           <div class="vert-page-content--body" style="justify-content: start">
             <p class="vert-page-content--desc">
               Disclaimer
@@ -54,7 +54,7 @@
                 <p  class="q-py-sm text-bold" v-if="$store.state.settings.dexData.depositCoin && $store.state.settings.dexData.depositCoin && false"> Click go to exchange to swap {{$store.state.settings.dexData.fromAmount}}  {{$store.state.settings.dexData.depositCoin.value.toUpperCase()}} to {{$store.state.settings.dexData.destinationCoin.value.toUpperCase()}}</p>
             </div>
           <div class="vert-page-content--footer" style="padding-bottom: 30px">
-            <q-btn class="btn__blue" size="lg" @click="dataRefresh" unelevated label="Start Trading"/>
+            <q-btn class="btn__blue" size="lg" @click="dataRefresh()" unelevated label="Start Trading"/>
           </div>
         </div>
     </div>

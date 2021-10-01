@@ -1,7 +1,7 @@
 <template>
   <q-page class="column items-center justify-start setup-page">
     <div class="q-pa-md">
-      <img src="statics/icons/icon-256x256.png" width="100" alt="logo"/>
+      <img src="statics/icons/icon-256x256.png" width="80" alt="logo"/>
     </div>
     <div class="vert-page-content">
       <h2 class="vert-page-content--title">
