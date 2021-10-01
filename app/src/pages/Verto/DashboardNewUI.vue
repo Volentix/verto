@@ -6,15 +6,15 @@
       'dark-theme': $store.state.settings.lightMode === 'true',
       'text-black bg-white': $store.state.settings.lightMode === 'false',
       'desktop-marg': screenSize > 1024,
-      'mobile-pad': screenSize < 1024 && !$q.platform.is.mobile,
+      'mobile-pad': screenSize < 1024 && !($q.platform.is.mobile||$isbex),
     }"
-    :style=" $q.platform.is.mobile? 'position: static; background: #f2f2f2 !important' : '' "
+    :style=" $q.platform.is.mobile||$isbex? 'position: static; background: #f2f2f2 !important' : '' "
   >
-  <!-- :style=" $q.platform.is.mobile? 'position: static; background: #f2f2f2 !important' : '' " -->
+  <!-- :style=" $q.platform.is.mobile||$isbex? 'position: static; background: #f2f2f2 !important' : '' " -->
     <div
       :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
       style="height: 100vh"
-      v-if="!$q.platform.is.mobile"
+      v-if="!($q.platform.is.mobile||$isbex)"
     >
       <div class="desktop-version full-height"  >
         <div class="row full-height">
@@ -224,7 +224,7 @@
 
     </div>
     <!-- MOBILE SECTION STARTED  -->
-    <div v-if="$q.platform.is.mobile">
+    <div v-if="$q.platform.is.mobile||$isbex">
       <AssetsExplorer
         @assetsChanged="assetsChanged"
         ref="assetsComponent2"
@@ -523,6 +523,10 @@ export default {
       this.$store.state.settings.show.tab = ''
     },
     getWindowWidth () {
+      if (this.$isbex) {
+        this.screenSize = 357
+        return
+      }
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
     showIntros () {

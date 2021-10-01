@@ -3,7 +3,7 @@
   <div
     :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
     class="wrapper q-pr-md"
-    v-if="asset.type && !$q.platform.is.mobile"
+    v-if="asset.type && !($q.platform.is.mobile||$isbex)"
   >
     <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" style="margin-left: 15px; height: 77vh;">
       <div class="row" >
@@ -588,7 +588,7 @@
       </div>
     </q-scroll-area>
   </div>
-  <div v-if="$q.platform.is.mobile">
+  <div v-if="$q.platform.is.mobile||$isbex">
     <SignleTokenDialog :marketData="marketData" :asset="asset" :formatNumber="formatNumber" :chartData="chartData" :chartAvailable="chartAvailable" :intervalHistory="intervalHistory" :getHistoriclPrice="getHistoriclPrice" :nFormatter2="nFormatter2" :tab.sync="tab" :success.sync="success" :error.sync="error" :exchangeToken="exchangeToken" :setAsset.sync="setAsset" :fromPreview.sync="fromPreview" :depositQuantity.sync="depositQuantity" :assetBalance="assetBalance" :destinationCoin.sync="destinationCoin" :destinationCoinOptions="destinationCoinOptions" :sendTo.sync="sendTo" :memo.sync="memo" :isTxValid="isTxValid" :triggerAction="triggerAction" :goToExchange="goToExchange" :spinnerVisible.sync="spinnerVisible" :filterDestinationCoin="filterDestinationCoin" :setSuccessData="setSuccessData" />
   </div>
 </div>
