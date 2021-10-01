@@ -1,6 +1,6 @@
 <template>
-  <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="alert" :maximized="$q.platform.is.mobile">
-    <q-card :dark="$store.state.settings.lightMode === 'true'" :style="!$q.platform.is.mobile ? 'width:380px;': ''">
+  <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="alert" :maximized="$q.platform.is.mobile||$isbex">
+    <q-card :dark="$store.state.settings.lightMode === 'true'" :style="!($q.platform.is.mobile||$isbex) ? 'width:380px;': ''">
       <div
         id="id-svk40f"
         role="dialog"

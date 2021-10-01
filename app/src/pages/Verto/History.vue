@@ -86,7 +86,7 @@ export default {
     }
   },
   mounted () {
-    if (this.$q.platform.is.mobile) document.getElementById('scrollToID3').scrollIntoView()
+    if (this.$q.platform.is.mobile || this.$isbex) document.getElementById('scrollToID3').scrollIntoView()
 
     this.version = version
     this.setupPlatformPath()
