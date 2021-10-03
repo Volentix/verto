@@ -183,7 +183,7 @@
         </div>
       </q-drawer>
 
-      <q-footer v-if="$q.platform.is.mobile">
+      <q-footer v-if="$q.platform.is.mobile||$isbex">
         <q-tabs
           v-model="tabRoute"
           indicator-color="primary"
@@ -198,22 +198,22 @@
         </q-tabs>
       </q-footer>
 
-      <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}" :style="$q.platform.is.mobile ? 'overflow:scroll; background: #f2f2f2 !important' : 'overflow:scroll;' " >
-        <div v-if="$q.platform.is.mobile">
+      <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}" :style="$q.platform.is.mobile||$isbex ? 'overflow:scroll; background: #f2f2f2 !important' : 'overflow:scroll;' " >
+        <div v-if="$q.platform.is.mobile||$isbex">
           <div id ="scrollID8"></div>
           <q-pull-to-refresh @refresh="refresh" >
             <TopMenu v-if="!$q.screen.lt.sm"/>
-            <TopMenuMobile v-if="$q.platform.is.mobile" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" />
+            <TopMenuMobile v-if="$q.platform.is.mobile||$isbex" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" />
           </q-pull-to-refresh>
         </div>
         <div v-else>
            <TopMenu v-if="!$q.screen.lt.sm"/>
-          <TopMenuMobile v-if="$q.platform.is.mobile" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" />
+          <TopMenuMobile v-if="$q.platform.is.mobile||$isbex" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" />
         </div>
 
         <q-breadcrumbs
           class="text-deep-purple-12 breadcrumbs"
-          v-if="$route.path != '/verto/dashboard'   && !$q.platform.is.mobile"
+          v-if="$route.path != '/verto/dashboard'   && !($q.platform.is.mobile||$isbex)"
         >
           <template v-slot:separator>
             <q-icon size="1.5em" name="chevron_right" :color="$store.state.settings.lightMode === 'true' ? 'white':'primary'" />

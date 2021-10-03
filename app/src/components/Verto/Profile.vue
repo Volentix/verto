@@ -15,14 +15,14 @@
             <div v-if="screenSize <= 1024 && item.info === 'Linked'" class="flex flex-center q-mr-md text-grey">{{existingCruxID}}</div>
             <div v-if="screenSize <= 1024 && item.info === 'darkmode'" class="flex flex-center q-mr-md text-grey"></div>
           </q-item-section>
-          <q-item-section v-if="!$q.platform.is.mobile">
+          <q-item-section v-if="!($q.platform.is.mobile||$isbex)">
             <div class="flex justify-end">
               <div v-if="screenSize > 1024 && item.info === 'Linked'" class="flex flex-center q-mr-md text-grey">{{existingCruxID}}</div>
               <q-btn v-if="item.info === 'Linked'" flat unelevated text-color="grey" @click="copyToClipboard(existingCruxID , 'Verto ID')" round class="btn-copy" icon="o_file_copy" />
             </div>
           </q-item-section>
-          <q-item-section v-if="!$q.platform.is.mobile" class="profile-wrapper--list__item-info" :class="{'hide': item.info === '' || item.info === 'darkmode', 'text-orange': item.info !== 'Linked', 'text-green' : item.info === 'Linked'}">{{item.info}}</q-item-section>
-          <q-item-section v-if="($q.platform.is.mobile && item.name === 'Theme') && screenSize <= 1024 && item.info === 'darkmode'" class="flex justify-end darkmode-option">
+          <q-item-section v-if="!($q.platform.is.mobile||$isbex)" class="profile-wrapper--list__item-info" :class="{'hide': item.info === '' || item.info === 'darkmode', 'text-orange': item.info !== 'Linked', 'text-green' : item.info === 'Linked'}">{{item.info}}</q-item-section>
+          <q-item-section v-if="(($q.platform.is.mobile||$isbex) && item.name === 'Theme') && screenSize <= 1024 && item.info === 'darkmode'" class="flex justify-end darkmode-option">
             <q-toggle
               v-model="lightMode"
               checked-icon="wb_sunny"
@@ -48,7 +48,7 @@
               {label: 'Main Net', value: 'mainnet'},
               {label: 'Test Net', value: 'testnet'}
             ]"
-            :style="$q.platform.is.mobile ? 'margin-left: -76px;' : ''"
+            :style="$q.platform.is.mobile||$isbex ? 'margin-left: -76px;' : ''"
           />
           </q-item-section>
            <q-item-section v-if="item.name === 'Dev Mode'" class="flex justify-end darkmode-option">
@@ -60,13 +60,13 @@
               {label: 'Active', value: true },
               {label: 'Inactive', value: false }
             ]"
-            :style="$q.platform.is.mobile ? 'margin-left: -58px;' : ''"
+            :style="$q.platform.is.mobile||$isbex ? 'margin-left: -58px;' : ''"
             />
           </q-item-section>
         </q-item>
       </q-list>
     </div>
-    <span v-if="!$q.platform.is.mobile && screenSize <= 1024" class="version full-width text-center text-grey column q-pt-md q-pl-xl q-pr-xl q-pb-xl q-mt-md">
+    <span v-if="!($q.platform.is.mobile||$isbex) && screenSize <= 1024" class="version full-width text-center text-grey column q-pt-md q-pl-xl q-pr-xl q-pb-xl q-mt-md">
       <span class="q-mb-md q-mt-md"><strong>{{version}}</strong></span>
       <span class="q-pa-sm">
         This app is in beta, please send us bug reports if you find any. <b><a target="_blank" :class="{'text-white':$store.state.settings.lightMode === 'true'}" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
