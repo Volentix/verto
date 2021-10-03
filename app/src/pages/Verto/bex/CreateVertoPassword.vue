@@ -59,7 +59,7 @@
               outlined
               :error="(!passHasError)&&!passwordsMatch"
               error-message="Password mismatched"
-              :color="passwordsMatch ? 'green' : 'deep-purple-14'"
+              :color="passwordsMatch ? 'green' : 'deep-red-14'"
               :type="isPwd ? 'password' : 'text'"
               class="q-mt-sm"
             >
@@ -221,6 +221,7 @@ export default {
     },
     submit: async function (step) {
       this.passwordCheck()
+      this.confirmPasswordCheck()
       if (this.isRecovering) {
         step = 4
       }

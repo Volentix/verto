@@ -1411,7 +1411,7 @@
       </div>
       <!-- TABLE SECTION  -->
       <table
-        v-if="!$q.platform.is.mobile && paths.length && step != 2"
+        v-if="!($q.platform.is.mobile||$isbex) && paths.length && step != 2"
         class="AssetTable__Table-sc-1hzgxt1-1 hkPLhL"
       >
         <colgroup>
@@ -1778,7 +1778,7 @@
       </table>
 
       <!-- MOBILE VIEW ONLY  -->
-      <ExchangeRowItem v-if="$q.platform.is.mobile" :paths="paths" :formatNumber="formatNumber" :destinationCoin="destinationCoin" :setPathTransaction="setPathTransaction" :isPathInvalid="isPathInvalid" />
+      <ExchangeRowItem v-if="$q.platform.is.mobile||$isbex" :paths="paths" :formatNumber="formatNumber" :destinationCoin="destinationCoin" :setPathTransaction="setPathTransaction" :isPathInvalid="isPathInvalid" />
     </div>
     <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="showMessage">
       <q-card :dark="$store.state.settings.lightMode === 'true'">

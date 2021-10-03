@@ -7,7 +7,7 @@
       'import_wrapper_class': tab == 'import'
     }"
     class="wrapper q-px-lg full-width assets_explorer_container"
-    :style=" $q.platform.is.mobile? 'background: #f2f2f2 !important' : '' "
+    :style=" $q.platform.is.mobile||$isbex? 'background: #f2f2f2 !important' : '' "
 >
   <q-dialog v-model="alertSecurity">
     <q-card
@@ -71,7 +71,7 @@
   </q-dialog>
 
   <div
-     v-if="!$q.platform.is.mobile"
+     v-if="!($q.platform.is.mobile||$isbex)"
   >
     <div
       class="wrap"
@@ -1079,7 +1079,7 @@
   />
   <div> </div>
   <!-- MOBILE SECTION STARTED -->
-  <div   v-if="$q.platform.is.mobile">
+  <div   v-if="$q.platform.is.mobile||$isbex">
     <TabAssetsExplorer  :chains="chains" :tab.sync="tab" :chainAction='chainAction' :formatNumber='formatNumber' :showQr.sync='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage='showTokenPage' :initTable="initTable" :selectedChain.sync="selectedChain" :keys="keys" :showPrivateKeys="showPrivateKeys" :alertSecurity.sync="alertSecurity" :tokenSearchVal="tokenSearchVal"/>
   </div>
   <!-- MOBILE SECTION END -->

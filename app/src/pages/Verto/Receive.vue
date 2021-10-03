@@ -1,7 +1,7 @@
 <template>
   <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 99vh;">
-      <q-toolbar v-if="$q.platform.is.mobile">
+      <q-toolbar v-if="($q.platform.is.mobile||$isbex)">
           <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)"/>
           <q-toolbar-title :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" > Token Receive </q-toolbar-title>
       </q-toolbar>
