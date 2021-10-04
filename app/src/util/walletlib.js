@@ -257,6 +257,43 @@ class Lib {
   history = async (chain, key, token, data = null) => {
     const self = this
     const wallet = {
+      async sol (token, key, data) {
+        return new Promise(async (resolve, reject) => {
+          let actions = []
+          axios.get(process.env[store.state.settings.network].CACHE + 'https://api.solscan.io/account/transaction?address='+key)
+            .then(function (result) {
+                result.data.data.filter(o => a.status.toLowerCase() === 'success').map(a => {
+                    let tx = {}
+
+                    let date = new Date(a.blockTime)
+                    tx.timeStamp = date.getTime() / 1000
+                    tx.chain = token
+                    tx.friendlyHash = a.txHash.substring(0, 6) + '...' + a.txHash.substr(a.txHash.length - 5)
+                    tx.to = tx.friendlyTo = a.parsedInstruction[0].programId
+                    tx.hash = a.txHash
+                    tx.explorerLink = 'https://solscan.io/tx/' + tx.hash
+                    tx.from = a.signer[0]
+                    tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+                    tx.image = 'https://solana.com/branding/new/exchange/exchange-black.png' //self.getTokenImage(amount.split(' ')[1])
+                    tx.amount = a.lamport * 0.000000001
+                    tx.symbol = 'SOL'
+                    tx.direction = self.getTransactionDirection(a.signer[0], a.parsedInstruction[0].programId, key)
+                    tx.dateFormatted = date.toISOString().split('T')[0]
+                    tx.amountFriendly = parseFloat(Math.abs(tx.amount)).toFixed(6)
+
+                    actions.push(tx)
+                  })
+                
+                resolve({
+                  history: actions
+                })
+              }).catch(function (error) {
+              reject({
+                error: error
+              })
+            })
+        })
+      },
       async eos (token, key, data) {
         return new Promise(async (resolve, reject) => {
           let actions = []
