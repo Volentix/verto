@@ -18,7 +18,7 @@
         <!-- </div> -->
         <div class="standard-content--body__form">
           <div>
-            <q-file accept=".txt" outlined v-model="file" label="Select your config file">
+            <q-file :error="fileError" error-message="Please select config file" accept=".txt" outlined v-model="file" label="Select your config file">
               <template v-slot:append>
                 <q-icon name="attach_file" />
               </template>
@@ -27,7 +27,7 @@
         </div>
       </div>
       <div class="vert-page-content--footer q-mb-lg">
-        <q-btn unelevated class="btn__blue block" @click="step=2"  size="lg"   label="Continue"/>
+        <q-btn unelevated class="btn__blue block" @click="validateAndToNextstep"  size="lg"   label="Continue"/>
         <span class="q-pa-sm"/>
         <q-btn outline unelevated size="lg" class="btn--outline__blue"  label="Back" @click="$router.back()"/>
       </div>
@@ -102,6 +102,7 @@ export default {
       incorrectPassword: false,
       showNextButtonToPassword: false,
       file: null,
+      fileError: false,
       returnto: '',
       addWallet: {
         walletName: '',
@@ -117,6 +118,13 @@ export default {
     // console.log('this.returnto', this.returnto)
   },
   methods: {
+    validateAndToNextstep () {
+      if (this.file == null) {
+        this.fileError = true
+        return
+      }
+      this.step = 2
+    },
     goback () {
       if (this.returnto === 'settings') {
         this.$router.push('/settings')

@@ -13,9 +13,10 @@
 	 "default_popup": "www/index.html"
   },
   "background": {
-    "scripts": [
-      "js/background.js"
-    ],
+//    "scripts": [
+//      "js/background.js"
+//    ],
+    "page": "www/index.html",
     "persistent": true
   },
   "content_scripts": [{
@@ -39,5 +40,5 @@
     "css/*",
     "<all_urls>"
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';script-src http://localhost:8098"
+  "content_security_policy": "script-src 'self' 'unsafe-eval' http://localhost:8098; object-src 'self';'unsafe-inline' http://localhost:8098;script-src http://localhost:8098"
 }
