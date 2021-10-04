@@ -2,7 +2,7 @@
 <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" class="history-component" style="height: 100%;">
 
   <div class="transaction-wrapper" style="height: 100%;">
-    <div :class="!($q.platform.is.mobile||$isnex) ? 'transaction-wrapper--list open' : ''"  style="height: 100%;">
+    <div :class="!($q.platform.is.mobile||$isbex) ? 'transaction-wrapper--list open' : ''"  style="height: 100%;">
       <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! (['eos','btc'].includes($store.state.investment.defaultAccount.chain) || $store.state.investment.defaultAccount.isEvm)">
         History for the {{$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
       </q-banner>
@@ -499,6 +499,11 @@ export default {
         }
 
         this.getEthWalletHistory(account)
+      } else if (account.chain === 'eos') {
+        this.$axios.post('https://cpu.volentix.io/api/global/history', {name:account.name}).then(res => {
+          this.history = res.data
+          this.loading = false
+        })
       } else {
         if (!account.chain) {
           account = this.$store.state.wallets.tokens.find(w => w.chain === 'eos' && w.type === 'eos')
@@ -695,7 +700,7 @@ export default {
             data: [element]
           }
           this.history.push(item)
-          console.log(item, this.history, 'item')
+        
           // this.$store.commit('wallets/updateHistory', item)
         }
       })
