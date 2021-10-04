@@ -224,7 +224,7 @@
             icon="keyboard_backspace"
             :class="{'text-white': $store.state.settings.lightMode === 'true'}"
             class="cursor-pointer q-ml-md"
-            @click="$route.name.includes('token') && $route.params.asset && !['btc'].includes($route.params.asset.chain) && $route.params.asset.name ? goToTab('assets', $route.params.asset.chain) : $router.go(-1)"
+            @click="$route.name.includes('token') && $route.params.asset && !['btc'].includes($route.params.asset.chain) && $route.params.asset.name ? goToTab('assets', $route.params.asset.chain) : $router.back()"
           />
           <q-breadcrumbs-el
             v-if="$route.name.includes('token')"
