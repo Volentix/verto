@@ -83,7 +83,7 @@
     <% } %>
 
   </style>
-    <% if (process.env.NODE_ENV === 'development') { %>
+    <% if (process.env.NODE_ENV === 'development' && htmlWebpackPlugin.options.ctx.mode.bex) { %>
       <!-- Load Vue Devtools remote ONLY in development -->
        <script src="http://localhost:8098"></script>
     <% } %>
