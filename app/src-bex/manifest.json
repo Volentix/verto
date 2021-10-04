@@ -13,14 +13,13 @@
 	 "default_popup": "www/index.html"
   },
   "background": {
-    "scripts": [
-      "js/background.js"
-    ],
+    "page": "background.html",
     "persistent": true
   },
   "content_scripts": [{
     "matches": ["<all_urls>"],
     "js": [
+      "www/bex-content-script.js",
       "js/content-script.js"
     ],
     "css": [
@@ -39,5 +38,5 @@
     "css/*",
     "<all_urls>"
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';script-src http://localhost:8098"
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';"
 }
