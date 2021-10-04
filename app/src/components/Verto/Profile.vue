@@ -203,6 +203,9 @@
       <q-card-section>
         <div class="text-h6">Verto Extension not found</div>
       </q-card-section>
+      <q-card-section class="q-pt-none">
+        If you have installed extension please refresh this page and try again
+      </q-card-section>
       <q-card-actions align="right">
         <q-btn flat label="OK" color="primary" v-close-popup />
       </q-card-actions>

@@ -4,37 +4,9 @@
       <img src="statics/icons/icon-256x256.png"  width="80" alt="logo"/>
     </div>
     <notify-message/>
-    <div v-if="step==1" class="vert-page-content">
-      <!--          <h2 class="vert-page-content&#45;&#45;title">-->
-      <!--            Verto-->
-      <!--          </h2>-->
+    <div class="vert-page-content">
       <h2 class="vert-page-content--title">
-        Select your config file
-      </h2>
-      <!-- The seed phrase will now be added to your config after confirming the password. -->
-      <div class="vert-page-content--body">
-        <!-- <div class="standard-content--body__img column flex-center gt-xs" v-if="!passwordsMatch"> -->
-        <!-- <img src="statics/password_bg.svg" alt=""> -->
-        <!-- </div> -->
-        <div class="standard-content--body__form">
-          <div>
-            <q-file :error="fileError" error-message="Please select config file" accept=".txt" outlined v-model="file" label="Select your config file">
-              <template v-slot:append>
-                <q-icon name="attach_file" />
-              </template>
-            </q-file>
-          </div>
-        </div>
-      </div>
-      <div class="vert-page-content--footer q-mb-lg">
-        <q-btn unelevated class="btn__blue block" @click="validateAndToNextstep"  size="lg"   label="Continue"/>
-        <span class="q-pa-sm"/>
-        <q-btn outline unelevated size="lg" class="btn--outline__blue"  label="Back" @click="$router.back()"/>
-      </div>
-    </div>
-    <div v-if="step==2" class="vert-page-content">
-      <h2 class="vert-page-content--title">
-        Enter your config password
+        Enter your sync config password
       </h2>
       <!-- The seed phrase will now be added to your config after confirming the password. -->
       <div class="vert-page-content--body">
@@ -70,7 +42,7 @@
       <div class="vert-page-content--footer q-mb-lg">
         <q-btn @click="restoreConfig" unelevated class="btn__blue block"  size="lg"   label="Continue"/>
         <span class="q-pa-sm"/>
-        <q-btn outline unelevated size="lg" class="btn--outline__blue"  label="Back" @click="step=1"/>
+        <q-btn outline unelevated size="lg" class="btn--outline__blue"  label="Cancel Sync" @click="cancelSync"/>
       </div>
     </div>
   </q-page>
@@ -100,8 +72,6 @@ export default {
       unknownError: false,
       incorrectPassword: false,
       showNextButtonToPassword: false,
-      file: null,
-      fileError: false,
       returnto: '',
       addWallet: {
         walletName: '',
@@ -117,13 +87,6 @@ export default {
     // console.log('this.returnto', this.returnto)
   },
   methods: {
-    validateAndToNextstep () {
-      if (this.file == null) {
-        this.fileError = true
-        return
-      }
-      this.step = 2
-    },
     goback () {
       if (this.returnto === 'settings') {
         this.$router.push('/settings')
@@ -160,36 +123,43 @@ export default {
         this.showNextButtonToPassword = true
       }
     },
-    async restoreConfig () {
-      const self = this
-      const reader = new FileReader()
-      reader.onload = async function () {
-        try {
-          self.spinnervisible = true
-          const results = await configManager.restoreConfig(reader.result, self.addWallet.vertoPassword)
-          console.log(results, 'results restoreConfig')
-          if (results.message === 'bad_password') {
-            // self.startRestoreConfig()
-            self.spinnervisible = false
-            throw new Error('Incorrect Password')
-          }
-          // updateProgress(1)
-          self.$store.commit('settings/temporary', self.addWallet.vertoPassword)
-          self.applicationRefreshing = true
-          self.$q.notify({ color: 'positive', message: 'Application refreshing' })
-          setTimeout(function () {
-            self.$router.push({
-              path: '/verto/dashboard'
-            })
-            self.spinnervisible = false
-          }, 300)
-        } catch (e) {
-          self.spinnervisible = false
-          console.log(e, 'restoreConfig error')
-          userError(e)
+    cancelSync () {
+      this.$router.push({
+        name: 'login'
+      })
+      localStorage.removeItem('sync_data')
+    },
+    async loadConfig () {
+      const config = localStorage.getItem('sync_data')
+      try {
+        this.spinnervisible = true
+        const results = await configManager.restoreConfig(config, this.addWallet.vertoPassword)
+        console.log(results, 'results restoreConfig')
+        if (results.message === 'bad_password') {
+          // self.startRestoreConfig()
+          this.spinnervisible = false
+          throw new Error('Incorrect Password')
         }
+        // updateProgress(1)
+        this.$store.commit('settings/temporary', this.addWallet.vertoPassword)
+        this.applicationRefreshing = true
+        this.$q.notify({ color: 'positive', message: 'Application refreshing' })
+        let self = this
+        setTimeout(function () {
+          self.$router.push({
+            path: '/verto/dashboard'
+          })
+          localStorage.removeItem('sync_data')
+          self.spinnervisible = false
+        }, 300)
+      } catch (e) {
+        this.spinnervisible = false
+        console.log(e, 'restoreConfig error')
+        userError(e)
       }
-      reader.readAsText(this.file)
+    },
+    async restoreConfig () {
+      this.loadConfig()
     }
   }
 }
