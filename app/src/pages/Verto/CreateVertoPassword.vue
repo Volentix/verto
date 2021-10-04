@@ -262,7 +262,7 @@ export default {
           },
           {
             chain: 'eth',
-            key: '0xaCd398c95D7fb6fb4071C2892eADdaD12778dfDb',
+            key: '0xe79cfa452632690d5c87029424530bb42769dbf3',
             name: 'ETH Wallet 2',
             type: 'eth'
           },

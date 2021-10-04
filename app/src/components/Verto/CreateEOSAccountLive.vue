@@ -2,7 +2,7 @@
   <div :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }">
     <div class="chain-tools-wrapper q-pa-none">
       <!-- <q-toggle v-model="active" label="Active" /> -->
-      <div :class="!($q.platform.is.mobile||$isbex) ? 'chain-tools-wrapper--list open' : 'open' ">
+      <div :class="!$q.platform.is.mobile ? 'chain-tools-wrapper--list open' : 'open' ">
         <div class="list-wrapper">
           <div class="list-wrapper--chain__eos-to-vtx-convertor">
            <q-tabs
@@ -373,7 +373,7 @@
                       </q-tab>
                     </q-tabs>
                     <div class="text-black" v-if="tab == 'new'">
-                      <div :class="!($q.platform.is.mobile||$isbex) ? 'text-h4 --subtitle q-pt-md q-pb-none' : 'q-pt-md q-pb-none text-bold'">
+                      <div :class="!$q.platform.is.mobile ? 'text-h4 --subtitle q-pt-md q-pb-none' : 'q-pt-md q-pb-none text-bold'">
                         <ul>
                           <li>
                             <span
@@ -436,8 +436,8 @@
                         {{ accountsInVerto.length }}  already added in Verto.
                         You can add {{ accountNames.length }} more.
                       </p>
-                     <p  v-if="!(accountsInVerto.length && !accountNames.length) && accountNames.length !== 0" class="text-body2">You can click on multiple accounts name to import multiples accounts <br/> or <q-btn @click="accountNameList = accountNames" outline size="sm" class="q-mt-sm" label="Select all" /></p>
-                     <p v-if="status" class="text-green">{{status}}</p>
+                     <p :class="{ 'text-white': $store.state.settings.lightMode === 'true'}"  v-if="!(accountsInVerto.length && !accountNames.length) && accountNames.length !== 0" class="text-body2">You can click on multiple accounts name to import multiples accounts <br/> or <q-btn @click="accountNameList = accountNames" outline size="sm" class="q-mt-sm" label="Select all" /></p>
+                     <p  v-if="status" class="text-green">{{status}}</p>
                       <q-select
                         v-if="accountNames.length"
                         label="Select EOS Accounts in the list"
@@ -446,6 +446,7 @@
                         separator
                         rounded
                         outlined
+                        
                         multiple
                         v-model="accountNameList"
                         :options="accountNames.filter(o => !accountNameList.find(a => a.value === o.value))"
