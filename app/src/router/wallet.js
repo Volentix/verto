@@ -9,6 +9,12 @@ if (process.env.MODE === 'bex') {
       meta: {}
     },
     {
+      name: 'syncExtensionWallet',
+      path: '/verto/sync-wallet-ext',
+      component: () => import('pages/Verto/bex/SyncWalletFromExtension.vue'),
+      meta: {}
+    },
+    {
       name: 'landing',
       path: '/verto/landing',
       component: () => import('pages/Verto/bex/Landing.vue'),

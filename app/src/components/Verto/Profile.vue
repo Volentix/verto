@@ -5,7 +5,7 @@
     <!-- <q-toggle v-model="active" label="Active" /> -->
     <div class="profile-wrapper--list">
       <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator>
-        <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="(item.to !== 'backup' && item.to !== 'logout' && item.to !== 'restore' && item.to !== 'share') ? item.to : ''" @click="item.to === 'backup' ? backupConfig() : item.to === 'logout' ? logout() : item.to === 'restore' ? startRestoreConfig() : item.to === 'share' ? toggleShare() : item.id === 'debug' ? saveDebugData() : empty()">
+        <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="(item.to !== 'backup' && item.to !== 'logout' && item.to !== 'restore' && item.to !== 'share' && item.to!=='sync') ? item.to : ''" @click="item.to === 'backup' ? backupConfig() : item.to === 'logout' ? logout() : item.to === 'restore' ? startRestoreConfig() : item.to === 'share' ? toggleShare() : item.id === 'debug' ? saveDebugData() : item.to === 'sync'?syncExtension(): empty()">
           <q-item-section avatar>
             <q-icon class="icons" :class="{'reverse' : item.icon === 'exit_to_app'}" v-if="item.icon !== 'vtx'" :name="item.icon" />
             <img v-else class="vtx_logo" width="15px" :src="$store.state.settings.lightMode === 'true' ? 'statics/vtx.png' : 'statics/vtx_black.svg'" alt="">
@@ -198,6 +198,29 @@
       </q-card-section>
     </q-card>
   </q-dialog>
+  <q-dialog v-model="extensionNotFound">
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">Verto Extension not found</div>
+      </q-card-section>
+      <q-card-section class="q-pt-none">
+        If you have installed extension please refresh this page and try again
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn flat label="OK" color="primary" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+  <q-dialog v-model="extensionSyncSuccess">
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">Please open extension for further steps like setting password</div>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn flat label="OK" color="primary" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
   <!-- <q-dialog v-model="confirmLogout" persistent>
     <q-card class="q-pa-md" style="width: 700px; max-width: 90vw;">
       <q-card-section class="row items-center">
@@ -239,7 +262,9 @@ export default {
       existingCruxID: null,
       screenSize: 0,
       menu: [],
-      showShareWrapper: false
+      showShareWrapper: false,
+      extensionNotFound: false,
+      extensionSyncSuccess: false
     }
   },
   async mounted () {
@@ -297,6 +322,15 @@ export default {
     // screenSize > 1024
   },
   methods: {
+    async syncExtension () {
+      if (window.saveToVertoExtension !== undefined) {
+        // eslint-disable-next-line no-undef
+        window.saveToVertoExtension(await ConfigManager.syncConfig())
+        this.extensionSyncSuccess = true
+      } else {
+        this.extensionNotFound = true
+      }
+    },
     setNetwork: function () {
       this.$store.dispatch('settings/toggleNetwork', this.network)
       this.$q.notify({ message: `Network changed to ${this.network}`, color: 'positive' })
