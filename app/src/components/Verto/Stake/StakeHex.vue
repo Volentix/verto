@@ -764,6 +764,7 @@ export default {
   },
   async mounted () {
     this.sendAmount = parseInt(this.currentAccount.amount)
+    this.getStakingObject()
 
     /* this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://go.hex.com/data/event-batch-7-3.hxb')
       .then(res => {
