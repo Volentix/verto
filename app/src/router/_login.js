@@ -3,6 +3,11 @@ let shared_auth_urls = [
 if (process.env.MODE === 'bex') {
   shared_auth_urls = [
     {
+      name: 'storesync',
+      path: '/storesync',
+      component: () => import('pages/Verto/bex/StorageSync.vue')
+    },
+    {
       name: 'login',
       path: '/login',
       component: () => import('pages/Verto/bex/Landing.vue')
@@ -149,11 +154,17 @@ if (process.env.MODE === 'bex') {
     }
   ]
 }
+let redirectRoute = {}
+if (process.env.MODE === 'bex') {
+  redirectRoute = { name: 'storesync' }
+} else {
+  redirectRoute = { name: 'login' }
+}
 
 export default [
   {
     path: '/',
-    redirect: { name: 'login' }
+    redirect: redirectRoute
   },
   {
     name: 'intro',

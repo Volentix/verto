@@ -42,6 +42,7 @@ import DexInteraction from '../../../mixins/DexInteraction'
 import Vue from 'vue'
 import VideoBg from 'vue-videobg'
 import NotifyMessage from '../../../components/notify/NotifyMessage'
+import store from '../../../store'
 
 Vue.component('video-bg', VideoBg)
 export default {
@@ -60,6 +61,9 @@ export default {
       spinnerVisible: false,
       showSubmit: false
     }
+  },
+  beforeMount () {
+    console.log(this.$store)
   },
   async mounted () {
     this.hasConfig = !!await configManager.hasVertoConfig()
@@ -100,12 +104,18 @@ export default {
     this.$refs.psswrd.focus()
   },
   created () {
-    Lib.removeExpiredData()
-    this.$store.dispatch('tokens/getTokenList')
-    this.$store.dispatch('settings/getSettings')
-    let ids = ['volentix-vtx']
-    this.$store.dispatch('tokens/getTokenMarketData', ids)
-    this.$store.dispatch('tokens/getEvmsTokensData')
+    if (store.state.currentwallet && store.state.currentwallet.loggedIn === true) {
+      this.$router.push({
+        path: '/verto/dashboard'
+      })
+    } else {
+      Lib.removeExpiredData()
+      this.$store.dispatch('tokens/getTokenList')
+      this.$store.dispatch('settings/getSettings')
+      let ids = ['volentix-vtx']
+      this.$store.dispatch('tokens/getTokenMarketData', ids)
+      this.$store.dispatch('tokens/getEvmsTokensData')
+    }
   },
   methods: {
     pageStyle () {
