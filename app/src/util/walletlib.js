@@ -780,7 +780,7 @@ class Lib {
 
     const web3 = this.getWeb3Instance(chain)
     if (evmData) {
-      if (evmData.gas && evmData.gas.length) { response = await axios.get(evmData.gas) }
+      if (evmData.gas && evmData.gas.length) { response = await axios.get(process.env[store.state.settings.network].CACHE +evmData.gas) }
 
       gasData = {
         gas: gasLimit || 21000,
