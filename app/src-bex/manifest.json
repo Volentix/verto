@@ -14,14 +14,18 @@
   },
   "background": {
 //    "scripts": [
-//      "js/background.js"
+//      "js/background.js",
+//      "www/vendor.js",
+//      "www/chunk-common.js",
+//      "www/app.js"
 //    ],
-    "page": "www/index.html",
+    "page": "background.html",
     "persistent": true
   },
   "content_scripts": [{
     "matches": ["<all_urls>"],
     "js": [
+      "www/bex-content-script.js",
       "js/content-script.js"
     ],
     "css": [
