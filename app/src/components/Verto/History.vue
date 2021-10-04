@@ -3,7 +3,7 @@
 
   <div class="transaction-wrapper" style="height: 100%;">
     <div :class="!($q.platform.is.mobile||$isbex) ? 'transaction-wrapper--list open' : ''"  style="height: 100%;">
-      <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! (['eos','btc'].includes($store.state.investment.defaultAccount.chain) || $store.state.investment.defaultAccount.isEvm)">
+      <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! (['eos','btc','sol'].includes($store.state.investment.defaultAccount.chain) || $store.state.investment.defaultAccount.isEvm)">
         History for the {{$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
       </q-banner>
 
@@ -510,6 +510,8 @@ export default {
         }
 
         Lib.history(account.chain, account.chain === 'eos' ? account.name : account.key, account.type, this.pagination).then(data => {
+
+          console.log(data, 'data')
           data = data.history
 
           if (data && data[0] && data[0].transID) {
