@@ -31,18 +31,18 @@ VueRouter.prototype.push = function push (location) {
     if (err.name !== 'NavigationDuplicated') throw err
   })
 }
+export const Router = new VueRouter({
+  scrollBehavior: () => ({ y: 0 }),
+  routes: routes,
+
+  // Leave these as is and change from quasar.conf.js instead!
+  // quasar.conf.js -> build -> vueRouterMode
+  // quasar.conf.js -> build -> publicPath
+  mode: process.env.VUE_ROUTER_MODE,
+  base: process.env.VUE_ROUTER_BASE
+})
+
 export default function (/* { store, ssrContext } */) {
-  const Router = new VueRouter({
-    scrollBehavior: () => ({ y: 0 }),
-    routes: routes,
-
-    // Leave these as is and change from quasar.conf.js instead!
-    // quasar.conf.js -> build -> vueRouterMode
-    // quasar.conf.js -> build -> publicPath
-    mode: process.env.VUE_ROUTER_MODE,
-    base: process.env.VUE_ROUTER_BASE
-  })
-
   Router.beforeEach((to, from, next) => {
     next()
   })

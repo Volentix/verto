@@ -11,12 +11,15 @@ import investment from './investment'
 import vdexnode from './vdexnode'
 import tokens from './tokens'
 import notify from './notify'
+import storeLoadedPlugin from '../util/bex/storeLoadedPlugin'
 
 const plugins = []
+
 if (process.env.MODE === 'bex') {
   plugins.push(VuexWebExtensions({
     loggerLevel: 'debug'
   }))
+  plugins.push(storeLoadedPlugin)
 }
 Vue.use(Vuex)
 
