@@ -3,8 +3,9 @@
     class="column items-center justify-start create-password-page"
   >
     <div class="q-pa-md">
-      <img src="statics/icons/icon-256x256.png" width="100" alt="logo"/>
+      <img src="statics/icons/icon-256x256.png" width="80" alt="logo"/>
     </div>
+    <notify-message/>
     <div class="vert-page-content">
       <h2 class="vert-page-content--title">
         Create your Verto Password
@@ -13,9 +14,7 @@
         class="vert-page-content--desc"
       >
         Please write down your password and store it somewhere safe. Only
-        you know your password. There is no way to recover a Verto
-        password yet, we are working on an exciting new solution for you
-        that's coming soon.
+        you know your password.
       </h2>
       <!-- The seed phrase will now be added to your config after confirming the password. -->
       <div class="vert-page-content--body">
@@ -34,6 +33,8 @@
               @keyup.enter="gotoSecondScreen"
               autofocus
               outlined
+              :error="passHasError"
+              :error-message="passwordError"
               :type="isPwd ? 'password' : 'text'"
               class="q-mt-sm"
             >
@@ -46,36 +47,38 @@
               </template>
             </q-input>
           </div>
-         <div class="q-pt-xs">
-           <label class="ver-label">
-             Re-type your password
-           </label>
-           <q-input
-             ref="psswrdConfirm"
-             v-model="confirmPassword"
-             @input="confirmPasswordCheck"
-             @keyup.enter="submit"
-             outlined
-             :color="passwordsMatch ? 'green' : 'deep-purple-14'"
-             :type="isPwd ? 'password' : 'text'"
-             class="q-mt-sm"
-           >
-             <template v-slot:append>
-               <q-icon
-                 :name="isPwd ? 'visibility_off' : 'visibility'"
-                 class="cursor-pointer"
-                 @click="isPwd = !isPwd"
-               />
-             </template>
-           </q-input>
-         </div>
+          <div class="q-pt-xs">
+            <label class="ver-label">
+              Re-type your password
+            </label>
+            <q-input
+              ref="psswrdConfirm"
+              v-model="confirmPassword"
+              @input="confirmPasswordCheck"
+              @keyup.enter="submit"
+              outlined
+              :error="(!passHasError)&&!passwordsMatch"
+              error-message="Password mismatched"
+              :color="passwordsMatch ? 'green' : 'deep-red-14'"
+              :type="isPwd ? 'password' : 'text'"
+              class="q-mt-sm"
+            >
+              <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+            </q-input>
+          </div>
         </div>
       </div>
       <span class="q-pa-xs"/>
-      <div class="vert-page-content--footer">
-        <q-btn unelevated class="btn__blue block" @click="submit(2)"  size="lg"   label="Continue"/>
+      <div class="vert-page-content--footer q-mb-md">
+        <q-btn unelevated class="btn__blue block" @click="submit(2)" size="lg" label="Continue"/>
         <span class="q-pa-xs"/>
-        <q-btn outline unelevated size="lg" class="btn--outline__blue"  label="Back" @click="$router.back()"/>
+        <q-btn outline unelevated size="lg" class="btn--outline__blue" label="Back" @click="$router.back()"/>
       </div>
     </div>
   </q-page>
@@ -89,12 +92,14 @@ import Vue from 'vue'
 import VideoBg from 'vue-videobg'
 import Lib from '@/util/walletlib'
 import store from '@/store'
+import NotifyMessage from '../../../components/notify/NotifyMessage'
 
 Vue.component('video-bg', VideoBg)
 
 export default {
   name: 'CreatePassword',
   components: {
+    NotifyMessage
     // FileSelect
   },
   data () {
@@ -105,6 +110,7 @@ export default {
       step: 1,
       passLabel: 'Type your password here',
       password: '',
+      passHasError: false,
       passwordError: '',
       confirmPassword: '',
       wrongPasswordError: 'Password Incorrect',
@@ -114,7 +120,7 @@ export default {
       passwordApproved: false,
       applicationRefreshing: false,
       confirmColor: 'white',
-      passwordsMatch: false,
+      passwordsMatch: true,
       file: null,
       contractable: true,
       isRecovering: false
@@ -205,6 +211,7 @@ export default {
       this.passwordApproved = false
       if (this.password.length > 7) {
         this.contains_long = true
+        this.passHasError = false
         this.passwordApproved = true
       } else {
         this.contains_long = false
@@ -213,17 +220,21 @@ export default {
       }
     },
     submit: async function (step) {
+      this.passwordCheck()
+      this.confirmPasswordCheck()
       if (this.isRecovering) {
         step = 4
       }
-      try {
-        this.$store.commit('settings/temporary', '123456789')// this.password)
-        await configManager.createWallet('123456789')// (this.password)
-        this.$router.push({
-          name: 'recovery-seed',
-          params: { step: step }
-        })
-      } catch (e) {
+      if (this.passwordsMatch && this.passwordApproved) {
+        try {
+          this.$store.commit('settings/temporary', this.password)
+          await configManager.createWallet(this.password)
+          this.$router.push({
+            name: 'recovery-seed',
+            params: { step: step }
+          })
+        } catch (e) {
+        }
       }
     },
     checked () {
@@ -240,10 +251,12 @@ export default {
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
 @import "~@/assets/styles/auth_page.scss";
+
 .create-password-page {
   background: #F5F5FE
 }
-.vert-page-content--title{
+
+.vert-page-content--title {
   margin-bottom: 0;
 }
 

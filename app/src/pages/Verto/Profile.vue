@@ -75,7 +75,7 @@ export default {
   mounted () {
     this.version = version
     this.setupPlatformPath()
-    if (this.$q.platform.is.mobile) { document.getElementById('scrollToIDP').scrollIntoView() }
+    if (this.$q.platform.is.mobile || this.$isbex) { document.getElementById('scrollToIDP').scrollIntoView() }
   },
   methods: {
     getWindowWidth () {

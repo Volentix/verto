@@ -1,8 +1,9 @@
 <template>
   <q-page class="column items-center justify-start recovery-seed-page">
     <div class="q-pa-xs q-pt-lg">
-      <img src="statics/icons/icon-256x256.png" width="100" alt="logo"/>
+      <img src="statics/icons/icon-256x256.png" width="80" alt="logo"/>
     </div>
+    <notify-message/>
     <div class="vert-page-content">
       <div v-if="step===0" class="standard-content">
         <h2 class="standard-content--desc"></h2>
@@ -89,7 +90,7 @@
         <div class="vert-page-content--footer">
           <q-btn class="btn__blue" size="lg" unelevated label="Next"
                  @click="saveMnemonic()"/>
-          <span class="q-pa-xs"></span>
+          <span class="q-pa-sm"></span>
           <q-btn outline unelevated size="lg" class="btn--outline__blue"  label="Back" @click="step=2"/>
         </div>
       </div>
@@ -110,7 +111,7 @@
           / -->
         </div>
         <div class="vert-page-content--body">
-          <div style="flex-grow: 1">
+          <div style="flex-grow: 1" class="q-pb-sm">
             <h4 class="mnemonic--heading">
               Mnemonic
             </h4>
@@ -155,11 +156,13 @@ Vue.component('video-bg', VideoBg)
 const bip39 = require('bip39')
 import HD from '@/util/hdwallet'
 import WordsOrderBex from '../../../components/Verto/WordsOrderBex'
+import NotifyMessage from '../../../components/notify/NotifyMessage'
 // import { userError } from '@/util/errorHandler'
 let platformTools = require('@/util/platformTools')
 if (platformTools.default) platformTools = platformTools.default
 export default {
   components: {
+    NotifyMessage,
     WordsOrderBex
   },
   data () {
@@ -241,10 +244,11 @@ export default {
         await platformTools.downloadFile(this.mnemonic, 'Verto_mnemonic_' + today + '.txt')
         this.downloaded = true
       } catch (error) {
-        this.$q.notify({
-          color: 'negative',
-          message: 'Please copy the list of words, an error occured during the download'
-        })
+        this.$store.dispatch('notify/error', 'Please copy the list of words, an error occured during the download')
+        // this.$q.notify({
+        //   color: 'negative',
+        //   message: 'Please copy the list of words, an error occured during the download'
+        // })
       }
     },
     validateMnemonic () {
@@ -278,8 +282,8 @@ export default {
             //   } catch (e) {
             //     // TODO: Exception handling
             //   }
-
-            this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
+            this.$store.dispatch('notify/success', 'EOS Keys created')
+            // this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
             //   this.$router.push('wallet')
           }
           this.$router.push({ path: '/create-keys' })
@@ -300,22 +304,23 @@ export default {
           self.$store.commit('settings/temporary', self.vertoPassword)
         }).catch(error => {
           self.goodPassword = false
-          if (error) this.$q.notify({ color: 'negative', message: error })
+          if (error) this.$store.dispatch('notify/error', error) // this.$q.notify({ color: 'negative', message: error })
           return false
         })
       } catch (error) {
         self.goodPassword = false
-        if (error) this.$q.notify({ color: 'negative', message: error })
+        if (error) this.$store.dispatch('notify/error', error) // this.$q.notify({ color: 'negative', message: error })
         return false
       }
     },
     copy2clip (value) {
       this.$clipboardWrite(value)
-      this.$q.notify({
-        message: this.$t('Main.copied'),
-        position: 'top',
-        color: 'positive'
-      })
+      this.$store.dispatch('notify/success', this.$t('Main.copied'))
+      // this.$q.notify({
+      //   message: this.$t('Main.copied'),
+      //   position: 'top',
+      //   color: 'positive'
+      // })
     }
   }
 }
@@ -327,6 +332,9 @@ export default {
 
 .recovery-seed-page {
   background: #F5F5FE
+}
+.vert-page-content--footer{
+  padding-bottom: 30px;
 }
 .error-message{
   margin: 5px;
@@ -357,7 +365,7 @@ export default {
   padding-top: 10px;
   line-height: 16px !important;
   font-size: 14px;
-  height: 130px !important;
+  height: 100px !important;
   //color: #FFF !important;
 }
 

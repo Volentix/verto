@@ -327,9 +327,11 @@
                       />
                     </q-stepper-navigation>
                   </q-step>
+                   <q-step
+                    :name="2"
                   <q-step
                     :name="2"
-                    title="Chooze account name"
+                    title="Choose account name"
                     icon="settings"
                     :done="step > 2"
                     style="max-width: 600px"
@@ -434,22 +436,24 @@
                         {{ accountsInVerto.length }}  already added in Verto.
                         You can add {{ accountNames.length }} more.
                       </p>
-
+                     <p :class="{ 'text-white': $store.state.settings.lightMode === 'true'}"  v-if="!(accountsInVerto.length && !accountNames.length) && accountNames.length !== 0" class="text-body2">You can click on multiple accounts name to import multiples accounts <br/> or <q-btn @click="accountNameList = accountNames" outline size="sm" class="q-mt-sm" label="Select all" /></p>
+                     <p  v-if="status" class="text-green">{{status}}</p>
                       <q-select
                         v-if="accountNames.length"
-                        label="Select an EOS Account Name in the list"
+                        label="Select EOS Accounts in the list"
                         :dark="$store.state.settings.lightMode === 'true'"
                         :light="$store.state.settings.lightMode === 'false'"
                         separator
                         rounded
                         outlined
-
-                        v-model="accountName"
-                        :options="accountNames"
+                        
+                        multiple
+                        v-model="accountNameList"
+                        :options="accountNames.filter(o => !accountNameList.find(a => a.value === o.value))"
                         :error="accountNameError"
                         error-message="This account  is already in your wallet"
                         :loading="!accountNames"
-                        @input="validAccountName"
+
                       />
 
                       <q-input
@@ -487,12 +491,13 @@
                     >
                       <q-btn
                          v-if="tab == 'import' &&  (accountsInVerto.length != 0 ||  accountNames.length != 0)"
-                        @click="upgradeAccountName(true)"
+                        @click="addAccountList(true)"
                         unelevated
                         color="deep-purple-14"
                         class="--next-btn"
                         rounded
-                        :disable="!vertoPassword || !vertoPassordValid || !accountName || accountNameError"
+                        :loading="spinnervisible"
+                        :disable="!vertoPassword || !vertoPassordValid || !accountNameList.length || accountNameError"
                         label="Import new account"
                       />
                       <q-btn
@@ -505,6 +510,16 @@
                         label="Go to Payment"
                       />
                     </q-stepper-navigation>
+                  </q-step>
+                   <q-step
+                    :name="4"
+                    title="Success"
+                    icon="check_circle"
+                    :done="step > 4"
+                    v-if="step == 4"
+                  >
+                  <div class="text-h6 text-green q-mb-md">Imported Successfully:</div>
+                  <q-btn to="/verto/dashboard" outline label="Go to Dashboard" />
                   </q-step>
                   <q-step
                     :name="3"
@@ -754,7 +769,8 @@ import HD from '@/util/hdwallet'
 import { JsonRpc } from 'eosjs'
 import transactEOS from './transactEOS'
 import AccountSelector from './Exchange/AccountSelector.vue'
-
+import initWallet from '@/util/Wallets2Tokens'
+import { sleep } from '@/util/utils'
 export default {
   name: 'VTXConverter',
   components: { AccountSelector, transactEOS },
@@ -774,6 +790,7 @@ export default {
       vertoPassword: null,
       vertoPassordValid: false,
       accountNameError: false,
+      accountNameList: [],
       errorMessage: '',
       vertoPasswordWrong: false,
       showNextButtonToVertoPassword: false,
@@ -795,6 +812,7 @@ export default {
       sendAmount: null,
       formatedAmount: null,
       currentProxy: null,
+      status: null,
       ErrorMessage: null,
       SuccessMessage: null,
       success: false,
@@ -1259,9 +1277,26 @@ export default {
           userError(err.toString())
         })
     },
-
-    async upgradeAccountName (importing = false) {
+    async addAccountList () {
+      for (let index = 0; index < this.accountNameList.length; index++) {
+        this.spinnervisible = true
+        await this.upgradeAccountName(true, this.accountNameList[index].value)
+        this.status = 'Importing ' + this.accountNameList[index].value + ' account...'
+        await sleep(3000)
+      }
+      this.status = 'Refreshing wallet...'
+      initWallet('all')
+      setTimeout(() => {
+        this.spinnervisible = false
+        this.step = 4
+      }, 3000)
+    },
+    async upgradeAccountName (importing = false, accountName = null) {
       let origin = 'imported'
+
+      if (accountName) {
+        this.accountName = { label: '', value: accountName }
+      }
 
       if (this.source === 'accounts') {
         this.currentAccount = this.tableData.find(w => w.key.toLowerCase() === this.currentToken.value.toLowerCase())
@@ -1287,7 +1322,7 @@ export default {
       // this.currentAccount.origin
       // Hability to have more than 1 EOS account associated with the same key
 
-      if (currentType === 'verto') {
+      if (currentType === 'verto' && !accountName) {
         this.$store.state.currentwallet.config.keys.filter(c => c.key === this.currentAccount.key && c.type === currentType).map(w => {
           w.name = this.currentAccount.name
           w.type = 'eos'
@@ -1298,12 +1333,13 @@ export default {
       } else {
         await this.$configManager.saveWalletAndKey(this.currentAccount.name, this.vertoPassword, this.privateKeyPassword, this.currentAccount.key, this.currentAccount.privateKey, 'eos', origin)
       }
-
+      if (!accountName) {
       // reset form variables
-      this.vertoPassword = null
-      this.privateKeyPassword = null
+        this.vertoPassword = null
+        this.privateKeyPassword = null
 
-      this.$router.push('/verto/dashboard/' + this.currentAccount.name)
+        this.$router.push('/verto/dashboard/' + this.currentAccount.name)
+      }
     },
     checkPassword () {
       if (this.password.length > 2) {

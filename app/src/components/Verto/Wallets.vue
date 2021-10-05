@@ -135,7 +135,7 @@
                             </q-card>
 
                         </q-expansion-item>
-                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': !$q.platform.is.mobile && chain.count }" :key="Math.random()+index" clickable  >
+                     <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': !($q.platform.is.mobile||$isbex) && chain.count }" :key="Math.random()+index" clickable  >
                     <template v-slot:header>
 
                             <q-item-section avatar>
@@ -505,7 +505,7 @@
 
                         </q-expansion-item>
 
-                                       <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': !$q.platform.is.mobile && chain.count }" :key="Math.random()+index" clickable  >
+                                       <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': !($q.platform.is.mobile||$isbex) && chain.count }" :key="Math.random()+index" clickable  >
                     <template v-slot:header>
 
                             <q-item-section avatar>
@@ -576,12 +576,12 @@
         </div> -->
         <q-item-label caption> Plese select an account from the lsit. </q-item-label>
 
-        <div v-if="isMobile"  :class="{'open': !walletShowHide, 'is-mobile wallets-wrapper--list': !$q.platform.is.mobile}">
+        <div v-if="isMobile"  :class="{'open': !walletShowHide, 'is-mobile wallets-wrapper--list': !($q.platform.is.mobile||$isbex)}">
             <mobileAssets v-if="false" />
             <q-scroll-area :visible="true" class="scrollarea_" :style="{'height' : '84vh'}">
 
                 <br>
-                <div v-if="!$q.platform.is.mobile && $store.state.currentwallet.wallet.empty" class="header-list-table">
+                <div v-if="!($q.platform.is.mobile||$isbex) && $store.state.currentwallet.wallet.empty" class="header-list-table">
                     <div class="row q-pl-sm q-pr-sm">
                         <div class="col col-6 q-pl-sm " :class="{'active' : directionAccount}">
                             <span class="sort">Account name</span>
@@ -593,7 +593,7 @@
                     </div>
                 </div>
                 <!-- DETAILS SECTION  -->
-                <div v-if="!$q.platform.is.mobile">
+                <div v-if="!($q.platform.is.mobile||$isbex)">
                     <q-item v-if="$store.state.currentwallet.wallet.chain"  class="selected selected22222" clickable active-class="bg-teal-1 text-grey-8">
                         <div class="header-wallet-wrapper culumn full-width">
                             <div class="menu-wallet">
@@ -741,11 +741,11 @@
                     </q-item>
                 </div>
                 <!-- MOBILE VIEW COMPONENT - DETAILS SECTION  -->
-                <div v-if="$q.platform.is.mobile">
+                <div v-if="$q.platform.is.mobile||$isbex">
                     <WalletsAccountDetailsDialog :dialog.sync="dialog" :circularProgress="circularProgress" :focusOnChainTools="focusOnChainTools" :alertSecurity.sync="alertSecurity" :hideCurrency="hideCurrency" :selectedCoin="selectedITEM" :formatNumber="formatNumber" :accountChain="selectedAccountChain" />
                 </div>
 
-                <div class="wallet-list q-pa-sm text-body1 q-mt-md text-grey-9" v-if="!$q.platform.is.mobile && $store.state.currentwallet.wallet.chain" >
+                <div class="wallet-list q-pa-sm text-body1 q-mt-md text-grey-9" v-if="!($q.platform.is.mobile||$isbex) && $store.state.currentwallet.wallet.chain" >
                    <q-icon name="add" /> More wallets and accounts
                 </div>
                 <q-list  class="rounded-borders "  bordered >
@@ -800,7 +800,7 @@
                             </q-card>
 
                     </q-expansion-item>
-                    <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': !$q.platform.is.mobile && chain.count }" :key="Math.random()+index" clickable  >
+                    <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': !($q.platform.is.mobile||$isbex) && chain.count }" :key="Math.random()+index" clickable  >
                         <template v-slot:header>
 
                             <q-item-section avatar>

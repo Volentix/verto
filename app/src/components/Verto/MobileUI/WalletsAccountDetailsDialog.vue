@@ -307,7 +307,7 @@ export default {
     shoKeysStatus () {
       this.keys.keying++
       this.keys.field = 'key'
-      this.keys.chain = this.accountChain 
+      this.keys.chain = this.accountChain
       // console.log('keys-----', this.keys)
     },
     closeDialog () {

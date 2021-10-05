@@ -1,6 +1,6 @@
 <template>
     <div :class="{'bg-white text-black q-pa-md': $store.state.settings.lightMode === 'false'}">
-      <q-toolbar v-if="$q.platform.is.mobile && $route.path === '/verto/wallets/send' ">
+      <q-toolbar v-if="($q.platform.is.mobile||$isbex) && $route.path === '/verto/wallets/send' ">
           <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)"/>
           <q-toolbar-title :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" > Token Send </q-toolbar-title>
       </q-toolbar>
@@ -280,7 +280,7 @@
                   <br>
                 </div>
 
-                <q-list :class="{'q-pt-md': miniMode}" v-if="!$q.platform.is.mobile && !params.gasSelected && gasOptions.length && (currentAccount.isEvm || currentAccount.chain == 'btc' ) && (!miniMode || miniStep == 2)" class="gasfield q-mb-md"  separator>
+                <q-list :class="{'q-pt-md': miniMode}" v-if="!($q.platform.is.mobile||$isbex) && !params.gasSelected && gasOptions.length && (currentAccount.isEvm || currentAccount.chain == 'btc' ) && (!miniMode || miniStep == 2)" class="gasfield q-mb-md"  separator>
                     <span v-if="!disableMemoEdit"> <span v-if="miniStep == 2" class="q-pr-md"><q-btn @click="miniStep = 1" icon="arrow_back" flat /> |</span> <span>Select gas</span></span>
                     <div dense class="gasSelector row" :class="{'q-pt-sm': miniStep == 2}">
                         <div class="col-md-4" :class="{'col-md-12 q-mb-sm': miniMode}" v-for="(gas, index) in gasOptions" :key="index">
@@ -309,7 +309,7 @@
                     </div>
                 </q-list>
                 <!-- MOBILE VIEW ONLY  -->
-                <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator   class="q-mt-md q-mb-md rounded-borders" v-if="$q.platform.is.mobile && !params.gasSelected && gasOptions.length && (currentAccount.isEvm || currentAccount.chain == 'btc' ) && (!miniMode || miniStep == 2)" >
+                <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator   class="q-mt-md q-mb-md rounded-borders" v-if="($q.platform.is.mobile||$isbex) && !params.gasSelected && gasOptions.length && (currentAccount.isEvm || currentAccount.chain == 'btc' ) && (!miniMode || miniStep == 2)" >
                     <q-item-label class="q-pt-md" v-if="!disableMemoEdit">
                       <span v-if="miniStep == 2" class="q-pr-md"><q-btn @click="miniStep = 1" icon="arrow_back" flat /> |</span> <span>Select gas</span>
                     </q-item-label>

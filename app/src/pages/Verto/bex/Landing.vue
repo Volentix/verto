@@ -3,6 +3,7 @@
     <div class="q-pa-md">
       <img src="statics/icons/icon-256x256.png" width="170" alt="logo"/>
     </div>
+    <notify-message/>
     <div class="standard-content col-grow">
       <h2 class="landing--title">
         Verto
@@ -13,7 +14,7 @@
       <div class="standard-content--body full-width">
         <div class="standard-content--body__form">
           <label class="ver-label">Enter your password</label>
-          <q-input bg-color="white" ref="psswrd" v-model="password" @keyup.enter="login" @input="checkPassword" :error="passHasError"
+          <q-input bg-color="white" ref="psswrd" v-model="password" @keyup.enter="login" error-message="Your password is wrong" @input="checkPassword" :error="passHasError"
                    outlined :type="isPwd ? 'password' : 'text'">
             <template v-slot:append>
               <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd"/>
@@ -22,7 +23,7 @@
         </div>
       </div>
       <div class="standard-content--footer full-width justify-end">
-        <q-btn unelevated class="btn__blue block"  size="lg"  :loading="spinnerVisible" label="Login"/>
+        <q-btn unelevated class="btn__blue block"  size="lg"  :loading="spinnerVisible" @click="login" label="Login"/>
         <span class="q-pa-xs"></span>
         <q-btn flat size="lg" class="btn-flat__blue" label="import or Restore" @click="startRestoreConfig"/>
       </div>
@@ -40,10 +41,13 @@ import initWallet from '@/util/Wallets2Tokens'
 import DexInteraction from '../../../mixins/DexInteraction'
 import Vue from 'vue'
 import VideoBg from 'vue-videobg'
+import NotifyMessage from '../../../components/notify/NotifyMessage'
+import store from '../../../store'
 
 Vue.component('video-bg', VideoBg)
 export default {
   name: 'Login',
+  components: { NotifyMessage },
   data () {
     return {
       hasConfig: false,
@@ -57,6 +61,9 @@ export default {
       spinnerVisible: false,
       showSubmit: false
     }
+  },
+  beforeMount () {
+    console.log(this.$store)
   },
   async mounted () {
     this.hasConfig = !!await configManager.hasVertoConfig()
@@ -97,12 +104,18 @@ export default {
     this.$refs.psswrd.focus()
   },
   created () {
-    Lib.removeExpiredData()
-    this.$store.dispatch('tokens/getTokenList')
-    this.$store.dispatch('settings/getSettings')
-    let ids = ['volentix-vtx']
-    this.$store.dispatch('tokens/getTokenMarketData', ids)
-    this.$store.dispatch('tokens/getEvmsTokensData')
+    if (store.state.currentwallet && store.state.currentwallet.loggedIn === true) {
+      this.$router.push({
+        path: '/verto/dashboard'
+      })
+    } else {
+      Lib.removeExpiredData()
+      this.$store.dispatch('tokens/getTokenList')
+      this.$store.dispatch('settings/getSettings')
+      let ids = ['volentix-vtx']
+      this.$store.dispatch('tokens/getTokenMarketData', ids)
+      this.$store.dispatch('tokens/getEvmsTokensData')
+    }
   },
   methods: {
     pageStyle () {
@@ -182,10 +195,11 @@ export default {
       }
     },
     triggerCustomRegisteredType1 () {
-      this.$q.notify({
-        type: 'my-notif',
-        message: `This app is in beta, use at your own risk.`
-      })
+      // this.$store.dispatch('notify/banner', `This app is in beta, use at your own risk.`)
+      // this.$q.notify({
+      //   type: 'my-notif',
+      //   message: `This app is in beta, use at your own risk.`
+      // })
     }
   },
   mixins: [DexInteraction]

@@ -1,6 +1,6 @@
 <template>
 <div v-if="!chain || chains || showAllWallets" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-  <div v-if="!$q.platform.is.mobile">
+  <div v-if="!($q.platform.is.mobile||$isbex)">
     <q-btn class="account_selector" dense v-if="accountOption" :dark="$store.state.settings.lightMode === 'true'" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" style="width:230px;" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" >
       <q-menu :dark="$store.state.settings.lightMode === 'true'">
         <q-list class="coins_menu_wrapper_popup" bordered separator>
@@ -76,7 +76,7 @@
     </div>
   </div>
 
-  <div v-if="$q.platform.is.mobile" class="row justify-center">
+  <div v-if="$q.platform.is.mobile||$isbex" class="row justify-center">
       <q-btn class="account_selector" dense v-if="accountOption" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" :style="titleView ? 'width: 100%' : 'width:230px;'" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" @click="dialog=true" />
       <q-dialog v-model="dialog"  :maximized="true">
         <q-card>
@@ -87,7 +87,7 @@
           <div class="text-h6 q-pa-md">Select An Account</div>
           <q-card-section class=" items-center">
             <q-list bordered separator style="width:100%;" v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index">
-              
+
               <q-expansion-item :dark="$store.state.settings.lightMode === 'true'"   >
                 <template v-slot:header>
                     <q-item-section :dark="$store.state.settings.lightMode === 'true'" avatar>

@@ -15,11 +15,16 @@ export default {
     bexStyles () {
       if (this.$isbex) {
         return {
-          minWidth: '357px'
+          width: '357px',
+          height: '600px',
+          background: '#F5F5FE'
         }
       }
       return {}
     }
+  },
+  mounted () {
+
   }
 }
 </script>
