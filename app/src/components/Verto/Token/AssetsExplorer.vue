@@ -1442,6 +1442,7 @@ export default {
     },
     chainAction (chain) {
       const self = this
+      console.log('chainAction called ', chain);
       let actions = {
         import () {
           self.$router.push(self.getImportLink(chain.chain))
@@ -1492,6 +1493,7 @@ export default {
           }
         }
       }
+      console.log('ctions[self.tab]', actions[self.tab])
       if (actions[self.tab]) {
         actions[self.tab]()
       }
