@@ -15,8 +15,8 @@ export default function storeLoadedPlugin (store) {
             path: '/verto/dashboard'
           })
         } else {
-          this.hasConfig = !!await configManager.hasVertoConfig()
-          if (!this.hasConfig) {
+          const hasConfig = !!await configManager.hasVertoConfig()
+          if (!hasConfig) {
             Router.push({
               name: 'setup',
               params: {
