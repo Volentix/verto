@@ -10,7 +10,7 @@
         <q-card class=" text-black" style="background: #f2f2f2 !important">
             <q-toolbar >
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
-                <q-toolbar-title> Coins/Assets List </q-toolbar-title>
+                <q-toolbar-title> Coins/Assets List.. </q-toolbar-title>
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
             </q-toolbar>
 
@@ -89,11 +89,18 @@ export default {
   },
   methods: {
     closeDialog () {
-      this.$emit('update:tab', 'chains')
-      this.$emit('update:dialog', false)
-      this.$router.push({
-        path: '/verto/dashboard'
-      })
+      if (!this.$route.query.hasOwnProperty('return')) {
+        this.handleTab('chains')
+        this.$emit('update:tab', 'chains')
+        this.$emit('update:dialog', false)
+        this.$router.push({
+          path: '/verto/dashboard'
+        })
+      } else {
+        this.$router.push({
+          path: `/verto/${this.$route.query.return}`
+        })
+      }
     },
     handleTab (index) {
       this.updateTab(index)
