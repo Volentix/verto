@@ -1,10 +1,9 @@
-
 <template>
   <div class="wrapper">
     <q-layout
-      view="hHh Lpr lff"
-      container
-      style="height: 100vh"
+      :view="$q.platform.is.mobile ? 'hHh lpR fFf' : 'hHh Lpr lff' "
+      :container="!$q.platform.is.mobile"
+      :style="!$q.platform.is.mobile ? 'height: 100vh' : ''"
       class="shadow-2"
     >
       <q-drawer
@@ -183,32 +182,17 @@
         </div>
       </q-drawer>
 
-      <q-footer v-if="$q.platform.is.mobile||$isbex">
-        <q-tabs
-          v-model="tabRoute"
-          indicator-color="primary"
-          active-color="primary"
-          class="bg-white text-grey-7 shadow-2 text-bold"
-        >
-          <q-tab name="exchange" icon="sync" label=" " no-caps @click="goTo('crosschain-exchange')" />
-          <q-tab name="history" icon="history" label="" no-caps @click="goTo('history')"  />
-          <q-tab name="dashboard" icon="dashboard" label="" @click="goTo('dashboard')"/>
-          <q-tab name="account" icon="account_balance" label="" no-caps @click="goTo('wallets')" />
-          <q-tab name="profile" icon="person" label="" no-caps @click="goTo('profile')"/>
-        </q-tabs>
-      </q-footer>
-
-      <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}" :style="$q.platform.is.mobile||$isbex ? 'overflow:scroll; background: #f2f2f2 !important' : 'overflow:scroll;' " >
+      <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}" :style="$q.platform.is.mobile ? 'overflow:scroll; background: #f2f2f2 !important' : 'overflow:scroll;' " >
         <div v-if="$q.platform.is.mobile||$isbex">
           <div id ="scrollID8"></div>
-          <q-pull-to-refresh @refresh="refresh" >
+          <!-- <q-pull-to-refresh @refresh="refresh" > -->
             <TopMenu v-if="!$q.screen.lt.sm"/>
-            <TopMenuMobile v-if="$q.platform.is.mobile||$isbex" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" />
-          </q-pull-to-refresh>
+            <TopMenuMobile v-if="$q.platform.is.mobile||$isbex" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>
+          <!-- </q-pull-to-refresh> -->
         </div>
         <div v-else>
            <TopMenu v-if="!$q.screen.lt.sm"/>
-          <TopMenuMobile v-if="$q.platform.is.mobile||$isbex" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" />
+          <TopMenuMobile v-if="$q.platform.is.mobile||$isbex" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>
         </div>
 
         <q-breadcrumbs
@@ -244,6 +228,22 @@
         </q-breadcrumbs>
         <router-view class="main-container" v-if="toggleView " />
       </q-page-container>
+
+      <q-footer v-if="($q.platform.is.mobile||$isbex) && showPanelStatus" elevated class="bg-grey-8 text-white">
+        <q-tabs
+          v-model="tabRoute"
+          indicator-color="primary"
+          active-color="primary"
+          class="bg-white text-grey-7 shadow-2 text-bold"
+        >
+          <q-tab name="exchange" icon="sync"  no-caps @click="goTo('crosschain-exchange')"> <div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">Exchange</div> </q-tab>
+          <q-tab name="history" icon="history"  no-caps @click="goTo('history')"> <div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">History</div> </q-tab>
+          <q-tab name="dashboard" icon="dashboard" label=" " @click="goTo('dashboard')"/>
+          <q-tab name="account" icon="account_balance"  no-caps @click="goTo('wallets')"> <div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">Account</div> </q-tab>
+          <q-tab name="profile" icon="person"  style="font-size: 5px;" no-caps @click="goTo('profile')"><div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">Profile</div> </q-tab>
+        </q-tabs>
+      </q-footer>
+
       <SelectTokenPopup :key="keys.send" v-if="chainTools.send" />
 
     </q-layout>
@@ -321,7 +321,8 @@ export default {
       str: {},
       miniState: false,
       showPanelStatus: true,
-      tabRoute: 'dashboard'
+      tabRoute: 'dashboard',
+      showTabPanel: true
     }
   },
   mounted () {
@@ -334,7 +335,7 @@ export default {
       }
     },
     '$route': function () {
-      // console.log('route change ', this.$route)
+      console.log('route change ', this.$route)
       if (this.$q.platform.is.mobile) { this.checkRoute() }
     }
   },
@@ -343,6 +344,7 @@ export default {
       this.$router.push(`/verto/${path}`)
     },
     checkRoute () {
+      this.showPanelStatus = false
       if (this.$route.name === 'dashboard') {
         this.showPanelStatus = true
         document.getElementById('scrollID8').scrollIntoView()
@@ -357,6 +359,7 @@ export default {
       }
       if (this.$route.name === 'history') { this.tabRoute = 'history' }
       if (this.$route.name === 'crosschain-exchange') { this.tabRoute = 'exchange' }
+      if (this.$route.name === 'wallets') { this.tabRoute = 'account' }
     },
     sendTokens () {
       this.toggleView = false
