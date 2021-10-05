@@ -43,7 +43,7 @@
             <q-tab name="investments" icon="trending_up" label="Investments" class="read"/>
         </q-tabs>
 
-        <ChainItemList :chains="chains" :tab.sync="tabIndex" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal"/>
+        <ChainItemList :chains="chains" :tab.sync="tabIndex" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :key="componentKey" />
 
         <AssetDialog :dialog.sync="dialog" :updateTab="updateTab" :tab.sync="tabIndex" :chains="chains" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens'  :getChains='getChains' :allChains='allChains' :showAllChains='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal"/>
     </div>
@@ -62,7 +62,8 @@ export default {
       lightMode: true,
       tabIndex: 'chains',
       qrSelect: false,
-      dialog: false
+      dialog: false,
+      componentKey: 1
     }
   },
   mounted () {
@@ -70,13 +71,15 @@ export default {
   },
   watch: {
     tabIndex (val) {
+      this.componentKey += 1
       this.$emit('update:tab', val)
       if (val !== 'chains') { this.dialog = true }
+      // setTimeout(function () { console.log(":::::: "); this.componentKey += 1 }, 2000)
     }
   },
   methods: {
     updateTab (value) {
-      console.log('VAlue of tab', value)
+      // console.log('VAlue of tab', value)
       if (value !== 'privateKeys') { this.$emit('update:tab', value) }
       if (value === 'import' || value === 'receive') {
         this.getChains()
