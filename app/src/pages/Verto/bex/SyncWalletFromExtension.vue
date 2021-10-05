@@ -6,8 +6,11 @@
     <notify-message/>
     <div class="vert-page-content">
       <h2 class="vert-page-content--title">
-        Enter your sync config password
+        Enter your Verto config password
       </h2>
+      <p class="vert-page-content--title__sub">
+        Please enter your verto account password which you are syncing to verto extension
+      </p>
       <!-- The seed phrase will now be added to your config after confirming the password. -->
       <div class="vert-page-content--body">
         <!-- <div class="standard-content--body__img column flex-center gt-xs" v-if="!passwordsMatch"> -->
@@ -25,6 +28,8 @@
               @keyup.enter="restoreConfig"
               autofocus
               outlined
+              :error="pwdError"
+              error-message="Your config password is incorrect"
               :type="isPwd ? 'password' : 'text'"
               class="q-mt-sm"
             >
@@ -73,6 +78,7 @@ export default {
       incorrectPassword: false,
       showNextButtonToPassword: false,
       returnto: '',
+      pwdError: false,
       addWallet: {
         walletName: '',
         address: '',
@@ -138,12 +144,13 @@ export default {
         if (results.message === 'bad_password') {
           // self.startRestoreConfig()
           this.spinnervisible = false
+          this.pwdError = true
           throw new Error('Incorrect Password')
         }
         // updateProgress(1)
         this.$store.commit('settings/temporary', this.addWallet.vertoPassword)
         this.applicationRefreshing = true
-        this.$q.notify({ color: 'positive', message: 'Application refreshing' })
+        this.$store.dispatch('notify/success', 'Application refreshing')
         let self = this
         setTimeout(function () {
           self.$router.push({
@@ -151,11 +158,12 @@ export default {
           })
           localStorage.removeItem('sync_data')
           self.spinnervisible = false
+          this.$store.dispatch('notify/success', 'Please Login')
         }, 300)
       } catch (e) {
         this.spinnervisible = false
-        console.log(e, 'restoreConfig error')
-        userError(e)
+        // console.log(e, 'restoreConfig error')
+        // userError(e)
       }
     },
     async restoreConfig () {
