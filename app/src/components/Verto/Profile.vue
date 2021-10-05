@@ -382,7 +382,7 @@ export default {
       }
     },
     logout () {
-      // configManager.logout()
+      configManager.logout()
       this.$router.push({
         path: '/login'
       })

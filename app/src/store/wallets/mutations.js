@@ -21,6 +21,9 @@ const getWalletIndex = wallet => {
   return index
 }
 export const updateTokens = (state, updatedtokens) => {
+  if (!updatedtokens) {
+    updatedtokens = []
+  }
   updatedtokens = updatedtokens.map((o) => {
     o.index = getWalletIndex(o)
     return o
@@ -80,7 +83,7 @@ export const updateTokens = (state, updatedtokens) => {
   })
   state.portfolioTotal = updatedtokens
     .map(o => (isNaN(o.usd) ? 0 : +o.usd))
-    .reduce((a, c) => a + c)
+    .reduce((a, c) => a + c, 0)
   state.tokens = updatedtokens
 
   localStorage.setItem(
