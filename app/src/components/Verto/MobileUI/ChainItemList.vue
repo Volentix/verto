@@ -22,7 +22,6 @@
                         </q-item-section>
                         <q-item-section>
                             <q-item-label lines="1" class="text-bold text-capitalize ellipsis">{{chain.label}} </q-item-label>
-    
                             <div v-if="!$route.params.accounts && tab == 'chains'" > <br>
                                 <q-item-label v-for="(item, index) in getChainList(chain)"
                                     :key="index+Math.floor(Math.random() * 1000)"

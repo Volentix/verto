@@ -39,7 +39,7 @@
           <q-banner inline-actions class="text-white bg-red q-my-md " v-if="false">
             Section currently in development: currently showing ETH wallets history
           </q-banner>
-           
+
           <div class="standard-content--body" style="height: 100%">
             <History :refresh="refresh" :key="refresh" :isMobile="true" />
           </div>
@@ -49,7 +49,6 @@
     </div>
   </q-page>
 </template>
-
 
 <script>
 import History from '../../components/Verto/History'
@@ -82,7 +81,7 @@ export default {
     }
   },
   mounted () {
-    if (this.$q.platform.is.mobile) document.getElementById('scrollToID3').scrollIntoView()
+    if (this.$q.platform.is.mobile || this.$isbex) document.getElementById('scrollToID3').scrollIntoView()
 
     this.version = version
     this.setupPlatformPath()

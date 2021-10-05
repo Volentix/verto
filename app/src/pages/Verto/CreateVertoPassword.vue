@@ -18,7 +18,7 @@
         <router-link to="/verto/dashboard">VERTO</router-link>
       </div>
     </div>
-    <video-bg :sources="[sourceVideo]" img="">
+    <video-bg :sources="[require('assets/mp4/'+sourceVideo)]" img="">
       <div class="video-page-wrapper q-pt-md q-pb-md">
         <q-btn flat v-if="hasConfig" unelevated class="btn-align-left q-pl-lg absolute" @click=" $router.push('/login')" text-color="white" icon="keyboard_backspace" />
         <!-- <h1>Discover<br>the crypto space</h1> -->
@@ -217,7 +217,7 @@ export default {
     return {
       isPwd: true,
       hasConfig: false,
-      sourceVideo: 'statics/mp4/create-password.mp4',
+      sourceVideo: 'create-password.mp4',
       step: 1,
       passLabel: 'Type your password here',
       password: '',
@@ -238,9 +238,9 @@ export default {
   watch: {
     passwordsMatch (newVal) {
       if (!newVal) {
-        this.sourceVideo = 'statics/mp4/create-password.mp4'
+        this.sourceVideo = 'create-password.mp4'
       } else {
-        this.sourceVideo = 'statics/mp4/create-password2.mp4'
+        this.sourceVideo = 'create-password2.mp4'
       }
     }
   },
@@ -262,7 +262,7 @@ export default {
           },
           {
             chain: 'eth',
-            key: '0xaCd398c95D7fb6fb4071C2892eADdaD12778dfDb',
+            key: '0xe79cfa452632690d5c87029424530bb42769dbf3',
             name: 'ETH Wallet 2',
             type: 'eth'
           },

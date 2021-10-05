@@ -183,21 +183,21 @@
       </q-drawer>
 
       <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}" :style="$q.platform.is.mobile ? 'overflow:scroll; background: #f2f2f2 !important' : 'overflow:scroll;' " >
-        <div v-if="$q.platform.is.mobile">
+        <div v-if="$q.platform.is.mobile||$isbex">
           <div id ="scrollID8"></div>
           <!-- <q-pull-to-refresh @refresh="refresh" > -->
             <TopMenu v-if="!$q.screen.lt.sm"/>
-            <TopMenuMobile v-if="$q.platform.is.mobile" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>
+            <TopMenuMobile v-if="$q.platform.is.mobile||$isbex" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>
           <!-- </q-pull-to-refresh> -->
         </div>
         <div v-else>
            <TopMenu v-if="!$q.screen.lt.sm"/>
-          <TopMenuMobile v-if="$q.platform.is.mobile" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>
+          <TopMenuMobile v-if="$q.platform.is.mobile||$isbex" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>
         </div>
 
         <q-breadcrumbs
           class="text-deep-purple-12 breadcrumbs"
-          v-if="$route.path != '/verto/dashboard'   && !$q.platform.is.mobile"
+          v-if="$route.path != '/verto/dashboard'   && !($q.platform.is.mobile||$isbex)"
         >
           <template v-slot:separator>
             <q-icon size="1.5em" name="chevron_right" :color="$store.state.settings.lightMode === 'true' ? 'white':'primary'" />
@@ -208,7 +208,7 @@
             icon="keyboard_backspace"
             :class="{'text-white': $store.state.settings.lightMode === 'true'}"
             class="cursor-pointer q-ml-md"
-            @click="$route.name.includes('token') && $route.params.asset && !['btc'].includes($route.params.asset.chain) && $route.params.asset.name ? goToTab('assets', $route.params.asset.chain) : $router.go(-1)"
+            @click="$route.name.includes('token') && $route.params.asset && !['btc'].includes($route.params.asset.chain) && $route.params.asset.name ? goToTab('assets', $route.params.asset.chain) : $router.back()"
           />
           <q-breadcrumbs-el
             v-if="$route.name.includes('token')"
@@ -229,7 +229,7 @@
         <router-view class="main-container" v-if="toggleView " />
       </q-page-container>
 
-      <q-footer v-if="$q.platform.is.mobile && showPanelStatus" elevated class="bg-grey-8 text-white">
+      <q-footer v-if="($q.platform.is.mobile||$isbex) && showPanelStatus" elevated class="bg-grey-8 text-white">
         <q-tabs
           v-model="tabRoute"
           indicator-color="primary"

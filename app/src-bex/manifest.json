@@ -13,14 +13,14 @@
 	 "default_popup": "www/index.html"
   },
   "background": {
-    "scripts": [
-      "js/background.js"
-    ],
+        "scripts": [],
+    "page": "background.html",
     "persistent": true
   },
   "content_scripts": [{
     "matches": ["<all_urls>"],
     "js": [
+      "www/bex-content-script.js",
       "js/content-script.js"
     ],
     "css": [

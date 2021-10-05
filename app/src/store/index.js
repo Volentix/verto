@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import VuexWebExtensions from 'vuex-webextensions'
 
 // we first import the module
 import currentwallet from './currentwallet'
@@ -9,7 +10,14 @@ import wallets from './wallets'
 import investment from './investment'
 import vdexnode from './vdexnode'
 import tokens from './tokens'
+import notify from './notify'
 
+const plugins = []
+if (process.env.MODE === 'bex') {
+  plugins.push(VuexWebExtensions({
+    loggerLevel: 'debug'
+  }))
+}
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
@@ -20,8 +28,10 @@ const store = new Vuex.Store({
     wallets,
     highestVTXAccount,
     investment,
-    tokens
-  }
+    tokens,
+    notify
+  },
+  plugins: plugins
 })
 
 // if we want some HMR magic for it, we handle

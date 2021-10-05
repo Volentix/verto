@@ -262,7 +262,7 @@
                                       "
                                       v-model="daysNumber"
                                       type="number"
-                                      :suffix="params.tokenID.toUpperCase()"
+                                      suffix="days"
                                       rounded
                                       max="5555"
                                       outlined
@@ -274,7 +274,7 @@
                                     />
                                     <GasSelector
                                 ref="gas_global"
-                                :key="'gas_global'"
+                                :key="daysNumber+sendAmount"
                                 v-if="
                                   txObj &&
                                   txObj.data
@@ -763,7 +763,8 @@ export default {
     this.initData()
   },
   async mounted () {
-    this.sendAmount = this.currentAccount.amount
+    this.sendAmount = parseInt(this.currentAccount.amount)
+    this.getStakingObject()
 
     /* this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://go.hex.com/data/event-batch-7-3.hxb')
       .then(res => {
@@ -791,12 +792,12 @@ export default {
         this.txObj.gasPrice = data.value.gasPrice
       }
     },
-    getStakingData () {
+   async getStakingData () {
       let data = {
         stake: this.sendAmount,
         days: this.daysNumber,
         chosencurrency: 'USD',
-        hex_price_prediction: 0.177
+        hex_price_prediction: (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=hex&vs_currencies=usd')).data.hex.usd
       }
       this.spinnerVisible = true
       this.$axios

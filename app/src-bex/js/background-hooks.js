@@ -35,15 +35,12 @@ export default function attachBackgroundHooks (bridge /* , allActiveConnections 
   //   chrome.storage.local.remove(payload.key, () => {
   //     bridge.send(event.eventResponseKey, payload.data)
   //   })
-  // })
-
-  /*
-  // EXAMPLES
-  // Listen to a message from the client
-  bridge.on('test', d => {
-    console.log(d)
+  // })*/
+  bridge.on('app.sync', event => {
+    localStorage.setItem('sync_data', event.data.data)
+    bridge.send(event.responseKey, { success: true })
   })
-
+  /*
   // Send a message to the client based on something happening.
   chrome.tabs.onCreated.addListener(tab => {
     bridge.send('browserTabCreated', { tab })

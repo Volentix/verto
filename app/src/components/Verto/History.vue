@@ -2,7 +2,7 @@
 <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" class="history-component" style="height: 100%;">
 
   <div class="transaction-wrapper" style="height: 100%;">
-    <div :class="!$q.platform.is.mobile ? 'transaction-wrapper--list open' : ''"  :style="!$q.platform.is.mobile ? 'height: 100%;' : 'height: 100%;'">
+    <div :class="!($q.platform.is.mobile||$isbex)  ? 'transaction-wrapper--list open' : ''"  :style="!$q.platform.is.mobile ? 'height: 100%;' : 'height: 100%;'">
       <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! (['eos','btc'].includes($store.state.investment.defaultAccount.chain) || $store.state.investment.defaultAccount.isEvm)">
         History for the {{$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
       </q-banner>
@@ -63,8 +63,8 @@
       <div  class="q-pa-md" v-else-if="!history.length && !loading">
         No transactions recorded yet with this account
       </div>
-      <q-scroll-area v-else :visible="true" class="q-pr-md" :style="!$q.platform.is.mobile ? 'height: 85%;' : 'height: 100%' ">
-        <div v-if="!$q.platform.is.mobile">
+      <q-scroll-area v-else :visible="true" class="q-pr-md" style="height: 85%;">
+        <div v-if="!($q.platform.is.mobile||$isbex)">
 
           <div v-for="(day,indexDay) in history" :key="indexDay">
 
@@ -381,7 +381,7 @@
           </div>
         </div>
           <!-- MOBILE VIEW ONLY  -->
-          <HistoryItemList :history="history" :getImage="getImage" :getAction="getAction" v-if="$q.platform.is.mobile"/>
+          <HistoryItemList :history="history" :getImage="getImage" :getAction="getAction" v-if="$q.platform.is.mobile||$isbex"/>
 
           <p v-if="history.length && $store.state.investment.defaultAccount.chain == 'eth'" class="text-center text-body1 cursor-pointer q-pb-xl" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" /></p>
       </q-scroll-area>
@@ -501,6 +501,11 @@ export default {
         }
 
         this.getEthWalletHistory(account)
+      } else if (account.chain === 'eos') {
+        this.$axios.post('https://cpu.volentix.io/api/global/history', { name: account.name }).then(res => {
+          this.history = res.data
+          this.loading = false
+        })
       } else {
         if (!account.chain) {
           account = this.$store.state.wallets.tokens.find(w => w.chain === 'eos' && w.type === 'eos')
@@ -697,7 +702,7 @@ export default {
             data: [element]
           }
           this.history.push(item)
-          console.log(item, this.history, 'item')
+
           // this.$store.commit('wallets/updateHistory', item)
         }
       })

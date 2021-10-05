@@ -21,14 +21,14 @@ class ErrorHandler extends Error {
 
 export const userError = (message) => {
   // if (!process.env.PROD) return devError(message)
-  console.log(message, 'userError')
+  // console.log(message, 'userError')
   const error = new ErrorHandler(message)
   Notify.create({ message: error.customMessage, timeout: 15000 })
 }
 
 export const devError = (message) => {
   // With user permission log to server or service
-  console.log(message, 'devError')
+  // console.log(message, 'devError')
   if (process.env.PROD) return
   const error = new ErrorHandler(message)
   Notify.create({ message: error.customMessage })
