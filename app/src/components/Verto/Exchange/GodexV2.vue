@@ -6,6 +6,10 @@
     }"
     class="full-width"
   >
+    <q-toolbar  class="" v-if="$q.platform.is.mobile">
+        <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/dashboard"/>
+        <q-toolbar-title> Exchange  </q-toolbar-title>
+    </q-toolbar>
     <div>
       <UI v-if="false"/>
       <q-btn label="test" v-if="false" @click="testData()" />
@@ -1780,6 +1784,9 @@
       <!-- MOBILE VIEW ONLY  -->
       <ExchangeRowItem v-if="$q.platform.is.mobile||$isbex" :paths="paths" :formatNumber="formatNumber" :destinationCoin="destinationCoin" :setPathTransaction="setPathTransaction" :isPathInvalid="isPathInvalid" />
     </div>
+
+    <GodexDialog  v-if="$q.platform.is.mobile && false"/>
+
     <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="showMessage">
       <q-card :dark="$store.state.settings.lightMode === 'true'">
         <q-card-section class="row items-center q-pb-none">
@@ -1829,6 +1836,7 @@ import GasSelector from '../../../components/Verto/ETH/GasSelector.vue'
 // import transactEOS from '../transactEOS'
 
 import ExchangeRowItem from '../MobileUI/ExchangeRowItem.vue'
+import GodexDialog from '../MobileUI/GodexDialog.vue'
 
 let defaults = ['eos', 'eth', 'btc']
 const txStatus = {
@@ -1856,7 +1864,8 @@ export default {
     Exchange,
     GasSelector,
     UI,
-    ExchangeRowItem
+    ExchangeRowItem,
+    GodexDialog
     // transactEOS
   },
   props: ['fromAssetData', 'toAssetData'],
