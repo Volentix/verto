@@ -13,10 +13,35 @@
                 <q-toolbar-title> {{$store.state.currentwallet.wallet.name}}  </q-toolbar-title>
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
             </q-toolbar>
-            <div class="column wrap justify-center items-center content-center">
+            <!-- <div class="column wrap justify-center items-center content-center">
                 <div class="text-h9">Total Balance</div>
                 <div class="text-h6 text-bold" v-if="selectedCoin.total">${{formatNumber(new Number(isNaN(selectedCoin.total) ? 0 : selectedCoin.total).toFixed(2),0)}} USD</div>
                 <span class="text-h6 text-bold" v-else>${{formatNumber(new Number(isNaN(selectedCoin.usd) ? 0 : selectedCoin.usd).toFixed(2),0)}}</span>
+            </div> -->
+            <div v-if="$q.platform.is.mobile">
+                <div class="q-pa-md">
+                    <div class="q-pb-md">
+                        <div class="text-h4 text-bold" v-if="selectedCoin.total">
+                        US${{formatNumber(new Number(isNaN(selectedCoin.total) ? 0 : selectedCoin.total).toFixed(2),0)}}
+                        </div>
+                        <div class="text-h4 text-bold" v-else>
+                        US${{formatNumber(new Number(isNaN(selectedCoin.usd) ? 0 : selectedCoin.usd).toFixed(2),0)}}
+                        </div>
+                    </div>
+                    <div class="q-pb-lg">
+                        <q-toolbar class="bg-white shadow-2 rounded-borders row justify-between">
+                            <div>
+                                <q-btn flat round dense color="primary" icon="send"  style="margin-right:-10px;"/>
+                                <q-btn flat color="primary" class="text-bold" @click="callChainTools"> Send </q-btn>
+                            </div>
+                            <q-separator vertical inset color="grey"/>
+                            <div>
+                                <q-btn flat round dense color="primary" icon="call_received" class="q-pl-md" style="margin-right:-10px;"/>
+                                <q-btn flat color="primary" class="text-bold" @click="shoKeysStatus()"> Receive</q-btn>
+                            </div>
+                        </q-toolbar>
+                    </div>
+                </div>
             </div>
 
             <q-card-section v-if="$store.state.currentwallet.wallet.chain">
@@ -86,9 +111,9 @@
                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                             </q-item-section>
                         </q-item>
-                        <q-item  data-name='Stake Proxy EOS' class="p-relative" >
-                            <q-item-section>
-                                <q-item-label lines="1" class="text-h6"><a href="https://volentix.io/node/" target="_blank"> Run a node </a> </q-item-label>
+                        <q-item  clickable v-ripple data-name='Stake Proxy EOS' class="p-relative" >
+                            <q-item-section @click="goNewWindow()">
+                                <q-item-label lines="1" class="text-h6">Run a node </q-item-label>
                             </q-item-section>
                             <q-item-section side>
                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
@@ -220,7 +245,7 @@
                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                             </q-item-section>
                         </q-item>
-                        <q-item data-name='History' clickable to="/verto/history" v-ripple class="p-relative">
+                        <q-item data-name='History' clickable @click="goTo('history')" v-ripple class="p-relative">
                             <q-item-section>
                                 <q-item-label lines="1" class="text-h6">History</q-item-label>
                             </q-item-section>
@@ -243,26 +268,62 @@
 
         </q-card>
         </q-dialog>
+        <SelectTokenPopup :key="keys2.send" v-if="chainTools.send" :selectedChain="selectedCoin.chain" />
+        <ShowKeys
+            :key="keys.keying"
+            v-if="keys.chain"
+            :chain="keys.chain"
+            :field="keys.field"
+        />
     </div>
 </template>
 
 <script>
+import Formatter from '@/mixins/Formatter'
+import SelectTokenPopup from '../../Verto/Token/SelectTokenPopup.vue'
+import ShowKeys from '@/components/Verto/ShowKeys'
 
 export default {
   name: 'WalletsAccountDetailsDialogMobile',
-  props: ['dialog', 'circularProgress', 'focusOnChainTools', 'alertSecurity', 'hideCurrency', 'selectedCoin', 'formatNumber'],
-  // components: { ChainItemList },
+  props: ['dialog', 'circularProgress', 'focusOnChainTools', 'alertSecurity', 'hideCurrency', 'selectedCoin', 'accountChain'],
+  components: { SelectTokenPopup, ShowKeys },
+  mixins: [Formatter],
   data () {
     return {
       maximizedToggle: true,
       open: false,
       tabIndex: 'assets',
-      previousTab: ''
+      previousTab: '',
+      chainTools: { send: false },
+      keys2: { send: 1 },
+      keys: {
+        chain: null,
+        field: '',
+        keying: 1
+      }
     }
   },
   methods: {
+    shoKeysStatus () {
+      this.keys.keying++
+      this.keys.field = 'key'
+      this.keys.chain = this.accountChain 
+      // console.log('keys-----', this.keys)
+    },
     closeDialog () {
       this.$emit('update:dialog', false)
+    },
+    goNewWindow () {
+      console.log('goNew tabl')
+      window.open('https://volentix.io/node/', '_blank')
+    },
+    goTo (path) {
+      // this.$router.push(`/verto/${path}`)
+      this.$router.push({ path: `/verto/${path}`, query: { return: 'wallets' } })
+    },
+    callChainTools () {
+      this.chainTools.send = true
+      this.keys2.send++
     }
   }
 

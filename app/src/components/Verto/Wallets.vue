@@ -570,15 +570,15 @@
             </div> -->
         </div>
 
-        <div class="fit row  justify-center items-stretch q-gutter-lg q-mb-md">
+        <!-- <div class="fit row  justify-center items-stretch q-gutter-lg q-mb-md">
             <q-btn outline rounded to="/verto/wallets/send" class="" color="primary"  label="Send" style="width:100px;"/>
             <q-btn outline rounded to="/verto/wallets/receive" class="" color="primary" label="Receive" />
-        </div>
+        </div> -->
         <q-item-label caption> Plese select an account from the lsit. </q-item-label>
 
         <div v-if="isMobile"  :class="{'open': !walletShowHide, 'is-mobile wallets-wrapper--list': !$q.platform.is.mobile}">
             <mobileAssets v-if="false" />
-            <q-scroll-area :visible="true" class="scrollarea_" :style="{'height' : '100vh'}">
+            <q-scroll-area :visible="true" class="scrollarea_" :style="{'height' : '84vh'}">
 
                 <br>
                 <div v-if="!$q.platform.is.mobile && $store.state.currentwallet.wallet.empty" class="header-list-table">
@@ -742,7 +742,7 @@
                 </div>
                 <!-- MOBILE VIEW COMPONENT - DETAILS SECTION  -->
                 <div v-if="$q.platform.is.mobile">
-                    <WalletsAccountDetailsDialog :dialog.sync="dialog" :circularProgress="circularProgress" :focusOnChainTools="focusOnChainTools" :alertSecurity.sync="alertSecurity" :hideCurrency="hideCurrency" :selectedCoin="selectedITEM" :formatNumber="formatNumber"/>
+                    <WalletsAccountDetailsDialog :dialog.sync="dialog" :circularProgress="circularProgress" :focusOnChainTools="focusOnChainTools" :alertSecurity.sync="alertSecurity" :hideCurrency="hideCurrency" :selectedCoin="selectedITEM" :formatNumber="formatNumber" :accountChain="selectedAccountChain" />
                 </div>
 
                 <div class="wallet-list q-pa-sm text-body1 q-mt-md text-grey-9" v-if="!$q.platform.is.mobile && $store.state.currentwallet.wallet.chain" >
@@ -772,7 +772,7 @@
                             <q-card-section>
                                 <q-item  :key="Math.random()+index"  v-for="(item, index) in vtxAccounts"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                                 <div class="header-wallet-wrapper culumn full-width">
-                                    <div @click="!item.disabled ? showMenu(item) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
+                                    <div @click="!item.disabled ? showMenu(item, false, false, vtxAccounts) : ''" :class="{'disable-coin' : item.disabled}" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
                                             <img class="coin-icon" width="35px" src="statics/icons/favicon-32x32.png" alt="">
                                         </q-item-section>
@@ -826,7 +826,7 @@
                             <q-card-section>
                                 <q-item  :key="Math.random()+index"  v-for="(item, index) in chain.accounts"   clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                                 <div class="header-wallet-wrapper culumn full-width">
-                                    <div @click="!item.disabled ? showMenu(item) : ''" class="header-wallet full-width flex justify-between">
+                                    <div @click="!item.disabled ? showMenu(item, false, false, chain) : ''" class="header-wallet full-width flex justify-between">
                                         <q-item-section avatar>
                                            <q-icon name="fiber_manual_record" :color="item.color"/>
                                         </q-item-section>
@@ -1013,7 +1013,8 @@ export default {
         icon: ''
       },
       dialog: false, // for mobile version [account details info ]
-      selectedITEM: { total: '', usd: '' }
+      selectedITEM: { total: '', usd: '' },
+      selectedAccountChain: []
     }
   },
   async mounted () {
@@ -1204,7 +1205,7 @@ export default {
     openModalFun: function (item) {
       this.openModal = true
     },
-    async showMenu (menu, to, loadingIndex) {
+    async showMenu (menu, to, loadingIndex, accountChain = false) {
       this.loadingIndex = loadingIndex
       this.$store.state.currentwallet.wallet = menu
       setTimeout(() => {
@@ -1214,6 +1215,7 @@ export default {
 
         // account details dialog prop
         this.selectedITEM = menu
+        this.selectedAccountChain = accountChain
         this.dialog = true
       }, 200)
       this.removeClassSelected()

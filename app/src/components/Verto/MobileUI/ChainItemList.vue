@@ -21,13 +21,11 @@
                             </q-avatar>
                         </q-item-section>
                         <q-item-section>
-                            <q-item-label lines="1" class="text-bold text-capitalize ellipsis">{{chain.label}} <q-icon name="check_circle" color="primary" /></q-item-label>
-
+                            <q-item-label lines="1" class="text-bold text-capitalize ellipsis">{{chain.label}} </q-item-label>
+    
                             <div v-if="!$route.params.accounts && tab == 'chains'" > <br>
-                                <q-item-label v-for="(item, index) in assetsOptions[0].data
-                                    .filter((o) => o.chain === chain.chain)
-                                    .slice(0, 1)"
-                                    :key="index"
+                                <q-item-label v-for="(item, index) in getChainList(chain)"
+                                    :key="index+Math.floor(Math.random() * 1000)"
                                 >
                                     <q-btn
                                         align="left"
@@ -132,7 +130,7 @@
                                 class="text-body1 q-pt-md copy-key"
                                 v-else-if=" tab == 'receive' && chain.accounts && chain.accounts.length > 1 "
                             >
-                                {{ chain.accounts.length }} accounts <q-icon name="arrow_forward_ios" />
+                                {{ chain.accounts.length }} ...accounts <q-icon name="arrow_forward_ios" />
                             </div>
                             <div class="text-caption q-pt-md" v-else-if="tab == 'import' || tab == 'create'">
                                 <span class="text-capitalize">
@@ -193,7 +191,7 @@
                             </q-avatar>
                         </q-item-section>
                         <q-item-section>
-                            <q-item-label lines="1" class="text-bold text-capitalize ellipsis">{{asset.type.toUpperCase()}} <q-icon name="check_circle" color="primary" /></q-item-label>
+                            <q-item-label lines="1" class="text-bold text-capitalize ellipsis">{{asset.type.toUpperCase()}} </q-item-label>
                             <q-item-label>
                             </q-item-label>
 
@@ -293,6 +291,9 @@ export default {
       lightMode: true
     }
   },
+  mounted () {
+    if (this.$q.platform.is.mobile && !this.showAllChains && this.tab === 'chains') { this.showAllChainData() }
+  },
   methods: {
     openAssetDialog (chain) {
       if (this.tab !== 'receive' && this.tab !== 'privateKeys') { this.chainAction(chain) }
@@ -305,6 +306,9 @@ export default {
             chain.accounts.length === 1 &&
             chain[this.tab === 'privateKeys' ? 'privateKey' : 'key']) { return true }
       } catch (e) { return false }
+    },
+    getChainList (chain) {
+      return this.assetsOptions[0].data.filter((o) => o.chain === chain.chain).slice(0, 1)
     }
   }
 
