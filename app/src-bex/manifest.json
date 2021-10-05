@@ -13,6 +13,7 @@
 	 "default_popup": "www/index.html"
   },
   "background": {
+        "scripts": [],
     "page": "background.html",
     "persistent": true
   },
