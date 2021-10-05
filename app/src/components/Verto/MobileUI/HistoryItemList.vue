@@ -1,5 +1,5 @@
 <template>
-    <div class="q-pa-sm" >
+    <div class="q-pa-sm" style="overflow: auto;">
         <q-card flat   v-for="(day,indexDay) in history" :key="indexDay" class="rounded-borders  q-mb-sm" :class="{'dark-bg': $store.state.settings.lightMode === 'true'}" >
             <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7">{{day.friendlyDay}} </div>
 
@@ -54,17 +54,27 @@
                                 </q-item-label>
                             </q-item-section>
                             <q-item-section >
-                                <q-item-label > Transaction hash</q-item-label>
+                                <q-item-label > Transaction hash
+                                    <div class="float-right" v-if="transaction.chain !== 'eth' && transaction.chain !== 'eos'">
+                                        <div class="flex items-center q-ml-md">
+                                            <q-btn color="white" round size="sm" @click="copyToClipboard(transaction.hash, 'Transaction Hash')" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
+                                            <a :href="transaction.explorerLink" target="_blank">
+                                                <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </q-item-label>
                                 <q-item-label caption>
                                     <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
-                                       <div class="ellipsis"> {{transaction.friendlyHash}} </div>
+                                       <!-- <div class="ellipsis"> {{transaction.friendlyHash}} </div> -->
+                                        <div class="ellipsis"> {{transaction.hash}} </div>
                                     </span>
                                 </q-item-label>
-                                <q-item-label >
+                                <q-item-label v-if="transaction.chain == 'eth' || transaction.chain == 'eos'">
                                     <div class="flex items-center q-ml-md">
-                                        <q-btn color="white" round size="sm" @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
+                                        <q-btn color="white" round size="sm" @click="copyToClipboard(transaction.hash, 'Transaction Hash')" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
                                         <a :href="transaction.explorerLink" target="_blank">
-                                        <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
+                                            <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
                                         </a>
                                     </div>
                                 </q-item-label>
@@ -134,12 +144,13 @@
                                 <q-item-label > Transaction hash</q-item-label>
                                 <q-item-label caption>
                                     <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
-                                       <div class="ellipsis"> {{transaction.friendlyHash}} </div>
+                                       <!-- <div class="ellipsis"> {{transaction.friendlyHash}} </div> -->
+                                       <div class="ellipsis"> {{transaction.hash}} </div>
                                     </span>
                                 </q-item-label>
                                 <q-item-label >
                                     <div class="flex items-center q-ml-md">
-                                        <q-btn color="white" round size="sm"  @click="$clipboardWrite(transaction.hash)"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
+                                        <q-btn color="white" round size="sm"  @click="copyToClipboard(transaction.hash, 'Transaction Hash')"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
                                         <a :href="transaction.explorerLink" target="_blank">
                                         <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
                                         </a>
@@ -200,15 +211,24 @@
                                 </q-item-label>
                             </q-item-section>
                             <q-item-section >
-                                <q-item-label > Transaction hash</q-item-label>
+                                <q-item-label > Transaction hash
+                                    <div class="float-right" v-if="transaction.chain !== 'eth' && transaction.chain !== 'eos'">
+                                        <div class="flex items-center q-ml-md">
+                                            <q-btn color="white" round size="sm" @click="copyToClipboard(transaction.hash, 'Transaction Hash')" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
+                                            <a :href="transaction.explorerLink" target="_blank">
+                                            <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </q-item-label>
                                 <q-item-label caption>
                                     <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                                        <div class="ellipsis"> {{transaction.hash}} </div>
                                     </span>
                                 </q-item-label>
-                                <q-item-label >
-                                    <div class="flex items-center q-ml-md">
-                                        <q-btn color="white" round size="sm" @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
+                                <q-item-label v-if="transaction.chain == 'eth' || transaction.chain == 'eos'">
+                                    <div class="flex items-center q-ml-md" >
+                                        <q-btn color="white" round size="sm" @click="copyToClipboard(transaction.hash, 'Transaction Hash')" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
                                         <a :href="transaction.explorerLink" target="_blank">
                                         <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
                                         </a>
@@ -226,10 +246,12 @@
 </template>
 
 <script>
+import Formatter from '@/mixins/Formatter'
 
 export default {
   name: 'ExchangeItem',
   props: ['history', 'getImage', 'getAction', 'isPathInvalid'],
+  mixins: [Formatter],
   data () {
     return {
       lightMode: true
