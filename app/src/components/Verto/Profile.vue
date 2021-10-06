@@ -364,16 +364,17 @@ export default {
   methods: {
     async syncExtension () {
       const data = await ConfigManager.syncConfig()
-      const EXTENSION_ID = 'adgjbgmmbjmnofpecpikkddmpcfljiam'
+      console.log(this.$extensionId)
+      // const EXTENSION_ID = 'adgjbgmmbjmnofpecpikkddmpcfljiam'
       try {
-        chrome.runtime.sendMessage(EXTENSION_ID, { type: 'EXTENSION_AVAILABLE' }, response => {
+        chrome.runtime.sendMessage(this.$extensionId, { type: 'EXTENSION_AVAILABLE' }, response => {
           if (response === undefined) {
             this.extensionNotFound = true
           }
           if (!response && response.success !== true) {
             this.extensionNotFound = true
           } else {
-            chrome.runtime.sendMessage(EXTENSION_ID, { type: 'SYNC_DATA', data: data }, response => {
+            chrome.runtime.sendMessage(this.$extensionId, { type: 'SYNC_DATA', data: data }, response => {
               if (!response && response.success !== true) {
                 this.extensionSyncFailure = true
                 return
