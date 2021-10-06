@@ -62,9 +62,6 @@ export default {
       showSubmit: false
     }
   },
-  beforeMount () {
-    console.log(this.$store)
-  },
   async mounted () {
     this.hasConfig = !!await configManager.hasVertoConfig()
     if (!this.hasConfig) {

@@ -17,7 +17,6 @@ const plugins = []
 
 if (process.env.MODE === 'bex') {
   plugins.push(VuexWebExtensions({
-    loggerLevel: 'debug',
     syncActions: false
   }))
   plugins.push(storeLoadedPlugin)

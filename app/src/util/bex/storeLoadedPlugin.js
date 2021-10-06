@@ -5,28 +5,47 @@ export default function storeLoadedPlugin (store) {
   const whitelist = ['vweReplaceState']
   store.subscribe(async (mutation, state) => {
     if (whitelist.includes(mutation.type)) {
+      console.log('state replaced')
+      sessionStorage.setItem('app_started', true)
+      const routerLoaded = sessionStorage.getItem('router_loaded')
+      if (routerLoaded == null) {
+        return
+      }
       if (localStorage.getItem('sync_data')) {
         Router.push({
           name: 'syncExtensionWallet'
         })
       } else {
-        if (state.currentwallet && state.currentwallet.loggedIn === true) {
+        const lastRoute = localStorage.getItem('last_route') ? JSON.parse(localStorage.getItem('last_route')) : null
+        if (lastRoute && Router.currentRoute.name !== lastRoute.name && lastRoute.name !== 'storesync') {
+          console.log('loading existing route ', lastRoute.path)
           Router.push({
-            path: '/verto/dashboard'
+            name: lastRoute.name,
+            query: lastRoute.query,
+            params: lastRoute.params
           })
         } else {
-          const hasConfig = !!await configManager.hasVertoConfig()
-          if (!hasConfig) {
+          if (state.currentwallet && state.currentwallet.loggedIn === true) {
+            console.log('moving to dashboard')
             Router.push({
-              name: 'setup',
-              params: {
-                showConfigStep: true
-              }
+              path: '/verto/dashboard'
             })
           } else {
-            Router.push({
-              name: 'login'
-            })
+            const hasConfig = !!await configManager.hasVertoConfig()
+            if (!hasConfig) {
+              console.log('moving to setup')
+              Router.push({
+                name: 'setup',
+                params: {
+                  showConfigStep: true
+                }
+              })
+            } else {
+              console.log('moving to login')
+              Router.push({
+                name: 'login'
+              })
+            }
           }
         }
       }

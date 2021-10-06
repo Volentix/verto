@@ -83,7 +83,10 @@
     <% } %>
 
   </style>
-
+    <% if (process.env.NODE_ENV === 'development') { %>
+    <!-- Load Vue Devtools remote ONLY in development -->
+    <script src="http://localhost:8098"></script>
+    <% } %>
   </head>
   <body
   >

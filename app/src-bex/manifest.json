@@ -39,11 +39,14 @@
     "tabs",
     "activeTab"
   ],
+  "externally_connectable": {
+    "matches": ["*://localhost/*"]
+  },
   "web_accessible_resources": [
     "www/*",
     "js/*",
     "css/*",
     "<all_urls>"
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';"
+  "content_security_policy":"script-src 'self' 'unsafe-eval' http://localhost:8098; object-src 'self';'unsafe-inline' http://localhost:8098;script-src http://localhost:8098"
 }
