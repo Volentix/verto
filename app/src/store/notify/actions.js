@@ -8,7 +8,7 @@ export function notify (context, payload) {
   setTimeout(() => context.commit('setMessage', {
     message: '',
     type: ''
-  }), payload.timeout ? payload.timeout : 2000)
+  }), 3000)
 }
 export function success (context, payload) {
   context.dispatch('notify', {
