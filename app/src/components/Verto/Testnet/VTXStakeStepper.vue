@@ -4,6 +4,39 @@
       <!-- <q-toggle v-model="active" label="Active" /> -->
       <div class="chain-tools-wrapper--list open">
         <div class="list-wrapper">
+        {{isPrivateKeyEncrypted ? 1: 0}}
+        <q-dialog v-model="showPKDiaglog">
+        <q-card class="q-pa-md q-px-lg">
+        <q-icon v-close-popup name="close" class="absolute-top-right q-ma-md"/>
+        <div class="text-h6 --subtitle q-py-md">Your private key is encrypted</div>
+        <p>Enter your password to sign the transaction.</p>
+                        <q-input
+
+                          v-model="privateKeyPassword"
+                          :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
+                          rounded
+                          outlined
+                          class="--input"
+                          color="green"
+                          label="Private Key Password"
+                          debounce="500"
+                          :error="invalidPrivateKeyPassword"
+                          error-message="The password is incorrect"
+                          @input="checkPrivateKeyPassword()"
+                          :type="isPwd ? 'password' : 'text'"
+                        >
+                          <template v-slot:append>
+                            <q-icon
+                              :name="isPwd ? 'visibility_off' : 'visibility'"
+                              class="cursor-pointer"
+                              @click="isPwd = !isPwd"
+                            />
+                          </template>
+                        </q-input>
+                          <q-btn label="Submit" @click="unstake()" :loading="spinnerVisible" outline rounded class="float-right" :disable="invalidPrivateKeyPassword || !privateKeyPassword || privateKeyPassword.toString().trim().length == 0" />
+                        </q-card>
+                      
+                        </q-dialog>
           <div class="list-wrapper--chain__eos-to-vtx-convertor">
             <q-tabs
               v-model="tab"
@@ -16,7 +49,7 @@
               narrow-indicator
             >
               <q-tab name="stake" label="Stake Now" class="full-width" />
-              <q-tab @click="initData()" name="staked" label="Staked Amounts" :disable="stakes.length === 0" class="full-width" />
+              <q-tab @click=" initAccount(); initData()" name="staked" label="Staked Amounts" :disable="stakes.length === 0" class="full-width" />
             </q-tabs>
 
             <q-separator />
@@ -233,7 +266,7 @@
                       </div>
 
                       <div class="staked-wrapper">
-
+                 <p class="q-pb-sm text-red" v-if="ErrorMessage"> {{ErrorMessage}} </p>
                   <div v-for="(stake, i) in stakes" :key="i" class="item-wrapper row flex">
                     <div class="col col-9 q-pr-sm">
                       <div class="border column justify-between">
@@ -243,7 +276,7 @@
                           </strong></div>
                           <div class="col">Period: <br> <strong>{{stake.stake_period}} Days</strong></div>
                           <div class="col mobile-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br> <strong>{{stake.time_left}} {{(( ((stake.stake_period * 24 * 60)   - stake.time_left) / (stake.stake_period * 24 * 60) ))}}</strong></div>
-                          <div v-if="stake.time_left > 0" class="col desktop-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br>
+                          <div v-if="!stake.time_left > 0" class="col desktop-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br>
                             <q-linear-progress dark rounded stripe size="25px" :value="parseFloat(stake.time_left_percentage) / 100" color="deep-purple-14">
                               <div class="absolute-full flex flex-center">
                                 <q-badge color="white" text-color="black" :label="(stake.time_left_percentage) + ' %'" />
@@ -254,7 +287,7 @@
                             </q-linear-progress>
                           </div>
                           <div v-else class="col desktop-only">
-                            <q-btn @click="unStakeVTX()" outline  label="Unstake" />
+                            <q-btn :loading="spinnerVisible" @click="isPrivateKeyEncrypted ? showPKDiaglog = true : unStakeVTX()" outline  label="Unstake" />
                           </div>
 
                         </div>
@@ -367,7 +400,7 @@
                             </q-linear-progress>
                           </div>
                           <div v-else class="col desktop-only">
-                            <q-btn @click="unStakeVTX()" outline  label="Unstake" />
+                            <q-btn @click="isPrivateKeyEncrypted ? showPKDiaglog = true : unStakeVTX()" outline  label="Unstake" />
                           </div>
 
                         </div>
@@ -407,6 +440,7 @@ export default {
     return {
       tab: 'stake',
       step: 1,
+      showPKDiaglog: false,
       period_duration: 30,
       timers: [],
       condition: 3,
@@ -488,6 +522,7 @@ export default {
       if (this.tableData && this.tableData.length) {
         if (!this.currentAccount) {
           this.currentAccount = this.tableData[0]
+          this.currentAccount.name = 'crosschainfx'
           this.currentAccount.label = this.currentAccount.name
           this.currentAccount.value = this.currentAccount.name
         }
@@ -530,6 +565,7 @@ export default {
       if (eos.isPrivKeyValid(this.currentAccount.privateKey)) {
         this.privateKey.key = this.currentAccount.privateKey
         this.isPrivateKeyEncrypted = false
+        this.isPrivateKeyEncrypted = true
       } else {
         this.isPrivateKeyEncrypted = true
       }
@@ -732,9 +768,20 @@ export default {
         this.transactionError = true
         this.ErrorMessage = 'Your EOS account does not have enough RAM staked to process the transaction.'
       } else {
+        console.log(error.toString(), 'error')
         this.transactionError = true
-        this.ErrorMessage = 'Unknown Error: ' + error
+        this.ErrorMessage = 'Unknown Error: ' + error.toString()
+        this.$q.notify({
+        message: error.toString(),
+        timeout: 2000,
+        icon: 'check',
+        textColor: 'white',
+        type: 'warning',
+        position: 'top'
+      })
+
       }
+     
     },
     payForUserCPU (actions, message = null) {
       let account = {
@@ -758,6 +805,8 @@ export default {
       })
     },
     async unStakeVTX () {
+      this.spinnerVisible = true
+      this.ErrorMessage = false
       const actions = [{
         account: stakingContract,
         name: 'unstake',
@@ -776,8 +825,10 @@ export default {
         }, { keyProvider: this.privateKey.key })
         this.initData()
         this.$q.notify(message)
+         this.spinnerVisible = false
         initWallet(this.currentAccount.name)
       } catch (error) {
+          this.spinnerVisible = false
         this.displayError(error, true, actions, message)
       }
     },

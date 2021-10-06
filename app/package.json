@@ -1,6 +1,6 @@
 {
   "name": "verto",
-  "version": "0.9.260.16",
+  "version": "0.9.260.18",
   "description": "A multi-currency cryptocurrency wallet",
   "productName": "Verto",
   "cordovaId": "org.cordova.verto",
