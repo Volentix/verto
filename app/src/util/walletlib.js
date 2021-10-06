@@ -262,7 +262,7 @@ class Lib {
           let actions = []
           axios.get(process.env[store.state.settings.network].CACHE + 'https://api.solscan.io/account/transaction?address='+key)
             .then(function (result) {
-                result.data.data.filter(o => a.status.toLowerCase() === 'success').map(a => {
+                result.data.data.filter(o => o.parsedInstruction[0].type.toLowerCase() === 'sol-transfer').map(a => {
                     let tx = {}
 
                     let date = new Date(a.blockTime)
@@ -964,14 +964,16 @@ class Lib {
 
     const wallet = {
       async sol (token, from, to, value, memo, key) {
-        let account = solanaWeb3.Account(key)
+        
+        let account = new solanaWeb3.Account(JSON.parse(key).data)
+       
         // Connect to cluster
         var connection = new solanaWeb3.Connection(
           solanaWeb3.clusterApiUrl('mainnet-beta'),
           'confirmed'
         )
         let tx = solanaWeb3.SystemProgram.transfer({
-          fromPubkey: from,
+          fromPubkey: account.publicKey,
           toPubkey: to,
           lamports: solanaWeb3.LAMPORTS_PER_SOL * value
         })
@@ -986,22 +988,16 @@ class Lib {
           transaction,
           [account]
         )
-        console.log('SIGNATURE', signature)
 
-        return new Promise((resolve, reject) =>
-          account.send(to, value, 'BTC', { fee: fee })
-            .on('transactionHash', (tx_hash) => {
+        return new Promise((resolve, reject) => {
+        
               resolve({
-                message: `https://www.blockchain.com/btc/tx/${tx_hash}`,
+                message: `solscan.io/tx/${signature}`,
                 success: true,
-                transaction_id: tx_hash
+                transaction_id: signature
               })
+          
             })
-            .on('confirmation', confirmations => {
-              // console.log(confirmations, 'confirmations')
-            })
-            .catch(reject)
-        )
       },
       async btc (token, from, to, value, memo, key) {
         const bitcoin = require('bitcoinjs-lib')

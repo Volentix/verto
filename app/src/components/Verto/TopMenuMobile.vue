@@ -2,13 +2,21 @@
   <div >
         <AppBar :callChainTools="callChainTools" v-if="showPanelStatus"/>
         <div class="q-pa-md" v-if="showPanelStatus" >
-            <div class="q-pb-md">
+            <div class="q-pb-md row">
                 <div class="text-h4 text-bold" v-if="$store.state.wallets.customTotal.show">
                   US${{ nFormatter2($store.state.wallets.customTotal.usd, 3) }}
                 </div>
                 <div class="text-h4 text-bold" v-else>
                   US${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }}
                 </div>
+                <q-btn
+                      dense
+                      flat
+                      icon-right="cached"
+                      color="grey"
+                      @click="refreshWallet()"
+                      class="q-pl-md"
+                    />
             </div>
             <div class="q-pb-lg">
                 <q-toolbar class="bg-white shadow-2 rounded-borders row justify-between">
@@ -19,7 +27,7 @@
                     <q-separator vertical inset color="grey"/>
                     <div>
                         <q-btn flat round dense color="primary" icon="call_received" class="q-pl-md" style="margin-right:-10px;"/>
-                        <q-btn flat color="primary" class="text-bold" to="/verto/manage/receive"> Receive</q-btn>
+                        <q-btn flat color="primary" class="text-bold" @click="goTo('manage/receive')"> Receive</q-btn>
                     </div>
                 </q-toolbar>
             </div>
@@ -52,7 +60,7 @@ import Formatter from '@/mixins/Formatter'
 export default {
   name: 'TopMenuMobile',
   components: { AppBar },
-  props: ['chainTools', 'keys', 'showPanelStatus'],
+  props: ['chainTools', 'keys', 'showPanelStatus', 'refreshWallet'],
   mixins: [Formatter],
   data () {
     return {
@@ -83,12 +91,18 @@ export default {
     // },
     callChainTools () {
       console.log('calling callChaintools')
-      this.$emit('update:keys', { send: ++this.keys.send })
-      this.$emit('update:chainTools', { show: this.chainTools.show, send: true })
+      let self = this
+      setTimeout(function () {
+        self.$emit('update:keys', { send: ++self.keys.send })
+        self.$emit('update:chainTools', { show: self.chainTools.show, send: true })
+      }, 300)
+    },
+    goTo (path) {
+      let self = this
+      setTimeout(function () {
+        self.$router.push(`/verto/${path}`)
+      }, 100)
     }
-    // goTo (path) {
-    //   this.$router.push(`/verto/${path}`)
-    // }
   }
 
 }

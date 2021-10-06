@@ -2,14 +2,14 @@
 <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" class="history-component" style="height: 100%;">
 
   <div class="transaction-wrapper" style="height: 100%;">
-    <div :class="!($q.platform.is.mobile||$isbex) ? 'transaction-wrapper--list open' : ''"  style="height: 100%;">
+    <div :class="!($q.platform.is.mobile||$isbex)  ? 'transaction-wrapper--list open' : ''"  :style="!$q.platform.is.mobile ? 'height: 100%;' : 'height: 100%;'">
       <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! (['eos','btc','sol'].includes($store.state.investment.defaultAccount.chain) || $store.state.investment.defaultAccount.isEvm)">
         History for the {{$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
       </q-banner>
 
       <div class="q-pa-md loading-table" v-else-if="loading">
       <span class="text-body1">We are loading your transaction history. This may take a moment</span>
-        <q-markup-table flat>
+        <q-markup-table flat v-if="!$q.platform.is.mobile">
           <thead>
             <tr>
               <th class="text-left" style="width: 150px">
@@ -34,7 +34,7 @@
           </thead>
 
           <tbody>
-            <tr v-for="n in 5" :key="n">
+            <tr v-for="n in 10" :key="n">
               <td class="text-left">
                 <q-skeleton animation="blink" type="text" width="85px" />
               </td>
@@ -56,6 +56,8 @@
             </tr>
           </tbody>
         </q-markup-table>
+        <q-linear-progress query color="warning" class="q-mt-md" v-if="$q.platform.is.mobile"/>
+
       </div>
 
       <div  class="q-pa-md" v-else-if="!history.length && !loading">
@@ -381,7 +383,7 @@
           <!-- MOBILE VIEW ONLY  -->
           <HistoryItemList :history="history" :getImage="getImage" :getAction="getAction" v-if="$q.platform.is.mobile||$isbex"/>
 
-          <p v-if="history.length && $store.state.investment.defaultAccount.chain == 'eth'" class="text-center text-body1 cursor-pointer" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" /></p>
+          <p v-if="history.length && $store.state.investment.defaultAccount.chain == 'eth'" class="text-center text-body1 cursor-pointer q-pb-xl" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" /></p>
       </q-scroll-area>
     </div>
   </div>
@@ -487,6 +489,7 @@ export default {
         return
       }
       this.history = []
+      console.log(account, 'account')
       if (account.origin === 'metamask') {
         account = this.$store.state.wallets.tokens.find(o => o.type === 'eth' && o.origin !== 'metamask')
       }
@@ -500,7 +503,7 @@ export default {
 
         this.getEthWalletHistory(account)
       } else if (account.chain === 'eos') {
-        this.$axios.post('https://cpu.volentix.io/api/global/history', {name:account.name}).then(res => {
+        this.$axios.post('https://cpu.volentix.io/api/global/history', { name: account.name }).then(res => {
           this.history = res.data
           this.loading = false
         })
@@ -702,7 +705,7 @@ export default {
             data: [element]
           }
           this.history.push(item)
-        
+
           // this.$store.commit('wallets/updateHistory', item)
         }
       })
