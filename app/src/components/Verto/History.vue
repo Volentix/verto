@@ -513,7 +513,6 @@ export default {
         }
 
         Lib.history(account.chain, account.chain === 'eos' ? account.name : account.key, account.type, this.pagination).then(data => {
-
           console.log(data, 'data')
           data = data.history
 

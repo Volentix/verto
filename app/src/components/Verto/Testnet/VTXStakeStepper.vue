@@ -34,7 +34,7 @@
                         </q-input>
                           <q-btn label="Submit" @click="unstake()" :loading="spinnerVisible" outline rounded class="float-right" :disable="invalidPrivateKeyPassword || !privateKeyPassword || privateKeyPassword.toString().trim().length == 0" />
                         </q-card>
-                      
+
                         </q-dialog>
           <div class="list-wrapper--chain__eos-to-vtx-convertor">
             <q-tabs
@@ -521,7 +521,7 @@ export default {
       if (this.tableData && this.tableData.length) {
         if (!this.currentAccount) {
           this.currentAccount = this.tableData[0]
-         
+
           this.currentAccount.label = this.currentAccount.name
           this.currentAccount.value = this.currentAccount.name
         }
@@ -682,7 +682,7 @@ export default {
     getPeriod (reward, amount, period) {
       let stake_per = (1 + period / 10.0) / 100
       let checkReward = (Math.round(amount * stake_per * 100) / 100) * period
-     
+
       return (parseInt(checkReward) === parseInt(reward)) ? period : false
     },
     checkAmount () {
@@ -772,16 +772,14 @@ export default {
         this.transactionError = true
         this.ErrorMessage = 'Unknown Error: ' + error.toString()
         this.$q.notify({
-        message: error.toString(),
-        timeout: 2000,
-        icon: 'check',
-        textColor: 'white',
-        type: 'warning',
-        position: 'top'
-      })
-
+          message: error.toString(),
+          timeout: 2000,
+          icon: 'check',
+          textColor: 'white',
+          type: 'warning',
+          position: 'top'
+        })
       }
-     
     },
     payForUserCPU (actions, message = null) {
       let account = {
@@ -825,10 +823,10 @@ export default {
         }, { keyProvider: this.privateKey.key })
         this.initData()
         this.$q.notify(message)
-         this.spinnerVisible = false
+        this.spinnerVisible = false
         initWallet(this.currentAccount.name)
       } catch (error) {
-          this.spinnerVisible = false
+        this.spinnerVisible = false
         this.displayError(error, true, actions, message)
       }
     },
