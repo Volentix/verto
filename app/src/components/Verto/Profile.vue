@@ -232,7 +232,10 @@
           <div class="text-h6">Verto Extension not found</div>
         </q-card-section>
         <q-card-section class="q-pt-none">
-          If you have installed extension please refresh this page and try again
+          Please download extension from following link <q-btn type="a" icon="link" :href="extensionUrl" flat target="_blank" color="primary" />
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+          If you have extension installed then try again after refreshing this page.
         </q-card-section>
         <q-card-actions align="right">
           <q-btn flat label="OK" color="primary" v-close-popup/>
@@ -304,10 +307,16 @@ export default {
       showShareWrapper: false,
       extensionNotFound: false,
       extensionSyncSuccess: false,
-      extensionSyncFailure: false
+      extensionSyncFailure: false,
+      extensionUrl: ''
     }
   },
   async mounted () {
+    if (typeof chrome === 'undefined') {
+      this.extensionUrl = this.$extensionUrlMozila
+    } else {
+      this.extensionUrl = this.$extensionUrl
+    }
     /*  let cruxKey = await HD.Wallet('crux')
     this.version = version
     cruxClient = new CruxPay.CruxClient({
@@ -321,7 +330,6 @@ export default {
       // console.log('existingCruxID', this.existingCruxID)
     }
     */
-
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
@@ -364,39 +372,39 @@ export default {
   methods: {
     async syncExtension () {
       const data = await ConfigManager.syncConfig()
-      console.log(this.$extensionId)
-      // const EXTENSION_ID = 'adgjbgmmbjmnofpecpikkddmpcfljiam'
-      try {
-        chrome.runtime.sendMessage(this.$extensionId, { type: 'EXTENSION_AVAILABLE' }, response => {
-          if (response === undefined) {
-            this.extensionNotFound = true
-          }
-          if (!response && response.success !== true) {
-            this.extensionNotFound = true
-          } else {
-            chrome.runtime.sendMessage(this.$extensionId, { type: 'SYNC_DATA', data: data }, response => {
-              if (!response && response.success !== true) {
-                this.extensionSyncFailure = true
-                return
-              }
-              this.extensionSyncSuccess = true
-            })
-          }
-        })
-      } catch (e) {
-        console.log('error')
-        console.log(e)
-        if (e instanceof TypeError) {
-
+      const extensionId = this.$extensionId
+      let browserProxy = null
+      if (typeof chrome === 'undefined') {
+        if (window.saveToVertoExtension !== undefined) {
+          // eslint-disable-next-line no-undef
+          window.saveToVertoExtension(await ConfigManager.syncConfig())
+          this.extensionSyncSuccess = true
+        } else {
+          this.extensionNotFound = true
+        }
+      } else {
+        try {
+          chrome.runtime.sendMessage(extensionId, { type: 'EXTENSION_AVAILABLE' }, response => {
+            if (response === undefined) {
+              this.extensionNotFound = true
+            }
+            if (!response && response.success !== true) {
+              this.extensionNotFound = true
+            } else {
+              chrome.runtime.sendMessage(this.$extensionId, { type: 'SYNC_DATA', data: data }, response => {
+                if (!response && response.success !== true) {
+                  this.extensionSyncFailure = true
+                  return
+                }
+                this.extensionSyncSuccess = true
+              })
+            }
+          })
+        } catch (e) {
+          console.log(e)
+          this.extensionNotFound = true
         }
       }
-      // if (window.saveToVertoExtension !== undefined) {
-      //   // eslint-disable-next-line no-undef
-      //   window.saveToVertoExtension(await ConfigManager.syncConfig())
-      //   this.extensionSyncSuccess = true
-      // } else {
-      //   this.extensionNotFound = true
-      // }
     },
     setNetwork: function () {
       this.$store.dispatch('settings/toggleNetwork', this.network)
