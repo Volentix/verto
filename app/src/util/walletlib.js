@@ -260,34 +260,34 @@ class Lib {
       async sol (token, key, data) {
         return new Promise(async (resolve, reject) => {
           let actions = []
-          axios.get(process.env[store.state.settings.network].CACHE + 'https://api.solscan.io/account/transaction?address='+key)
+          axios.get(process.env[store.state.settings.network].CACHE + 'https://api.solscan.io/account/transaction?address=' + key)
             .then(function (result) {
-                result.data.data.filter(o => o.parsedInstruction[0].type.toLowerCase() === 'sol-transfer').map(a => {
-                    let tx = {}
+              result.data.data.filter(o => o.parsedInstruction[0].type.toLowerCase() === 'sol-transfer').map(a => {
+                let tx = {}
 
-                    let date = new Date(a.blockTime)
-                    tx.timeStamp = date.getTime() / 1000
-                    tx.chain = token
-                    tx.friendlyHash = a.txHash.substring(0, 6) + '...' + a.txHash.substr(a.txHash.length - 5)
-                    tx.to = tx.friendlyTo = a.parsedInstruction[0].programId
-                    tx.hash = a.txHash
-                    tx.explorerLink = 'https://solscan.io/tx/' + tx.hash
-                    tx.from = a.signer[0]
-                    tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
-                    tx.image = 'https://solana.com/branding/new/exchange/exchange-black.png' //self.getTokenImage(amount.split(' ')[1])
-                    tx.amount = a.slot * 0.000000001
-                    tx.symbol = 'SOL'
-                    tx.direction = self.getTransactionDirection(a.signer[0], a.parsedInstruction[0].programId, key)
-                    tx.dateFormatted = date.toISOString().split('T')[0]
-                    tx.amountFriendly = parseFloat(Math.abs(tx.amount)).toFixed(6)
+                let date = new Date(a.blockTime)
+                tx.timeStamp = date.getTime() / 1000
+                tx.chain = token
+                tx.friendlyHash = a.txHash.substring(0, 6) + '...' + a.txHash.substr(a.txHash.length - 5)
+                tx.to = tx.friendlyTo = a.parsedInstruction[0].programId
+                tx.hash = a.txHash
+                tx.explorerLink = 'https://solscan.io/tx/' + tx.hash
+                tx.from = a.signer[0]
+                tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+                tx.image = 'https://solana.com/branding/new/exchange/exchange-black.png' // self.getTokenImage(amount.split(' ')[1])
+                tx.amount = a.slot * 0.000000001
+                tx.symbol = 'SOL'
+                tx.direction = self.getTransactionDirection(a.signer[0], a.parsedInstruction[0].programId, key)
+                tx.dateFormatted = date.toISOString().split('T')[0]
+                tx.amountFriendly = parseFloat(Math.abs(tx.amount)).toFixed(6)
 
-                    actions.push(tx)
-                  })
-                
-                resolve({
-                  history: actions
-                })
-              }).catch(function (error) {
+                actions.push(tx)
+              })
+
+              resolve({
+                history: actions
+              })
+            }).catch(function (error) {
               reject({
                 error: error
               })
@@ -817,7 +817,7 @@ class Lib {
 
     const web3 = this.getWeb3Instance(chain)
     if (evmData) {
-      if (evmData.gas && evmData.gas.length) { response = await axios.get(process.env[store.state.settings.network].CACHE +evmData.gas) }
+      if (evmData.gas && evmData.gas.length) { response = await axios.get(process.env[store.state.settings.network].CACHE + evmData.gas) }
 
       gasData = {
         gas: gasLimit || 21000,
@@ -964,9 +964,8 @@ class Lib {
 
     const wallet = {
       async sol (token, from, to, value, memo, key) {
-        
         let account = new solanaWeb3.Account(JSON.parse(key).data)
-       
+
         // Connect to cluster
         var connection = new solanaWeb3.Connection(
           solanaWeb3.clusterApiUrl('mainnet-beta'),
@@ -990,14 +989,12 @@ class Lib {
         )
 
         return new Promise((resolve, reject) => {
-        
-              resolve({
-                message: `solscan.io/tx/${signature}`,
-                success: true,
-                transaction_id: signature
-              })
-          
-            })
+          resolve({
+            message: `solscan.io/tx/${signature}`,
+            success: true,
+            transaction_id: signature
+          })
+        })
       },
       async btc (token, from, to, value, memo, key) {
         const bitcoin = require('bitcoinjs-lib')

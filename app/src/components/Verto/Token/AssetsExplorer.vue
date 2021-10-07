@@ -1442,7 +1442,7 @@ export default {
     },
     chainAction (chain) {
       const self = this
-      console.log('chainAction called ', chain);
+      console.log('chainAction called ', chain)
       let actions = {
         import () {
           self.$router.push(self.getImportLink(chain.chain))

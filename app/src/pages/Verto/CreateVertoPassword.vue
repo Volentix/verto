@@ -264,7 +264,7 @@ export default {
             chain: 'sol',
             key: 'HekM1hBawXQu6wK6Ah1yw1YXXeMUDD2bfCHEzo25vnEB',
             name: 'Solana',
-             type: 'sol'
+            type: 'sol'
           },
           {
             chain: 'eth',

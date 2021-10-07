@@ -108,7 +108,7 @@ import { Resources } from '@greymass/eosio-resources'
 import AccountSelector from '../Exchange/AccountSelector.vue'
 export default {
   name: 'BuyEosRam',
-  components:{
+  components: {
     AccountSelector
   },
   data () {
@@ -133,11 +133,11 @@ export default {
       return this.$store.state.currentwallet.wallet || {}
     }
   },
-  watch:{
-    "$store.state.currentwallet.wallet": function(){
-     this.currentAccount = this.wallet
-     this.getRessourceData(100)
-    if (this.currentAccount) { this.receiver = this.currentAccount.name }
+  watch: {
+    '$store.state.currentwallet.wallet': function () {
+      this.currentAccount = this.wallet
+      this.getRessourceData(100)
+      if (this.currentAccount) { this.receiver = this.currentAccount.name }
     }
   },
   async created () {

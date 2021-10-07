@@ -271,7 +271,7 @@
                           </template>
                         </q-input>
                       </div>
-                      <div class="col col-12" v-if="currentToken.chainID && !currentAccount.isEvm && currentAccount.chain != 'btc'">
+                      <div class="col col-12" v-if="currentToken.chainID && !currentAccount.isEvm &&  !['btc','sol'].includes(currentAccount.chain)">
                         <span v-if="currentToken.chainID && !currentAccount.isEvm" class="lab-input">Memo</span>
                         <q-input :disable="disableMemoEdit" v-if="currentToken.chainID && !currentAccount.isEvm" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
                       </div>
