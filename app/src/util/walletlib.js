@@ -275,7 +275,7 @@ class Lib {
                     tx.from = a.signer[0]
                     tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
                     tx.image = 'https://solana.com/branding/new/exchange/exchange-black.png' //self.getTokenImage(amount.split(' ')[1])
-                    tx.amount = a.lamport * 0.000000001
+                    tx.amount = a.slot * 0.000000001
                     tx.symbol = 'SOL'
                     tx.direction = self.getTransactionDirection(a.signer[0], a.parsedInstruction[0].programId, key)
                     tx.dateFormatted = date.toISOString().split('T')[0]

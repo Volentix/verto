@@ -4,7 +4,6 @@
       <!-- <q-toggle v-model="active" label="Active" /> -->
       <div class="chain-tools-wrapper--list open">
         <div class="list-wrapper">
-        {{isPrivateKeyEncrypted ? 1: 0}}
         <q-dialog v-model="showPKDiaglog">
         <q-card class="q-pa-md q-px-lg">
         <q-icon v-close-popup name="close" class="absolute-top-right q-ma-md"/>
@@ -276,7 +275,7 @@
                           </strong></div>
                           <div class="col">Period: <br> <strong>{{stake.stake_period}} Days</strong></div>
                           <div class="col mobile-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br> <strong>{{stake.time_left}} {{(( ((stake.stake_period * 24 * 60)   - stake.time_left) / (stake.stake_period * 24 * 60) ))}}</strong></div>
-                          <div v-if="!stake.time_left > 0" class="col desktop-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br>
+                          <div v-if="stake.time_left > 0" class="col desktop-only">{{stake.time_left > 0 ? 'Time left' : 'Stake period ended'}}: <br>
                             <q-linear-progress dark rounded stripe size="25px" :value="parseFloat(stake.time_left_percentage) / 100" color="deep-purple-14">
                               <div class="absolute-full flex flex-center">
                                 <q-badge color="white" text-color="black" :label="(stake.time_left_percentage) + ' %'" />
@@ -522,7 +521,7 @@ export default {
       if (this.tableData && this.tableData.length) {
         if (!this.currentAccount) {
           this.currentAccount = this.tableData[0]
-          this.currentAccount.name = 'crosschainfx'
+         
           this.currentAccount.label = this.currentAccount.name
           this.currentAccount.value = this.currentAccount.name
         }
@@ -565,7 +564,6 @@ export default {
       if (eos.isPrivKeyValid(this.currentAccount.privateKey)) {
         this.privateKey.key = this.currentAccount.privateKey
         this.isPrivateKeyEncrypted = false
-        this.isPrivateKeyEncrypted = true
       } else {
         this.isPrivateKeyEncrypted = true
       }
@@ -601,6 +599,7 @@ export default {
           */
           while (counter <= 10) {
             let period = this.getPeriod(s.subsidy, s.stake_amount, counter)
+            console.log(period, 'period')
             if (period) {
               s.stake_period = period * this.period_duration
               break
@@ -608,6 +607,7 @@ export default {
             counter++
           }
           s.stake_date = new Date((s.unlock_timestamp - s.stake_period * 24 * 60 * 60) * 1000)
+          console.log(s, 's.time_left_percentage')
           s.time_left_percentage = ((date.getDateDiff(s.stake_done, Date.now(), 'days') / s.stake_period) * 100).toFixed(2)
           stakedAmounts += +s.stake_amount
         })
@@ -682,8 +682,8 @@ export default {
     getPeriod (reward, amount, period) {
       let stake_per = (1 + period / 10.0) / 100
       let checkReward = (Math.round(amount * stake_per * 100) / 100) * period
-
-      return (checkReward === reward) ? period : false
+     
+      return (parseInt(checkReward) === parseInt(reward)) ? period : false
     },
     checkAmount () {
       let stake_per = (1 + this.stakePeriod / 10.0) / 100
