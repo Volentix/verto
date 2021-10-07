@@ -5,6 +5,7 @@
 >
   Power up
 </div>
+ <AccountSelector :chains="['eos']"    :chain="'eos'" class="q-pt-lg" />
 <div class="row full-width">
 <div class="col-md-5">
     <q-tabs
@@ -101,8 +102,12 @@
 
 <script>
 import { Resources } from '@greymass/eosio-resources'
+import AccountSelector from '../Exchange/AccountSelector.vue'
 export default {
   name: 'BuyEosRam',
+  components:{
+    AccountSelector
+  },
   data () {
     return {
       action: 'ressources',
