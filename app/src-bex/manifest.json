@@ -20,7 +20,6 @@
           "www/chunk-common.js",
           "www/vendor.js"
         ],
-//    "page": "background.html",
     "persistent": true
   },
   "content_scripts": [{
