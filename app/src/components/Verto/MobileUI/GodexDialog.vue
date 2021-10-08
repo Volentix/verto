@@ -1,6 +1,6 @@
 <template>
     <div>
-        
+
               <div class="block-contents">
 
                 <label class="switch">
@@ -216,6 +216,7 @@
                                         <b>~12 sec</b>
                                     </div>
 
+                                    // eslint-disable-next-line vue/no-parsing-error
                                     <span> < 119.63 Gwei</span>
                                     <input type="radio" name="types" id="ckb4" checked="checked">
                                     <span class="checkmark"></span>
@@ -226,6 +227,7 @@
                                         <b>~12 sec</b>
                                     </div>
 
+                                    // eslint-disable-next-line vue/no-parsing-error
                                     <span> < 119.63 Gwei</span>
                                     <input type="radio" name="types" id="ckb5" >
                                     <span class="checkmark"></span>
@@ -522,7 +524,7 @@ function fnccc () {
   var rootCss = document.querySelector(':root')
   if (localStorage.getItem('theme')) {
     const theme = localStorage.getItem('theme')
-    if (theme == 'dark') {
+    if (theme === 'dark') {
       console.log('it is dark')
 
       rootCss.style.setProperty('--bodyBackground', '#06070a')
@@ -536,7 +538,7 @@ function fnccc () {
       rootCss.style.setProperty('--borderColor', '#202835')
 
       document.body.classList.remove('lighTheme')
-    } else if (theme == 'light') {
+    } else if (theme === 'light') {
       document.body.classList.add('lighTheme')
       rootCss.style.setProperty('--bodyBackground', '#f3f5fa')
       rootCss.style.setProperty('--bodyColorUp', '#6c86ad26')

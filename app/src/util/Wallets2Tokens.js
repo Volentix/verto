@@ -244,8 +244,8 @@ class Wallets2Tokens {
           }
           // wallet.vespucciScore = vespucciScore
         }
-        if (wallet.type == 'sol') {
-         // wallet.key = 'HekM1hBawXQu6wK6Ah1yw1YXXeMUDD2bfCHEzo25vnEB'
+        if (wallet.type === 'sol') {
+          // wallet.key = 'HekM1hBawXQu6wK6Ah1yw1YXXeMUDD2bfCHEzo25vnEB'
         }
         wallet.disabled = false
 
