@@ -394,6 +394,7 @@ export default {
   data () {
     return {
       screenSize: 0,
+      mobileDialog: true,
       step: 1,
       step2: 1,
       isPwd: true,

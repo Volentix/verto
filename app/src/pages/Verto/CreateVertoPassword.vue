@@ -261,6 +261,12 @@ export default {
             type: 'eth'
           },
           {
+            chain: 'sol',
+            key: 'HekM1hBawXQu6wK6Ah1yw1YXXeMUDD2bfCHEzo25vnEB',
+            name: 'Solana',
+            type: 'sol'
+          },
+          {
             chain: 'eth',
             key: '0xe79cfa452632690d5c87029424530bb42769dbf3',
             name: 'ETH Wallet 2',
