@@ -15,8 +15,10 @@ chrome.runtime.onMessageExternal.addListener(
       return true
     } else if (message.type === 'SYNC_DATA') {
       localStorage.setItem('sync_data', message.data)
+      const url = chrome.extension.getURL('www/index.html')
       sendResponse({
         type: 'SYNC_DATA',
+        url: url,
         success: true
       })
     }

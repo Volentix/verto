@@ -6,7 +6,7 @@ export default function attachContentHooks (bridge) {
   bridge.on('app.save', event => {
     // console.log(event.data)
     bridge.send('app.sync', event.data).then((data) => {
-      bridge.send(event.responseKey, data)
+      bridge.send(event.eventResponseKey, data.data)
     })
   })
   /*
