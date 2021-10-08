@@ -144,7 +144,7 @@ module.exports = function (ctx) {
           ...cfg.resolve.alias,
           '@': path.resolve(__dirname, './src')
         }
-        /*
+        
         cfg.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
@@ -154,7 +154,7 @@ module.exports = function (ctx) {
             // cache: true,
             fix: true
           }
-        }) */
+        }) 
       }
     },
 
@@ -259,6 +259,7 @@ module.exports = function (ctx) {
 
         // appId: 'quasar-app'
         'productName': 'Verto',
+        'version' : '123',
         'appId': 'io.volentix.verto',
         /* eslint-disable */
         'artifactName': '${name}-${os}-${version}.${ext}',

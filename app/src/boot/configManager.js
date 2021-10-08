@@ -4,6 +4,7 @@ import EosRPC from '../util/EosWrapper'
 import * as utils from '@/util/utils.js'
 import { userError } from '@/util/errorHandler'
 import store from '@/store'
+
 export default ({ Vue }) => {
   Vue.prototype.$configManager = configManager
   Vue.prototype.$vDexNodeConfigManager = new VDexNodeConfigManager(process.env[store.state.settings.network].EOS_HISTORYAPI)

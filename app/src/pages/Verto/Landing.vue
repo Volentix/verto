@@ -128,6 +128,10 @@ export default {
     Lib.removeExpiredData()
     this.$store.dispatch('tokens/getTokenList')
     this.$store.dispatch('settings/getSettings')
+    setInterval(() => {
+      this.$store.dispatch('settings/getSettings')
+    }, 54000000)
+
     let ids = ['volentix-vtx']
     this.$store.dispatch('tokens/getTokenMarketData', ids)
     this.$store.dispatch('tokens/getEvmsTokensData')
