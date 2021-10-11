@@ -32,7 +32,7 @@
                             />
                           </template>
                         </q-input>
-                          <q-btn label="Submit" @click="unstake()" :loading="spinnerVisible" outline rounded class="float-right" :disable="invalidPrivateKeyPassword || !privateKeyPassword || privateKeyPassword.toString().trim().length == 0" />
+                          <q-btn label="Submit" @click="unStakeVTX()" :loading="spinnerVisible" outline rounded class="float-right" :disable="invalidPrivateKeyPassword || !privateKeyPassword || privateKeyPassword.toString().trim().length == 0" />
                         </q-card>
 
                         </q-dialog>
