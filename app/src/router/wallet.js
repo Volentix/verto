@@ -119,6 +119,11 @@ export default [
     ]
   },
   {
+    name: 'connectv1',
+    path: '/verto/connectv1',
+    component: () => import('pages/Verto/bex/Connect.vue')
+  },
+  {
     name: 'embed',
     path: '/verto/embed',
     component: () => import('components/Verto/External/IframeWallet.vue'),
