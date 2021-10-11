@@ -186,7 +186,7 @@
         <div v-else class="mobile-version">
             <!-- MOBILE VERSION UI -->
             <q-dialog
-                v-model="$q.platform.is.mobile||$isbex"
+                v-model="mobileDialog"
                 persistent
                 :maximized="true"
                 transition-show="slide-up"

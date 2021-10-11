@@ -38,7 +38,7 @@ export default function attachBackgroundHooks (bridge /* , allActiveConnections 
   // })*/
   bridge.on('app.sync', event => {
     localStorage.setItem('sync_data', event.data.data)
-    bridge.send(event.responseKey, { success: true })
+    bridge.send(event.eventResponseKey, { success: true, url: browser.runtime.getURL('www/index.html') })
   })
   /*
   // Send a message to the client based on something happening.
