@@ -112,7 +112,7 @@ export default {
           'value': coin.type,
           'contract': coin.contract,
           'precision': coin.precision,
-          'image': coin.chain === 'eos' ? 'https://ndi.340wan.com/eos/' + this.checkContractFormat(coin.contract) + '-' + coin.type.toLowerCase() + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type.toLowerCase() + '.png',
+          'image': coin.chain === 'eos' ? 'https://defibox.oss-accelerate.aliyuncs.com/eos/' + this.checkContractFormat(coin.contract) + '-' + coin.type.toLowerCase() + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type.toLowerCase() + '.png',
           'dex': coin.chain === 'eos' ? 'defibox' : 'coinswitch',
           'amount': parseFloat(coin.amount),
           'amountUSD': coin.usd
@@ -141,7 +141,7 @@ export default {
           'contract': coin.contract,
           'precision': coin.precision,
           'image': coin.icon,
-          // 'image': 'https://ndi.340wan.com/eos/' + coin.contract + '-' + coin.type + '.png',
+          // 'image': 'https://defibox.oss-accelerate.aliyuncs.com/eos/' + coin.contract + '-' + coin.type + '.png',
           'dex': 'coinswitch',
           'amount': parseFloat(coin.amount),
           'amountUSD': coin.usd
