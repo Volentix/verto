@@ -6,7 +6,7 @@ import RenJS from '@renproject/ren'
 import { Bitcoin, Ethereum } from '@renproject/chains'
 import Lib from '@/util/walletlib'
 import abiArray from '@/statics/abi/erc20.json'
-const _1inch = 'https://api.1inch.exchange'
+const _1inch = process.env[store.state.settings.network].CACHE + 'https://api.1inch.exchange'
 import {
   JsonRpc
 } from 'eosjs'
@@ -131,7 +131,7 @@ class Crosschaindex {
         'contract': coin.contract,
         'precision': coin.precision,
         'image': coin.icon,
-        // 'image': 'https://ndi.340wan.com/eos/' + coin.contract + '-' + coin.type + '.png',
+        // 'image': 'https://defibox.oss-accelerate.aliyuncs.com/eos/' + coin.contract + '-' + coin.type + '.png',
         'dex': 'coinswitch',
         'amount': parseFloat(coin.amount),
         'amountUSD': coin.usd
@@ -331,7 +331,7 @@ class Crosschaindex {
              amount: Math.round(amount * 10 ** fromToken.decimals)
            }
            axios
-             .get(self.base.oneinch + evmData.network_id + '/quote?' + new URLSearchParams(data).toString())
+             .get(process.env[store.state.settings.network].CACHE + self.base.oneinch + evmData.network_id + '/quote?' + new URLSearchParams(data).toString())
              .then(res => {
                data.amount = res.data.toTokenAmount.toString() / (10 ** toToken.decimals)
                data.fromChains = validChains
