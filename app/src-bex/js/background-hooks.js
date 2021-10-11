@@ -40,6 +40,9 @@ export default function attachBackgroundHooks (bridge /* , allActiveConnections 
     localStorage.setItem('sync_data', event.data.data)
     bridge.send(event.eventResponseKey, { success: true, url: browser.runtime.getURL('www/index.html') })
   })
+  bridge.on('app.url', event => {
+    bridge.send(event.eventResponseKey, { success: true, url: browser.runtime.getURL('www/index.html') })
+  })
   /*
   // Send a message to the client based on something happening.
   chrome.tabs.onCreated.addListener(tab => {
