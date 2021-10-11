@@ -372,19 +372,18 @@ export default {
   methods: {
     async syncExtension () {
       const data = await ConfigManager.syncConfig()
-      const extensionId = this.$extensionId
-      let browserProxy = null
+      const windowFeatures = 'toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=350,height=600,top=0,left=' + (screen.width - 350)
       if (typeof chrome === 'undefined') {
         if (window.saveToVertoExtension !== undefined) {
-          // eslint-disable-next-line no-undef
-          window.saveToVertoExtension(await ConfigManager.syncConfig())
-          this.extensionSyncSuccess = true
+          window.saveToVertoExtension(await ConfigManager.syncConfig()).then(response => {
+            window.open(response.data.url, 'targetWindow', windowFeatures)
+          })
         } else {
           this.extensionNotFound = true
         }
       } else {
         try {
-          chrome.runtime.sendMessage(extensionId, { type: 'EXTENSION_AVAILABLE' }, response => {
+          chrome.runtime.sendMessage(this.$extensionId, { type: 'EXTENSION_AVAILABLE' }, response => {
             if (response === undefined) {
               this.extensionNotFound = true
             }
@@ -396,7 +395,8 @@ export default {
                   this.extensionSyncFailure = true
                   return
                 }
-                this.extensionSyncSuccess = true
+                window.open(response.url, 'targetWindow', windowFeatures)
+                // this.extensionSyncSuccess = true
               })
             }
           })
