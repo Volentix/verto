@@ -373,20 +373,20 @@ export default {
       const windowFeatures = 'toolbar=0, directories=0,addressbar=0, location=0, status=0, menubar=0, scrollbars=0, resizable=0, width=350, height=600, top=0, left=' + (screen.width - 350)
       if (typeof chrome === 'undefined') {
         if (window.saveToVertoExtension !== undefined) {
-          const extension = window.open('', 'Verto', windowFeatures)
+          // const extension = window.open('', 'Verto', windowFeatures)
           window.saveToVertoExtension(this.syncData).then(response => {
-            extension.location = response.data.url
+            // extension.location = response.data.url
           })
         } else {
           this.extensionNotFound = true
         }
       } else {
         try {
-          const extension = window.open('', 'Verto', windowFeatures)
+          // const extension = window.open('', 'Verto', windowFeatures)
 
           chrome.runtime.sendMessage(this.$extensionId, { type: 'EXTENSION_AVAILABLE' }, response => {
             if (response === undefined) {
-              this.extensionNotFound = true
+              // this.extensionNotFound = true
             }
             if (!response && response.success !== true) {
               this.extensionNotFound = true
@@ -394,10 +394,9 @@ export default {
               chrome.runtime.sendMessage(this.$extensionId, { type: 'SYNC_DATA', data: this.syncData }, response => {
                 if (!response && response.success !== true) {
                   this.extensionSyncFailure = true
-                  return
                 }
                 // window.open(response.url, 'null', windowFeatures)
-                extension.location = response.url
+                // extension.location = response.url
                 // this.extensionSyncSuccess = true
               })
             }
