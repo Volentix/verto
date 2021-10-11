@@ -86,6 +86,7 @@
     "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^6.2.0",
     "ethereumjs-wallet": "^0.6.3",
+    "extensionizer": "^1.0.1",
     "file-saver": "^2.0.1",
     "fs-web": "^1.0.1",
     "hdkey": "^2.0.1",

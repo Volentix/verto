@@ -1,4 +1,5 @@
 // Background code goes here
+
 const element = document.createElement('div')
 element.id = 'q-app'
 window.document.body.insertBefore(element, window.document.body.firstChild)
@@ -15,6 +16,15 @@ chrome.runtime.onMessageExternal.addListener(
       return true
     } else if (message.type === 'SYNC_DATA') {
       localStorage.setItem('sync_data', message.data)
+      chrome.windows.create(
+        { url: chrome.runtime.getURL('www/index.html'),
+          type: 'popup',
+          height: 600,
+          width: 400,
+          top: 0,
+          left: screen.width - 350,
+          focused: true
+        })
       const url = chrome.extension.getURL('www/index.html')
       sendResponse({
         type: 'SYNC_DATA',
