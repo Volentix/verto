@@ -308,7 +308,9 @@ export default {
       extensionNotFound: false,
       extensionSyncSuccess: false,
       extensionSyncFailure: false,
-      extensionUrl: ''
+      extensionUrl: '',
+      syncData: null,
+      firefoxExtensionUrl: ''
     }
   },
   async mounted () {
@@ -317,19 +319,14 @@ export default {
     } else {
       this.extensionUrl = this.$extensionUrl
     }
-    /*  let cruxKey = await HD.Wallet('crux')
-    this.version = version
-    cruxClient = new CruxPay.CruxClient({
-      walletClientName: 'verto',
-      privateKey: cruxKey.privateKey
+    ConfigManager.syncConfig().then(value => {
+      this.syncData = value
     })
-
-    await cruxClient.init()
-    this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
-    if (this.existingCruxID) {
-      // console.log('existingCruxID', this.existingCruxID)
+    if (window.getVertoExtensionUrl != undefined) {
+      window.getVertoExtensionUrl().then(response => {
+        this.firefoxExtensionUrl = response.data.url
+      })
     }
-    */
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
@@ -370,19 +367,23 @@ export default {
     // screenSize > 1024
   },
   methods: {
-    async syncExtension () {
-      const data = await ConfigManager.syncConfig()
-      const windowFeatures = 'toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=350,height=600,top=0,left=' + (screen.width - 350)
+    syncExtension () {
+      window.opener = self
+
+      const windowFeatures = 'toolbar=0, directories=0,addressbar=0, location=0, status=0, menubar=0, scrollbars=0, resizable=0, width=350, height=600, top=0, left=' + (screen.width - 350)
       if (typeof chrome === 'undefined') {
         if (window.saveToVertoExtension !== undefined) {
-          window.saveToVertoExtension(await ConfigManager.syncConfig()).then(response => {
-            window.open(response.data.url, 'targetWindow', windowFeatures)
+          const extension = window.open('', 'Verto', windowFeatures)
+          window.saveToVertoExtension(this.syncData).then(response => {
+            extension.location = response.data.url
           })
         } else {
           this.extensionNotFound = true
         }
       } else {
         try {
+          const extension = window.open('', 'Verto', windowFeatures)
+
           chrome.runtime.sendMessage(this.$extensionId, { type: 'EXTENSION_AVAILABLE' }, response => {
             if (response === undefined) {
               this.extensionNotFound = true
@@ -390,12 +391,13 @@ export default {
             if (!response && response.success !== true) {
               this.extensionNotFound = true
             } else {
-              chrome.runtime.sendMessage(this.$extensionId, { type: 'SYNC_DATA', data: data }, response => {
+              chrome.runtime.sendMessage(this.$extensionId, { type: 'SYNC_DATA', data: this.syncData }, response => {
                 if (!response && response.success !== true) {
                   this.extensionSyncFailure = true
                   return
                 }
-                window.open(response.url, 'targetWindow', windowFeatures)
+                // window.open(response.url, 'null', windowFeatures)
+                extension.location = response.url
                 // this.extensionSyncSuccess = true
               })
             }

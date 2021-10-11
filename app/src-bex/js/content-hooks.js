@@ -9,6 +9,12 @@ export default function attachContentHooks (bridge) {
       bridge.send(event.eventResponseKey, data.data)
     })
   })
+  bridge.on('app.askUrl', event => {
+    // console.log(event.data)
+    bridge.send('app.url', event.data).then((data) => {
+      bridge.send(event.eventResponseKey, data.data)
+    })
+  })
   /*
   bridge.on('some.event', event => {
     if (event.data.yourProp) {
