@@ -21,7 +21,7 @@ export default {
   methods: {
 
     getEOSTokenImageUrl (symbol, contract) {
-      return this.invalidImages.find(o => o === symbol.toLowerCase()) ? 'https://dbds.340wan.com/static/img/eos.png' : 'https://ndi.340wan.com/eos/' + contract + '-' + symbol.toLowerCase() + '.png'
+      return this.invalidImages.find(o => o === symbol.toLowerCase()) ? 'https://dbds.340wan.com/static/img/eos.png' : 'https://defibox.oss-accelerate.aliyuncs.com/eos/' + contract + '-' + symbol.toLowerCase() + '.png'
     },
     async sendTransaction (transactionObject, externalRpc = null, header = null, step = null) {
       let transactionHeader = header || {
