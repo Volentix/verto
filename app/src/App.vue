@@ -15,7 +15,7 @@ export default {
     bexStyles () {
       if (this.$isbex) {
         return {
-          width: '400px',
+          width: '357px;',
           height: '600px',
           background: '#F5F5FE'
         }
