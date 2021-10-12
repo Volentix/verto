@@ -20,7 +20,7 @@ chrome.runtime.onMessageExternal.addListener(
         { url: chrome.runtime.getURL('www/index.html'),
           type: 'popup',
           height: 600,
-          width: 400,
+          width: 357,
           top: 0,
           left: screen.width - 350,
           focused: true
