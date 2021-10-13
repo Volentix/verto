@@ -792,7 +792,7 @@ export default {
         this.txObj.gasPrice = data.value.gasPrice
       }
     },
-   async getStakingData () {
+    async getStakingData () {
       let data = {
         stake: this.sendAmount,
         days: this.daysNumber,

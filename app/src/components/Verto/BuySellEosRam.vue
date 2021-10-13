@@ -1,7 +1,7 @@
 <template>
 <div :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }">
-<div
-  class="text-h6 text-bold q-pt-md"
+<div class="row"><div
+  class="text-h6 text-bold q-pt-md q-pr-lg"
 >
   <q-header>
     <q-toolbar  id="scrollToID3" class="text-black q-mb-md">
@@ -10,6 +10,9 @@
     </q-toolbar>
   </q-header>
 </div>
+ <AccountSelector :chains="['eos']"    :chain="'eos'" class="q-pt-lg" />
+ </div>
+
 <div style="max-width:400px;">
     <q-tabs
       v-model="action"
@@ -36,6 +39,9 @@
           <q-radio  v-if="false" v-model="unit" val="bytes" label="Bytes" />
           <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmount" type="number" :suffix="unit.toUpperCase()"  rounded outlined class="--input q-my-md" @input="changeAmount()" />
           Buy {{sendAmount}} EOS of RAM
+           <p class=" q-pt-md text-body1">Ram Receiver</p>
+          <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="receiver" type="text"   rounded outlined class="--input q-my-md" @input="changeAmount()" />
+
         </div>
       </q-tab-panel>
       <q-tab-panel name="sell">
@@ -43,6 +49,7 @@
           <p class="text-body1">Amount of RAM to Sell (Bytes)</p>
           <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="sendAmount" type="number" suffix="Bytes"  rounded outlined class="--input q-mb-md" @input="changeAmount()" />
           Selling {{sendAmount}} Bytes
+
         </div>
       </q-tab-panel>
     </q-tab-panels>
@@ -52,15 +59,19 @@
 </template>
 
 <script>
-
+import AccountSelector from './Exchange/AccountSelector.vue'
 export default {
+  components: {
+    AccountSelector
+  },
   name: 'BuyEosRam',
   data () {
     return {
       action: 'buy',
       sendAmount: 0,
       bytes: 0,
-      unit: 'eos'
+      unit: 'eos',
+      receiver: ''
     }
   },
   computed: {
@@ -68,8 +79,16 @@ export default {
       return this.$store.state.currentwallet.wallet || {}
     }
   },
+
+  watch: {
+    '$store.state.currentwallet.wallet': function () {
+      this.currentAccount = this.wallet
+      this.receiver = this.wallet.name
+    }
+  },
   async created () {
     this.currentAccount = this.wallet
+    this.receiver = this.wallet.name
   },
   methods: {
     changeAmount () {
@@ -98,7 +117,7 @@ export default {
           }],
           data: this.action === 'buy' ? {
             payer: this.wallet.name,
-            receiver: this.wallet.name,
+            receiver: this.receiver,
             quant: parseFloat(this.sendAmount).toFixed(4) + ' EOS'
           } : {
             account: this.wallet.name,

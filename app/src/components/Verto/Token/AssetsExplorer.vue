@@ -824,7 +824,7 @@
             <div class="main cursor-pointer">
               <div class="main-top">
                 <div class="mt-img">
-                  <img :src="asset.icon" />
+                  <img :src="asset.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"/>
                 </div>
                 <div>
                   <h6>
@@ -1442,7 +1442,7 @@ export default {
     },
     chainAction (chain) {
       const self = this
-      console.log('chainAction called ', chain);
+      console.log('chainAction called ', chain)
       let actions = {
         import () {
           self.$router.push(self.getImportLink(chain.chain))
@@ -1561,13 +1561,13 @@ export default {
           poolName: t.symbol0 + ' / ' + t.symbol1,
           amount: t['count' + index],
           icon:
-            'https://ndi.340wan.com/eos/' +
+            'https://defibox.oss-accelerate.aliyuncs.com/eos/' +
             t['contract' + index] +
             '-' +
             t['symbol' + index].toLowerCase() +
             '.png',
           protocol: 'Defibox',
-          protocolIcon: 'https://ndi.340wan.com/eos/token.defi-box.png'
+          protocolIcon: 'https://defibox.oss-accelerate.aliyuncs.com/eos/token.defi-box.png'
         }
       }
       investments.forEach((item) => {

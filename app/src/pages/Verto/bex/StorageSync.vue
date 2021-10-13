@@ -6,42 +6,55 @@
 
 <script>
 import configManager from '@/util/ConfigManager'
-import store from '../../../store'
 
 export default {
   name: 'StorageSync',
   async mounted () {
-    console.log(localStorage.getItem('sync_data'))
+    console.log('route loaded')
+    sessionStorage.setItem('router_loaded', true)
+    const routerLoaded = sessionStorage.getItem('app_started')
+    if (routerLoaded == null) {
+      return
+    }
     if (localStorage.getItem('sync_data')) {
       this.$router.push({
         name: 'syncExtensionWallet'
       })
     } else {
-      if (store.state.currentwallet && store.state.currentwallet.loggedIn === true) {
+      const lastRoute = localStorage.getItem('last_route') ? JSON.parse(localStorage.getItem('last_route')) : null
+      if (lastRoute && this.$route.name !== lastRoute.name && lastRoute.name !== 'storesync') {
+        console.log('loading existing route ', lastRoute.path)
         this.$router.push({
-          path: '/verto/dashboard'
+          name: lastRoute.name,
+          query: lastRoute.query,
+          params: lastRoute.params
         })
       } else {
-        this.hasConfig = !!await configManager.hasVertoConfig()
-        if (!this.hasConfig) {
+        if (this.$store.state.currentwallet && this.$store.state.currentwallet.loggedIn === true) {
+          console.log('moving to dashboard')
           this.$router.push({
-            name: 'setup',
-            params: {
-              showConfigStep: true
-            }
+            path: '/verto/dashboard'
           })
         } else {
-          this.$router.push({
-            name: 'login'
-          })
+          const hasConfig = !!await configManager.hasVertoConfig()
+          if (!hasConfig) {
+            console.log('moving to setup')
+            this.$router.push({
+              name: 'setup',
+              params: {
+                showConfigStep: true
+              }
+            })
+          } else {
+            console.log('moving to login')
+            this.$router.push({
+              name: 'login'
+            })
+          }
         }
       }
     }
-    if (this.$isbex) {
-      this.$nextTick(() => {
-        document.querySelector('#preloader').style.display = 'none'
-      })
-    }
+    document.querySelector('#preloader').style.display = 'none'
   }
 }
 </script>

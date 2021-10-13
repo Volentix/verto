@@ -79,7 +79,7 @@
                     <div class="shared__HStack-sc-1qg837v-1 icuFOW">
                       <div class="shared__HStack-sc-1qg837v-1 iXubSr">
                         <div size="36" class="TokenIcon__Wr-sc-1tdh4mp-0 ehgTIN">
-                          <q-img   :src="token.icon" class="rounded" />
+                          <img width="36"  :src="token.icon" class="rounded" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"/>
                         </div>
                         <div class="VStack-sc-1vdo21d-0 iPFffQ">
                           <div

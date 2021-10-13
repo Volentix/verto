@@ -1,13 +1,16 @@
 <template>
   <q-page class="column  items-center justify-start  restore-wallet">
     <div class="q-pa-md">
-      <img src="statics/icons/icon-256x256.png"  width="80" alt="logo"/>
+      <img src="statics/icons/icon-256x256.png" width="80" alt="logo"/>
     </div>
     <notify-message/>
     <div class="vert-page-content">
       <h2 class="vert-page-content--title">
-        Enter your sync config password
+        Enter your Verto config password
       </h2>
+      <p class="vert-page-content--title__sub">
+        Please enter your verto account password which you are syncing to verto extension
+      </p>
       <!-- The seed phrase will now be added to your config after confirming the password. -->
       <div class="vert-page-content--body">
         <!-- <div class="standard-content--body__img column flex-center gt-xs" v-if="!passwordsMatch"> -->
@@ -25,6 +28,8 @@
               @keyup.enter="restoreConfig"
               autofocus
               outlined
+              :error="pwdError"
+              error-message="Your config password is incorrect"
               :type="isPwd ? 'password' : 'text'"
               class="q-mt-sm"
             >
@@ -40,9 +45,9 @@
         </div>
       </div>
       <div class="vert-page-content--footer q-mb-lg">
-        <q-btn @click="restoreConfig" unelevated class="btn__blue block"  size="lg"   label="Continue"/>
+        <q-btn @click="restoreConfig" unelevated class="btn__blue block" size="lg" label="Continue"/>
         <span class="q-pa-sm"/>
-        <q-btn outline unelevated size="lg" class="btn--outline__blue"  label="Cancel Sync" @click="cancelSync"/>
+        <q-btn outline unelevated size="lg" class="btn--outline__blue" label="Cancel Sync" @click="cancelSync"/>
       </div>
     </div>
   </q-page>
@@ -55,6 +60,7 @@ import { userError } from '@/util/errorHandler'
 import Vue from 'vue'
 import VideoBg from 'vue-videobg'
 import NotifyMessage from '../../../components/notify/NotifyMessage'
+
 export default {
   name: 'SyncWalletFromExtension.vue',
   components: {
@@ -73,6 +79,7 @@ export default {
       incorrectPassword: false,
       showNextButtonToPassword: false,
       returnto: '',
+      pwdError: false,
       addWallet: {
         walletName: '',
         address: '',
@@ -129,6 +136,30 @@ export default {
       })
       localStorage.removeItem('sync_data')
     },
+    async login () {
+      localStorage.removeItem('sync_data')
+      const results = await configManager.login(this.addWallet.vertoPassword)
+      if (results.success) {
+        this.$store.commit('settings/temporary', this.password)
+        if (this.$route.params.nextUrl && this.$route.params.nextUrl.includes('dashboard')) initWallet()
+        setTimeout(() => {
+          this.$store.dispatch('investment/getMarketDataVsUSD')
+          this.$router.push({
+            path: '/verto/dashboard'
+          })
+        },
+        100)
+      } else {
+        if (results.message === 'no_default_key') {
+          this.$router.push({
+            path: 'vertomanager'
+          })
+        } else {
+          this.passHasError = true
+        }
+        this.spinnerVisible = false
+      }
+    },
     async loadConfig () {
       const config = localStorage.getItem('sync_data')
       try {
@@ -136,26 +167,18 @@ export default {
         const results = await configManager.restoreConfig(config, this.addWallet.vertoPassword)
         console.log(results, 'results restoreConfig')
         if (results.message === 'bad_password') {
-          // self.startRestoreConfig()
           this.spinnervisible = false
+          this.pwdError = true
           throw new Error('Incorrect Password')
         }
-        // updateProgress(1)
         this.$store.commit('settings/temporary', this.addWallet.vertoPassword)
         this.applicationRefreshing = true
-        this.$q.notify({ color: 'positive', message: 'Application refreshing' })
-        let self = this
-        setTimeout(function () {
-          self.$router.push({
-            path: '/verto/dashboard'
-          })
-          localStorage.removeItem('sync_data')
-          self.spinnervisible = false
-        }, 300)
+        this.$store.dispatch('notify/success', 'Application refreshing')
+        setTimeout(this.login, 300)
       } catch (e) {
         this.spinnervisible = false
-        console.log(e, 'restoreConfig error')
-        userError(e)
+        // console.log(e, 'restoreConfig error')
+        // userError(e)
       }
     },
     async restoreConfig () {
@@ -168,10 +191,12 @@ export default {
 <style scoped lang="scss">
 @import "~@/assets/styles/variables.scss";
 @import "~@/assets/styles/auth_page.scss";
-.restore-wallet{
+
+.restore-wallet {
   //padding-bottom: 0px;
   background: #F5F5FE
 }
+
 //.vert-page-content {
 //  padding: 0 5% 10% 5%;
 //  flex-grow: 1;
@@ -267,21 +292,23 @@ export default {
 //  /deep/ .q-field--dark .q-field__bottom {
 //  }
 //}
-.chain-tools-wrapper{
+.chain-tools-wrapper {
   // padding: 0px 6%;
   @media screen and (min-width: 768px) {
     max-width: 700px;
     width: 100%;
     margin: auto;
   }
-  &--list{
-    &__hide-chain-tools{
+
+  &--list {
+    &__hide-chain-tools {
       text-transform: initial !important;
       margin-top: 0px;
       margin-bottom: 10px;
       color: #7272FA !important;
     }
-    .list-wrapper{
+
+    .list-wrapper {
       overflow: hidden;
       visibility: hidden;
       height: 0px;
@@ -289,8 +316,9 @@ export default {
       transform: translateY(-20px) scaleY(.5);
       transform-origin: top;
       transition: ease transform .3s, ease opacity .4s;
-      &--chain{
-        &__type{
+
+      &--chain {
+        &__type {
           background-color: #fff;
           margin-bottom: 10px;
           border-radius: 0px 0px 10px 10px;
@@ -300,41 +328,52 @@ export default {
           font-size: 20px;
           color: #2A2A2A;
           font-weight: $bold;
-          b{
+
+          b {
             color: #7272FA;
             text-transform: uppercase;
           }
-          .chain{}
-          .token{}
+
+          .chain {
+          }
+
+          .token {
+          }
         }
-        &__coming-soon{
-          ul{
+
+        &__coming-soon {
+          ul {
             list-style: none;
             padding: 0px;
             margin: 0px;
             padding: 5% 6%;
-            li{
-              &:not(:last-child){
+
+            li {
+              &:not(:last-child) {
                 border-bottom: 1px solid #707070;
               }
-              .btn-soon{
+
+              .btn-soon {
                 text-transform: initial !important;
                 padding: 20px 10px;
                 border-radius: 0px;
-                /deep/ .q-btn__content{
+
+                /deep/ .q-btn__content {
                   display: flex;
                   justify-content: space-between;
                   flex-direction: row;
                   align-items: center;
                   align-content: center;
                 }
-                .title{
+
+                .title {
                   font-size: 20px;
                   color: #454F63;
                   font-weight: $bold;
                   margin-right: auto;
                 }
-                .soon{
+
+                .soon {
                   font-size: 16px;
                   color: #B0B0B0;
                   display: flex;
@@ -343,7 +382,8 @@ export default {
                   align-items: center;
                   align-content: center;
                 }
-                .icon{
+
+                .icon {
                   color: #78849E;
                   position: relative;
                   top: 2px;
@@ -353,13 +393,15 @@ export default {
             }
           }
         }
-        &__eos-to-vtx-convertor{
+
+        &__eos-to-vtx-convertor {
           background-color: #fff;
           margin-bottom: 0px;
           border-radius: 10px;
           padding: 0px;
           box-shadow: 0px 4px 16px 0px rgba(black, .09);
-          &--title{
+
+          &--title {
             font-size: 22px;
             font-family: $Titillium;
             font-weight: $bold;
@@ -369,9 +411,11 @@ export default {
             margin-top: 3px;
             position: relative;
           }
-          /deep/ .q-stepper__step{
+
+          /deep/ .q-stepper__step {
             position: relative;
           }
+
           /deep/ .q-stepper--vertical .q-stepper__dot:before,
           /deep/ .q-stepper--vertical .q-stepper__dot:after {
             content: '';
@@ -381,64 +425,78 @@ export default {
             // margin-top: -4px;
             // margin-bottom: -4px;
           }
-          /deep/ .q-stepper__tab{
-            .q-stepper__title{
+
+          /deep/ .q-stepper__tab {
+            .q-stepper__title {
               font-size: 16px;
               font-family: $Titillium;
               font-weight: $regular;
               color: #2A2A2A;
             }
-            &.q-stepper__tab--active,&.q-stepper__tab--done{
-              .q-stepper__title{
+
+            &.q-stepper__tab--active, &.q-stepper__tab--done {
+              .q-stepper__title {
                 color: #7272FA;
               }
-              .q-stepper__dot{
+
+              .q-stepper__dot {
                 background: #7272FA;
               }
             }
           }
-          .--input{
+
+          .--input {
             margin-top: 20px;
-            /deep/ .q-field{
+
+            /deep/ .q-field {
               height: 40px;
             }
+
             /deep/ .q-field__native,
             /deep/ .q-field__prefix,
-            /deep/ .q-field__suffix{
+            /deep/ .q-field__suffix {
               padding-top: 10px;
               padding-bottom: 0px;
             }
-            /deep/ .q-field__label{
+
+            /deep/ .q-field__label {
               top: 10px;
               font-size: 12px;
               font-weight: $bold;
               font-family: $Titillium;
             }
-            /deep/ .q-field__marginal{
+
+            /deep/ .q-field__marginal {
               height: 40px;
             }
-            /deep/ .q-field__control{
+
+            /deep/ .q-field__control {
               height: 40px;
             }
           }
-          .--slider{
+
+          .--slider {
             /deep/ &.q-slider--dark {
-              .q-slider__track-container{
+              .q-slider__track-container {
                 background: rgba(0, 0, 0, 0.3);
               }
-              .q-slider__pin-value-marker-text{
+
+              .q-slider__pin-value-marker-text {
                 font-weight: $bold;
                 font-size: 11px;
               }
-              .q-slider__pin-value-marker-bg{
+
+              .q-slider__pin-value-marker-bg {
                 background: #FFB200 !important;
               }
-              .text-green{
+
+              .text-green {
                 background: #FFB200 !important;
               }
             }
           }
-          .--next-btn{
+
+          .--next-btn {
             width: 100px;
             text-transform: initial !important;
             box-shadow: 0px 0px 10px 0px #6200ea;
@@ -450,29 +508,35 @@ export default {
             border-radius: 40px;
             margin-left: 0px;
           }
-          .--progress{
+
+          .--progress {
             height: 20px;
-            /deep/ .q-linear-progress{
+
+            /deep/ .q-linear-progress {
               margin-top: 8px;
               height: 5px !important;
               max-width: 90%;
               margin-left: auto;
               margin-right: auto;
-              .q-linear-progress__track{
+
+              .q-linear-progress__track {
                 background: #FFB200;
               }
+
               .q-linear-progress__model--indeterminate:before,
-              .q-linear-progress__model--indeterminate:after{
+              .q-linear-progress__model--indeterminate:after {
                 background: #FFB200;
               }
             }
           }
-          .--back-btn{
+
+          .--back-btn {
             position: absolute;
             right: 0px;
             top: 6px;
           }
-          .--subtitle{
+
+          .--subtitle {
             font-size: 17px;
             color: #000;
             font-family: $Titillium;
@@ -480,37 +544,44 @@ export default {
             line-height: 20px;
             margin-top: 10px;
             margin-bottom: 30px;
-            &__success{
+
+            &__success {
               color: #00D0CA;
               font-weight: $bold;
               margin-bottom: 20px;
             }
-            &__faild{
+
+            &__faild {
               color: #FFB200;
               font-weight: $bold;
               margin-bottom: 20px;
             }
-            &__transLink{
+
+            &__transLink {
               color: #2A2A2A;
               border-bottom: 1px solid;
               width: fit-content;
               font-weight: $bold;
               margin-bottom: 20px;
             }
-            &__summary{
+
+            &__summary {
               margin-bottom: 20px;
               font-weight: $bold;
             }
-            &__summary--list{
+
+            &__summary--list {
               list-style: disc;
               padding-left: 24px;
               margin-top: -10px;
-              li{
+
+              li {
                 color: #B0B0B0;
               }
             }
           }
-          .--title,.--amount{
+
+          .--title, .--amount {
             font-size: 13px;
             font-family: $Titillium;
             font-weight: $bold;
@@ -518,17 +589,20 @@ export default {
             text-transform: initial !important;
             line-height: 20px;
           }
-          .--amount{
+
+          .--amount {
             color: #2A2A2A !important;
           }
         }
       }
     }
-    &.open{
+
+    &.open {
       margin-bottom: 0px;
       padding-left: 6%;
       padding-right: 6%;
-      .list-wrapper{
+
+      .list-wrapper {
         visibility: visible;
         height: auto;
         opacity: 1;
@@ -538,20 +612,23 @@ export default {
     }
   }
 }
-.standard-content{
+
+.standard-content {
   padding: 5%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   // padding-bottom: 100px;
-  .privatekey_bg{
+  .privatekey_bg {
     margin-top: -10px;
-    img{
+
+    img {
       width: 100%;
       max-width: 330px;
     }
   }
-  &--title{
+
+  &--title {
     font-size: 35px;
     font-weight: $bold;
     position: relative;
@@ -561,28 +638,33 @@ export default {
     margin-bottom: 0px;
     position: relative;
     z-index: 2;
-    .btn-align-left{
+
+    .btn-align-left {
       position: absolute;
       left: -5px;
       top: 5px;
     }
   }
 }
-.file-select-wrapper{
+
+.file-select-wrapper {
   border: 1px solid #CCC;
   border-radius: 100px;
   padding: 0px;
   overflow: hidden;
   position: relative;
-  .icon-upload{
+
+  .icon-upload {
     font-size: 25px;
     position: absolute;
     right: 15px;
     opacity: .3;
   }
-  label{
+
+  label {
     width: 100%;
   }
+
   /deep/ .file-select > .select-button {
     padding: .12rem;
     color: transparent;
@@ -592,51 +674,63 @@ export default {
     flex-direction: row;
     justify-content: flex-start;
     display: flex;
-    span{
+
+    span {
       color: #000;
       padding: 0px 15px;
     }
   }
 }
-.dark-theme{
-  .svg_logo{
+
+.dark-theme {
+  .svg_logo {
     fill: #FFF;
   }
+
   background: transparent !important;
-  .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor{
+
+  .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor {
     background-color: transparent;
   }
-  .standard-content--title{
+
+  .standard-content--title {
     color: #FFF;
     font-size: 20px;
     margin-top: 8px;
     font-weight: $regular;
   }
+
   /deep/ .file-select-wrapper {
-    .file-select > .select-button span{
+    .file-select > .select-button span {
       color: #FFF;
     }
-    .file-select > .select-button{
+
+    .file-select > .select-button {
       background-color: #04111F !important;
       border: 1px solid #627797;
     }
   }
 }
-/deep/ .q-stepper{
-  &.q-dark{
+
+/deep/ .q-stepper {
+  &.q-dark {
     background: transparent !important;
-    .q-stepper__title{
+
+    .q-stepper__title {
       color: #CCC !important;
     }
   }
 }
-.app-logo-row{
+
+.app-logo-row {
   position: relative;
   width: 97%;
-  .app-logo{
+
+  .app-logo {
     position: absolute !important;
     left: 0px;
     z-index: 9;
+
     a {
       font-weight: $lighter;
       text-transform: uppercase;
@@ -648,7 +742,7 @@ export default {
   }
 }
 
-/deep/ .video-page-wrapper{
+/deep/ .video-page-wrapper {
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
@@ -657,18 +751,23 @@ export default {
   width: 100%;
   max-width: 500px;
 }
+
 /deep/ .VideoBg {
   overflow: hidden;
   width: 100vw !important;
   height: 100vh !important;
 }
-/deep/ .VideoBg__content{
+
+/deep/ .VideoBg__content {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  img{}
-  h1{
+
+  img {
+  }
+
+  h1 {
     font-family: $Franklin;
     color: #FFF;
     font-weight: 100;
@@ -677,33 +776,40 @@ export default {
     line-height: 55px;
   }
 }
-.video-page-wrapper{
-  .or-text{
+
+.video-page-wrapper {
+  .or-text {
     margin-left: 10px;
     font-size: 16px;
     // margin-top: -10px;
     // margin-bottom: 10px;
   }
-  /deep/ .q-field--focused .q-field__label{
+
+  /deep/ .q-field--focused .q-field__label {
     color: #FFF !important;
   }
+
   .next {
     box-shadow: 0px 0px 10px 0px #6200ea;
     border: 1px solid #B0B0B0 !important;
   }
+
   .back {
     box-shadow: 0px 0px 10px 0px #4caf50;
   }
-  /deep/ .q-field--outlined.q-field--focused .q-field__control:after{
+
+  /deep/ .q-field--outlined.q-field--focused .q-field__control:after {
     border: 1px solid #FFF;
     box-shadow: 0px 0px 10px 0px #6200ea;
   }
+
   /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
   /deep/ .q-field--dark .q-field__marginal,
-  /deep/ .q-field--dark .q-field__bottom{
+  /deep/ .q-field--dark .q-field__bottom {
     color: #FFF !important;
   }
-  .perpleGlow{
+
+  .perpleGlow {
     text-shadow: 2px 2px 2px #6200ea;
   }
 }

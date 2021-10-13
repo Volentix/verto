@@ -1,7 +1,9 @@
 <template>
 <div :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }">
+<div class="row">
+
 <div
-  class="text-h6 text-bold q-pt-md"
+  class="text-h6 text-bold q-pt-md q-pr-lg"
 >
   <q-header>
     <q-toolbar  id="scrollToID3" class="text-black q-mb-md">
@@ -10,6 +12,8 @@
     </q-toolbar>
   </q-header>
 </div>
+ <AccountSelector :chains="['eos']"    :chain="'eos'" class="q-pt-lg" />
+ </div>
 <div class="row full-width">
 <div class="col-md-5">
     <q-tabs
@@ -106,8 +110,12 @@
 
 <script>
 import { Resources } from '@greymass/eosio-resources'
+import AccountSelector from '../Exchange/AccountSelector.vue'
 export default {
   name: 'BuyEosRam',
+  components: {
+    AccountSelector
+  },
   data () {
     return {
       action: 'ressources',
@@ -128,6 +136,13 @@ export default {
   computed: {
     wallet () {
       return this.$store.state.currentwallet.wallet || {}
+    }
+  },
+  watch: {
+    '$store.state.currentwallet.wallet': function () {
+      this.currentAccount = this.wallet
+      this.getRessourceData(100)
+      if (this.currentAccount) { this.receiver = this.currentAccount.name }
     }
   },
   async created () {

@@ -507,7 +507,7 @@
                 <q-item-label caption class="text-bold">></q-item-label>
               </q-item-section>
               <q-item-section>
-                <q-icon v-if="depositCoin" class="option--avatar" :name="`img:https://ndi.340wan.com/eos/eosio.token-eos.png`" />
+                <q-icon v-if="depositCoin" class="option--avatar" :name="`img:https://defibox.oss-accelerate.aliyuncs.com/eos/eosio.token-eos.png`" />
                 <q-item-label caption class="text-bold text-center q-mt-sm"> EOS</q-item-label>
               </q-item-section>
 

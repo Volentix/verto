@@ -137,7 +137,7 @@ class Wallets2Tokens {
                     chain: 'eos',
                     to: '/verto/wallets/eos/' + type + '/' + name,
                     icon:
-                      'https://ndi.340wan.com/eos/' +
+                      'https://defibox.oss-accelerate.aliyuncs.com/eos/' +
                       t.code +
                       '-' +
                       t.symbol.toLowerCase() +
@@ -244,8 +244,8 @@ class Wallets2Tokens {
           }
           // wallet.vespucciScore = vespucciScore
         }
-        if (wallet.type == 'sol') {
-         // wallet.key = 'HekM1hBawXQu6wK6Ah1yw1YXXeMUDD2bfCHEzo25vnEB'
+        if (wallet.type === 'sol') {
+          // wallet.key = 'HekM1hBawXQu6wK6Ah1yw1YXXeMUDD2bfCHEzo25vnEB'
         }
         wallet.disabled = false
 
@@ -323,7 +323,14 @@ class Wallets2Tokens {
               .then(res => {
                 res.data.data.items.map(t => {
                   let amount = (t.balance / 10 ** t.contract_decimals) * t.quote_rate
-
+                  /* const getLogo = (chainId, t) => {
+                    let url = null
+                    if(chainId === 56){
+                      url = 'https://pancakeswap.finance/images/tokens/'+t.contract_address+'.svg'
+                    } else {
+                    url = t.logo_url && t.logo_url.length ? t.logo_url : self.getTokenImage(e.chain, t.contract_ticker_symbol.toLowerCase())
+                  }
+                } */
                   self.tableData.push({
                     isEvm: true,
                     disabled: false,
@@ -578,7 +585,7 @@ class Wallets2Tokens {
                 chain: 'eos',
                 to: '/verto/wallets/eos/' + type + '/' + name,
                 icon:
-                'https://ndi.340wan.com/eos/' +
+                'https://defibox.oss-accelerate.aliyuncs.com/eos/' +
                 t.code +
                 '-' +
                 t.symbol.toLowerCase() +
