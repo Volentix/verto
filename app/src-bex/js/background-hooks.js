@@ -2,7 +2,6 @@
 // Note: Events sent from this background script using `bridge.send` can be `listen`'d for by all client BEX bridges for this BEX
 
 // More info: https://quasar.dev/quasar-cli/developing-browser-extensions/background-hooks
-
 export default function attachBackgroundHooks (bridge /* , allActiveConnections */) {
   // bridge.on('storage.get', event => {
   //   const payload = event.data
@@ -38,7 +37,19 @@ export default function attachBackgroundHooks (bridge /* , allActiveConnections 
   // })*/
   bridge.on('app.sync', event => {
     localStorage.setItem('sync_data', event.data.data)
-    bridge.send(event.responseKey, { success: true })
+    chrome.windows.create(
+      { url: chrome.runtime.getURL('www/index.html'),
+        type: 'popup',
+        height: 600,
+        width: 357,
+        top: 0,
+        left: screen.width - 350,
+        focused: true
+      })
+    bridge.send(event.eventResponseKey, { success: true, url: chrome.runtime.getURL('www/index.html') })
+  })
+  bridge.on('app.url', event => {
+    bridge.send(event.eventResponseKey, { success: true, url: chrome.runtime.getURL('www/index.html') })
   })
   /*
   // Send a message to the client based on something happening.

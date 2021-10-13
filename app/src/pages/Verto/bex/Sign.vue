@@ -42,6 +42,7 @@ import DexInteraction from '../../../mixins/DexInteraction'
 import Vue from 'vue'
 import VideoBg from 'vue-videobg'
 import NotifyMessage from '../../../components/notify/NotifyMessage'
+import store from '../../../store'
 
 Vue.component('video-bg', VideoBg)
 export default {

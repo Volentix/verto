@@ -329,8 +329,6 @@
                   </q-step>
                    <q-step
                     :name="2"
-                  <q-step
-                    :name="2"
                     title="Choose account name"
                     icon="settings"
                     :done="step > 2"
@@ -446,7 +444,7 @@
                         separator
                         rounded
                         outlined
-                        
+
                         multiple
                         v-model="accountNameList"
                         :options="accountNames.filter(o => !accountNameList.find(a => a.value === o.value))"

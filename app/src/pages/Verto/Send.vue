@@ -87,7 +87,7 @@
               </div>
             </template>
           </q-input>
-          <a :href="transactionLink" target="_blank" class="text-body2 text-black"> More info</a>
+          <a :class="{'text-white':$store.state.settings.lightMode === 'true', 'text-black':$store.state.settings.lightMode !== 'false'}" :href="transactionLink" target="_blank" class="text-body2 "> More info</a>
         </q-card-section>
         <q-card-actions align="right" class="q-pr-sm">
           <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/>
@@ -123,7 +123,7 @@
           <div :class="[ embedded ? 'col-md-10 offset-md-1' : (miniMode ? 'col-md-12' : ' col-md-8' ), 'col']">
             <div class="apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'desktop-card-style': screenSize > 1024 && !miniMode }">
               <div class="standard-content_">
-                <h2 class="standard-content--title flex justify-start items-center" v-if="!miniMode">Send <img :src="currentToken.icon" class="max40 q-ml-sm" alt=""></h2>
+                <h2 class="standard-content--title flex justify-start items-center" v-if="!miniMode">Send <img :src="currentToken.icon" class="max40 q-ml-sm" alt="" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"></h2>
                 <div class="standard-content--body" v-show="miniStep != 2">
                   <div class="standard-content--body__form">
 
@@ -148,7 +148,7 @@
                               v-on="scope.itemEvents"
                             >
                               <q-item-section avatar>
-                                <q-icon class="option--avatar" :name="`img:${scope.opt.icon}`" />
+                                <img class="option--avatar" :src="`${scope.opt.icon}`" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"/>
                               </q-item-section>
                               <q-item-section dark>
                                 <q-item-label v-html="scope.opt.type.toUpperCase()" />
@@ -161,7 +161,7 @@
                               v-if="currentToken && currentToken.type"
                             >
                               <q-item-section avatar>
-                                <q-icon class="option--avatar" :name="`img:${currentToken.icon}`" />
+                                <img class="option--avatar" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="`${currentToken.icon}`" />
                               </q-item-section>
                               <q-item-section>
                                 <q-item-label v-html="currentToken.type.toUpperCase()" />
@@ -271,7 +271,7 @@
                           </template>
                         </q-input>
                       </div>
-                      <div class="col col-12" v-if="currentToken.chainID && !currentAccount.isEvm && currentAccount.chain != 'btc'">
+                      <div class="col col-12" v-if="currentToken.chainID && !currentAccount.isEvm &&  !['btc','sol'].includes(currentAccount.chain)">
                         <span v-if="currentToken.chainID && !currentAccount.isEvm" class="lab-input">Memo</span>
                         <q-input :disable="disableMemoEdit" v-if="currentToken.chainID && !currentAccount.isEvm" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" ref="sendMemo" v-model="sendMemo" @input="checkMemo" :error="memoError" error-message="Memo is required on this exchange, check your deposit instructions" rounded outlined class="" color="purple" type="textarea"/>
                       </div>

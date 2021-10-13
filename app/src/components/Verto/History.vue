@@ -3,7 +3,7 @@
 
   <div class="transaction-wrapper" style="height: 100%;">
     <div :class="!($q.platform.is.mobile||$isbex)  ? 'transaction-wrapper--list open' : ''"  :style="!$q.platform.is.mobile ? 'height: 100%;' : 'height: 100%;'">
-      <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! (['eos','btc'].includes($store.state.investment.defaultAccount.chain) || $store.state.investment.defaultAccount.isEvm)">
+      <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! (['eos','btc','sol'].includes($store.state.investment.defaultAccount.chain) || $store.state.investment.defaultAccount.isEvm)">
         History for the {{$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
       </q-banner>
 
@@ -489,6 +489,7 @@ export default {
         return
       }
       this.history = []
+      console.log(account, 'account')
       if (account.origin === 'metamask') {
         account = this.$store.state.wallets.tokens.find(o => o.type === 'eth' && o.origin !== 'metamask')
       }
@@ -503,7 +504,13 @@ export default {
         this.getEthWalletHistory(account)
       } else if (account.chain === 'eos') {
         this.$axios.post('https://cpu.volentix.io/api/global/history', { name: account.name }).then(res => {
-          this.history = res.data
+         
+          res.data.forEach( (d,i) => {
+            res.data[i].data.map(h => {
+               h.image = Lib.getTokenImage(h.symbol)
+            })   
+            })
+             this.history = res.data
           this.loading = false
         })
       } else {
@@ -512,6 +519,7 @@ export default {
         }
 
         Lib.history(account.chain, account.chain === 'eos' ? account.name : account.key, account.type, this.pagination).then(data => {
+          
           data = data.history
 
           if (data && data[0] && data[0].transID) {
@@ -521,6 +529,8 @@ export default {
           }
 
           if (data && Array.isArray(data)) {
+            
+           
             this.groupByDay(data)
           }
         })

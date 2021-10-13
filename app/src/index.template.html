@@ -27,7 +27,7 @@
   <style>
     #preloader{
       height: 600px;
-      width: 356px;
+      width: 357px;
       background-color: #F5F5FE;
       position: relative;
     }
@@ -77,19 +77,19 @@
         width: 357px !important;
         height: 600px !important;
       }
-      .q-body--fullscreen-mixin, q-body--prevent-scroll{
+      body{
+        background-color: #F5F5FE !important;
+        position: relative !important;
+      }
+      body.q-body--fullscreen-mixin.q-body--prevent-scroll{
         position: relative !important;
       }
     <% } %>
 
   </style>
-<!--    <% if (process.env.NODE_ENV === 'development' && htmlWebpackPlugin.options.ctx.mode.bex) { %>-->
-<!--      &lt;!&ndash; Load Vue Devtools remote ONLY in development &ndash;&gt;-->
-<!--       <script src="http://localhost:8098"></script>-->
-<!--    <% } %>-->
-
   </head>
   <body
+    style="position: relative !important;"
   >
 
     <!-- Google Tag Manager (noscript) -->
@@ -106,8 +106,8 @@
         </div>
       </div>
     </div>
-    <div style="position: relative;">
-      <div id="q-app" style="width: 300px;height: 600px"></div>
+    <div>
+      <div id="q-app" style="width: 357px;;height: 600px"></div>
     </div>
     <% } %>
     <% if (!htmlWebpackPlugin.options.ctx.mode.bex) { %>
