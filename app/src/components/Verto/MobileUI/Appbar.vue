@@ -13,7 +13,9 @@
 
             <q-toolbar-title class="primary">VERTO</q-toolbar-title>
             <div class="q-gutter-sm">
-                <q-btn class="primary" dense icon="search" @click="callChainTools" />
+                <SearchList :openSearch.sync="openSearch"  v-if="openSearch"/>
+
+                <q-btn class="primary" dense icon="search" @click="openSearch = true" />
                 <q-btn class="primary" dense icon="qr_code" @click="qrSelect = true" />
                 <q-btn class="primary" dense icon="notifications">
                     <q-menu transition-show="flip-right" transition-hide="flip-left" auto-close>
@@ -28,9 +30,7 @@
                                     <q-item-label caption>5 min ago</q-item-label>
                                 </q-item-section>
                             </q-item>
-
                             <q-separator spaced inset />
-
                             <q-item>
                                 <q-item-section>
                                     <q-item-label>Transaction alert </q-item-label>
@@ -41,28 +41,22 @@
                                     <q-item-label caption>US $10</q-item-label>
                                 </q-item-section>
                             </q-item>
-
                             <q-separator spaced inset />
-
                             <q-item>
                                 <q-item-section>
                                     <q-item-label>Payment Updated </q-item-label>
                                     <q-item-label caption>Secondary line text. Lorem ipsum dolor sit amet, consectetur adipiscit elit.</q-item-label>
                                 </q-item-section>
-
                                 <q-item-section side top>
                                     <q-badge color="teal" label="10k" />
                                 </q-item-section>
                             </q-item>
-
                             <q-separator spaced inset />
-
                             <q-item>
                                 <q-item-section>
                                     <q-item-label>Send Money alert </q-item-label>
                                     <q-item-label caption>Secondary line text. Lorem ipsum dolor sit amet, consectetur adipiscit elit.</q-item-label>
                                 </q-item-section>
-
                                 <q-item-section side top>
                                     <q-item-label caption>2 min ago</q-item-label>
                                 </q-item-section>
@@ -88,18 +82,23 @@
 
             </q-card>
         </q-dialog>
+        
     </div>
 </template>
 
 <script>
+import SearchList from '../TopMenu.vue';
+
 export default {
   name: 'AppbarMobile',
   props: ['callChainTools'],
+  components: { SearchList },
   data () {
     return {
       lightMode: true,
       tab: 'mails',
-      qrSelect: false
+      qrSelect: false,
+      openSearch: false
     }
   }
 

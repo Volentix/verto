@@ -3,7 +3,12 @@
 <div
   class="text-h6 text-bold q-pt-md"
 >
-  Buy / Sell Ram
+  <q-header>
+    <q-toolbar  id="scrollToID3" class="text-black q-mb-md">
+        <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)" />
+        <q-toolbar-title style="margin-left: -25px"> Buy / Sell Ram  </q-toolbar-title>
+    </q-toolbar>
+  </q-header>
 </div>
 <div style="max-width:400px;">
     <q-tabs

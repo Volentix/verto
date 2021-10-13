@@ -8,13 +8,15 @@
             transition-hide="slide-down"
         >
         <q-card class=" text-black" style="background: #f2f2f2 !important">
-            <q-toolbar >
+            <q-header class="bg-white">
+              <q-toolbar class="text-black">
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
-                <q-toolbar-title> Coins/Assets List.. </q-toolbar-title>
+                <q-toolbar-title> Coins/Assets List </q-toolbar-title>
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
-            </q-toolbar>
-
-            <q-card-section>
+              </q-toolbar>
+            </q-header>
+            
+            <q-card-section class="q-mt-xl">
                 <q-tabs
                   style="max-width: initial"
                     v-model="tabIndex"

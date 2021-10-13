@@ -77,7 +77,7 @@
   </div>
 
   <div v-if="$q.platform.is.mobile||$isbex" class="row justify-center">
-      <q-btn class="account_selector" dense v-if="accountOption" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" :style="titleView ? 'width: 100%' : 'width:230px;'" outline :icon="`img:${accountOption.icon}`" icon-right="fiber_manual_record" :label="accountOption.label" @click="dialog=true" />
+      <q-btn class="account_selector" dense v-if="accountOption" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" :style="titleView ? 'width: 100%' : 'width:160px;'" outline :icon="`img:${accountOption.icon}`"  :label="formatLabel(accountOption.label)" @click="dialog=true" />
       <q-dialog v-model="dialog"  :maximized="true">
         <q-card>
           <q-toolbar >
@@ -358,6 +358,11 @@ export default {
           }
         }
       }, time)
+    },
+    formatLabel (label) {
+      try {
+        return label.substr(0, 10)
+      } catch (e) { return label }
     }
   },
   watch: {

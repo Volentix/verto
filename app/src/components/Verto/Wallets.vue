@@ -574,11 +574,11 @@
             <q-btn outline rounded to="/verto/wallets/send" class="" color="primary"  label="Send" style="width:100px;"/>
             <q-btn outline rounded to="/verto/wallets/receive" class="" color="primary" label="Receive" />
         </div> -->
-        <q-item-label caption> Plese select an account from the lsit. </q-item-label>
+        <q-item-label caption> Plese select an account from the list. </q-item-label>
 
-        <div v-if="isMobile"  :class="{'open': !walletShowHide, 'is-mobile wallets-wrapper--list': !($q.platform.is.mobile||$isbex)}">
+        <div v-if="isMobile" class="q-mb-lg"  :class="{'open': !walletShowHide, 'is-mobile wallets-wrapper--list': !($q.platform.is.mobile||$isbex)}">
             <mobileAssets v-if="false" />
-            <q-scroll-area :visible="true" class="scrollarea_" :style="{'height' : '84vh'}">
+            <div :visible="true" class="scrollarea_ q-mb-lg" style="'height:84vh', 'margin-bottom:100px;'">
 
                 <br>
                 <div v-if="!($q.platform.is.mobile||$isbex) && $store.state.currentwallet.wallet.empty" class="header-list-table">
@@ -781,7 +781,7 @@
                                             <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
 
                                         </q-item-section>
-                                        <q-item-section class="item-info" v-if="!item.disabled">
+                                        <q-item-section class="item-info" v-if="!item.disabled" style="margin-right: -25px;">
                                             <span class="item-info--amount">{{formatNumber(item.amount ? (new Number(item.amount).toString().split('.')[1] && new Number(item.amount).toString().split('.')[1].length > 8 ? new Number(item.amount).toFixed(4) : new Number(item.amount).toFixed(4).toString()) : 0, 2) }} {{item.type.toUpperCase()}}</span>
 
                                             <span class="item-info--amountUSD" >${{formatNumber(new Number(isNaN(item.usd) ? 0 : item.usd).toFixed(2),0)}}</span>
@@ -859,7 +859,7 @@
 
                         </q-expansion-item>
                 </q-list>
-            </q-scroll-area>
+            </div>
             <div v-if="false" class="add-remove-wrapper flex column flex-center item-center content-center">
                 <q-btn unelevated flat @click="revealHide()" :icon-right="showHidden ? 'visibility_off': 'visibility'" class="full-width wallets-wrapper--list__hide-wallets wallets-wrapper--list__hide-wallets--reveal" color="white" text-color="black" :label="showHidden ? 'Hide Currencies' : 'Show Currencies'" :class="showText ? 'open': 'hide'" />
                 <span class="add-remove-wrapper--desc text-black">Main chains and balances above zero will show in this list</span>

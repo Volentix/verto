@@ -26,21 +26,24 @@
           </div>
         </div>
       </div>
-       <div class="mobile-version" style="height: inherit;" v-else>&nbsp;
-         <q-toolbar  id="scrollToID3">
-            <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog()" />
-            <q-toolbar-title style="margin-left: -25px"> History  </q-toolbar-title>
-            <div class="row flex justify-end">
-              <AccountSelector  :autoSelectChain="'eos'" class="q-mr-md" :showAllWallets="true" :titleView='true'/>
-            </div>
-            <!-- <q-btn flat round dense icon="close" v-close-popup to="/verto/dashboard"/> -->
-        </q-toolbar>
-        <div class=" apps-section history-card" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 94%;">
+       <div class="mobile-version" style="height: inherit;" v-else>
+         <q-header>
+            <q-toolbar  id="scrollToID3" class="text-black q-mb-md">
+                <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog()" />
+                <q-toolbar-title style="margin-left: -25px"> History  </q-toolbar-title>
+                <div class="row flex justify-end" style="margin-bottom: -10px;">
+                  <AccountSelector  :autoSelectChain="'eos'" class="q-mr-sm" :showAllWallets="true" :titleView='false'/>
+                  <q-btn round outline color="primary" icon="cached" @click="refresh++" class="refresh-history" size="sm"/>
+                  <!-- <q-icon name="cached"  @click="refresh++" class="refresh-history"/> -->
+                </div> 
+            </q-toolbar>
+         </q-header>
+        <div class=" apps-section- history-card-" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 94%;">
           <q-banner inline-actions class="text-white bg-red q-my-md " v-if="false">
             Section currently in development: currently showing ETH wallets history
           </q-banner>
 
-          <div class="standard-content--body" style="height: 100%">
+          <div class="standard-content--body-" style="height: 100%">
             <History :refresh="refresh" :key="refresh" :isMobile="true" />
           </div>
         </div>

@@ -864,7 +864,6 @@ export default {
                 : this.asset.chain)))
 
         id = token ? token.id : null
-        console.log(id, 'id 34', token)
       }
       if (id) {
         this.getMarketData(id)

@@ -8,12 +8,15 @@
             transition-hide="slide-down"
         >
         <q-card class=" text-black" style="background: #f2f2f2 !important">
-            <q-toolbar >
+            <q-header class="bg-white">
+              <q-toolbar class="text-black">
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
                 <q-toolbar-title> Token Details </q-toolbar-title>
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
-            </q-toolbar>
-            <div class="text-center " v-if="tab != 'import'" >
+              </q-toolbar>
+            </q-header>
+
+            <div class="text-center q-mt-xl" v-if="tab != 'import'" >
                 <AccountSelector  :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
             </div>
             <q-card-section>
@@ -204,14 +207,14 @@
                     <TokenByAccount :type="asset.type" :chain="asset.chain" class="right-area q-mt-lg col" />
                 </div>
 
-                <q-page-sticky expand position="bottom" style="margin-bottom: -55px;">
+                <q-page-sticky expand position="bottom" style="margin-bottom: 10px;">
                     <q-toolbar class="bg-transparent text-white">
-                        <q-btn rounded icon-right="send" color="primary" label="SEND" class="full-width" @click="dialogSend = true"/>
+                        <q-btn rounded icon-right="send" color="primary" label="SEND" class="full-width" @click="dialogSend = true; setAssetLocalCount = 1"/>
                     </q-toolbar>
                 </q-page-sticky>
             </q-card-section>
 
-            <SendComponent v-if="!dialogSend" style="visibility: hidden" @setAsset="setAsset" :token="asset.type" :miniMode="true" :key="$store.state.investment.defaultAccount.key+$store.state.investment.defaultAccount.name+$store.state.investment.defaultAccount.chain"  />
+            <SendComponent v-if="!dialogSend" style="visibility: hidden" @setAsset="setAssetLocal" :token="asset.type" :miniMode="true" :key="getSendKey()"  />
         </q-card>
         </q-dialog>
 
@@ -224,13 +227,15 @@
             transition-hide="slide-down"
         >
             <q-card class=" text-black" style="background: #f2f2f2 !important">
-                <q-toolbar >
-                    <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="dialogSend =false"/>
-                    <q-toolbar-title> Token Transactions</q-toolbar-title>
-                    <q-btn flat round dense icon="close" v-close-popup @click="dialogSend = false"/>
-                </q-toolbar>
+                <q-header class="bg-white">
+                    <q-toolbar class="text-black">
+                        <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="dialogSend =false"/>
+                        <q-toolbar-title> Token Transactions</q-toolbar-title>
+                        <q-btn flat round dense icon="close" v-close-popup @click="dialogSend = false"/>
+                    </q-toolbar>
+                </q-header>
 
-                <q-card-section>
+                <q-card-section class="q-mt-xl">
                     <div>
                         <q-item style="margin-left: -14px;">
                             <q-item-section>
@@ -263,7 +268,7 @@
                                 </div>
 
                                 <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount" class="q-px-md" >
-                                    <SendComponent @setAsset="setAsset" :token="asset.type" :miniMode="true" :key="$store.state.investment.defaultAccount.key+$store.state.investment.defaultAccount.name+$store.state.investment.defaultAccount.chain"  />
+                                    <SendComponent @setAsset="setAssetLocal" :token="asset.type" :miniMode="true" :key="$store.state.investment.defaultAccount.key+$store.state.investment.defaultAccount.name+$store.state.investment.defaultAccount.chain"  />
                                 </div>
 
                                 <div v-if="show1inch && tab == 'swap'" >
@@ -522,7 +527,8 @@ export default {
         { label: '6M', value: 180 },
         { label: '1Y', value: 365 }
       ],
-      dialogSend: false
+      dialogSend: false,
+      setAssetLocalCount: 0
     }
   },
   mounted () {
@@ -564,6 +570,17 @@ export default {
     },
     closeSendDialog () {
       this.dialogSend = false
+    },
+    setAssetLocal () {
+      this.setAssetLocalCount++
+      if (this.setAssetLocalCount < 2) { this.setAsset() } else console.log('setAssetLocal count ', this.setAssetLocalCount)
+    },
+    getSendKey () {
+      try {
+        return this.$store.state.investment.defaultAccount.key + this.$store.state.investment.defaultAccount.name + this.$store.state.investment.defaultAccount.chain
+      } catch (e) {
+        return Math.floor(Math.random() * 100000)
+      }
     }
   }
 

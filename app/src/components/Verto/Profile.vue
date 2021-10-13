@@ -1,10 +1,16 @@
 
 <template>
 <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-  <div class="profile-wrapper">
+  <div class="profile-wrapper-" >
     <!-- <q-toggle v-model="active" label="Active" /> -->
-    <div class="profile-wrapper--list">
+  <q-card flat>
+    <div style="overflow-y: auto; height: 82vh;">
+    <div class="profile-wrapper--list" >
+
       <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator>
+        <!-- <q-item manual-focus focused>
+          <q-item-section ></q-item-section>
+        </q-item> -->
         <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="(item.to !== 'backup' && item.to !== 'logout' && item.to !== 'restore' && item.to !== 'share' && item.to!=='sync') ? item.to : ''" @click="item.to === 'backup' ? backupConfig() : item.to === 'logout' ? logout() : item.to === 'restore' ? startRestoreConfig() : item.to === 'share' ? toggleShare() : item.id === 'debug' ? saveDebugData() : item.to === 'sync'?syncExtension(): empty()">
           <q-item-section avatar>
             <q-icon class="icons" :class="{'reverse' : item.icon === 'exit_to_app'}" v-if="item.icon !== 'vtx'" :name="item.icon" />
@@ -65,7 +71,10 @@
           </q-item-section>
         </q-item>
       </q-list>
+
     </div>
+    </div>
+  </q-card>
     <span v-if="!($q.platform.is.mobile||$isbex) && screenSize <= 1024" class="version full-width text-center text-grey column q-pt-md q-pl-xl q-pr-xl q-pb-xl q-mt-md">
       <span class="q-mb-md q-mt-md"><strong>{{version}}</strong></span>
       <span class="q-pa-sm">
@@ -268,6 +277,8 @@ export default {
     }
   },
   async mounted () {
+    // document.getElementById('scrollToIDP200').scrollIntoView()
+
     /*  let cruxKey = await HD.Wallet('crux')
     this.version = version
     cruxClient = new CruxPay.CruxClient({
@@ -281,7 +292,6 @@ export default {
       // console.log('existingCruxID', this.existingCruxID)
     }
     */
-
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)

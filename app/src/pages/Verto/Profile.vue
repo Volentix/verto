@@ -21,13 +21,15 @@
         </div>
       </div>
       <div v-else class="mobile-version">
-        <!-- <profile-header :isMobile="true" class="marg_" version="type2222" /> -->
-        <q-toolbar id="scrollToIDP">
+        <q-header>
+          <q-toolbar  class="text-black ">
             <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/dashboard"/>
-            <q-toolbar-title> Profile  </q-toolbar-title>
+            <q-toolbar-title> Profile </q-toolbar-title>
             <q-btn flat round dense icon="close" v-close-popup to="/verto/dashboard"/>
-        </q-toolbar>
-        <div class="q-mt-lg">
+          </q-toolbar>
+        </q-header>
+
+        <div >
           <profile />
         </div>
       </div>
@@ -75,7 +77,6 @@ export default {
   mounted () {
     this.version = version
     this.setupPlatformPath()
-    if (this.$q.platform.is.mobile || this.$isbex) { document.getElementById('scrollToIDP').scrollIntoView() }
   },
   methods: {
     getWindowWidth () {
