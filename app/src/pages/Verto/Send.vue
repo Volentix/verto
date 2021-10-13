@@ -5,9 +5,9 @@
           <q-toolbar-title :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" > Token Send </q-toolbar-title>
       </q-toolbar>
     <div v-if="getPassword" class="send-modal flex flex-center" :class="{'open' : openModal, 'dark-theme': $store.state.settings.lightMode === 'true'}">
-      <div class="send-modal__content column flex-center">
+      <div class="send-modal__content column flex-center" :style="$q.platform.is.mobile ? 'width: initial; margin-left: 70px;': '' ">
         <div class="send-modal__content--head">
-          <span class="text-h5 --amount">Private key password</span>
+          <span :class="$q.platform.is.mobile ? 'text-h6':'text-h5 --amount'" :style="$q.platform.is.mobile ? 'margin-left:-30px;':''">Private key password</span>
           <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black' : 'white'" rounded flat unelevated @click="hideModalFun()" class="close-btn" :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" label="+" />
         </div>
         <div class="send-modal__content--body column flex-center full-width">
@@ -36,8 +36,8 @@
           </q-input>
 
           <div class="flex justify-start full-width">
-            <q-btn @click="openModal = false" unelevated color="grey" class="--next-btn mr10" rounded label="Cancel" />
-            <q-btn @click="toSummary()" unelevated color="deep-purple-14" class="--next-btn" rounded label="Submit transaction" />
+            <q-btn @click="openModal = false" unelevated color="grey" class="--next-btn mr10" rounded label="Cancel" :size="$q.platform.is.mobile ? 'sm': 'md'"/>
+            <q-btn @click="toSummary()" unelevated color="deep-purple-14" class="--next-btn" rounded label="Submit transaction" :size="$q.platform.is.mobile ? 'sm': 'md'"/>
           </div>
 
         </div>

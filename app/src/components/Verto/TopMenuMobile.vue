@@ -32,24 +32,6 @@
                 </q-toolbar>
             </div>
         </div>
-
-        <!-- BOTTOM NAVIGATION  -->
-        <div >
-            <!-- <q-footer  style="position:fixed; bottom:0; width: -webkit-fill-available; z-index: 1;">
-              <q-tabs
-                v-model="tabRoute"
-                indicator-color="primary"
-                active-color="primary"
-                class="bg-white text-grey-7 shadow-2 text-bold"
-              >
-                <q-tab name="exchange" icon="sync" label=" " no-caps @click="goTo('crosschain-exchange')" />
-                <q-tab name="history" icon="history" label="" no-caps @click="goTo('history')"  />
-                <q-tab name="dashboard" icon="dashboard" label="" @click="goTo('dashboard')"/>
-                <q-tab name="account" icon="account_balance" label="" no-caps @click="goTo('wallets')" />
-                <q-tab name="profile" icon="person" label="" no-caps @click="goTo('profile')"/>
-              </q-tabs>
-            </q-footer> -->
-        </div>
   </div>
 </template>
 
@@ -74,21 +56,7 @@ export default {
   mounted () {
     // this.checkRoute()
   },
-  // watch: {
-  //   '$route': function () {
-  //     this.checkRoute()
-  //   }
-  // },
   methods: {
-    // checkRoute () {
-    //   if (this.$route.name === 'dashboard') { this.tabRoute = 'dashboard' }
-    //   if (this.$route.name === 'profile') {
-    //     this.tabRoute = 'profile'
-    //     this.$emit('update:showPanelStatus', false)
-    //   }
-    //   if (this.$route.name === 'history') { this.tabRoute = 'history' }
-    //   if (this.$route.name === 'crosschain-exchange') { this.tabRoute = 'exchange' }
-    // },
     callChainTools () {
       console.log('calling callChaintools')
       let self = this
