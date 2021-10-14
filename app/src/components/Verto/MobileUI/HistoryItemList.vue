@@ -1,6 +1,6 @@
 <template>
     <div class="q-pa-sm" style="overflow: auto;">
-        <q-card flat   v-for="(day,indexDay) in history" :key="indexDay" class="rounded-borders  q-mb-sm" :class="{'dark-bg': $store.state.settings.lightMode === 'true'}" >
+        <q-card flat   v-for="(day,indexDay) in history" :key="indexDay" class="rounded-borders" :class="{'dark-bg': $store.state.settings.lightMode === 'true'}" >
             <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7">{{day.friendlyDay}} </div>
 
             <q-list  class="rounded-borders " v-for="(transaction, indexTx) in day.data" :key="indexTx" separator>
@@ -18,7 +18,7 @@
                                 <q-avatar round size="32px" color="primary">
                                     <img :src="transaction.image" >
                                 </q-avatar>
-                                 <div>&nbsp;&nbsp;-{{transaction.amountFriendly}} {{transaction.symbol}} </div>
+                                 <div>&nbsp;&nbsp;-{{formatNumber(transaction.amountFriendly)}} {{transaction.symbol}} </div>
                             </q-item-label>
                             <!-- <q-item-label caption>
                                 <div class="text-grey" v-if="transaction.usdAmount" >
@@ -96,7 +96,7 @@
                                 <q-avatar round size="32px" color="primary">
                                     <img :src="transaction.subTransactions[0].image" >
                                 </q-avatar>
-                                <div>&nbsp;&nbsp;-{{transaction.subTransactions[0].amountFriendly}} {{transaction.subTransactions[0].symbol}} </div>
+                                <div>&nbsp;&nbsp;-{{formatNumber(transaction.subTransactions[0].amountFriendly)}} {{transaction.subTransactions[0].symbol}} </div>
                             </q-item-label>
                             <!-- <q-item-label caption>
                                 <div class="text-grey" v-if="transaction.subTransactions[0].usdAmount" >
@@ -174,9 +174,9 @@
                                 <q-avatar round size="32px">
                                     <img :src="transaction.image">
                                 </q-avatar>
-                                <div>&nbsp;&nbsp;<span>+{{transaction.amountFriendly}}</span> {{transaction.symbol}}</div>
+                                <div>&nbsp;&nbsp;<span>+{{formatNumber(transaction.amountFriendly)}}</span> {{transaction.symbol}}</div>
                             </q-item-label>
-                            <!-- <q-item-label >&nbsp;&nbsp;From {{transaction.friendlyFrom}}</q-item-label> -->
+                            <!-- <q-item-label >&nbsp;&nbsp;From {{transaction.friendlyFrom}}</q-item-label> formatNumber-->
                             <!-- <q-item-label caption>
                                 <div class="text-grey" v-if="transaction.usdAmount" >
                                    ${{transaction.usdAmount}}
@@ -241,7 +241,6 @@
                 <q-separator />
             </q-list>
         </q-card>
-        <p style="height: 40px;"> </p>
     </div>
 </template>
 

@@ -63,7 +63,7 @@
       <div  class="q-pa-md" v-else-if="!history.length && !loading">
         No transactions recorded yet with this account
       </div>
-      <q-scroll-area v-else :visible="true" class="q-pr-md" style="height: 85%;">
+      <q-scroll-area v-else :visible="true" class="q-pr-md" :style="$q.platform.is.mobile ? 'height: 120%; padding-bottom: 5px; background-color: white;' : 'height: 85%;'">
         <div v-if="!($q.platform.is.mobile||$isbex)">
 
           <div v-for="(day,indexDay) in history" :key="indexDay">
@@ -383,7 +383,7 @@
           <!-- MOBILE VIEW ONLY  -->
           <HistoryItemList :history="history" :getImage="getImage" :getAction="getAction" v-if="$q.platform.is.mobile||$isbex"/>
 
-          <p v-if="history.length && $store.state.investment.defaultAccount.chain == 'eth'" class="text-center text-body1 cursor-pointer q-pb-xl" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" /></p>
+          <p v-if="history.length && $store.state.investment.defaultAccount.chain == 'eth'" class="text-center text-body1 cursor-pointer q-pb-xl" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" class="q-mb-xl"/></p>
       </q-scroll-area>
     </div>
   </div>
@@ -604,6 +604,7 @@ export default {
           }
         }
       }, 200)
+      console.log('loadMore calling ')
     },
     getTokenImage (type) {
       let token = this.getAllCoins().find((o) => o.value.toLowerCase() === type.toLowerCase())
