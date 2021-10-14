@@ -1,11 +1,13 @@
 <template>
   <q-page class="column " :class="{'text-black bg-grey-12':$store.state.settings.lightMode === 'false','':$store.state.settings.lightMode === 'true','dark-theme': $store.state.settings.lightMode === 'true'}">
     <profile-header version="type1" class="marg" :showWallets="true" :isWalletsPage="false" :isWalletDetail="true" v-if="false"/>
-    <q-toolbar  class="" id="scrollToID">
-        <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/dashboard"/>
-        <q-toolbar-title> Wallets  </q-toolbar-title>
-        <!-- <q-btn flat round dense icon="close" v-close-popup to="/verto/dashboard"/> -->
-    </q-toolbar>
+    <q-header>
+      <q-toolbar  class="text-black" id="scrollToID">
+          <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/dashboard"/>
+          <q-toolbar-title> Wallets  </q-toolbar-title>
+          <!-- <q-btn flat round dense icon="close" v-close-popup to="/verto/dashboard"/> -->
+      </q-toolbar>
+    </q-header>
     <wallets :showWallets="true" :isWalletsPage="false" :isWalletDetail="true"  class="q-pa-md"/>
   </q-page>
 </template>
