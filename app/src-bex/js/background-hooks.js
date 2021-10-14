@@ -35,13 +35,69 @@ export default function attachBackgroundHooks (bridge /* , allActiveConnections 
   //     bridge.send(event.eventResponseKey, payload.data)
   //   })
   // })*/
+  
+  bridge.on('connector.listener', event => {
+    localStorage.setItem('test_data_1',JSON.stringify( event.data ))
+    event.data.connect()
+    /*
+    event.data.connect().on("call_request", (error, payload) => { 
+       if (error) {   
+          throw error; 
+       }
+       alert('call_request')
+       localStorage.setItem('call_request', JSON.stringify(payload))
+       chrome.windows.create(
+        { url: chrome.runtime.getURL('www/index.html'),
+          type: 'popup',
+          height: 600,
+          width: 400,
+          top: 0,
+          left: screen.width - 350,
+          focused: true
+        })
+      })
+      
+      window.connector.on("personal_sign", (error, payload) => { 
+        alert('personal_sign')
+        if (error) {   
+           throw error; 
+        }
+        localStorage.setItem('call_request', JSON.stringify(payload))
+        chrome.windows.create(
+         { url: chrome.runtime.getURL('www/index.html'),
+           type: 'popup',
+           height: 600,
+           width: 400,
+           top: 0,
+           left: screen.width - 350,
+           focused: true
+         })
+       })
+      bridge.send(event.eventResponseKey)
+      */
+ })
+  bridge.on('app.connect', event => {
+   
+    localStorage.setItem('wallet_connect_svg', event.data.qr)
+    chrome.windows.create(
+      { url: chrome.runtime.getURL('www/index.html'),
+        type: 'popup',
+        height: 600,
+        width: 357,
+        top: 0,
+        left: screen.width - 350,
+        focused: true
+      })
+    bridge.send(event.eventResponseKey, { success: true, url: chrome.runtime.getURL('www/index.html') })
+  })
+
   bridge.on('app.sync', event => {
     localStorage.setItem('sync_data', event.data.data)
     chrome.windows.create(
       { url: chrome.runtime.getURL('www/index.html'),
         type: 'popup',
         height: 600,
-        width: 357,
+        width: 400,
         top: 0,
         left: screen.width - 350,
         focused: true

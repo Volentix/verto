@@ -16,7 +16,16 @@ export default {
     if (routerLoaded == null) {
       return
     }
-    if (localStorage.getItem('sync_data')) {
+    let qr = localStorage.getItem('wallet_connect_svg')
+    if(qr){
+      localStorage.removeItem('wallet_connect_svg')
+         this.$router.push({
+        name: 'connectv1',
+        params:{
+          qr:qr
+        }
+      })
+    } else if (localStorage.getItem('sync_data')) {
       this.$router.push({
         name: 'syncExtensionWallet'
       })
