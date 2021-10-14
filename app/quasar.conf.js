@@ -108,7 +108,8 @@ module.exports = function (ctx) {
         'QScrollArea',
         'QPullToRefresh',
         'QFooter',
-        'QFile'
+        'QFile',
+        'QVirtualScroll'
       ],
 
       directives: [

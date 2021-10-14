@@ -31,11 +31,13 @@
             transition-hide="slide-down"
         >
           <q-card >
-            <q-toolbar >
-                  <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/profile"/>
+            <q-header class="bg-white">
+              <q-toolbar class="text-black">
+                  <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)"/>
                   <q-toolbar-title> Import EOS Account  </q-toolbar-title>
-                  <q-btn flat round dense icon="close" v-close-popup to="/verto/profile"/>
+                  <q-btn flat round dense icon="close" v-close-popup @click="$router.go(-1)"/>
               </q-toolbar>
+            </q-header>
 
             <!-- <profile-header version="type4" /> -->
             <div class="q-mt-md">

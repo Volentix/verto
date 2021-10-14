@@ -1,8 +1,7 @@
 <template>
     <div class="q-pa-md q-pb-xl">
         <q-card class="q-mb-md"
-            v-for="(path, index) in paths"
-            :key="index"
+            v-for="(path, index) in paths" :key="index"
         >
             <q-list bordered separator class="rounded-borders bg-white">
                 <q-item>
