@@ -1,65 +1,55 @@
 <template>
-  <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-    <div class="profile-wrapper">
-      <!-- <q-toggle v-model="active" label="Active" /> -->
-      <div class="profile-wrapper--list">
-        <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator>
-          <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active"
-                  :to="(item.to !== 'backup' && item.to !== 'logout' && item.to !== 'restore' && item.to !== 'share' && item.to!=='sync') ? item.to : ''"
-                  @click="item.to === 'backup' ? backupConfig() : item.to === 'logout' ? logout() : item.to === 'restore' ? startRestoreConfig() : item.to === 'share' ? toggleShare() : item.id === 'debug' ? saveDebugData() : item.to === 'sync'?syncExtension(): empty()">
-            <q-item-section avatar>
-              <q-icon class="icons" :class="{'reverse' : item.icon === 'exit_to_app'}" v-if="item.icon !== 'vtx'"
-                      :name="item.icon"/>
-              <img v-else class="vtx_logo" width="15px"
-                   :src="$store.state.settings.lightMode === 'true' ? 'statics/vtx.png' : 'statics/vtx_black.svg'"
-                   alt="">
-            </q-item-section>
-            <q-item-section class="item-name">
-              <div>{{ item.name }}</div>
-              <div v-if="screenSize <= 1024 && item.info === 'Linked'" class="flex flex-center q-mr-md text-grey">
-                {{ existingCruxID }}
-              </div>
-              <div v-if="screenSize <= 1024 && item.info === 'darkmode'"
-                   class="flex flex-center q-mr-md text-grey"></div>
-            </q-item-section>
-            <q-item-section v-if="!($q.platform.is.mobile||$isbex)">
-              <div class="flex justify-end">
-                <div v-if="screenSize > 1024 && item.info === 'Linked'" class="flex flex-center q-mr-md text-grey">
-                  {{ existingCruxID }}
-                </div>
-                <q-btn v-if="item.info === 'Linked'" flat unelevated text-color="grey"
-                       @click="copyToClipboard(existingCruxID , 'Verto ID')" round class="btn-copy" icon="o_file_copy"/>
-              </div>
-            </q-item-section>
-            <q-item-section v-if="!($q.platform.is.mobile||$isbex)" class="profile-wrapper--list__item-info"
-                            :class="{'hide': item.info === '' || item.info === 'darkmode', 'text-orange': item.info !== 'Linked', 'text-green' : item.info === 'Linked'}">
-              {{ item.info }}
-            </q-item-section>
-            <q-item-section
-              v-if="(($q.platform.is.mobile||$isbex) && item.name === 'Theme') && screenSize <= 1024 && item.info === 'darkmode'"
-              class="flex justify-end darkmode-option">
-              <q-toggle
-                v-model="lightMode"
-                checked-icon="wb_sunny"
-                @input="toggleLightDarkMode"
-                color="grey"
-                size="lg"
-                class="darkmode-btn"
-                unchecked-icon="brightness_3">
-                <q-tooltip v-if="$store.state.settings.lightMode === 'false'" content-class="black" :offset="[10, 10]">
-                  Dark mode
-                </q-tooltip>
-                <q-tooltip v-else content-class="black" :offset="[10, 10]">
-                  Light mode
-                </q-tooltip>
-              </q-toggle>
-            </q-item-section>
-            <q-item-section v-if="item.name === 'Network'" class="flex justify-end darkmode-option">
-              <q-btn-toggle
-                v-model="network"
-                unelevated
-                @input="setNetwork"
-                :options="[
+<div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+  <div class="profile-wrapper-" >
+    <!-- <q-toggle v-model="active" label="Active" /> -->
+  <q-card flat>
+    <div style="overflow-y: auto; height: 82vh;">
+    <div class="profile-wrapper--list" >
+
+      <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator>
+        <!-- <q-item manual-focus focused>
+          <q-item-section ></q-item-section>
+        </q-item> -->
+        <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="(item.to !== 'backup' && item.to !== 'logout' && item.to !== 'restore' && item.to !== 'share' && item.to!=='sync') ? item.to : ''" @click="item.to === 'backup' ? backupConfig() : item.to === 'logout' ? logout() : item.to === 'restore' ? startRestoreConfig() : item.to === 'share' ? toggleShare() : item.id === 'debug' ? saveDebugData() : item.to === 'sync'?syncExtension(): empty()">
+          <q-item-section avatar>
+            <q-icon class="icons" :class="{'reverse' : item.icon === 'exit_to_app'}" v-if="item.icon !== 'vtx'" :name="item.icon" />
+            <img v-else class="vtx_logo" width="15px" :src="$store.state.settings.lightMode === 'true' ? 'statics/vtx.png' : 'statics/vtx_black.svg'" alt="">
+          </q-item-section>
+          <q-item-section class="item-name">
+            <div>{{item.name}}</div>
+            <div v-if="screenSize <= 1024 && item.info === 'Linked'" class="flex flex-center q-mr-md text-grey">{{existingCruxID}}</div>
+            <div v-if="screenSize <= 1024 && item.info === 'darkmode'" class="flex flex-center q-mr-md text-grey"></div>
+          </q-item-section>
+          <q-item-section v-if="!($q.platform.is.mobile||$isbex)">
+            <div class="flex justify-end">
+              <div v-if="screenSize > 1024 && item.info === 'Linked'" class="flex flex-center q-mr-md text-grey">{{existingCruxID}}</div>
+              <q-btn v-if="item.info === 'Linked'" flat unelevated text-color="grey" @click="copyToClipboard(existingCruxID , 'Verto ID')" round class="btn-copy" icon="o_file_copy" />
+            </div>
+          </q-item-section>
+          <q-item-section v-if="!($q.platform.is.mobile||$isbex)" class="profile-wrapper--list__item-info" :class="{'hide': item.info === '' || item.info === 'darkmode', 'text-orange': item.info !== 'Linked', 'text-green' : item.info === 'Linked'}">{{item.info}}</q-item-section>
+          <q-item-section v-if="(($q.platform.is.mobile||$isbex) && item.name === 'Theme') && screenSize <= 1024 && item.info === 'darkmode'" class="flex justify-end darkmode-option">
+            <q-toggle
+              v-model="lightMode"
+              checked-icon="wb_sunny"
+              @input="toggleLightDarkMode"
+              color="grey"
+              size="lg"
+              class="darkmode-btn"
+              unchecked-icon="brightness_3">
+              <q-tooltip v-if="$store.state.settings.lightMode === 'false'" content-class="black" :offset="[10, 10]">
+                Dark mode
+              </q-tooltip>
+              <q-tooltip v-else content-class="black" :offset="[10, 10]">
+                Light mode
+              </q-tooltip>
+            </q-toggle>
+          </q-item-section>
+          <q-item-section v-if="item.name === 'Network'" class="flex justify-end darkmode-option">
+            <q-btn-toggle
+            v-model="network"
+            unelevated
+            @input="setNetwork"
+            :options="[
               {label: 'Main Net', value: 'mainnet'},
               {label: 'Test Net', value: 'testnet'}
             ]"
@@ -75,15 +65,17 @@
               {label: 'Active', value: true },
               {label: 'Inactive', value: false }
             ]"
-                :style="$q.platform.is.mobile||$isbex ? 'margin-left: -58px;' : ''"
-              />
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </div>
-      <span v-if="!($q.platform.is.mobile||$isbex) && screenSize <= 1024"
-            class="version full-width text-center text-grey column q-pt-md q-pl-xl q-pr-xl q-pb-xl q-mt-md">
-      <span class="q-mb-md q-mt-md"><strong>{{ version }}</strong></span>
+            :style="$q.platform.is.mobile||$isbex ? 'margin-left: -58px;' : ''"
+            />
+          </q-item-section>
+        </q-item>
+      </q-list>
+
+    </div>
+    </div>
+  </q-card>
+    <span v-if="!($q.platform.is.mobile||$isbex) && screenSize <= 1024" class="version full-width text-center text-grey column q-pt-md q-pl-xl q-pr-xl q-pb-xl q-mt-md">
+      <span class="q-mb-md q-mt-md"><strong>{{version}}</strong></span>
       <span class="q-pa-sm">
         This app is in beta, please send us bug reports if you find any. <b><a target="_blank"
                                                                                :class="{'text-white':$store.state.settings.lightMode === 'true'}"
@@ -314,19 +306,20 @@ export default {
     }
   },
   async mounted () {
-    if (typeof chrome === 'undefined') {
-      this.extensionUrl = this.$extensionUrlMozila
-    } else {
-      this.extensionUrl = this.$extensionUrl
-    }
-    ConfigManager.syncConfig().then(value => {
-      this.syncData = value
+    // document.getElementById('scrollToIDP200').scrollIntoView()
+
+    /*  let cruxKey = await HD.Wallet('crux')
+    this.version = version
+    cruxClient = new CruxPay.CruxClient({
+      walletClientName: 'verto',
+      privateKey: cruxKey.privateKey
     })
     if (window.getVertoExtensionUrl != undefined) {
       window.getVertoExtensionUrl().then(response => {
         this.firefoxExtensionUrl = response.data.url
       })
     }
+    */
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)

@@ -6,11 +6,14 @@
     }"
     class="full-width"
   >
-    <q-toolbar  class="" v-if="$q.platform.is.mobile">
-        <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/dashboard"/>
-        <q-toolbar-title> Exchange  </q-toolbar-title>
-    </q-toolbar>
-    <div>
+    <!-- <q-header class="bg-white">
+      <q-toolbar  class="text-black" v-if="$q.platform.is.mobile">
+          <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/dashboard"/>
+          <q-toolbar-title> Exchange  </q-toolbar-title>
+      </q-toolbar>
+    </q-header> -->
+
+    <div v-if="!$q.platform.is.mobile">
       <UI v-if="false"/>
       <q-btn label="test" v-if="false" @click="testData()" />
       <div class="gdx-exchange-form q-px-md" v-show="step != 2">
@@ -1784,9 +1787,12 @@
       <!-- MOBILE VIEW ONLY  -->
       <ExchangeRowItem v-if="$q.platform.is.mobile||$isbex" :paths="paths" :formatNumber="formatNumber" :destinationCoin="destinationCoin" :setPathTransaction="setPathTransaction" :isPathInvalid="isPathInvalid" />
     </div>
+     <!-- <ExchangeRowItem v-if="$q.platform.is.mobile||$isbex" :paths="paths" :formatNumber="formatNumber" :destinationCoin="destinationCoin" :setPathTransaction="setPathTransaction" :isPathInvalid="isPathInvalid" />
+    -->
 
-    <GodexDialog  v-if="$q.platform.is.mobile && false"/>
-
+    <!-- <GodexDialog  v-if="$q.platform.is.mobile" :destinationCoinOptions.sync="destinationCoinOptions" :destinationCoinUnfilter="destinationCoinUnfilter" :depositCoinOptions.sync="depositCoinOptions" :hideDeposit.sync="hideDeposit" :hideDestination.sync="hideDestination" /> -->
+      <GodexDialog  v-if="$q.platform.is.mobile||$isbex" :step.sync="step" :paths="paths" :formatNumber="formatNumber" :isPathInvalid="isPathInvalid" :setMinimum="setMinimum" :getSwapInfo="getSwapInfo" :destinationCoinOptions.sync="destinationCoinOptions" :destinationCoinUnfilter="destinationCoinUnfilter" :depositCoin.sync="depositCoin" :depositCoinOptions.sync="depositCoinOptions" :depositCoinUnfilter="depositCoinUnfilter" :hideDeposit.sync="hideDeposit" :hideDestination.sync="hideDestination" :swapData="swapData" :spinner="spinner" :setPathTransaction="setPathTransaction" :getDepositTxData="getDepositTxData" :destinationCoin.sync="destinationCoin"  :filterDestinationCoin="filterDestinationCoin" :setSuccessData="setSuccessData" :currentDex="currentDex" :switchAmounts="switchAmounts"
+                    :createTransaction="createTransaction" :error="error" :chains="chains" :path="path" :splitterModel="splitterModel" :tab.sync="tab" :setPathData="setPathData" :innerStep="innerStep" :chainData="chainData" :approvalCheckRun="approvalCheckRun" :fromAccountSelected="fromAccountSelected" :getKeyFormat="getKeyFormat" :setSelectedGas="setSelectedGas" :processApproval="processApproval" :swapTokens="swapTokens" :toAccountSelected="toAccountSelected" :setTransactionStatus="setTransactionStatus" :setTab="setTab" :exchangeDetails="exchangeDetails" :showSendComponent="showSendComponent" :validStatus="validStatus" :copyToClipboard="copyToClipboard" />
     <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="showMessage">
       <q-card :dark="$store.state.settings.lightMode === 'true'">
         <q-card-section class="row items-center q-pb-none">

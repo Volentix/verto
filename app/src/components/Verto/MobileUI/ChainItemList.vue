@@ -160,11 +160,11 @@
                             <!-- COMMON SECTION END  -->
                         </q-item-section>
                     </q-item>
-                    <q-item>
+                    <!-- <q-item>
                         <div class="col-md-12 flex flex-center text-body1 cursor-pointer" v-if="!showAllChains && tab == 'chains' " @click="showAllChainData()">
                             <span>Show all chains</span>
                         </div>
-                    </q-item>
+                    </q-item> -->
                 </q-list>
             </div>
 
