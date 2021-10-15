@@ -1,11 +1,13 @@
 <template>
 <div class="flex flex-center text-center">
-<Landing />
+<Landing :noRedirect="true" v-if="!$store.state.currentwallet.config.keys" />
+<Sign style="height: 100vh;" :tx="$route.params.txObject" v-else-if="$route.params.txObject" />
+<div v-else-if="$route.params.qr" >
 <div class="flex flex-center text-center full-width q-pt-lg">
 <img class=" verto-logo" src="statics/icons/icon-256x256.png" width="60"  alt="logo"/>
 </div>
 
-<div style="width:100px;"  class="flex flex-center text-center q-pt-lg" v-html="$route.params.qr">
+<div style="width:100px;margin: 0 auto;"  class="flex flex-center text-center q-pt-lg" v-html="$route.params.qr">
 </div>
  <div
         class="standard-content--body full-width q-pb-lg flex flex-center"
@@ -16,7 +18,7 @@
             <q-item-label v-if="!connected" class="text-bold text-h6 text-center" header
               >Choose account</q-item-label
             >
-    
+
             <q-item
               v-show="!connected"
               tag="label"
@@ -44,18 +46,18 @@
               <q-btn
                 v-if="!connected"
                 size="lg"
-                @click="connectWallet()"
-                :loading="spinnerVisible"
+                @click=" shouldConnect = true; connectWallet()"
+                :loading="spinnerVisible &&  this.shouldConnect"
                 label="Connect"
                 class="full-width"
                 color="deep-purple-12"
-                
+
               />
                <q-btn
                 v-if="!connected"
                 size="lg"
-                @click="connectWallet()"
-                :loading="spinnerVisible"
+                @click="shouldConnect = false; connectWallet()"
+                :loading="spinnerVisible && !this.shouldConnect"
                 label="Reject"
                 class="full-width q-mt-md"
                 color="deep-purple-12"
@@ -67,11 +69,12 @@
             </div>
           </q-list>
         </div>
+ </div>
  </div> </div>
 </template>
 
 <script>
-import QrcodeDecoder from 'qrcode-decoder';
+import QrcodeDecoder from 'qrcode-decoder'
 import configManager from '@/util/ConfigManager'
 import {
   version
@@ -85,13 +88,13 @@ import Vue from 'vue'
 import VideoBg from 'vue-videobg'
 import NotifyMessage from '../../../components/notify/NotifyMessage'
 import store from '../../../store'
-import WalletConnect from "@walletconnect/client";
+import WalletConnect from '@walletconnect/client'
 let connector = null
-
+import Sign from '../../../components/Verto/ETH/Sign'
 Vue.component('video-bg', VideoBg)
 export default {
   name: 'Login',
-  components: { NotifyMessage, Landing },
+  components: { NotifyMessage, Landing, Sign },
   data () {
     return {
       hasConfig: false,
@@ -109,16 +112,14 @@ export default {
       showSubmit: false
     }
   },
+  watch:{
+    "$store.state.currentwallet.config.keys":function(){
+       this.setDefaultChoice()
+    }
+  },
   async mounted () {
-    console.log(this.$store.state.currentwallet.config.keys, 'this.$store.state.currentwallet.config.keys')
-
-   let ethAccounts = [...this.$store.state.currentwallet.config.keys
-          ].filter((o) => o && o.type === "eth")
-
-          if (ethAccounts.length === 1) {
-            this.accountValue = ethAccounts[0];
-          }
-
+    
+    this.setDefaultChoice()
     /*
     this.hasConfig = !!await configManager.hasVertoConfig()
     if (!this.hasConfig) {
@@ -167,56 +168,43 @@ export default {
     this.$store.dispatch('tokens/getEvmsTokensData')
   },
   methods: {
-   async connectWallet(){
-         console.log(this.$store.state.currentwallet.config.keys, 'this.$store.state.currentwallet.config.keys')
+    setDefaultChoice(){
+        if(this.$store.state.currentwallet.config.keys){
+      let ethAccounts = [...this.$store.state.currentwallet.config.keys
+    ].filter((o) => o && o.type === 'eth')
 
-     this.spinnerVisible = true
-      var qr = new QrcodeDecoder();
-     var svgToImage = require('save-svg-as-png')
- 
-let image = await svgToImage.svgAsDataUri(document.querySelector('.walletconnect-qrcode__image'))
-
-
-   qr.decodeFromImage(image).then(async (res) => {
-   await this.connect(res.data)
-   
-     
-});
-
-
+    if (ethAccounts.length === 1) {
+      this.accountValue = ethAccounts[0]
+    } else {
+       this.accountValue = null
+    }
+    }
     },
- async   connect(uri){
-localStorage.removeItem('walletconnect')
- connector = new WalletConnect(
-  {
-    uri
-  })
+    async connectWallet () {
+      this.spinnerVisible = true
+      var qr = new QrcodeDecoder()
+      var svgToImage = require('save-svg-as-png')
 
-// Approve Session
-setTimeout(() => {
-connector.approveSession({
-  accounts: [                 // required
-    this.accountValue.key,
-  ],
-  chainId: 1                  // required
-})
- this.spinnerVisible = false
-this.connected = true
+      let image = await svgToImage.svgAsDataUri(document.querySelector('.walletconnect-qrcode__image'))
 
-  connector.on("call_request", (error, payload) => { 
-       if (error) {   
-          throw error; 
-       }
-       console.log(payload)
-  })
-
-  //this.$q.bex.send('connector.listener', { connector: connect })
-                
-}, 3000)
-
-
-
-    }, 
+      qr.decodeFromImage(image).then(async (res) => {
+        await this.connect(res.data)
+      })
+    },
+    async connect (uri) {
+      this.$q.bex.send('connector.listener', {uri: uri, accept: this.shouldConnect, accounts: ['0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'] /* [this.accountValue.key] */ })
+        .then((o) => {
+          console.log(o, 'resolve')
+          this.spinnerVisible = false
+          setTimeout(()=> {
+            if( this.shouldConnect )
+            this.connected = true
+           // window.close()  
+          }, this.shouldConnect ? 3000: 0)
+        }).catch(() => {
+          this.spinnerVisible = false
+        })
+    },
     pageStyle () {
       return {
         minWidth: '400px',
@@ -308,7 +296,7 @@ this.connected = true
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
 .verto-logo {
-    
+
     background: #fffffff2;
     border-radius: 50%;
     padding: 12px;

@@ -504,13 +504,12 @@ export default {
         this.getEthWalletHistory(account)
       } else if (account.chain === 'eos') {
         this.$axios.post('https://cpu.volentix.io/api/global/history', { name: account.name }).then(res => {
-         
-          res.data.forEach( (d,i) => {
+          res.data.forEach((d, i) => {
             res.data[i].data.map(h => {
-               h.image = Lib.getTokenImage(h.symbol)
-            })   
+              h.image = Lib.getTokenImage(h.symbol)
             })
-             this.history = res.data
+          })
+          this.history = res.data
           this.loading = false
         })
       } else {
@@ -519,7 +518,6 @@ export default {
         }
 
         Lib.history(account.chain, account.chain === 'eos' ? account.name : account.key, account.type, this.pagination).then(data => {
-          
           data = data.history
 
           if (data && data[0] && data[0].transID) {
@@ -529,8 +527,6 @@ export default {
           }
 
           if (data && Array.isArray(data)) {
-            
-           
             this.groupByDay(data)
           }
         })

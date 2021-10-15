@@ -15,7 +15,7 @@
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
               </q-toolbar>
             </q-header>
-            
+
             <q-card-section class="q-mt-xl">
                 <q-tabs
                   style="max-width: initial"

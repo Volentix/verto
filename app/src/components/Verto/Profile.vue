@@ -383,7 +383,6 @@ export default {
     syncExtension () {
       window.opener = self
 
-      const windowFeatures = 'toolbar=0, directories=0,addressbar=0, location=0, status=0, menubar=0, scrollbars=0, resizable=0, width=350, height=600, top=0, left=' + (screen.width - 350)
       if (typeof chrome === 'undefined') {
         if (window.saveToVertoExtension !== undefined) {
           // const extension = window.open('', 'Verto', windowFeatures)
@@ -395,8 +394,6 @@ export default {
         }
       } else {
         try {
-          // const extension = window.open('', 'Verto', windowFeatures)
-
           chrome.runtime.sendMessage(this.$extensionId, { type: 'EXTENSION_AVAILABLE' }, response => {
             if (response === undefined) {
               // this.extensionNotFound = true

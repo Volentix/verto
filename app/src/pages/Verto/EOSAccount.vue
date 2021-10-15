@@ -21,7 +21,7 @@
           </div>
         </div>
       </div>
-      <div v-else>
+      <div v-else-if="$q.platform.is.mobile||$isbex">
         <!-- MOBILE VERSION UI -->
         <q-dialog
             v-model="$q.platform.is.mobile||$isbex"

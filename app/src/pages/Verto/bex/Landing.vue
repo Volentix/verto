@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column items-center justify-start login-page">
+  <div class="column items-center justify-start login-page full-width">
     <div class="q-pa-md">
       <img src="statics/icons/icon-256x256.png" width="170" alt="logo"/>
     </div>
@@ -14,7 +14,7 @@
       <div class="standard-content--body full-width">
         <div class="standard-content--body__form">
           <label class="ver-label">Enter your password</label>
-          <q-input bg-color="white" ref="psswrd" v-model="password" @keyup.enter="login" error-message="Your password is wrong" @input="checkPassword" :error="passHasError"
+          <q-input autofocus bg-color="white" ref="psswrd" v-model="password" @keyup.enter="login" error-message="Your password is wrong" @input="checkPassword" :error="passHasError"
                    outlined :type="isPwd ? 'password' : 'text'">
             <template v-slot:append>
               <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd"/>
@@ -23,12 +23,12 @@
         </div>
       </div>
       <div class="standard-content--footer full-width justify-end">
-        <q-btn unelevated class="btn__blue block"  size="lg"  :loading="spinnerVisible" @click="login" label="Login"/>
+        <q-btn unelevated class="btn__blue block"  size="lg"  :loading="spinnerVisible" @click="login" label="Unlock"/>
         <span class="q-pa-xs"></span>
-        <q-btn flat size="lg" class="btn-flat__blue" label="import or Restore" @click="startRestoreConfig"/>
+        <q-btn flat size="md" class="btn-flat__blue" label="import or Restore" @click="startRestoreConfig"/>
       </div>
     </div>
-  </q-page>
+  </div>
 </template>
 
 <script>
@@ -39,12 +39,10 @@ import {
 import Lib from '@/util/walletlib'
 import initWallet from '@/util/Wallets2Tokens'
 import DexInteraction from '../../../mixins/DexInteraction'
-import Vue from 'vue'
-import VideoBg from 'vue-videobg'
 import NotifyMessage from '../../../components/notify/NotifyMessage'
 
-Vue.component('video-bg', VideoBg)
 export default {
+  props:['noRedirect'],
   name: 'Login',
   components: { NotifyMessage },
   data () {
@@ -97,7 +95,7 @@ export default {
 
     localStorage.setItem('version', version)
 
-    this.$refs.psswrd.focus()
+    // this.$refs.psswrd.focus()
   },
   created () {
     Lib.removeExpiredData()
@@ -149,9 +147,11 @@ export default {
         setTimeout(() => {
           this.$store.dispatch('investment/getMarketDataVsUSD')
           // always redirect to dashboard for now : pending issue
+         if(!this.noRedirect){
           this.$router.push({
             path: /*  this.$route.params.nextUrl ? this.$route.params.nextUrl : */ '/verto/dashboard'
-          })
+          })        
+         }
         },
         100)
         // this.$router.push({ path: 'vertomanager' })
