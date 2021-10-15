@@ -25,7 +25,8 @@
   "content_scripts": [{
     "matches": [
       "https://verto.volentix.io/*",
-      "http://localhost:8080/*"
+      "http://localhost:8080/*",
+      "<all_urls>"
     ],
     "js": [
       "www/bex-content-script.js",
@@ -37,7 +38,7 @@
   }],
   "permissions": [
     "https://verto.volentix.io/*",
-    "http://localhost:8080/*",
+    "http://localhost:8080/*"
   ],
   "externally_connectable": {
     "matches": ["*://localhost/*","*://verto.volentix.io/*"]

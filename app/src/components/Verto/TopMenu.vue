@@ -310,7 +310,7 @@
                   <template v-slot="{ item, index }">
                     <q-item
                       :key="index"
-                      
+
                       clickable
                       @click="selectToken(item)"
                     >

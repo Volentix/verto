@@ -82,12 +82,12 @@
 
             </q-card>
         </q-dialog>
-        
+
     </div>
 </template>
 
 <script>
-import SearchList from '../TopMenu.vue';
+import SearchList from '../TopMenu.vue'
 
 export default {
   name: 'AppbarMobile',

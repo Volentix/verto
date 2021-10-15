@@ -35,7 +35,7 @@
                   <AccountSelector  :autoSelectChain="'eos'" class="q-mr-sm" :showAllWallets="true" :titleView='false'/>
                   <q-btn round outline color="primary" icon="cached" @click="refresh++" class="refresh-history" size="sm"/>
                   <!-- <q-icon name="cached"  @click="refresh++" class="refresh-history"/> -->
-                </div> 
+                </div>
             </q-toolbar>
          </q-header>
         <div class=" apps-section- history-card-" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 94%;">
