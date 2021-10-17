@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column" :class="{'text-black': $store.state.settings.lightMode === 'false', 'bg-white': $store.state.settings.lightMode === 'false','desktop-marg':screenSize > 1024, 'mobile-pad':screenSize < 1024, 'dark-theme': $store.state.settings.lightMode === 'true'}">
+  <q-page class="column" :class="{'text-black': $store.state.settings.lightMode === 'false', 'bg-white': $store.state.settings.lightMode === 'false','desktop-marg':screenSize > 1024, 'mobile-pad---':screenSize < 1024, 'dark-theme': $store.state.settings.lightMode === 'true'}" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': ''">
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">

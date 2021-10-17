@@ -5,8 +5,8 @@
 <div
   class="text-h6 text-bold q-pt-md q-pr-lg"
 >
-  <q-header>
-    <q-toolbar  id="scrollToID3" class="text-black q-mb-md">
+  <q-header v-if="$q.platform.is.mobile">
+    <q-toolbar  id="scrollToID3" class="text-black">
         <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)" />
         <q-toolbar-title style="margin-left: -25px"> Power up </q-toolbar-title>
     </q-toolbar>

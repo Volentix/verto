@@ -7,8 +7,15 @@
       'text-black bg-white': $store.state.settings.lightMode === 'false',
     }"
   >
+  <q-header v-if="$q.platform.is.mobile">
+    <q-toolbar class="text-black">
+        <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)" />
+        <q-toolbar-title style="margin-left: -25px"> Transaction builder  </q-toolbar-title>
+    </q-toolbar>
+  </q-header>
+
     <div :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }" style="height: 100vh;">
-      <div class="desktop-version full-height" v-if="screenSize > 1024">
+      <div :class="$q.platform.is.mobile ? 'full-height':'esktop-version full-height' " v-if="screenSize > 1024 || $q.platform.is.mobile">
         <div class="row full-height">
           <div class="col col-md-3" v-if="false">
             <div class="wallets-container" style="height: 100%">
@@ -29,7 +36,7 @@
           </div>
           <div class="col col-md-12">
             <div
-              class="desktop-card-style apps-section history-card"
+              class="desktop-card-style------ apps-section history-card"
               :class="{
                 'dark-theme': $store.state.settings.lightMode === 'true',
               }"
@@ -43,18 +50,19 @@
                 Section currently in development: currently showing ETH wallets
                 history
               </q-banner>
-              <div class="row">
+              <div class="row q-mr-sm">
                 <h2
                   class="standard-content--title col-md-4 float-left flex justify-start q-pl-md q-pt-lg"
+                  v-if="!$q.platform.is.mobile"
                 >
                   Transaction builder
                 </h2>
-                <div class="col flex justify-end q-pr-md">
+                <div class="col flex justify-end q-pr-md" :style="$q.platform.is.mobile ? 'padding: 10px;': ''">
                   <AccountSelector :showAllWallets="true" />
                 </div>
               </div>
 
-              <div class="standard-content--body" style="height: 100%">
+              <div class="standard-content--body q-pa-md" style="height: 100%">
                 <div class="row">
                   <div class="col-md-6">
                     <div

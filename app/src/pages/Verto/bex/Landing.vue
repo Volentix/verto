@@ -42,7 +42,7 @@ import DexInteraction from '../../../mixins/DexInteraction'
 import NotifyMessage from '../../../components/notify/NotifyMessage'
 
 export default {
-  props:['noRedirect'],
+  props: ['noRedirect'],
   name: 'Login',
   components: { NotifyMessage },
   data () {
@@ -147,11 +147,11 @@ export default {
         setTimeout(() => {
           this.$store.dispatch('investment/getMarketDataVsUSD')
           // always redirect to dashboard for now : pending issue
-         if(!this.noRedirect){
-          this.$router.push({
-            path: /*  this.$route.params.nextUrl ? this.$route.params.nextUrl : */ '/verto/dashboard'
-          })        
-         }
+          if (!this.noRedirect) {
+            this.$router.push({
+              path: /*  this.$route.params.nextUrl ? this.$route.params.nextUrl : */ '/verto/dashboard'
+            })
+          }
         },
         100)
         // this.$router.push({ path: 'vertomanager' })

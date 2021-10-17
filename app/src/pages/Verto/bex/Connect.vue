@@ -88,7 +88,7 @@ import Vue from 'vue'
 import VideoBg from 'vue-videobg'
 import NotifyMessage from '../../../components/notify/NotifyMessage'
 import store from '../../../store'
-import WalletConnect from '@walletconnect/client'
+// import WalletConnect from '@walletconnect/client'
 let connector = null
 import Sign from '../../../components/Verto/ETH/Sign'
 Vue.component('video-bg', VideoBg)
@@ -112,13 +112,12 @@ export default {
       showSubmit: false
     }
   },
-  watch:{
-    "$store.state.currentwallet.config.keys":function(){
-       this.setDefaultChoice()
+  watch: {
+    '$store.state.currentwallet.config.keys': function () {
+      this.setDefaultChoice()
     }
   },
   async mounted () {
-    
     this.setDefaultChoice()
     /*
     this.hasConfig = !!await configManager.hasVertoConfig()
@@ -168,17 +167,17 @@ export default {
     this.$store.dispatch('tokens/getEvmsTokensData')
   },
   methods: {
-    setDefaultChoice(){
-        if(this.$store.state.currentwallet.config.keys){
-      let ethAccounts = [...this.$store.state.currentwallet.config.keys
-    ].filter((o) => o && o.type === 'eth')
+    setDefaultChoice () {
+      if (this.$store.state.currentwallet.config.keys) {
+        let ethAccounts = [...this.$store.state.currentwallet.config.keys
+        ].filter((o) => o && o.type === 'eth')
 
-    if (ethAccounts.length === 1) {
-      this.accountValue = ethAccounts[0]
-    } else {
-       this.accountValue = null
-    }
-    }
+        if (ethAccounts.length === 1) {
+          this.accountValue = ethAccounts[0]
+        } else {
+          this.accountValue = null
+        }
+      }
     },
     async connectWallet () {
       this.spinnerVisible = true
@@ -192,15 +191,14 @@ export default {
       })
     },
     async connect (uri) {
-      this.$q.bex.send('connector.listener', {uri: uri, accept: this.shouldConnect, accounts: ['0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'] /* [this.accountValue.key] */ })
+      this.$q.bex.send('connector.listener', { uri: uri, accept: this.shouldConnect, accounts: ['0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'] /* [this.accountValue.key] */ })
         .then((o) => {
           console.log(o, 'resolve')
           this.spinnerVisible = false
-          setTimeout(()=> {
-            if( this.shouldConnect )
-            this.connected = true
-           // window.close()  
-          }, this.shouldConnect ? 3000: 0)
+          setTimeout(() => {
+            if (this.shouldConnect) { this.connected = true }
+            // window.close()
+          }, this.shouldConnect ? 3000 : 0)
         }).catch(() => {
           this.spinnerVisible = false
         })

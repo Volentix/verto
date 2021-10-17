@@ -3,10 +3,10 @@
         <AppBar :callChainTools="callChainTools" v-if="showPanelStatus"/>
         <div class="q-pa-md" v-if="showPanelStatus" >
             <div class="q-pb-md row">
-                <div class="text-h4 text-bold" v-if="$store.state.wallets.customTotal.show">
+                <div class="text-h4 text-bold" v-if="$store.state.wallets.customTotal.show" :class="{'text-white': $store.state.settings.lightMode === 'true'} ">
                   US${{ nFormatter2($store.state.wallets.customTotal.usd, 3) }}
                 </div>
-                <div class="text-h4 text-bold" v-else>
+                <div class="text-h4 text-bold" :class="{'text-white': $store.state.settings.lightMode === 'true'} " v-else>
                   US${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }}
                 </div>
                 <q-btn
