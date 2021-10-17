@@ -52,7 +52,7 @@ export default function (/* { store, ssrContext } */) {
     const routerLoaded = sessionStorage.getItem('router_loaded')
     const lastRoute = localStorage.getItem('last_route') ? JSON.parse(localStorage.getItem('last_route')) : null
     console.log('navigating to route', to.name, lastRoute)
-    if (appStarted != null && routerLoaded != null) {
+    if (appStarted != null && routerLoaded != null && to.name != 'connectv1') {
       console.log('saving route', appStarted, routerLoaded)
       const route = {
         name: to.name,

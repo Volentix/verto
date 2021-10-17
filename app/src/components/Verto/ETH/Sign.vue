@@ -123,7 +123,7 @@
                         </div>
                       </div>
                       <div class="account-list-item__account-name">
-                        {{getKeyFormat('0x2c13f9722540a3b0a75cc641005f4954cc7e8771')}}
+                        {{getKeyFormat(txData.from)}}
                       </div>
                     </div>
                   </div>
@@ -132,7 +132,7 @@
 
               <div class="request-signature__balance">
                 <div class="request-signature__balance-text">To :</div>
-                <div class="request-signature__balance-value">{{getKeyFormat('0x2c13f9722540a3b0a75cc641005f4954cc7e8771')}}</div>
+                <div class="request-signature__balance-value">{{getKeyFormat(txData.to)}}</div>
               </div>
             </div>
             <div  class="request-signature__account-info">
@@ -187,8 +187,10 @@
                           </div>
                         </div>
                       </div>
-                      <div class="account-list-item__account-name">
-                        {{txData.value / (10 ** 18)}} ETH
+                      <div class="account-list-item__account-name text-left">
+                       <span v-if="gasData"> {{formatNumber(txData.value / (10 ** 18) * gasData.ethPrice, 0)}} $ <br></span>
+                      {{txData.value / (10 ** 18)}} ETH
+
                       </div>
                     </div>
                   </div>
@@ -196,11 +198,11 @@
               </div>
 
               <div class="request-signature__balance">
-                <div class="request-signature__balance-text">Gas :</div>
-                <div class="request-signature__balance-value">{{txData.gas * txData.gasPrice / (10 ** 18)}} ETH</div>
+                <div class="request-signature__balance-text">Gas fees:</div>
+                <div class="request-signature__balance-value" v-if="gasData">{{formatNumber(gasData.usdVal, 0)}} $ <br><span>{{gasData.ethVal}}  ETH</span> </div>
               </div>
             </div>
-            <div class="request-signature__origin-row">
+            <div class="request-signature__origin-row" v-if="false">
               <div class="request-signature__origin-label">Origin:</div>
               <div class="icon-border" style="height: 24px; width: 24px">
                 <img
@@ -211,10 +213,10 @@
               </div>
               <div class="request-signature__origin">http://localhost:8080</div>
             </div>
-            <div class="request-signature__notice">Transaction data:</div>
-            <div class="request-signature__rows" >
+            <div v-if="txData.data && txData.data.toString().length" class="request-signature__notice">Transaction data:</div>
+            <div class="request-signature__rows" v-if="txData.data && txData.data.toString().length">
               <div class="request-signature__row">
-                <div class="request-signature__row-title">Transaction data:</div>
+               
                 <div class="request-signature__row-value">
              {{txData.data}}
                </div>
@@ -232,18 +234,20 @@
               tabindex="0"
             >
               Cancel</button
-            ><button
+            ><q-btn
               class="
                 button
                 btn-secondary btn--large
                 request-signature__footer__sign-button
               "
+              :disable="!gasData"
+              @click="signTransaction()"
               data-testid="request-signature__sign"
               role="button"
               tabindex="0"
             >
               Sign
-            </button>
+            </q-btn>
           </div>
         </div>
       </div>
@@ -255,8 +259,9 @@ import ParseDB from '@/util/ParseDb'
 import Formatter from '@/mixins/Formatter'
 import Lib from '@/util/walletlib'
 import initWallet from '@/util/Wallets2Tokens'
+
 export default {
-  props: ['txObject'],
+  props: ['txObject', 'tx'],
   mixins: [Formatter],
   methods: {
     signTransaction () {
@@ -267,7 +272,7 @@ export default {
       let account = [...this.$store.state.currentwallet.config.keys].find(a => a.key.toLowerCase() === this.txData.from.toLowerCase())
       this.spinner = true
       Lib.send(
-        this.txObject.chain,
+        this.chain,
         this.destinationCoin.value.toLowerCase(),
         this.txData.from,
         this.txData.to,
@@ -292,16 +297,17 @@ export default {
       this.txData.hash = result.transaction_id
       this.txData.status = 'Submitted'
       this.txData.explorer_link = result.message
-      let obj = {
+      if(this.txObject){
+       let obj = {
         txId: this.$route.params.txId,
         hash: this.txData.hash,
         error: null
       }
-      console.log(this.txData, this.txObject, obj, 'obj')
       await ParseDB.createUseACLObject('TransactionEvents', obj)
+      }
       let status = await Lib.checkEvmTxStatus(
         this.txData.hash,
-        this.txObject.get('chain')
+        this.chain
       )
       if (status) {
         this.txData.status = 'Success'
@@ -312,10 +318,30 @@ export default {
     }
   },
   created () {
+
     let data = ['gas', 'gasPrice', 'to', 'data', 'from', 'value']
+    if(this.txObject){
+     this.chain =  this.txObject.get('chain')
     data.forEach(element => {
       this.txData[element] = this.txObject.get(element)
     })
+    } else if(this.tx){
+      const Web3 = require('web3')
+      Lib.gas('eth', this.tx, 'eth')
+      .then(o => {
+     
+      this.gasData = {
+         gas: Web3.utils.hexToNumber(this.tx.gas),
+         gasPrice:  o[0].gasPrice,
+         ethPrice: o[0].isUsd,
+         ethVal: Web3.utils.hexToNumber(this.tx.gas) * o[0].gasPrice  / (10 ** 18),
+         usdVal: Web3.utils.hexToNumber(this.tx.gas) * o[0].gasPrice  / (10 ** 18) * o[0].isUsd
+      }
+  
+      })
+     
+      this.txData = this.tx
+    }
     /*
     this.processTransaction({
       transaction_id: '0xf15a9445fbfa94e6e4dd0d930dc2c3f9d8efc18c7b3e0be266972d9dbae6dbdc',
@@ -324,6 +350,8 @@ export default {
   },
   data () {
     return {
+      chain: 'eth',
+      gasData: null,
       txData: {
         status: false,
         hash: false
@@ -473,7 +501,7 @@ a {
 }
 .request-signature__account-item .account-list-item__account-name {
   text-overflow: ellipsis;
-  overflow: hidden;
+
   white-space: nowrap;
   width: 80px;
 }

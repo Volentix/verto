@@ -186,8 +186,8 @@
         <div v-if="$q.platform.is.mobile||$isbex">
           <div id ="scrollID8"></div>
           <!-- <q-pull-to-refresh @refresh="refresh" > -->
-            <TopMenu />
-            <TopMenuMobile v-if="$q.platform.is.mobile||$isbex" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>
+            <TopMenu v-if="!($q.platform.is.mobile||$isbex)" />
+            <TopMenuMobile v-else  :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>
           <!-- </q-pull-to-refresh> -->
         </div>
         <div v-else>
