@@ -184,7 +184,7 @@
             </div>
         </div>
         <q-dialog
-            v-model="$q.platform.is.mobile||$isbex"
+            v-model="accDialog"
             persistent
             :maximized="true"
             transition-show="slide-up"
@@ -425,7 +425,8 @@ export default {
         filePassword: '',
         filePasswordConfirm: '',
         storeInWallet: false
-      }
+      },
+      accDialog: this.$q.platform.is.mobile || this.$isbex
     }
   },
   created () {

@@ -24,7 +24,7 @@
       <div v-else>
         <!-- MOBILE VERSION UI -->
         <q-dialog
-            v-model="$q.platform.is.mobile||$isbex"
+            v-model="accDialog"
             persistent
             :maximized="true"
             transition-show="slide-up"
@@ -68,7 +68,8 @@ export default {
   },
   data () {
     return {
-      osName: ''
+      osName: '',
+      accDialog: this.$q.platform.is.mobile || this.$isbex
     }
   },
   beforeDestroy () {

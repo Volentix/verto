@@ -77,16 +77,19 @@
   </div>
 
   <div v-if="$q.platform.is.mobile||$isbex" class="row justify-center">
-      <q-btn class="account_selector" dense v-if="accountOption" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : 'white'" :style="titleView ? 'width: 100%' : 'width:160px;'" outline :icon="`img:${accountOption.icon}`"  :label="formatLabel(accountOption.label)" @click="dialog=true" />
+      <q-btn class="account_selector" dense v-if="accountOption" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : ''" :style="titleView ? 'width: 100%' : 'width:160px;'" outline :icon="`img:${accountOption.icon}`"  :label="formatLabel(accountOption.label)" @click="dialog=true" />
       <q-dialog v-model="dialog"  :maximized="true">
-        <q-card>
-          <q-toolbar >
-                <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="dialog=false"/>
+
+        <q-card class="" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': ''">
+
+            <q-toolbar >
+                <q-btn flat round dense :color="$store.state.settings.lightMode === 'true' ? 'white': 'black' " icon="arrow_back_ios" class="q-mr-sm" @click="dialog=false"/>
+                <!-- <q-toolbar-title style="margin-left: -25px"> Select An Account  </q-toolbar-title> -->
             </q-toolbar>
 
-          <div class="text-h6 q-pa-md">Select An Account</div>
+          <div :class="$store.state.settings.lightMode === 'true' ? 'text-h6 q-pa-md text-white':'text-h6 q-pa-md ' ">Select An Account</div>
           <q-card-section class=" items-center">
-            <q-list bordered separator style="width:100%;" v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index">
+            <q-list bordered separator style="width:100%;" v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index" >
 
               <q-expansion-item :dark="$store.state.settings.lightMode === 'true'"   >
                 <template v-slot:header>

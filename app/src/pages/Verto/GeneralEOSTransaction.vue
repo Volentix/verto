@@ -81,7 +81,9 @@
                             </div>
                           </q-card-section>
                         </div>
+                        <p>
                         <q-btn label="Process" :disable="!transactionObject" :loading="spinnervisible" @click="process()"  v-if="transactionObject && !decryptPrivateKey && !transactionLink" outline />
+                        </p>
                          <q-input v-if="transactionLink" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" readonly class="input-input" rounded outlined color="purple" v-model="transactionLink">
                             <template v-slot:append>
                             <div class="flex justify-end">
@@ -90,7 +92,7 @@
                             </template>
                         </q-input>
                         <a v-if="transactionLink" :href="transactionLink" target="_blank" class="text-body2 text-black"> More info</a>
-
+                        <!-- <p> </p> -->
                   </div>
                 </div>
               </div>

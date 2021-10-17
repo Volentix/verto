@@ -51,7 +51,7 @@
               <q-tab @click=" initAccount(); initData()" name="staked" label="Staked Amounts" :disable="stakes.length === 0" class="full-width" />
             </q-tabs>
 
-            <q-separator />
+            <q-separator v-if="!$q.platform.is.mobile" />
 
             <q-tab-panels v-model="tab" animated>
               <q-tab-panel name="stake">

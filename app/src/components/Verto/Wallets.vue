@@ -574,7 +574,7 @@
             <q-btn outline rounded to="/verto/wallets/send" class="" color="primary"  label="Send" style="width:100px;"/>
             <q-btn outline rounded to="/verto/wallets/receive" class="" color="primary" label="Receive" />
         </div> -->
-        <q-item-label caption> Plese select an account from the list. </q-item-label>
+        <q-item-label caption :class="$store.state.settings.lightMode === 'true' ? 'text-white':''"> Plese select an account from the list. </q-item-label>
 
         <div v-if="isMobile" class="q-mb-lg"  :class="{'open': !walletShowHide, 'is-mobile wallets-wrapper--list': !($q.platform.is.mobile||$isbex)}">
             <mobileAssets v-if="false" />
@@ -748,7 +748,7 @@
                 <div class="wallet-list q-pa-sm text-body1 q-mt-md text-grey-9" v-if="!($q.platform.is.mobile||$isbex) && $store.state.currentwallet.wallet.chain" >
                    <q-icon name="add" /> More wallets and accounts
                 </div>
-                <q-list  class="rounded-borders "  bordered >
+                <q-list  :class="$store.state.settings.lightMode === 'true' ? 'rounded-borders text-white': 'rounded-borders'"  bordered  >
                     <q-expansion-item    :style="setPosition(99999999)" @click="vtxAccounts.length == 1 ? showMenu(vtxAccounts[0]) : showChainAccounts('', 'vtx')"  :key="Math.random()" clickable  >
                         <template v-slot:header>
                             <q-item-section avatar>

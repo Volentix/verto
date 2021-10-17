@@ -182,7 +182,7 @@
         </div>
       </q-drawer>
 
-      <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}" :style="$q.platform.is.mobile ? ( $route.name === 'dashboard' ? 'overflow:scroll; background:  #f2f2f2 !important': 'overflow:scroll;') : 'overflow:scroll;' " >
+      <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}" :style="$q.platform.is.mobile ? ( $route.name === 'dashboard' && $store.state.settings.lightMode !== 'true' ? 'overflow:scroll; background:  #f2f2f2 !important': 'overflow:scroll; ') : 'overflow:scroll;' " >
         <div v-if="$q.platform.is.mobile||$isbex">
           <div id ="scrollID8"></div>
           <!-- <q-pull-to-refresh @refresh="refresh" > -->

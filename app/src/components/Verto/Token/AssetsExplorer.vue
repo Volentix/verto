@@ -7,7 +7,7 @@
       'import_wrapper_class': tab == 'import'
     }"
     class="wrapper q-px-lg full-width assets_explorer_container"
-    :style=" $q.platform.is.mobile||$isbex? 'background: #f2f2f2 !important' : '' "
+    :style=" ($q.platform.is.mobile||$isbex) && $store.state.settings.lightMode !== 'true' ? 'background: #f2f2f2 !important' : '' "
 >
   <q-dialog v-model="alertSecurity">
     <q-card

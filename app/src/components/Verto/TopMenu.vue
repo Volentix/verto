@@ -238,7 +238,7 @@
 
     <div v-if="$q.platform.is.mobile">
        <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="dialog" :maximized="$q.platform.is.mobile">
-        <q-card :dark="$store.state.settings.lightMode === 'true'" style="width:380px;">
+        <q-card :dark="$store.state.settings.lightMode === 'true'" style="width:100%;">
           <div
             id="id-svk40f"
             role="dialog"
@@ -310,7 +310,7 @@
                   <template v-slot="{ item, index }">
                     <q-item
                       :key="index"
-                      
+
                       clickable
                       @click="selectToken(item)"
                     >
