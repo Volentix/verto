@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div >
         <q-dialog
             v-model="dialog"
             persistent
@@ -7,19 +7,21 @@
             transition-show="slide-up"
             transition-hide="slide-down"
         >
-        <q-card flat class=" text-black" style="background: #f2f2f2 !important">
-            <q-toolbar >
-                <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
-                <q-toolbar-title> {{$store.state.currentwallet.wallet.name}}  </q-toolbar-title>
-                <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
-            </q-toolbar>
+        <q-card flat :class="$store.state.settings.lightMode === 'true' ? 'text-white' : 'text-black'"  :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
+            <q-header>
+                <q-toolbar class="bg-white text-black">
+                    <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
+                    <q-toolbar-title> {{$store.state.currentwallet.wallet.name}}  </q-toolbar-title>
+                    <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
+                </q-toolbar>
+            </q-header>
             <!-- <div class="column wrap justify-center items-center content-center">
                 <div class="text-h9">Total Balance</div>
                 <div class="text-h6 text-bold" v-if="selectedCoin.total">${{formatNumber(new Number(isNaN(selectedCoin.total) ? 0 : selectedCoin.total).toFixed(2),0)}} USD</div>
                 <span class="text-h6 text-bold" v-else>${{formatNumber(new Number(isNaN(selectedCoin.usd) ? 0 : selectedCoin.usd).toFixed(2),0)}}</span>
             </div> -->
-            <div v-if="$q.platform.is.mobile">
-                <div class="q-pa-md">
+            <div v-if="$q.platform.is.mobile" class="q-mt-xl">
+                <div class="q-pa-md ">
                     <div class="q-pb-md">
                         <div class="text-h4 text-bold" v-if="selectedCoin.total">
                         US${{formatNumber(new Number(isNaN(selectedCoin.total) ? 0 : selectedCoin.total).toFixed(2),0)}}
@@ -121,14 +123,24 @@
                         </q-item>
                     </q-list>
                 </div>
-                <div v-if="$store.state.currentwallet.wallet.chain === 'eos'" >
+
+                <div v-if="$store.state.currentwallet.wallet.chain === 'eos' || $store.state.currentwallet.wallet.chain === 'eth'" >
                     <q-item style="margin-left: -14px;">
                         <q-item-section>
                             <q-item-label class=" text-h5">Chain tools</q-item-label>
                         </q-item-section>
                     </q-item>
-                    <q-list  bordered separator class="rounded-borders bg-white">
-                        <q-item  data-name='Staking' clickable v-ripple class="p-relative" to="/verto/stake">
+                    <q-list  bordered separator class="rounded-borders bg-white text-black" >
+                        <q-item  data-name='Staking' clickable v-ripple class="p-relative" :to="path.to" v-for="(path, index) in ( $store.state.currentwallet.wallet ? tools[$store.state.currentwallet.wallet.chain] : [])" :key="index" >
+                            <q-item-section>
+                                <q-item-label lines="1" class="text-h6">{{path.title}} </q-item-label>
+                            </q-item-section>
+                            <q-item-section side>
+                                <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
+                            </q-item-section>
+                        </q-item>
+
+                        <!-- <q-item  data-name='Staking' clickable v-ripple class="p-relative" to="/verto/stake">
                             <q-item-section>
                                 <q-item-label lines="1" class="text-h6">Stake VTX </q-item-label>
                             </q-item-section>
@@ -192,7 +204,7 @@
                             <q-item-section side>
                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                             </q-item-section>
-                        </q-item>
+                        </q-item> -->
                     </q-list>
                 </div>
 
@@ -202,7 +214,7 @@
                             <q-item-label class=" text-h5">Security & History </q-item-label>
                         </q-item-section>
                     </q-item>
-                    <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders bg-white">
+                    <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders bg-white text-black">
                         <!-- <q-separator style="margin-top: -20px" /> -->
 
                         <q-item data-name='Create EOS account' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">
@@ -212,15 +224,16 @@
                                 <q-item-section side>
                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                             </q-item-section>
-                            </q-item>
-                            <q-item data-name='Import EOS account' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative bold-btn">
-                                <q-item-section>
-                                    <q-item-label lines="1" class="text-h6">Import EOS account</q-item-label>
-                                </q-item-section>
-                                <q-item-section side>
+                        </q-item>
+
+                        <q-item data-name='Import EOS account' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account/import" clickable v-ripple class="p-relative bold-btn">
+                            <q-item-section>
+                                <q-item-label lines="1" class="text-h6">Import EOS account</q-item-label>
+                            </q-item-section>
+                            <q-item-section side>
                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                             </q-item-section>
-                            </q-item>
+                        </q-item>
                         <!-- <q-item v-if="$store.state.currentwallet.wallet.type === 'eos'" data-name='EOS to VTX Converter' clickable v-ripple class="p-relative" to="/verto/converter">EOS to VTX Converter
                             <q-item-section side>
                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
@@ -245,6 +258,7 @@
                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                             </q-item-section>
                         </q-item>
+                        <q-separator  color="grey-3"/>
                         <q-item data-name='History' clickable @click="goTo('history')" v-ripple class="p-relative">
                             <q-item-section>
                                 <q-item-label lines="1" class="text-h6">History</q-item-label>
@@ -300,7 +314,47 @@ export default {
         chain: null,
         field: '',
         keying: 1
+      },
+      tools: {
+        eth: [{
+          icon: 'img:https://zapper.fi/images/HEX-icon.png',
+          to: '/verto/stake/eth/hex',
+          title: 'Stake HEX',
+          activeAccRequired: true
+        }],
+        eos: [{
+          icon: 'bolt',
+          to: '/verto/wallet/eos/powerup',
+          title: 'Power up',
+          activeAccRequired: true
+        }, {
+          icon: 'img:https://www.api.bloks.io/image-proxy/display?w=100&h=100&url=https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/volentixgsys/VTX.png&op=resize',
+          title: 'Stake VTX',
+          activeAccRequired: true,
+          to: '/verto/stake/eos/vtx'
+        }, {
+          icon: 'battery_charging_full',
+          title: 'Buy / Sell Ram',
+          activeAccRequired: true,
+          to: '/verto/ram-market'
+        }, /* {
+          icon: 'shield',
+          title: 'Stake Proxy EOS',
+          activeAccRequired: true,
+          to: '/verto/stakeproxy',
+        }, */ {
+          icon: 'swap_vert',
+          title: 'Stake EOS',
+          activeAccRequired: true,
+          to: '/verto/stake/eos/eos'
+        }, {
+          activeAccRequired: true,
+          to: '/verto/custom-transactions',
+          icon: 'tune',
+          title: 'Transact'
+        }]
       }
+
     }
   },
   methods: {

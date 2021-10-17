@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import QrcodeDecoder from 'qrcode-decoder';
+import QrcodeDecoder from 'qrcode-decoder'
 import configManager from '@/util/ConfigManager'
 import {
   version
@@ -19,8 +19,7 @@ import Vue from 'vue'
 import VideoBg from 'vue-videobg'
 import NotifyMessage from '../../../components/notify/NotifyMessage'
 import store from '../../../store'
-//import WalletConnect from "@walletconnect/client";
-
+// import WalletConnect from "@walletconnect/client";
 
 Vue.component('video-bg', VideoBg)
 export default {
@@ -89,19 +88,16 @@ export default {
     this.$store.dispatch('tokens/getEvmsTokensData')
   },
   methods: {
-   async test(){
-      var qr = new QrcodeDecoder();
-     var svgToImage = require('save-svg-as-png')
- 
-let image = await svgToImage.svgAsDataUri(document.querySelector('.walletconnect-qrcode__image'))
+    async test () {
+      var qr = new QrcodeDecoder()
+      var svgToImage = require('save-svg-as-png')
 
+      let image = await svgToImage.svgAsDataUri(document.querySelector('.walletconnect-qrcode__image'))
 
-   qr.decodeFromImage(image).then((res) => {
-     console.log(res)
-});
-
-
-    },/*
+      qr.decodeFromImage(image).then((res) => {
+        console.log(res)
+      })
+    }, /*
     connect(){
       // Create connector
 const connector = new WalletConnect(

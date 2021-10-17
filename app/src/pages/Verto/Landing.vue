@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column flex-center dark-theme">
+  <q-page class="column flex-center dark-theme" v-if="!$q.platform.is.mobile">
     <div class="row app-logo-row">
       <div class="col col-md-12 app-logo flex q-pl-lg q-ml-sm q-mt-lg items-center justify-start">
         <img src="statics/icons/vtx-logo-1024x1024.png" class="q-mr-sm" width="40" alt="logo"/>
@@ -57,6 +57,36 @@
       </q-card>
     </q-dialog>
   </q-page>
+  <q-page class="column items-center justify-start login-page" v-else>
+    <div class="q-pa-md">
+      <img src="statics/icons/icon-256x256.png" width="170" alt="logo"/>
+    </div>
+    <notify-message/>
+    <div class="standard-content-bex col-grow">
+      <h2 class="landing--title-bex">
+        Verto
+      </h2>
+      <h2 class="landing--title__sub">
+        <span class="">Multi-chain wallet manager</span>
+      </h2>
+      <div class="standard-content-bex--body full-width">
+        <div class="standard-content-bex--body__form">
+          <label class="ver-label">Enter your password</label>
+          <q-input bg-color="white" ref="psswrd" v-model="password" @keyup.enter="login" error-message="Your password is wrong" @input="checkPassword" :error="passHasError"
+                   outlined :type="isPwd ? 'password' : 'text'">
+            <template v-slot:append>
+              <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd"/>
+            </template>
+          </q-input>
+        </div>
+      </div>
+      <div class="standard-content-bex--footer full-width justify-end">
+        <q-btn unelevated class="btn__blue block"  size="lg"  :loading="spinnerVisible" @click="login" label="Login"/>
+        <span class="q-pa-xs"></span>
+        <q-btn flat size="lg" class="btn-flat__blue" label="import or Restore" @click="startRestoreConfig"/>
+      </div>
+    </div>
+  </q-page>
 </template>
 
 <script>
@@ -69,9 +99,12 @@ import initWallet from '@/util/Wallets2Tokens'
 import DexInteraction from '../../mixins/DexInteraction'
 import Vue from 'vue'
 import VideoBg from 'vue-videobg'
+import NotifyMessage from '../../components/notify/NotifyMessage.vue'
+
 Vue.component('video-bg', VideoBg)
 export default {
   name: 'Login',
+  components: { NotifyMessage },
   data () {
     return {
       hasConfig: false,
@@ -215,6 +248,9 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
+.login-page{
+  background: #F5F5FE
+}
 
 .landing {
   height: 100%;
@@ -250,6 +286,56 @@ export default {
       width: 200px;
       opacity: .6;
     }
+
+    b.version {
+      // position: absolute;
+      // right: 0px;
+      // bottom: -26px;
+      font-weight: $regular;
+      font-size: 15px;
+      margin-left: 10px;
+    }
+
+    span {
+      font-size: 20px;
+      margin-top: 8px;
+      display: block;
+      color: #000000;
+      font-weight: $regular;
+    }
+
+    &__sub {
+      font-size: 18px;
+      text-align: center;
+      line-height: 30px;
+      margin-top: 0px;
+    }
+
+    strong {
+      font-weight: $light;
+    }
+
+    &:before {
+      content: "";
+      width: 14px;
+      height: 100%;
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      background: #7900FF;
+      background: transparent linear-gradient(180deg, #7900FF 0%, #00D0DF 100%) 0% 0% no-repeat padding-box;
+      display: none;
+    }
+  }
+  &--title-bex {
+    font-size: 30px;
+    font-weight: bold;
+    line-height: 24px;
+    font-family: $Franklin;
+    position: relative;
+    margin-left: 0%;
+    margin-top: 0px;
+    text-align: center;
 
     b.version {
       // position: absolute;
@@ -398,6 +484,53 @@ export default {
   }
 }
 
+.standard-content-bex {
+  padding: 0 10% 10% 10%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &--body {
+    margin-top: 5%;
+    margin-bottom: 5%;
+
+    @media screen and (min-width: 768px) {
+      margin-top: 5%;
+      margin-bottom: 0%;
+      max-width: 400px;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+  }
+
+  &--footer {
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    &.auto {
+      min-height: unset;
+    }
+
+    @media screen and (min-width: 768px) {
+      max-width: 400px;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .action-link {
+      height: 50px;
+      text-transform: initial !important;
+      font-size: 16px;
+      letter-spacing: .5px;
+      border-radius: 10px;
+      margin-left: 0px;
+    }
+
+  }
+}
 .q-card {
   border-radius: 25px;
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 35px rgba(0, 0, 0, 0.14), 0 1px 10px rgba(0, 0, 0, 0.12);
@@ -509,6 +642,49 @@ export default {
   }
   .perpleGlow{
     text-shadow: 2px 2px 2px #6200ea;
+  }
+}
+
+.login-page {
+  .or-text {
+    margin-left: 10px;
+    font-size: 16px;
+    // margin-top: -10px;
+    // margin-bottom: 10px;
+  }
+
+  /deep/ .q-field--focused .q-field__label {
+  }
+  & .q-field--outlined .q-field__control{
+   background-color: #fff
+  }
+  /deep/ .q-field--outlined .q-field__control:after {
+    border: 2px solid #E1E1E9;
+    //background-color: #fff;
+    //box-shadow: 0px 0px 10px 0px #E1E1E9;
+  }
+
+  /deep/ .q-field--outlined .q-field__control:before {
+    border: 2px solid #E1E1E9;
+    //background-color: #fff;
+    //box-shadow: 0px 0px 10px 0px #E1E1E9;
+  }
+
+  /deep/ .q-field--outlined.q-field--focused .q-field__control:after {
+    border: 2px solid #c4c4c6;
+    //background-color: #fff;
+    //box-shadow: 0px 0px 10px 0px #d4d4db;
+  }
+
+  /deep/ .q-field--outlined.q-field--focused .q-field__control:before {
+    border: 2px solid #c4c4c6;
+    //background-color: #fff;
+    //box-shadow: 0px 0px 10px 0px #d4d4db;
+  }
+
+  /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
+  /deep/ .q-field--dark .q-field__marginal,
+  /deep/ .q-field--dark .q-field__bottom {
   }
 }
 </style>

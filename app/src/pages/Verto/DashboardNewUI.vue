@@ -7,8 +7,9 @@
       'text-black bg-white': $store.state.settings.lightMode === 'false',
       'desktop-marg': screenSize > 1024,
       'mobile-pad': screenSize < 1024 && !($q.platform.is.mobile||$isbex),
+      'mobile-card': $store.state.settings.lightMode === 'true'
     }"
-    :style=" $q.platform.is.mobile||$isbex? 'position: static; background: #f2f2f2 !important' : '' "
+    :style=" ($q.platform.is.mobile||$isbex) && $store.state.settings.lightMode !== 'true' ? 'position: static; background: #f2f2f2 !important' : '' "
   >
     <div
       :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
@@ -481,7 +482,7 @@ export default {
    */
 
     if (this.$q.screen.width < 1024) {
-      window.localStorage.setItem('skin', 'false')
+      if (!this.$q.platform.is.mobile) { window.localStorage.setItem('skin', 'false') }
       this.$store.state.settings.lightMode =
         window.localStorage.getItem('skin')
     }
