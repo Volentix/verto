@@ -16,13 +16,33 @@ export default {
     if (routerLoaded == null) {
       return
     }
-    if (localStorage.getItem('sync_data')) {
+    let call = localStorage.getItem('call_request')
+    let qr = localStorage.getItem('wallet_connect_svg')
+  
+    if (call) {
+      localStorage.removeItem('call_request')
+      call = JSON.parse(call)
+      this.$router.push({
+        name: 'connectv1',
+        params: {
+          txObject: call.params[0]
+        }
+      })
+    } else if (qr) {
+      localStorage.removeItem('wallet_connect_svg')
+      this.$router.push({
+        name: 'connectv1',
+        params: {
+          qr: qr
+        }
+      })
+    } else if (localStorage.getItem('sync_data')) {
       this.$router.push({
         name: 'syncExtensionWallet'
       })
     } else {
       const lastRoute = localStorage.getItem('last_route') ? JSON.parse(localStorage.getItem('last_route')) : null
-      if (lastRoute && this.$route.name !== lastRoute.name && lastRoute.name !== 'storesync') {
+      if (lastRoute && this.$route.name !== lastRoute.name && !['connectv1','storesync'].includes(lastRoute.name)) {
         console.log('loading existing route ', lastRoute.path)
         this.$router.push({
           name: lastRoute.name,

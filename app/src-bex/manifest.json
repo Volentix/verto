@@ -23,7 +23,11 @@
     "persistent": true
   },
   "content_scripts": [{
-    "matches": ["<all_urls>"],
+    "matches": [
+      "https://verto.volentix.io/*",
+      "http://localhost:8080/*",
+      "<all_urls>"
+    ],
     "js": [
       "www/bex-content-script.js",
       "js/content-script.js"
@@ -33,13 +37,11 @@
     ]
   }],
   "permissions": [
-    "<all_urls>",
-    "storage",
-    "tabs",
-    "activeTab"
+    "https://verto.volentix.io/*",
+    "http://localhost:8080/*"
   ],
   "externally_connectable": {
-    "matches": ["*://localhost/*"]
+    "matches": ["*://localhost/*","*://verto.volentix.io/*"]
   },
   "web_accessible_resources": [
     "www/*",

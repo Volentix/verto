@@ -417,8 +417,6 @@ export default {
         }
       } else {
         try {
-          // const extension = window.open('', 'Verto', windowFeatures)
-
           chrome.runtime.sendMessage(this.$extensionId, { type: 'EXTENSION_AVAILABLE' }, response => {
             if (response === undefined) {
               // this.extensionNotFound = true
