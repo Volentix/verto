@@ -16,8 +16,8 @@
                 <SearchList :openSearch.sync="openSearch"  v-if="openSearch"/>
 
                 <q-btn class="primary" dense icon="search" @click="openSearch = true" />
-                <q-btn class="primary" dense icon="qr_code" @click="qrSelect = true" />
-                <q-btn class="primary" dense icon="notifications">
+                <q-btn v-if="false" class="primary" dense icon="qr_code" @click="qrSelect = true" />
+                <q-btn v-if="false" class="primary" dense icon="notifications">
                     <q-menu transition-show="flip-right" transition-hide="flip-left" auto-close>
                         <q-list separator style="min-width: 100px">
                             <q-item>

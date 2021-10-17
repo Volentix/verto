@@ -344,11 +344,10 @@ export default {
         { name: 'Add HD Account', to: '/verto/create-hd-account', icon: 'label', info: '' },
         // { name: 'Add BTC Account', to: '/verto/import-wallet/btc', icon: 'label', info: '' },
         { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
-        { name: 'Network', to: '', icon: 'public_off', info: 'darkmode' },
-        { name: 'Dev Mode', to: '', icon: 'public_off', info: 'darkmode' },
+        
         { name: 'Download debug data', id: 'debug', icon: 'o_get_app' },
         //  { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'soon' },
-        { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' }
+        //{ name: 'share Verto wallet', to: 'share', icon: 'share', info: '' }
       ]
     } else {
       this.menu = [

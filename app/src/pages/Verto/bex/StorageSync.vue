@@ -29,11 +29,13 @@ export default {
         }
       })
     } else if (qr) {
-      localStorage.removeItem('wallet_connect_svg')
+      qr = JSON.parse(qr)
+      //localStorage.removeItem('wallet_connect_svg')
       this.$router.push({
         name: 'connectv1',
         params: {
-          qr: qr
+          qr: qr.qr,
+          domain:qr.domain
         }
       })
     } else if (localStorage.getItem('sync_data')) {

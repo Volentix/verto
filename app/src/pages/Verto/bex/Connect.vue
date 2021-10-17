@@ -192,14 +192,16 @@ export default {
       })
     },
     async connect (uri) {
-      this.$q.bex.send('connector.listener', {uri: uri, accept: this.shouldConnect, accounts: ['0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'] /* [this.accountValue.key] */ })
+      
+      this.$q.bex.send('connector.listener', {uri: uri, domain:this.$route.params.domain, accept: this.shouldConnect, accounts: ['0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'] /* [this.accountValue.key] */ })
         .then((o) => {
-          console.log(o, 'resolve')
-          this.spinnerVisible = false
+         localStorage.removeItem("walletconnect");
+          console.log(o, 'o')
           setTimeout(()=> {
             if( this.shouldConnect )
             this.connected = true
            // window.close()  
+           this.spinnerVisible = false
           }, this.shouldConnect ? 3000: 0)
         }).catch(() => {
           this.spinnerVisible = false

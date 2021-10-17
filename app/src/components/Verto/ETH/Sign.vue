@@ -222,6 +222,7 @@
                </div>
               </div>
             </div>
+            <span class="text-red">{{error}}</span>
           </div>
           <div   v-if="!(txData && txData.hash)" class="request-signature__footer">
             <button
@@ -273,7 +274,7 @@ export default {
       this.spinner = true
       Lib.send(
         this.chain,
-        this.destinationCoin.value.toLowerCase(),
+        this.token,
         this.txData.from,
         this.txData.to,
         this.txData.value,
@@ -282,6 +283,7 @@ export default {
         ''
       )
         .then(async (result) => {
+          console.log(result, 'result')
           if (result.success) {
             this.processTransaction(result)
           } else {
@@ -327,20 +329,28 @@ export default {
     })
     } else if(this.tx){
       const Web3 = require('web3')
+     
       Lib.gas('eth', this.tx, 'eth')
       .then(o => {
      
       this.gasData = {
          gas: Web3.utils.hexToNumber(this.tx.gas),
-         gasPrice:  o[0].gasPrice,
-         ethPrice: o[0].isUsd,
-         ethVal: Web3.utils.hexToNumber(this.tx.gas) * o[0].gasPrice  / (10 ** 18),
-         usdVal: Web3.utils.hexToNumber(this.tx.gas) * o[0].gasPrice  / (10 ** 18) * o[0].isUsd
+         gasPrice:  o[1].gasPrice,
+         ethPrice: o[1].isUsd,
+         ethVal: Web3.utils.hexToNumber(this.tx.gas) * o[1].gasPrice  / (10 ** 18),
+         usdVal: Web3.utils.hexToNumber(this.tx.gas) * o[1].gasPrice  / (10 ** 18) * o[0].isUsd
       }
   
+      }).catch(e => {
+        this.error = e
       })
-     
-      this.txData = this.tx
+      for(let i in this.tx){
+       this.$set(this.txData, i,  this.tx[i])
+      }
+   
+      if(this.txData.data === '0x'){
+        this.txData.data = ''
+      }
     }
     /*
     this.processTransaction({
@@ -351,6 +361,8 @@ export default {
   data () {
     return {
       chain: 'eth',
+      token: 'eth',
+      error: null,
       gasData: null,
       txData: {
         status: false,
@@ -427,6 +439,9 @@ a {
   .request-signature__container {
    /*  height: 620px; */
   }
+}
+div#app-content {
+    width: 100%;
 }
 .request-signature__header {
   height: 64px;
