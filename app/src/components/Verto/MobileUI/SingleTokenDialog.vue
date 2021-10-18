@@ -7,7 +7,7 @@
             transition-show="slide-up"
             transition-hide="slide-down"
         >
-        <q-card class=" text-black" style="background: #f2f2f2 !important">
+        <q-card :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
             <q-header class="bg-white">
               <q-toolbar class="text-black">
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
@@ -30,7 +30,7 @@
                         <q-item-label class=" text-h5">{{marketData && marketData.tokenName ? marketData && marketData.tokenName:  asset.type.toUpperCase()}}</q-item-label>
                     </q-item-section>
                     <q-item-section side top>
-                        <div class="text-bold text-h6 text-black">
+                        <div class="text-bold text-h6 ">
                             ${{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice,18).split(".")[0] : formatNumber(asset.rateUsd, 18).split(".")[0]}} .{{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice, 3, false, true).split(".")[1] : formatNumber(asset.rateUsd, 3 , false, true).split(".")[1] }}
                         </div>
                         <div class="text-bold text-h7 text-green">
@@ -85,7 +85,7 @@
                         <q-item-label caption>{{ formatNumber(asset.percentage, 2) }}% of Portfolio</q-item-label>
                     </q-item-section>
                     <q-item-section side top>
-                        <div class="text-bold text-h6 text-black">
+                        <div class="text-bold text-h6 ">
                              ${{ formatNumber(asset.usd, 18).split(".")[0]}}<span>{{
                             formatNumber(asset.usd, 3).split(".")[1] ? '.'+formatNumber(asset.usd, 3).split(".")[1] : ''
                             }}</span>
@@ -96,7 +96,7 @@
                         </div>
                     </q-item-section>
                 </q-item>
-                <q-card flat bordered class="q-pa-md" v-if="$store.state.investment.defaultAccount">
+                <q-card flat bordered class="q-pa-md text-black" v-if="$store.state.investment.defaultAccount">
                     <div class=" row">
                         <div class="col-6">
                             Profit/Loss <span><i class="far fa-question-circle"></i></span>
@@ -134,7 +134,7 @@
                     <q-item-section side top>
                     </q-item-section>
                 </q-item>
-                <q-list bordered separator class="rounded-borders bg-white" v-if="marketData">
+                <q-list bordered separator class="rounded-borders bg-white text-black" v-if="marketData">
                     <q-item>
                         <q-item-section>
                             <q-item-label lines="1">1 Day</q-item-label>
@@ -226,7 +226,7 @@
             transition-show="slide-up"
             transition-hide="slide-down"
         >
-            <q-card class=" text-black" style="background: #f2f2f2 !important">
+            <q-card :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
                 <q-header class="bg-white">
                     <q-toolbar class="text-black">
                         <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="dialogSend =false"/>
@@ -240,12 +240,12 @@
                         <q-item style="margin-left: -14px;">
                             <q-item-section>
                                 <q-item-label class=" text-h5">Send/Buy/Sell </q-item-label>
-                                <q-item-label caption>Token Statistics</q-item-label>
+                                <q-item-label caption class="text-grey">Token Statistics</q-item-label>
                             </q-item-section>
                             <q-item-section side top>
                             </q-item-section>
                         </q-item>
-                        <q-card flat bordered class="q-pa-md">
+                        <q-card :dark="$store.state.settings.lightMode === 'true'" flat bordered :class="$store.state.settings.lightMode === 'true' ? 'q-pa-md text-white': 'q-pa-md text-black' " :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': ''">
                             <div>
                                 <q-tabs
                                     v-model="tabLocal"
@@ -268,7 +268,7 @@
                                 </div>
 
                                 <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount" class="q-px-md" >
-                                    <SendComponent @setAsset="setAssetLocal" :token="asset.type" :miniMode="true" :key="$store.state.investment.defaultAccount.key+$store.state.investment.defaultAccount.name+$store.state.investment.defaultAccount.chain"  />
+                                    <SendComponent @setAsset="setAssetLocal" :token="asset.type" :miniMode="true" :key="getSendKey()"   />
                                 </div>
 
                                 <div v-if="show1inch && tab == 'swap'" >

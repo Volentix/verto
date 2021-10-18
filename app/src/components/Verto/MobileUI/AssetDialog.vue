@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="">
         <q-dialog
             v-model="dialog"
             persistent
@@ -7,7 +7,7 @@
             transition-show="slide-up"
             transition-hide="slide-down"
         >
-        <q-card class=" text-black" style="background: #f2f2f2 !important">
+        <q-card  :class="$store.state.settings.lightMode === 'true' ? 'text-black mobile-card': 'text-black'" :style="$store.state.settings.lightMode === 'true' ?'':'background: #f2f2f2 !important'">
             <q-header class="bg-white">
               <q-toolbar class="text-black">
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
@@ -29,6 +29,7 @@
                     :class="{
                         'account-tabs': $route.params.accounts,
                         'assets-tabs': !$route.params.accounts,
+                        'mobile-card text-white':  $store.state.settings.lightMode === 'true'
                     }"
                 >
                     <q-tab name="receive" icon="get_app" label="Receive" :class="{
@@ -119,7 +120,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.mobile-card{
+    background-color: #04111F !important;
+}
 .group:before,
 .group:after {
   content: " "; /* 1 */

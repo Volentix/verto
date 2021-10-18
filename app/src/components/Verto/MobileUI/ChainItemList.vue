@@ -6,7 +6,7 @@
                 !['assets', 'investments'].includes(tab)) ||
                 tab == 'chains'
             " class="q-pb-lg">
-                <q-list separator class="rounded-borders bg-white" >
+                <q-list separator class="rounded-borders bg-white text-black" >
 
                     <q-item clickable v-ripple
                         v-for="(chain, i) in chains.filter(a => tab !== 'privateKeys' || (a.accounts && a.accounts.length))"
@@ -17,7 +17,7 @@
                     >
                         <q-item-section avatar top>
                             <q-avatar  v-if="!showQr[chain.chain]">
-                                <img :src="chain.icon" />
+                                <img :src="chain.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" />
                             </q-avatar>
                         </q-item-section>
                         <q-item-section>
@@ -30,11 +30,14 @@
                                         align="left"
                                         size="sm"
                                         class="col-12 q-mb-sm text-left"
-                                        :icon="'img:' + item.icon"
-                                        :label="item.type.toUpperCase()"
                                         flat
                                         dense
                                     >
+                                    <q-avatar size="xs">
+                                        <img :src="item.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" />
+                                    </q-avatar>
+                                    <span class="q-pl-sm">{{item.type.toUpperCase()}}</span>
+
                                         <span class="q-pl-sm text-grey"
                                         >${{ formatNumber(item.usd, 0) }}</span
                                         >
@@ -186,7 +189,7 @@
                     >
                         <q-item-section avatar top>
                             <q-avatar>
-                                <img :src="asset.icon" />
+                                <img :src="asset.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"/>
                             </q-avatar>
                         </q-item-section>
                         <q-item-section>
@@ -195,7 +198,7 @@
                             </q-item-label>
 
                             <q-item-label
-                                :class="{'text-white': $store.state.settings.lightMode === 'true',}"
+                                :class="{'text-black': $store.state.settings.lightMode === 'true',}"
                                 class="q-pt-sm"
                             >
                                 Amount:

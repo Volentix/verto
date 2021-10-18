@@ -8,7 +8,7 @@
       </q-banner>
 
       <div class="q-pa-md loading-table" v-else-if="loading">
-      <span class="text-body1">We are loading your transaction history. This may take a moment</span>
+      <span :class="$store.state.settings.lightMode === 'true' ? 'text-body1 text-white': 'text-body1'">We are loading your transaction history. This may take a moment</span>
         <q-markup-table flat v-if="!$q.platform.is.mobile">
           <thead>
             <tr>
@@ -60,16 +60,16 @@
 
       </div>
 
-      <div  class="q-pa-md" v-else-if="!history.length && !loading">
+      <div  :class="$store.state.settings.lightMode === 'true' ? 'text-white q-pa-md': 'text-black q-pa-md'" v-else-if="!history.length && !loading">
         No transactions recorded yet with this account
       </div>
-      <q-scroll-area v-else :visible="true" class="q-pr-md" :style="$q.platform.is.mobile ? 'height: 120%; padding-bottom: 5px; background-color: white;' : 'height: 85%;'">
+      <q-scroll-area v-else :visible="true" :class="$store.state.settings.lightMode === 'true' ? 'q-pr-md':'q-pr-md bg-white'" :style="$q.platform.is.mobile ? 'height: 120%; padding-bottom: 5px;' : 'height: 85%;'">
         <div v-if="!($q.platform.is.mobile||$isbex)">
 
           <div v-for="(day,indexDay) in history" :key="indexDay">
 
             <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7">{{day.friendlyDay}} </div>
-            <q-list bordered dark separator class="list-wrapper"  v-for="(transaction, indexTx) in day.data" :key="indexTx">
+            <q-list bordered dark separator class="list-wrapper"  v-for="(transaction, indexTx) in day.data" :key="indexTx" >
 
               <q-item v-if="transaction.direction == 'outgoing'" clickable class="column history-item-wrapper send-component" :class="{'dark-bg': $store.state.settings.lightMode === 'true'}">
                 <q-item-section class="history-item flex justify-between">

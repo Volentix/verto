@@ -26,7 +26,7 @@
               />
             </q-tabs>
 
-            <q-separator />
+            <q-separator v-if="!$q.platform.is.mobile"/>
 
             <q-tab-panels v-model="tab" animated>
               <q-tab-panel name="stake">
@@ -331,7 +331,7 @@
                                   </div>
                                 </div>
                               </div>
-                              <div v-html="summary" class="col-md-6 summary-data" > </div>
+                              <div v-html="summary" class="col-md-6 summary-data" :style="$q.platform.is.mobile ? 'margin-top: auto':''"> </div>
                             </div>
                           </div>
                         </div>

@@ -216,7 +216,7 @@
             <div v-if="txData.data && txData.data.toString().length" class="request-signature__notice">Transaction data:</div>
             <div class="request-signature__rows" v-if="txData.data && txData.data.toString().length">
               <div class="request-signature__row">
-               
+
                 <div class="request-signature__row-value">
              {{txData.data}}
                </div>
@@ -299,13 +299,13 @@ export default {
       this.txData.hash = result.transaction_id
       this.txData.status = 'Submitted'
       this.txData.explorer_link = result.message
-      if(this.txObject){
-       let obj = {
-        txId: this.$route.params.txId,
-        hash: this.txData.hash,
-        error: null
-      }
-      await ParseDB.createUseACLObject('TransactionEvents', obj)
+      if (this.txObject) {
+        let obj = {
+          txId: this.$route.params.txId,
+          hash: this.txData.hash,
+          error: null
+        }
+        await ParseDB.createUseACLObject('TransactionEvents', obj)
       }
       let status = await Lib.checkEvmTxStatus(
         this.txData.hash,
@@ -320,35 +320,32 @@ export default {
     }
   },
   created () {
-
     let data = ['gas', 'gasPrice', 'to', 'data', 'from', 'value']
-    if(this.txObject){
-     this.chain =  this.txObject.get('chain')
-    data.forEach(element => {
-      this.txData[element] = this.txObject.get(element)
-    })
-    } else if(this.tx){
-      const Web3 = require('web3')
-     
-      Lib.gas('eth', this.tx, 'eth')
-      .then(o => {
-     
-      this.gasData = {
-         gas: Web3.utils.hexToNumber(this.tx.gas),
-         gasPrice:  o[1].gasPrice,
-         ethPrice: o[1].isUsd,
-         ethVal: Web3.utils.hexToNumber(this.tx.gas) * o[1].gasPrice  / (10 ** 18),
-         usdVal: Web3.utils.hexToNumber(this.tx.gas) * o[1].gasPrice  / (10 ** 18) * o[0].isUsd
-      }
-  
-      }).catch(e => {
-        this.error = e
+    if (this.txObject) {
+      this.chain = this.txObject.get('chain')
+      data.forEach(element => {
+        this.txData[element] = this.txObject.get(element)
       })
-      for(let i in this.tx){
-       this.$set(this.txData, i,  this.tx[i])
+    } else if (this.tx) {
+      const Web3 = require('web3')
+
+      Lib.gas('eth', this.tx, 'eth')
+        .then(o => {
+          this.gasData = {
+            gas: Web3.utils.hexToNumber(this.tx.gas),
+            gasPrice: o[1].gasPrice,
+            ethPrice: o[1].isUsd,
+            ethVal: Web3.utils.hexToNumber(this.tx.gas) * o[1].gasPrice / (10 ** 18),
+            usdVal: Web3.utils.hexToNumber(this.tx.gas) * o[1].gasPrice / (10 ** 18) * o[0].isUsd
+          }
+        }).catch(e => {
+          this.error = e
+        })
+      for (let i in this.tx) {
+        this.$set(this.txData, i, this.tx[i])
       }
-   
-      if(this.txData.data === '0x'){
+
+      if (this.txData.data === '0x') {
         this.txData.data = ''
       }
     }

@@ -5,7 +5,7 @@
                 <div class="text-h6 text-bold">Wallets</div>
             </div>
             <div>
-                <q-btn flat color="primary" class="text-bold" @click="goImport" >Add/Import</q-btn>
+                <q-btn flat :color="$store.state.settings.lightMode === 'true' ? 'white' : 'primary'" class="text-bold" @click="goImport" >Add/Import</q-btn>
             </div>
             <div  class="row text-grey">Click on a chain to see assets. </div>
         </div>
@@ -17,11 +17,13 @@
             no-caps
             outside-arrows
             mobile-arrows
-            class="text-primary q-pb-md"
+            class="q-pb-md"
             @click="updateTab(tabIndex)"
             :class="{
                 'account-tabs': $route.params.accounts,
                 'assets-tabs': !$route.params.accounts,
+                'text-primary': $store.state.settings.lightMode !== 'true',
+                'text-white': $store.state.settings.lightMode === 'true',
             }"
         >
             <q-tab name="receive" icon="get_app" label="Receive" :class="{

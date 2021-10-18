@@ -2,14 +2,15 @@
 <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
   <div class="profile-wrapper-" >
     <!-- <q-toggle v-model="active" label="Active" /> -->
-  <q-card flat>
+  <div  >
     <div style="overflow-y: auto; height: 82vh;">
-    <div class="profile-wrapper--list" >
+    <div class="profile-wrapper--list">
 
       <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator>
         <!-- <q-item manual-focus focused>
           <q-item-section ></q-item-section>
         </q-item> -->
+
         <q-item v-for="(item, index) in menu" :key="index" clickable v-ripple :active="active" :to="(item.to !== 'backup' && item.to !== 'logout' && item.to !== 'restore' && item.to !== 'share' && item.to!=='sync') ? item.to : ''" @click="item.to === 'backup' ? backupConfig() : item.to === 'logout' ? logout() : item.to === 'restore' ? startRestoreConfig() : item.to === 'share' ? toggleShare() : item.id === 'debug' ? saveDebugData() : item.to === 'sync'?syncExtension(): empty()">
           <q-item-section avatar>
             <q-icon class="icons" :class="{'reverse' : item.icon === 'exit_to_app'}" v-if="item.icon !== 'vtx'" :name="item.icon" />
@@ -28,7 +29,7 @@
           </q-item-section>
           <q-item-section v-if="!($q.platform.is.mobile||$isbex)" class="profile-wrapper--list__item-info" :class="{'hide': item.info === '' || item.info === 'darkmode', 'text-orange': item.info !== 'Linked', 'text-green' : item.info === 'Linked'}">{{item.info}}</q-item-section>
           <q-item-section v-if="(($q.platform.is.mobile||$isbex) && item.name === 'Theme') && screenSize <= 1024 && item.info === 'darkmode'" class="flex justify-end darkmode-option">
-            <q-toggle
+            <!-- <q-toggle
               v-model="lightMode"
               checked-icon="wb_sunny"
               @input="toggleLightDarkMode"
@@ -42,7 +43,28 @@
               <q-tooltip v-else content-class="black" :offset="[10, 10]">
                 Light mode
               </q-tooltip>
+            </q-toggle> -->
+            <q-toggle
+              v-model="lightMode"
+              checked-icon="wb_sunny"
+              @input="toggleLightDarkMode"
+              color="grey"
+              size="lg"
+              class="darkmode-btn"
+              unchecked-icon="brightness_3"
+            >
+              <q-tooltip
+                v-if="$store.state.settings.lightMode === 'false'"
+                content-class="black"
+                :offset="[10, 10]"
+              >
+                Dark mode
+              </q-tooltip>
+              <q-tooltip v-else content-class="black" :offset="[10, 10]">
+                Light mode
+              </q-tooltip>
             </q-toggle>
+
           </q-item-section>
           <q-item-section v-if="item.name === 'Network'" class="flex justify-end darkmode-option">
             <q-btn-toggle
@@ -73,7 +95,7 @@
 
     </div>
     </div>
-  </q-card>
+  </div>
     <span v-if="!($q.platform.is.mobile||$isbex) && screenSize <= 1024" class="version full-width text-center text-grey column q-pt-md q-pl-xl q-pr-xl q-pb-xl q-mt-md">
       <span class="q-mb-md q-mt-md"><strong>{{version}}</strong></span>
       <span class="q-pa-sm">
@@ -344,10 +366,10 @@ export default {
         { name: 'Add HD Account', to: '/verto/create-hd-account', icon: 'label', info: '' },
         // { name: 'Add BTC Account', to: '/verto/import-wallet/btc', icon: 'label', info: '' },
         { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
-        
-        { name: 'Download debug data', id: 'debug', icon: 'o_get_app' },
+
+        { name: 'Download debug data', id: 'debug', icon: 'o_get_app' }
         //  { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'soon' },
-        //{ name: 'share Verto wallet', to: 'share', icon: 'share', info: '' }
+        // { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' }
       ]
     } else {
       this.menu = [
@@ -382,6 +404,7 @@ export default {
     syncExtension () {
       window.opener = self
 
+      // const windowFeatures = 'toolbar=0, directories=0,addressbar=0, location=0, status=0, menubar=0, scrollbars=0, resizable=0, width=350, height=600, top=0, left=' + (screen.width - 350)
       if (typeof chrome === 'undefined') {
         if (window.saveToVertoExtension !== undefined) {
           // const extension = window.open('', 'Verto', windowFeatures)
@@ -423,6 +446,7 @@ export default {
     toggleLightDarkMode (val) {
       window.localStorage.setItem('skin', val)
       this.$store.state.settings.lightMode = window.localStorage.getItem('skin')
+      console.log('LIGHT MODE ', this.$store.state.settings.lightMode)
     },
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
