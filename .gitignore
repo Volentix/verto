@@ -163,9 +163,6 @@ node_modules
 app/dist
 app/build
 .nuxt.
-app/verto/www/
-app/src-bex/www
-app/src-bex/www/*
 .app/src-bex/www
 app/src-cordova/node_modules
 app/src-cordova/platforms

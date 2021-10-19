@@ -20,7 +20,7 @@
                 <AccountSelector  :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
             </div>
             <q-card-section>
-                <q-item style="margin-left: -14px;margin-top:40px">
+                <q-item style="margin-left: -14px;" :class="{'top-margin':!asset.amount}">
                     <q-item-section side>
                         <q-avatar rounded>
                             <img v-if="asset.icon" :src="asset.icon" style="max-width: 40px" alt="image" />
@@ -586,6 +586,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.top-margin {
+margin-top: 40px;
+}
 .q-select__dialog {
     width: 90vw !important;
     max-width: 100vw !important;

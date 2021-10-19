@@ -1,5 +1,6 @@
 <template>
   <div id="app-content">
+  {{tx}}
     <div class="app os-mac browser-chrome">
       <div><span></span></div>
       <div
@@ -11,6 +12,7 @@
           <div class="request-signature__header">
             <div class="request-signature__header-background"></div>
             <div class="request-signature__header__text">Signature Request</div>
+            {{payloadId}}
             <div class="request-signature__header__tip-container">
               <div class="request-signature__header__tip"></div>
             </div>
@@ -231,6 +233,7 @@
                 btn-default btn--large
                 request-signature__footer__cancel-button
               "
+              @click="cancel"
               role="button"
               tabindex="0"
             >
@@ -262,7 +265,7 @@ import Lib from '@/util/walletlib'
 import initWallet from '@/util/Wallets2Tokens'
 
 export default {
-  props: ['txObject', 'tx'],
+  props: ['txObject', 'tx', 'payloadId'],
   mixins: [Formatter],
   methods: {
     signTransaction () {
@@ -295,10 +298,14 @@ export default {
           this.spinner = false
         })
     },
+    cancel () {
+      this.$q.bex.send('result.listener.' + this.payloadId, { approve: false })
+    },
     async processTransaction (result) {
       this.txData.hash = result.transaction_id
       this.txData.status = 'Submitted'
       this.txData.explorer_link = result.message
+      this.$q.bex.send('result.listener.' + this.payloadId, { hash: result.transaction_id, approve: true })
       if (this.txObject) {
         let obj = {
           txId: this.$route.params.txId,

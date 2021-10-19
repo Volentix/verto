@@ -296,12 +296,12 @@ export default {
           (o) =>
             ((this.autoSelectChain && o.chain === this.autoSelectChain) ||
             (this.chain && o.chain === this.chain) ||
-            o.chain === 'eos') && (!this.withTokenBalance || ((this.withTokenBalance === o.type && o.amount > 0) || !this.$store.state.wallets.portfolioTotal))
+            o.chain === 'eos') && (!this.withTokenBalance || ((this.withTokenBalance === o.type) || !this.$store.state.wallets.portfolioTotal))
         )
 
         if (!item) {
           item = this.accountOptions.find(
-            (o) => ((this.chain && o.chain === this.chain) || o.chain === 'eth') && ((this.withTokenBalance === o.type && o.amount > 0) || !this.$store.state.wallets.portfolioTotal))
+            (o) => ((this.chain && o.chain === this.chain) || o.chain === 'eth') && ((this.withTokenBalance === o.type) || !this.$store.state.wallets.portfolioTotal))
         }
 
         this.accountOption = item

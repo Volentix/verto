@@ -1,12 +1,11 @@
 <template>
 <div class="flex flex-center text-center">
 <Landing :noRedirect="true" v-if="!$store.state.currentwallet.config.keys" />
-<Sign style="height: 100vh;" :tx="$route.params.txObject" v-else-if="$route.params.txObject" />
+<Sign style="height: 100vh;" :payloadId="$route.params.payloadId" :tx="$route.params.txObject" v-else-if="$route.params.txObject" />
 <div v-else-if="$route.params.qr" >
 <div class="flex flex-center text-center full-width q-pt-lg">
 <img class=" verto-logo" src="statics/icons/icon-256x256.png" width="60"  alt="logo"/>
 </div>
-
 <div style="width:100px;margin: 0 auto;"  class="flex flex-center text-center q-pt-lg" v-html="$route.params.qr">
 </div>
  <div
@@ -161,6 +160,9 @@ export default {
     this.$store.dispatch('tokens/getEvmsTokensData')
   },
   methods: {
+    interact () {
+
+    },
     setDefaultChoice () {
       if (this.$store.state.currentwallet.config.keys) {
         let ethAccounts = [...this.$store.state.currentwallet.config.keys

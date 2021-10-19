@@ -26,7 +26,8 @@ export default {
       this.$router.push({
         name: 'connectv1',
         params: {
-          txObject: call.params[0]
+          txObject: call.params[0],
+          payloadId: call.id
         }
       })
     } else if (qr) {

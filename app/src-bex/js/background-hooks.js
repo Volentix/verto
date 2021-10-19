@@ -78,6 +78,20 @@ export default function attachBackgroundHooks (
             throw error
           }
 
+          bridge.on('result.listener.' + payload.id, event => {
+            if (event.data.approve) {
+              connector.approveRequest({
+                id: payload.id,
+                result: event.data.hash
+              })
+            } else {
+              connector.rejectRequest({
+                id: payload.id,
+                error: { message: 'Transaction rejected by user' }
+              })
+            }
+          })
+
           localStorage.setItem('call_request', JSON.stringify(payload))
           chrome.windows.create({
             url: chrome.runtime.getURL('www/index.html'),
@@ -93,12 +107,13 @@ export default function attachBackgroundHooks (
           if (error) {
             throw error
           }
-          alert('session_request')
-          alert(JSON.stringify(payload))
+          alert(payload)
+          connect(connector, event.data.accounts)
+          /*
           connector.approveRequest({
             id: payload.id,
-            result: event.data.accounts[0]
-          })
+            result: event.data.accounts
+          }) */
         })
 
         connector.on('disconnect', (error, payload) => {
