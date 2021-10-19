@@ -44,7 +44,7 @@
                         !$store.state.wallets.portfolioTotal &&
                         !$route.params.accounts,
                     }" />
-                    <q-tab name="create" icon="arrow_downward" label="Create new account" :class="{ active: tab == 'create', manage: true, }" />
+                    <q-tab name="create" icon="add" label="New account" :class="{ active: tab == 'create', manage: true, }" />
                     <q-tab name="chains" icon="link" label="Chains" class="read" v-if="$store.state.wallets.portfolioTotal"/>
                     <q-tab name="assets" icon="adjust" label="Assets" class="read"/>
                     <q-tab name="privateKeys" icon="vpn_key" label="Private Keys" class="manage" @click="handlePrivateKey(tabIndex)"/>

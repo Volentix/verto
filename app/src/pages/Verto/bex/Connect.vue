@@ -188,10 +188,12 @@ export default {
       this.$q.bex.send('connector.listener', { uri: uri, domain: this.$route.params.domain, accept: this.shouldConnect, accounts: [this.accountValue.key] })
         .then((o) => {
           localStorage.removeItem('walletconnect')
-          console.log(o, 'o')
+
           setTimeout(() => {
-            if (this.shouldConnect) { this.connected = true }
-            // window.close()
+            if (this.shouldConnect) { this.connected = true } else {
+              window.close()
+            }
+
             this.spinnerVisible = false
           }, this.shouldConnect ? 3000 : 0)
         }).catch(() => {

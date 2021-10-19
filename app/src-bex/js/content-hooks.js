@@ -2,39 +2,34 @@
 // More info: https://quasar.dev/quasar-cli/developing-browser-extensions/content-hooks
 // Select the node that will be observed for mutations
 
-
 export default function attachContentHooks (bridge) {
-
   (function () {
     // When the page loads, insert our browser extension app.
     // $$ ESLint - change from docs - strings must use single quote (not backticks)
-  
-  var targetNode = document.querySelector('body');
-  
-  // Options for the observer (which mutations to observe)
-  var config = { attributes: true, childList: true };
-  
-  // Callback function to execute when mutations are observed
-  var callback = function(mutationsList) {
-      for(var mutation of mutationsList) {
-        
-          if (mutation.type == 'childList') {
-              if(mutation.addedNodes[0] && mutation.addedNodes[0].id == 'walletconnect-wrapper'){
-               setTimeout(() => {
-  
-                let qr = document.querySelector('.walletconnect-qrcode__image')
-                if(qr)
-                bridge.send('app.connect',{qr: qr.outerHTML, domain:document.domain})
-                
-               },1000
-               )
-          } }
+
+    var targetNode = document.querySelector('body')
+
+    // Options for the observer (which mutations to observe)
+    var config = { attributes: true, childList: true }
+
+    // Callback function to execute when mutations are observed
+    var callback = function (mutationsList) {
+      for (var mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          if (mutation.addedNodes[0] && mutation.addedNodes[0].id === 'walletconnect-wrapper') {
+            setTimeout(() => {
+              let qr = document.querySelector('.walletconnect-qrcode__image')
+              if (qr) { bridge.send('app.connect', { qr: qr.outerHTML, domain: document.domain }) }
+            }, 1000
+            )
+          }
+        }
       }
-  };
-  
-  var observer = new MutationObserver(callback);
-  
-  observer.observe(targetNode, config);
+    }
+
+    var observer = new MutationObserver(callback)
+
+    observer.observe(targetNode, config)
   })()
 
   // Hook into the bridge to listen for events sent from the client BEX.
