@@ -1,9 +1,9 @@
 <template>
   <div class="wrapper">
     <q-layout
-      :view="$q.platform.is.mobile ? 'hHh lpR fFf' : 'hHh Lpr lff' "
-      :container="!$q.platform.is.mobile"
-      :style="!$q.platform.is.mobile ? 'height: 100vh' : ''"
+      :view="$q.platform.is.mobile || $isbex ? 'hHh lpR fFf' : 'hHh Lpr lff' "
+      :container="!($q.platform.is.mobile || $isbex)"
+      :style="!($q.platform.is.mobile || $isbex) ? 'height: 100vh' : ''"
       class="shadow-2"
     >
       <q-drawer
@@ -188,7 +188,7 @@
           <div id="scrollID8"></div>
           <!-- <q-pull-to-refresh @refresh="refresh" > -->
 
-            <TopMenuMobile   :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>
+            <TopMenuMobile  v-if="$route.path == '/verto/dashboard'" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>
           <!-- </q-pull-to-refresh> -->
         </div>
         <div v-else>

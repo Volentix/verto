@@ -2,7 +2,7 @@
   <q-page class="" :class="{'desktop-marg': screenSize > 1024, 'mobile-pad': screenSize < 1024, 'text-black bg-white': $store.state.settings.lightMode === 'false'}" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'" >
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'history-main-top-wrapper': !$q.platform.is.mobile}"  :style="!$q.platform.is.mobile ? 'height: 100vh;': 'height: 85vh;'">
       <!-- class="history-main-top-wrapper_" style="height: 100vh;" -->
-      <div class="desktop-version full-height" v-if="screenSize > 1024">
+      <div class="desktop-version full-height" v-if="!($q.platform.is.mobile || $isbex)">
         <div class="row full-height">
           <div class="col col-md-3" v-if="false">
             <div class="wallets-container" style="height: 100%">

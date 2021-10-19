@@ -138,7 +138,7 @@
                               <div   class="header-wallet full-width flex justify-between">
 
                                   <q-item-section class="item-name">
-                                      <span class="item-name--name" v-if="item.isEvm"> {{getAccountLabel(item)}}</span>
+                                      <span class="item-name--name" v-if="item && item.isEvm"> {{getAccountLabel(item)}}</span>
                                       <span>No {{ tokChain.chain.toUpperCase() }} account found</span>
                                       <div class="q-mt-md"   v-if=" tokChain.chain == 'eos' && $store.state.wallets.tokens.find( o => o.chain == 'eos' && o.type == 'verto')">
                                       You need to setup your EOS account.<br/>
@@ -229,7 +229,7 @@ export default {
             amount: w.amount,
             chain: 'eth',
             index: w.index,
-            isEvm: w.isEvm,
+            isEvm: w.isEvm || this.isEvm(w.type),
             type: w.type,
             usd: w.usd,
             total: w.total,
