@@ -107,7 +107,7 @@ export default {
 </script>
 <style lang="scss" scoped>
   @import "~@/assets/styles/variables.scss";
-  
+
   .mobile-pad{
     padding-bottom: 50px;
     background: #FFF !important;

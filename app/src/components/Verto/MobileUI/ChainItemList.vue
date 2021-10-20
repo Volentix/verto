@@ -25,7 +25,7 @@
                             <div v-if="!$route.params.accounts && tab == 'chains' && chain.chainTotal > 0" > <br>
                                 <q-item-label v-for="(item, index) in getChainList(chain)"
                                     :key="index+Math.floor(Math.random() * 1000)"
-                                   
+
                                 >
                                     <q-btn
                                         align="left"
