@@ -1018,8 +1018,6 @@ export default {
     }
   },
   async mounted () {
-    console.log('reoute.. ', this.$route.params.openDialog)
-
     this.showSetupEos()
     setTimeout(() => {
       this.showSetupEos()

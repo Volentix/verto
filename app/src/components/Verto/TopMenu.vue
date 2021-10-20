@@ -1,8 +1,8 @@
 <template>
   <div
-    :class="{ 'menu-top-wrapper': !$q.platform.is.mobile, 'dark-theme': $store.state.settings.lightMode === 'true' }"
+    :class="{ 'menu-top-wrapper': !$q.platform.is.mobile || $isbex, 'dark-theme': $store.state.settings.lightMode === 'true' }"
   >
-  <div v-if="!$q.platform.is.mobile">
+  <div v-if="!($q.platform.is.mobile || $isbex)">
     <div class="row">
       <div class="col col-1 app-logo row flex q-pl-md items-center q-pt-md">
         <!-- <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;"> -->
@@ -236,7 +236,7 @@
     </q-dialog>
     </div>
 
-    <div v-if="$q.platform.is.mobile">
+    <div v-if="$q.platform.is.mobile || $isbex">
        <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="dialog" :maximized="$q.platform.is.mobile">
         <q-card :dark="$store.state.settings.lightMode === 'true'" style="width:100%;">
           <div

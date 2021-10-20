@@ -1,5 +1,6 @@
 <template>
   <div id="app-content">
+  {{tx}}
     <div class="app os-mac browser-chrome">
       <div><span></span></div>
       <div
@@ -11,6 +12,7 @@
           <div class="request-signature__header">
             <div class="request-signature__header-background"></div>
             <div class="request-signature__header__text">Signature Request</div>
+            {{payloadId}}
             <div class="request-signature__header__tip-container">
               <div class="request-signature__header__tip"></div>
             </div>
@@ -216,12 +218,12 @@
             <div v-if="txData.data && txData.data.toString().length" class="request-signature__notice">Transaction data:</div>
             <div class="request-signature__rows" v-if="txData.data && txData.data.toString().length">
               <div class="request-signature__row">
-               
                 <div class="request-signature__row-value">
              {{txData.data}}
                </div>
               </div>
             </div>
+            <span class="text-red">{{error}}</span>
           </div>
           <div   v-if="!(txData && txData.hash)" class="request-signature__footer">
             <button
@@ -230,6 +232,7 @@
                 btn-default btn--large
                 request-signature__footer__cancel-button
               "
+              @click="cancel"
               role="button"
               tabindex="0"
             >
@@ -261,7 +264,7 @@ import Lib from '@/util/walletlib'
 import initWallet from '@/util/Wallets2Tokens'
 
 export default {
-  props: ['txObject', 'tx'],
+  props: ['txObject', 'tx', 'payloadId'],
   mixins: [Formatter],
   methods: {
     signTransaction () {
@@ -273,7 +276,7 @@ export default {
       this.spinner = true
       Lib.send(
         this.chain,
-        this.destinationCoin.value.toLowerCase(),
+        this.token,
         this.txData.from,
         this.txData.to,
         this.txData.value,
@@ -282,6 +285,7 @@ export default {
         ''
       )
         .then(async (result) => {
+          console.log(result, 'result')
           if (result.success) {
             this.processTransaction(result)
           } else {
@@ -293,17 +297,21 @@ export default {
           this.spinner = false
         })
     },
+    cancel () {
+      this.$q.bex.send('result.listener.' + this.payloadId, { approve: false })
+    },
     async processTransaction (result) {
       this.txData.hash = result.transaction_id
       this.txData.status = 'Submitted'
       this.txData.explorer_link = result.message
-      if(this.txObject){
-       let obj = {
-        txId: this.$route.params.txId,
-        hash: this.txData.hash,
-        error: null
-      }
-      await ParseDB.createUseACLObject('TransactionEvents', obj)
+      this.$q.bex.send('result.listener.' + this.payloadId, { hash: result.transaction_id, approve: true })
+      if (this.txObject) {
+        let obj = {
+          txId: this.$route.params.txId,
+          hash: this.txData.hash,
+          error: null
+        }
+        await ParseDB.createUseACLObject('TransactionEvents', obj)
       }
       let status = await Lib.checkEvmTxStatus(
         this.txData.hash,
@@ -318,29 +326,34 @@ export default {
     }
   },
   created () {
-
     let data = ['gas', 'gasPrice', 'to', 'data', 'from', 'value']
-    if(this.txObject){
-     this.chain =  this.txObject.get('chain')
-    data.forEach(element => {
-      this.txData[element] = this.txObject.get(element)
-    })
-    } else if(this.tx){
-      const Web3 = require('web3')
-      Lib.gas('eth', this.tx, 'eth')
-      .then(o => {
-     
-      this.gasData = {
-         gas: Web3.utils.hexToNumber(this.tx.gas),
-         gasPrice:  o[0].gasPrice,
-         ethPrice: o[0].isUsd,
-         ethVal: Web3.utils.hexToNumber(this.tx.gas) * o[0].gasPrice  / (10 ** 18),
-         usdVal: Web3.utils.hexToNumber(this.tx.gas) * o[0].gasPrice  / (10 ** 18) * o[0].isUsd
-      }
-  
+    if (this.txObject) {
+      this.chain = this.txObject.get('chain')
+      data.forEach(element => {
+        this.txData[element] = this.txObject.get(element)
       })
-     
-      this.txData = this.tx
+    } else if (this.tx) {
+      const Web3 = require('web3')
+
+      Lib.gas('eth', this.tx, 'eth')
+        .then(o => {
+          this.gasData = {
+            gas: Web3.utils.hexToNumber(this.tx.gas),
+            gasPrice: o[1].gasPrice,
+            ethPrice: o[1].isUsd,
+            ethVal: Web3.utils.hexToNumber(this.tx.gas) * o[1].gasPrice / (10 ** 18),
+            usdVal: Web3.utils.hexToNumber(this.tx.gas) * o[1].gasPrice / (10 ** 18) * o[0].isUsd
+          }
+        }).catch(e => {
+          this.error = e
+        })
+      for (let i in this.tx) {
+        this.$set(this.txData, i, this.tx[i])
+      }
+
+      if (this.txData.data === '0x') {
+        this.txData.data = ''
+      }
     }
     /*
     this.processTransaction({
@@ -351,6 +364,8 @@ export default {
   data () {
     return {
       chain: 'eth',
+      token: 'eth',
+      error: null,
       gasData: null,
       txData: {
         status: false,
@@ -427,6 +442,9 @@ a {
   .request-signature__container {
    /*  height: 620px; */
   }
+}
+div#app-content {
+    width: 100%;
 }
 .request-signature__header {
   height: 64px;

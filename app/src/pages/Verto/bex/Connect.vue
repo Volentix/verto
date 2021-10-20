@@ -1,12 +1,11 @@
 <template>
 <div class="flex flex-center text-center">
 <Landing :noRedirect="true" v-if="!$store.state.currentwallet.config.keys" />
-<Sign style="height: 100vh;" :tx="$route.params.txObject" v-else-if="$route.params.txObject" />
+<Sign style="height: 100vh;" :payloadId="$route.params.payloadId" :tx="$route.params.txObject" v-else-if="$route.params.txObject" />
 <div v-else-if="$route.params.qr" >
 <div class="flex flex-center text-center full-width q-pt-lg">
 <img class=" verto-logo" src="statics/icons/icon-256x256.png" width="60"  alt="logo"/>
 </div>
-
 <div style="width:100px;margin: 0 auto;"  class="flex flex-center text-center q-pt-lg" v-html="$route.params.qr">
 </div>
  <div
@@ -76,9 +75,6 @@
 <script>
 import QrcodeDecoder from 'qrcode-decoder'
 import configManager from '@/util/ConfigManager'
-import {
-  version
-} from '../../../../package.json'
 import Landing from './Landing'
 import Lib from '@/util/walletlib'
 import initWallet from '@/util/Wallets2Tokens'
@@ -86,15 +82,12 @@ import DexInteraction from '../../../mixins/DexInteraction'
 import Formatter from '../../../mixins/Formatter'
 import Vue from 'vue'
 import VideoBg from 'vue-videobg'
-import NotifyMessage from '../../../components/notify/NotifyMessage'
-import store from '../../../store'
 // import WalletConnect from '@walletconnect/client'
-let connector = null
 import Sign from '../../../components/Verto/ETH/Sign'
 Vue.component('video-bg', VideoBg)
 export default {
   name: 'Login',
-  components: { NotifyMessage, Landing, Sign },
+  components: { Landing, Sign },
   data () {
     return {
       hasConfig: false,
@@ -167,6 +160,9 @@ export default {
     this.$store.dispatch('tokens/getEvmsTokensData')
   },
   methods: {
+    interact () {
+
+    },
     setDefaultChoice () {
       if (this.$store.state.currentwallet.config.keys) {
         let ethAccounts = [...this.$store.state.currentwallet.config.keys
@@ -191,13 +187,16 @@ export default {
       })
     },
     async connect (uri) {
-      this.$q.bex.send('connector.listener', { uri: uri, accept: this.shouldConnect, accounts: ['0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'] /* [this.accountValue.key] */ })
+      this.$q.bex.send('connector.listener', { uri: uri, domain: this.$route.params.domain, accept: this.shouldConnect, accounts: [this.accountValue.key] })
         .then((o) => {
-          console.log(o, 'resolve')
-          this.spinnerVisible = false
+          localStorage.removeItem('walletconnect')
+
           setTimeout(() => {
-            if (this.shouldConnect) { this.connected = true }
-            // window.close()
+            if (this.shouldConnect) { this.connected = true } else {
+              window.close()
+            }
+
+            this.spinnerVisible = false
           }, this.shouldConnect ? 3000 : 0)
         }).catch(() => {
           this.spinnerVisible = false

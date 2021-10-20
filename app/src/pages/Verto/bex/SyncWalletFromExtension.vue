@@ -56,11 +56,8 @@
 <script>
 // import FileSelect from '@/components/FileSelect.vue'
 import configManager from '@/util/ConfigManager'
-import { userError } from '@/util/errorHandler'
-import Vue from 'vue'
-import VideoBg from 'vue-videobg'
 import NotifyMessage from '../../../components/notify/NotifyMessage'
-
+import initWallet from '@/util/Wallets2Tokens'
 export default {
   name: 'SyncWalletFromExtension.vue',
   components: {

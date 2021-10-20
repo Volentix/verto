@@ -12,9 +12,9 @@
       </h2>
       <div class="vert-page-content--body full-width extra__px">
         <div class="flex column justify-center">
-          <q-btn unelevated class="btn__blue block" @click="$router.push({name:'create-password'})"  size="md"  label="Create Vallet"/>
+          <q-btn unelevated class="btn__blue block" @click="$router.push({name:'create-password'})"  size="md"  label="Create Wallet"/>
           <span class="q-pa-xs"/>
-          <q-btn to="/import-restore" unelevated class="btn__blue block" size="md" label="Import Vallet"/>
+          <q-btn to="/import-restore" unelevated class="btn__blue block" size="md" label="Import Wallet"/>
         </div>
       </div>
     </div>

@@ -208,7 +208,7 @@ class Wallets2Tokens {
           wallet.chain = 'eos'
         } else if (wallet.type === 'verto') {
           wallet.to = '/verto/wallets/eos/verto/' + wallet.name.toLowerCase()
-          wallet.icon = '/statics/icon.png'
+          wallet.icon = 'https://files.coinswitch.co/public/coins/eos.png'
           wallet.chain = 'eos'
         } else {
           wallet.to =

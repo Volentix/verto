@@ -155,7 +155,7 @@ export default {
 
     localStorage.setItem('version', version)
 
-    if (!this.$q.platform.is.mobile) { this.$refs.psswrd.focus() }
+    this.$refs.psswrd.focus()
   },
   created () {
     Lib.removeExpiredData()

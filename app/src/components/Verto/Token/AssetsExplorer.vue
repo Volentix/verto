@@ -46,7 +46,7 @@
           type="password"
           :label-color="$store.state.settings.lightMode === 'true' ? 'white' : ''"
           :bg-color="$store.state.settings.lightMode === 'true' ? 'grey' : ''"
-          
+
         >
           <template v-slot:append>
             <span

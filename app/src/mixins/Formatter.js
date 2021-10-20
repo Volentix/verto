@@ -122,11 +122,14 @@ export default {
       }
       return isEvm ? isEvm.name : (chainLabel ? chainLabel.label : chain.toUpperCase())
     },
+    isEvm (type) {
+      return ['ftm', 'avaxc', 'eth', 'bsc', 'matic'].includes(type.toLowerCase())
+    },
     formatAccoountOption (w) {
       let account = {
         value: w.key + '-' + w.chain + (w.name),
         key: w.key,
-        isEvm: w.isEvm,
+        isEvm: w.isEvm || this.isEvm(w.type),
         chain: w.chain,
         amount: w.amount,
         type: w.type,

@@ -1,9 +1,9 @@
 <template>
   <div class="wrapper">
     <q-layout
-      :view="$q.platform.is.mobile ? 'hHh lpR fFf' : 'hHh Lpr lff' "
-      :container="!$q.platform.is.mobile"
-      :style="!$q.platform.is.mobile ? 'height: 100vh' : ''"
+      :view="$q.platform.is.mobile || $isbex ? 'hHh lpR fFf' : 'hHh Lpr lff' "
+      :container="!($q.platform.is.mobile || $isbex)"
+      :style="!($q.platform.is.mobile || $isbex) ? 'height: 100vh' : ''"
       class="shadow-2"
     >
       <q-drawer
@@ -183,16 +183,17 @@
       </q-drawer>
 
       <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}" :style="$q.platform.is.mobile ? ( $route.name === 'dashboard' && $store.state.settings.lightMode !== 'true' ? 'overflow:scroll; background:  #f2f2f2 !important': 'overflow:scroll; ') : 'overflow:scroll;' " >
+
         <div v-if="$q.platform.is.mobile||$isbex">
-          <div id ="scrollID8"></div>
+          <div id="scrollID8"></div>
           <!-- <q-pull-to-refresh @refresh="refresh" > -->
-            <TopMenu v-if="!($q.platform.is.mobile||$isbex)" />
-            <TopMenuMobile v-else  :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>
+
+            <TopMenuMobile  v-if="$route.path == '/verto/dashboard'" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>
           <!-- </q-pull-to-refresh> -->
         </div>
         <div v-else>
-           <TopMenu v-if="!$q.screen.lt.sm"/>
-          <TopMenuMobile v-if="$q.platform.is.mobile||$isbex" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>
+           <TopMenu />
+         <!--  <TopMenuMobile v-if="$q.platform.is.mobile||$isbex" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>-->
         </div>
 
         <q-breadcrumbs
