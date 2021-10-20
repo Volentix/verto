@@ -28,12 +28,12 @@
       </div>
        <div class="mobile-version" style="height: inherit;" v-else >
          <q-header>
-            <q-toolbar  id="scrollToID3" class="text-black q-mb-md">
+            <q-toolbar  id="scrollToID3"  :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'text-black'">
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog()" />
                 <q-toolbar-title style="margin-left: -25px"> History  </q-toolbar-title>
                 <div class="row flex justify-end" style="margin-bottom: -10px;">
                   <AccountSelector  :autoSelectChain="'eos'" class="q-mr-sm" :showAllWallets="true" :titleView='false'/>
-                  <q-btn round outline color="primary" icon="cached" @click="refresh++" class="refresh-history" size="sm"/>
+                  <q-btn round outline  icon="cached" @click="refresh++" class="refresh-history" size="sm"/>
                   <!-- <q-icon name="cached"  @click="refresh++" class="refresh-history"/> -->
                 </div>
             </q-toolbar>

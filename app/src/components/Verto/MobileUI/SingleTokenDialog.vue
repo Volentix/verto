@@ -9,7 +9,7 @@
         >
         <q-card :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
             <q-header class="bg-white">
-              <q-toolbar class="text-black">
+              <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
                 <q-toolbar-title> Token Details </q-toolbar-title>
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
@@ -23,7 +23,7 @@
                 <q-item style="margin-left: -14px;">
                     <q-item-section side>
                         <q-avatar rounded>
-                            <img v-if="asset.icon" :src="asset.icon" style="max-width: 40px" alt="image" />
+                            <img v-if="asset.icon" :src="asset.icon" style="max-width: 40px" alt="icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"/>
                         </q-avatar>
                     </q-item-section>
                     <q-item-section>
@@ -96,7 +96,7 @@
                         </div>
                     </q-item-section>
                 </q-item>
-                <q-card flat bordered class="q-pa-md text-black" v-if="$store.state.investment.defaultAccount">
+                <q-card :dark="$store.state.settings.lightMode === 'true'" flat bordered separator class="q-pa-md  rounded-borders" :class="$store.state.settings.lightMode === 'true' ? 'mobile-card': ' bg-white text-black'" v-if="$store.state.investment.defaultAccount">
                     <div class=" row">
                         <div class="col-6">
                             Profit/Loss <span><i class="far fa-question-circle"></i></span>
@@ -134,7 +134,7 @@
                     <q-item-section side top>
                     </q-item-section>
                 </q-item>
-                <q-list bordered separator class="rounded-borders bg-white text-black" v-if="marketData">
+                <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'" v-if="marketData">
                     <q-item>
                         <q-item-section>
                             <q-item-label lines="1">1 Day</q-item-label>
@@ -228,7 +228,7 @@
         >
             <q-card :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
                 <q-header class="bg-white">
-                    <q-toolbar class="text-black">
+                    <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                         <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="dialogSend =false"/>
                         <q-toolbar-title> Token Transactions</q-toolbar-title>
                         <q-btn flat round dense icon="close" v-close-popup @click="dialogSend = false"/>
@@ -475,10 +475,12 @@
                                     :class="{'q-pt-md' : !fromPreview}"
                                         class="buy text-capitalize"
                                         v-if="!spinnerVisible && !success && !asset.isEvm"
+                                         :style="$store.state.settings.lightMode === 'true' ? 'color: white !important':''"
                                     >
                                         <a
                                         href="javascript:void(0)"
                                         @click="isTxValid && triggerActionLocal()"
+                                        :style="$store.state.settings.lightMode === 'true' ? 'color: white !important':''"
                                         >{{ tab === 'send' ? (!fromPreview ? 'Preview' : 'Send') :tab }}</a>
                                     </div>
                                 </div>
@@ -633,5 +635,8 @@ export default {
   color: #000;
   background: #e8e8e9;
 }
+.mobile-card{
+    background-color: #04111F !important;
+  }
 
 </style>

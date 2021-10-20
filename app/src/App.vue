@@ -29,7 +29,8 @@ export default {
 <style>
 body {
   font-family: 'Libre Franklin', sans-serif;
-  background: black;
+  background: #F5F5FE;
+  /* black; */
 }
 @media screen and (max-width: 768px) {
   ::-webkit-scrollbar { display: none; }

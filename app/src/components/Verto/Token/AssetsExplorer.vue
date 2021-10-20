@@ -13,6 +13,7 @@
     <q-card
       style="width: 100%; max-width: 400px"
       :dark="$store.state.settings.lightMode === 'true'"
+      :class="{ 'mobile-card text-white' : $store.state.settings.lightMode === 'true' }"
     >
       <q-card-section>
         <q-icon
@@ -43,11 +44,15 @@
           class="q-pt-md"
           filled
           type="password"
+          :label-color="$store.state.settings.lightMode === 'true' ? 'white' : ''"
+          :bg-color="$store.state.settings.lightMode === 'true' ? 'grey' : ''"
+          
         >
           <template v-slot:append>
             <span
               @click="verifyPassword()"
-              class="text-body1 cursor-pointer"
+              class="text-body1 cursor-pointer "
+              :class="{'text-white': $store.state.settings.lightMode === 'true'}"
               >Verify</span
             >
             <q-btn
@@ -57,6 +62,7 @@
               dense
               flat
               icon="send"
+              :class="{'text-white': $store.state.settings.lightMode === 'true'}"
             />
           </template>
         </q-input>
@@ -1080,7 +1086,7 @@
   <div> </div>
   <!-- MOBILE SECTION STARTED -->
   <div   v-if="$q.platform.is.mobile||$isbex">
-    <TabAssetsExplorer  :chains="chains" :tab.sync="tab" :chainAction='chainAction' :formatNumber='formatNumber' :showQr.sync='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage='showTokenPage' :initTable="initTable" :selectedChain.sync="selectedChain" :keys="keys" :showPrivateKeys="showPrivateKeys" :alertSecurity.sync="alertSecurity" :tokenSearchVal="tokenSearchVal"/>
+    <TabAssetsExplorer ref="tabAssetExp" :chains="chains" :tab.sync="tab" :chainAction='chainAction' :formatNumber='formatNumber' :showQr.sync='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage='showTokenPage' :initTable="initTable" :selectedChain.sync="selectedChain" :keys="keys" :showPrivateKeys="showPrivateKeys" :alertSecurity.sync="alertSecurity" :tokenSearchVal="tokenSearchVal"/>
   </div>
   <!-- MOBILE SECTION END -->
 
@@ -1422,6 +1428,7 @@ export default {
       })
     },
     async verifyPassword () {
+      console.log('verifyPassword')
       this.passHasError = false
       if (!this.password) {
         this.passHasError = true
@@ -1435,6 +1442,7 @@ export default {
         this.tab = 'privateKeys'
         this.alertSecurity = false
         this.getChains()
+        // if (this.$q.platform.is.mobile) { this.$refs.tabAssetExp.updateTab('privateKeys') }
       } else {
         this.passHasError = true
       }

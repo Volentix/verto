@@ -81,9 +81,9 @@
         </div>
       </div>
       <div class="standard-content-bex--footer full-width justify-end">
-        <q-btn unelevated class="btn__blue block"  size="lg"  :loading="spinnerVisible" @click="login" label="Login"/>
+        <q-btn unelevated class="btn__blue block"  size="lg"  :loading="spinnerVisible" @click="login" label="Unlock"/>
         <span class="q-pa-xs"></span>
-        <q-btn flat size="lg" class="btn-flat__blue" label="import or Restore" @click="startRestoreConfig"/>
+        <q-btn flat size="md" class="btn-flat__blue" label="import or Restore" @click="startRestoreConfig"/>
       </div>
     </div>
   </q-page>
@@ -155,7 +155,7 @@ export default {
 
     localStorage.setItem('version', version)
 
-    this.$refs.psswrd.focus()
+    if (!this.$q.platform.is.mobile) { this.$refs.psswrd.focus() }
   },
   created () {
     Lib.removeExpiredData()
@@ -179,12 +179,21 @@ export default {
       }
     },
     async startRestoreConfig () {
-      this.$router.push({
-        name: 'restoreWallet',
-        params: {
-          returnto: 'settings'
-        }
-      })
+      if (this.$q.platform.is.mobile) {
+        this.$router.push({
+          name: 'import-restore',
+          params: {
+            returnto: 'settings'
+          }
+        })
+      } else {
+        this.$router.push({
+          name: 'restoreWallet',
+          params: {
+            returnto: 'settings'
+          }
+        })
+      }
     },
     async login () {
       this.passHasError = false

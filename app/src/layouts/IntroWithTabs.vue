@@ -229,12 +229,14 @@
         <router-view class="main-container" v-if="toggleView " />
       </q-page-container>
 
-      <q-footer v-if="($q.platform.is.mobile||$isbex) && showPanelStatus" elevated class="bg-grey-8 text-white">
+      <q-footer v-if="($q.platform.is.mobile||$isbex) && showPanelStatus" elevated class=" text-white">
         <q-tabs
           v-model="tabRoute"
           indicator-color="primary"
-          active-color="primary"
-          class="bg-white text-grey-7 shadow-2 text-bold"
+          :active-color="$store.state.settings.lightMode === 'true' ? 'white':'primary'"
+          :active-bg-color="$store.state.settings.lightMode === 'true' ? 'light-blue-10':'white'"
+          class=" shadow-2 text-bold"
+          :class="$store.state.settings.lightMode === 'true' ? 'mobile-card':'bg-white text-grey-7'"
         >
           <q-tab name="exchange" icon="sync"  no-caps @click="goTo('crosschain-exchange')"> <div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">Exchange</div> </q-tab>
           <q-tab name="history" icon="history"  no-caps @click="goTo('history')"> <div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">History</div> </q-tab>
@@ -1084,5 +1086,11 @@ ul.left-menu {
   font-weight: 700;
   font-family: 'Libre Franklin', sans-serif;
   width: 100%;
+}
+.mobile-card{
+    background-color: #04111F !important;
+}
+.tab-dark-mode{
+  background-color: #071e36
 }
 </style>

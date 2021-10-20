@@ -7,7 +7,7 @@
             <div>
                 <q-btn flat :color="$store.state.settings.lightMode === 'true' ? 'white' : 'primary'" class="text-bold" @click="goImport" >Add/Import</q-btn>
             </div>
-            <div  class="row text-grey">Click on a chain to see assets. </div>
+            <div  class="row text-grey">{{tab}} Click on a chain to see assets.{{tabIndex}} </div>
         </div>
 
         <q-tabs
@@ -42,12 +42,12 @@
             <q-tab name="chains" icon="link" label="Chains" class="read" v-if="$store.state.wallets.portfolioTotal"/>
             <q-tab name="assets" icon="adjust" label="Assets" class="read"/>
             <q-tab name="privateKeys" icon="vpn_key" label="Private Keys" class="manage"/>
-            <q-tab name="investments" icon="trending_up" label="Investments" class="read"/>
+            <q-tab name="investments" icon="trending_up" label="Investments" class="read" v-if="$store.state.wallets.portfolioTotal"/>
         </q-tabs>
 
         <ChainItemList :chains="chains" :tab.sync="tabIndex" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :key="componentKey" />
 
-        <AssetDialog :dialog.sync="dialog" :updateTab="updateTab" :tab.sync="tabIndex" :chains="chains" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens'  :getChains='getChains' :allChains='allChains' :showAllChains='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal"/>
+        <AssetDialog :dialog.sync="dialog" :updateTab="updateTab" :tab.sync="tabIndex" :chains="chains" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens'  :getChains='getChains' :allChains='allChains' :showAllChains='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :showPrivateKeys="showPrivateKeys"/>
     </div>
 </template>
 
@@ -70,13 +70,17 @@ export default {
   },
   mounted () {
     this.tabIndex = this.tab
+    console.log(this.tabIndex + ' << mounted tabIndex ', this.tab)
   },
   watch: {
     tabIndex (val) {
       this.componentKey += 1
       this.$emit('update:tab', val)
-      if (val !== 'chains') { this.dialog = true }
+      if ((this.$store.state.wallets.portfolioTotal && val !== 'chains') || (!this.$store.state.wallets.portfolioTotal && val !== 'receive') || (this.$route.params.accounts === 'receive')) { this.dialog = true }
       // setTimeout(function () { console.log(":::::: "); this.componentKey += 1 }, 2000)
+    },
+    tab (val) {
+      if (val !== this.tabIndex) { this.tabIndex = val }
     }
   },
   methods: {
@@ -92,12 +96,14 @@ export default {
         this.$store.state.wallets.customTotal.show = false
         this.initTable()
       } else if (value === 'assets') {
+        console.log('openAssetDialg called value === assets')
         this.$store.state.wallets.customTotal.show = false
         this.initTable()
         this.openAssetDialog()
       } else if (value === 'privateKeys') {
-        console.log('showPrivateKeys ', this.showPrivateKeys)
-        this.showPrivateKeys ? (this.$emit('update:tab', value)) : (this.$emit('update:alertSecurity', true))
+        // console.log('showPrivateKeys UPDAT TAB>>', this.showPrivateKeys)
+        this.showPrivateKeys ? (this.$emit('update:tab', 'privateKeys')) : (this.$emit('update:alertSecurity', true))
+        this.tabIndex = this.tab
         this.$emit('update:showQr', {})
         this.getChains()
         this.$store.state.wallets.customTotal.show = false
