@@ -170,7 +170,7 @@
       </div>
       <div v-else>
         <div class="chain-tools-wrapper_">
-          <q-toolbar  class="">
+          <q-toolbar  :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
               <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'"/>
               <q-toolbar-title> {{ currentWallet.privateKey ?  'Show private key' : 'Add private key' }}  </q-toolbar-title>
               <!-- <q-btn flat round dense icon="close" v-close-popup to="/verto/dashboard"/> -->

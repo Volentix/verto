@@ -11,13 +11,13 @@
             <q-header class="bg-white">
               <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
-                <q-toolbar-title> Token Details </q-toolbar-title>
+                <q-toolbar-title> Token Details tab{{tab}} </q-toolbar-title>
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
               </q-toolbar>
             </q-header>
 
-            <div class="text-center q-mt-xl" v-if="tab != 'import'" >
-                <AccountSelector  :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
+            <div class="text-center q-pt-xl" >
+                <AccountSelector v-if="tab != 'import'" :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
             </div>
             <q-card-section>
                 <q-item style="margin-left: -14px;">
@@ -268,7 +268,7 @@
                                 </div>
 
                                 <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount" class="q-px-md" >
-                                    <SendComponent @setAsset="setAssetLocal" :token="asset.type" :miniMode="true" :key="getSendKey()"   />
+                                    <SendComponent v-if="false" @setAsset="setAssetLocal" :token="asset.type" :miniMode="true" :key="getSendKey()"   />
                                 </div>
 
                                 <div v-if="show1inch && tab == 'swap'" >

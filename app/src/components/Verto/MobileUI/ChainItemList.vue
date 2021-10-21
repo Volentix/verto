@@ -1,11 +1,11 @@
 <template>
     <div class="q-pb-xl">
-        <div class="q-pb-lg">
+        <div class="q-pb-xl">
             <div v-if="
                 (($route.params.accounts || !$store.state.wallets.portfolioTotal) &&
                 !['assets', 'investments'].includes(tab)) ||
                 tab == 'chains'
-            " class="q-pb-lg">
+            " class="q-pb-xl">
                 <q-list  :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'">
 
                     <q-item clickable v-ripple
@@ -178,6 +178,7 @@
                     (o) => !allAssets || o.title == allAssets.title
                 )"
                 :key="index + Math.random() * 1000"
+                class="q-pb-xl"
             >
                 <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'">
 
