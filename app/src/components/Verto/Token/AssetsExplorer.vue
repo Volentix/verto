@@ -37,6 +37,7 @@
         >
         <q-input
           @keyup.enter="verifyPassword"
+          :dark="$store.state.settings.lightMode == 'true'"
           error-message="Invalid password"
           :error="passHasError"
           v-model="password"
@@ -59,6 +60,7 @@
               :loaling="spinnerVisible"
               @click="verifyPassword()"
               round
+
               dense
               flat
               icon="send"
@@ -66,7 +68,7 @@
             />
           </template>
         </q-input>
-        <span class="text-red">
+        <span class="text-red text-caption">
           Your private keys will be partially exposed
         </span>
       </q-card-section>
@@ -463,7 +465,7 @@
                     icon-right="img:https://image.flaticon.com/icons/png/512/107/107072.png"
                   />
                 </div>
-                <div v-if="showQr[chain.chain]" class="qr-code">
+                <div v-if="showQr[chain.chain]" class="qr-code" style="width:134px:height:134px;">
                   <qrcode
                     :key="tab"
                     dark
@@ -1289,7 +1291,7 @@ export default {
         (o) => o.chain === this.$route.params.selectChain
       )
       this.tab = 'chains'
-      this.chainAction(chain)
+      if (chain.isEvm || chain.chain === 'eos') { this.chainAction(chain) }
     }
     this.initTable()
     this.$store.state.wallets.tokens
@@ -1450,7 +1452,7 @@ export default {
     },
     chainAction (chain) {
       const self = this
-      console.log('chainAction called ', chain)
+
       let actions = {
         import () {
           self.$router.push(self.getImportLink(chain.chain))
@@ -1501,7 +1503,7 @@ export default {
           }
         }
       }
-      console.log('ctions[self.tab]', actions[self.tab])
+
       if (actions[self.tab]) {
         actions[self.tab]()
       }
@@ -1840,6 +1842,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.qr-code canvas {
+    width: 134px !important;
+    height: 134px !important;
+}
 /deep/ ul.tabs.group {
   height: 60px !important ;
   border-radius: 50px;

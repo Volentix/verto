@@ -10,8 +10,8 @@
                 <SearchList :openSearch.sync="openSearch"  v-if="openSearch"/>
 
                 <q-btn :class="$store.state.settings.lightMode === 'true' ? 'text-black':'text-black'" :color="$store.state.settings.lightMode === 'true' ? 'white': ''" dense icon="search" @click="openSearch = true" />
-                <q-btn :class="$store.state.settings.lightMode === 'true' ? 'text-black':'text-black'" :color="$store.state.settings.lightMode === 'true' ? 'white': ''" dense icon="qr_code" @click="qrSelect = true" />
-                <q-btn :class="$store.state.settings.lightMode === 'true' ? 'text-black':'text-black'" :color="$store.state.settings.lightMode === 'true' ? 'white': ''"   dense icon="notifications">
+                <q-btn v-if="false" :class="$store.state.settings.lightMode === 'true' ? 'text-black':'text-black'" :color="$store.state.settings.lightMode === 'true' ? 'white': ''" dense icon="qr_code" @click="qrSelect = true" />
+                <q-btn v-if="false" :class="$store.state.settings.lightMode === 'true' ? 'text-black':'text-black'" :color="$store.state.settings.lightMode === 'true' ? 'white': ''"   dense icon="notifications">
                     <q-menu transition-show="flip-right" transition-hide="flip-left" auto-close>
                         <q-list separator style="min-width: 100px">
                             <q-item>
