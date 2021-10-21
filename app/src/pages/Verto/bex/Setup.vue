@@ -15,9 +15,9 @@
       </div>
       <div class="vert-page-content--footer">
         <q-btn unelevated class="btn__blue block" @click="$router.push({name:'create-password'})" size="lg"
-               label="Create Vallet"/>
+               label="Create Wallet"/>
         <span class="q-pa-md"/>
-        <q-btn to="/import-restore" unelevated class="btn__blue block" size="lg" label="Import Vallet"/>
+        <q-btn to="/import-restore" unelevated class="btn__blue block" size="lg" label="Import Wallet"/>
       </div>
     </div>
   </q-page>

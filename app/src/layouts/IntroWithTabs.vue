@@ -239,9 +239,9 @@
           class=" shadow-2 text-bold"
           :class="$store.state.settings.lightMode === 'true' ? 'mobile-card':'bg-white text-grey-7'"
         >
-          <q-tab name="exchange" icon="sync"  no-caps @click="goTo('crosschain-exchange')"> <div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">Exchange</div> </q-tab>
+          <q-tab v-if="!$isbex" name="exchange" icon="sync"  no-caps @click="goTo('crosschain-exchange')"> <div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">Exchange</div> </q-tab>
           <q-tab name="history" icon="history"  no-caps @click="goTo('history')"> <div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">History</div> </q-tab>
-          <q-tab name="dashboard" icon="dashboard" label=" " @click="goTo('dashboard')"/>
+          <q-tab v-if="!$isbex" name="dashboard" icon="dashboard" label=" " @click="goTo('dashboard')"/>
           <q-tab name="account" icon="account_balance"  no-caps @click="goTo('wallets')"> <div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">Account</div> </q-tab>
           <q-tab name="profile" icon="person"  style="font-size: 5px;" no-caps @click="goTo('profile')"><div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">Profile</div> </q-tab>
         </q-tabs>
