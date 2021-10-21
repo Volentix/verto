@@ -1088,7 +1088,7 @@
   <div> </div>
   <!-- MOBILE SECTION STARTED -->
   <div   v-if="$q.platform.is.mobile||$isbex">
-    <TabAssetsExplorer ref="tabAssetExp" :chains="chains" :tab.sync="tab" :chainAction='chainAction' :formatNumber='formatNumber' :showQr.sync='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage='showTokenPage' :initTable="initTable" :selectedChain.sync="selectedChain" :keys="keys" :showPrivateKeys="showPrivateKeys" :alertSecurity.sync="alertSecurity" :tokenSearchVal="tokenSearchVal"/>
+    <TabAssetsExplorer ref="tabAssetExp" :chains="chains" :tab.sync="tab" :chainAction='chainAction' :formatNumber='formatNumber' :showQr.sync='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage='showTokenPage' :initTable="initTable" :selectedChain.sync="selectedChain" :keys="keys" :showPrivateKeys="showPrivateKeys" :alertSecurity.sync="alertSecurity" :tokenSearchVal="tokenSearchVal" :getImportLink="getImportLink"/>
   </div>
   <!-- MOBILE SECTION END -->
 

@@ -30,7 +30,7 @@
             transition-show="slide-up"
             transition-hide="slide-down"
         >
-          <q-card >
+          <q-card :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
             <q-header >
               <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" >
                   <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)"/>
