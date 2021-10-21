@@ -420,11 +420,11 @@ export default {
             if (response === undefined) {
               // this.extensionNotFound = true
             }
-            if (!response && response.success !== true) {
+            if (!response || response.success !== true) {
               this.extensionNotFound = true
             } else {
               chrome.runtime.sendMessage(this.$extensionId, { type: 'SYNC_DATA', data: this.syncData }, response => {
-                if (!response && response.success !== true) {
+                if (!response || response.success !== true) {
                   this.extensionSyncFailure = true
                 }
                 // window.open(response.url, 'null', windowFeatures)
