@@ -3,7 +3,7 @@
     class=""
     :class="{
       'desktop-marg': screenSize > 1024,
-      'mobile-pad': screenSize < 1024,
+      'mobile-pad': screenSize < 1024 && !$q.platform.is.mobile,
       'text-black bg-white': $store.state.settings.lightMode === 'false',
       'text-white': $store.state.settings.lightMode === 'true',
     }"

@@ -35,21 +35,21 @@
 
                         </q-item-section>
                     </template>
-                    <q-card class="bg-grey-2" :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-black': $store.state.settings.lightMode === 'true'}">
+                    <q-card :bordered="$store.state.settings.lightMode === 'true'" :dark="$store.state.settings.lightMode === 'true'" :class="{'text-black bg-grey-2': $store.state.settings.lightMode === 'false', 'text-white mobile-card': $store.state.settings.lightMode === 'true'}">
                         <q-separator />
                         <q-item>
                             <q-item-section  v-if="transaction.chain == 'eth'">
                                 <q-item-label > Fee</q-item-label>
                                 <q-item-label caption>
-                                    <span>
-                                        <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
-                                        <span class="">ETH</span>
+                                    <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'">
+                                        <span >{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
+                                        <span >ETH</span>
                                     </span> (${{transaction.usdFees}})
                                 </q-item-label>
                             </q-item-section>
                             <q-item-section  v-if="transaction.chain == 'eos'">
                                 <q-item-label > Memo</q-item-label>
-                                <q-item-label caption>
+                                <q-item-label caption :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'">
                                     <div class="ellipsis_">{{transaction.memo}}</div>
                                 </q-item-label>
                             </q-item-section>
@@ -57,7 +57,7 @@
                                 <q-item-label > Transaction hash
                                     <div class="float-right" v-if="transaction.chain !== 'eth' && transaction.chain !== 'eos'">
                                         <div class="flex items-center q-ml-md">
-                                            <q-btn color="black" round size="sm" @click="copyToClipboard(transaction.hash, 'Transaction Hash')" outline :text-color="$store.state.settings.lightMode === 'true' ? 'black': 'black'" icon="content_copy" />
+                                            <q-btn color="red" round size="sm" @click="copyToClipboard(transaction.hash, 'Transaction Hash')" outline :text-color="$store.state.settings.lightMode === 'true' ? 'black': 'black'" icon="content_copy" />
                                             <a :href="transaction.explorerLink" target="_blank">
                                                 <q-btn color="black" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'black': 'black'" icon="open_in_new" class="q-ml-sm" />
                                             </a>
@@ -65,16 +65,16 @@
                                     </div>
                                 </q-item-label>
                                 <q-item-label caption>
-                                    <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-black': $store.state.settings.lightMode === 'true'}">
+                                    <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                                        <!-- <div class="ellipsis"> {{transaction.friendlyHash}} </div> -->
                                         <div class="ellipsis"> {{transaction.hash}} </div>
                                     </span>
                                 </q-item-label>
                                 <q-item-label v-if="transaction.chain == 'eth' || transaction.chain == 'eos'">
                                     <div class="flex items-center q-ml-md">
-                                        <q-btn color="black" round size="sm" @click="copyToClipboard(transaction.hash, 'Transaction Hash')" outline :text-color="$store.state.settings.lightMode === 'true' ? 'black': 'black'" icon="content_copy" />
+                                        <q-btn round size="sm" @click="copyToClipboard(transaction.hash, 'Transaction Hash')" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
                                         <a :href="transaction.explorerLink" target="_blank">
-                                            <q-btn color="black" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'black': 'black'" icon="open_in_new" class="q-ml-sm" />
+                                            <q-btn color="black" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
                                         </a>
                                     </div>
                                 </q-item-label>
@@ -119,13 +119,13 @@
                             </q-item-label>
                         </q-item-section>
                     </template>
-                    <q-card class="bg-grey-2" :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-black': $store.state.settings.lightMode === 'true'}">
+                    <q-card :bordered="$store.state.settings.lightMode === 'true'" :dark="$store.state.settings.lightMode === 'true'" :class="{'text-black bg-grey-2': $store.state.settings.lightMode === 'false', 'text-white mobile-card': $store.state.settings.lightMode === 'true'}">
                         <q-separator />
                         <q-item>
                             <q-item-section>
                                 <q-item-label > Fee</q-item-label>
                                 <q-item-label caption>
-                                    <span>
+                                    <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'">
                                         <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
                                         <span class="">ETH</span>
                                     </span> (${{transaction.usdFees}})
@@ -134,7 +134,7 @@
                             <q-item-section >
                                 <q-item-label > Rate</q-item-label>
                                 <q-item-label caption>
-                                    <span>
+                                    <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'">
                                         <span class="">1</span>&nbsp;
                                         <span class="">{{transaction.subTransactions[0].symbol}}</span>
                                     </span> = <div class="ellipsis">{{transaction.subTransactions[1].amount /  transaction.subTransactions[0].amount}} {{transaction.subTransactions[1].symbol}}</div>
@@ -143,16 +143,16 @@
                             <q-item-section >
                                 <q-item-label > Transaction hash</q-item-label>
                                 <q-item-label caption>
-                                    <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-black': $store.state.settings.lightMode === 'true'}">
+                                    <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                                        <!-- <div class="ellipsis"> {{transaction.friendlyHash}} </div> -->
                                        <div class="ellipsis"> {{transaction.hash}} </div>
                                     </span>
                                 </q-item-label>
                                 <q-item-label >
                                     <div class="flex items-center q-ml-md">
-                                        <q-btn color="black" round size="sm"  @click="copyToClipboard(transaction.hash, 'Transaction Hash')"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'black': 'black'" icon="content_copy" />
+                                        <q-btn color="black" round size="sm"  @click="copyToClipboard(transaction.hash, 'Transaction Hash')"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
                                         <a :href="transaction.explorerLink" target="_blank">
-                                        <q-btn color="black" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'black': 'black'" icon="open_in_new" class="q-ml-sm" />
+                                        <q-btn color="black" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
                                         </a>
                                     </div>
                                 </q-item-label>
@@ -192,13 +192,13 @@
                             </q-item-label>
                         </q-item-section>
                     </template>
-                    <q-card class="bg-grey-2" :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-black': $store.state.settings.lightMode === 'true'}">
+                    <q-card :bordered="$store.state.settings.lightMode === 'true'" :dark="$store.state.settings.lightMode === 'true'" :class="{'text-black bg-grey-2': $store.state.settings.lightMode === 'false', 'text-white mobile-card': $store.state.settings.lightMode === 'true'}">
                         <q-separator />
                         <q-item>
                             <q-item-section  v-if="transaction.chain == 'eth'">
                                 <q-item-label > Fee</q-item-label>
                                 <q-item-label caption>
-                                    <span>
+                                    <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'">
                                         <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
                                         <span class="">ETH</span>
                                     </span> (${{transaction.usdFees}})
@@ -206,7 +206,7 @@
                             </q-item-section>
                             <q-item-section  v-if="transaction.chain == 'eos'">
                                 <q-item-label > Memo</q-item-label>
-                                <q-item-label caption>
+                                <q-item-label caption :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'">
                                     <span class="ellipsis_">{{transaction.memo}}</span>
                                 </q-item-label>
                             </q-item-section>
@@ -216,21 +216,21 @@
                                         <div class="flex items-center q-ml-md">
                                             <q-btn color="black" round size="sm" @click="copyToClipboard(transaction.hash, 'Transaction Hash')" outline :text-color="$store.state.settings.lightMode === 'true' ? 'black': 'black'" icon="content_copy" />
                                             <a :href="transaction.explorerLink" target="_blank">
-                                            <q-btn color="black" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'black': 'black'" icon="open_in_new" class="q-ml-sm" />
+                                            <q-btn color="black" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
                                             </a>
                                         </div>
                                     </div>
                                 </q-item-label>
                                 <q-item-label caption>
-                                    <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-black': $store.state.settings.lightMode === 'true'}">
+                                    <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                                        <div class="ellipsis"> {{transaction.hash}} </div>
                                     </span>
                                 </q-item-label>
                                 <q-item-label v-if="transaction.chain == 'eth' || transaction.chain == 'eos'">
                                     <div class="flex items-center q-ml-md" >
-                                        <q-btn color="black" round size="sm" @click="copyToClipboard(transaction.hash, 'Transaction Hash')" outline :text-color="$store.state.settings.lightMode === 'true' ? 'black': 'black'" icon="content_copy" />
+                                        <q-btn color="black" round size="sm" @click="copyToClipboard(transaction.hash, 'Transaction Hash')" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
                                         <a :href="transaction.explorerLink" target="_blank">
-                                        <q-btn color="black" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'black': 'black'" icon="open_in_new" class="q-ml-sm" />
+                                        <q-btn color="black" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
                                         </a>
                                     </div>
                                 </q-item-label>
@@ -263,4 +263,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.mobile-card{
+    background-color: #04111F !important;
+}
 </style>

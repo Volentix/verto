@@ -7,9 +7,9 @@
             transition-show="slide-up"
             transition-hide="slide-down"
         >
-        <q-card  :class="$store.state.settings.lightMode === 'true' ? 'text-black mobile-card': 'text-black'" :style="$store.state.settings.lightMode === 'true' ?'':'background: #f2f2f2 !important'">
+        <q-card  :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card': 'text-black'" :style="$store.state.settings.lightMode === 'true' ?'':'background: #f2f2f2 !important'">
             <q-header class="bg-white">
-              <q-toolbar class="text-black">
+              <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
                 <q-toolbar-title> Coins/Assets List </q-toolbar-title>
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
@@ -44,11 +44,11 @@
                         !$store.state.wallets.portfolioTotal &&
                         !$route.params.accounts,
                     }" />
-                    <q-tab name="create" icon="add" label="New account" :class="{ active: tab == 'create', manage: true, }" />
+                    <q-tab name="create" icon="arrow_downward" label="Create new account" :class="{ active: tab == 'create', manage: true, }" />
                     <q-tab name="chains" icon="link" label="Chains" class="read" v-if="$store.state.wallets.portfolioTotal"/>
                     <q-tab name="assets" icon="adjust" label="Assets" class="read"/>
                     <q-tab name="privateKeys" icon="vpn_key" label="Private Keys" class="manage" @click="handlePrivateKey(tabIndex)"/>
-                    <q-tab name="investments" icon="trending_up" label="Investments" class="read"/>
+                    <q-tab name="investments" icon="trending_up" label="Investments" class="read" v-if="$store.state.wallets.portfolioTotal"/>
                 </q-tabs>
             </q-card-section>
 
@@ -75,7 +75,7 @@ import ChainItemList from './ChainItemList.vue'
 
 export default {
   name: 'AssesDialogMobile',
-  props: ['dialog', 'chains', 'updateTab', 'tab', 'chainAction', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'showAllChainData', 'tokenSearchVal'],
+  props: ['dialog', 'chains', 'updateTab', 'tab', 'chainAction', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'showAllChainData', 'tokenSearchVal', 'showPrivateKeys'],
   components: { ChainItemList },
   data () {
     return {
@@ -93,8 +93,8 @@ export default {
   methods: {
     closeDialog () {
       if (!this.$route.query.hasOwnProperty('return')) {
-        this.handleTab('chains')
-        this.$emit('update:tab', 'chains')
+        this.handleTab(this.$store.state.wallets.portfolioTotal ? 'chains' : 'receive')
+        this.$emit('update:tab', this.$store.state.wallets.portfolioTotal ? 'chains' : 'receive')
         this.$emit('update:dialog', false)
         this.$router.push({
           path: '/verto/dashboard'
@@ -107,7 +107,8 @@ export default {
     },
     handleTab (index) {
       this.updateTab(index)
-      if (index === 'privateKeys') {
+      // console.log('assetDialg handleTab ', this.showPrivateKeys)
+      if (!this.showPrivateKeys && index === 'privateKeys') {
         this.tabIndex = this.previousTab
       }
     },

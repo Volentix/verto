@@ -31,16 +31,16 @@
             transition-hide="slide-down"
         >
           <q-card >
-            <q-header class="bg-white">
-              <q-toolbar class="text-black">
+            <q-header >
+              <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" >
                   <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)"/>
-                  <q-toolbar-title> Import EOS Account  </q-toolbar-title>
+                  <q-toolbar-title>Import EOS Account  </q-toolbar-title>
                   <q-btn flat round dense icon="close" v-close-popup @click="$router.go(-1)"/>
               </q-toolbar>
             </q-header>
 
             <!-- <profile-header version="type4" /> -->
-            <div class="q-mt-md">
+            <div class="q-mt-md" :class="$store.state.settings.lightMode === 'true' ? 'mobile-card':'bg-white text-black'" >
               <CreateEOSAccount  v-if="$store.state.settings.network == 'mainnet' "/>
               <CreateTesnetEOSAccount v-else />
             </div>

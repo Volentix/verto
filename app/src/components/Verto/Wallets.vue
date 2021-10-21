@@ -749,10 +749,10 @@
                    <q-icon name="add" /> More wallets and accounts
                 </div>
                 <q-list  :class="$store.state.settings.lightMode === 'true' ? 'rounded-borders text-white': 'rounded-borders'"  bordered  >
-                    <q-expansion-item    :style="setPosition(99999999)" @click="vtxAccounts.length == 1 ? showMenu(vtxAccounts[0]) : showChainAccounts('', 'vtx')"  :key="Math.random()" clickable  >
+                    <q-expansion-item    :style="setPosition(99999999)" @click="vtxAccounts.length == 1 ? showMenu(vtxAccounts[0]) : showChainAccounts('', 'vtx')"  :key="Math.random()" clickable   v-if="vtxAccounts.total > 0">
                         <template v-slot:header>
                             <q-item-section avatar>
-                                <img class="coin-icon" width="35px" src="statics/icons/favicon-32x32.png"  />
+                                <img class="coin-icon" width="35px" src="statics/icons/favicon-32x32.png"  onerror="this.src='https://etherscan.io/images/main/empty-token.png';"  />
                             </q-item-section>
                             <q-item-section  class="item-name">
                             <span class="item-name--name"> VTX</span>
@@ -800,11 +800,11 @@
                             </q-card>
 
                     </q-expansion-item>
-                    <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': !($q.platform.is.mobile||$isbex) && chain.count }" :key="Math.random()+index" clickable  >
-                        <template v-slot:header>
+                    <q-expansion-item  :ref="'chain'+index" :style="setPosition(chain.chainTotal)" @click="chain.accounts.length == 1 ? showMenu(chain.accounts[0], false, index+1 ) : showChainAccounts(index, chain.chain)" v-for="(chain, index) in chains" :class="{ 'single-chain': !($q.platform.is.mobile||$isbex) && chain.count }" :key="Math.random()+index" clickable  v-show="!(chain.label === 'EOS' && chain.chainTotal < 1)">
+                        <template v-slot:header >
 
                             <q-item-section avatar>
-                                <img class="coin-icon" width="35px" :src="chain.icon"  />
+                                <img class="coin-icon" width="35px" :src="chain.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"  />
                             </q-item-section>
                             <q-item-section  class="item-name" >
 
@@ -1044,6 +1044,12 @@ export default {
     }, 6000)
 
     this.setRessourcesInfos()
+    // handle dialog page to wallets details page route
+    if (this.$route.params.openDialog) {
+      let menuChain = JSON.parse(localStorage.getItem('menuChain'))
+      this.showMenu(menuChain.menu, menuChain.to, menuChain.loadingIndex, menuChain.accountChain)
+      this.dialog = true
+    }
   },
   async updated () {
     // ////console.log('updated')
@@ -1217,6 +1223,7 @@ export default {
         this.selectedITEM = menu
         this.selectedAccountChain = accountChain
         this.dialog = true
+        localStorage.setItem('menuChain', JSON.stringify({ menu: menu, to: to, loadingIndex: loadingIndex, accountChain: accountChain }))
       }, 200)
       this.removeClassSelected()
       menu.selected = true

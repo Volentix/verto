@@ -21,10 +21,10 @@
         </div>
       </div>
       <div v-else class="mobile-version">
-        <q-header>
-          <q-toolbar  class="text-black ">
+        <q-header >
+          <q-toolbar  :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'text-black'">
             <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/dashboard"/>
-            <q-toolbar-title> Profile </q-toolbar-title>
+            <q-toolbar-title> Profile</q-toolbar-title>
             <q-btn flat round dense icon="close" v-close-popup to="/verto/dashboard"/>
           </q-toolbar>
         </q-header>

@@ -1,6 +1,6 @@
 <template>
 <q-page class="column import-private-key" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-grey-12': $store.state.settings.lightMode === 'false', 'desktop-marg': screenSize > 1024,  'mobile-pad': screenSize < 1024}">
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+    <div :class="{'dark-theme mobile-card': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
       <div class="desktop-version full-height" v-if="screenSize > 1024">
           <div class="row full-height">
             <div class="col col-md-3" v-if="false">
@@ -55,11 +55,11 @@
       </div>
       <div v-else>
           <div class="col col-md-12">
-            <q-toolbar >
+            <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" >
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)"/>
                 <q-toolbar-title> HD Account Details </q-toolbar-title>
             </q-toolbar>
-            <div class="apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+            <div class="apps-section q-mb-sm" :class="{'dark-theme mobile-card text-white': $store.state.settings.lightMode === 'true'}">
                 <div class="chain-tools-wrapper_">
                     <div class="q-pa-md text-h6">
                          Create HD Account

@@ -6,7 +6,7 @@
                 !['assets', 'investments'].includes(tab)) ||
                 tab == 'chains'
             " class="q-pb-lg">
-                <q-list separator class="rounded-borders bg-white text-black" >
+                <q-list  :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'">
 
                     <q-item clickable v-ripple
                         v-for="(chain, i) in chains.filter(a => tab !== 'privateKeys' || (a.accounts && a.accounts.length))"
@@ -22,9 +22,10 @@
                         </q-item-section>
                         <q-item-section>
                             <q-item-label lines="1" class="text-bold text-capitalize ellipsis">{{chain.label}} </q-item-label>
-                            <div v-if="!$route.params.accounts && tab == 'chains'" > <br>
+                            <div v-if="!$route.params.accounts && tab == 'chains' && chain.chainTotal > 0" > <br>
                                 <q-item-label v-for="(item, index) in getChainList(chain)"
                                     :key="index+Math.floor(Math.random() * 1000)"
+
                                 >
                                     <q-btn
                                         align="left"
@@ -158,7 +159,7 @@
 
                         <q-item-section side top>
                             <!-- CHAIN / RECEIVE / IMPORT COMMON SECTION -->
-                            <div class="text-bold text-h7 text-black" v-if="!$route.params.accounts || !(tab == 'receive' || tab == 'privateKeys' || tab == 'import' || tab == 'create' )" >${{ nFormatter2(chain.chainTotal, chain.chainTotal > 10 ? 0 : 2) }} </div >
+                            <div :class="$store.state.settings.lightMode === 'true' ? '': 'text-black'" class="text-bold text-h7" v-if="!$route.params.accounts || !(tab == 'receive' || tab == 'privateKeys' || tab == 'import' || tab == 'create' )" >${{ nFormatter2(chain.chainTotal, chain.chainTotal > 10 ? 0 : 2) }} </div >
 
                             <!-- COMMON SECTION END  -->
                         </q-item-section>
@@ -178,7 +179,7 @@
                 )"
                 :key="index + Math.random() * 1000"
             >
-                <q-list separator class="rounded-borders bg-white">
+                <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'">
 
                     <q-item clickable v-ripple
                         v-show=" !allAssets || item.id == 'investments' || listViewMode == 'card' "
@@ -198,7 +199,7 @@
                             </q-item-label>
 
                             <q-item-label
-                                :class="{'text-black': $store.state.settings.lightMode === 'true',}"
+                                :class="{'text-black': !$store.state.settings.lightMode === 'true',}"
                                 class="q-pt-sm"
                             >
                                 Amount:
@@ -254,7 +255,7 @@
                         </q-item-section>
 
                         <q-item-section side top>
-                            <q-item-label class="text-h7  text-bold text-black">
+                            <q-item-label class="text-h7  text-bold" :class="$store.state.settings.lightMode === 'true' ? '': ' text-black'">
                                 <div >${{ formatNumber(asset.usd, 2) }} </div >
                             </q-item-label>
                             <div class="text-bold text-h7 text-black q-mt-md">

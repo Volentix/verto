@@ -218,7 +218,6 @@
             <div v-if="txData.data && txData.data.toString().length" class="request-signature__notice">Transaction data:</div>
             <div class="request-signature__rows" v-if="txData.data && txData.data.toString().length">
               <div class="request-signature__row">
-
                 <div class="request-signature__row-value">
              {{txData.data}}
                </div>

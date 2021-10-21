@@ -145,16 +145,16 @@ module.exports = function (ctx) {
           ...cfg.resolve.alias,
           '@': path.resolve(__dirname, './src')
         }
-         cfg.module.rules.push({
-           enforce: 'pre',
-           test: /\.(js|vue)$/,
-           loader: 'eslint-loader',
+        cfg.module.rules.push({
+          enforce: 'pre',
+          test: /\.(js|vue)$/,
+          loader: 'eslint-loader',
           exclude: /node_modules/,
-           options: {
-              cache: true,
-             fix: true
-           }
-         }) 
+          options: {
+            cache: true,
+            fix: true
+          }
+        })
       }
     },
 

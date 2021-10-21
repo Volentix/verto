@@ -6,8 +6,8 @@
   class="text-h6 text-bold q-pt-md q-pr-lg"
 >
   <q-header v-if="$q.platform.is.mobile">
-    <q-toolbar  id="scrollToID3" class="text-black">
-        <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)" />
+    <q-toolbar  id="scrollToID3" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
+        <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="goBack()" />
         <q-toolbar-title style="margin-left: -25px"> Power up </q-toolbar-title>
     </q-toolbar>
   </q-header>
@@ -198,6 +198,9 @@ export default {
       }
 
       return transactionObject
+    },
+    goBack () {
+      this.$router.push({ name: 'wallets', params: { openDialog: true } })
     }
   }
 }

@@ -2,7 +2,7 @@
   <q-page class="" :class="{'desktop-marg': screenSize > 1024, 'mobile-pad': screenSize < 1024, 'text-black bg-white': $store.state.settings.lightMode === 'false'}" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'" >
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'history-main-top-wrapper': !$q.platform.is.mobile}"  :style="!$q.platform.is.mobile ? 'height: 100vh;': 'height: 85vh;'">
       <!-- class="history-main-top-wrapper_" style="height: 100vh;" -->
-      <div class="desktop-version full-height" v-if="!($q.platform.is.mobile || $isbex)">
+      <div class="desktop-version full-height" v-if="screenSize > 1024">
         <div class="row full-height">
           <div class="col col-md-3" v-if="false">
             <div class="wallets-container" style="height: 100%">
@@ -28,12 +28,12 @@
       </div>
        <div class="mobile-version" style="height: inherit;" v-else >
          <q-header>
-            <q-toolbar  id="scrollToID3" class="text-black q-mb-md">
+            <q-toolbar  id="scrollToID3"  :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'text-black'">
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog()" />
                 <q-toolbar-title style="margin-left: -25px"> History  </q-toolbar-title>
                 <div class="row flex justify-end" style="margin-bottom: -10px;">
                   <AccountSelector  :autoSelectChain="'eos'" class="q-mr-sm" :showAllWallets="true" :titleView='false'/>
-                  <q-btn round outline color="primary" icon="cached" @click="refresh++" class="refresh-history" size="sm"/>
+                  <q-btn round outline  icon="cached" @click="refresh++" class="refresh-history" size="sm"/>
                   <!-- <q-icon name="cached"  @click="refresh++" class="refresh-history"/> -->
                 </div>
             </q-toolbar>

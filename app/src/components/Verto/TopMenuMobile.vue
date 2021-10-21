@@ -19,15 +19,15 @@
                     />
             </div>
             <div class="q-pb-lg">
-                <q-toolbar class="bg-white shadow-2 rounded-borders row justify-between">
-                    <div>
-                        <q-btn flat round dense color="primary" icon="send"  style="margin-right:-10px;"/>
-                        <q-btn flat color="primary" class="text-bold" @click="callChainTools"> Send </q-btn>
+                <q-toolbar class="shadow-2 rounded-borders row justify-between" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'text-black bg-white'">
+                    <div >
+                        <q-btn flat round dense  icon="send"  style="margin-right:-10px;"/>
+                        <q-btn flat  class="text-bold" @click="callChainTools"> Send </q-btn>
                     </div>
                     <q-separator vertical inset color="grey"/>
                     <div>
-                        <q-btn flat round dense color="primary" icon="call_received" class="q-pl-md" style="margin-right:-10px;"/>
-                        <q-btn flat color="primary" class="text-bold" @click="goTo('manage/receive')"> Receive</q-btn>
+                        <q-btn flat round dense  icon="call_received" class="q-pl-md" style="margin-right:-10px;"/>
+                        <q-btn flat  class="text-bold" @click="goTo('manage/receive')"> Receive</q-btn>
                     </div>
                 </q-toolbar>
             </div>
@@ -77,4 +77,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.mobile-card{
+    background-color: #04111F !important;
+}
 </style>

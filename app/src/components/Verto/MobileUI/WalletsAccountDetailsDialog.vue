@@ -9,7 +9,7 @@
         >
         <q-card flat :class="$store.state.settings.lightMode === 'true' ? 'text-white' : 'text-black'"  :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
             <q-header>
-                <q-toolbar class="bg-white text-black">
+                <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" >
                     <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
                     <q-toolbar-title> {{$store.state.currentwallet.wallet.name}}  </q-toolbar-title>
                     <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
@@ -21,7 +21,7 @@
                 <span class="text-h6 text-bold" v-else>${{formatNumber(new Number(isNaN(selectedCoin.usd) ? 0 : selectedCoin.usd).toFixed(2),0)}}</span>
             </div> -->
             <div v-if="$q.platform.is.mobile" class="q-mt-xl">
-                <div class="q-pa-md ">
+                <div class="q-pa-md " >
                     <div class="q-pb-md">
                         <div class="text-h4 text-bold" v-if="selectedCoin.total">
                         US${{formatNumber(new Number(isNaN(selectedCoin.total) ? 0 : selectedCoin.total).toFixed(2),0)}}
@@ -31,15 +31,15 @@
                         </div>
                     </div>
                     <div class="q-pb-lg">
-                        <q-toolbar class="bg-white shadow-2 rounded-borders row justify-between">
+                        <q-toolbar class=" shadow-2 rounded-borders row justify-between" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'text-black bg-white'">
                             <div>
-                                <q-btn flat round dense color="primary" icon="send"  style="margin-right:-10px;"/>
-                                <q-btn flat color="primary" class="text-bold" @click="callChainTools"> Send </q-btn>
+                                <q-btn flat round dense  icon="send"  style="margin-right:-10px;"/>
+                                <q-btn flat  class="text-bold" @click="callChainTools"> Send </q-btn>
                             </div>
                             <q-separator vertical inset color="grey"/>
                             <div>
-                                <q-btn flat round dense color="primary" icon="call_received" class="q-pl-md" style="margin-right:-10px;"/>
-                                <q-btn flat color="primary" class="text-bold" @click="shoKeysStatus()"> Receive</q-btn>
+                                <q-btn flat round dense  icon="call_received" class="q-pl-md" style="margin-right:-10px;"/>
+                                <q-btn flat  class="text-bold" @click="shoKeysStatus()"> Receive</q-btn>
                             </div>
                         </q-toolbar>
                     </div>
@@ -104,7 +104,7 @@
                             <q-item-label class=" text-h5">VTX tools</q-item-label>
                         </q-item-section>
                     </q-item>
-                    <q-list  bordered separator class="rounded-borders bg-white">
+                    <q-list  :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'">
                         <q-item  data-name='Staking' clickable v-ripple class="p-relative" to="/verto/stake">
                             <q-item-section>
                                 <q-item-label lines="1" class="text-h6">Stake VTX </q-item-label>
@@ -130,7 +130,7 @@
                             <q-item-label class=" text-h5">Chain tools</q-item-label>
                         </q-item-section>
                     </q-item>
-                    <q-list  bordered separator class="rounded-borders bg-white text-black" >
+                    <q-list  :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'">
                         <q-item  data-name='Staking' clickable v-ripple class="p-relative" :to="path.to" v-for="(path, index) in ( $store.state.currentwallet.wallet ? tools[$store.state.currentwallet.wallet.chain] : [])" :key="index" >
                             <q-item-section>
                                 <q-item-label lines="1" class="text-h6">{{path.title}} </q-item-label>
@@ -214,7 +214,7 @@
                             <q-item-label class=" text-h5">Security & History </q-item-label>
                         </q-item-section>
                     </q-item>
-                    <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders bg-white text-black">
+                    <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'">
                         <!-- <q-separator style="margin-top: -20px" /> -->
 
                         <q-item data-name='Create EOS account' v-if="$store.state.currentwallet.wallet.type === 'verto'" to="/verto/eos-account/create" clickable v-ripple class="p-relative bold-btn">
@@ -258,7 +258,6 @@
                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                             </q-item-section>
                         </q-item>
-                        <q-separator  color="grey-3"/>
                         <q-item data-name='History' clickable @click="goTo('history')" v-ripple class="p-relative">
                             <q-item-section>
                                 <q-item-label lines="1" class="text-h6">History</q-item-label>
@@ -385,4 +384,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.mobile-card{
+    background-color: #04111F !important;
+  }
 </style>

@@ -9,7 +9,7 @@
         >
         <q-card :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
             <q-header class="bg-white">
-              <q-toolbar class="text-black">
+              <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
                 <q-toolbar-title> Token Details </q-toolbar-title>
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
@@ -20,10 +20,10 @@
                 <AccountSelector  :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
             </div>
             <q-card-section>
-                <q-item style="margin-left: -14px;" :class="{'top-margin':!asset.amount}">
+                <q-item style="margin-left: -14px;">
                     <q-item-section side>
                         <q-avatar rounded>
-                            <img v-if="asset.icon" :src="asset.icon" style="max-width: 40px" alt="image" />
+                            <img v-if="asset.icon" :src="asset.icon" style="max-width: 40px" alt="icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"/>
                         </q-avatar>
                     </q-item-section>
                     <q-item-section>
@@ -64,7 +64,6 @@
                     </div>
                     <div>
                         <q-btn-toggle
-                            v-if="chartAvailable && chartData"
                             @click="getHistoriclPrice(historicalLimit)"
                             v-model="historicalLimit"
                             style="width: 100%; justify-content: space-evenly;"
@@ -72,9 +71,9 @@
                             no-caps
                             rounded
                             unelevated
-                            toggle-color="black"
+                            toggle-color="purple"
                             color="white"
-                            text-color="black"
+                            text-color="purple"
                             :options="historicalOptions"
                         />
                     </div>
@@ -97,7 +96,7 @@
                         </div>
                     </q-item-section>
                 </q-item>
-                <q-card flat bordered class="q-pa-md text-black" v-if="$store.state.investment.defaultAccount">
+                <q-card :dark="$store.state.settings.lightMode === 'true'" flat bordered separator class="q-pa-md  rounded-borders" :class="$store.state.settings.lightMode === 'true' ? 'mobile-card': ' bg-white text-black'" v-if="$store.state.investment.defaultAccount">
                     <div class=" row">
                         <div class="col-6">
                             Profit/Loss <span><i class="far fa-question-circle"></i></span>
@@ -135,7 +134,7 @@
                     <q-item-section side top>
                     </q-item-section>
                 </q-item>
-                <q-list bordered separator class="rounded-borders bg-white text-black" v-if="marketData">
+                <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'" v-if="marketData">
                     <q-item>
                         <q-item-section>
                             <q-item-label lines="1">1 Day</q-item-label>
@@ -208,10 +207,13 @@
                     <TokenByAccount :type="asset.type" :chain="asset.chain" class="right-area q-mt-lg col" />
                 </div>
 
+                <q-page-sticky expand position="bottom" style="margin-bottom: 10px;">
+                    <q-toolbar class="bg-transparent text-white">
+                        <q-btn rounded icon-right="send" color="primary" label="SEND" class="full-width" @click="dialogSend = true; setAssetLocalCount = 1"/>
+                    </q-toolbar>
+                </q-page-sticky>
             </q-card-section>
-            <div class="q-px-md q-mx-md flex flex-center text-center fixed-bottom">
- <q-btn rounded icon-right="send" style="width:80% !important" color="primary" label="SEND" class="full-width q-pa-sm q-mb-md " @click="dialogSend = true; setAssetLocalCount = 1"/>
-</div>
+
             <SendComponent v-if="!dialogSend" style="visibility: hidden" @setAsset="setAssetLocal" :token="asset.type" :miniMode="true" :key="getSendKey()"  />
         </q-card>
         </q-dialog>
@@ -226,7 +228,7 @@
         >
             <q-card :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
                 <q-header class="bg-white">
-                    <q-toolbar class="text-black">
+                    <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                         <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="dialogSend =false"/>
                         <q-toolbar-title> Token Transactions</q-toolbar-title>
                         <q-btn flat round dense icon="close" v-close-popup @click="dialogSend = false"/>
@@ -473,10 +475,12 @@
                                     :class="{'q-pt-md' : !fromPreview}"
                                         class="buy text-capitalize"
                                         v-if="!spinnerVisible && !success && !asset.isEvm"
+                                         :style="$store.state.settings.lightMode === 'true' ? 'color: white !important':''"
                                     >
                                         <a
                                         href="javascript:void(0)"
                                         @click="isTxValid && triggerActionLocal()"
+                                        :style="$store.state.settings.lightMode === 'true' ? 'color: white !important':''"
                                         >{{ tab === 'send' ? (!fromPreview ? 'Preview' : 'Send') :tab }}</a>
                                     </div>
                                 </div>
@@ -586,9 +590,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.top-margin {
-margin-top: 40px;
-}
 .q-select__dialog {
     width: 90vw !important;
     max-width: 100vw !important;
@@ -634,5 +635,8 @@ margin-top: 40px;
   color: #000;
   background: #e8e8e9;
 }
+.mobile-card{
+    background-color: #04111F !important;
+  }
 
 </style>
