@@ -34,7 +34,6 @@ export default function attachContentHooks (bridge) {
 
   // Hook into the bridge to listen for events sent from the client BEX.
   bridge.on('app.save', event => {
-    // console.log(event.data)
     bridge.send('app.sync', event.data).then((data) => {
       bridge.send(event.eventResponseKey, data.data)
     })

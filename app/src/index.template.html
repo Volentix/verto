@@ -29,7 +29,11 @@
       height: 600px;
       width: 357px;
       background-color: #F5F5FE;
-      position: relative;
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
     }
     .loading-container{
       position: absolute;
@@ -78,11 +82,13 @@
         height: 600px !important;
       }
       body{
+        width: 357px !important;
         background-color: #F5F5FE !important;
         position: relative !important;
       }
       body.q-body--fullscreen-mixin.q-body--prevent-scroll{
         position: relative !important;
+
       }
     <% } %>
 
