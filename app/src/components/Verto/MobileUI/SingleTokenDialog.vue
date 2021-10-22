@@ -11,7 +11,7 @@
             <q-header class="bg-white">
               <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
-                <q-toolbar-title> Token Details tab{{tab}} </q-toolbar-title>
+                <q-toolbar-title> Token Details </q-toolbar-title>
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
               </q-toolbar>
             </q-header>
@@ -258,8 +258,8 @@
                                 <q-tab v-if="!$store.state.wallets.portfolioTotal" name="import" label="Import" />
                                     <q-tab v-if="$store.state.wallets.portfolioTotal" name="send" label="Send" />
                                     <!--     <q-tab name="swap" v-if="asset.chain != 'eos'  && show1inch" label="Swap" />-->
-                                    <q-tab name="buy" v-if="$store.state.wallets.portfolioTotal" @click="exchangeToken({to:asset.type})"  label="Buy" />
-                                    <q-tab v-if="$store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key && $store.state.wallets.portfolioTotal" name="sell" @click="exchangeToken({from:asset.type})" label="Sell" />
+                                    <q-tab name="buy" v-if="$store.state.wallets.portfolioTotal && !isbex" @click="exchangeToken({to:asset.type})"  label="Buy" />
+                                    <q-tab v-if="$store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key && $store.state.wallets.portfolioTotal  && !isbex" name="sell" @click="exchangeToken({from:asset.type})" label="Sell" />
                                 </q-tabs>
 
                                 <ImportView class="q-pa-md" v-if="!$store.state.wallets.portfolioTotal" :chain="asset.chain" :key="asset.chain" />
@@ -268,7 +268,7 @@
                                 </div>
 
                                 <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount" class="q-px-md" >
-                                    <SendComponent v-if="false" @setAsset="setAssetLocal" :token="asset.type" :miniMode="true" :key="getSendKey()"   />
+                                    <SendComponent  @setAsset="setAssetLocal" :token="asset.type" :miniMode="true" :key="getSendKey()"   />
                                 </div>
 
                                 <div v-if="show1inch && tab == 'swap'" >
