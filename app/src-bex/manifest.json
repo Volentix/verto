@@ -10,7 +10,7 @@
   },
   "browser_action": {
     "default_title": "verto-browser-extension",
-	 "default_popup": "www/index.html"
+	 "default_popup": "popup.html"
   },
   "background": {
         "scripts": [
@@ -38,7 +38,8 @@
   }],
   "permissions": [
     "https://verto.volentix.io/*",
-    "http://localhost:8080/*"
+    "http://localhost:8080/*",
+    "storage"
   ],
   "externally_connectable": {
     "matches": ["*://localhost/*","*://verto.volentix.io/*"]
