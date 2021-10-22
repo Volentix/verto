@@ -8,7 +8,7 @@
           <!-- <q-btn flat round dense icon="close" v-close-popup to="/verto/dashboard"/> -->
       </q-toolbar>
     </q-header>
-    <wallets :showWallets="true" :isWalletsPage="false" :isWalletDetail="true"  class="q-pa-md q-mt-xl"/>
+    <wallets :showWallets="true" :isWalletsPage="false" :isWalletDetail="true"  class="q-pa-md"/>
   </q-page>
 </template>
 

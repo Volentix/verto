@@ -8,13 +8,13 @@
             transition-hide="slide-down"
         >
         <q-card flat :class="$store.state.settings.lightMode === 'true' ? 'text-white' : 'text-black'"  :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
-            <q-header>
+            <q-page-sticky expand position="top" style="margin-top: -50px;">
                 <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" >
                     <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
                     <q-toolbar-title> {{$store.state.currentwallet.wallet.name}}  </q-toolbar-title>
                     <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
                 </q-toolbar>
-            </q-header>
+            </q-page-sticky>
             <!-- <div class="column wrap justify-center items-center content-center">
                 <div class="text-h9">Total Balance</div>
                 <div class="text-h6 text-bold" v-if="selectedCoin.total">${{formatNumber(new Number(isNaN(selectedCoin.total) ? 0 : selectedCoin.total).toFixed(2),0)}} USD</div>
@@ -31,7 +31,7 @@
                         </div>
                     </div>
                     <div class="q-pb-lg">
-                        <q-toolbar class=" shadow-2 rounded-borders row justify-between" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'text-black bg-white'">
+                        <div class=" shadow-2 rounded-borders row justify-between q-pa-sm" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'text-black bg-white'">
                             <div>
                                 <q-btn flat round dense  icon="send"  style="margin-right:-10px;"/>
                                 <q-btn flat  class="text-bold" @click="callChainTools"> Send </q-btn>
@@ -41,7 +41,7 @@
                                 <q-btn flat round dense  icon="call_received" class="q-pl-md" style="margin-right:-10px;"/>
                                 <q-btn flat  class="text-bold" @click="shoKeysStatus()"> Receive</q-btn>
                             </div>
-                        </q-toolbar>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -105,7 +105,7 @@
                         </q-item-section>
                     </q-item>
                     <q-list  :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'">
-                        <q-item  data-name='Staking' clickable v-ripple class="p-relative" to="/verto/stake">
+                        <q-item  data-name='Staking' clickable v-ripple class="p-relative" to="/verto/stake/eos/vtx">
                             <q-item-section>
                                 <q-item-label lines="1" class="text-h6">Stake VTX </q-item-label>
                             </q-item-section>
@@ -131,7 +131,7 @@
                         </q-item-section>
                     </q-item>
                     <q-list  :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'">
-                        <q-item  data-name='Staking' clickable v-ripple class="p-relative" :to="path.to" v-for="(path, index) in ( $store.state.currentwallet.wallet ? tools[$store.state.currentwallet.wallet.chain] : [])" :key="index" >
+                        <q-item  data-name='Staking' clickable v-ripple class="p-relative" :to="path.to" v-for="(path, index) in ( $store.state.currentwallet.wallet ? tools[$store.state.currentwallet.wallet.chain] : [])" :key="index"  v-show="!($store.state.currentwallet.wallet.type === 'vtx' && path.to ==='/verto/stake/eos/vtx')">
                             <q-item-section>
                                 <q-item-label lines="1" class="text-h6">{{path.title}} </q-item-label>
                             </q-item-section>

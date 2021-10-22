@@ -2,9 +2,8 @@
     <div>
         <q-toolbar >
             <!-- <q-btn flat round dense icon="menu" class="q-mr-sm" /> -->
-            <q-avatar>
-                <img src="statics/icons/ms-icon-144x144.png" width="32" class="png_logo q-mr-sm" alt="">
-            </q-avatar>
+
+            <img src="statics/icons/ms-icon-144x144.png" width="32" class="png_logo q-mr-sm q-pa" alt="">
 
             <q-toolbar-title class="primary" :class="{'text-white': $store.state.settings.lightMode === 'true'} ">VERTO</q-toolbar-title>
             <div class="q-gutter-sm">

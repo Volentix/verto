@@ -45,9 +45,9 @@
             <q-tab name="investments" icon="trending_up" label="Investments" class="read" v-if="$store.state.wallets.portfolioTotal"/>
         </q-tabs>
 
-        <ChainItemList :chains="chains" :tab.sync="tabIndex" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :key="componentKey" />
+        <ChainItemList :chains="chains" :tab.sync="tabIndex" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :key="componentKey" :getImportLink="getImportLink"/>
 
-        <AssetDialog :dialog.sync="dialog" :updateTab="updateTab" :tab.sync="tabIndex" :chains="chains" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens'  :getChains='getChains' :allChains='allChains' :showAllChains='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :showPrivateKeys="showPrivateKeys"/>
+        <AssetDialog :dialog.sync="dialog" :updateTab="updateTab" :tab.sync="tabIndex" :chains="chains" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens'  :getChains='getChains' :allChains='allChains' :showAllChains='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :showPrivateKeys="showPrivateKeys" :getImportLink="getImportLink"/>
     </div>
 </template>
 
@@ -57,7 +57,7 @@ import ChainItemList from './ChainItemList.vue'
 
 export default {
   name: 'TabAssetExplorer',
-  props: ['chains', 'tab', 'chainAction', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'initTable', 'selectedChain', 'showPrivateKeys', 'alertSecurity', 'tokenSearchVal'],
+  props: ['chains', 'tab', 'chainAction', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'initTable', 'selectedChain', 'showPrivateKeys', 'alertSecurity', 'tokenSearchVal', 'getImportLink'],
   components: { AssetDialog, ChainItemList },
   data () {
     return {

@@ -1,11 +1,11 @@
 <template>
     <div class="q-pb-xl">
-        <div class="q-pb-lg">
+        <div class="q-pb-xl">
             <div v-if="
                 (($route.params.accounts || !$store.state.wallets.portfolioTotal) &&
                 !['assets', 'investments'].includes(tab)) ||
                 tab == 'chains'
-            " class="q-pb-lg">
+            " class="q-pb-xl">
                 <q-list  :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'">
 
                     <q-item clickable v-ripple
@@ -178,11 +178,12 @@
                     (o) => !allAssets || o.title == allAssets.title
                 )"
                 :key="index + Math.random() * 1000"
+                class="q-pb-xl"
             >
                 <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'">
 
                     <q-item clickable v-ripple
-                        v-show=" !allAssets || item.id == 'investments' || listViewMode == 'card' "
+                        v-show=" (!allAssets || item.id == 'investments' || listViewMode == 'card') && asset.type.toUpperCase() !=='VERTO'"
                         @click="showTokenPage(asset)"
                         v-for="(asset, i) in filterTokens"
                         :key="i"
@@ -288,7 +289,7 @@
 
 export default {
   name: 'ChainItem',
-  props: ['chains', 'tab', 'chainAction', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'showAllChainData', 'tokenSearchVal'],
+  props: ['chains', 'tab', 'chainAction', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'showAllChainData', 'tokenSearchVal', 'getImportLink'],
   data () {
     return {
       lightMode: true

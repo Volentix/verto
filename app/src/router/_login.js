@@ -1,6 +1,6 @@
 let shared_auth_urls = [
 ]
-if (process.env.MODE === 'bex') {
+if (process.env.MODE === 'bex' || window.screen.width < 500) {
   shared_auth_urls = [
     {
       name: 'storesync',
@@ -93,6 +93,7 @@ if (process.env.MODE === 'bex') {
     }
   ]
 } else {
+  console.log('else route path')
   shared_auth_urls = [
     {
       name: 'login',
@@ -151,11 +152,6 @@ if (process.env.MODE === 'bex') {
       path: '/verto',
       component: () => import('pages/Verto/CreateVertoPassword.vue'),
       meta: {}
-    },
-    {
-      name: 'import-restore',
-      path: '/import-restore',
-      component: () => import('pages/Verto/bex/ImportOrRestore.vue')
     }
   ]
 }

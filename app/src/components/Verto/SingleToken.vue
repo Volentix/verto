@@ -851,38 +851,39 @@ export default {
       this.chartData = false
       this.chartAvailable = true
       let id = this.asset.coinGeckoId
+      try {
+        if (!id) {
+          let token = this.$store.state.tokens.list.find(
+            (t) =>
+              t.symbol.toLowerCase() === this.asset.type &&
+            ((!t.platforms.hasOwnProperty('eos') &&
+              !t.platforms.hasOwnProperty('ethereum')) ||
+              this.asset.chain ===
+                (t.platforms.hasOwnProperty('eos')
+                  ? 'eos'
+                  : this.asset.chain)))
 
-      if (!id) {
-        let token = this.$store.state.tokens.list.find(
-          (t) =>
-            t.symbol.toLowerCase() === this.asset.type &&
-          ((!t.platforms.hasOwnProperty('eos') &&
-            !t.platforms.hasOwnProperty('ethereum')) ||
-            this.asset.chain ===
-              (t.platforms.hasOwnProperty('eos')
-                ? 'eos'
-                : this.asset.chain)))
-
-        id = token ? token.id : null
-      }
-      if (id) {
-        this.getMarketData(id)
-        let response = await this.$axios.get(
-          process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/' +
-            id +
-            '/market_chart?vs_currency=usd&days=' +
-            days
-        )
-        this.chartData = response.data
-        this.intervalHistory = days
-
-        if (response.data.prices && !this.asset.rateUsd) {
-          this.asset.rateUsd =
-            response.data.prices[response.data.prices.length - 1][1]
+          id = token ? token.id : null
         }
-      } else {
-        this.chartAvailable = false
-      }
+        if (id) {
+          this.getMarketData(id)
+          let response = await this.$axios.get(
+            process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/' +
+              id +
+              '/market_chart?vs_currency=usd&days=' +
+              days
+          )
+          this.chartData = response.data
+          this.intervalHistory = days
+
+          if (response.data.prices && !this.asset.rateUsd) {
+            this.asset.rateUsd =
+              response.data.prices[response.data.prices.length - 1][1]
+          }
+        } else {
+          this.chartAvailable = false
+        }
+      } catch (e) { console.log('e', e) }
     },
     setSuccessData (status) {
       this.success = status
