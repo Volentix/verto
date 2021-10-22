@@ -378,7 +378,7 @@ export default {
         { name: 'Backup Config', to: 'backup', icon: 'o_get_app', info: '' },
         { name: 'Sync with Verto chrome Extension', to: 'sync', icon: 'sync', info: '' },
         { name: 'Restore Config', to: 'restore', icon: 'cloud_upload', info: '' },
-        //   { name: 'Import EOS Account', to: '/verto/eos-account/import', icon: 'label', info: '' },
+        { name: 'Network settings', to: '/verto/networks', icon: 'label', info: '' },
         { name: 'Create new EOS Account', to: '/verto/eos-account/create', icon: 'label', info: '' },
         // { name: 'Add ETH Account', to: '/verto/import-private-key/eth', icon: 'label', info: '' },
         { name: 'Add HD Account', to: '/verto/create-hd-account', icon: 'label', info: '' },
