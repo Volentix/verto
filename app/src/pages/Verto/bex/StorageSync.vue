@@ -1,6 +1,5 @@
 <template>
   <div>
-
   </div>
 </template>
 
@@ -14,7 +13,7 @@ export default {
     sessionStorage.setItem('router_loaded', true)
     const routerLoaded = sessionStorage.getItem('app_started')
     if (routerLoaded == null) {
-      return
+
     }
     let call = localStorage.getItem('call_request')
     let qr = localStorage.getItem('wallet_connect_svg')
