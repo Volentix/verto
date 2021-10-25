@@ -870,18 +870,13 @@
     </div>
     <q-dialog v-model="alertSecurity">
         <q-card style="width: 100%; max-width: 400px" :dark="$store.state.settings.lightMode === 'true'">
-            <q-card-section>
-                <div class="icon-alert flex flex-center q-mt-lg">
-                    <img src="statics/alert.svg" style="max-width: 100px" alt="">
-                </div>
-            </q-card-section>
 
             <q-card-section class="q-pa-lg text-h6">
                 The private key is confidential. Please make sure you do not share it with anyone. Your private keys control your funds.
             </q-card-section>
 
             <q-card-actions align="right" class="q-pb-lg q-pr-lg">
-                <q-btn :dark="$store.state.settings.lightMode === 'true'" flat label="Got it" class="go-to-security" @click="goToSecurity()" color="primary" v-close-popup />
+             <q-btn :dark="$store.state.settings.lightMode === 'true'" flat label="Cancel"   v-close-popup />     <q-btn :dark="$store.state.settings.lightMode === 'true'" flat label="Got it" class="go-to-security" @click="goToSecurity()" color="primary" v-close-popup />
             </q-card-actions>
         </q-card>
     </q-dialog>

@@ -10,7 +10,7 @@
       <div class="video-page-wrapper q-pt-md q-pb-md">
         <div class="standard-content" style="padding-bottom: 0px">
           <h2 class="landing--title text-white">
-            <span class="text-white">Multi-chain wallet manager</span>
+            <span class="text-white">Multi-chain wallet manager {{$q.platform.is.mobile ? 'yes' : 'no'}}</span>
           </h2>
           <div class="standard-content--body full-width">
             <div class="standard-content--body__form">

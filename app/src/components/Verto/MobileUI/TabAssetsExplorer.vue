@@ -7,7 +7,7 @@
             <div>
                 <q-btn flat :color="$store.state.settings.lightMode === 'true' ? 'white' : 'primary'" class="text-bold" @click="goImport" >Add/Import</q-btn>
             </div>
-            <div  class="row text-grey">{{tab}} Click on a chain to see assets.{{tabIndex}} </div>
+            <div  class="row text-grey">Click on a chain to see assets.{{tabIndex}} </div>
         </div>
 
         <q-tabs

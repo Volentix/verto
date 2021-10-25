@@ -693,6 +693,7 @@ export default {
       }
     },
     async setAssetData (data) {
+      console.log(data, 'data')
       let asset = data || this.assetData
       if (asset && asset.chainID) {
         asset.chain = asset.chainID

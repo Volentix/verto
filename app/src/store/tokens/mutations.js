@@ -4,7 +4,7 @@ let noPriceList = {
   bsc: ['flux', 'velo']
 }
 export const setTokenList = (state, data) => {
-  state.list = data
+  state.list = typeof data === 'string' ? JSON.parse(data) : data
 }
 export const setWalletTokensData = (state, data) => {
   state.walletTokensData = state.walletTokensData.concat(data)

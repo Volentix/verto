@@ -100,7 +100,7 @@
                                   <q-item-section dark>
                                     <q-item-label
                                       class="ellipsis"
-                                      v-html="scope.opt.label"
+                                      v-html="getKeyFormat(scope.opt.label)"
                                     />
                                     <q-item-label caption>{{
                                       scope.opt.value
@@ -763,6 +763,7 @@ const eos = new EosWrapper()
 import { userError } from '@/util/errorHandler'
 import ecc from 'eosjs-ecc'
 import configManager from '@/util/ConfigManager'
+import Formatter from '@/mixins/Formatter'
 import HD from '@/util/hdwallet'
 import { JsonRpc } from 'eosjs'
 import transactEOS from './transactEOS'
@@ -770,6 +771,7 @@ import AccountSelector from './Exchange/AccountSelector.vue'
 import initWallet from '@/util/Wallets2Tokens'
 import { sleep } from '@/util/utils'
 export default {
+  mixins: [Formatter],
   name: 'VTXConverter',
   components: { AccountSelector, transactEOS },
   data () {
