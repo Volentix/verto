@@ -684,7 +684,7 @@ export default {
   },
   methods: {
     setAsset (asset) {
-      let data = (this.$route.params.assets || []).find(o => o.type === asset.type && o.chain === asset.chainID)
+      let data = (this.$route.params.assets || []).find(o => asset && o.type === asset.type && o.chain === asset.chainID)
 
       if (data) {
         this.setAssetData(data)
