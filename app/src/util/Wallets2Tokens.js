@@ -351,7 +351,7 @@ class Wallets2Tokens {
                       t.contract_ticker_symbol.toLowerCase() +
                       '/' +
                       wallet.key,
-                    icon: t.logo_url && t.logo_url.length ? t.logo_url : self.getTokenImage(e.chain, t.contract_ticker_symbol.toLowerCase())
+                    icon: self.getTokenImage(e.chain, t.contract_ticker_symbol.toLowerCase())
                   })
                 })
                 this.updateWallet()

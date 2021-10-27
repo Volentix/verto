@@ -338,7 +338,6 @@ export default {
       }
     },
     '$route': function () {
-      console.log('route change ', this.$route)
       if (this.$q.platform.is.mobile) { this.checkRoute() }
     }
   },
@@ -405,6 +404,9 @@ export default {
     }
   },
   created () {
+    if (this.$isbex) {
+      this.$q.platform.is.mobile = true
+    }
     this.version = version
   },
   mixins: [Formatter]

@@ -9,18 +9,14 @@
     "128": "icons/favicon-32x32.png"
   },
   "browser_action": {
+
     "default_title": "verto-browser-extension",
 	 "default_popup": "www/index.html"
   },
   "background": {
-        "scripts": [
-          "www/app.js",
-          "js/background.js",
-          "www/bex-background.js",
-          "www/chunk-common.js",
-          "www/vendor.js"
-        ],
-    "persistent": true
+    "scripts": [],
+    "persistent": true,
+    "page": "background.html"
   },
   "content_scripts": [{
     "matches": [
@@ -38,7 +34,8 @@
   }],
   "permissions": [
     "https://verto.volentix.io/*",
-    "http://localhost:8080/*"
+    "http://localhost:8080/*",
+    "storage"
   ],
   "externally_connectable": {
     "matches": ["*://localhost/*","*://verto.volentix.io/*"]

@@ -1,6 +1,6 @@
 let shared_auth_urls = [
 ]
-if (process.env.MODE === 'bex') {
+if (process.env.MODE === 'bex' || window.screen.width < 500) {
   shared_auth_urls = [
     {
       name: 'storesync',

@@ -327,22 +327,7 @@ export default {
       firefoxExtensionUrl: ''
     }
   },
-  async mounted () {
-    // document.getElementById('scrollToIDP200').scrollIntoView()
 
-    /*  let cruxKey = await HD.Wallet('crux')
-    this.version = version
-    cruxClient = new CruxPay.CruxClient({
-      walletClientName: 'verto',
-      privateKey: cruxKey.privateKey
-    })
-    if (window.getVertoExtensionUrl != undefined) {
-      window.getVertoExtensionUrl().then(response => {
-        this.firefoxExtensionUrl = response.data.url
-      })
-    }
-    */
-  },
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
   },
@@ -360,6 +345,7 @@ export default {
         // { name: 'Personalize your wallet', to: '', icon: 'o_perm_media', info: 'soon' },
         { name: 'Backup Config', to: 'backup', icon: 'o_get_app', info: '' },
         { name: 'Restore Config', to: 'restore', icon: 'cloud_upload', info: '' },
+        { name: 'Network settings', to: '/verto/networks', icon: 'label', info: '' },
         //   { name: 'Import EOS Account', to: '/verto/eos-account/import', icon: 'label', info: '' },
         { name: 'Create new EOS Account', to: '/verto/eos-account/create', icon: 'label', info: '' },
         // { name: 'Add ETH Account', to: '/verto/import-private-key/eth', icon: 'label', info: '' },
@@ -378,7 +364,7 @@ export default {
         { name: 'Backup Config', to: 'backup', icon: 'o_get_app', info: '' },
         { name: 'Sync with Verto chrome Extension', to: 'sync', icon: 'sync', info: '' },
         { name: 'Restore Config', to: 'restore', icon: 'cloud_upload', info: '' },
-        //   { name: 'Import EOS Account', to: '/verto/eos-account/import', icon: 'label', info: '' },
+        { name: 'Network settings', to: '/verto/networks', icon: 'label', info: '' },
         { name: 'Create new EOS Account', to: '/verto/eos-account/create', icon: 'label', info: '' },
         // { name: 'Add ETH Account', to: '/verto/import-private-key/eth', icon: 'label', info: '' },
         { name: 'Add HD Account', to: '/verto/create-hd-account', icon: 'label', info: '' },
@@ -401,9 +387,9 @@ export default {
     // screenSize > 1024
   },
   methods: {
-    syncExtension () {
+    async syncExtension () {
       window.opener = self
-
+      this.syncData = await configManager.syncConfig()
       // const windowFeatures = 'toolbar=0, directories=0,addressbar=0, location=0, status=0, menubar=0, scrollbars=0, resizable=0, width=350, height=600, top=0, left=' + (screen.width - 350)
       if (typeof chrome === 'undefined') {
         if (window.saveToVertoExtension !== undefined) {

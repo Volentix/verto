@@ -256,6 +256,15 @@ export default [
         }
       },
       {
+        name: 'networks',
+        path: '/verto/networks',
+        component: () => import('components/Verto/ChainSettings.vue'),
+        meta: {
+          authRequired: true
+          //  needskeyscreated: true
+        }
+      },
+      {
         name: 'customTransaction',
         path: '/verto/custom-transactions',
         component: () => import('pages/Verto/CustomTransaction.vue'),

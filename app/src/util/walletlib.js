@@ -15,9 +15,9 @@ const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 class Lib {
-  constructor (evms) {
+  constructor () {
     // https://mainnet.infura.io/v3/a66f85635aef42758bc4aeed2f295645
-    this.evms = [{
+    let evms = [{
       name: 'Ethereum',
       chain: 'eth',
       nativeToken: 'eth',
@@ -72,6 +72,22 @@ class Lib {
     //   network_id: 1285
     }]
     // instance = this
+
+    let localSettings = localStorage.getItem('chainSettings')
+    if (localSettings) {
+      localSettings = JSON.parse(localSettings)
+      this.evms = []
+      evms.forEach(e => {
+        if (localSettings[e.chain] && localSettings[e.chain].provider) {
+          this.evms.push(localSettings[e.chain])
+        } else {
+          this.evms.push(e)
+        }
+      })
+    } else {
+      this.evms = evms
+    }
+    console.log(this.evms, ' this.evms')
   }
 
   async getRawETHTransaction (token, from, to, value, key, contract, origin = 'mnemonic', evm = 'eth') {
