@@ -62,7 +62,7 @@
                             style="height: 200px"
                         />
                     </div>
-                    <div>
+                    <div v-if="chartAvailable">
                         <q-btn-toggle
                             @click="getHistoriclPrice(historicalLimit)"
                             v-model="historicalLimit"
@@ -72,7 +72,7 @@
                             rounded
                             unelevated
                             toggle-color="purple"
-                            color="white"
+                            :color="$store.state.settings.lightMode === 'true' ? 'black': 'white'"
                             text-color="purple"
                             :options="historicalOptions"
                         />

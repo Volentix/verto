@@ -1,6 +1,6 @@
 <template>
     <div class="q-pb-xl">
-        <div class="q-pb-xl">
+        <div class="q-pb-sm">
             <div v-if="
                 (($route.params.accounts || !$store.state.wallets.portfolioTotal) &&
                 !['assets', 'investments'].includes(tab)) ||
@@ -269,7 +269,7 @@
                             </div>
                             <div class=" ">
                                 <q-chip dense>
-                                    <q-avatar icon="insights" color="red" text-color="white" />
+                                    <q-avatar icon="insights" :color="$store.state.settings.lightMode === 'true' ? 'black': 'red'" text-color="white" />
                                     Trade
                                 </q-chip>
                             </div>
