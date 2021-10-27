@@ -259,7 +259,7 @@
                                     <q-tab v-if="$store.state.wallets.portfolioTotal" name="send" label="Send" />
                                     <!--     <q-tab name="swap" v-if="asset.chain != 'eos'  && show1inch" label="Swap" />-->
                                     <q-tab name="buy" v-if="$store.state.wallets.portfolioTotal && !$isbex" @click="exchangeToken({to:asset.type})"  label="Buy" />
-                                    <q-tab v-if="$store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key && $store.state.wallets.portfolioTotal  && !isbex" name="sell" @click="exchangeToken({from:asset.type})" label="Sell" />
+                                    <q-tab v-if="$store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key && $store.state.wallets.portfolioTotal  && !$isbex" name="sell" @click="exchangeToken({from:asset.type})" label="Sell" />
                                 </q-tabs>
 
                                 <ImportView class="q-pa-md" v-if="!$store.state.wallets.portfolioTotal" :chain="asset.chain" :key="asset.chain" />
