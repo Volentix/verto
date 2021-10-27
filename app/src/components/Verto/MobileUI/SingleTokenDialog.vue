@@ -11,7 +11,7 @@
             <q-header class="bg-white">
               <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
-                <q-toolbar-title> Token Details tab{{tab}} </q-toolbar-title>
+                <q-toolbar-title> Token Details tab </q-toolbar-title>
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
               </q-toolbar>
             </q-header>
@@ -62,7 +62,7 @@
                             style="height: 200px"
                         />
                     </div>
-                    <div>
+                    <div v-if="chartAvailable">
                         <q-btn-toggle
                             @click="getHistoriclPrice(historicalLimit)"
                             v-model="historicalLimit"
@@ -72,7 +72,7 @@
                             rounded
                             unelevated
                             toggle-color="purple"
-                            color="white"
+                            :color="$store.state.settings.lightMode === 'true' ? 'black': 'white'"
                             text-color="purple"
                             :options="historicalOptions"
                         />

@@ -1,6 +1,6 @@
 <template>
   <q-page class="column import-private-key" :class="{'desktop-marg':screenSize > 1024, 'mobile-pad': screenSize < 1024,'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-grey-12': $store.state.settings.lightMode === 'false'}">
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 90vh;">
       <div class="desktop-version full-height" v-if="screenSize > 1024">
         <div class="row full-height">
           <div class="col col-md-3">
@@ -170,11 +170,13 @@
       </div>
       <div v-else>
         <div class="chain-tools-wrapper_">
-          <q-toolbar  :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
-              <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'"/>
-              <q-toolbar-title> {{ currentWallet.privateKey ?  'Show private key' : 'Add private key' }}  </q-toolbar-title>
-              <!-- <q-btn flat round dense icon="close" v-close-popup to="/verto/dashboard"/> -->
-          </q-toolbar>
+          <q-header class="bg-white">
+            <q-toolbar  :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
+                <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'"/>
+                <q-toolbar-title> {{ currentWallet.privateKey ?  'Show private key' : 'Add private key' }}  </q-toolbar-title>
+                <!-- <q-btn flat round dense icon="close" v-close-popup to="/verto/dashboard"/> -->
+            </q-toolbar>
+          </q-header>
           <div class="standard-content">
               <!-- <div class="standard-content--title flex justify-center">
                   <q-btn flat unelevated class="btn-align-left" :to="goBack" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white q-pa-md">
+  <div class="q-pa-md" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
     <div  v-if="!addToVerto">
       <div class="text-h6">
         New {{ chain.label }} account
