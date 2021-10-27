@@ -115,15 +115,19 @@ export default {
         // TODO: Exception handling
       }
     },
+    // goBackPage () {
+    //   this.$router.push({ name: 'wallets', params: { openDialog: true } })
+    // }
     closeDialog () {
       if (!this.$route.query.hasOwnProperty('return')) {
         this.$router.push({
           path: '/verto/dashboard'
         })
       } else {
-        this.$router.push({
-          path: `/verto/${this.$route.query.return}`
-        })
+        // this.$router.push({
+        //   path: `/verto/${this.$route.query.return}`
+        // })
+        this.$router.push({ name: 'wallets', params: { openDialog: true } })
       }
     }
   }

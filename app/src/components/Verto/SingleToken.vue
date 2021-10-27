@@ -681,15 +681,20 @@ export default {
   },
   async created () {
     this.setAssetData()
+    console.log('param-asset >', this.$route.params.asset)
   },
   methods: {
     setAsset (asset) {
-      let data = (this.$route.params.assets || []).find(o => o.type === asset.type && o.chain === asset.chainID)
+      try {
+        let data = (this.$route.params.assets || []).find(o => o.type === asset.type && o.chain === asset.chainID)
 
-      if (data) {
-        this.setAssetData(data)
-      } else if (asset) {
-        this.setAssetData(asset)
+        if (data) {
+          this.setAssetData(data)
+        } else if (asset) {
+          this.setAssetData(asset)
+        }
+      } catch (e) {
+        console.log('e', e)
       }
     },
     async setAssetData (data) {
@@ -865,6 +870,7 @@ export default {
                   : this.asset.chain)))
 
           id = token ? token.id : null
+          // console.log('token ', token)
         }
         if (id) {
           this.getMarketData(id)
