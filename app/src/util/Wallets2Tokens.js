@@ -507,7 +507,7 @@ class Wallets2Tokens {
     // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)
   }
   getTokenImage (chain, type) {
-    let image = 'https://i.ibb.co/hYhjV1j/empty-token.png'
+    let image = 'https://etherscan.io/images/main/empty-token.png'
 
     if (Lib.evms.find(o => o.chain === chain) && store.state.tokens.evmTokens[chain]) {
       let token = store.state.tokens.evmTokens[chain].find(o => o.symbol.toLowerCase() === type.toLowerCase())

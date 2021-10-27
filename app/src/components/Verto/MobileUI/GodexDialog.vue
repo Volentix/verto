@@ -12,15 +12,15 @@
             <div class="middle-block" >
               <div class="blk-header">
                 <ul>
-                    <li>Swap</li>
-                    <li class="limitBtn">Limit</li>
+                    <li v-if="false" ><b class="q-mr-md">Swap:</b> Onchain </li>
+                    <li class="limitBtn" v-if="false">Limit</li>
                 </ul>
                 <ul>
                     <li>
                         <!-- <arrow-locator-loading _ngcontent-bjk-c337="" _nghost-bjk-c327=""><svg _ngcontent-bjk-c327="" id="arrow_loading" xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 36 36" class="arrow-loading" width="36" height="36"><path _ngcontent-bjk-c327="" stroke="none" fill="none" d="M16.2751 7.78995C13.932 5.44681 10.133 5.44681 7.78986 7.78995C7.02853 8.55128 6.51457 9.4663 6.24798 10.4351C6.24473 10.4499 6.24114 10.4646 6.23719 10.4793C6.17635 10.7064 6.12938 10.9339 6.09577 11.161C5.83159 12.9457 6.39255 14.7026 7.52624 15.9944C7.61054 16.0901 7.69842 16.1838 7.78986 16.2752C8.08307 16.5685 8.39909 16.825 8.7322 17.0448C9.25533 17.3892 9.84172 17.6568 10.4798 17.8278C10.7386 17.8971 10.9979 17.9484 11.2565 17.9825C12.9537 18.2061 14.6187 17.6866 15.8747 16.6415C16.0123 16.5265 16.1459 16.4044 16.2751 16.2752C16.2848 16.2655 16.2947 16.2561 16.3047 16.2469C17.0123 15.531 17.5491 14.627 17.8283 13.5851C17.9712 13.0517 18.5196 12.7351 19.053 12.878C19.5865 13.021 19.9031 13.5693 19.7602 14.1028C19.3141 15.7676 18.3745 17.1684 17.1409 18.1899C16.1883 18.9822 15.0949 19.5189 13.9515 19.8002C11.8607 20.3147 9.6028 19.9749 7.7328 18.7809C7.06855 18.3579 6.47841 17.8432 5.97519 17.2589C5.12341 16.2738 4.55173 15.1302 4.26015 13.9324C4.01698 12.9416 3.96104 11.8931 4.12168 10.8379C4.36697 9.20484 5.1183 7.63309 6.37564 6.37574C9.49984 3.25154 14.5652 3.25154 17.6894 6.37574L18.2332 6.91959L18.2337 5.49951C18.2338 5.05769 18.5921 4.69964 19.034 4.69979C19.4758 4.69995 19.8338 5.05825 19.8337 5.50007L19.8325 9.03277L19.8322 9.8325L19.0325 9.83249L18.9401 9.83249C18.8146 9.85665 18.6854 9.85665 18.5599 9.83248L15.5005 9.83245C15.0587 9.83245 14.7005 9.47427 14.7005 9.03244C14.7005 8.59062 15.0587 8.23245 15.5005 8.23245L16.7176 8.23246L16.2751 7.78995Z" class="background-path"></path><defs _ngcontent-bjk-c327=""><path _ngcontent-bjk-c327="" id="arrow" stroke="none" fill="none" d="M16.2751 7.78995C13.932 5.44681 10.133 5.44681 7.78986 7.78995C7.02853 8.55128 6.51457 9.4663 6.24798 10.4351C6.24473 10.4499 6.24114 10.4646 6.23719 10.4793C6.17635 10.7064 6.12938 10.9339 6.09577 11.161C5.83159 12.9457 6.39255 14.7026 7.52624 15.9944C7.61054 16.0901 7.69842 16.1838 7.78986 16.2752C8.08307 16.5685 8.39909 16.825 8.7322 17.0448C9.25533 17.3892 9.84172 17.6568 10.4798 17.8278C10.7386 17.8971 10.9979 17.9484 11.2565 17.9825C12.9537 18.2061 14.6187 17.6866 15.8747 16.6415C16.0123 16.5265 16.1459 16.4044 16.2751 16.2752C16.2848 16.2655 16.2947 16.2561 16.3047 16.2469C17.0123 15.531 17.5491 14.627 17.8283 13.5851C17.9712 13.0517 18.5196 12.7351 19.053 12.878C19.5865 13.021 19.9031 13.5693 19.7602 14.1028C19.3141 15.7676 18.3745 17.1684 17.1409 18.1899C16.1883 18.9822 15.0949 19.5189 13.9515 19.8002C11.8607 20.3147 9.6028 19.9749 7.7328 18.7809C7.06855 18.3579 6.47841 17.8432 5.97519 17.2589C5.12341 16.2738 4.55173 15.1302 4.26015 13.9324C4.01698 12.9416 3.96104 11.8931 4.12168 10.8379C4.36697 9.20484 5.1183 7.63309 6.37564 6.37574C9.49984 3.25154 14.5652 3.25154 17.6894 6.37574L18.2332 6.91959L18.2337 5.49951C18.2338 5.05769 18.5921 4.69964 19.034 4.69979C19.4758 4.69995 19.8338 5.05825 19.8337 5.50007L19.8325 9.03277L19.8322 9.8325L19.0325 9.83249L18.9401 9.83249C18.8146 9.85665 18.6854 9.85665 18.5599 9.83248L15.5005 9.83245C15.0587 9.83245 14.7005 9.47427 14.7005 9.03244C14.7005 8.59062 15.0587 8.23245 15.5005 8.23245L16.7176 8.23246L16.2751 7.78995Z"></path><clipPath _ngcontent-bjk-c327="" id="arrow-clip"><use _ngcontent-bjk-c327="" xlink:href="#arrow"></use></clipPath></defs><g _ngcontent-bjk-c327="" clip-path="url(#arrow-clip)"><circle _ngcontent-bjk-c327="" cx="12" cy="12" r="5" transform="rotate(365,12,12)" fill="none" stroke="currentColor" stroke-width="16" stroke-dasharray="30" stroke-dashoffset="0"><animate _ngcontent-bjk-c327="" attributeName="stroke-dashoffset" values="0;-30" begin="arrow_loading.click; 0.7s" repeatCount="indefinite" dur="9.3s"></animate></circle></g><use _ngcontent-bjk-c327="" xlink:href="#arrow"></use><animateTransform _ngcontent-bjk-c327="" id="transform_0" attributeName="transform" attributeType="XML" type="rotate" from="0 0 0" to="-10 0 0" dur="0.07s" begin="arrow_loading.click;" repeatCount="1"></animateTransform><animateTransform _ngcontent-bjk-c327="" id="transform_1" attributeName="transform" attributeType="XML" type="rotate" from="-45 0 0" to="390 0 0" dur="0.6s" begin="transform_0.end" repeatCount="1"></animateTransform><animateTransform _ngcontent-bjk-c327="" id="transform_2" attributeName="transform" attributeType="XML" type="rotate" from="390 0 0" to="360 0 0" dur="0.15s" begin="transform_1.end" repeatCount="1"></animateTransform></svg></arrow-locator-loading> -->
-                      <q-btn round flat  icon="refresh" />
+                    <b >Account selected</b><br> <span class="q-pl-md key">0x398c...71C2892e27b</span>  <q-btn size="sm" class="q-ml-md" round flat  icon="img:https://icons.veryicon.com/png/128/education-technology/big-data-official-website-icon/exchange-11.png" />
                     </li>
-                    <li class="settingBtn" @click="showHeader = false">
+                    <li v-if="false" class="settingBtn" @click="showHeader = false">
                         <svg xmlns="http://www.w3.org/2000/svg" id="swap-settings" width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <circle cx="9" cy="8" r="2" stroke="currentColor" stroke-width="2" stroke-linecap="round"></circle>
                             <path d="M11 8L20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
@@ -33,13 +33,13 @@
                 </ul>
               </div>
               <div class="fromBlk">
-                  <p style="color:#6c86ad;"><span>From</span></p>
+                  <p style="color:#6c86ad;"><span>From - Ethereum <q-icon name="keyboard_arrow_down"  size="xs"/></span><span>Balance: 0.1387 <span class="max">Max</span></span></p>
                   <h5 class="drpn"><span  @click="coinStatus = 'deposit' ; showHeader = false; "><img :src="depositCoin.image" alt=""> {{depositCoin.value.toUpperCase()}}  </span> <input type="text"  v-model="swapData.fromAmount" @input="getSwapInfo()"></h5>
                   <p><span>{{depositCoin.label}}</span> <span>454545</span></p>
               </div>
               <div class="toBlk">
                   <div class="top_arrow_icon"  @click="switchAmounts()" ><svg xmlns="http://www.w3.org/2000/svg" id="swap-direction-arrow" width="12" height="11" viewBox="0 0 12 11" fill="none"><path d="M6 1L6 10M6 10L11 5M6 10L1 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
-                  <p><span>To (estimated)</span> <span>Balance: 0.00</span></p>
+                  <p><span>To - Ethereum <q-icon name="keyboard_arrow_down"  size="xs"/></span> <span>Balance: 0.00</span></p>
                   <h5 class="drpn" @click="coinStatus = 'destination'; showHeader = false;"><span><img :src="destinationCoin.image" alt=""> {{ destinationCoin.value.toUpperCase() }} </span></h5>
                   <!-- <div class="cash-blk primari active">
                       <h5><b>{{swapData.dex}} <span>{{swapData.chain}}</span></b> <b>{{swapData.toAmount}} <span></span></b></h5>
@@ -47,11 +47,11 @@
                   <!-- <div class="cash-blk">
                       <h5><b class="dn_arr"> <div class="withArr">Unifi <span class="arrow"></span></div> <span>Tx cost 0.0336E (~$123.74)</span></b> <b>0.00031 <span>~$1.18</span></b></h5>
                   </div> -->
-                  <div class="cash-blk last_ops hide" v-for="(path, index) in paths" :key="index">
+                  <div class="cash-blk last_ops hide" v-show="false" v-for="(path, index) in paths" :key="index">
                       <h5><b class="dn_arr"  >{{path.dex}}<span>{{ path.txChainLabel }}</span> </b> <b style="text-align: end;">{{ formatNumber(path.toAmount, 5) }} {{ destinationCoin.value.toUpperCase() }} <span>{{ path.tokenPrice ? "$" + formatNumber(path.tokenPrice, 2) : "NAN" }}</span></b></h5>
                   </div>
               </div>
-              <button type="button" class="theme-btn" @click="openWallet()" :disabled="paths.length < 1">Connect Wallet</button>
+              <button type="button" class="theme-btn" @click="openWallet()" :disabled="paths.length < 1">Exchange</button>
             </div>
             <ul class="rates" :class="$store.state.settings.lightMode === 'true' ? 'mobile-card':'bg-white'">
               <li>
@@ -81,7 +81,7 @@
             </ul>
           </div>
           <!-- SEARCH PANEL  -->
-        <div class="searchBlk" style="position: fixed;">
+        <div class="searchBlk" style="position: fixed; width:400px">
           <h5 class="heading">
             <q-icon name="arrow_back_ios"  class="backfromtoken" style="padding-right: 25px; height: 1px;  top: 50%; left: 13px; background-clor: #000; font-size: 1em;" @click="back()"/>
             <!-- <q-icon name="arrow_back_ios"  class="backfromtoken" style="height: 1px; position: absolute; top: 50%; left: 30px; color: black; font-size: 1em;" @click="back()"/> -->
@@ -96,7 +96,7 @@
               <!-- <q-input rounded outlined v-model="text" label="Rounded outlined" /> -->
           </form>
           <ul class="cryptoSuggestions" v-if="coinStatus == 'deposit'">
-              <li v-for="item in [...depositCoinOptions].sort((a,b) => b-a).slice(0,5)" :key="`${Math.floor(Math.random() * 1000)} ${item.address}`" @click="selectionProcess(item)">
+              <li v-for="item in [...depositCoinOptions].sort((a,b) => b-a).slice(0,4)" :key="`${Math.floor(Math.random() * 1000)} ${item.address}`" @click="selectionProcess(item)">
                 <img :src="item.image" alt=""> {{item.value.toUpperCase()}}
               </li>
           </ul>
@@ -1655,7 +1655,11 @@ export default {
 </script>
 
 <style>
-
+span.max {
+    color: #7b4dff;
+    margin-left: 5px;
+    cursor: pointer;
+}
   :root{
     --bodyColor: #6c86ad;
     --bodyColorUp: #6c86ad26;
@@ -1897,7 +1901,7 @@ Default css end
     align-items: center;
     background: #ffffff00;
     height: 36px;
-    width: 36px;
+   /* width: 36px; */
     justify-content: center;
     border-radius: 12px;
     transition: .3s;
