@@ -358,10 +358,16 @@ export default {
   },
   methods: {
     shoKeysStatus () {
+      let tempChain = JSON.parse(JSON.stringify(this.accountChain))
       this.keys.keying++
       this.keys.field = 'key'
       this.keys.chain = this.accountChain
-      // console.log('keys-----', this.keys)
+      for (let i = 0; i < this.accountChain.accounts.length; i++) {
+        if (this.$store.state.currentwallet.wallet.name !== this.accountChain.accounts[i].name) {
+          tempChain.accounts.splice(i, 1)
+          this.keys.chain = tempChain
+        }
+      }
     },
     closeDialog () {
       this.$emit('update:dialog', false)

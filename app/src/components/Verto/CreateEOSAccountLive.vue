@@ -70,6 +70,7 @@
                             <q-item-label caption>
                               Choose a EOS key from your Verto Wallet
                             </q-item-label>
+
                             <q-select
                               @input="publicKey = currentToken.value ; privateKey.key =  currentToken.privateKey "
 
@@ -123,7 +124,7 @@
                                       v-html="currentToken.label"
                                     />
                                     <q-item-label caption>{{
-                                      currentToken.value
+                                      currentToken.value.replace(/(.{7})..+/, '$1…')
                                     }}</q-item-label>
                                   </q-item-section>
                                 </q-item>
@@ -421,7 +422,7 @@
                       <p  class="q-pt-md" :class="{ 'text-white': $store.state.settings.lightMode === 'true'}" v-if="accountsInVerto.length == 0 &&  accountNames.length == 0"> No EOS accounts found</p>
                       <q-btn class="float-right" :color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'" :loading="spinnervisible" dense label="Refetch accounts" icon="refresh"  @click="getAccountNames()"  flat/>
                       <div
-                        class="text-h4 --subtitle"
+                        :class="$store.state.settings.lightMode === 'true' ? '': 'text-h4 --subtitle'"
                         v-if="accountNames.length"
                       >
                         <ul>
