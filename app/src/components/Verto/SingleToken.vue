@@ -335,7 +335,7 @@
                    <AccountSelector  :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
               </div>
 
-              <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount" class="q-px-md" >
+              <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount && !$store.state.wallets.portfolioTotal" class="q-px-md" >
                 <SendComponent @setAsset="setAsset" :token="asset.type" :miniMode="true" :key="$store.state.investment.defaultAccount.key+$store.state.investment.defaultAccount.name+$store.state.investment.defaultAccount.chain"  />
               </div>
 
@@ -684,12 +684,16 @@ export default {
   },
   methods: {
     setAsset (asset) {
-      let data = (this.$route.params.assets || []).find(o => asset && o.type === asset.type && o.chain === asset.chainID)
+      try {
+        let data = (this.$route.params.assets || []).find(o => o.type === asset.type && o.chain === asset.chainID)
 
-      if (data) {
-        this.setAssetData(data)
-      } else if (asset) {
-        this.setAssetData(asset)
+        if (data) {
+          this.setAssetData(data)
+        } else if (asset) {
+          this.setAssetData(asset)
+        }
+      } catch (e) {
+        console.log('e', e)
       }
     },
     async setAssetData (data) {
@@ -865,6 +869,7 @@ export default {
                   : this.asset.chain)))
 
           id = token ? token.id : null
+          // console.log('token ', token)
         }
         if (id) {
           this.getMarketData(id)
