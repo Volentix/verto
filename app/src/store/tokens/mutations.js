@@ -1,5 +1,8 @@
 import store from '@/store'
-
+import Lib from '@/util/walletlib'
+let noPriceList = {
+  bsc: ['flux', 'velo']
+}
 export const setTokenList = (state, data) => {
   state.list = data
 }
@@ -8,13 +11,18 @@ export const setWalletTokensData = (state, data) => {
   store.state.wallets.tokens.forEach((token, i) => {
     let tokenData = state.walletTokensData.find(o => o.symbol.toLowerCase() === token.type)
     if (tokenData) {
-      store.state.wallets.tokens[i].tokenPrice = tokenData.current_price
-      store.state.wallets.tokens[i].usd = tokenData.current_price * token.amount
+      let usd = Lib.findInExchangeList(token.chain, token.type, token.contract)
+
+      if (usd && (!noPriceList[token.chain] || !noPriceList[token.chain].includes(token.type))) {
+        store.state.wallets.tokens[i].tokenPrice = tokenData.current_price
+        store.state.wallets.tokens[i].usd = tokenData.current_price * token.amount
+      }
       if (store.state.wallets.tokens[i].icon.includes('empty')) {
         store.state.wallets.tokens[i].icon = tokenData.image
       }
     }
   })
+  if (store.state.wallets.tokens && store.state.wallets.tokens.length) { store.commit('wallets/updateTokens', store.state.wallets.tokens) }
 }
 export const updateState = (state, payload) => {
   state[payload.key] = payload.value

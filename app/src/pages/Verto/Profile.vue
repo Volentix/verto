@@ -3,16 +3,16 @@
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
-          <div class="col col-md-3">
+          <div class="col col-md-3" v-if="false">
             <div class="wallets-container">
               <profile-header :isMobile="false" class="marg" version="type2222" />
               <wallets :isMobile="false" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
               <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
             </div>
           </div>
-          <div class="col col-md-9">
+          <div class="col col-md-12">
             <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
-              <div class="standard-content">
+              <div class="standard-content-x q-pt-md">
                 <h2 class="standard-content--title flex justify-start">Profile</h2>
                 <profile />
               </div>
@@ -129,11 +129,11 @@ export default {
     }
   }
   .desktop-version{
-    background: #E7E8E8;
+    background: #FFF;
     padding-top: 13vh;
     padding-left: 18vh;
     padding-bottom: 50px;
-    padding-right: 2%;
+
     @media screen and (min-width: 768px) {
       padding-top: 11vh;
       padding-bottom: 0px;
@@ -141,6 +141,7 @@ export default {
   }
   .dark-theme{
     background: #04111F;
+    height: fit-content;
     /deep/ .mobile-version{
       background: #04111F;
     }
@@ -160,7 +161,7 @@ export default {
     .desktop-version{
       background: #04111F;
       padding-bottom: 8px;
-      min-height: 102vh;
+      min-height: unset;
       overflow: hidden;
       position: relative;
       scrollbar-width: 0px;
@@ -192,7 +193,7 @@ export default {
     min-height: 100vh !important;
     padding-bottom: 100px;
     @media screen and (min-width: 768px) {
-      padding: 2%;
+
       flex-direction: column;
       justify-content: flex-start;
       min-height: unset !important;
@@ -211,5 +212,22 @@ export default {
         font-size: 25px;
       }
     }
+  }
+  .desktop-card-style {
+    border-radius: 0px;
+  }
+  .desktop-version {
+    padding-top: 20px !important;
+    padding-left: 15px !important;
+    margin-bottom: 0px !important;
+  }
+  .desktop-card-style.dark-theme {
+    border: none;
+    padding-left: 20px;
+    border-radius: 0px;
+  }
+  .desktop-card-style{
+    box-shadow: none;
+    padding-left: 20px;
   }
 </style>

@@ -1,5 +1,7 @@
 import store from '@/store'
-
+let noPriceList = {
+  bsc: ['flux', 'velo']
+}
 const removePrivateData = data => {
   return JSON.parse(JSON.stringify(data)).map(o => {
     o.privateKeyEncrypted = null
@@ -41,7 +43,10 @@ export const updateTokens = (state, updatedtokens) => {
 
   updatedtokens = updatedtokens.map((o, index) => {
     o.index = getWalletIndex(o)
-
+    if (noPriceList[o.chain] && noPriceList[o.chain].includes(o.type)) {
+      o.tokenPrice = 0
+      o.usd = 0
+    }
     if (o.type === 'eos') {
       // console.log(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name), o.name, updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(b => b.usd), parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, b) => a + b, 0)), 'total')
       o.total = parseFloat(
@@ -79,7 +84,7 @@ export const updateTokens = (state, updatedtokens) => {
   state.tokens = updatedtokens
 
   localStorage.setItem(
-    'walletPublicData',
+    'walletPublicDatav2',
     JSON.stringify(removePrivateData(updatedtokens))
   )
 

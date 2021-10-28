@@ -4,17 +4,104 @@ import { scroll } from 'quasar'
 
 export default {
   methods: {
+    getImportLink (chain) {
+      let to = '/verto/import-wallet/' + chain
+      let routes = {
+        eth: '/verto/import-private-key/eth',
+        eos: '/verto/eos-account/import',
+        btc: '/verto/import-wallet/btc'
+      }
+      if (routes[chain]) {
+        to = routes[chain]
+      }
+      return to
+    },
+    getAssets (chain = null, account = null) {
+      let assets = []
+
+      this.$store.state.wallets.tokens
+        .filter(
+          (o) =>
+            (!account && !chain) ||
+            (chain && o.chain === chain && !account) ||
+            (account &&
+              o.chain === account.chain &&
+              ((account.isEvm && o.key === account.key) ||
+                (!account.isEvm && o.name === account.name)))
+        )
+        .forEach((asset, i) => {
+          let token = Object.assign({}, asset)
+
+          token.amount = parseFloat(token.amount)
+          token.usd = parseFloat(token.usd)
+
+          if (
+            (!isNaN(token.amount) && token.amount !== 0) ||
+            token.isEvm ||
+            !this.$store.state.wallets.portfolioTotal
+          ) {
+            let index = assets.findIndex(
+              (o) =>
+                o.type === token.type &&
+                o.chain === token.chain &&
+                (token.chain !== 'eos' || o.contract === token.contract)
+            )
+
+            if (index !== -1) {
+              assets[index].amount += token.amount
+              assets[index].usd += isNaN(token.usd) ? 0 : token.usd
+              assets[index].rateUsd = isNaN(token.tokenPrice)
+                ? 0
+                : token.tokenPrice
+              assets[index].percentage =
+                (assets[index].usd /
+                  parseFloat(this.$store.state.wallets.portfolioTotal)) *
+                100
+            } else {
+              token.percentage =
+                (token.usd /
+                  parseFloat(this.$store.state.wallets.portfolioTotal)) *
+                100
+              token.index = assets.length
+              token.rateUsd = isNaN(token.tokenPrice) ? 0 : token.tokenPrice
+              token.friendlyType =
+                token.type.length > 6
+                  ? token.type.substring(0, 6) + '...'
+                  : token.type
+              token.chainLabel = this.getChainLabel(token.chain)
+              assets.push(token)
+            }
+            assets.sort(
+              (a, b) =>
+                (isNaN(parseFloat(b.usd)) ? 0 : parseFloat(b.usd)) -
+                (isNaN(parseFloat(a.usd)) ? 0 : parseFloat(a.usd))
+            )
+          }
+        })
+      return assets
+    },
     getAccountLabel (w) {
       let label = this.getKeyFormat(w.key)
       if (w.chain === 'eos') {
         label = w.name
+      } else if (w.isEvm) {
+        label = !w.name.toLowerCase().includes('coin') ? (w.name) + ' ' + label.substring(6) : label
       }
       return label
     },
-    getKeyFormat (key) {
-      return key.substring(0, 6).toLowerCase() +
+    getKeyFormat (key, last = 5) {
+      return key.substring(0, 5).toLowerCase() +
       '...' +
-      key.substr(key.length - 5).toLowerCase()
+      key.substr(key.length - last).toLowerCase()
+    },
+    getPageName (name) {
+      let pages = {
+        token: ['token-page', 'single-token-page']
+      }
+      if (pages[name]) {
+        name = pages[name].find(a => a !== this.$route.name)
+      }
+      return name
     },
     scrollToElement (id) {
       const { getScrollTarget, setScrollPosition } = scroll
@@ -26,6 +113,7 @@ export default {
       setScrollPosition(target, offset, duration)
     },
     getChainLabel (chain) {
+      chain = chain.toLowerCase()
       let isEvm = Lib.evms.find(a => a.chain === chain)
       let chainLabel = HD.names.find(a => a.value === chain)
 
@@ -36,7 +124,7 @@ export default {
     },
     formatAccoountOption (w) {
       let account = {
-        value: w.key + '-' + w.chain,
+        value: w.key + '-' + w.chain + (w.name),
         key: w.key,
         isEvm: w.isEvm,
         chain: w.chain,
@@ -50,6 +138,9 @@ export default {
         name: w.name,
         label: this.getAccountLabel(w),
         color: this.getRandomColor()
+      }
+      for (let key in w) {
+        if (!account[key]) { account[key] = w[key] }
       }
       return account
     },
@@ -84,11 +175,11 @@ export default {
     copyToClipboard (key, copied) {
       this.$clipboardWrite(key)
       this.$q.notify({
-        message: copied ? copied + ' Copied' : 'Key Copied',
+        message: copied ? copied + ' Copied' : 'Copied',
         timeout: 2000,
         icon: 'check',
         textColor: 'white',
-        type: 'warning',
+        type: 'primary',
         position: 'top'
       })
     },
@@ -99,6 +190,19 @@ export default {
       let colors = 'red pink purple deep-purple indigo blue cyan teal amber blue-grey'
       let arrayColors = colors.split(' ')
       return arrayColors[randomNumber(0, arrayColors.length - 1)] + '-' + randomNumber(1, 4)
+    },
+    formatNumberWithSign (change) {
+      return (change > 0 ? '+' : '-') + '$' + this.formatNumber(Math.abs(change), 2)
+    },
+    toFormData: function (data) {
+      var form_data = new FormData()
+
+      for (var key in data) {
+        if (data[key] != null) {
+          form_data.append(key, data[key])
+        }
+      }
+      return form_data
     },
     nFormatter2 (num, digits) {
       if (isNaN(num)) {
@@ -157,7 +261,7 @@ export default {
            ....,
         ]
       */
-      let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || !['eos', 'eth'].includes(v.chain)) && a.findIndex(t => (t.chain === v.chain)) === i)))
+      let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || v.type === 'verto' || !['eos', 'eth'].includes(v.chain)) && a.findIndex(t => (t.chain === v.chain)) === i)))
         .map(o => {
           let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
           o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)
@@ -181,14 +285,44 @@ export default {
         })
       return chains.sort((a, b) => parseFloat(b.chainTotal) - parseFloat(a.chainTotal))
     },
-    formatNumber (num, decimals = 4) {
+
+    async setCurrentWallet (chain) {
+      this.$store.state.currentwallet.wallet = chain
+
+      this.selectedCoin = chain
+
+      this.$store.commit('currentwallet/updateParams', {
+        chainID: this.$route.params.chainID || this.selectedCoin.chain,
+        tokenID: this.$route.params.tokenID || this.selectedCoin.type,
+        accountName: this.$route.params.accountName || this.selectedCoin.name.toLowerCase()
+      })
+
+      // this.setRessourcesInfos()
+    },
+    formatNumber (num, decimals = 4, scientific = true, removeZero = false) {
+      num = isNaN(num) ? 0 : num
+      if (num && decimals !== 2 && decimals !== 0 && !removeZero) {
+        decimals = (parseFloat(num) - parseInt(num)) === 0 ? 0 : decimals
+      }
       decimals = decimals < 0 ? 0 : decimals
+
       let value = parseFloat(num ? num.toString().split(',').join('') : num).toFixed(decimals)
       const formatter = new Intl.NumberFormat('en-US', {
         minimumFractionDigits: decimals
       })
 
-      return isNaN(value) ? '0.00' : formatter.format(value)
+      let amount = isNaN(value) ? '0.00' : formatter.format(value)
+      if (parseFloat(num) >= 1000000) amount = this.nFormatter2(num)
+      if (parseFloat(amount) === 0 && parseFloat(num) !== 0 && !isNaN(amount) && decimals !== 0 && Math.abs(parseFloat(num)) < 0.00001) {
+        if (scientific) {
+          amount = parseFloat(num).toExponential().replace(/e\+?/, ' x10^')
+          let a = amount.toString().split('x')
+          amount = parseFloat(a).toFixed(0).toString() + 'x' + a[1]
+        } else {
+          amount = parseFloat(num)
+        }
+      }
+      return amount.toString()
     },
     convertTimestamp (timestamp) {
       let d = isNaN(timestamp) ? new Date(timestamp) : new Date(timestamp * 1000),

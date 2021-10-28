@@ -83,7 +83,7 @@
               </div>
             </template>
           </q-input>
-          <a :href="transactionLink" target="_blank" class="text-body2 text-black"> More infos</a>
+          <a :href="transactionLink" target="_blank" class="text-body2 text-black"> More info</a>
         </q-card-section>
         <q-card-actions align="right" class="q-pr-sm">
           <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/>
@@ -103,7 +103,8 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'full-height': screenSize > 1024 && !miniMode}">
+
+    <div v-show="currentAccount" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'full-height': screenSize > 1024 && !miniMode}">
 
       <div :class="{'desktop-version': screenSize > 1024 && !miniMode}" v-if="screenSize">
         <div class="row ">
@@ -118,7 +119,7 @@
           <div :class="[ embedded ? 'col-md-10 offset-md-1' : (miniMode ? 'col-md-12' : ' col-md-8' ), 'col']">
             <div class="apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'desktop-card-style': screenSize > 1024 && !miniMode }">
               <div class="standard-content">
-                <h2 class="standard-content--title flex justify-start items-center" v-if="!miniMode">Send <img :src="currentToken.image" class="max40 q-ml-sm" alt=""></h2>
+                <h2 class="standard-content--title flex justify-start items-center" v-if="!miniMode">Send <img :src="currentToken.icon" class="max40 q-ml-sm" alt=""></h2>
                 <div class="standard-content--body" v-show="miniStep != 2">
                   <div class="standard-content--body__form">
 
@@ -132,7 +133,7 @@
                             rounded
                             outlined
                             class="select-input"
-                            @input="checkGas()"
+                            @input="checkGas() ; $emit('setAsset', currentToken)"
                             v-model="currentToken"
                             :options="options.filter( o => o.chainID == selectedCoin.chain && ((selectedCoin.isEvm && o.key.toLowerCase() == currentAccount.key.toLowerCase()) || (!selectedCoin.isEvm && o.label.toLowerCase() == selectedCoin.name.toLowerCase())))"
                         >
@@ -143,7 +144,7 @@
                               v-on="scope.itemEvents"
                             >
                               <q-item-section avatar>
-                                <q-icon class="option--avatar" :name="`img:${scope.opt.image}`" />
+                                <q-icon class="option--avatar" :name="`img:${scope.opt.icon}`" />
                               </q-item-section>
                               <q-item-section dark>
                                 <q-item-label v-html="scope.opt.type.toUpperCase()" />
@@ -156,7 +157,7 @@
                               v-if="currentToken && currentToken.type"
                             >
                               <q-item-section avatar>
-                                <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
+                                <q-icon class="option--avatar" :name="`img:${currentToken.icon}`" />
                               </q-item-section>
                               <q-item-section>
                                 <q-item-label v-html="currentToken.type.toUpperCase()" />
@@ -187,7 +188,7 @@
                             class="select-input"
                             @input="changeAccount()"
                             v-model="currentToken"
-                            :options="options"
+                            :options="options.filter( o => o.value == currentAccount.chain)"
                         >
                           <template v-slot:option="scope">
                             <q-item
@@ -196,7 +197,7 @@
                               v-on="scope.itemEvents"
                             >
                               <q-item-section avatar>
-                                <q-icon class="option--avatar" :name="`img:${scope.opt.image}`" />
+                                <q-icon class="option--avatar" :name="`img:${scope.opt.icon}`" />
                               </q-item-section>
                               <q-item-section dark>
                                 <q-item-label v-html="scope.opt.label + ' - ' + scope.opt.type.toUpperCase()" />
@@ -209,11 +210,12 @@
                               v-if="currentToken"
                             >
                               <q-item-section avatar>
-                                <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
+                                <q-icon class="option--avatar" :name="`img:${currentToken.icon}`" />
                               </q-item-section>
                               <q-item-section>
                                 <q-item-label v-html="currentToken.label"/>
-                                <q-item-label caption class="ellipsis mw200">{{ currentToken.value }}</q-item-label>
+                                <q-item-label caption class="ellipsis mw200" v-if="currentToken && currentToken.value">{{ getKeyFormat( currentToken.value ) }}</q-item-label>
+
                               </q-item-section>
                             </q-item>
                             <q-item
@@ -231,7 +233,7 @@
 
                       </div>
                       <div class="col col-4" :class="{'col-md-12 col-12': screenSize < 1024 || miniMode}">
-                        <span class="lab-input" >Amount</span>
+                        <span class="lab-input" @click="isTest = true" >Amount</span>
                         <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentToken.amount) ? ( miniMode ?  sendAmount :  parseFloat(currentToken.amount) ) : parseFloat(sendAmount) ; checkGas(); " :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                           <template v-slot:append>
                             <div class="flex justify-end">
@@ -242,7 +244,7 @@
                         </q-input>
                       </div>
                     </div>
-                    <div class="row">
+                    <div class="row" v-if="parseFloat(sendAmount) || !miniMode">
                       <div class="col col-12">
                         <span class="lab-input">To</span>
                         <q-input
@@ -307,13 +309,18 @@
                  <q-input outlined label="Gas Price (GWEI)"  @input="isBalanceEnough(); setCustomGas()" v-model="gasPriceGwei" dense   class="col-6"/>
                  <q-input outlined label="Gas limit" @input="isBalanceEnough(); setCustomGas()"  v-model="gasLimit" dense  class="col-6" />
                 </div>
-                <span v-if="gasOptions.length && currentAccount.isEvm">
+                <span v-if="gasOptions.length && currentAccount.isEvm && (!miniMode || miniStep == 2)">
                 <span class="q-pl-md cursor-pointer"  @click="showGasOptions = true" v-if="!showGasOptions"><q-icon name="add" /> Advanced </span>
                 <span class="cursor-pointer q-pt-xs" @click="showGasOptions = false" v-else>Hide </span>
                 </span>
+               <span v-if="isTest">{{!currentToken.amount? '!currentToken.amount' :9 }}
+                {{ currentAccount.isEvm ? 'currentAccount.isEvm ' : '5'}}
+                {{ gasOptions.length == 0 ? 'gasOptions.length == 0 ' : 4}}
+                {{!sendToResolved ? ' !sendToResolve':'6'}}{{ currentAccount.chain}}
+                </span>
                 <q-linear-progress v-if="!params.sendTransaction && sendAmount !== 0 && sendToResolved  && currentAccount.isEvm &&  gasOptions.length == 0 " indeterminate rounded  color="deep-purple-12" class="q-my-sm" />
                  <div class="standard-content--footer" v-if="!params.sendTransaction && (!isExchange || !transSuccessDialog)">
-                   <q-btn flat :loading="openModalProgress" class="action-link next" :disable="!currentToken.amount || currentAccount.isEvm &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="(!miniMode || !currentAccount.isEvm) ? openModalFun() :  ( miniStep == 2 ? openModalFun() : miniStep = 2 )" text-color="white"  :label="currentAccount.isEvm && miniMode && miniStep == 1 ? 'Set Gas' : 'Transfer'" />
+                   <q-btn flat :loading="openModalProgress" class="action-link next" :disable="!currentToken.amount || currentAccount.isEvm &&  gasOptions.length == 0 || sendAmount == 0 || !sendToResolved" color="black" @click="(!miniMode || !(currentAccount.isEvm || currentAccount.chain == 'btc') ) ? openModalFun() :  ( miniStep == 2 ? openModalFun() : miniStep = 2 )" text-color="white"  :label="(currentAccount.isEvm || currentAccount.chain == 'btc' )  && miniMode && miniStep == 1 ? 'Set Gas' : 'Transfer'" />
                 </div>
               </div>
             </div>
@@ -391,6 +398,7 @@ import { osName } from 'mobile-device-detect'
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import EOSContract from '../../mixins/EOSContract'
+import Formatter from '../../mixins/Formatter'
 import ETHContract from '../../mixins/EthContract'
 import initWallet from '@/util/Wallets2Tokens'
 import {
@@ -404,7 +412,7 @@ export default {
     ProfileHeader,
     Wallets
   },
-  props: ['embedded', 'miniMode', 'isExchange'],
+  props: ['embedded', 'miniMode', 'isExchange', 'token'],
   data () {
     return {
       osName: '',
@@ -430,6 +438,7 @@ export default {
       fetchCurrentWalletFromState: true,
       from: '',
       isPwd: true,
+      isTest: false,
       sendAmount: 0,
       formatedAmount: '',
       options: [],
@@ -449,7 +458,7 @@ export default {
       walletClientName: 'verto', // should be 'verto' when in prod
       cruxKey: {},
       currentToken: {
-        image: ''
+        icon: ''
       },
       sendToResolved: null,
       memoError: false,
@@ -611,10 +620,11 @@ export default {
           this.options.push({
             label: token.name.toLowerCase(),
             value: token.key + ' - ' + token.type.toUpperCase(),
-            image: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+            icon: token.type !== 'usdt' ? token.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
             type: token.type,
             contract: token.contract,
             key: token.key,
+            isEvm: token.isEvm,
             name: token.name,
             precision: token.precision,
             amount: token.amount,
@@ -629,11 +639,12 @@ export default {
           this.currentToken = {
             label: this.selectedCoin.name,
             value: this.selectedCoin.chain !== 'eos' ? this.selectedCoin.key : this.selectedCoin.key + ' - ' + this.selectedCoin.type.toUpperCase(),
-            image: this.selectedCoin.type !== 'usdt' ? this.selectedCoin.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
+            icon: this.selectedCoin.type !== 'usdt' ? this.selectedCoin.icon : 'https://assets.coingecko.com/coins/images/325/small/tether.png',
             type: this.selectedCoin.type,
             contract: this.selectedCoin.contract,
             precision: this.selectedCoin.precision,
             chainID: this.selectedCoin.chain,
+            isEvm: this.selectedCoin.isEvm,
             key: this.selectedCoin.key,
             name: this.selectedCoin.name,
             amount: this.selectedCoin.amount
@@ -644,6 +655,15 @@ export default {
       } else {
         let updatedToken = this.options.find(o => o.type.toLowerCase() === this.currentToken.type.toLowerCase() && o.key.toLowerCase() === this.currentToken.key.toLowerCase() && o.name.toLowerCase() === this.currentToken.name.toLowerCase() && o.chainID === this.currentToken.chainID)
         if (updatedToken) this.currentToken = updatedToken
+      }
+
+      if (this.token && this.options.length) {
+        let found = this.options.find(o => o.type === this.token && o.chainID === this.selectedCoin.chain && o.key === this.selectedCoin.key)
+
+        if (found) {
+          this.$emit('setAsset', found)
+          this.currentToken = found
+        }
       }
     },
     setCustomGas () {
@@ -947,12 +967,12 @@ export default {
       this.openModalProgress = false
     }
   },
-  mixins: [EOSContract, ETHContract]
+  mixins: [EOSContract, ETHContract, Formatter]
 }
 </script>
 <style lang="scss" scoped>
   @import "~@/assets/styles/variables.scss";
-.full-height {
+.gt-sm .full-height {
 height: 100vh  !important;
 }
 .gasfield {
@@ -1402,5 +1422,8 @@ height: 100vh  !important;
         // height: 56vh;
         max-height: 90.15%;
     }
+}
+.dark-theme .standard-content--body__form .lab-input{
+  color: #FFF;
 }
 </style>

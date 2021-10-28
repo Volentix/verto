@@ -4,21 +4,71 @@
     :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
   >
     <div class="row">
-      <div class="col col-2 app-logo flex q-pl-md items-center">
+      <div class="col col-1 app-logo row flex q-pl-md items-center q-pt-md">
         <!-- <img src="statics/vtx_black.svg" alt="" class="q-mr-sm" style="width: 30px; height: 30px;"> -->
-        <svg
-          class="svg_logo q-mr-sm"
-          width="20"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 16 20.58"
-        >
-          <path
-            d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z"
-            transform="translate(-183 -18.21)"
-          ></path>
-        </svg>
-        <router-link to="/verto/dashboard">VERTO</router-link>
+        <div class="col-12">
+          <svg
+            class="svg_logo q-mr-sm"
+            width="20"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 20.58"
+          >
+            <path
+              d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z"
+              transform="translate(-183 -18.21)"
+            ></path>
+          </svg>
+          <router-link to="/verto/dashboard">VERTO</router-link>
+        </div>
       </div>
+      <div class="col-2 q-pt-sm" style="width: 150px;"></div>
+      <div class="col-md-2 q-pt-md q-pb-sm q-pl-sm">
+        <q-input v-if="false" dense filled v-model="searchVal" style="width:280px" class="float-right  full-width q-mt-sm" icon-right="search"></q-input>
+        <q-select
+          filled
+          v-model="searchVal"
+          :dark="$store.state.settings.lightMode === 'true'"
+          use-input
+          input-debounce="0"
+          class="select-token"
+          rounded
+          dense
+          :label="options.length == optionsUnfiltered.length ? 'Search '+options.length+'+ tokens' : 'Result: '+options.length+' tokens'"
+          :options="options"
+          @filter="filterFn"
+          style="width: 250px"
+        >
+          <template v-slot:option="scope">
+            <q-item
+              class="custom-menu"
+              v-bind="scope.itemProps"
+              v-on="scope.itemEvents"
+              @click="selectToken(scope.opt) ; "
+            >
+              <q-item-section v-if="scope.opt.image" avatar>
+                <q-icon :name="`img:${scope.opt.image}`" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label
+                  v-html="scope.opt.value.length > 20 ? scope.opt.value.substring(0,20).toUpperCase()+'...' : scope.opt.value.toUpperCase()"
+                />
+              </q-item-section>
+            </q-item>
+          </template>
+          <template v-slot:append>
+            <q-icon v-if="searchVal !== ''" name="close" @click="searchVal = ''" class="cursor-pointer" />
+            <q-icon name="search" />
+          </template>
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey">
+                No results
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
+    </div>
+
       <div class="col col-3 flex items-center date-scrolling-msg">
         <div class="flex items-center main_portfolio" :class="{'text-white': $store.state.settings.lightMode === 'true'}" v-if="$router.currentRoute.path === '/verto/defi'">
           <h3 class="">Main Portfolio</h3> <span class="q-ml-sm q-mr-sm q-mb-xs">|</span> <h2 class="">${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }} USD</h2>
@@ -26,10 +76,10 @@
         <!-- <div class="date">{{ refreshDate() }}</div> -->
         <!-- <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content='This app is in beta, please send us bug reports if you find any. <b><a target="_blank" href="https://t.me/vertosupport">t.me/vertosupport</a></b>' /> -->
       </div>
-      <div class="col col-7 flex justify-end q-pr-md items-center menu">
+      <div class="col col-4 flex justify-end q-pt-xs q-pr-md items-center menu">
         <!-- to="/verto/create-polkadot-account" -->
        <!-- <router-link to="/verto/create-polkadot-account" >Polkadot</router-link> -->
-        <q-btn @click="$store.state.settings.activityBar = !$store.state.settings.activityBar" dense flat round icon="notifications_none" class="q-ml-md q-mr-md"  >
+        <q-btn @click="$store.state.settings.activityBar = !$store.state.settings.activityBar" dense unelevated round icon="notifications_none" :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}" class="q-ml-md q-mr-md">
           <q-badge color="white" class="text-black" floating>0</q-badge>
         </q-btn>
         <q-btn-dropdown
@@ -194,21 +244,26 @@ import Vue from 'vue'
 import VDexNodeConfigManager from '@/util/VDexNodeConfigManager'
 import initWallet from '@/util/Wallets2Tokens'
 import EosRPC from '@/util/EosWrapper'
+import Formatter from '@/mixins/Formatter'
 import configManager from '@/util/ConfigManager'
-
+import Lib from '@/util/walletlib'
 export default {
   name: 'TopMenu',
+  mixins: [Formatter],
   components: {
-    // VTextMarquee: VTextMarquee
+
   },
   data () {
     return {
       lightMode: true,
+      optionsUnfiltered: [],
       temp: false,
       animate: true,
+      searchVal: '',
       interval: null,
       key: 0,
       network: null,
+      options: [],
       networks: [
         {
           label: 'Mainnet',
@@ -229,6 +284,7 @@ export default {
     this.network = this.networks.find(
       (o) => o.value.toLowerCase() === this.$store.state.settings.network
     )
+    // this.options = CrosschainDex.getAllCoins()
     window.localStorage.setItem(
       'skin',
       window.localStorage.getItem('skin') !== null
@@ -241,8 +297,29 @@ export default {
         : false
     // console.log('this.$store.state.settings.lightMode', this.$store.state.settings.lightMode)
     this.lightMode = window.localStorage.getItem('skin') !== 'false'
+
+    this.getTokens()
+  },
+  watch: {
+    '$store.state.tokens.list': function () {
+      this.getTokens()
+    }
   },
   methods: {
+    selectToken (asset) {
+      setTimeout(() => {
+        this.options = this.optionsUnfiltered
+        this.searchVal = ''
+
+        this.$router.push({
+          name: this.getPageName('token'),
+          path: '/verto/token/' + asset.chain + '/' + asset.value,
+          params: {
+            asset: asset
+          }
+        })
+      }, 300)
+    },
     nFormatter2 (num, digits) {
       var si = [
         { value: 1, symbol: '' },
@@ -261,6 +338,60 @@ export default {
         }
       }
       return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol
+    },
+    filterFn (val, update) {
+      if (val === '') {
+        update(() => {
+          this.options = this.optionsUnfiltered
+        })
+        return
+      }
+
+      update(() => {
+        const needle = val.toLowerCase()
+        this.options = this.optionsUnfiltered.filter(v => v.value.toLowerCase().indexOf(needle) > -1).sort(function (a, b) {
+          return a.value.length - b.value.length
+        })
+      })
+    },
+    getTokens () {
+      if (!this.$store.state.tokens.list || !this.$store.state.tokens.list.length) return
+      let top20 = ['btc', 'eth', 'ada', 'usdt', 'bnb', 'xrp', 'doge', 'usdc', 'dot', 'uni', 'sol', 'ltc', 'bch', 'busd', 'link', 'matic', 'icp', 'wbtc', 'xlm', 'etc'].reverse()
+      let options = [{
+        label: 'Bitcoin',
+        value: 'btc',
+        chain: 'btc',
+        type: 'btc',
+        coinGeckoId: 'bitcoin'
+        // image: 'https://files.coinswitch.co/public/coins/btc.png'
+      }]
+
+      this.$store.state.tokens.list.filter(t => {
+        let chains = Object.keys(t.platforms)
+        if (chains && chains.length) {
+          let chain = chains.find(a => a === 'ethereum')
+          chain = chain || chains[0]
+          chain = Lib.getCoingeckoChain(chain)
+          if (chain) {
+            // let image = null /// Lib.getTokenImage(t.symbol.toLowerCase())
+
+            options.push({
+              label: t.name,
+              value: t.symbol.toLowerCase(),
+              chain: chain,
+              coinGeckoId: t.id,
+              type: t.symbol.toLowerCase()
+            })
+          }
+        }
+      })
+      options = options.filter((e, i, a) => a.findIndex(j => j.value === e.value) === i).sort(function (a, b) {
+        return top20.indexOf(b.type) - top20.indexOf(a.type)
+      })
+      this.options = options
+      this.optionsUnfiltered = options
+      /*
+      console.log(a, 'a', this.$store.state.tokens.list) */
     },
     async switchNetwork () {
       this.$store.dispatch('settings/toggleNetwork', this.network.value)
@@ -333,7 +464,17 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
-
+.select-token /deep/ .q-menu {
+  max-width: 100px !important;
+  min-width: 50px !important;
+}
+/deep/ .select-token {
+  border-radius: 100px !important;
+}
+/deep/ .select-token .q-field__control,
+/deep/ .select-token .q-field__native {
+  border-radius: 100px !important;
+}
 .menu-top-wrapper {
   position: fixed;
   left: 0px;
@@ -349,6 +490,8 @@ export default {
     .col {
       height: $height;
       &.menu {
+        position: relative;
+        right: -45px;
         a {
           font-weight: $regular;
           font-family: $Titillium;

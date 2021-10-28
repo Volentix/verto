@@ -1,23 +1,22 @@
 <template>
   <div
     :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
-    class="wrapper"
+    class="wrapper q-pr-md"
+    v-if="asset.type"
   >
-    <q-scroll-area
-      :visible="true"
-      class="q-mr-sm"
-      style="height: 75vh"
-      v-if="asset.type"
-    >
+    <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" style="margin-left: 15px; height: 77vh;">
       <div class="row" >
         <div class="left-area col-md-8">
           <div class="left q-ml-md q-py-md">
 
             <span class="z-max">
+             <div class="text-h6 text-bold">
+              {{marketData && marketData.tokenName ? marketData && marketData.tokenName:  asset.type.toUpperCase()}}</div>
               <div class="row q-pb-xl flex items-center">
+
                 <h2>
 
-                  <img :src="asset.icon" style="max-width: 40px" alt="image" />
+                  <img v-if="asset.icon" :src="asset.icon" style="max-width: 40px" alt="image" />
                   <img
                     v-if="false"
                     style="max-width: 0px"
@@ -29,9 +28,10 @@
                     alt=""
                   />
                 </h2>
-                <h3 v-if="asset.rateUsd" class="q-pl-lg q-pr-md">
-                  ${{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice, 0) : formatNumber(asset.rateUsd, 0)
-                  }}<span
+                <h3   class="q-pl-lg q-pr-md">
+
+                 <span class="historicalPrice"> ${{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice,18).split(".")[0] : formatNumber(asset.rateUsd, 18).split(".")[0]
+                  }} </span><span
                   class="g-txt"
                     style="
                       font-size: 35px;
@@ -39,10 +39,10 @@
                       font-weight: 600;
                       letter-spacing: normal;
                     "
-                    >.{{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice, 2).split(".")[1] : formatNumber(asset.rateUsd, 2).split(".")[1] }}</span
+                    >.{{ $store.state.tokens.historicalPrice ? formatNumber($store.state.tokens.historicalPrice, 3, false, true).split(".")[1] : formatNumber(asset.rateUsd, 3 , false, true).split(".")[1] }}</span
                   >
-                  <span class="q-pl-md text-h6" v-if="!$store.state.tokens.historicalPrice" :class="asset.color">{{
-                    asset.change24hPercentage
+                  <span class="q-pl-md text-h6" v-if="!$store.state.tokens.historicalPrice && marketData" :class="marketData.color">{{
+                    marketData.change_24h
                   }}</span>
                 </h3>
               </div>
@@ -50,15 +50,18 @@
 
             <div class="token-chart q-mt-lg" @mouseleave="$store.commit('tokens/updateState', { key: 'historicalPrice', value: null })">
               <!--  <q-spinner-dots color="deep-purple-12" v-if="!chartData" /> -->
-              <span class="text-caption" v-if="!chartData">
+              <span class="text-caption" v-if="!chartData && chartAvailable">
                 Loading historical price (1 month period)</span
+              >
+              <span class="text-caption" v-else-if="!chartAvailable">
+                Historical price not available for this token </span
               >
               <q-linear-progress
                 indeterminate
                 color="grey-5"
                 size="xs"
                 class="q-mt-sm"
-                v-if="!chartData"
+                v-if="!chartData && chartAvailable"
               />
 
               <PriceChart
@@ -66,12 +69,12 @@
                 :dataType="'price'"
                 class="q-mt-md"
                 :data="chartData"
-                v-else
+                v-else-if="chartAvailable"
               />
               <PriceChart :dataType="'volume'" v-if="false" />
             </div>
 
-            <ul class="tab-btn">
+            <ul class="tab-btn" >
               <li @click="getHistoriclPrice(1)">
                 <a
                   href="javascript:void(0)"
@@ -109,44 +112,110 @@
               </li>
             </ul>
           </div>
+           <div class="left left2"  v-if="$store.state.investment.defaultAccount">
+            <table>
+              <tr>
+                <td>
+                  <h3>
+                    <span class="text-bold q-pr-md"> Equity</span>
 
-          <div class="left left3" v-if="false">
-            <h3>Stats</h3>
+                  </h3>
+                  <span class="percentage percent-portfolio"
+                      >{{ formatNumber(asset.percentage, 2) }}% of Portfolio</span
+                    >
+                  <h2>
+                    ${{ formatNumber(asset.usd, 18).split(".")[0]}}<span>{{
+                      formatNumber(asset.usd, 3).split(".")[1] ? '.'+formatNumber(asset.usd, 3).split(".")[1] : ''
+                    }}</span>
+                  </h2>
+                  <h4>
+                    {{ formatNumber(asset.amount, 3) }}
+                    {{ asset.type.toUpperCase() }}
+                  </h4>
+                </td>
+
+                <td class="m-left q-pt-md">
+                  <h5 class="text-bold">
+                    Profit/Loss
+                    <span><i class="far fa-question-circle"></i></span>
+
+                  </h5>
+                  <p>-</p>
+
+                  <h5 class="text-bold">24-hour Return</h5>
+                  <p v-if="asset.change24hPercentage">
+                    {{ asset.change24h }}
+                    <span :class="'pair q-pr-xs allocation ' + asset.color"
+                      >({{ asset.change24hPercentage }})</span
+                    >
+                  </p>
+                  <p v-else>
+                    <span :class="'pair q-pr-xs allocation ' + asset.color"
+                      >-</span
+                    >
+                  </p>
+                </td>
+
+                <td class="m-left q-pt-md">
+                  <h5 class="text-bold">
+                    Average Cost
+                    <span><i class="far fa-question-circle"></i></span>
+                  </h5>
+                  <p>-</p>
+
+                  <h5 class="text-bold">
+                    Fees
+                    <span><i class="far fa-question-circle"></i></span>
+                  </h5>
+                  <p>-</p>
+                </td>
+              </tr>
+            </table>
+          </div>
+             <div
+          class="col col-12 history-container"
+
+        >
+
+         <div class="left q-pl-lg left3" v-if="marketData">
+            <h3 class="text-body text-bold">Stats</h3>
 
             <table>
               <tr>
                 <td>
                   <h5>1 Day</h5>
-                  <span style="color: #f18383; font-weight: 400">-6.3%</span>
+                  <span :class="[marketData.change_24h && marketData.change_24h.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_24h}}%</span>
                   <h5>Market Cap</h5>
-                  <p>$194.6B</p>
+                  <p>${{nFormatter2(marketData.market_cap)}}</p>
+                </td>
+
+                <td>
+                  <h5>1 Week</h5>
+                  <span :class="[marketData.change_7d && marketData.change_7d.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_7d}}%</span>
+                  <h5>High 24h</h5>
+                  <p>{{marketData.high_24h}}</p>
                 </td>
 
                 <td>
                   <h5>1 Month</h5>
-                  <span style="color: #f18383; font-weight: 400">-14.7%</span>
-                  <h5>Fully Diluted Value</h5>
-                  <p>$194.6B</p>
-                </td>
-
-                <td>
-                  <h5>3 Month</h5>
-                  <span style="color: #65d687; font-weight: 400">+176.9%</span>
-                  <h5>1 Year Low</h5>
-                  <p>$124.55</p>
+                  <span :class="[marketData.change_30d && marketData.change_30d.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400">{{marketData.change_30d}}%</span>
+                  <h5>Total Supply</h5>
+                  <p>{{marketData.total_supply}}</p>
                 </td>
 
                 <td>
                   <h5>1 Year</h5>
-                  <span style="color: #65d687; font-weight: 400"
-                    >+1,178.2%</span
+                  <span :class="[marketData.change_1y && marketData.change_1y.substr(0,1) == '+' ? 'text-green-6' : 'text-pink-12']" style="font-weight: 400"
+                    >{{marketData.change_1y}}</span
                   >
-                  <h5>1 Year High</h5>
-                  <p>$1,969.98</p>
+                  <h5>Total volume</h5>
+                  <p>{{marketData.total_volume}}</p>
                 </td>
               </tr>
             </table>
           </div>
+
+        </div>
 
           <div class="left left3" style="border: none" v-if="false">
             <h3>Tags</h3>
@@ -224,6 +293,7 @@
             </div>
           </div>
         </div>
+
         <div class="right-area q-pr-lg col" >
           <transition name="fade" mode="out-in">
             <div
@@ -251,25 +321,28 @@
                 mobile-arrows
                 :set="show1inch = ['bsc','matic','eth'].includes(asset.chain)"
               >
-                <q-tab name="send" label="Send" />
-                <q-tab name="swap" v-if="asset.chain != 'eos'  && show1inch" label="Swap" />
-                <q-tab name="buy" v-if="asset.chain == 'eos'" label="Buy" />
-                <q-tab name="sell" v-if="asset.chain == 'eos'" label="Sell" />
+
+               <q-tab v-if="!$store.state.wallets.portfolioTotal" name="import" label="Import" />
+                <q-tab v-if="$store.state.wallets.portfolioTotal" name="send" label="Send" />
+           <!--     <q-tab name="swap" v-if="asset.chain != 'eos'  && show1inch" label="Swap" />-->
+                <q-tab name="buy" v-if="$store.state.wallets.portfolioTotal" @click="exchangeToken({to:asset.type})"  label="Buy" />
+                <q-tab v-if="$store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key && $store.state.wallets.portfolioTotal" name="sell" @click="exchangeToken({from:asset.type})" label="Sell" />
               </q-tabs>
 
-              <div class="text-center">
-                   <AccountSelector :chains="asset.isEvm ? ['bsc','matic','eth'] : [asset.chain]"  v-show="tab != 'swap' && !fromPreview" :showAllWallets="true"  :chain="asset.chain" class="q-pt-lg" />
+              <ImportView class="q-pa-md" v-if="!$store.state.wallets.portfolioTotal" :chain="asset.chain" :key="asset.chain" />
+              <div class="text-center " v-if="tab != 'import'" >
+                   <AccountSelector  :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
               </div>
 
-              <div v-if="tab == 'send' && asset.chain != 'eos'" class="q-px-md">
-                <SendComponent :miniMode="true" :key="$store.state.investment.defaultAccount.key+$store.state.investment.defaultAccount.name" v-if="$store.state.investment.defaultAccount" />
+              <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount" class="q-px-md" >
+                <SendComponent @setAsset="setAsset" :token="asset.type" :miniMode="true" :key="$store.state.investment.defaultAccount.key+$store.state.investment.defaultAccount.name+$store.state.investment.defaultAccount.chain"  />
               </div>
 
               <div v-if="show1inch && tab == 'swap'" >
                <Oneinch :miniMode="true" :tokenType="asset.type"  :chain="asset.chain" class="oneinch-wrapper"></Oneinch>
               </div>
 
-              <div v-else class="q-pa-md">
+              <div v-else-if="tab != 'send' && tab != 'import' || (tab == 'send' && asset.chain == 'eos')" class="q-pa-md">
               <p class="q-pt-md text-purple-12" v-if="tab != 'send' && !['bsc','matic','eth','eos'].includes(asset.chain)"> Buying and selling {{asset.type.toLowerCase()}} will be available very soon</p>
               <div class="row" v-if="!fromPreview ">
               .
@@ -277,10 +350,13 @@
                   :dark="$store.state.settings.lightMode === 'true'"
                   bottom-slots
                   :label="asset.type.toUpperCase() + ' amount to '+tab"
-                  class="col-12 q-px-md q-pt-md"
+                  class="col-12 q-px-md q-pt-md q-pb-lg from-input"
                   v-show="asset.chain == 'eos'"
                   v-model="depositQuantity"
                 >
+                 <template v-slot:hint>
+                  <q-btn class="set-max" label="Set max" @click="depositQuantity = parseFloat(assetBalance)" dense flat />
+                  </template>
                   <template v-slot:append>
                     <q-icon
                       size="1rem"
@@ -303,7 +379,8 @@
                     {{ formatNumber(assetBalance, 2) }}
                     {{ asset.type.toUpperCase() }}
                   </template>
-                </q-input>
+                </q-input><br/>
+
                 <q-select
                   v-if="
                     (tab == 'sell' || tab == 'buy' || tab == 'add liquidity') &&
@@ -375,13 +452,16 @@
                 </q-select>
 
                 <q-input
+
                   :dark="$store.state.settings.lightMode === 'true'"
                   v-if="tab == 'send'"
-                  label="To"
+                  label="To : Enter account name"
                   v-show="asset.chain == 'eos'"
                   class="col-12 q-px-md"
                   v-model="sendTo"
-                />
+                >
+
+                </q-input>
                 <q-input
                   :dark="$store.state.settings.lightMode === 'true'"
                   v-if="
@@ -500,85 +580,10 @@
             <!-- <AssetBalancesTable v-if="tokenTabOption == 'assets'" @setAsset="setAsset" :rowsPerPage="6"/>
           <liquidityPoolsTable  v-else-if="tokenTabOption == 'opportunities'"  :asset="asset" :rowsPerPage="7"   /> -->
           </div>
+
+ <TokenByAccount :type="asset.type" :chain="asset.chain" class="right-area q-mt-lg col" />
         </div>
-        <div
-          class="col col-12 history-container"
-          v-if="$store.state.investment.defaultAccount"
-        >
-          <div class="left left2">
-            <table>
-              <tr>
-                <td>
-                  <h3>
-                    <span class="text-bold q-pr-md"> Equity</span>
-                    <span class="percentage"
-                      >{{ formatNumber(asset.percentage, 2) }}% of tradeable
-                      assets</span
-                    >
-                  </h3>
-                  <h2>
-                    ${{ formatNumber(asset.usd, 0) }}.<span>{{
-                      formatNumber(asset.usd, 2).split(".")[1]
-                    }}</span>
-                  </h2>
-                  <h4>
-                    {{ formatNumber(asset.amount, 2) }}
-                    {{ asset.type.toUpperCase() }}
-                  </h4>
-                </td>
 
-                <td class="m-left q-pt-md">
-                  <h5 class="text-bold">
-                    Profit/Loss
-                    <span><i class="far fa-question-circle"></i></span>
-
-                  </h5>
-                  <p>-</p>
-
-                  <h5 class="text-bold">24-hour Return</h5>
-                  <p v-if="asset.change24hPercentage">
-                    {{ asset.change24h }}
-                    <span :class="'pair q-pr-xs allocation ' + asset.color"
-                      >({{ asset.change24hPercentage }})</span
-                    >
-                  </p>
-                  <p v-else>
-                    <span :class="'pair q-pr-xs allocation ' + asset.color"
-                      >-</span
-                    >
-                  </p>
-                </td>
-
-                <td class="m-left q-pt-md">
-                  <h5 class="text-bold">
-                    Average Cost
-                    <span><i class="far fa-question-circle"></i></span>
-                  </h5>
-                  <p>-</p>
-
-                  <h5 class="text-bold">
-                    Fees
-                    <span><i class="far fa-question-circle"></i></span>
-                  </h5>
-                  <p>-</p>
-                </td>
-              </tr>
-            </table>
-          </div>
-
-          <h3><span class="text-bold q-pl-md q-ml-sm">History  <q-icon name="cached"  @click="refresh++" class="refresh-history q-pl-sm"/></span></h3>
-          <History :refresh="refresh" :key="refresh" v-if="tokenTabOption == 'history'" :isMobile="false" />
-          <AssetBalancesTable
-            v-else-if="tokenTabOption == 'assets'"
-            @setAsset="setAsset"
-            :rowsPerPage="6"
-          />
-          <liquidityPoolsTable
-            v-else-if="tokenTabOption == 'opportunities'"
-            :asset="asset"
-            :rowsPerPage="7"
-          />
-        </div>
       </div>
     </q-scroll-area>
   </div>
@@ -587,34 +592,50 @@
 import transactEOS from './transactEOS'
 import Oneinch from '../../components/Verto/Exchange/Oneinch'
 import Formatter from '@/mixins/Formatter'
-import History from '../../components/Verto/History'
+import ImportView from './Token/ImportView.vue'
+import TokenByAccount from './Token/TokenByAccount'
+// import History from '../../components/Verto/History'
 import SendComponent from '../../pages/Verto/Send'
 import PriceChart from '../../components/Verto/Token/PriceChart'
 import DexInteraction from '../../mixins/DexInteraction'
 import AccountSelector from './Exchange/AccountSelector.vue'
-import AssetBalancesTable from '../../components/Verto/AssetBalancesTable'
-import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
+// import AssetBalancesTable from '../../components/Verto/AssetBalancesTable'
+// import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 import { JsonRpc } from 'eosjs'
 import { QScrollArea } from 'quasar'
+
 // import Godex from './Exchange/Godex.vue'
 
 export default {
   components: {
-    QScrollArea,
+    TokenByAccount,
     Oneinch,
     AccountSelector,
-    AssetBalancesTable,
-    History,
+    ImportView,
+    // AssetBalancesTable,
+    // History,
     PriceChart,
     transactEOS,
-    liquidityPoolsTable,
-    SendComponent
+    // liquidityPoolsTable,
+    SendComponent,
+    QScrollArea
     // Godex
   },
   watch: {
+    '$route': function () {
+      if (this.$route.params.asset) { this.setAsset(this.$route.params.asset) }
+    },
     '$store.state.investment.accountTokens': function () {
       this.setPaymentOptions()
     },
+    asset () {
+      if (this.asset) {
+        this.$route.params.asset = this.asset
+        this.$store.state.wallets.customTotal.usd = this.asset.usd
+        this.$store.state.wallets.customTotal.show = true
+        this.$store.state.wallets.customTotal.label = this.asset.type.toUpperCase() + ' balance'
+      }
+    }/*
     '$store.state.currentwallet.wallet': function (val) {
       let assets = this.initAssetTable()
       if (val.chain !== this.asset.chain) {
@@ -630,10 +651,7 @@ export default {
         this.asset.usd = 0
         this.asset.amount = 0
       }
-    }
-  },
-  mounted () {
-    this.getHistoriclPrice()
+    } */
   },
   computed: {
     isTxValid () {
@@ -655,63 +673,95 @@ export default {
     }
   },
   async created () {
-    this.asset = this.assetData
-
-    this.depositCoin = {
-      label: this.asset.type.toUpperCase(),
-      value: this.asset.type,
-      icon: this.asset.icon
-    }
-
-    this.destinationCoinOptions = this.$store.state.settings.coins[this.asset.chain === 'eos' ? 'defibox' : 'oneinch'].filter(
-      (o) =>
-        ['eos', 'usdt'].includes(o.value.toLowerCase()) ||
-        this.asset.type !== 'vtx'
-    )
-
-    this.destinationCoinUnfilter = this.destinationCoinOptions
-    if (this.asset.chain === 'eth' || this.asset.chain === 'eos') {
-      let pref = {
-        eth: ['usdt', 'link'],
-        eos: ['eos', 'vtx', 'uni']
-      }
-      if (pref[this.asset.chain]) {
-        let preferredToken = pref[this.asset.chain].filter(
-          (o) => o !== this.asset.type
-        )[0]
-        this.destinationCoin = this.destinationCoinOptions.find(
-          (o) => preferredToken === o.value.toLowerCase()
-        )
-      }
-    }
-    if (this.asset.chain !== 'eos') {
-      this.tab = 'send'
-    } else {
-      let rpc = new JsonRpc(
-        process.env[this.$store.state.settings.network].CACHE +
-          'https://eos.greymass.com:443'
-      )
-      this.pairs = (
-        await rpc.get_table_rows({
-          json: true,
-          code: 'swap.defi',
-          scope: 'swap.defi',
-          table: 'pairs',
-          limit: -1
-        })
-      ).rows
-    }
-
-    if (this.depositCoin.value === this.destinationCoin.value) {
-      this.depositCoin = this.destinationCoinOptions.find(
-        (o) => o.value.toLowerCase() !== this.depositCoin.value
-      )
-    }
-    this.setPaymentOptions()
+    this.setAssetData()
   },
   methods: {
+    setAsset (asset) {
+      let data = (this.$route.params.assets || []).find(o => o.type === asset.type && o.chain === asset.chainID)
+
+      if (data) {
+        this.setAssetData(data)
+      } else if (asset) {
+        this.setAssetData(asset)
+      }
+    },
+    async setAssetData (data) {
+      let asset = data || this.assetData
+      if (asset && asset.chainID) {
+        asset.chain = asset.chainID
+      }
+      if (!asset && this.$route.params.asset) {
+        this.asset = this.$route.params.asset
+      } else {
+        this.asset = asset
+      }
+      if (this.asset.type === 'vtx') {
+        this.$store.state.settings.defaultChainData = this.asset
+      }
+      this.depositCoin = {
+        label: this.asset.type.toUpperCase(),
+        value: this.asset.type,
+        icon: this.asset.icon
+      }
+
+      this.destinationCoinOptions = this.$store.state.settings.coins[this.asset.chain === 'eos' ? 'defibox' : 'oneinch'].filter(
+        (o) =>
+          ['eos', 'usdt'].includes(o.value.toLowerCase()) ||
+        this.asset.type !== 'vtx'
+      )
+
+      this.destinationCoinUnfilter = this.destinationCoinOptions
+      if (this.asset.chain === 'eth' || this.asset.chain === 'eos') {
+        let pref = {
+          eth: ['usdt', 'link'],
+          eos: ['eos', 'vtx', 'uni']
+        }
+        if (pref[this.asset.chain]) {
+          let preferredToken = pref[this.asset.chain].filter(
+            (o) => o !== this.asset.type
+          )[0]
+          this.destinationCoin = this.destinationCoinOptions.find(
+            (o) => preferredToken === o.value.toLowerCase()
+          )
+        }
+      }
+      if (this.asset.chain !== 'eos') {
+        this.tab = 'send'
+      } else {
+        let rpc = new JsonRpc(
+          process.env[this.$store.state.settings.network].CACHE +
+          'https://eos.greymass.com:443'
+        )
+        this.pairs = (
+          await rpc.get_table_rows({
+            json: true,
+            code: 'swap.defi',
+            scope: 'swap.defi',
+            table: 'pairs',
+            limit: -1
+          })
+        ).rows
+      }
+
+      if (this.depositCoin.value === this.destinationCoin.value) {
+        this.depositCoin = this.destinationCoinOptions.find(
+          (o) => o.value.toLowerCase() !== this.depositCoin.value
+        )
+      }
+      if (!this.$store.state.wallets.tokens.find(o => o.chain === this.asset.chain && o.type !== 'verto') || !this.$store.state.wallets.portfolioTotal) {
+        this.tab = 'import'
+      }
+      this.setPaymentOptions()
+      this.getHistoriclPrice()
+    },
+    exchangeToken (params) {
+      this.$router.push({
+        name: 'crosschain-exchange',
+        params: params
+      })
+    },
     getEchangeData () {
-      const self = this
+    /*  const self = this
       let exchange = {
         eos () {
           let from = this.tab === 'buy' ? this.asset.type : this.destinationCoin.value.toLowerCase()
@@ -724,7 +774,8 @@ export default {
           )
         }
       }
-      console.log(exchange[this.asset.chain]())
+      // console.log(exchange[this.asset.chain]())
+      */
     },
     getTxData () {
       let transactionObject = {
@@ -757,33 +808,73 @@ export default {
 
       return transactionObject
     },
+    getMarketData (id) {
+      this.marketData = null
+      this.$axios
+        .get(
+          process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=' +
+          id +
+          '&price_change_percentage=24h,7d,30d,200d,1y'
+        ).then(res => {
+          if (res && res.data && res.data[0]) {
+            let data = res.data[0]
+            if (!this.asset.icon) {
+              this.asset.icon = data.image
+            }
+            if (!this.asset.rateUsd) {
+              this.asset.rateUsd = data.current_price
+            }
+            this.marketData = {
+              change_24h: this.formatNumberWithSign(data.price_change_percentage_24h, 1),
+              change_30d: this.formatNumberWithSign(data.price_change_percentage_30d_in_currency, 1),
+              change_7d: this.formatNumberWithSign(data.price_change_percentage_7d_in_currency, 1),
+              change_1y: this.formatNumberWithSign(data.price_change_percentage_1y_in_currency, 1),
+              high_24h: this.formatNumberWithSign(data.high_24h),
+              total_volume: this.nFormatter2(data.total_volume),
+              total_supply: this.nFormatter2(data.total_supply),
+              market_cap: this.nFormatter2(data.market_cap),
+              // tokenName: data.name,
+              color: data.price_change_percentage_24h >= 0 ? 'text-green-6' : 'text-pink-12'
+            }
+          }
+        })
+    },
     async getHistoriclPrice (days = 30) {
-      let token = this.$store.state.tokens.list.find(
-        (t) =>
-          t.symbol.toLowerCase() === this.asset.type &&
+      this.chartData = false
+      this.chartAvailable = true
+      let id = this.asset.coinGeckoId
+
+      if (!id) {
+        let token = this.$store.state.tokens.list.find(
+          (t) =>
+            t.symbol.toLowerCase() === this.asset.type &&
           ((!t.platforms.hasOwnProperty('eos') &&
             !t.platforms.hasOwnProperty('ethereum')) ||
             this.asset.chain ===
               (t.platforms.hasOwnProperty('eos')
                 ? 'eos'
-                : t.platforms.hasOwnProperty('ethereum')
-                  ? 'eth'
-                  : this.asset.chain))
-      )
-      if (token) {
+                : this.asset.chain)))
+
+        id = token ? token.id : null
+        console.log(id, 'id 34', token)
+      }
+      if (id) {
+        this.getMarketData(id)
         let response = await this.$axios.get(
           process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/' +
-            token.id +
+            id +
             '/market_chart?vs_currency=usd&days=' +
             days
         )
-
         this.chartData = response.data
         this.intervalHistory = days
+
         if (response.data.prices && !this.asset.rateUsd) {
           this.asset.rateUsd =
             response.data.prices[response.data.prices.length - 1][1]
         }
+      } else {
+        this.chartAvailable = false
       }
     },
     setSuccessData (status) {
@@ -876,12 +967,17 @@ export default {
       }
     }
   },
+  destroyed () {
+    this.$store.state.wallets.customTotal.show = false
+  },
   data () {
     return {
       tab: 'send',
+      marketData: null,
       asset: {},
       fromPreview: false,
       assetBalance: null,
+      chartAvailable: true,
       refresh: 0,
       chartData: false,
       pairData: false,
@@ -914,7 +1010,13 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-
+ .set-max {
+                margin-top: -10px;
+                font-size: 12px;
+                }
+ .from-input {
+ margin-bottom: 15px !important;
+ }
 /deep/ .gasSelector * {
     font-size: 11px;
 }
@@ -923,7 +1025,7 @@ export default {
   // min-height: 78vh;
 }
 .left.left2 {
-  margin-top: 30px;
+  margin-top: 0px;
 }
 .destination {
   display: contents;
@@ -1170,6 +1272,10 @@ export default {
   line-height: 16px;
   font-weight: 400;
 }
+.percent-portfolio {
+    margin: -2px 0 10px;
+
+    }
 
 .left table {
   width: 100%;
@@ -1183,10 +1289,6 @@ export default {
   padding-left: 4%;
 }
 
-.left3 {
-  border-top: 1px solid #e8e8e8;
-}
-
 .left3 tr td {
   width: 25%;
 }
@@ -1196,7 +1298,7 @@ export default {
   line-height: 24px;
   font-weight: 500;
   color: #000;
-  margin-bottom: 40px;
+  margin-bottom: 10px;
 }
 
 .left3 a {
@@ -1293,7 +1395,7 @@ export default {
 }
 .history-container {
   h3 {
-    font-size: 28px;
+    font-size: 20px;
     line-height: 32px;
     font-weight: 500;
     letter-spacing: normal;
@@ -1492,7 +1594,10 @@ export default {
     font-size: 16px;
   }
 }
-
+.wrapper .row {
+    max-width: 1100px;
+    margin: 0 auto;
+}
 @media screen and (max-width: 767px) {
   .wrapper {
     width: 100%;
@@ -1674,5 +1779,14 @@ export default {
   @media screen and (min-height: 870px) {
     height: 76.7vh !important;
   }
+}
+/deep/ .tokenbyaccount .q-item__label--header {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.dark-theme /deep/ .tokenbyaccount .q-item__label--header {
+  color: #FFF;
 }
 </style>

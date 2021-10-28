@@ -99,8 +99,8 @@
                           </template>
                         </q-select>
                       </div>
-                      <div class="col-md-6 q-pl-lg">
-                        <div class="row current-stake-balanca">
+                      <div class="col-md-6 q-pl-lg flex justify-end">
+                        <div class="row current-stake-balanca full-width">
                               <div class="">
                                 <span class="--title row text-h6"> Current Balance<br>{{ params.tokenID.toUpperCase() }} (Liquid) </span>
                                 <span class="--amount row text-h4"> {{ formatNumber(currentAccount.amount, 0) }} {{ params.tokenID.toUpperCase() }} </span>
@@ -169,7 +169,7 @@
                               </q-badge>
                               <q-slider
                                 v-model="slider"
-                                :label-value="slider + '%'"
+                                :label-value="(isNaN(slider) ? 0 : slider)  + '%'"
                                 :min="0"
                                 :max="100"
                                 :step="1"
@@ -201,7 +201,7 @@
                         <q-btn @click="step = 2" v-if="condition === 3" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
                       </div>
                             </div>
-                            <div  class="col-md-6 q-pa-md flex flex-center">
+                            <div  class="col-md-6 q-pa-md flex justify-end">
                             <div class="summary-wrapper row full-width shadow-1 q-ma-lg q-pa-lg rounded-borders" style="max-width:300px;">
                               <div class="full-width">
                                 <span class="--title row text-h6"> Amount to stake </span>
@@ -410,7 +410,7 @@ export default {
       period_duration: 30,
       timers: [],
       condition: 3,
-      currentAccount: {},
+      currentAccount: null,
       stakePeriod: 10,
       estimatedReward: 0,
       options: [],
@@ -481,19 +481,24 @@ export default {
         o.value = o.name
         return o
       })
+
       let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
       // console.log('---this.wallet---', this.wallet)
 
-      if (this.wallet) {
-        this.currentAccount = this.wallet
+      if (this.tableData && this.tableData.length) {
+        if (!this.currentAccount) {
+          this.currentAccount = this.tableData[0]
+          this.currentAccount.label = this.currentAccount.name
+          this.currentAccount.value = this.currentAccount.name
+        }
         this.params = {
           chainID: this.currentAccount.chain,
-          tokenID: this.currentAccount.type,
+          tokenID: 'vtx',
           accountName: this.currentAccount.name
         }
       } else {
         this.params = this.$store.state.currentwallet.params
-        this.currentAccount = this.tableData.find(w => w.chain === this.params.chainID && w.type === this.params.tokenID && (
+        this.currentAccount = this.currentAccount ? this.currentAccount : this.tableData.find(w => w.chain === this.params.chainID && w.type === 'vtx' && (
           w.chain === 'eos' ? w.name.toLowerCase() === this.params.accountName : w.key === this.params.accountName)
         )
       }
@@ -808,7 +813,7 @@ export default {
     max-width: 600px;
 }
   .chain-tools-wrapper{
-    padding: 0px 6%;
+    padding: 0px 0%;
     &--list{
       &__hide-chain-tools{
         text-transform: initial !important;
@@ -1325,5 +1330,12 @@ export default {
         color: #CCC !important;
       }
     }
+  }
+</style>
+<style>
+  .q-stepper{border-radius: 0px !important;}
+  .dark-theme .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .q-stepper--vertical .q-stepper__dot:before,
+  .dark-theme .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor .q-stepper--vertical .q-stepper__dot:after {
+    background: #071d35;
   }
 </style>

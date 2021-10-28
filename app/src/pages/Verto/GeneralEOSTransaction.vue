@@ -11,7 +11,7 @@
     <div :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }" style="height: 100vh;">
       <div class="full-height" :class="{'desktop-version': screenSize > 1024 }">
         <div class="row full-height">
-          <div class="col col-md-3"  v-if="screenSize > 1024">
+          <div class="col col-md-3"  v-if="screenSize > 1024 && false">
             <div class="wallets-container" style="height: 100%">
               <profile-header
                 :isMobile="false"
@@ -28,7 +28,7 @@
               <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
             </div>
           </div>
-          <div class="col col-md-9">
+          <div class="col col-md-12">
             <div
               class="desktop-card-style apps-section history-card"
               :class="{
@@ -89,9 +89,9 @@
                             </div>
                             </template>
                         </q-input>
-                        <a v-if="transactionLink" :href="transactionLink" target="_blank" class="text-body2 text-black"> More infos</a>
+                        <a v-if="transactionLink" :href="transactionLink" target="_blank" class="text-body2 text-black"> More info</a>
 
-                       </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -352,12 +352,12 @@ export default {
 }
 .desktop-version {
   background: #e7e8e8;
-  padding-top: 13vh;
-  padding-left: 20vh;
+  padding-top: 0vh;
+  padding-left: 0vh;
   padding-bottom: 50px;
-  padding-right: 18px;
+  padding-right: 0px;
   @media screen and (min-width: 768px) {
-    padding-top: 11vh;
+    padding-top: 0vh;
     padding-bottom: 0px;
   }
 }

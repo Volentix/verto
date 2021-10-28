@@ -269,7 +269,7 @@ export default {
       empty: true
     }
 
-    this.walletData = localStorage.getItem('walletPublicData')
+    this.walletData = localStorage.getItem('walletPublicDatav2')
 
     if (!this.$route.query.url) {
       this.getGodexCoins()

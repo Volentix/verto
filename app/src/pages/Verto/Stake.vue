@@ -1,25 +1,27 @@
 <template>
   <q-page class="column stake-page" :class="{'desktop-marg':screenSize > 1024, 'mobile-pad': screenSize < 1024,'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-grey-12': $store.state.settings.lightMode === 'false'}">
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 84vh;">
       <div class="desktop-version full-height" v-if="screenSize > 1024">
         <div class="row full-height">
-          <div class="col col-md-3">
+          <div class="col col-md-3" v-if="false">
             <div class="wallets-container" style="height: 100%">
               <profile-header :isMobile="false" class="marg" version="type2222" :fetchCurrentWalletFromState="true" />
               <wallets :isMobile="false" class="full-height max-height" :showWallets="false" :isWalletsPage="false" :isWalletDetail="false" />
               <!-- <img src="statics/prototype_screens/wallets.jpg" alt=""> -->
             </div>
           </div>
-          <div class="col col-md-9">
+          <div class="col col-md-12">
             <div class="desktop-card-style apps-section" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
               <q-scroll-area :visible="true" class="q-pr-md" style="height: 98%;">
-                <div class="standard-content">
+                <div class="standard-content q-pr-md">
                   <h2  v-if="false" class="standard-content--title flex justify-start">{{$store.state.currentwallet.params.tokenID == 'eos' ? 'Staking / Unstaking' :  'Staking' }}</h2>
                   <div class="standard-content--body">
                     <div class="standard-content--body__form">
 
-                      <VTXStakeStepper v-if="$store.state.currentwallet.params.tokenID == 'vtx'" />
-                      <EosStakeStepper v-else-if="$store.state.currentwallet.params.tokenID == 'eos'"/>
+                      <VTXStakeStepper v-if="$route.params.chain == 'eos' && $route.params.type == 'vtx'" />
+
+                      <EosStakeStepper v-if="$route.params.chain == 'eos' && $route.params.type == 'eos'"/>
+                      <StakeHex v-else-if="$route.params.chain == 'eth' && $route.params.type == 'hex'"/>
                     </div>
                   </div>
                 </div>
@@ -30,8 +32,12 @@
       </div>
       <div v-else class="mobile-version">
         <profile-header version="type2" :fetchCurrentWalletFromState="true" />
-        <VTXStakeStepper v-if="$store.state.currentwallet.params.tokenID == 'vtx'" />
-        <EosStakeStepper v-else-if="$store.state.currentwallet.params.tokenID == 'eos'"/>
+        <VTXStakeStepper v-if="$route.params.chain == 'eos' && $route.params.type == 'vtx'" />
+
+        <EosStakeStepper v-else-if="$route.params.chain == 'eos' && $route.params.type == 'eos'"/>
+
+        <StakeHex v-else-if="$route.params.chain == 'eth' && $route.params.type == 'hex'"/>
+
       </div>
     </div>
   </q-page>
@@ -41,6 +47,7 @@
 import EosStakeStepper from '../../components/Verto/EOSStakeStepper'
 // import StakeStepper from '../../components/Verto/StakeStepper'
 import VTXStakeStepper from '../../components/Verto/Testnet/VTXStakeStepper'
+import StakeHex from '../../components/Verto/Stake/StakeHex.vue'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import { osName } from 'mobile-device-detect'
 import Wallets from '../../components/Verto/Wallets'
@@ -53,7 +60,8 @@ export default {
     Wallets,
     EosStakeStepper,
     VTXStakeStepper,
-    QScrollArea
+    QScrollArea,
+    StakeHex
   },
   data () {
     return {
@@ -102,7 +110,7 @@ export default {
     padding-top: 13vh;
     padding-left: 18vh;
     padding-bottom: 0px;
-    padding-right: 18px;
+    // padding-right: 18px;
     position: relative;
     overflow: hidden;
     @media screen and (min-width: 768px) {
@@ -144,7 +152,7 @@ export default {
     .desktop-version{
         background: #04111F;
         padding-bottom: 8px;
-        min-height: 102vh;
+        height: 84vh !important;
         overflow: hidden;
         position: relative;
         scrollbar-width: 0px;

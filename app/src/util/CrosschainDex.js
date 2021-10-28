@@ -139,6 +139,20 @@ class Crosschaindex {
 
       coins.unshift(row)
     })
+    const getImage = (type) => {
+      let images = {
+        eth: 'https://zapper.fi/images/ETH-icon.png',
+        btc: 'https://api.godex.io/storage/coins/nlQJWbSb5SZ0CsXk0RTDFH2Tsg4bcRKuZLZwVyKr.png',
+        usdc: 'https://tokens.1inch.exchange/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png'
+      }
+      if (images[type]) {
+        return images[type]
+      }
+    }
+    coins.map(o => {
+      let image = getImage(o.value.toLowerCase())
+      o.image = image || o.image
+    })
     // coins = this.getUniqueTokens(coins)
     return coins.sort(function (a, b) {
       return a.name ? -1 : 1
@@ -500,6 +514,7 @@ class Crosschaindex {
               let nonce = await web3.eth.getTransactionCount(fromAddress, 'latest')
               let txObject = result.data.tx
               txObject.nonce = nonce
+              txObject.value = web3.utils.toHex(txObject.value)
               txObject.chainId = evmData.network_id
               resolve(txObject)
             })

@@ -103,7 +103,8 @@ module.exports = function (ctx) {
         'QSpinnerDots',
         'QTimeline',
         'QTimelineEntry',
-        'QMenu'
+        'QMenu',
+        'QScrollArea'
       ],
 
       directives: [
@@ -125,7 +126,8 @@ module.exports = function (ctx) {
 
     build: {
       uglifyOptions: {
-        compress: { drop_console: true }
+        keep_fnames: true ,
+        compress: { drop_console: true  }
       },
       scopeHoisting: true,
       vueRouterMode: 'history',

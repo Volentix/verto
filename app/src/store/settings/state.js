@@ -3,6 +3,7 @@ export default {
   rightOrder: false,
   network: 'mainnet',
   devMode: false,
+  defaultChainData: null,
   globalSettings: {},
   activityBar: false,
   coins: {
@@ -11,7 +12,14 @@ export default {
     defibox: [],
     godex: []
   },
+  show: {
+    exchange: false,
+    tokens: false,
+    vtxstaking: false,
+    tab: 'dashboard'
+  },
   chainsSendEnabled: ['eos', 'eth', 'dot', 'ksm', 'bsc', 'avax', 'avaxc', 'matic', 'ftm', 'btc'],
+  disableChains: ['xtz', 'xlm', 'ltc', 'dash'],
   backupConfig: false,
   defiMenu: 'swap',
   isDemo: false,
@@ -24,5 +32,5 @@ export default {
   eos: {
     swapSlippage: 3
   },
-  lightMode: true
+  lightMode: false
 }

@@ -15,14 +15,15 @@ const sleep = (milliseconds) => {
 }
 class Lib {
   constructor (evms) {
+    // https://mainnet.infura.io/v3/a66f85635aef42758bc4aeed2f295645
     this.evms = [{
       name: 'Ethereum',
       chain: 'eth',
       nativeToken: 'eth',
       icon: 'https://zapper.fi/images/ETH-icon.png',
-      provider: 'https://mainnet.infura.io/v3/a66f85635aef42758bc4aeed2f295645',
+      provider: 'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63',
       explorer: 'https://etherscan.io/tx/',
-      gas: 'https://data-api.defipulse.com/api/v1/egs/api/ethgasAPI.json?api-key=61cb5f87d40937069b831354a3d9e8a5c1f1e69ebb755140b79e555249a8',
+      gas: 'http://ethgas.watch/api/gas',
       network_id: 1
     }, {
       name: 'Binance Smart Chain',
@@ -37,7 +38,7 @@ class Lib {
       name: 'Polygon',
       chain: 'matic',
       nativeToken: 'matic',
-      icon: 'https://seeklogo.com/images/P/polygon-matic-logo-86F4D6D773-seeklogo.com.png',
+      icon: 'https://cdnwp-s3.benzinga.com/wp-content/uploads/2021/04/29083434/polygon.png',
       provider: 'https://rpc-mainnet.maticvigil.com/v1/08e234538a11a966248fd358b3b135c4aeb6924b',
       explorer: 'https://explorer-mainnet.maticvigil.com/tx/',
       gas: 'https://gasstation-mainnet.matic.network/',
@@ -91,7 +92,7 @@ class Lib {
       }
     }
 
-    let web3Value = value * 10 ** toToken.decimals
+    let web3Value = localWeb3.utils.toHex(value * 10 ** toToken.decimals)
 
     let sendTo = to
     let data = null
@@ -101,10 +102,10 @@ class Lib {
       data = web3Contract.methods.transfer(to, web3Value).encodeABI()
 
       /* web3Contract.methods.transfer(to, web3Value).estimateGas(function (error, gasAmount) {
-        console.log(error, gasAmount, 'error, gasAmount)')
+        //console.log(error, gasAmount, 'error, gasAmount)')
       }) */
       sendTo = contract
-      web3Value = '0x00'
+      web3Value = '0x0'
     }
 
     let rawTx = {
@@ -136,8 +137,17 @@ class Lib {
     }).filter(o => o != null)
   }
 
+  findInExchangeList (chain, type, contract) {
+    let found = false
+    if (chain === 'eos' || chain === 'eth') {
+      found = store.state.settings.coins[chain === 'eos' ? 'defibox' : 'oneinch'].find(o => o.value.toLowerCase() === type.toLowerCase() /* && o.contract === contract */)
+    } else {
+      found = true
+    }
+    return found
+  }
   getAllCoins (dex) {
-    let coins = store.state.settings.coins.coinswitch.concat(store.state.settings.coins.oneinch).concat(store.state.settings.coins.defibox)
+    let coins = store.state.settings.coins.godex.concat(store.state.settings.coins.oneinch).concat(store.state.settings.coins.defibox)
 
     coins = this.getUniqueTokens(coins).filter(o => !(store.state.wallets.tokens.filter(x => x.chain === 'eos').map(w => w.type.toLowerCase()).includes(o.value.toLowerCase())))
 
@@ -204,15 +214,29 @@ class Lib {
     }
     localStorage.setItem('walletDataExpiration', now)
   }
+  getCoingeckoChain (chain) {
+    let nameToChain = {
+      ethereum: 'eth',
+      binancesmartchain: 'bsc',
+      fantom: 'ftm',
+      polkadot: 'dot',
+      avalanche: 'avax',
+      binancecoin: 'bnb',
+      eos: 'eos',
+      solana: 'sol'
+    }
+
+    return nameToChain[chain.replace(/-/g, '')]
+  }
   getTokenImage (type) {
     let token = this.getAllCoins().find((o) => o.value.toLowerCase() === type.toLowerCase())
     return token ? (type.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : token.image) : 'https://etherscan.io/images/main/empty-token.png'
   }
 
   cacheWalletHistoryData (data, key, chain) {
-    console.log(data, 'data 123')
+    // console.log(data, 'data 123')
     data.then(o => {
-      console.log(o, 'o 321')
+      // console.log(o, 'o 321')
       if (o && o.hasOwnProperty('history') && key) { localStorage.setItem(chain + '_history_' + key, JSON.stringify(o)) }
     })
   }
@@ -243,11 +267,11 @@ class Lib {
             .then(function (result) {
               if (result.length !== 0) {
                 result.data.actions.reverse().map(a => {
-                // console.log('split', a.action_trace.act.name === 'transfer' ? a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() : 'not transfer')
+                // //console.log('split', a.action_trace.act.name === 'transfer' ? a.action_trace.act.data.quantity.toString().split(' ')[1].toLowerCase() : 'not transfer')
                   if (token === 'eos' && (
                     a.action_trace.act.name === 'transfer' &&
                     a.action_trace.receiver === key && typeof a.action_trace.act.data.from !== 'undefined' && typeof a.action_trace.act.data.to !== 'undefined')) {
-                  // console.log('walletlib history actions', a)
+                  // //console.log('walletlib history actions', a)
 
                     let amount = ''
                     switch (a.action_trace.act.name) {
@@ -465,7 +489,7 @@ class Lib {
             }
           }).catch(function (error) {
             // TODO: Exception handling
-            // console.log('history error', error)
+            // //console.log('history error', error)
             userError(error)
             return false
           })
@@ -496,7 +520,7 @@ class Lib {
             }
           }).catch(function (error) {
             // TODO: Exception handling
-            // console.log('history error', error)
+            // //console.log('history error', error)
             userError(error)
             return false
           })
@@ -532,7 +556,7 @@ class Lib {
         // const balProm =
         await eos.getCurrencyBalanceP(key, tokenContract[token])
           .then(function (result) {
-            /// /console.log('walletlib', key, tokenContract[token], bal)
+            /// ///console.log('walletlib', key, tokenContract[token], bal)
             if (result.length) {
               float = result[0].split(' ')[0]
               return float
@@ -575,10 +599,10 @@ class Lib {
         let number2 = new BN(test.data.feeFrozen.toBigInt(), 'u128')
         let number3 = new BN(test.data.reserved.toBigInt(), 'u128')
         let number4 = new BN(test.data.miscFrozen.toBigInt(), 'u128')
-        console.log(number.toString(10), number2.toString(10), number3.toString(10), number4.toString(10))
+        //console.log(number.toString(10), number2.toString(10), number3.toString(10), number4.toString(10))
 
         api.query.system.account(key, ({ data: { free: currentFree }, nonce: currentNonce }) => {
-          console.log(`New balance  ${currentFree}, nonce ${currentNonce}`)
+          //console.log(`New balance  ${currentFree}, nonce ${currentNonce}`)
         })
          let amount = account.data.free.toNumber() / 10000000000
 
@@ -598,7 +622,7 @@ class Lib {
         const { ApiPromise, WsProvider } = require('@polkadot/api')
         const provider = new WsProvider('wss://kusama-rpc.polkadot.io/')
         const api = await ApiPromise.create({ provider })
-        console.log(key, 'ksm key')
+        //console.log(key, 'ksm key')
         let { data: { free: amount } } = await api.query.system.account(key)
         amount = amount / 1000000000000
 
@@ -656,9 +680,9 @@ class Lib {
               amount = +b.free + +b.frozen + +b.locked
             })
           }
-          /// /console.log('bnb', balances, amount)
+          /// ///console.log('bnb', balances, amount)
         } catch (err) {
-          /// /console.log('', err)
+          /// ///console.log('', err)
         }
         let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd')).data.binancecoin.usd
         const usd = amount * tokenPrice
@@ -677,9 +701,9 @@ class Lib {
               amount = +b.quantity
             })
           }
-          console.log('ada', balances, amount)
+          // console.log('ada', balances, amount)
         } catch (err) {
-          console.log('ada catch', err)
+          // console.log('ada catch', err)
         }
         let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd')).data.cardano.usd
         const usd = amount * tokenPrice
@@ -725,6 +749,15 @@ class Lib {
   gas = async (chain, transaction, type, tokenPrice, gasLimit) => {
     let evmData = this.getEvmData(chain)
     let response = null, gasData = null
+    let txData = {}
+
+    if (transaction && typeof transaction === 'object') {
+      let excludes = ['chainId', 'gas']
+      for (let key in transaction) {
+        if (!excludes.includes(key)) { txData[key] = transaction[key] }
+      }
+    }
+    transaction = txData
 
     const web3 = this.getWeb3Instance(chain)
     if (evmData) {
@@ -738,10 +771,12 @@ class Lib {
         nativeToken: evmData.nativeToken
       }
     }
-    const convertGasPrice = (gasObj) => {
+    const convertGasPrice = (gasObj, nativeTokenPrice) => {
       // Return gas price in USD if tokenPrice is valid, otherwise return the value in native token unit
-      gasObj.isUsd = tokenPrice
-      gasObj.value = web3.utils.fromWei(parseInt(gasObj.gasPrice).toString(), 'ether') * gasObj.gas * (gasObj.isUsd ? tokenPrice : 1)
+      gasObj.isUsd = nativeTokenPrice || tokenPrice
+      gasObj.value = web3.utils.fromWei(parseInt(gasObj.gasPrice).toString(), 'ether') * gasObj.gas * (gasObj.isUsd ? gasObj.isUsd : 1)
+      gasObj.requiredNativeAmount = web3.utils.fromWei(parseInt(gasObj.gasPrice).toString(), 'ether') * gasObj.gas
+      gasObj.nativeToken = evmData.nativeToken
       return gasObj
     }
 
@@ -780,26 +815,30 @@ class Lib {
       },
       async eth () {
         let gasOptions = []
+
         if ((type !== evmData.nativeToken || transaction.data) && !gasLimit) {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
-          console.log('gas', gas, response.data)
         }
-
+        console.log(chain, transaction, type, tokenPrice, gasLimit, 'chain, transaction, type, tokenPrice, gasLimit')
         if (!response.data) {
           gasData.gasPrice = await web3.eth.getGasPrice()
           gasData.label = 'Fee'
           gasOptions.push(gasData)
         } else {
-          ['average', 'fast', 'fastest'].forEach((option) => {
+          let gasStationData = response.data.sources.find(o => o.name.toLowerCase().includes('gas now'))
+          if (!gasStationData) {
+            gasStationData = response.data.sources.find(o => o.name.toLowerCase().includes('poa'))
+          }
+          ['standard', 'fast', 'instant'].forEach((option) => {
             let gasOption = Object.assign({}, gasData)
-            gasOption.gasPrice = response.data[option] / 10 * 1000000000 // To wei
+            gasOption.gasPrice = gasStationData[option] * 1000000000 // To wei
             gasOption.label = option
-            gasOption = convertGasPrice(gasOption)
+            gasOption = convertGasPrice(gasOption, response.data.ethPrice)
             gasOptions.push(gasOption)
           })
         }
-        console.log(gasOptions, 'gasOptions')
+        // console.log(gasOptions, 'gasOptions')
         return gasOptions
       },
       async avaxc () {
@@ -866,14 +905,16 @@ class Lib {
 
   send = async (chain, token, from, to, value, memo, key, contract, data) => {
     const self = this
-    // console.log(chain, token, from, to, value, memo, key, contract, data, 'chain, token, from, to, value, memo, key, contract, data')
+    console.log(chain, token, from, to, value, memo, contract, data, 'chain, token, from, to, value, memo, key, contract, data')
     const wallet = {
       async btc (token, from, to, value, memo, key) {
         const bitcoin = require('bitcoinjs-lib')
         const CryptoAccount = require('send-crypto').default
         const keyPair = bitcoin.ECPair.fromWIF(key)
 
-        const account = new CryptoAccount(keyPair.privateKey)
+        const account = new CryptoAccount(keyPair.privateKey, {
+          network: ''
+        })
         let fee = memo && memo.fee ? memo.fee : 10000
 
         return new Promise((resolve, reject) =>
@@ -886,7 +927,7 @@ class Lib {
               })
             })
             .on('confirmation', confirmations => {
-              console.log(confirmations, 'confirmations')
+              // console.log(confirmations, 'confirmations')
             })
             .catch(reject)
         )
@@ -913,7 +954,7 @@ class Lib {
         // })
 
         returnedUTXOS.forEach((UTXO) => {
-          console.log('UTXO', UTXO)
+          //console.log('UTXO', UTXO)
           let formattedWitnessUtxo = {
             script: Buffer.from(UTXO.witnessUtxo.script),
             value: UTXO.witnessUtxo.value
@@ -949,10 +990,10 @@ class Lib {
           Promise(async (resolve, reject) => {
             insight.broadcast(tx, function (error, transactionId) {
               if (error) {
-                // console.log(error)
+                // //console.log(error)
                 return reject()
               } else {
-                // console.log(transactionId)
+                // //console.log(transactionId)
                 resolve({
                   message: `https://www.blockchain.com/btc/tx/${transactionId}`,
                   success: true
@@ -1057,9 +1098,9 @@ class Lib {
             sequence
           )
 
-          console.log(result)
+          // console.log(result)
           if (result.status === 200) {
-            console.log('success', result.result[0].hash)
+            // console.log('success', result.result[0].hash)
 
             message = 'https://explorer.binance.org/tx/' + result.result[0].hash
             success = true
@@ -1095,9 +1136,9 @@ class Lib {
         //     sequence
         //   )
 
-        //   console.log(result)
+        //   //console.log(result)
         //   if (result.status === 200) {
-        //     console.log('success', result.result[0].hash)
+        //     //console.log('success', result.result[0].hash)
 
         //     message = 'https://explorer.binance.org/tx/' + result.result[0].hash
         //     success = true
@@ -1183,7 +1224,7 @@ class Lib {
         return chainsWallets.eth(token, from, to, value, info, key, contract, evm)
       },
       async eth (token, from, to, value, info, key, contract, evm = 'eth') {
-        // console.log('(token, from, to, value, gas, key, contract, info)', token, from, to, value, info, key, contract)
+        // //console.log('(token, from, to, value, gas, key, contract, info)', token, from, to, value, info, key, contract)
 
         const Web3 = require('web3')
         let evmData = self.evms.find(o => o.chain === evm)
@@ -1203,7 +1244,8 @@ class Lib {
           }
         }
 
-        let web3Value = !value.toString().includes('0x') ? value * 10 ** toToken.decimals : value
+        let web3Value = !value.toString().includes('0x') ? web3.utils.toHex((value * 10 ** toToken.decimals).toString()) : value
+
         // let transactionHash = ''
         let sendTo = to
 
@@ -1212,7 +1254,7 @@ class Lib {
           data = web3Contract.methods.transfer(to, web3Value).encodeABI()
 
           sendTo = contract
-          web3Value = '0x00'
+          web3Value = '0x0'
         } else if (info && info.txData) {
           data = info.txData
         }
@@ -1255,7 +1297,7 @@ class Lib {
 
         // web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, id) => {
         //   if (err) {
-        //     //console.log(err)
+        //     ////console.log(err)
         //     return reject()
         //   }
         //   resolve({
@@ -1274,12 +1316,12 @@ class Lib {
                   success: true
                 })
               }
-              //console.log('receipt:', confirmationNumber, receipt)
+              ////console.log('receipt:', confirmationNumber, receipt)
             })
 
             tx.on('transactionHash', hash => {
               transactionHash = hash
-              //console.log('hash:', hash)
+              ////console.log('hash:', hash)
             })
           })
         } catch (err) {
@@ -1358,7 +1400,7 @@ class Lib {
                         clearInterval(interval)
                       }
                     }).catch(error => {
-                      //console.log(error)
+                      ////console.log(error)
                       return reject()
                     })
                   }, 5000)

@@ -51,7 +51,7 @@
                 Anyone with access to these 24 words will be able to recover this Verto app and the private keys it is associated with,
                 so keep in a safe place that only you have access to.
 
-                <p  class="q-py-sm text-bold" v-if="$store.state.settings.dexData.depositCoin && $store.state.settings.dexData.depositCoin"> Click go to exchange to swap {{$store.state.settings.dexData.fromAmount}}  {{$store.state.settings.dexData.depositCoin.value.toUpperCase()}} to {{$store.state.settings.dexData.destinationCoin.value.toUpperCase()}}</p>
+                <p  class="q-py-sm text-bold" v-if="$store.state.settings.dexData.depositCoin && $store.state.settings.dexData.depositCoin && false"> Click go to exchange to swap {{$store.state.settings.dexData.fromAmount}}  {{$store.state.settings.dexData.depositCoin.value.toUpperCase()}} to {{$store.state.settings.dexData.destinationCoin.value.toUpperCase()}}</p>
             <div class="standard-content--body__form">
                 <div class="flex-end flex justify-end">
                      <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Go to dashboard" @click="dataRefresh()" />
@@ -64,7 +64,7 @@
 
 <script>
 import HD from '@/util/hdwallet'
-const localStorageKeysToDelete = ['walletPublicData', 'hideEosSetup', 'disableIntros_home', 'disableIntro_defi', 'closewizard', 'disable_freeospopup']
+const localStorageKeysToDelete = ['walletPublicDatav2', 'hideEosSetup', 'disableIntros_home', 'disableIntro_defi', 'closewizard', 'disable_freeospopup']
 // I have setup your symbols into a sandbox wallet named testwallet.
 // You can proceed with development with this as your walletName.
 // IDs will be created as foo@testwallet.crux

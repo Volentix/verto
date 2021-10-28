@@ -1,5 +1,6 @@
 <template>
 <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" class="history-component" style="height: 100%;">
+
   <div class="transaction-wrapper" style="height: 100%;">
     <div class="transaction-wrapper--list open"  style="height: 100%;">
       <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! (['eos','btc'].includes($store.state.investment.defaultAccount.chain) || $store.state.investment.defaultAccount.isEvm)">
@@ -7,6 +8,7 @@
       </q-banner>
 
       <div class="q-pa-md loading-table" v-else-if="loading">
+      <span class="text-body1">We are loading your transaction history. This may take a moment</span>
         <q-markup-table flat>
           <thead>
             <tr>
@@ -55,6 +57,7 @@
           </tbody>
         </q-markup-table>
       </div>
+
       <div  class="q-pa-md" v-else-if="!history.length && !loading">
         No transactions recorded yet with this account
       </div>
@@ -405,6 +408,8 @@ export default {
     return {
       sendComponent: false,
       showInfos: [],
+      historyRetrieval: {
+      },
       loading: true,
       loadMoreLoading: false,
       legacyHistory: [],
@@ -439,12 +444,13 @@ export default {
       // if (!this.$store.state.currentwallet.wallet || !this.$store.state.currentwallet.wallet.chain) { this.$store.state.currentwallet.wallet = val }
       this.loading = true
 
-      setTimeout(() => {
+      setTimeout(async () => {
         this.getHistory()
       }, 500)
     }
   },
   async mounted () {
+    this.$store.state.settings.defaultChainData = false
     /*
     this.$bus.$on('refreshHistory', (e) => {
       if (!this.isrefresh) {
@@ -463,8 +469,15 @@ export default {
   },
   methods: {
     async getHistory () {
-      this.history = []
       let account = this.$store.state.investment.defaultAccount
+      let key = account.key + account.chain + (account.chain === 'eos' ? account.name : '')
+
+      if (!this.historyRetrieval[key]) {
+        this.$set(this.historyRetrieval, key, true)
+      } else {
+        return
+      }
+      this.history = []
       if (account.origin === 'metamask') {
         account = this.$store.state.wallets.tokens.find(o => o.type === 'eth' && o.origin !== 'metamask')
       }
@@ -484,7 +497,7 @@ export default {
 
         Lib.history(account.chain, account.chain === 'eos' ? account.name : account.key, account.type, this.pagination).then(data => {
           data = data.history
-          console.log(data, 'data')
+
           if (data && data[0] && data[0].transID) {
             this.legacyHistory = data
             this.loading = false
@@ -673,6 +686,7 @@ export default {
             data: [element]
           }
           this.history.push(item)
+          console.log(item, this.history, 'item')
           // this.$store.commit('wallets/updateHistory', item)
         }
       })
