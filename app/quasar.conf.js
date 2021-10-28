@@ -11,7 +11,8 @@ module.exports = function (ctx) {
       'documentationManger',
       'i18n',
       'eventBus',
-      'vuelidate'
+      'vuelidate',
+      'bexSetup'
     ],
 
     css: [
@@ -104,7 +105,11 @@ module.exports = function (ctx) {
         'QTimeline',
         'QTimelineEntry',
         'QMenu',
-        'QScrollArea'
+        'QScrollArea',
+        'QPullToRefresh',
+        'QFooter',
+        'QFile',
+        'QVirtualScroll'
       ],
 
       directives: [
@@ -126,8 +131,8 @@ module.exports = function (ctx) {
 
     build: {
       uglifyOptions: {
-        keep_fnames: true ,
-        compress: { drop_console: true  }
+        keep_fnames: true,
+        compress: { drop_console: true }
       },
       scopeHoisting: true,
       vueRouterMode: 'history',
@@ -211,7 +216,7 @@ module.exports = function (ctx) {
     },
 
     cordova: {
-      // id: 'org.cordova.quasar.app'
+      id: 'org.cordova.vertoapp'
       // noIosLegacyBuildFlag: true // uncomment only if you know what you are doing
     },
 
@@ -254,6 +259,7 @@ module.exports = function (ctx) {
 
         // appId: 'quasar-app'
         'productName': 'Verto',
+        'version': '123',
         'appId': 'io.volentix.verto',
         /* eslint-disable */
         'artifactName': '${name}-${os}-${version}.${ext}',

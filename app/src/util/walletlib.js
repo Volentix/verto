@@ -1,6 +1,7 @@
 import EosWrapper from '@/util/EosWrapper'
 import axios from 'axios'
 import store from '@/store'
+import * as solanaWeb3 from '@solana/web3.js'
 
 import {
   userError
@@ -14,22 +15,22 @@ const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 class Lib {
-  constructor (evms) {
+  constructor () {
     // https://mainnet.infura.io/v3/a66f85635aef42758bc4aeed2f295645
-    this.evms = [{
+    let evms = [{
       name: 'Ethereum',
       chain: 'eth',
       nativeToken: 'eth',
       icon: 'https://zapper.fi/images/ETH-icon.png',
       provider: 'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63',
       explorer: 'https://etherscan.io/tx/',
-      gas: 'http://ethgas.watch/api/gas',
+      gas: 'https://ethgas.watch/api/gas',
       network_id: 1
     }, {
       name: 'Binance Smart Chain',
       chain: 'bsc',
       nativeToken: 'bnb',
-      icon: 'https://nownodes.io/images/binance-smart-chain/bsc-logo.png',
+      icon: 'https://cryptologos.cc/logos/binance-coin-bnb-logo.png',
       provider: 'https://bsc-dataseed1.binance.org:443',
       explorer: 'https://bscscan.com/tx/',
       gas: 'https://api.bscscan.com/api?module=proxy&action=eth_gasPrice&apikey=JK2Z5XQYR1FMCAQFQDBFNS5FJM6XC7ETTB',
@@ -71,6 +72,22 @@ class Lib {
     //   network_id: 1285
     }]
     // instance = this
+
+    let localSettings = localStorage.getItem('chainSettings')
+    if (localSettings) {
+      localSettings = JSON.parse(localSettings)
+      this.evms = []
+      evms.forEach(e => {
+        if (localSettings[e.chain] && localSettings[e.chain].provider) {
+          this.evms.push(localSettings[e.chain])
+        } else {
+          this.evms.push(e)
+        }
+      })
+    } else {
+      this.evms = evms
+    }
+    console.log(this.evms, ' this.evms')
   }
 
   async getRawETHTransaction (token, from, to, value, key, contract, origin = 'mnemonic', evm = 'eth') {
@@ -160,7 +177,7 @@ class Lib {
         'value': coin.type,
         'contract': coin.contract,
         'precision': coin.precision,
-        'image': coin.chain === 'eos' ? 'https://ndi.340wan.com/eos/' + coin.contract + '-' + coin.type.toLowerCase() + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type.toLowerCase() + '.png',
+        'image': coin.chain === 'eos' ? 'https://defibox.oss-accelerate.aliyuncs.com/eos/' + coin.contract + '-' + coin.type.toLowerCase() + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type.toLowerCase() + '.png',
         'dex': 'coinswitch',
         'amount': parseFloat(coin.amount),
         'amountUSD': coin.usd
@@ -256,6 +273,43 @@ class Lib {
   history = async (chain, key, token, data = null) => {
     const self = this
     const wallet = {
+      async sol (token, key, data) {
+        return new Promise(async (resolve, reject) => {
+          let actions = []
+          axios.get(process.env[store.state.settings.network].CACHE + 'https://api.solscan.io/account/transaction?address=' + key)
+            .then(function (result) {
+              result.data.data.filter(o => o.parsedInstruction[0].type.toLowerCase() === 'sol-transfer').map(a => {
+                let tx = {}
+
+                let date = new Date(a.blockTime)
+                tx.timeStamp = date.getTime() / 1000
+                tx.chain = token
+                tx.friendlyHash = a.txHash.substring(0, 6) + '...' + a.txHash.substr(a.txHash.length - 5)
+                tx.to = tx.friendlyTo = a.parsedInstruction[0].programId
+                tx.hash = a.txHash
+                tx.explorerLink = 'https://solscan.io/tx/' + tx.hash
+                tx.from = a.signer[0]
+                tx.time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+                tx.image = 'https://solana.com/branding/new/exchange/exchange-black.png' // self.getTokenImage(amount.split(' ')[1])
+                tx.amount = a.slot * 0.000000001
+                tx.symbol = 'SOL'
+                tx.direction = self.getTransactionDirection(a.signer[0], a.parsedInstruction[0].programId, key)
+                tx.dateFormatted = date.toISOString().split('T')[0]
+                tx.amountFriendly = parseFloat(Math.abs(tx.amount)).toFixed(6)
+
+                actions.push(tx)
+              })
+
+              resolve({
+                history: actions
+              })
+            }).catch(function (error) {
+              reject({
+                error: error
+              })
+            })
+        })
+      },
       async eos (token, key, data) {
         return new Promise(async (resolve, reject) => {
           let actions = []
@@ -546,6 +600,24 @@ class Lib {
 
   balance = async (chain, key, token) => {
     const wallet = {
+      async sol (key, token) {
+        let connection = new solanaWeb3.Connection(
+          solanaWeb3.clusterApiUrl('mainnet-beta'),
+          'confirmed'
+        )
+        let Pkey = new solanaWeb3.PublicKey(key)
+        console.log(key, 'key', Pkey, 'Pkey')
+        let amount = await connection.getBalance(Pkey)
+        let tokenPrice = (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd')).data.solana.usd
+        amount = amount * 0.000000001
+        const usd = amount * tokenPrice
+
+        return {
+          amount,
+          usd,
+          tokenPrice
+        }
+      },
       async eos (key, token) {
         let float = 0
         const tokenContract = {
@@ -761,7 +833,7 @@ class Lib {
 
     const web3 = this.getWeb3Instance(chain)
     if (evmData) {
-      if (evmData.gas && evmData.gas.length) { response = await axios.get(evmData.gas) }
+      if (evmData.gas && evmData.gas.length) { response = await axios.get(process.env[store.state.settings.network].CACHE + evmData.gas) }
 
       gasData = {
         gas: gasLimit || 21000,
@@ -905,8 +977,41 @@ class Lib {
 
   send = async (chain, token, from, to, value, memo, key, contract, data) => {
     const self = this
-    console.log(chain, token, from, to, value, memo, contract, data, 'chain, token, from, to, value, memo, key, contract, data')
+
     const wallet = {
+      async sol (token, from, to, value, memo, key) {
+        let account = new solanaWeb3.Account(JSON.parse(key).data)
+
+        // Connect to cluster
+        var connection = new solanaWeb3.Connection(
+          solanaWeb3.clusterApiUrl('mainnet-beta'),
+          'confirmed'
+        )
+        let tx = solanaWeb3.SystemProgram.transfer({
+          fromPubkey: account.publicKey,
+          toPubkey: to,
+          lamports: solanaWeb3.LAMPORTS_PER_SOL * value
+        })
+        // Add transfer instruction to transaction
+        var transaction = new solanaWeb3.Transaction().add(
+          tx
+        )
+
+        // Sign transaction, broadcast, and confirm
+        var signature = await solanaWeb3.sendAndConfirmTransaction(
+          connection,
+          transaction,
+          [account]
+        )
+
+        return new Promise((resolve, reject) => {
+          resolve({
+            message: `solscan.io/tx/${signature}`,
+            success: true,
+            transaction_id: signature
+          })
+        })
+      },
       async btc (token, from, to, value, memo, key) {
         const bitcoin = require('bitcoinjs-lib')
         const CryptoAccount = require('send-crypto').default
@@ -1105,14 +1210,10 @@ class Lib {
             message = 'https://explorer.binance.org/tx/' + result.result[0].hash
             success = true
           } else {
-            console.error('error else', result.message)
-
             message = result.message
             success = false
           }
         } catch (error) {
-          console.error('error catch', error)
-
           message = error
           success = false
         }

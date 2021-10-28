@@ -1,5 +1,5 @@
 <template>
-  <div id="q-app">
+  <div id="q-app" :style="bexStyles">
     <router-view :keys='network' />
   </div>
 </template>
@@ -11,6 +11,16 @@ export default {
   computed: {
     network () {
       return this.$store.state.settings.network
+    },
+    bexStyles () {
+      if (this.$isbex) {
+        return {
+          width: '357px;',
+          height: '600px',
+          background: '#F5F5FE'
+        }
+      }
+      return {}
     }
   }
 }
@@ -19,7 +29,8 @@ export default {
 <style>
 body {
   font-family: 'Libre Franklin', sans-serif;
-  background: black;
+  background: #F5F5FE;
+  /* black; */
 }
 @media screen and (max-width: 768px) {
   ::-webkit-scrollbar { display: none; }

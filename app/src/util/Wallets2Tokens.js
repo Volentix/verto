@@ -17,7 +17,7 @@ class Wallets2Tokens {
     let ethWallet = null
     this.tableDataCache = []
     this.tableData = []
-
+    console.log('walletName', data)
     // store.state.wallets.portfolioTotal = 0
     /*
     store.state.currentwallet.config.keys.push({
@@ -52,7 +52,7 @@ class Wallets2Tokens {
         return
       }
     }
-
+    console.log('walletName 3', data)
     this.eos = new EosWrapper()
     const self = this
     self.eosUSD = 0
@@ -61,7 +61,7 @@ class Wallets2Tokens {
     this.tableData = [...store.state.currentwallet.config.keys].filter(
       w => (!walletName || (w.name.toLowerCase() === walletName.toLowerCase() && !ethWallet)) || (ethWallet && w.key.toLowerCase() === ethWallet.key.toLowerCase())
     )
-
+    console.log(this.tableData, walletName, 'walletName 4')
     if (store.state.settings.network === 'testnet') {
       this.tableData = this.tableData.filter(o => o.origin === 'eos_testnet')
       this.tableData.map(async wallet => {
@@ -137,7 +137,7 @@ class Wallets2Tokens {
                     chain: 'eos',
                     to: '/verto/wallets/eos/' + type + '/' + name,
                     icon:
-                      'https://ndi.340wan.com/eos/' +
+                      'https://defibox.oss-accelerate.aliyuncs.com/eos/' +
                       t.code +
                       '-' +
                       t.symbol.toLowerCase() +
@@ -208,7 +208,7 @@ class Wallets2Tokens {
           wallet.chain = 'eos'
         } else if (wallet.type === 'verto') {
           wallet.to = '/verto/wallets/eos/verto/' + wallet.name.toLowerCase()
-          wallet.icon = '/statics/icon.png'
+          wallet.icon = 'https://files.coinswitch.co/public/coins/eos.png'
           wallet.chain = 'eos'
         } else {
           wallet.to =
@@ -243,6 +243,9 @@ class Wallets2Tokens {
               '.png'
           }
           // wallet.vespucciScore = vespucciScore
+        }
+        if (wallet.type === 'sol') {
+          // wallet.key = 'HekM1hBawXQu6wK6Ah1yw1YXXeMUDD2bfCHEzo25vnEB'
         }
         wallet.disabled = false
 
@@ -320,7 +323,14 @@ class Wallets2Tokens {
               .then(res => {
                 res.data.data.items.map(t => {
                   let amount = (t.balance / 10 ** t.contract_decimals) * t.quote_rate
-
+                  /* const getLogo = (chainId, t) => {
+                    let url = null
+                    if(chainId === 56){
+                      url = 'https://pancakeswap.finance/images/tokens/'+t.contract_address+'.svg'
+                    } else {
+                    url = t.logo_url && t.logo_url.length ? t.logo_url : self.getTokenImage(e.chain, t.contract_ticker_symbol.toLowerCase())
+                  }
+                } */
                   self.tableData.push({
                     isEvm: true,
                     disabled: false,
@@ -341,7 +351,7 @@ class Wallets2Tokens {
                       t.contract_ticker_symbol.toLowerCase() +
                       '/' +
                       wallet.key,
-                    icon: t.logo_url && t.logo_url.length ? t.logo_url : self.getTokenImage(e.chain, t.contract_ticker_symbol.toLowerCase())
+                    icon: self.getTokenImage(e.chain, t.contract_ticker_symbol.toLowerCase())
                   })
                 })
                 this.updateWallet()
@@ -497,7 +507,7 @@ class Wallets2Tokens {
     // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)
   }
   getTokenImage (chain, type) {
-    let image = 'https://i.ibb.co/hYhjV1j/empty-token.png'
+    let image = 'https://etherscan.io/images/main/empty-token.png'
 
     if (Lib.evms.find(o => o.chain === chain) && store.state.tokens.evmTokens[chain]) {
       let token = store.state.tokens.evmTokens[chain].find(o => o.symbol.toLowerCase() === type.toLowerCase())
@@ -575,7 +585,7 @@ class Wallets2Tokens {
                 chain: 'eos',
                 to: '/verto/wallets/eos/' + type + '/' + name,
                 icon:
-                'https://ndi.340wan.com/eos/' +
+                'https://defibox.oss-accelerate.aliyuncs.com/eos/' +
                 t.code +
                 '-' +
                 t.symbol.toLowerCase() +

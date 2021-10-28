@@ -6,7 +6,7 @@
         <router-link to="/verto/dashboard">VERTO</router-link>
       </div>
     </div>
-    <video-bg :sources="['statics/mp4/recovery-seed.mp4']" img="">
+    <video-bg :sources="[require('assets/mp4/recovery-seed.mp4')]" img="">
       <div class="video-page-wrapper q-pt-md q-pb-md">
         <div v-if="step===0" class="standard-content">
           <h2 class="standard-content--desc"></h2>
@@ -254,17 +254,17 @@ export default {
           const result = await this.$configManager.saveWalletAndKey('EOS Key', this.vertoPassword, null, keys.publicKey, keys.privateKey, 'verto', 'mnemonic')
 
           if (result && result.success) {
-          //   try {
-          //     await this.$configManager.backupConfig()
-          //     if (this.$q.platform.is.android) {
-          //       this.$q.notify({ color: 'positive', message: 'Config Saved' })
-          //     }
-          //   } catch (e) {
-          //     // TODO: Exception handling
-          //   }
+            //   try {
+            //     await this.$configManager.backupConfig()
+            //     if (this.$q.platform.is.android) {
+            //       this.$q.notify({ color: 'positive', message: 'Config Saved' })
+            //     }
+            //   } catch (e) {
+            //     // TODO: Exception handling
+            //   }
 
             this.$q.notify({ color: 'positive', message: 'EOS Keys created' })
-          //   this.$router.push('wallet')
+            //   this.$router.push('wallet')
           }
           this.$router.push({ path: '/create-keys' })
         }
@@ -351,38 +351,38 @@ export default {
   color: #FFF !important;
 }
 .row {
-    .col {
-      &.menu {
-        a {
-          font-weight: $regular;
-          font-family: $Titillium;
-          font-size: 16px;
-          color: #333;
-          text-decoration: none;
-          padding: 5px 10px;
-          border-radius: 5px;
+  .col {
+    &.menu {
+      a {
+        font-weight: $regular;
+        font-family: $Titillium;
+        font-size: 16px;
+        color: #333;
+        text-decoration: none;
+        padding: 5px 10px;
+        border-radius: 5px;
 
-          &:hover {
-            background-color: rgba(black, 0.02);
-          }
+        &:hover {
+          background-color: rgba(black, 0.02);
         }
       }
-
-      &.app-logo {
-        a {
-          font-weight: $lighter;
-          text-transform: uppercase;
-          font-family: $Titillium;
-          font-size: 25px;
-          color: #FFF;
-          text-decoration: none;
-        }
-      }
-
-      cursor: pointer;
-      position: relative;
     }
+
+    &.app-logo {
+      a {
+        font-weight: $lighter;
+        text-transform: uppercase;
+        font-family: $Titillium;
+        font-size: 25px;
+        color: #FFF;
+        text-decoration: none;
+      }
+    }
+
+    cursor: pointer;
+    position: relative;
   }
+}
 .standard-content{
   padding: 5%;
   display: flex;

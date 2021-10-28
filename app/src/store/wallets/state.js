@@ -2,6 +2,9 @@
 export default {
   tokens: [],
   portfolioTotal: 0,
+  tx: {
+
+  },
   customTotal: {
     label: null,
     usd: 0,

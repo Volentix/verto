@@ -163,6 +163,7 @@ node_modules
 app/dist
 app/build
 .nuxt.
+.app/src-bex/www
 app/src-cordova/node_modules
 app/src-cordova/platforms
 app/src-cordova/plugins
@@ -192,3 +193,4 @@ electron-builder.yml
 
 # Build folders for readthedocs
 _build/
+app/src-bex/www

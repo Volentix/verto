@@ -37,7 +37,8 @@ export const getSettings = ({ commit }, data) => {
           message: 'New Version available (v' + settings.vertoVersion + ')',
           color: 'black',
           position: 'top',
-          timeout: 360000,
+          // #SUJAN timeout: 360000,
+          timeout: 360,
           avatar: 'https://verto.volentix.io/statics/icons/vtx-logo-1024x1024.png',
           actions: [
             { label: 'Refresh Page',

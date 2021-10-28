@@ -1,8 +1,9 @@
 <template>
+<div>
   <div
     :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
     class="wrapper q-pr-md"
-    v-if="asset.type"
+    v-if="asset.type && !($q.platform.is.mobile||$isbex)"
   >
     <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" style="margin-left: 15px; height: 77vh;">
       <div class="row" >
@@ -16,7 +17,7 @@
 
                 <h2>
 
-                  <img v-if="asset.icon" :src="asset.icon" style="max-width: 40px" alt="image" />
+                  <img v-if="asset.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="asset.icon" style="max-width: 40px" alt="image" />
                   <img
                     v-if="false"
                     style="max-width: 0px"
@@ -334,7 +335,7 @@
                    <AccountSelector  :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
               </div>
 
-              <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount" class="q-px-md" >
+              <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount && !$store.state.wallets.portfolioTotal" class="q-px-md" >
                 <SendComponent @setAsset="setAsset" :token="asset.type" :miniMode="true" :key="$store.state.investment.defaultAccount.key+$store.state.investment.defaultAccount.name+$store.state.investment.defaultAccount.chain"  />
               </div>
 
@@ -345,7 +346,7 @@
               <div v-else-if="tab != 'send' && tab != 'import' || (tab == 'send' && asset.chain == 'eos')" class="q-pa-md">
               <p class="q-pt-md text-purple-12" v-if="tab != 'send' && !['bsc','matic','eth','eos'].includes(asset.chain)"> Buying and selling {{asset.type.toLowerCase()}} will be available very soon</p>
               <div class="row" v-if="!fromPreview ">
-              .
+
                 <q-input
                   :dark="$store.state.settings.lightMode === 'true'"
                   bottom-slots
@@ -581,12 +582,16 @@
           <liquidityPoolsTable  v-else-if="tokenTabOption == 'opportunities'"  :asset="asset" :rowsPerPage="7"   /> -->
           </div>
 
- <TokenByAccount :type="asset.type" :chain="asset.chain" class="right-area q-mt-lg col" />
+          <TokenByAccount :type="asset.type" :chain="asset.chain" class="right-area q-mt-lg col" />
         </div>
 
       </div>
     </q-scroll-area>
   </div>
+  <div v-if="$q.platform.is.mobile||$isbex">
+    <SignleTokenDialog :marketData="marketData" :asset="asset" :formatNumber="formatNumber" :chartData="chartData" :chartAvailable="chartAvailable" :intervalHistory="intervalHistory" :getHistoriclPrice="getHistoriclPrice" :nFormatter2="nFormatter2" :tab.sync="tab" :success.sync="success" :error.sync="error" :exchangeToken="exchangeToken" :setAsset.sync="setAsset" :fromPreview.sync="fromPreview" :depositQuantity.sync="depositQuantity" :assetBalance="assetBalance" :destinationCoin.sync="destinationCoin" :destinationCoinOptions="destinationCoinOptions" :sendTo.sync="sendTo" :memo.sync="memo" :isTxValid="isTxValid" :triggerAction="triggerAction" :goToExchange="goToExchange" :spinnerVisible.sync="spinnerVisible" :filterDestinationCoin="filterDestinationCoin" :setSuccessData="setSuccessData" />
+  </div>
+</div>
 </template>
 <script>
 import transactEOS from './transactEOS'
@@ -603,6 +608,7 @@ import AccountSelector from './Exchange/AccountSelector.vue'
 // import liquidityPoolsTable from '../../components/Verto/Defi/LiquidityPoolsTable'
 import { JsonRpc } from 'eosjs'
 import { QScrollArea } from 'quasar'
+import SignleTokenDialog from './MobileUI/SingleTokenDialog.vue'
 
 // import Godex from './Exchange/Godex.vue'
 
@@ -618,7 +624,8 @@ export default {
     transactEOS,
     // liquidityPoolsTable,
     SendComponent,
-    QScrollArea
+    QScrollArea,
+    SignleTokenDialog
     // Godex
   },
   watch: {
@@ -677,15 +684,20 @@ export default {
   },
   methods: {
     setAsset (asset) {
-      let data = (this.$route.params.assets || []).find(o => o.type === asset.type && o.chain === asset.chainID)
+      try {
+        let data = (this.$route.params.assets || []).find(o => o.type === asset.type && o.chain === asset.chainID)
 
-      if (data) {
-        this.setAssetData(data)
-      } else if (asset) {
-        this.setAssetData(asset)
+        if (data) {
+          this.setAssetData(data)
+        } else if (asset) {
+          this.setAssetData(asset)
+        }
+      } catch (e) {
+        console.log('e', e)
       }
     },
     async setAssetData (data) {
+      console.log(data, 'data')
       let asset = data || this.assetData
       if (asset && asset.chainID) {
         asset.chain = asset.chainID
@@ -840,42 +852,44 @@ export default {
         })
     },
     async getHistoriclPrice (days = 30) {
+      console.log('getHistoriclPrice called')
       this.chartData = false
       this.chartAvailable = true
       let id = this.asset.coinGeckoId
+      try {
+        if (!id) {
+          let token = this.$store.state.tokens.list.find(
+            (t) =>
+              t.symbol.toLowerCase() === this.asset.type &&
+            ((!t.platforms.hasOwnProperty('eos') &&
+              !t.platforms.hasOwnProperty('ethereum')) ||
+              this.asset.chain ===
+                (t.platforms.hasOwnProperty('eos')
+                  ? 'eos'
+                  : this.asset.chain)))
 
-      if (!id) {
-        let token = this.$store.state.tokens.list.find(
-          (t) =>
-            t.symbol.toLowerCase() === this.asset.type &&
-          ((!t.platforms.hasOwnProperty('eos') &&
-            !t.platforms.hasOwnProperty('ethereum')) ||
-            this.asset.chain ===
-              (t.platforms.hasOwnProperty('eos')
-                ? 'eos'
-                : this.asset.chain)))
-
-        id = token ? token.id : null
-        console.log(id, 'id 34', token)
-      }
-      if (id) {
-        this.getMarketData(id)
-        let response = await this.$axios.get(
-          process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/' +
-            id +
-            '/market_chart?vs_currency=usd&days=' +
-            days
-        )
-        this.chartData = response.data
-        this.intervalHistory = days
-
-        if (response.data.prices && !this.asset.rateUsd) {
-          this.asset.rateUsd =
-            response.data.prices[response.data.prices.length - 1][1]
+          id = token ? token.id : null
+          // console.log('token ', token)
         }
-      } else {
-        this.chartAvailable = false
-      }
+        if (id) {
+          this.getMarketData(id)
+          let response = await this.$axios.get(
+            process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/coins/' +
+              id +
+              '/market_chart?vs_currency=usd&days=' +
+              days
+          )
+          this.chartData = response.data
+          this.intervalHistory = days
+
+          if (response.data.prices && !this.asset.rateUsd) {
+            this.asset.rateUsd =
+              response.data.prices[response.data.prices.length - 1][1]
+          }
+        } else {
+          this.chartAvailable = false
+        }
+      } catch (e) { console.log('e', e) }
     },
     setSuccessData (status) {
       this.success = status

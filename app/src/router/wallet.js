@@ -1,22 +1,84 @@
+let shared_wallet_urls = [
+]
+if (process.env.MODE === 'bex') {
+  shared_wallet_urls = [
+    {
+      name: 'restoreWallet',
+      path: '/verto/restore-wallet/:returnto',
+      component: () => import('pages/Verto/bex/RestoreWallet.vue'),
+      meta: {}
+    },
+    {
+      name: 'syncExtensionWallet',
+      path: '/verto/sync-wallet-ext',
+      component: () => import('pages/Verto/bex/SyncWalletFromExtension.vue'),
+      meta: {}
+    },
+    {
+      name: 'landing',
+      path: '/verto/landing',
+      component: () => import('pages/Verto/bex/Landing.vue'),
+      meta: {
+        authRequired: false
+      }
+    },
+    {
+      name: 'create-verto-password',
+      path: '/verto/create-verto-password',
+      component: () => import('pages/Verto/bex/CreateVertoPassword.vue'),
+      meta: {
+        authRequired: false
+      }
+    },
+    {
+      name: 'recovery-seed',
+      path: '/verto/recovery-seed',
+      component: () => import('pages/Verto/bex/RecoverySeed.vue'),
+      meta: {
+        authRequired: false
+      }
+    }
+  ]
+} else {
+  shared_wallet_urls = [
+    {
+      name: 'restoreWallet',
+      path: '/verto/restore-wallet/:returnto',
+      component: () => import('pages/Verto/RestoreWallet.vue'),
+      meta: {}
+    },
+    {
+      name: 'landing',
+      path: '/verto/landing',
+      component: () => import('pages/Verto/Landing.vue'),
+      meta: {
+        authRequired: false
+      }
+    },
+    {
+      name: 'create-verto-password',
+      path: '/verto/create-verto-password',
+      component: () => import('pages/Verto/CreateVertoPassword.vue'),
+      meta: {
+        authRequired: false
+      }
+    },
+    {
+      name: 'recovery-seed',
+      path: '/verto/recovery-seed',
+      component: () => import('pages/Verto/RecoverySeed.vue'),
+      meta: {
+        authRequired: false
+      }
+    }
+  ]
+}
 export default [
   {
     path: '/verto',
     component: () => import('layouts/Intro.vue'),
     children: [
-      {
-        name: 'restoreWallet',
-        path: '/verto/restore-wallet/:returnto',
-        component: () => import('pages/Verto/RestoreWallet.vue'),
-        meta: {}
-      },
-      {
-        name: 'landing',
-        path: '/verto/landing',
-        component: () => import('pages/Verto/Landing.vue'),
-        meta: {
-          authRequired: false
-        }
-      },
+      ...shared_wallet_urls,
       {
         path: '/verto/vdexnode',
         component: () => import('pages/vDexNode/Index.vue'),
@@ -28,14 +90,6 @@ export default [
         name: 'secret-words',
         path: '/verto/secret-words',
         component: () => import('pages/Verto/SecretWords.vue'),
-        meta: {
-          authRequired: false
-        }
-      },
-      {
-        name: 'create-verto-password',
-        path: '/verto/create-verto-password',
-        component: () => import('pages/Verto/CreateVertoPassword.vue'),
         meta: {
           authRequired: false
         }
@@ -57,20 +111,17 @@ export default [
         }
       },
       {
-        name: 'recovery-seed',
-        path: '/verto/recovery-seed',
-        component: () => import('pages/Verto/RecoverySeed.vue'),
-        meta: {
-          authRequired: false
-        }
-      },
-      {
         name: 'mnemonic2',
         path: '/intro/mnemonic2',
         component: () => import('pages/Intro/Mnemonic.vue')
       }
 
     ]
+  },
+  {
+    name: 'connectv1',
+    path: '/verto/connectv1',
+    component: () => import('pages/Verto/bex/Connect.vue')
   },
   {
     name: 'embed',
@@ -202,6 +253,15 @@ export default [
         meta: {
           authRequired: true,
           needskeyscreated: true
+        }
+      },
+      {
+        name: 'networks',
+        path: '/verto/networks',
+        component: () => import('components/Verto/ChainSettings.vue'),
+        meta: {
+          authRequired: true
+          //  needskeyscreated: true
         }
       },
       {
@@ -404,14 +464,14 @@ export default [
           authRequired: true
         }
       },
-      {
-        name: 'dashboardNewUI',
-        path: '/verto/dashboardNewUI',
-        component: () => import('pages/Verto/DashboardNewUI.vue'),
-        meta: {
-          authRequired: true
-        }
-      },
+      // {
+      //   name: 'dashboardNewUI',
+      //   path: '/verto/dashboardNewUI',
+      //   component: () => import('pages/Verto/DashboardNewUI.vue'),
+      //   meta: {
+      //     authRequired: true
+      //   }
+      // },
       {
         name: 'profile',
         path: '/verto/profile',

@@ -4,6 +4,17 @@ import { scroll } from 'quasar'
 
 export default {
   methods: {
+    isValidUrl (string) {
+      let url
+
+      try {
+        url = new URL(string)
+      } catch (_) {
+        return false
+      }
+
+      return url.protocol === 'http:' || url.protocol === 'https:'
+    },
     getImportLink (chain) {
       let to = '/verto/import-wallet/' + chain
       let routes = {
@@ -90,9 +101,9 @@ export default {
       return label
     },
     getKeyFormat (key, last = 5) {
-      return key.substring(0, 5).toLowerCase() +
+      return key ? key.substring(0, 5).toLowerCase() +
       '...' +
-      key.substr(key.length - last).toLowerCase()
+      key.substr(key.length - last).toLowerCase() : ''
     },
     getPageName (name) {
       let pages = {
@@ -122,11 +133,14 @@ export default {
       }
       return isEvm ? isEvm.name : (chainLabel ? chainLabel.label : chain.toUpperCase())
     },
+    isEvm (type) {
+      return ['ftm', 'avaxc', 'eth', 'bsc', 'matic'].includes(type.toLowerCase())
+    },
     formatAccoountOption (w) {
       let account = {
         value: w.key + '-' + w.chain + (w.name),
         key: w.key,
-        isEvm: w.isEvm,
+        isEvm: w.isEvm || this.isEvm(w.type),
         chain: w.chain,
         amount: w.amount,
         type: w.type,

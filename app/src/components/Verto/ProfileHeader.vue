@@ -19,7 +19,7 @@
       </div>
     </div>
     <div v-if="version === 'type1'" class="p-relative column flex-center profile-wrapper--header wallets" style="background: url('statics/header_bg3.png');">
-      <q-btn flat unelevated class="btn-align-left" to="/verto/dashboard" text-color="white" icon="keyboard_backspace" />
+      <q-btn flat unelevated class="btn-align-left" to="/verto/profile" text-color="white" icon="keyboard_backspace" />
       <h3 class="profile-wrapper--header__title text-white">Total Balance</h3>
       <h2 class="profile-wrapper--header__balance text-white">${{ new Number( $store.state.wallets.portfolioTotal ).toFixed(2) }} USD</h2>
       <div class="profile-wrapper--header__action">
@@ -69,8 +69,10 @@
     <div v-else
     class="column flex-center profile-wrapper--header"
     :class="{'desktop-ui' : !isMobile, 'selected-wallet':  !isMobile && !$store.getters['currentwallet/getWallet'].empty}"
-    :style="$store.state.settings.lightMode === 'true' ? `background: url('statics/header_bg3.png')` : `background: url('statics/header_bg3light.png')`"
+    style="height:160px;"
     >
+    <!-- :style="$store.state.settings.lightMode === 'true' ? `background: url('statics/header_bg3.png')` : `background: url('statics/header_bg3light.png')`" -->
+
       <q-btn v-if="!isMobile && !$store.getters['currentwallet/getWallet'].empty" flat round @click="resetSelectedWallet()" to="/verto/dashboard" color="transparent" class="reset-btn" text-color="white" size="md" icon="close" />
       <h3 class="profile-wrapper--header__title" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-if="!isMobile && !$store.getters['currentwallet/getWallet'].empty">{{$store.getters['currentwallet/getWallet'].name.replace('- HD', '')}}</h3>
@@ -86,7 +88,7 @@
       <h2 class="profile-wrapper--header__balance" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-dark'"
       v-else>${{ nFormatter2( chainData ?  chainData.total : $store.state.wallets.portfolioTotal , 3) }} USD <span class="profile-wrapper--header__equivalent">Equivalent</span></h2>
       <!-- {{$store.state.wallets.portfolioTotal}} -->
-      <div class="profile-wrapper--header__action">
+      <div class="profile-wrapper--header__action" v-if="!($q.platform.is.mobile||$isbex)">
 
         <q-btn unelevated v-if="screenSize <= 1024"
           :disable="$store.getters['currentwallet/getWallet'].type === 'verto' || !($store.state.settings.chainsSendEnabled.includes($store.getters['currentwallet/getWallet'].chain))"

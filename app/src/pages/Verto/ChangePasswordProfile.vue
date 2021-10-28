@@ -1,6 +1,6 @@
 <template>
   <q-page class="column text-black bg-grey-12" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+    <div :class="{'dark-theme mobile-card': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
       <div class="desktop-version full-height" v-if="screenSize > 1024">
         <div class="row full-height">
           <div class="col col-md-3" v-if="false">
@@ -132,31 +132,33 @@
           </div>
         </div>
       </div>
-      <div v-else class="chain-tools-wrapper">
+      <div v-else class="chain-tools-wrapper" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card': ''">
+          <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
+              <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)"/>
+              <q-toolbar-title> {{ $t('ChangeVertoPassword.header') }}  </q-toolbar-title>
+          </q-toolbar>
           <div class="standard-content">
-              <h2 class="standard-content--title flex justify-center">
-                  <q-btn flat unelevated class="btn-align-left" to="/verto/profile" text-color="black" icon="keyboard_backspace" />
-                    {{ $t('ChangeVertoPassword.header') }}
-              </h2>
               <div class="privatekey_bg flex flex-center"><img src="statics/password_picto.svg" alt=""></div>
           </div>
-          <div class="chain-tools-wrapper--list open">
-              <div class="list-wrapper">
+          <div class="chain-tools-wrapper--list_ open" >
+              <div class="list-wrapper" >
                   <div class="list-wrapper--chain__eos-to-vtx-convertor">
-                      <q-stepper v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat >
+                      <q-stepper :dark="$store.state.settings.lightMode === 'true'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical   animated flat :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card': ''">
                           <!--
                               1. Current Password
                           -->
-                          <q-step title="Current Password" :name="1" prefix="1" :done="step > 1">
+                          <q-step title="Current Password" :name="1" prefix="1" :done="step > 1" >
                               <q-input
                                   v-model="passwords.current"
                                   light
                                   debounce="500"
-                                  rounded outlined color="purple"
+                                  rounded outlined color="primary"
                                   @input="checkCurrent"
                                   @keyup.enter="showNewPassword"
                                   :label="$t('ChangeVertoPassword.current')"
                                   :type="isPwd ? 'password' : 'text'"
+                                  :label-color="$store.state.settings.lightMode === 'true' ? 'grey' : 'primary'"
+
                               >
                                   <template v-slot:append>
                                       <q-icon
@@ -202,6 +204,7 @@
                                           @keyup.enter="gotoConfirmScreen"
                                           ref="passwordInput"
                                           :type="isPwd ? 'password' : 'text'"
+                                          :label-color="$store.state.settings.lightMode === 'true' ? 'grey' : 'primary'"
                                       >
                                           <template v-slot:append>
                                               <q-icon
@@ -231,6 +234,7 @@
                                   @keyup.enter="submit"
                                   :label="$t('ChangeVertoPassword.confirm')"
                                   :type="isPwd ? 'password' : 'text'"
+                                  :label-color="$store.state.settings.lightMode === 'true' ? 'grey' : 'primary'"
                               >
                                   <template v-slot:append>
                                       <q-icon

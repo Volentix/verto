@@ -1,18 +1,22 @@
+
 <template>
   <q-page
     class="column"
-    :class="{
+    :class=" {
       'dark-theme': $store.state.settings.lightMode === 'true',
       'text-black bg-white': $store.state.settings.lightMode === 'false',
       'desktop-marg': screenSize > 1024,
-      'mobile-pad': screenSize < 1024,
+      'mobile-pad': screenSize < 1024 && !($q.platform.is.mobile||$isbex),
+      'mobile-card': $store.state.settings.lightMode === 'true'
     }"
+    :style=" ($q.platform.is.mobile||$isbex) && $store.state.settings.lightMode !== 'true' ? 'position: static; background: #f2f2f2 !important' : '' "
   >
     <div
       :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
       style="height: 100vh"
+      v-if="!($q.platform.is.mobile||$isbex)"
     >
-      <div class="desktop-version full-height" >
+      <div class="desktop-version full-height"  >
         <div class="row full-height">
           <div class="col col-md-3" v-if="false">
             <div class="wallets-container" style="height: 100%">
@@ -37,6 +41,7 @@
               'bg-white': $store.state.settings.lightMode === 'false'
             }" class="col col-md-12 q-pr-md">
             <div class="row dashboard-ui-tokens">
+            <HexChart style="width:100%" v-if="false" />
               <q-tabs
                 v-model="tab"
                 v-if="false"
@@ -216,7 +221,18 @@
           </q-card-section>
         </q-card>
       </q-dialog>
+
     </div>
+    <!-- MOBILE SECTION STARTED  -->
+    <div v-if="$q.platform.is.mobile||$isbex">
+      <AssetsExplorer
+        @assetsChanged="assetsChanged"
+        ref="assetsComponent2"
+        v-show="!assetSelected && tab == 'dashboard'"
+        @setAsset="setAsset"
+      />
+    </div>
+    <!-- MOBILE SECTION END  -->
   </q-page>
 </template>
 
@@ -241,6 +257,7 @@ import MakeVTXSection2 from '../../components/Verto/MakeVTXSection2'
 // import ExchangeSection from '../../components/Verto/ExchangeSection'
 // import ExchangeSection3 from '../../components/Verto/ExchangeSection3'
 //
+import HexChart from '../../components/Verto/Stake/HexChart'
 import SingleToken from '../../components/Verto/SingleToken'
 import GodexV2 from '../../components/Verto/Exchange/GodexV2'
 import VTXStakeState from '../../components/Verto/EOS/StakingState'
@@ -275,6 +292,7 @@ export default {
     // ConvertAnyCoin,
     VTXStakeState,
     MultiTransaction,
+    HexChart,
     // NftsExplorer,
     ProfileHeader,
     Wallets,
@@ -464,7 +482,7 @@ export default {
    */
 
     if (this.$q.screen.width < 1024) {
-      window.localStorage.setItem('skin', 'false')
+      if (!this.$q.platform.is.mobile) { window.localStorage.setItem('skin', 'false') }
       this.$store.state.settings.lightMode =
         window.localStorage.getItem('skin')
     }
@@ -505,6 +523,10 @@ export default {
       this.$store.state.settings.show.tab = ''
     },
     getWindowWidth () {
+      if (this.$isbex) {
+        this.screenSize = 357
+        return
+      }
       this.screenSize = document.querySelector('#q-app').offsetWidth
     },
     showIntros () {

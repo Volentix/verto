@@ -1,10 +1,9 @@
-
 <template>
   <div class="wrapper">
     <q-layout
-      view="hHh Lpr lff"
-      container
-      style="height: 100vh"
+      :view="$q.platform.is.mobile || $isbex ? 'hHh lpR fFf' : 'hHh Lpr lff' "
+      :container="!($q.platform.is.mobile || $isbex)"
+      :style="!($q.platform.is.mobile || $isbex) ? 'height: 100vh' : ''"
       class="shadow-2"
     >
       <q-drawer
@@ -183,11 +182,23 @@
         </div>
       </q-drawer>
 
-      <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}">
-        <TopMenu />
+      <q-page-container id="main-container" :class="{'dark-theme':$store.state.settings.lightMode === 'true'}" :style="$q.platform.is.mobile ? ( $route.name === 'dashboard' && $store.state.settings.lightMode !== 'true' ? 'overflow:scroll; background:  #f2f2f2 !important': 'overflow:scroll; ') : 'overflow:scroll;' " >
+
+        <div v-if="$q.platform.is.mobile||$isbex">
+          <div id="scrollID8"></div>
+          <!-- <q-pull-to-refresh @refresh="refresh" > -->
+
+            <TopMenuMobile  v-if="$route.path == '/verto/dashboard'" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>
+          <!-- </q-pull-to-refresh> -->
+        </div>
+        <div v-else>
+           <TopMenu />
+         <!--  <TopMenuMobile v-if="$q.platform.is.mobile||$isbex" :chainTools.sync="chainTools" :keys.sync="keys" :showPanelStatus.sync="showPanelStatus" :refreshWallet="refreshWallet"/>-->
+        </div>
+
         <q-breadcrumbs
           class="text-deep-purple-12 breadcrumbs"
-          v-if="$route.path != '/verto/dashboard'"
+          v-if="$route.path != '/verto/dashboard'   && !($q.platform.is.mobile||$isbex)"
         >
           <template v-slot:separator>
             <q-icon size="1.5em" name="chevron_right" :color="$store.state.settings.lightMode === 'true' ? 'white':'primary'" />
@@ -198,7 +209,7 @@
             icon="keyboard_backspace"
             :class="{'text-white': $store.state.settings.lightMode === 'true'}"
             class="cursor-pointer q-ml-md"
-            @click="$route.name.includes('token') && $route.params.asset && !['btc'].includes($route.params.asset.chain) && $route.params.asset.name ? goToTab('assets', $route.params.asset.chain) : $router.go(-1)"
+            @click="$route.name.includes('token') && $route.params.asset && !['btc'].includes($route.params.asset.chain) && $route.params.asset.name ? goToTab('chains', $route.params.asset.chain) : $router.back()"
           />
           <q-breadcrumbs-el
             v-if="$route.name.includes('token')"
@@ -216,9 +227,28 @@
           />
           <q-breadcrumbs-el v-else class="text-capitalize" :class="{'text-white': $store.state.settings.lightMode === 'true'}" :label="$route.name" />
         </q-breadcrumbs>
-        <router-view class="main-container" v-if="toggleView" />
+        <router-view class="main-container" v-if="toggleView " />
       </q-page-container>
+
+      <q-footer v-if="($q.platform.is.mobile||$isbex) && showPanelStatus" elevated class=" text-white">
+        <q-tabs
+          v-model="tabRoute"
+          indicator-color="primary"
+          :active-color="$store.state.settings.lightMode === 'true' ? 'white':'primary'"
+          :active-bg-color="$store.state.settings.lightMode === 'true' ? 'light-blue-10':'white'"
+          class=" shadow-2 text-bold"
+          :class="$store.state.settings.lightMode === 'true' ? 'mobile-card':'bg-white text-grey-7'"
+        >
+          <q-tab v-if="!$isbex" name="exchange" icon="sync"  no-caps @click="goTo('crosschain-exchange')"> <div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">Exchange</div> </q-tab>
+          <q-tab name="history" icon="history"  no-caps @click="goTo('history')"> <div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">History</div> </q-tab>
+          <q-tab v-if="!$isbex" name="dashboard" icon="dashboard" label=" " @click="goTo('dashboard')"/>
+          <q-tab name="account" icon="account_balance"  no-caps @click="goTo('wallets')"> <div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">Wallets</div> </q-tab>
+          <q-tab name="profile" icon="person"  style="font-size: 5px;" no-caps @click="goTo('profile')"><div style="font-size: 11px;line-height: 1.715em; font-weight: 500;">Settings</div> </q-tab>
+        </q-tabs>
+      </q-footer>
+
       <SelectTokenPopup :key="keys.send" v-if="chainTools.send" />
+
     </q-layout>
   </div>
 </template>
@@ -230,12 +260,14 @@ import Formatter from '@/mixins/Formatter'
 import AccountSelector from '@/components/Verto/Exchange/AccountSelector.vue'
 import TopMenu from '../components/Verto/TopMenu'
 import SelectTokenPopup from '../components/Verto/Token/SelectTokenPopup.vue'
+import TopMenuMobile from '../components/Verto/TopMenuMobile.vue'
 import { QScrollArea } from 'quasar'
 export default {
   components: {
     AccountSelector,
     TopMenu,
     SelectTokenPopup,
+    TopMenuMobile,
     QScrollArea
   },
   data () {
@@ -290,17 +322,47 @@ export default {
         send: false
       },
       str: {},
-      miniState: false
+      miniState: false,
+      showPanelStatus: true,
+      tabRoute: 'dashboard',
+      showTabPanel: true
     }
+  },
+  mounted () {
+    if (this.$q.platform.is.mobile) { this.checkRoute() }
   },
   watch: {
     '$store.state.settings.defaultChainData': function () {
       if (this.$store.state.settings.defaultChainData) {
         this.chainTools.show = true
       }
+    },
+    '$route': function () {
+      if (this.$q.platform.is.mobile) { this.checkRoute() }
     }
   },
   methods: {
+    goTo (path) {
+      this.$router.push(`/verto/${path}`)
+    },
+    checkRoute () {
+      this.showPanelStatus = false
+      if (this.$route.name === 'dashboard') {
+        this.showPanelStatus = true
+        document.getElementById('scrollID8').scrollIntoView()
+      } else {
+        this.showPanelStatus = false
+      }
+      // set tab
+      if (this.$route.name === 'dashboard') { this.tabRoute = 'dashboard' }
+      if (this.$route.name === 'profile') {
+        this.tabRoute = 'profile'
+        this.showPanelStatus = false
+      }
+      if (this.$route.name === 'history') { this.tabRoute = 'history' }
+      if (this.$route.name === 'crosschain-exchange') { this.tabRoute = 'exchange' }
+      if (this.$route.name === 'wallets') { this.tabRoute = 'account' }
+    },
     sendTokens () {
       this.toggleView = false
       this.$router.push({
@@ -316,7 +378,6 @@ export default {
       this.$router.push('/verto/manage/accounts')
     },
     goToTab (tab, chain) {
-    //  tab = chain ? 'chains' : tab
       this.$router.push({
         name: 'dashboard',
         params: {
@@ -334,9 +395,18 @@ export default {
       }
 
       return initWallet(name)
+    },
+    refresh (done) {
+      setTimeout(() => {
+        this.refreshWallet()
+        done()
+      }, 1000)
     }
   },
   created () {
+    if (this.$isbex) {
+      this.$q.platform.is.mobile = true
+    }
     this.version = version
   },
   mixins: [Formatter]
@@ -1018,5 +1088,11 @@ ul.left-menu {
   font-weight: 700;
   font-family: 'Libre Franklin', sans-serif;
   width: 100%;
+}
+.mobile-card{
+    background-color: #04111F !important;
+}
+.tab-dark-mode{
+  background-color: #071e36
 }
 </style>

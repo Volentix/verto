@@ -1,6 +1,6 @@
 <template>
-  <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="alert">
-    <q-card :dark="$store.state.settings.lightMode === 'true'" style="width:380px;">
+  <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="alert" :maximized="$q.platform.is.mobile||$isbex">
+    <q-card :dark="$store.state.settings.lightMode === 'true'" :style="!($q.platform.is.mobile||$isbex) ? 'width:380px;': ''">
       <div
         id="id-svk40f"
         role="dialog"
@@ -9,12 +9,7 @@
         data-dialog="true"
         class="_2ml_U"
         aria-label="Select token to send"
-        style="
-          height: 470px;
-          max-width: 450px;
-          border-radius: 12px;
-          overflow: hidden;
-        "
+        :style=" $q.platform.is.mobile ? 'height: 100%; max-width: 450px; border-radius: 12px; overflow: hidden; ' : 'height: 470px; max-width: 450px; border-radius: 12px; overflow: hidden; '"
       >
         <div class="_1_oPM">
           <div
@@ -67,9 +62,9 @@
             <div class="Scrollable__ContainerWr-sc-1haiovs-1 kfPoNl">
               <div
                 class="Scrollable__Container-sc-1haiovs-2 hnbMXD ps ps--active-y"
-                style="height: 320px; padding-right: 14px"
+                :style="$q.platform.is.mobile ? 'height: 100vh; padding-right: 14px' : 'height: 620px; padding-right: 14px'"
               >
-               <div class="VStack-sc-1vdo21d-0 iPFffM">
+               <div class="VStack-sc-1vdo21d-0 iPFffM" style="padding-bottom:200px;">
                 <button
                   class="
                     UnstyledButton-sc-1d365uh-0
@@ -84,7 +79,7 @@
                     <div class="shared__HStack-sc-1qg837v-1 icuFOW">
                       <div class="shared__HStack-sc-1qg837v-1 iXubSr">
                         <div size="36" class="TokenIcon__Wr-sc-1tdh4mp-0 ehgTIN">
-                          <q-img   :src="token.icon" class="rounded" />
+                          <img width="36"  :src="token.icon" class="rounded" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"/>
                         </div>
                         <div class="VStack-sc-1vdo21d-0 iPFffQ">
                           <div
@@ -163,6 +158,7 @@
 import Formatter from '@/mixins/Formatter'
 export default {
   mixins: [Formatter],
+  props: ['selectedChain'],
   data () {
     return {
       alert: true,
@@ -172,6 +168,10 @@ export default {
   },
   mounted () {
     this.tokens = this.getAssets()
+    // only for mobile version
+    if (this.selectedChain) {
+      this.tokens = this.tokens.filter(item => item.chain === this.selectedChain)
+    }
   },
   methods: {
     selectToken (asset) {

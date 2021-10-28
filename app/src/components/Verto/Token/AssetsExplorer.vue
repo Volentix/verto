@@ -1,12 +1,85 @@
 <template>
-  <div
-    :class="{
+<div
+  :class="{
       'q-pt-lg': !allAssets,
       'dark-theme': $store.state.settings.lightMode === 'true',
       'receive_wrapper_class': tab == 'receive',
       'import_wrapper_class': tab == 'import'
     }"
     class="wrapper q-px-lg full-width assets_explorer_container"
+    :style=" ($q.platform.is.mobile||$isbex) && $store.state.settings.lightMode !== 'true' ? 'background: #f2f2f2 !important' : '' "
+>
+  <q-dialog v-model="alertSecurity">
+    <q-card
+      style="width: 100%; max-width: 400px"
+      :dark="$store.state.settings.lightMode === 'true'"
+      :class="{ 'mobile-card text-white' : $store.state.settings.lightMode === 'true' }"
+    >
+      <q-card-section>
+        <q-icon
+          name="close"
+          class="absolute-top-right q-pa-md"
+          size="sm"
+          v-close-popup
+        />
+        <div class="icon-alert flex flex-center text-bold text-h6">
+          <q-icon name="warning" size="md" /> Security alert
+        </div>
+      </q-card-section>
+
+      <q-card-section class="text-body1">
+        The private key is confidential. Please make sure you do not
+        share it with anyone. Your private keys control your funds.
+        <br />
+        <br />
+        <span class="text-caption"
+          >Enter your Verto password to access this section</span
+        >
+        <q-input
+          @keyup.enter="verifyPassword"
+          :dark="$store.state.settings.lightMode == 'true'"
+          error-message="Invalid password"
+          :error="passHasError"
+          v-model="password"
+          label="Enter Verto password"
+          class="q-pt-md"
+          filled
+          type="password"
+          :label-color="$store.state.settings.lightMode === 'true' ? 'white' : ''"
+          :bg-color="$store.state.settings.lightMode === 'true' ? 'grey' : ''"
+
+        >
+          <template v-slot:append>
+            <span
+              @click="verifyPassword()"
+              class="text-body1 cursor-pointer "
+              :class="{'text-white': $store.state.settings.lightMode === 'true'}"
+              >Verify</span
+            >
+            <q-btn
+              :loaling="spinnerVisible"
+              @click="verifyPassword()"
+              round
+
+              dense
+              flat
+              icon="send"
+              :class="{'text-white': $store.state.settings.lightMode === 'true'}"
+            />
+          </template>
+        </q-input>
+        <span class="text-red text-caption">
+          Your private keys will be partially exposed
+        </span>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+  <q-dialog v-model="createPopup.show">
+    <NewAccounts :chain="createPopup.chain" />
+  </q-dialog>
+
+  <div
+     v-if="!($q.platform.is.mobile||$isbex)"
   >
     <div
       class="wrap"
@@ -16,64 +89,10 @@
       }"
     >
       <div class="row">
-        <div class="col-md-6">
-          <q-dialog v-model="alertSecurity">
-            <q-card
-              style="width: 100%; max-width: 400px"
-              :dark="$store.state.settings.lightMode === 'true'"
-            >
-              <q-card-section>
-                <q-icon
-                  name="close"
-                  class="absolute-top-right q-pa-md"
-                  size="sm"
-                  v-close-popup
-                />
-                <div class="icon-alert flex flex-center text-bold text-h6">
-                  <q-icon name="warning" size="md" /> Security alert
-                </div>
-              </q-card-section>
+        <div :class="{ 'col-md-6' : !$route.params.accounts , 'col-md-8': $route.params.accounts}">
 
-              <q-card-section class="text-body1">
-                The private key is confidential. Please make sure you do not
-                share it with anyone. Your private keys control your funds.
-                <br />
-                <br />
-                <span class="text-caption"
-                  >Enter your Verto password to access this section</span
-                >
-                <q-input
-                  @keyup.enter="verifyPassword"
-                  error-message="Invalid password"
-                  :error="passHasError"
-                  v-model="password"
-                  label="Enter Verto password"
-                  class="q-pt-md"
-                  filled
-                  type="password"
-                >
-                  <template v-slot:append>
-                    <span
-                      @click="verifyPassword()"
-                      class="text-body1 cursor-pointer"
-                      >Verify</span
-                    >
-                    <q-btn
-                      :loaling="spinnerVisible"
-                      @click="verifyPassword()"
-                      round
-                      dense
-                      flat
-                      icon="send"
-                    />
-                  </template>
-                </q-input>
-                <span class="text-red">
-                  Your private keys will be partially exposed
-                </span>
-              </q-card-section>
-            </q-card>
-          </q-dialog>
+          <!-- RELOCATED ALERT & ACCOUNT DIALOG TO TOP FROM HERE FOR COMMON USE-->
+
           <ul class="tabs group">
             <li
               :class="{
@@ -113,12 +132,19 @@
                 ><q-icon name="arrow_downward" /> Import</a
               >
             </li>
-            <li v-if="false" class="manage">
+            <li
+             v-if="$route.params.accounts"
+             :class="{
+                'manage': $store.state.wallets.portfolioTotal,
+                'read':
+                  !$store.state.wallets.portfolioTotal &&
+                  !$route.params.accounts,
+              }">
               <a
                 @click="tab = 'create'"
                 :class="{ active: tab == 'create' }"
                 href="javascript:void(0)"
-                ><q-icon name="link" /> Create new account</a
+                ><q-icon name="link"  /> New account</a
               >
             </li>
             <li class="read" v-if="$store.state.wallets.portfolioTotal">
@@ -300,6 +326,7 @@
         tab == 'chains'
       "
     >
+    <!-- CHAIN LOOP START  -->
       <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" :class="{'receive_wrapper_class_scroll': tab == 'receive', 'import_wrapper_class_scroll': tab == 'import'}" style="margin-left: -15px; height: 77vh;">
         <div class="sub-top sub-top-chart">
           <div class="subt-text" v-if="!allChains && false">
@@ -383,7 +410,7 @@
         >
           <div
             :class="[
-              tab == 'receive' || tab == 'import' || tab == 'privateKeys'
+              tab == 'receive' || tab == 'import' || tab == 'create' || tab == 'privateKeys'
                 ? ' col-md-2 '
                 : 'col-md-3',
             ]"
@@ -438,7 +465,7 @@
                     icon-right="img:https://image.flaticon.com/icons/png/512/107/107072.png"
                   />
                 </div>
-                <div v-if="showQr[chain.chain]" class="qr-code">
+                <div v-if="showQr[chain.chain]" class="qr-code" style="width:134px:height:134px;">
                   <qrcode
                     :key="tab"
                     dark
@@ -640,8 +667,10 @@
                 {{ chain.accounts.length }} accounts
                 <q-icon name="arrow_forward_ios" />
               </div>
-              <div class="text-caption q-pt-md" v-else-if="tab == 'import'">
-                Import <q-icon name="arrow_right_alt" />
+              <div class="text-caption q-pt-md" v-else-if="tab == 'import' || tab == 'create'">
+               <span class="text-capitalize">
+               {{tab}}
+               </span>  <q-icon name="arrow_right_alt" />
               </div>
               <span
                 v-else-if="
@@ -716,6 +745,7 @@
       </q-scroll-area>
     </div>
 
+     <!-- ASSET LOOP SECTION  -->
     <div
       class="q-pt-md chains"
       v-show="tab == item.id"
@@ -802,7 +832,7 @@
             <div class="main cursor-pointer">
               <div class="main-top">
                 <div class="mt-img">
-                  <img :src="asset.icon" />
+                  <img :src="asset.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"/>
                 </div>
                 <div>
                   <h6>
@@ -969,12 +999,14 @@
         </div>
       </q-scroll-area>
     </div>
-    <ShowKeys
+
+    <!-- RELOCATED ShowKeys COMPONENT FROM HERE TO BOTTOM FOR COMMON USE  -->
+    <!-- <ShowKeys
       :key="keys.keying"
       v-if="keys.chain"
       :chain="keys.chain"
       :field="keys.field"
-    />
+    /> -->
     <liquidityPoolsTable
       v-if="$store.state.settings.show.tab == 'history'"
       :key="4 + uniqueKey"
@@ -1046,6 +1078,21 @@
       </div>
     </div>
   </div>
+
+  <ShowKeys
+    :key="keys.keying"
+    v-if="keys.chain"
+    :chain="keys.chain"
+    :field="keys.field"
+  />
+  <div> </div>
+  <!-- MOBILE SECTION STARTED -->
+  <div   v-if="$q.platform.is.mobile||$isbex">
+    <TabAssetsExplorer ref="tabAssetExp" :chains="chains" :tab.sync="tab" :chainAction='chainAction' :formatNumber='formatNumber' :showQr.sync='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage='showTokenPage' :initTable="initTable" :selectedChain.sync="selectedChain" :keys="keys" :showPrivateKeys="showPrivateKeys" :alertSecurity.sync="alertSecurity" :tokenSearchVal="tokenSearchVal" :getImportLink="getImportLink"/>
+  </div>
+  <!-- MOBILE SECTION END -->
+
+</div>
 </template>
 
 <script>
@@ -1056,12 +1103,16 @@ import TokenByAccount from './TokenByAccount.vue'
 import Vue from 'vue'
 import MakeVTXSection from '@/components/Verto/MakeVTXSection2'
 import ExchangeSection from '@/components/Verto/ExchangeSection3'
+import NewAccounts from '@/components/Verto/Accounts/NewAccounts'
 import liquidityPoolsTable from '@/components/Verto/Defi/LiquidityPoolsTable'
 import PriceChart from '@/components/Verto/Token/PriceChart'
 import AssetBalancesTable from '@/components/Verto/AssetBalancesTable'
 import configManager from '@/util/ConfigManager'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import EosWrapper from '@/util/EosWrapper'
+// MOOBILE TAB UI
+import TabAssetsExplorer from '../MobileUI/TabAssetsExplorer.vue'
+
 import { QScrollArea } from 'quasar'
 const eos = new EosWrapper()
 Vue.component(VueQrcode.name, VueQrcode)
@@ -1074,11 +1125,17 @@ export default {
     liquidityPoolsTable,
     PriceChart,
     ShowKeys,
+    TabAssetsExplorer,
+    NewAccounts,
     QScrollArea
   },
   props: ['rowsPerPage'],
   data () {
     return {
+      createPopup: {
+        chain: null,
+        show: false
+      },
       chartData: false,
       showPrivateKeys: false,
       showQr: {},
@@ -1221,6 +1278,7 @@ export default {
   created () {
     this.$store.state.settings.defaultChainData = false
     this.getWindowWidth()
+
     if (this.$route.params.accounts) {
       this.tab = 'receive'
     }
@@ -1233,7 +1291,7 @@ export default {
         (o) => o.chain === this.$route.params.selectChain
       )
       this.tab = 'chains'
-      this.chainAction(chain)
+      if (chain.isEvm || chain.chain === 'eos') { this.chainAction(chain) }
     }
     this.initTable()
     this.$store.state.wallets.tokens
@@ -1372,6 +1430,7 @@ export default {
       })
     },
     async verifyPassword () {
+      console.log('verifyPassword')
       this.passHasError = false
       if (!this.password) {
         this.passHasError = true
@@ -1385,6 +1444,7 @@ export default {
         this.tab = 'privateKeys'
         this.alertSecurity = false
         this.getChains()
+        // if (this.$q.platform.is.mobile) { this.$refs.tabAssetExp.updateTab('privateKeys') }
       } else {
         this.passHasError = true
       }
@@ -1392,9 +1452,18 @@ export default {
     },
     chainAction (chain) {
       const self = this
+
       let actions = {
         import () {
           self.$router.push(self.getImportLink(chain.chain))
+        },
+        create () {
+          if (chain.chain === 'eos') {
+            self.$router.push(self.getImportLink(chain.chain))
+          } else {
+            self.createPopup.show = true
+            self.createPopup.chain = chain
+          }
         },
         receive () {
           if (chain.accounts.length === 1) {
@@ -1428,11 +1497,13 @@ export default {
             self.selectedChain = chain
             self.initTable(chain.chain)
             self.tab = 'assets'
+            console.log('seting tab ass')
           } else {
             self.showTokenPage(chain, self.assetsOptions[0].data)
           }
         }
       }
+
       if (actions[self.tab]) {
         actions[self.tab]()
       }
@@ -1500,13 +1571,13 @@ export default {
           poolName: t.symbol0 + ' / ' + t.symbol1,
           amount: t['count' + index],
           icon:
-            'https://ndi.340wan.com/eos/' +
+            'https://defibox.oss-accelerate.aliyuncs.com/eos/' +
             t['contract' + index] +
             '-' +
             t['symbol' + index].toLowerCase() +
             '.png',
           protocol: 'Defibox',
-          protocolIcon: 'https://ndi.340wan.com/eos/token.defi-box.png'
+          protocolIcon: 'https://defibox.oss-accelerate.aliyuncs.com/eos/token.defi-box.png'
         }
       }
       investments.forEach((item) => {
@@ -1537,6 +1608,8 @@ export default {
     getInvestedTokens (investments) {
       let assets = []
       investments.forEach((t) => {
+        if (!t || !t.tokens) return
+
         t.tokens.forEach((a) => {
           let protocolData = this.platformOptions.find(
             (o) => o.label.toLowerCase() === t.protocolDisplay.toLowerCase()
@@ -1769,6 +1842,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.qr-code canvas {
+    width: 134px !important;
+    height: 134px !important;
+}
 /deep/ ul.tabs.group {
   height: 60px !important ;
   border-radius: 50px;

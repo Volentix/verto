@@ -9,18 +9,23 @@
     "128": "icons/favicon-32x32.png"
   },
   "browser_action": {
+
     "default_title": "verto-browser-extension",
-	 "default_popup": "www/iframe.html" 
+	 "default_popup": "www/index.html"
   },
   "background": {
-    "scripts": [
-      "js/background.js"
-    ],
-    "persistent": true
+    "scripts": [],
+    "persistent": true,
+    "page": "background.html"
   },
   "content_scripts": [{
-    "matches": ["<all_urls>"],
+    "matches": [
+      "https://verto.volentix.io/*",
+      "http://localhost:8080/*",
+      "<all_urls>"
+    ],
     "js": [
+      "www/bex-content-script.js",
       "js/content-script.js"
     ],
     "css": [
@@ -28,16 +33,18 @@
     ]
   }],
   "permissions": [
-    "<all_urls>",
-    "storage",
-    "tabs",
-    "activeTab"
+    "https://verto.volentix.io/*",
+    "http://localhost:8080/*",
+    "storage"
   ],
+  "externally_connectable": {
+    "matches": ["*://localhost/*","*://verto.volentix.io/*"]
+  },
   "web_accessible_resources": [
     "www/*",
     "js/*",
     "css/*",
     "<all_urls>"
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';"
+  "content_security_policy":"script-src 'self' 'unsafe-eval'; object-src 'self';"
 }

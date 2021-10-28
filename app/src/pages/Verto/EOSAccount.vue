@@ -21,10 +21,32 @@
           </div>
         </div>
       </div>
-      <div v-else>
-        <profile-header version="type4" />
-       <CreateEOSAccount  v-if="$store.state.settings.network == 'mainnet' "/>
-        <CreateTesnetEOSAccount v-else />
+      <div v-else-if="$q.platform.is.mobile||$isbex" >
+        <!-- MOBILE VERSION UI -->
+        <q-dialog
+            v-model="accDialog"
+            persistent
+            :maximized="true"
+            transition-show="slide-up"
+            transition-hide="slide-down"
+        >
+          <q-card :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
+            <q-header >
+              <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" >
+                  <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1);"/>
+                  <q-toolbar-title>=Import EOS Account  </q-toolbar-title>
+                  <q-btn flat round dense icon="close" @click="$router.go(-1);"/>
+              </q-toolbar>
+            </q-header>
+
+            <!-- <profile-header version="type4" /> -->
+            <div class="q-mt-xl" :class="$store.state.settings.lightMode === 'true' ? 'mobile-card':'bg-white text-black'" >
+              <CreateEOSAccount  v-if="$store.state.settings.network == 'mainnet' "/>
+              <CreateTesnetEOSAccount v-else />
+            </div>
+          </q-card>
+        </q-dialog>
+
       </div>
     </div>
   </q-page>
@@ -46,13 +68,15 @@ export default {
   },
   data () {
     return {
-      osName: ''
+      osName: '',
+      accDialog: this.$q.platform.is.mobile || this.$isbex
     }
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   created () {
+    console.log('created eos')
     this.osName = osName
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
@@ -62,6 +86,17 @@ export default {
   methods: {
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
+    goBack () {
+      console.log('router ', this.$router)
+      console.log('route ', this.$route)
+      // this.$router.push({ name: 'wallets', params: { openDialog: true } })
+    }
+  },
+  watch: {
+    '$route': function () {
+      // console.log('Route chaNGE ', this.$q.platform.is.mobile || this.$isbex)
+      this.accDialog = true
     }
   }
 }

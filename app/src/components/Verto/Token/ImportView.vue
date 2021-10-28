@@ -1,5 +1,5 @@
 <template>
-     <q-card>
+     <q-card :dark="$store.state.settings.lightMode === 'true'">
         <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">Action Required</div>
           <q-space />

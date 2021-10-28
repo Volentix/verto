@@ -6,7 +6,7 @@
         <router-link to="/verto/dashboard">VERTO</router-link>
       </div>
     </div>
-    <video-bg :sources="['statics/mp4/create-password.mp4']" img="">
+    <video-bg :sources="[require('statics/mp4/create-password.mp4')]" img="">
       <div class="video-page-wrapper q-pt-md q-pb-md">
         <!-- <h1>Discover<br>the crypto space</h1> -->
         <div v-if="step===1" class="standard-content">

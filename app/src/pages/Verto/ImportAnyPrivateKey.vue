@@ -183,20 +183,37 @@
             </div>
             </div>
         </div>
-        <div v-else class="mobile-version">
-            <div class="chain-tools-wrapper">
+        <q-dialog
+            v-model="accDialog"
+            persistent
+            :maximized="true"
+            transition-show="slide-up"
+            transition-hide="slide-down"
+        >
+
+        <q-card class="mobile-version" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
+            <q-header>
+                <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
+                    <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/manage/receive"/>
+                    <q-toolbar-title> Import Current Account  </q-toolbar-title>
+                    <q-btn flat round dense icon="close" v-close-popup to="/verto/manage/receive"/>
+                </q-toolbar>
+            </q-header>
+
+            <div class="chain-tools-wrapper--">
                 <div class="standard-content">
-                    <h2 v-show="showMainSteps" class="standard-content--title flex justify-center">
+
+                    <!-- <h2 v-show="showMainSteps" class="standard-content--title flex justify-center">
                         <q-btn flat unelevated class="btn-align-left" to="/verto/profile" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
                         Import Current Account
                     </h2>
                     <h2 v-show="!showMainSteps" class="standard-content--title flex justify-center">
                         <q-btn flat unelevated class="btn-align-left" to="/verto/profile" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
                         Save Private Key
-                    </h2>
-                    <div class="privatekey_bg flex flex-center"><img src="statics/privatekey_bg.svg" alt=""></div>
+                    </h2> -->
+                    <div class="privatekey_bg flex flex-center"><img height="200" src="statics/privatekey_bg.svg" alt=""></div>
                 </div>
-                <div class="chain-tools-wrapper--list open">
+                <div class="chain-tools-wrapper--list_ open">
                     <div class="list-wrapper">
                         <div class="list-wrapper--chain__eos-to-vtx-convertor">
                             <div v-show="showMainSteps">
@@ -205,8 +222,8 @@
                                             1.Private key
                                             -->
                                     <q-step title="Private Key" :name="1" prefix="1" order="10" :done="step > 1">
-                                        <div class="text-black">
-                                            <div class="text-h4 --subtitle">
+                                        <div :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
+                                            <div class="text-h4_ --subtitle">
                                                 <ul>
                                                     <li>
                                                         <span>
@@ -238,7 +255,7 @@
                                             -->
                                     <q-step title="Current Wallet Name" :name="2" prefix="2" order="30" :done="step > 2">
                                         <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                        <div class="text-black">
+                                        <div :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                                             <div class="text-h4 --subtitle">
                                                 <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.walletName" :error="addWallet.addressError"  label="Enter wallet name" />
                                                 <span class="text-body2">At least 4 characters</span>
@@ -253,7 +270,7 @@
                                             -->
                                     <q-step title="Verto Password" :name="3" prefix="3" order="40" :done="step > 3">
                                         <q-btn flat @click="$refs.stepper.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                        <div class="text-black">
+                                        <div :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                                             <div>
                                                 <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.vertoPassword" @input="showSubmitKey" @keyup.enter="addEosAddress" v-bind:label="$t('CreateVertoPassword.vertopassword')" :type="isPwd ? 'password' : 'text'">
                                                     <template v-slot:append>
@@ -284,7 +301,7 @@
                                         -->
                                     <q-step title="File Password" :name="1" prefix="1" :done="step2 > 1">
                                         <q-btn flat @click="showMainSteps = true" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                        <div class="text-black">
+                                        <div :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                                             <div class="text-h4 --subtitle">
                                                 <ul>
                                                     <li><span>Recommended to be different than your wallet password</span></li>
@@ -316,7 +333,7 @@
                                         -->
                                     <q-step title="Confirm Password" :name="2" prefix="2" :done="step2 > 2">
                                         <q-btn flat @click="$refs.stepperFilePassword.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                        <div class="text-black">
+                                        <div :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                                             <span class="q-pa-sm">
                                                 <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" debounce="500" rounded outlined color="purple" v-model="addWallet.filePasswordConfirm" @input="filePasswordConfirmCheck" label="Confirm Password For The File" @keyup.enter="gotToSaveFileInWallet()" :type="isPwd ? 'password' : 'text'">
                                                     <template v-slot:append>
@@ -339,7 +356,7 @@
                                         -->
                                     <q-step title="Save In Wallet" :name="3" prefix="3" :done="step2 > 3">
                                         <q-btn flat @click="$refs.stepperFilePassword.previous()" unelevated icon="keyboard_arrow_up" color="primary" class="--back-btn" />
-                                        <div class="text-black">
+                                        <div :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                                             <div class="text-h4 --subtitle">
                                                 <ul>
                                                     <li><span>Encrypt the private key in the wallet?</span></li>
@@ -358,7 +375,8 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </q-card>
+        </q-dialog>
     </div>
 </q-page>
 </template>
@@ -409,7 +427,8 @@ export default {
         filePassword: '',
         filePasswordConfirm: '',
         storeInWallet: false
-      }
+      },
+      accDialog: this.$q.platform.is.mobile || this.$isbex
     }
   },
   created () {

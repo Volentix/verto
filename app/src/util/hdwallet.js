@@ -120,7 +120,7 @@ class HD {
         const keychain = xchain.keyChain()
 
         const HDKey = require('hdkey')
-        const path = "m/44'/9000'/0'/0/0"
+        const path = "m/44'/9000'/0'/0/" + addressIndex.toString()
         const hdkey = HDKey.fromMasterSeed(seed)
         const key = hdkey.derive(path)
 
@@ -135,7 +135,7 @@ class HD {
       },
       sol () {
         const solanaWeb3 = require('@solana/web3.js')
-        const path = "m/44'/501'/0'"
+        const path = "m/44'/501'/" + addressIndex.toString() + "'"
         const derivedSeed = derivePath(path, seed).key
         const account = new solanaWeb3.Account(nacl.sign.keyPair.fromSeed(derivedSeed).secretKey)
         const publicKey = account.publicKey.toString()
@@ -198,7 +198,7 @@ class HD {
       },
       btc () {
         const bitcore = require('bitcore-lib')
-        const path = "m/44'/0'/0'/0/0"
+        const path = "m/44'/0'/0'/0/" + addressIndex.toString()
         const network = bitcoin.networks.livenet
         const xpriv = bitcore.HDPrivateKey.fromSeed(seed, network) // BIP32 Root Key
         const extPrivKey = xpriv.derive(path) // BIP32 Extended Private Key
@@ -211,7 +211,7 @@ class HD {
       },
       ltc () {
         const litecore = require('litecore-lib')
-        const path = "m/44'/2'/0'/0/0"
+        const path = "m/44'/2'/0'/0/" + addressIndex.toString()
         const network = bitcoin.networks.litecoin
         const xpriv = litecore.HDPrivateKey.fromSeed(seed, network) // BIP32 Root Key
         const extPrivKey = xpriv.derive(path) // BIP32 Extended Private Key
@@ -225,7 +225,7 @@ class HD {
       eth () {
         const ethhdkey = require('ethereumjs-wallet/hdkey')
         const ethhdwallet = ethhdkey.fromMasterSeed(seed)
-        const ethPath = "m/44'/60'/0'/0/0"
+        const ethPath = "m/44'/60'/0'/0/" + addressIndex.toString()
         const ethWallet = ethhdwallet.derivePath(ethPath).getWallet()
         const publicKey = ethWallet.getAddressString()
         const privateKey = ethWallet.getPrivateKeyString()
@@ -244,7 +244,7 @@ class HD {
       // },
       dash () {
         const dashcore = require('@dashevo/dashcore-lib')
-        const path = "m/44'/5'/0'/0/0"
+        const path = "m/44'/5'/0'/0/" + addressIndex.toString()
         const network = dashcore.Networks.livenet
         const xpriv = dashcore.HDPrivateKey.fromSeed(seed, network) // BIP32 Root Key
         const extPrivKey = xpriv.derive(path) // BIP32 Extended Private Key

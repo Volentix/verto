@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column" :class="{'text-black': $store.state.settings.lightMode === 'false', 'bg-white': $store.state.settings.lightMode === 'false','desktop-marg':screenSize > 1024, 'mobile-pad':screenSize < 1024, 'dark-theme': $store.state.settings.lightMode === 'true'}">
+  <q-page class="column" :class="{'text-black': $store.state.settings.lightMode === 'false', 'bg-white': $store.state.settings.lightMode === 'false','desktop-marg':screenSize > 1024, 'mobile-pad---':screenSize < 1024, 'dark-theme': $store.state.settings.lightMode === 'true'}" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': ''">
     <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
       <div class="desktop-version" v-if="screenSize > 1024">
         <div class="row">
@@ -21,8 +21,17 @@
         </div>
       </div>
       <div v-else class="mobile-version">
-        <profile-header :isMobile="true" class="marg" version="type2222" />
-        <profile />
+        <q-header >
+          <q-toolbar  :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'text-black'">
+            <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/dashboard"/>
+            <q-toolbar-title> Profile</q-toolbar-title>
+            <q-btn flat round dense icon="close" v-close-popup to="/verto/dashboard"/>
+          </q-toolbar>
+        </q-header>
+
+        <div >
+          <profile />
+        </div>
       </div>
     </div>
   </q-page>

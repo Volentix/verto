@@ -9,7 +9,14 @@
           <img src="statics/picto_verto.svg" alt="" />
         </h2>
       </transition>
-       <div v-if="transactionHash" class="standard-content--body full-width">
+      <div v-if="$route.params.txId && loggedIn && !txObject">
+           <p>Fetching transaction data..</p>
+           <div class="flex-center flex">
+          <q-linear-progress indeterminate style="max-width:400px"  color="grey" class="q-pb-md q-my-sm"/>
+          </div>
+      </div>
+      <Sign :txObject="txObject" v-else-if="txObject && $route.params.txId && loggedIn" />
+       <div v-else-if="transactionHash" class="standard-content--body full-width">
         <div class="standard-content--body__form">
           <p class="text-body1">
             Transaction submitted <router-link class="float-right" to="/verto/dashboard">Dashboard <q-icon name="chevron_right" /></router-link>
@@ -30,7 +37,7 @@
         </div>
       </div>
 
-      <div v-else-if="loggedIn" class="standard-content--body full-width">
+      <div v-else-if="loggedIn && !$route.params.session" class="standard-content--body full-width">
         <div class="standard-content--body__form ">
           <div class="text-body1 q-pb-sm"><b>Main portfolio:</b> ${{formatNumber($store.state.wallets.portfolioTotal)}}</div>
           <AccountSelector :key="$store.state.wallets.tokens.length"/>
@@ -41,7 +48,7 @@
         </div>
       </div>
 
-      <div class="standard-content--body full-width" v-else-if="!$store.state.wallets.tokens.length || !loggedIn">
+      <div class="standard-content--body full-width" v-else-if=" !loggedIn">
         <div class="standard-content--body__form">
           <div v-if="pending">
 
@@ -60,6 +67,7 @@
         </div>
 
       </div>
+ <!--
      <div class="standard-content--body full-width q-pb-lg" v-else-if="loggedIn && !$route.query.url">
         <div class="standard-content--body__form" v-if="$store.state.investment.defaultAccount">
          <Oneinch :crossChain="true" :disableDestinationCoin="false" v-if="$store.state.settings.selectedDex == 'oneinch'"></Oneinch>
@@ -67,10 +75,37 @@
          <Coinswitch :crossChain="true" :disableDestinationCoin="false" v-else-if="$store.state.settings.selectedDex == 'coinswitch'"></Coinswitch>
          </div>
      </div>
+       -->
       <div class="standard-content--body full-width q-pb-lg" v-else-if="loggedIn">
-        <div class="standard-content--body__form">
+        <div class="standard-content--body__form row">
+      <q-list  class="text-left   offset-md-4  col-md-4" padding>
+      <q-item-label v-if="!connected" class="text-bold text-h6" header>Choose account</q-item-label>
+      <q-item v-show="!connected" tag="label" class="bg-white rounded-borders shadow-1" :key="index" v-ripple v-for="(account, index) in [...$store.state.currentwallet.config.keys].filter( o => o.type === 'eth')">
+        <q-item-section side top>
+          <q-radio v-model="accountValue" :val="account" />
+        </q-item-section>
 
+        <q-item-section>
+          <q-item-label class="text-bold">{{account.name}}</q-item-label>
+          <q-item-label caption>
+            {{getKeyFormat(account.key, 16)}}
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+      <div class="q-mt-md">
+        <q-btn v-if="!connected" size="md" @click="connect()" label="Connect" color="deep-purple-12" outline/>
+        <div class="text-center flex flex-center" v-else>
+        <div class="text-h6 text-bold">You are connected</div>
+        <p class="text-center">You can go back  {{referrer ? 'to '+referrer : ''}}</p>
+        <a :href="referrer" target="_blank" v-if="referrer">
+           <q-btn size="md" @click="connect()" label="Go back" color="deep-purple-12" outline/>
+            </a>
+</div>
+        </div>
+
+      </q-list>
           <q-select
+          v-if="false"
             class="select-input"
             light
             separator
@@ -114,7 +149,7 @@
             </template>
           </q-select>
 
-          <q-list separator>
+          <q-list separator v-if="false">
             <q-item v-if="account.value.length">
               <q-item-section>
                 <q-item-label class="text-bold">From:</q-item-label>
@@ -145,7 +180,7 @@
             </q-item>
           </q-list>
 
-        <div v-if="!transactionHash" class="standard-content--footer full-width flex  justify-end">
+        <div v-if="!transactionHash && false" class="standard-content--footer full-width">
             <!-- <span v-show="!passHasError" :class="[loggedIn ? '' : '' , 'q-pl-md q-pt-md cursor-pointer text-grey']" @click="passHasError = true">{{loggedIn ? 'Cancel' : 'Restore'}}</span> -->
             <!-- <q-btn v-show="passHasError" flat class="action-link back" color="grey" text-color="white" label="Restore Config" @click="startRestoreConfig" /> -->
             <span></span>
@@ -156,9 +191,7 @@
             <q-btn flat v-show="passHasError" @click="restoreFromWords = true" outline class="back" text-color="deep-purple-14" label="Restore from 24 Words" />
             <span></span>
         </div>
-        <div class="landing--volentix-logo">
-            <a href="https://www.volentix.io" target="_blank"><img src="statics/vtx_black.svg" class="svg" /></a>
-        </div>
+
       </div>
       </div>
       <div v-if="!transactionHash && !loggedIn" class="standard-content--footer full-width flex justify-end">
@@ -209,28 +242,40 @@ import DexInteraction from '../../mixins/DexInteraction'
 import configManager from '@/util/ConfigManager'
 import { version } from '../../../package.json'
 import initWallet from '@/util/Wallets2Tokens'
-import Oneinch from '../../components/Verto/Exchange/Oneinch'
-import Coinswitch from '../../components/Verto/Exchange/Coinswitch'
-import Swapeos from '../../components/Verto/Exchange/Swapeos'
+// import Oneinch from '../../components/Verto/Exchange/Oneinch'
+// import Coinswitch from '../../components/Verto/Exchange/Coinswitch'
+// import Swapeos from '../../components/Verto/Exchange/Swapeos'
 import AccountSelector from '../../components/Verto/Exchange/AccountSelector'
+import Sign from '../../components/Verto/ETH/Sign'
 import Formatter from '../../mixins/Formatter'
 import {
   mapState
 } from 'vuex'
+const Parse = require('parse')
+Parse.initialize(
+  '6olkjCvR0SZGZxExwEPKgBAL9O9vmeHlQ32RyK3t',
+  'UEJsZbYlxn4iXIrKsgAGWj3kLzKMxPqsSuCjQhlP'
+)
+Parse.serverURL = 'https://parseapi.back4app.com'
 export default {
   name: 'Login',
   components: {
-    Oneinch,
-    Swapeos,
-    Coinswitch,
+    Sign,
+    //  Oneinch,
+    //  Swapeos,
+    // Coinswitch,
     AccountSelector
   },
   data () {
     return {
       hasConfig: false,
+      accountValue: null,
+      txObject: null,
       walletData: null,
       passHasError: false,
       password: '',
+      referrer: null,
+      connected: false,
       transactionHash: false,
       isPwd: true,
       deleteConfigFail: false,
@@ -267,6 +312,9 @@ export default {
   async created () {
     this.$store.state.currentwallet.wallet = {
       empty: true
+    }
+    if (document && document.referrer) {
+      this.referrer = document.referrer
     }
 
     this.walletData = localStorage.getItem('walletPublicDatav2')
@@ -307,7 +355,7 @@ export default {
   },
   async mounted () {
     this.version = version
-    this.$refs.psswrd.focus()
+    // this.$refs.psswrd.focus()
   },
   computed: {
     ...mapState('wallets', ['loaded', 'tokens'])
@@ -339,6 +387,23 @@ export default {
 
   },
   methods: {
+
+    connect () {
+      var acl = new Parse.ACL()
+      var Account = Parse.Object.extend('userMeta')
+      let account = new Account()
+      account.set('key', this.accountValue.key)
+      account.set('name', this.accountValue.name)
+      account.set('chain', this.accountValue.type)
+      // user can read data
+      acl.setReadAccess(Parse.User.current(), true)
+      // user can write data
+      // acl.setWriteAccess(Parse.User.current(), true)
+
+      account.setACL(acl)
+      account.save()
+      this.connected = true
+    },
     checkPassword () {
       if (this.password.length > 1) {
         this.showSubmit = true
@@ -365,12 +430,31 @@ export default {
       const results = await configManager.login(this.password, false)
 
       if (results.success) {
+        this.loggedIn = true
         this.$store.commit('settings/temporary', this.password)
-        await initWallet()
-
-        if (this.walletData) {
-          this.$router.push('/verto/exchange')
+        if (this.$route.params.session && this.$route.params.txId) {
+          this.currentUser = await Parse.User.become(this.$route.params.session)
+          let Transaction = Parse.Object.extend('Transaction')
+          let query = new Parse.Query(Transaction)
+          query.equalTo('objectId', this.$route.params.txId).first().then((result) => {
+            if (result) {
+              this.txObject = result
+            }
+          })
+        } else if (this.$route.params.session) {
+          this.accounts = [...this.$store.state.currentwallet.config.keys].filter(o => o.type === 'eth')
+          if (this.accounts.length === 1) {
+            this.accountValue = this.accounts[0]
+          }
+          console.log(this.$route.params.session, 'this.$route.params.session')
+          this.currentUser = await Parse.User.become(this.$route.params.session)
+        } else {
+          await initWallet()
+          if (this.walletData) {
+            this.$router.push('/verto/exchange')
+          }
         }
+        this.spinnerVisible = false
       } else {
         if (results.message === 'no_default_key') {
           this.$router.push({

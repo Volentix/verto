@@ -31,7 +31,13 @@
         </div>
       </div>
       <div v-else class="mobile-version">
-        <profile-header version="type2" :fetchCurrentWalletFromState="true" />
+        <!-- <profile-header version="type2" :fetchCurrentWalletFromState="true" /> -->
+        <q-header v-if="$q.platform.is.mobile">
+          <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
+              <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="goBack()" />
+              <q-toolbar-title style="margin-left: -25px"> Stake  </q-toolbar-title>
+          </q-toolbar>
+        </q-header>
         <VTXStakeStepper v-if="$route.params.chain == 'eos' && $route.params.type == 'vtx'" />
 
         <EosStakeStepper v-else-if="$route.params.chain == 'eos' && $route.params.type == 'eos'"/>
@@ -82,6 +88,9 @@ export default {
   methods: {
     getWindowWidth () {
       this.screenSize = document.querySelector('#q-app').offsetWidth
+    },
+    goBack () {
+      this.$router.push({ name: 'wallets', params: { openDialog: true } })
     }
   }
 }

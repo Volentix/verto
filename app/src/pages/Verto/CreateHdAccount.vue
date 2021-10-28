@@ -1,6 +1,6 @@
 <template>
 <q-page class="column import-private-key" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-grey-12': $store.state.settings.lightMode === 'false', 'desktop-marg': screenSize > 1024,  'mobile-pad': screenSize < 1024}">
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+    <div :class="{'dark-theme mobile-card': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
       <div class="desktop-version full-height" v-if="screenSize > 1024">
           <div class="row full-height">
             <div class="col col-md-3" v-if="false">
@@ -51,9 +51,57 @@
                 </div>
             </div>
           </div>
+        </div>
+      </div>
+      <div v-else>
+          <div class="col col-md-12">
+            <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" >
+                <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)"/>
+                <q-toolbar-title> HD Account Details </q-toolbar-title>
+            </q-toolbar>
+            <div class="apps-section q-mb-sm" :class="{'dark-theme mobile-card text-white': $store.state.settings.lightMode === 'true'}">
+                <div class="chain-tools-wrapper_">
+                    <div class="q-pa-md text-h6">
+                         Create HD Account
+                    </div>
+                    <div class="chain-tools-wrapper--list_ open">
+                        <div class="list-wrapper_">
+                            <div class="list-wrapper--chain__eos-to-vtx-convertor">
+                                <div>
+                                    <q-stepper :dark="$store.state.settings.lightMode === 'true'" v-model="step" done-color="green" ref="stepper" alternative-labels vertical color="primary" animated flat>
+                                        <q-step :dark="$store.state.settings.lightMode === 'true'" title="Missing HD Account" :name="1" prefix="1" order="10" :done="step > 1">
+                                            <div class="text-black">
+                                                <q-select
+                                                  v-if="notCreated.length !== 0"
+                                                  :dark="$store.state.settings.lightMode === 'true'"
+                                                  separator rounded outlined
+                                                  label="Select chain"
+                                                  class="select-input"
+                                                  v-model="currentToken"
+                                                  :options="notCreated"
+                                                />
+                                                <p  class="text-body1" :class="{
+                                                   'text-grey': $store.state.settings.lightMode === 'true'
+                                                }" v-else> No Missing HD keys found</p>
+                                                <p  class="text-body1 text-green q-pt-md" v-if="successMessage">{{successMessage}}</p>
+
+                                                <q-stepper-navigation v-show="currentToken && !successMessage" class="flex justify-end">
+                                                    <q-btn @click="addHdAccount()" color="deep-purple-14" class="--next-btn" rounded :label="$t('Add')" />
+                                                </q-stepper-navigation>
+                                            </div>
+                                        </q-step>
+                                    </q-stepper>
+                                </div>
+                            </div>
+                            <br><br><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+
       </div>
     </div>
-      </div>
 </q-page>
 </template>
 

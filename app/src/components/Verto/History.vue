@@ -2,14 +2,14 @@
 <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" class="history-component" style="height: 100%;">
 
   <div class="transaction-wrapper" style="height: 100%;">
-    <div class="transaction-wrapper--list open"  style="height: 100%;">
-      <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! (['eos','btc'].includes($store.state.investment.defaultAccount.chain) || $store.state.investment.defaultAccount.isEvm)">
+    <div :class="!($q.platform.is.mobile||$isbex)  ? 'transaction-wrapper--list open' : ''"  :style="!$q.platform.is.mobile ? 'height: 100%;' : 'height: 100%;'">
+      <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! (['eos','btc','sol'].includes($store.state.investment.defaultAccount.chain) || $store.state.investment.defaultAccount.isEvm)">
         History for the {{$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
       </q-banner>
 
       <div class="q-pa-md loading-table" v-else-if="loading">
-      <span class="text-body1">We are loading your transaction history. This may take a moment</span>
-        <q-markup-table flat>
+      <span :class="$store.state.settings.lightMode === 'true' ? 'text-body1 text-white': 'text-body1'">We are loading your transaction history. This may take a moment</span>
+        <q-markup-table flat v-if="!$q.platform.is.mobile">
           <thead>
             <tr>
               <th class="text-left" style="width: 150px">
@@ -56,325 +56,334 @@
             </tr>
           </tbody>
         </q-markup-table>
+        <q-linear-progress query color="warning" class="q-mt-md" v-if="$q.platform.is.mobile"/>
+
       </div>
 
-      <div  class="q-pa-md" v-else-if="!history.length && !loading">
+      <div  :class="$store.state.settings.lightMode === 'true' ? 'text-white q-pa-md': 'text-black q-pa-md'" v-else-if="!history.length && !loading">
         No transactions recorded yet with this account
       </div>
-      <q-scroll-area v-else :visible="true" class="q-pr-md" style="height: 85%;">
-        <div v-for="(day,indexDay) in history" :key="indexDay">
-        <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7"> {{day.friendlyDay}} </div>
-        <q-list bordered dark separator class="list-wrapper"  v-for="(transaction, indexTx) in day.data" :key="indexTx">
+      <q-scroll-area v-else :visible="true" :class="$store.state.settings.lightMode === 'true' ? 'q-pr-md':'q-pr-md bg-white'" :style="$q.platform.is.mobile ? 'height: 120%; padding-bottom: 5px;' : 'height: 85%;'">
+        <div v-if="!($q.platform.is.mobile||$isbex)">
 
-          <q-item v-if="transaction.direction == 'outgoing'" clickable class="column history-item-wrapper send-component" :class="{'dark-bg': $store.state.settings.lightMode === 'true'}">
-            <q-item-section class="history-item flex justify-between">
-              <div class="row" :class="[isMobile ? 'items-start':'items-center']">
-                <div class="col col-4">
-                  <div class="flex items-center">
-                    <div class="q-mr-md flex flex-center">
-                      <img width="32" :src="getImage(transaction)" />
-                    </div>
-                    <div class="txLabel">
-                      <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{getAction(transaction)}}</div>
-                      <div class="text-grey">{{transaction.time }}</div>
+          <div v-for="(day,indexDay) in history" :key="indexDay">
 
-                    </div>
-                  </div>
-                </div>
-                <div class="col col-8">
-                  <div class="row items-center">
-                    <div class="col col-6">
+            <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7">{{day.friendlyDay}} </div>
+            <q-list bordered dark separator class="list-wrapper"  v-for="(transaction, indexTx) in day.data" :key="indexTx" >
+
+              <q-item v-if="transaction.direction == 'outgoing'" clickable class="column history-item-wrapper send-component" :class="{'dark-bg': $store.state.settings.lightMode === 'true'}">
+                <q-item-section class="history-item flex justify-between">
+                  <div class="row" :class="[isMobile ? 'items-start':'items-center']">
+                    <div class="col col-4">
                       <div class="flex items-center">
                         <div class="q-mr-md flex flex-center">
-                          <img width="32" :src="transaction.image" class="" />
+                          <img width="32" :src="getImage(transaction)" />
                         </div>
-                        <div class="column">
-
-                          <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">-{{transaction.amountFriendly}}</span> {{transaction.symbol}} </div>
-                          <div class="text-grey" v-if="transaction.usdAmount">
-                          ${{transaction.usdAmount}}
-                            <q-tooltip>
-                            Estimated USD equivalent on Day of Txn
-                          </q-tooltip>
-                        </div>
-                        <div class="text-grey" v-else>
-                          N/A
-                        </div>
+                        <div class="txLabel">
+                          <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{getAction(transaction)}}</div>
+                          <div class="text-grey">{{transaction.time }}</div>
 
                         </div>
                       </div>
                     </div>
-                    <div class="col col-6 flex justify-end">
-                      <div class="column">
-                        <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
-                          <div class="flex items-center" style="cursor: pointer;">
-                            <img width="32" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADdElEQVR4Xu3doW4VURhF4bmSpAqFIiG4vkIFr4RrSJDga3gVPILHaJpU4TD18BCryc7NfPjNnK6zus8/l7nD5f72zb8j/Pn052tIH8evd99S/trDa34XAmwVIoAGSAbWBtUACX8PawANkCzSAAnfPqwBNECyUAMkfPuwBtAAyUINkPDtwxpAAyQLNUDCtw9rAA2QLNQACd8+rAE0QLJQAyR8+/C8AX6+/Z6eB6gGVgBPjy/TXfzw8SZdf83vQoC0fwcB4hmuAdoTUZWfBmgFoAHWZ5gZoD2TqQE0gLuA4oAh0BBY/MmPxRsCfQ6QBDQDJHyHuwB3AT4JTL9D9QxzG+g2MAlYw+4C3AUkh9ZHqCEwbZ8hcH4fawYYzwDxF2gu0NnXn4+AswNcn+GVPwEiQQKcHCABCJAI1A/C0sWP43AERIIa4OQACUCARMARMP4oOe3e0d9zSAACVAdT3hCY8GmAiO/6ARoCowLXDvDa1+8IOLnABCBA+2JI5Oefg+Pr9iv/y4+/X9L7AZ7vHuoa5AOB978/h/RxECDh24cJsN+D6QoIMMW/vzgB9nswXQEBpvj3FyfAfg+mKyDAFP/+4gTY78F0BQSY4t9fnAD7PZiugABT/PuLE2C/B9MVEGCKf39xAuz3YLoCAkzx7y+eBaivi68Irv2Zumtfv0fCosEEODlAAhAgEfDVMF8NSwLVsBkgEnQEnBwgAQiQCJgBzABJoBo2A0SCjoCTAyQAARIBM4AZIAlUw2aASNARcHKABCBAIjCfAe5v36T3A6Sf/hXCa4C1AV4BQforLgRI/PIbTtrVe5oAkaEGiABr3BHQCGqAxs8REPnluAZoCDVA46cBIr8c1wANoQZo/DRA5JfjGqAh1ACNnwaI/HJcAzSEGqDx0wCRX45rgIZQAzR+GiDyy3EN0BDOHwl7enxJP8GHjzcpX8PXvn4CRAMIcHKABCBAIrA+whwBafuOQwOcHCABCJAIOALcBiaBatgMEAk6Ak4OkAAESATMAGaAJFANmwEiQUfAyQESgACJgBnADJAEquE8A9QKfL57qD/DVefrf/hQG4QAY30IoAGSghog4duHNYAGSBZqgIRvH9YAGiBZqAESvn1YA2iAZKEGSPj2YQ2gAZKFGiDh24c1gAZIFmqAhG8f1gAaIFmoARK+fXjdAP8BXbztTvEVM2oAAAAASUVORK5CYII=" class="radius" />
-                            <div class="q-pl-sm actors column">
-                              <div class="">To</div>
-                              <span>{{transaction.friendlyTo}}</span>
+                    <div class="col col-8">
+                      <div class="row items-center">
+                        <div class="col col-6">
+                          <div class="flex items-center">
+                            <div class="q-mr-md flex flex-center">
+                              <img width="32" :src="transaction.image" class="" />
+                            </div>
+                            <div class="column">
+
+                              <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">-{{transaction.amountFriendly}}</span> {{transaction.symbol}} </div>
+                              <div class="text-grey" v-if="transaction.usdAmount">
+                              ${{transaction.usdAmount}}
+                                <q-tooltip>
+                                Estimated USD equivalent on Day of Txn
+                              </q-tooltip>
+                            </div>
+                            <div class="text-grey" v-else>
+                              N/A
+                            </div>
+
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col col-6 flex justify-end">
+                          <div class="column">
+                            <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
+                              <div class="flex items-center" style="cursor: pointer;">
+                                <img width="32" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADdElEQVR4Xu3doW4VURhF4bmSpAqFIiG4vkIFr4RrSJDga3gVPILHaJpU4TD18BCryc7NfPjNnK6zus8/l7nD5f72zb8j/Pn052tIH8evd99S/trDa34XAmwVIoAGSAbWBtUACX8PawANkCzSAAnfPqwBNECyUAMkfPuwBtAAyUINkPDtwxpAAyQLNUDCtw9rAA2QLNQACd8+rAE0QLJQAyR8+/C8AX6+/Z6eB6gGVgBPjy/TXfzw8SZdf83vQoC0fwcB4hmuAdoTUZWfBmgFoAHWZ5gZoD2TqQE0gLuA4oAh0BBY/MmPxRsCfQ6QBDQDJHyHuwB3AT4JTL9D9QxzG+g2MAlYw+4C3AUkh9ZHqCEwbZ8hcH4fawYYzwDxF2gu0NnXn4+AswNcn+GVPwEiQQKcHCABCJAI1A/C0sWP43AERIIa4OQACUCARMARMP4oOe3e0d9zSAACVAdT3hCY8GmAiO/6ARoCowLXDvDa1+8IOLnABCBA+2JI5Oefg+Pr9iv/y4+/X9L7AZ7vHuoa5AOB978/h/RxECDh24cJsN+D6QoIMMW/vzgB9nswXQEBpvj3FyfAfg+mKyDAFP/+4gTY78F0BQSY4t9fnAD7PZiugABT/PuLE2C/B9MVEGCKf39xAuz3YLoCAkzx7y+eBaivi68Irv2Zumtfv0fCosEEODlAAhAgEfDVMF8NSwLVsBkgEnQEnBwgAQiQCJgBzABJoBo2A0SCjoCTAyQAARIBM4AZIAlUw2aASNARcHKABCBAIjCfAe5v36T3A6Sf/hXCa4C1AV4BQforLgRI/PIbTtrVe5oAkaEGiABr3BHQCGqAxs8REPnluAZoCDVA46cBIr8c1wANoQZo/DRA5JfjGqAh1ACNnwaI/HJcAzSEGqDx0wCRX45rgIZQAzR+GiDyy3EN0BDOHwl7enxJP8GHjzcpX8PXvn4CRAMIcHKABCBAIrA+whwBafuOQwOcHCABCJAIOALcBiaBatgMEAk6Ak4OkAAESATMAGaAJFANmwEiQUfAyQESgACJgBnADJAEquE8A9QKfL57qD/DVefrf/hQG4QAY30IoAGSghog4duHNYAGSBZqgIRvH9YAGiBZqAESvn1YA2iAZKEGSPj2YQ2gAZKFGiDh24c1gAZIFmqAhG8f1gAaIFmoARK+fXjdAP8BXbztTvEVM2oAAAAASUVORK5CYII=" class="radius" />
+                                <div class="q-pl-sm actors column">
+                                  <div class="">To</div>
+                                  <span>{{transaction.friendlyTo}}</span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </q-item-section>
-            <q-item-section class="history-item__detail">
-              <div class="row items-center border-top">
-                <div class="col" :class="[isMobile ? 'col-6':' q-pl-xl']" v-if="transaction.chain == 'eth'">
-                  <div class="text-bold text-grey">Fee</div>
-                  <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
-                    <span>
-                      <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
-                      <span class="">ETH</span>
-                    </span> (${{transaction.usdFees}})
-                  </div>
-                </div>
-                <div class="col" :class="[isMobile ? 'col-6':'q-pl-xl']" v-else-if="transaction.chain == 'eos'">
-                  <div class="text-bold text-grey">Memo</div>
-                  <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
-                    <span>
-                      <span class="">{{transaction.memo}}</span>
-                    </span>
-                  </div>
-                </div>
-                <div class="col" :class="[isMobile ? 'col-6':'col-4 q-pl-xl flex items-center']">
-                  <div class="column">
-                    <span class="text-bold text-grey">Transaction hash</span>  <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
-                      <q-tooltip>
-                      {{transaction.hash}}
-                    </q-tooltip>
-                    </span>
-
-                  </div>
-                  <div class="flex items-center q-ml-md">
-                      <q-btn color="white" round size="sm" @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
-                      <a :href="transaction.explorerLink" target="_blank">
-                      <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
-                        </a>
-                  </div>
-                </div>
-              </div>
-            </q-item-section>
-          </q-item>
-          <q-item v-else-if="transaction.direction == 'exchange'" clickable class="column history-item-wrapper trade-component" @click="transaction.active = !transaction.active" :class="{'active': transaction.active}">
-            <q-item-section class="history-item flex justify-between">
-              <div class="row items-center">
-                <div class="col col-4">
-                  <div class="flex items-center">
-                    <div class="q-mr-md flex flex-center">
-                      <img width="32" :src="getImage(transaction)" />
-                    </div>
-                    <div class="txLabel">
-                      <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{getAction(transaction)}}</div>
-                      <div class="text-grey">{{transaction.time}}</div>
-
-                    </div>
-                  </div>
-                </div>
-                <div class="col col-5" :class="{'col-7' : !transaction.details}">
-                  <div class="row items-center">
-                    <div class="col col-6 flex items-center">
-                      <div class="flex items-center">
-                        <div class="q-mr-md flex flex-center">
-                          <img width="32" :src="transaction.subTransactions[0].image" class="" />
-                        </div>
-                        <div class="column">
-
-                          <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">-{{transaction.subTransactions[0].amountFriendly}}</span> {{transaction.subTransactions[0].symbol}} </div>
-                          <div class="text-grey" v-if="transaction.subTransactions[0].usdAmount">
-                          ${{transaction.subTransactions[0].usdAmount}}
-                            <q-tooltip>
-                            Estimated USD equivalent on Day of Txn
-                          </q-tooltip>
-                        </div>
-                        <div class="text-grey" v-else>
-                          N/A
-                        </div>
-                        </div>
+                </q-item-section>
+                <q-item-section class="history-item__detail">
+                  <div class="row items-center border-top">
+                    <div class="col" :class="[isMobile ? 'col-6':' q-pl-xl']" v-if="transaction.chain == 'eth'">
+                      <div class="text-bold text-grey">Fee</div>
+                      <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
+                        <span>
+                          <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
+                          <span class="">ETH</span>
+                        </span> (${{transaction.usdFees}})
                       </div>
                     </div>
-                    <div class="col col-1">
-                      <q-icon name="navigate_next" size="md" />
-                    </div>
-                    <div class="col col-5 flex justify-end">
-                      <div class="flex items-center">
-                        <div class="q-mr-md flex flex-center">
-                          <img width="32" :src="transaction.subTransactions[1].image" class="" />
-                        </div>
-                        <div class="column">
-                          <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">+{{transaction.subTransactions[1].amountFriendly}}</span> {{transaction.subTransactions[1].symbol}} </div>
-                          <div class="text-grey" v-if="transaction.subTransactions[1].usdAmount">
-                          ${{transaction.subTransactions[1].usdAmount}}
-                            <q-tooltip>
-                            Estimated USD equivalent on Day of Txn
-                          </q-tooltip>
-                        </div>
-                        <div class="text-grey" v-else>
-                          N/A
-                        </div>
-
-                        </div>
+                    <div class="col" :class="[isMobile ? 'col-6':'q-pl-xl']" v-else-if="transaction.chain == 'eos'">
+                      <div class="text-bold text-grey">Memo</div>
+                      <div :class="{'text-black ': $store.state.settings.lightMode === 'false', 'text-white ellipsis': $store.state.settings.lightMode === 'true'}">
+                        <span>
+                          <span class="">{{transaction.memo}}</span>
+                        </span>
                       </div>
                     </div>
-                  </div>
-                </div>
-                <div class="col col-3 flex justify-end" v-if="transaction.details">
+                    <div class="col" :class="[isMobile ? 'col-6':'col-4 q-pl-xl flex items-center']">
                       <div class="column">
-                        <div class="">
-                          <div class="flex items-center" v-if="transaction.details" style="cursor: pointer;">
-                            <img width="32" :src="'https://zapper.fi/images/'+transaction.details.icon" class="radius" />
-                            <div class="q-pl-sm column" >
-                              <div class="">Application</div>
-                              <span>{{transaction.details.protocol}}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-              </div>
-            </q-item-section>
-            <q-item-section class="history-item__detail">
-              <div class="row items-center border-top">
-                <div class="col col-8 q-pl-xl flex items-center">
-                  <div class="">
-                    <div class="text-bold text-grey">Fee</div>
-                    <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
-                      <span>
-                        <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
-                        <span class="">ETH</span>
-                      </span> (${{transaction.usdFees}})
-                    </div>
-                  </div>
-                  <div class="q-pl-xl">
-                    <div class="text-bold text-grey">Rate</div>
-                    <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
-                      <span>
-                        <span class="">1</span>&nbsp;
-                        <span class="">{{transaction.subTransactions[0].symbol}}</span>
-                      </span> = {{transaction.subTransactions[1].amount /  transaction.subTransactions[0].amount}} {{transaction.subTransactions[1].symbol}}
-                    </div>
-                  </div>
-
-                </div>
-                <div class="col q-pl-xl flex items-center">
-                  <div class="column">
-                    <span class="text-bold text-grey">Transaction hash</span>
-                    <span :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
-                      <q-tooltip>
-                      {{transaction.hash}}
-                    </q-tooltip></span>
-                  </div>
-                  <div class="flex items-center q-ml-md">
-                      <q-btn color="white" round size="sm"  @click="$clipboardWrite(transaction.hash)"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
-                      <a :href="transaction.explorerLink" target="_blank">
-                      <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
-                      </a>
-                  </div>
-                </div>
-              </div>
-            </q-item-section>
-          </q-item>
-          <q-item v-else-if="transaction.direction == 'incoming'" clickable class="column history-item-wrapper receive-component" @click="transaction.active = !transaction.active" :class="{'active': transaction.active}">
-            <q-item-section class="history-item flex justify-between">
-              <div class="row" :class="[isMobile ? 'items-start':'items-center']">
-                <div class="col col-4">
-                  <div class="flex items-center">
-                    <div class="q-mr-md flex flex-center">
-                      <img width="32" :src="getImage(transaction)" />
-                    </div>
-                    <div class="txLabel">
-                      <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{getAction(transaction)}}</div>
-                      <div class="text-grey">{{transaction.time}}</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col col-8">
-                  <div class="row items-center">
-                    <div class="col col-9">
-                      <div class="flex items-center">
-                        <div class="q-mr-md flex flex-center">
-                          <img width="32" :src="transaction.image" class="" />
-                        </div>
-                        <div class="column">
-                          <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">+{{transaction.amountFriendly}}</span> {{transaction.symbol}}
+                        <span class="text-bold text-grey">Transaction hash</span>  <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
                           <q-tooltip>
-                            The amount of {{transaction.symbol}} to be transferred to the recipient with the transaction
-                          </q-tooltip>
-                          </div>
-                          <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}" v-if="transaction.usdAmount">
-                          ${{transaction.usdAmount}}
-                            <q-tooltip>
-                            Estimated USD equivalent on Day of Txn
-                          </q-tooltip>
+                          {{transaction.hash}}
+                        </q-tooltip>
+                        </span>
+
+                      </div>
+                      <div class="flex items-center q-ml-md">
+                          <q-btn color="white" round size="sm" @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
+                          <a :href="transaction.explorerLink" target="_blank">
+                          <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
+                            </a>
+                      </div>
+                    </div>
+                  </div>
+                </q-item-section>
+              </q-item>
+              <q-item v-else-if="transaction.direction == 'exchange'" clickable class="column history-item-wrapper trade-component" @click="transaction.active = !transaction.active" :class="{'active': transaction.active}">
+                <q-item-section class="history-item flex justify-between">
+                  <div class="row items-center">
+                    <div class="col col-4">
+                      <div class="flex items-center">
+                        <div class="q-mr-md flex flex-center">
+                          <img width="32" :src="getImage(transaction)" />
                         </div>
-                        <div class="text-grey" v-else>
-                          N/A
-                        </div>
+                        <div class="txLabel">
+                          <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{getAction(transaction)}}</div>
+                          <div class="text-grey">{{transaction.time}}</div>
+
                         </div>
                       </div>
                     </div>
-                    <div class="col col-3 flex justify-end">
-                      <div class="column">
+                    <div class="col col-5" :class="{'col-7' : !transaction.details}">
+                      <div class="row items-center">
+                        <div class="col col-6 flex items-center">
+                          <div class="flex items-center">
+                            <div class="q-mr-md flex flex-center">
+                              <img width="32" :src="transaction.subTransactions[0].image" class="" />
+                            </div>
+                            <div class="column">
+
+                              <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">-{{transaction.subTransactions[0].amountFriendly}}</span> {{transaction.subTransactions[0].symbol}} </div>
+                              <div class="text-grey" v-if="transaction.subTransactions[0].usdAmount">
+                              ${{transaction.subTransactions[0].usdAmount}}
+                                <q-tooltip>
+                                Estimated USD equivalent on Day of Txn
+                              </q-tooltip>
+                            </div>
+                            <div class="text-grey" v-else>
+                              N/A
+                            </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col col-1">
+                          <q-icon name="navigate_next" size="md" />
+                        </div>
+                        <div class="col col-5 flex justify-end">
+                          <div class="flex items-center">
+                            <div class="q-mr-md flex flex-center">
+                              <img width="32" :src="transaction.subTransactions[1].image" class="" />
+                            </div>
+                            <div class="column">
+                              <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">+{{transaction.subTransactions[1].amountFriendly}}</span> {{transaction.subTransactions[1].symbol}} </div>
+                              <div class="text-grey" v-if="transaction.subTransactions[1].usdAmount">
+                              ${{transaction.subTransactions[1].usdAmount}}
+                                <q-tooltip>
+                                Estimated USD equivalent on Day of Txn
+                              </q-tooltip>
+                            </div>
+                            <div class="text-grey" v-else>
+                              N/A
+                            </div>
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col col-3 flex justify-end" v-if="transaction.details">
+                          <div class="column">
+                            <div class="">
+                              <div class="flex items-center" v-if="transaction.details" style="cursor: pointer;">
+                                <img width="32" :src="'https://zapper.fi/images/'+transaction.details.icon" class="radius" />
+                                <div class="q-pl-sm column" >
+                                  <div class="">Application</div>
+                                  <span>{{transaction.details.protocol}}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                  </div>
+                </q-item-section>
+                <q-item-section class="history-item__detail">
+                  <div class="row items-center border-top">
+                    <div class="col col-8 q-pl-xl flex items-center">
+                      <div class="">
+                        <div class="text-bold text-grey">Fee</div>
                         <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
-                          <div class="flex items-center" style="cursor: pointer;">
-                            <img width="32" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADdElEQVR4Xu3doW4VURhF4bmSpAqFIiG4vkIFr4RrSJDga3gVPILHaJpU4TD18BCryc7NfPjNnK6zus8/l7nD5f72zb8j/Pn052tIH8evd99S/trDa34XAmwVIoAGSAbWBtUACX8PawANkCzSAAnfPqwBNECyUAMkfPuwBtAAyUINkPDtwxpAAyQLNUDCtw9rAA2QLNQACd8+rAE0QLJQAyR8+/C8AX6+/Z6eB6gGVgBPjy/TXfzw8SZdf83vQoC0fwcB4hmuAdoTUZWfBmgFoAHWZ5gZoD2TqQE0gLuA4oAh0BBY/MmPxRsCfQ6QBDQDJHyHuwB3AT4JTL9D9QxzG+g2MAlYw+4C3AUkh9ZHqCEwbZ8hcH4fawYYzwDxF2gu0NnXn4+AswNcn+GVPwEiQQKcHCABCJAI1A/C0sWP43AERIIa4OQACUCARMARMP4oOe3e0d9zSAACVAdT3hCY8GmAiO/6ARoCowLXDvDa1+8IOLnABCBA+2JI5Oefg+Pr9iv/y4+/X9L7AZ7vHuoa5AOB978/h/RxECDh24cJsN+D6QoIMMW/vzgB9nswXQEBpvj3FyfAfg+mKyDAFP/+4gTY78F0BQSY4t9fnAD7PZiugABT/PuLE2C/B9MVEGCKf39xAuz3YLoCAkzx7y+eBaivi68Irv2Zumtfv0fCosEEODlAAhAgEfDVMF8NSwLVsBkgEnQEnBwgAQiQCJgBzABJoBo2A0SCjoCTAyQAARIBM4AZIAlUw2aASNARcHKABCBAIjCfAe5v36T3A6Sf/hXCa4C1AV4BQforLgRI/PIbTtrVe5oAkaEGiABr3BHQCGqAxs8REPnluAZoCDVA46cBIr8c1wANoQZo/DRA5JfjGqAh1ACNnwaI/HJcAzSEGqDx0wCRX45rgIZQAzR+GiDyy3EN0BDOHwl7enxJP8GHjzcpX8PXvn4CRAMIcHKABCBAIrA+whwBafuOQwOcHCABCJAIOALcBiaBatgMEAk6Ak4OkAAESATMAGaAJFANmwEiQUfAyQESgACJgBnADJAEquE8A9QKfL57qD/DVefrf/hQG4QAY30IoAGSghog4duHNYAGSBZqgIRvH9YAGiBZqAESvn1YA2iAZKEGSPj2YQ2gAZKFGiDh24c1gAZIFmqAhG8f1gAaIFmoARK+fXjdAP8BXbztTvEVM2oAAAAASUVORK5CYII=" class="radius" />
-                            <div class="q-pl-sm actors column">
-                              <div  >From</div>
-                              <span>{{transaction.friendlyFrom}}</span>
+                          <span>
+                            <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
+                            <span class="">ETH</span>
+                          </span> (${{transaction.usdFees}})
+                        </div>
+                      </div>
+                      <div class="q-pl-xl">
+                        <div class="text-bold text-grey">Rate</div>
+                        <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
+                          <span>
+                            <span class="">1</span>&nbsp;
+                            <span class="">{{transaction.subTransactions[0].symbol}}</span>
+                          </span> = {{transaction.subTransactions[1].amount /  transaction.subTransactions[0].amount}} {{transaction.subTransactions[1].symbol}}
+                        </div>
+                      </div>
+
+                    </div>
+                    <div class="col q-pl-xl flex items-center">
+                      <div class="column">
+                        <span class="text-bold text-grey">Transaction hash</span>
+                        <span :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
+                          <q-tooltip>
+                          {{transaction.hash}}
+                        </q-tooltip></span>
+                      </div>
+                      <div class="flex items-center q-ml-md">
+                          <q-btn color="white" round size="sm"  @click="$clipboardWrite(transaction.hash)"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
+                          <a :href="transaction.explorerLink" target="_blank">
+                          <q-btn color="white" round size="sm" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
+                          </a>
+                      </div>
+                    </div>
+                  </div>
+                </q-item-section>
+              </q-item>
+              <q-item v-else-if="transaction.direction == 'incoming'" clickable class="column history-item-wrapper receive-component" @click="transaction.active = !transaction.active" :class="{'active': transaction.active}">
+                <q-item-section class="history-item flex justify-between">
+                  <div class="row" :class="[isMobile ? 'items-start':'items-center']">
+                    <div class="col col-4">
+                      <div class="flex items-center">
+                        <div class="q-mr-md flex flex-center">
+                          <img width="32" :src="getImage(transaction)" />
+                        </div>
+                        <div class="txLabel">
+                          <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{getAction(transaction)}}</div>
+                          <div class="text-grey">{{transaction.time}}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col col-8">
+                      <div class="row items-center">
+                        <div class="col col-9">
+                          <div class="flex items-center">
+                            <div class="q-mr-md flex flex-center">
+                              <img width="32" :src="transaction.image" class="" />
+                            </div>
+                            <div class="column">
+                              <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">+{{transaction.amountFriendly}}</span> {{transaction.symbol}}
+                              <q-tooltip>
+                                The amount of {{transaction.symbol}} to be transferred to the recipient with the transaction
+                              </q-tooltip>
+                              </div>
+                              <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}" v-if="transaction.usdAmount">
+                              ${{transaction.usdAmount}}
+                                <q-tooltip>
+                                Estimated USD equivalent on Day of Txn
+                              </q-tooltip>
+                            </div>
+                            <div class="text-grey" v-else>
+                              N/A
+                            </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col col-3 flex justify-end">
+                          <div class="column">
+                            <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
+                              <div class="flex items-center" style="cursor: pointer;">
+                                <img width="32" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADdElEQVR4Xu3doW4VURhF4bmSpAqFIiG4vkIFr4RrSJDga3gVPILHaJpU4TD18BCryc7NfPjNnK6zus8/l7nD5f72zb8j/Pn052tIH8evd99S/trDa34XAmwVIoAGSAbWBtUACX8PawANkCzSAAnfPqwBNECyUAMkfPuwBtAAyUINkPDtwxpAAyQLNUDCtw9rAA2QLNQACd8+rAE0QLJQAyR8+/C8AX6+/Z6eB6gGVgBPjy/TXfzw8SZdf83vQoC0fwcB4hmuAdoTUZWfBmgFoAHWZ5gZoD2TqQE0gLuA4oAh0BBY/MmPxRsCfQ6QBDQDJHyHuwB3AT4JTL9D9QxzG+g2MAlYw+4C3AUkh9ZHqCEwbZ8hcH4fawYYzwDxF2gu0NnXn4+AswNcn+GVPwEiQQKcHCABCJAI1A/C0sWP43AERIIa4OQACUCARMARMP4oOe3e0d9zSAACVAdT3hCY8GmAiO/6ARoCowLXDvDa1+8IOLnABCBA+2JI5Oefg+Pr9iv/y4+/X9L7AZ7vHuoa5AOB978/h/RxECDh24cJsN+D6QoIMMW/vzgB9nswXQEBpvj3FyfAfg+mKyDAFP/+4gTY78F0BQSY4t9fnAD7PZiugABT/PuLE2C/B9MVEGCKf39xAuz3YLoCAkzx7y+eBaivi68Irv2Zumtfv0fCosEEODlAAhAgEfDVMF8NSwLVsBkgEnQEnBwgAQiQCJgBzABJoBo2A0SCjoCTAyQAARIBM4AZIAlUw2aASNARcHKABCBAIjCfAe5v36T3A6Sf/hXCa4C1AV4BQforLgRI/PIbTtrVe5oAkaEGiABr3BHQCGqAxs8REPnluAZoCDVA46cBIr8c1wANoQZo/DRA5JfjGqAh1ACNnwaI/HJcAzSEGqDx0wCRX45rgIZQAzR+GiDyy3EN0BDOHwl7enxJP8GHjzcpX8PXvn4CRAMIcHKABCBAIrA+whwBafuOQwOcHCABCJAIOALcBiaBatgMEAk6Ak4OkAAESATMAGaAJFANmwEiQUfAyQESgACJgBnADJAEquE8A9QKfL57qD/DVefrf/hQG4QAY30IoAGSghog4duHNYAGSBZqgIRvH9YAGiBZqAESvn1YA2iAZKEGSPj2YQ2gAZKFGiDh24c1gAZIFmqAhG8f1gAaIFmoARK+fXjdAP8BXbztTvEVM2oAAAAASUVORK5CYII=" class="radius" />
+                                <div class="q-pl-sm actors column">
+                                  <div  >From</div>
+                                  <span>{{transaction.friendlyFrom}}</span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </q-item-section>
-            <q-item-section class="history-item__detail">
-              <div class="row items-center border-top">
-                <div class="col" :class="[isMobile ? 'col-6':' q-pl-xl']" v-if="transaction.chain == 'eth'">
-                  <div class="text-bold text-grey">Fee</div>
-                  <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
-                    <span>
-                      <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
-                      <span class="">ETH</span>
-                    </span> (${{transaction.usdFees}})
+                </q-item-section>
+                <q-item-section class="history-item__detail">
+                  <div class="row items-center border-top">
+                    <div class="col" :class="[isMobile ? 'col-6':' q-pl-xl']" v-if="transaction.chain == 'eth'">
+                      <div class="text-bold text-grey">Fee</div>
+                      <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
+                        <span>
+                          <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
+                          <span class="">ETH</span>
+                        </span> (${{transaction.usdFees}})
+                      </div>
+                    </div>
+                    <div class="col" :class="[isMobile ? '':'q-mr-xl q-pl-xl']" v-else-if="transaction.chain == 'eos'">
+                      <div class="text-bold text-grey">Memo</div>
+                      <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
+                        <span>
+                          <span class="">{{transaction.memo}}</span>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="col" :class="[isMobile ? 'col-6':'col-4 q-pl-xl flex items-center']">
+                      <div class="column">
+                        <span class="text-bold text-grey">Transaction hash</span>
+                        <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
+                          <q-tooltip>
+                          {{transaction.hash}}
+                        </q-tooltip>
+                        </span>
+                      </div>
+                      <div class="flex items-center q-ml-md">
+                          <q-btn color="white" round size="sm" @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
+                          <a :href="transaction.explorerLink" target="_blank">
+                          <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
+                            </a>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div class="col" :class="[isMobile ? '':'q-mr-xl q-pl-xl']" v-else-if="transaction.chain == 'eos'">
-                  <div class="text-bold text-grey">Memo</div>
-                  <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
-                    <span>
-                      <span class="">{{transaction.memo}}</span>
-                    </span>
-                  </div>
-                </div>
-                <div class="col" :class="[isMobile ? 'col-6':'col-4 q-pl-xl flex items-center']">
-                  <div class="column">
-                    <span class="text-bold text-grey">Transaction hash</span>
-                    <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{transaction.friendlyHash}}
-                      <q-tooltip>
-                      {{transaction.hash}}
-                    </q-tooltip>
-                    </span>
-                  </div>
-                  <div class="flex items-center q-ml-md">
-                      <q-btn color="white" round size="sm" @click="$clipboardWrite(transaction.hash)" outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="content_copy" />
-                      <a :href="transaction.explorerLink" target="_blank">
-                      <q-btn color="white" round size="sm"  outline :text-color="$store.state.settings.lightMode === 'true' ? 'white': 'black'" icon="open_in_new" class="q-ml-sm" />
-                        </a>
-                  </div>
-                </div>
-              </div>
-            </q-item-section>
-          </q-item>
-        </q-list>
-        </div>
+                </q-item-section>
+              </q-item>
+            </q-list>
 
-          <p v-if="history.length && $store.state.investment.defaultAccount.chain == 'eth'" class="text-center text-body1 cursor-pointer" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" /></p>
+          </div>
+        </div>
+          <!-- MOBILE VIEW ONLY  -->
+          <HistoryItemList :history="history" :getImage="getImage" :getAction="getAction" v-if="$q.platform.is.mobile||$isbex"/>
+
+          <p v-if="history.length && $store.state.investment.defaultAccount.chain == 'eth'" class="text-center text-body1 cursor-pointer q-pb-xl" ><q-btn flat @click="loadMore()" :loading="loadMoreLoading" icon="add" label="Load more" class="q-mb-xl"/></p>
       </q-scroll-area>
     </div>
   </div>
@@ -388,11 +397,13 @@ import Lib from '@/util/walletlib'
 import DexInteraction from '@/mixins/DexInteraction'
 // const Web3 = require('web3')
 // let web3 = new Web3(new Web3.providers.HttpProvider('https://main-rpc.linkpool.io'))
+import HistoryItemList from './MobileUI/HistoryItemList.vue'
 
 export default {
   name: 'History',
   components: {
-    QScrollArea
+    QScrollArea,
+    HistoryItemList
   },
   props: {
     isMobile: {
@@ -478,6 +489,7 @@ export default {
         return
       }
       this.history = []
+      console.log(account, 'account')
       if (account.origin === 'metamask') {
         account = this.$store.state.wallets.tokens.find(o => o.type === 'eth' && o.origin !== 'metamask')
       }
@@ -490,6 +502,16 @@ export default {
         }
 
         this.getEthWalletHistory(account)
+      } else if (account.chain === 'eos') {
+        this.$axios.post('https://cpu.volentix.io/api/global/history', { name: account.name }).then(res => {
+          res.data.forEach((d, i) => {
+            res.data[i].data.map(h => {
+              h.image = Lib.getTokenImage(h.symbol)
+            })
+          })
+          this.history = res.data
+          this.loading = false
+        })
       } else {
         if (!account.chain) {
           account = this.$store.state.wallets.tokens.find(w => w.chain === 'eos' && w.type === 'eos')
@@ -578,6 +600,7 @@ export default {
           }
         }
       }, 200)
+      console.log('loadMore calling ')
     },
     getTokenImage (type) {
       let token = this.getAllCoins().find((o) => o.value.toLowerCase() === type.toLowerCase())
@@ -686,7 +709,7 @@ export default {
             data: [element]
           }
           this.history.push(item)
-          console.log(item, this.history, 'item')
+
           // this.$store.commit('wallets/updateHistory', item)
         }
       })
