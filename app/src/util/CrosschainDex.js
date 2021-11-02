@@ -116,8 +116,57 @@ class Crosschaindex {
       }
     }
     return list[exchange]()
-  };
+  }
+  format1InchTokens (coins, chain) {
+    coins = Object.keys(coins).map((key, index) => {
+      let image = coins[key].symbol.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : 'https://tokens.1inch.exchange/' + coins[key].address.toLowerCase() + '.png'
 
+      let row = {
+        'label': coins[key].name.toUpperCase(),
+        'value': coins[key].symbol,
+        'image': image,
+        'address': coins[key].address,
+        'decimals': coins[key].decimals,
+        'price': coins[key].current_price,
+        'dex': 'oneinch',
+        'priority': ['eth', 'dai', 'hex', 'usdt', 'usdc'].reverse().indexOf(coins[key].symbol.toLowerCase())
+      }
+      return row
+    })
+    return coins.filter(function (el) {
+      return el != null
+    }).sort(function (a, b) {
+      if (a.label && b.label && a.label.toLowerCase() < b.label.toLowerCase()) {
+        return -1
+      }
+      return 1
+    }).sort((a, b) => b.priority - a.priority)
+  }
+  async getCoinByChain (chain) {
+    let self = this
+    let coins = {
+      eth () {
+        return store.state.settings.coins.oneinch
+      },
+      eos () {
+
+      },
+      async bsc () {
+        let result = await axios.get(_1inch + '/v3.0/56/tokens')
+        coins = result.data.tokens
+        return self.format1InchTokens(coins, 'bsc')
+      },
+      async matic () {
+        let result = await axios.get(_1inch + '/v3.0/137/tokens')
+        coins = result.data.tokens
+        return self.format1InchTokens(coins, 'matic')
+      }
+    }
+
+    let data = await coins[chain]()
+
+    return data
+  }
   getAllCoins (unique = true, dex = false) {
     let coins = store.state.settings.coins.coinswitch.concat(store.state.settings.coins.oneinch).concat(store.state.settings.coins.defibox).concat(store.state.settings.coins.godex)
 
