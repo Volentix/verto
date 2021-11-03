@@ -358,18 +358,19 @@ export default {
   },
   methods: {
     shoKeysStatus () {
-      let tempChain = JSON.parse(JSON.stringify(this.accountChain))
-      this.keys.keying++
-      this.keys.field = 'key'
-      this.keys.chain = this.accountChain
-      if (this.accountChain) {
-        for (let i = 0; i < this.accountChain.accounts.length; i++) {
-          if (this.$store.state.currentwallet.wallet.name !== this.accountChain.accounts[i].name) {
-            tempChain.accounts.splice(i, 1)
-            this.keys.chain = tempChain
-          }
-        }
-      }
+      this.$router.push({ name: 'receive', params: { chainID: this.selectedCoin.chain, tokenID: this.selectedCoin.type, name: this.selectedCoin.name, value: this.selectedCoin.value, icon: this.selectedCoin.icon } })
+    //   let tempChain = JSON.parse(JSON.stringify(this.accountChain))
+    //   this.keys.keying++
+    //   this.keys.field = 'key'
+    //   this.keys.chain = this.accountChain
+    //   if (this.accountChain) {
+    //     for (let i = 0; i < this.accountChain.accounts.length; i++) {
+    //       if (this.$store.state.currentwallet.wallet.name !== this.accountChain.accounts[i].name) {
+    //         tempChain.accounts.splice(i, 1)
+    //         this.keys.chain = tempChain
+    //       }
+    //     }
+    //   }
     },
     closeDialog () {
       this.$emit('update:dialog', false)
