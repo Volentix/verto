@@ -259,15 +259,14 @@
                                     <q-tab v-if="$store.state.wallets.portfolioTotal" name="send" label="Send" />
                                     <!--     <q-tab name="swap" v-if="asset.chain != 'eos'  && show1inch" label="Swap" />-->
                                     <q-tab name="buy" v-if="$store.state.wallets.portfolioTotal && !$isbex" @click="exchangeToken({to:asset.type})"  label="Buy" />
-                                    <q-tab v-if="$store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key && $store.state.wallets.portfolioTotal  && !isbex" name="sell" @click="exchangeToken({from:asset.type})" label="Sell" />
+                                    <q-tab v-if="$store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key && $store.state.wallets.portfolioTotal  && !$isbex" name="sell" @click="exchangeToken({from:asset.type})" label="Sell" />
                                 </q-tabs>
 
                                 <ImportView class="q-pa-md" v-if="!$store.state.wallets.portfolioTotal" :chain="asset.chain" :key="asset.chain" />
                                 <div class="text-center " v-if="tab != 'import'" >
                                     <AccountSelector  :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
                                 </div>
-
-                                <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount" class="q-px-md" >
+                                <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount && $store.state.wallets.portfolioTotal" class="q-px-md" >
                                     <SendComponent  @setAsset="setAssetLocal" :token="asset.type" :miniMode="true" :key="getSendKey()"   />
                                 </div>
 

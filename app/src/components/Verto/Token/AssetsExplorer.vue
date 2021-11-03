@@ -144,7 +144,7 @@
                 @click="tab = 'create'"
                 :class="{ active: tab == 'create' }"
                 href="javascript:void(0)"
-                ><q-icon name="link" /> Create new account</a
+                ><q-icon name="link"  /> New account</a
               >
             </li>
             <li class="read" v-if="$store.state.wallets.portfolioTotal">

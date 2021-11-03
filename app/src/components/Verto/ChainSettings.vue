@@ -1,5 +1,12 @@
 <template>
   <div class="q-pa-md" style="max-width:400px">
+   <q-header class="bg-white" v-if="$q.platform.is.mobile">
+              <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
+                <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
+                <q-toolbar-title> Network settings </q-toolbar-title>
+                <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
+              </q-toolbar>
+            </q-header>
     <div>Switch chain to change settings</div>
     <q-select
       @input="getSettings()"
@@ -84,6 +91,9 @@ export default {
     this.getSettings(this.currentChain)
   },
   methods: {
+    closeDialog () {
+      this.$router.push('/verto/profile')
+    },
     updateLocalSettings () {
       localStorage.setItem('chainSettings', JSON.stringify(this.settings))
     },

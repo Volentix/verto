@@ -347,7 +347,7 @@ export default {
         { name: 'Restore Config', to: 'restore', icon: 'cloud_upload', info: '' },
         { name: 'Network settings', to: '/verto/networks', icon: 'label', info: '' },
         //   { name: 'Import EOS Account', to: '/verto/eos-account/import', icon: 'label', info: '' },
-        { name: 'Create new EOS Account', to: '/verto/eos-account/create', icon: 'label', info: '' },
+        //  { name: 'Create new EOS Account', to: '/verto/eos-account/create', icon: 'label', info: '' },
         // { name: 'Add ETH Account', to: '/verto/import-private-key/eth', icon: 'label', info: '' },
         { name: 'Add HD Account', to: '/verto/create-hd-account', icon: 'label', info: '' },
         // { name: 'Add BTC Account', to: '/verto/import-wallet/btc', icon: 'label', info: '' },
@@ -362,19 +362,21 @@ export default {
         // { name: 'Trade', to: '/verto/exchange', icon: 'compare_arrows', info: '' },
         // { name: 'Personalize your wallet', to: '', icon: 'o_perm_media', info: 'soon' },
         { name: 'Backup Config', to: 'backup', icon: 'o_get_app', info: '' },
+        { name: 'Network settings', to: '/verto/networks', icon: 'label', info: '' },
+
         { name: 'Sync with Verto chrome Extension', to: 'sync', icon: 'sync', info: '' },
         { name: 'Restore Config', to: 'restore', icon: 'cloud_upload', info: '' },
         { name: 'Network settings', to: '/verto/networks', icon: 'label', info: '' },
-        { name: 'Create new EOS Account', to: '/verto/eos-account/create', icon: 'label', info: '' },
+        // { name: 'Create new EOS Account', to: '/verto/eos-account/create', icon: 'label', info: '' },
         // { name: 'Add ETH Account', to: '/verto/import-private-key/eth', icon: 'label', info: '' },
         { name: 'Add HD Account', to: '/verto/create-hd-account', icon: 'label', info: '' },
         // { name: 'Add BTC Account', to: '/verto/import-wallet/btc', icon: 'label', info: '' },
         { name: 'Change Password', to: '/verto/profile/change-password', icon: 'lock_open', info: '' },
-        { name: 'Network', to: '', icon: 'public_off', info: 'darkmode' },
-        { name: 'Dev Mode', to: '', icon: 'public_off', info: 'darkmode' },
+        //  { name: 'Network', to: '', icon: 'public_off', info: 'darkmode' },
+        //  { name: 'Dev Mode', to: '', icon: 'public_off', info: 'darkmode' },
         { name: 'Download debug data', id: 'debug', icon: 'o_get_app' },
         //  { name: 'Link to Verto ID', to: '', icon: 'vtx', info: 'soon' },
-        { name: 'share Verto wallet', to: 'share', icon: 'share', info: '' }
+        { name: 'Share Verto wallet', to: 'share', icon: 'share', info: '' }
       ]
     }
 

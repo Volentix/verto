@@ -1418,7 +1418,7 @@
       </div>
       <!-- TABLE SECTION  -->
       <table
-        v-if="!($q.platform.is.mobile||$isbex) && paths.length && step != 2"
+        v-if=" false && !($q.platform.is.mobile||$isbex) && paths.length && step != 2"
         class="AssetTable__Table-sc-1hzgxt1-1 hkPLhL"
       >
         <colgroup>
@@ -1791,8 +1791,15 @@
     -->
 
     <!-- <GodexDialog  v-if="$q.platform.is.mobile" :destinationCoinOptions.sync="destinationCoinOptions" :destinationCoinUnfilter="destinationCoinUnfilter" :depositCoinOptions.sync="depositCoinOptions" :hideDeposit.sync="hideDeposit" :hideDestination.sync="hideDestination" /> -->
-      <GodexDialog  v-if="$q.platform.is.mobile||$isbex" :step.sync="step" :paths="paths" :formatNumber="formatNumber" :isPathInvalid="isPathInvalid" :setMinimum="setMinimum" :getSwapInfo="getSwapInfo" :destinationCoinOptions.sync="destinationCoinOptions" :destinationCoinUnfilter="destinationCoinUnfilter" :depositCoin.sync="depositCoin" :depositCoinOptions.sync="depositCoinOptions" :depositCoinUnfilter="depositCoinUnfilter" :hideDeposit.sync="hideDeposit" :hideDestination.sync="hideDestination" :swapData="swapData" :spinner="spinner" :setPathTransaction="setPathTransaction" :getDepositTxData="getDepositTxData" :destinationCoin.sync="destinationCoin"  :filterDestinationCoin="filterDestinationCoin" :setSuccessData="setSuccessData" :currentDex="currentDex" :switchAmounts="switchAmounts"
+    <div class="row">
+     <div class="col-md-4 offset-md-2">
+     <GodexDialog style="width:400px;"   :step.sync="step" :paths="paths" :formatNumber="formatNumber" :isPathInvalid="isPathInvalid" :setMinimum="setMinimum" :getSwapInfo="getSwapInfo" :destinationCoinOptions.sync="destinationCoinOptions" :destinationCoinUnfilter="destinationCoinUnfilter" :depositCoin.sync="depositCoin" :depositCoinOptions.sync="depositCoinOptions" :depositCoinUnfilter="depositCoinUnfilter" :hideDeposit.sync="hideDeposit" :hideDestination.sync="hideDestination" :swapData="swapData" :spinner="spinner" :setPathTransaction="setPathTransaction" :getDepositTxData="getDepositTxData" :destinationCoin.sync="destinationCoin"  :filterDestinationCoin="filterDestinationCoin" :setSuccessData="setSuccessData" :currentDex="currentDex" :switchAmounts="switchAmounts"
                     :createTransaction="createTransaction" :error="error" :chains="chains" :path="path" :splitterModel="splitterModel" :tab.sync="tab" :setPathData="setPathData" :innerStep="innerStep" :chainData="chainData" :approvalCheckRun="approvalCheckRun" :fromAccountSelected="fromAccountSelected" :getKeyFormat="getKeyFormat" :setSelectedGas="setSelectedGas" :processApproval="processApproval" :swapTokens="swapTokens" :toAccountSelected="toAccountSelected" :setTransactionStatus="setTransactionStatus" :setTab="setTab" :exchangeDetails="exchangeDetails" :showSendComponent="showSendComponent" :validStatus="validStatus" :copyToClipboard="copyToClipboard" />
+     </div>
+     <div class="col-md-4">
+       <ExchangeRowItem  :paths="paths" :formatNumber="formatNumber" :destinationCoin="destinationCoin" :setPathTransaction="setPathTransaction" :isPathInvalid="isPathInvalid" />
+     </div>
+      </div>
     <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="showMessage">
       <q-card :dark="$store.state.settings.lightMode === 'true'">
         <q-card-section class="row items-center q-pb-none">
@@ -3534,6 +3541,9 @@ export default {
 }
 </script>
 <style scoped>
+.gdx-exchange-form {
+  display: none !important;
+}
   /deep/ .q-tab-panel {
     max-width: 550px;
   }
