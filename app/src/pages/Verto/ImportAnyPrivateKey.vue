@@ -2,13 +2,13 @@
 <q-page class="column import-private-key" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-grey-12': $store.state.settings.lightMode === 'false', 'desktop-marg': screenSize > 1024,  'mobile-pad': screenSize < 1024}">
      <q-header v-if="$q.platform.is.mobile">
                 <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
-                    <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/manage/import"/>
+                    <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.push({ name: 'accounts', params: { accounts: 'receive', tab: 'import' } })"/>
                     <q-toolbar-title v-show="showMainSteps"> Import {{getChainLabel(currentChain)}} wallet  </q-toolbar-title>
                     <q-toolbar-title v-show="!showMainSteps">  Save Private Key  </q-toolbar-title>
-                    <q-btn flat round dense icon="close" v-close-popup to="/verto/manage/import"/>
+                    <q-btn flat round dense icon="close" v-close-popup @click="$router.push({ name: 'accounts', params: { accounts: 'receive', tab: 'import' } })"/>
                 </q-toolbar>
             </q-header>
-             <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+             <div :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'space-top' : $q.platform.is.mobile }" style="height: 100vh;">
         <div class="desktop-version full-height" >
             <div class="row full-height">
             <div class="col col-md-3" v-if="false">
@@ -45,7 +45,7 @@
                                                                     <span v-else>
                                                                         <q-chip dense color="green" class="sm-circle shadow-1">&nbsp;</q-chip>
                                                                     </span>
-                                                                    A valid {{currentChain}} private key
+                                                                    A valid {{getChainLabel(currentChain)}} private key
                                                                 </span>
                                                             </li>
                                                         </ul>
@@ -613,7 +613,9 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/assets/styles/variables.scss";
-
+  .space-top {
+          margin-top: 30px
+  }
   /deep/ .wallets-wrapper{
     padding-bottom: 0px !important;
   }
