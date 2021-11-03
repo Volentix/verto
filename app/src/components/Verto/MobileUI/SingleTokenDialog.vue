@@ -439,7 +439,7 @@
                                             </q-item>
                                         </q-list>
                                     </div>
-                                    <form action="#" method="#" v-if="tab == 'send'" v->
+                                    <form action="#" method="#" v-if="tab == 'send'" >
                                         <transactEOS
                                         :hideLabels="true"
                                         :key="$store.state.investment.defaultAccount.key"
@@ -502,7 +502,7 @@ import PriceChart from '../Token/PriceChart.vue'
 
 export default {
   name: 'TokenDialogMobile',
-  props: ['marketData', 'asset', 'formatNumber', 'chartData', 'chartAvailable', 'intervalHistory', 'getHistoriclPrice', 'nFormatter2', 'tab', 'success', 'error', 'exchangeToken', 'setAsset', 'fromPreview', 'depositQuantity', 'assetBalance', 'destinationCoin', 'destinationCoinOptions', 'sendTo', 'memo', 'isTxValid', 'triggerAction', 'goToExchange', 'spinnerVisible', 'filterDestinationCoin', 'setSuccessData'],
+  props: ['marketData', 'asset', 'formatNumber', 'chartData', 'chartAvailable', 'intervalHistory', 'getHistoriclPrice', 'nFormatter2', 'tab', 'success', 'error', 'exchangeToken', 'setAsset', 'fromPreview', 'depositQuantity', 'assetBalance', 'destinationCoin', 'destinationCoinOptions', 'sendTo', 'memo', 'isTxValid', 'triggerAction', 'goToExchange', 'spinnerVisible', 'filterDestinationCoin', 'setSuccessData', 'getTxData'],
   components: { PriceChart, ImportView, SendComponent, AccountSelector, transactEOS, TokenByAccount },
   data () {
     return {
