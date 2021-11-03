@@ -535,6 +535,10 @@ export default {
   mounted () {
     this.tabLocal = this.tab
     this.destinationCoinLocal = this.destinationCoin
+    if (this.$route.params.openDialog) {
+      this.dialogSend = true
+      this.setAssetLocalCount = 1
+    }
   },
   methods: {
     resetTab () {
