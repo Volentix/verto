@@ -1,7 +1,15 @@
 <template>
 <q-page class="column import-private-key" :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'text-black bg-grey-12': $store.state.settings.lightMode === 'false', 'desktop-marg': screenSize > 1024,  'mobile-pad': screenSize < 1024}">
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
-        <div class="desktop-version full-height" v-if="screenSize > 1024">
+     <q-header v-if="$q.platform.is.mobile">
+                <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
+                    <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/manage/import"/>
+                    <q-toolbar-title v-show="showMainSteps"> Import {{getChainLabel(currentChain)}} wallet  </q-toolbar-title>
+                    <q-toolbar-title v-show="!showMainSteps">  Save Private Key  </q-toolbar-title>
+                    <q-btn flat round dense icon="close" v-close-popup to="/verto/manage/import"/>
+                </q-toolbar>
+            </q-header>
+             <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100vh;">
+        <div class="desktop-version full-height" >
             <div class="row full-height">
             <div class="col col-md-3" v-if="false">
                 <div class="wallets-container" style="height: 100%">
@@ -13,7 +21,7 @@
             <div class="col col-md-12">
                 <div class="desktop-card-style apps-section q-mb-sm" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
                     <div class="chain-tools-wrapper">
-                        <div class="standard-content">
+                        <div class="standard-content" v-if="!$q.platform.is.mobile">
                             <h2 v-show="showMainSteps" class="standard-content--title flex">Import {{getChainLabel(currentChain)}} wallet</h2>
                             <h2 v-show="!showMainSteps" class="standard-content--title flex">Save Private Key</h2>
                         </div>
@@ -184,6 +192,7 @@
             </div>
         </div>
         <q-dialog
+            v-if="false"
             v-model="accDialog"
             persistent
             :maximized="true"

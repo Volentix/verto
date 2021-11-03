@@ -335,7 +335,7 @@
                    <AccountSelector  :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
               </div>
 
-              <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount && !$store.state.wallets.portfolioTotal" class="q-px-md" >
+              <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount && $store.state.wallets.portfolioTotal" class="q-px-md" >
                 <SendComponent @setAsset="setAsset" :token="asset.type" :miniMode="true" :key="$store.state.investment.defaultAccount.key+$store.state.investment.defaultAccount.name+$store.state.investment.defaultAccount.chain"  />
               </div>
 

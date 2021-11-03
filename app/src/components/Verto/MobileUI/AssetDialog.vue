@@ -11,7 +11,7 @@
             <q-header class="bg-white">
               <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
-                <q-toolbar-title> Coins/Assets List </q-toolbar-title>
+                <q-toolbar-title> Assets List </q-toolbar-title>
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
               </q-toolbar>
             </q-header>
@@ -32,23 +32,23 @@
                         'mobile-card text-white':  $store.state.settings.lightMode === 'true'
                     }"
                 >
-                    <q-tab name="receive" icon="get_app" label="Receive" :class="{
+                    <q-tab name="receive" dense label="Receive" :class="{
                         manage: $store.state.wallets.portfolioTotal,
                         read:
                         !$store.state.wallets.portfolioTotal &&
                         !$route.params.accounts,
                     }"/>
-                    <q-tab name="import" icon="arrow_downward" label="Import" :class="{
+                    <q-tab name="import"  label="Import" :class="{
                         manage: $store.state.wallets.portfolioTotal,
                         read:
                         !$store.state.wallets.portfolioTotal &&
                         !$route.params.accounts,
                     }" />
-                    <q-tab name="create" icon="arrow_downward" label="Create new account" :class="{ active: tab == 'create', manage: true, }" />
-                    <q-tab name="chains" icon="link" label="Chains" class="read" v-if="$store.state.wallets.portfolioTotal"/>
-                    <q-tab name="assets" icon="adjust" label="Assets" class="read"/>
-                    <q-tab name="privateKeys" icon="vpn_key" label="Private Keys" class="manage" @click="handlePrivateKey(tabIndex)"/>
-                    <q-tab name="investments" icon="trending_up" label="Investments" class="read" v-if="$store.state.wallets.portfolioTotal"/>
+                    <q-tab name="create"  label="New account" :class="{ active: tab == 'create', manage: true, }" />
+                    <q-tab name="chains"  label="Chains" class="read" v-if="$store.state.wallets.portfolioTotal"/>
+                    <q-tab name="assets" label="Assets" class="read"/>
+                    <q-tab name="privateKeys"  label="Private Keys" class="manage" @click="handlePrivateKey(tabIndex)"/>
+                    <q-tab name="investments"  label="Investments" class="read" v-if="$store.state.wallets.portfolioTotal"/>
                 </q-tabs>
             </q-card-section>
 
