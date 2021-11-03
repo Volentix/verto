@@ -180,7 +180,8 @@ export default {
         path: '/verto/token/' + asset.chain + '/' + asset.type,
         params: {
           asset: asset,
-          assets: this.$store.state.wallets.tokens
+          assets: this.$store.state.wallets.tokens,
+          openDialog: true
         }
       })
     }
