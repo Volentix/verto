@@ -4,7 +4,18 @@
       <q-header v-if="($q.platform.is.mobile||$isbex)">
           <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
             <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="goBackPage()"/>
-            <q-toolbar-title :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" > Token Receive </q-toolbar-title>
+               <q-item
+                  dense
+                  :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'"
+                >
+                  <q-item-section avatar>
+                    <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
+                  </q-item-section>
+                  <q-item-section dark>
+                    <q-item-label v-html="currentToken.label" />
+                    <q-item-label caption class="ellipsis mw200" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">{{ currentToken.value }}</q-item-label>
+                  </q-item-section>
+                </q-item>
         </q-toolbar>
       </q-header>
       <div class="desktop-version full-height" v-if="screenSize > 1024" style="height: 100vh;">
@@ -154,20 +165,9 @@
               </template>
             </q-select>
             <div >
-              <q-item
-                  class="custom-menu"
-                  :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'"
-                >
-                  <q-item-section avatar>
-                    <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
-                  </q-item-section>
-                  <q-item-section dark>
-                    <q-item-label v-html="currentToken.label" />
-                    <q-item-label caption class="ellipsis mw200" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">{{ currentToken.value }}</q-item-label>
-                  </q-item-section>
-                </q-item>
+
             </div>
-            <span class="lab-input text-grey">Or Via Verto ID (Soon)</span>
+
             <!-- <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="vertoID" class="input-input" rounded readonly outlined color="purple" type="text"/> -->
             <br>
             <div class="qrcode-wrapper">
