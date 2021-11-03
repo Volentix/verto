@@ -335,7 +335,7 @@
                    <AccountSelector  :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
               </div>
 
-              <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount && !$store.state.wallets.portfolioTotal" class="q-px-md" >
+              <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount" class="q-px-md" >
                 <SendComponent @setAsset="setAsset" :token="asset.type" :miniMode="true" :key="$store.state.investment.defaultAccount.key+$store.state.investment.defaultAccount.name+$store.state.investment.defaultAccount.chain"  />
               </div>
 
@@ -505,7 +505,7 @@
                   </q-item>
                 </q-list>
               </div>
-              <form action="#" method="#" v-if="tab == 'send'" v->
+              <form action="#" method="#" v-if="tab == 'send'" >
                 <transactEOS
                   :hideLabels="true"
                   :key="$store.state.investment.defaultAccount.key"
@@ -589,7 +589,7 @@
     </q-scroll-area>
   </div>
   <div v-if="$q.platform.is.mobile||$isbex">
-    <SignleTokenDialog :marketData="marketData" :asset="asset" :formatNumber="formatNumber" :chartData="chartData" :chartAvailable="chartAvailable" :intervalHistory="intervalHistory" :getHistoriclPrice="getHistoriclPrice" :nFormatter2="nFormatter2" :tab.sync="tab" :success.sync="success" :error.sync="error" :exchangeToken="exchangeToken" :setAsset.sync="setAsset" :fromPreview.sync="fromPreview" :depositQuantity.sync="depositQuantity" :assetBalance="assetBalance" :destinationCoin.sync="destinationCoin" :destinationCoinOptions="destinationCoinOptions" :sendTo.sync="sendTo" :memo.sync="memo" :isTxValid="isTxValid" :triggerAction="triggerAction" :goToExchange="goToExchange" :spinnerVisible.sync="spinnerVisible" :filterDestinationCoin="filterDestinationCoin" :setSuccessData="setSuccessData" />
+    <SignleTokenDialog :marketData="marketData" :asset="asset" :formatNumber="formatNumber" :chartData="chartData" :chartAvailable="chartAvailable" :intervalHistory="intervalHistory" :getHistoriclPrice="getHistoriclPrice" :nFormatter2="nFormatter2" :tab.sync="tab" :success.sync="success" :error.sync="error" :exchangeToken="exchangeToken" :setAsset.sync="setAsset" :fromPreview.sync="fromPreview" :depositQuantity.sync="depositQuantity" :assetBalance="assetBalance" :destinationCoin.sync="destinationCoin" :destinationCoinOptions="destinationCoinOptions" :sendTo.sync="sendTo" :memo.sync="memo" :isTxValid="isTxValid" :triggerAction="triggerAction" :goToExchange="goToExchange" :spinnerVisible.sync="spinnerVisible" :filterDestinationCoin="filterDestinationCoin" :setSuccessData="setSuccessData" :getTxData="getTxData"/>
   </div>
 </div>
 </template>
@@ -681,6 +681,7 @@ export default {
   },
   async created () {
     this.setAssetData()
+    console.log('param-asset >', this.$route.params.asset)
   },
   methods: {
     setAsset (asset) {
