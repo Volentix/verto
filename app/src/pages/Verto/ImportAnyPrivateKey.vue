@@ -195,7 +195,8 @@
             <q-header>
                 <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                     <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" to="/verto/manage/receive"/>
-                    <q-toolbar-title> Import Current Account  </q-toolbar-title>
+                    <q-toolbar-title v-show="showMainSteps"> Import {{getChainLabel(currentChain)}} wallet  </q-toolbar-title>
+                    <q-toolbar-title v-show="!showMainSteps">  Save Private Key  </q-toolbar-title>
                     <q-btn flat round dense icon="close" v-close-popup to="/verto/manage/receive"/>
                 </q-toolbar>
             </q-header>

@@ -362,10 +362,12 @@ export default {
       this.keys.keying++
       this.keys.field = 'key'
       this.keys.chain = this.accountChain
-      for (let i = 0; i < this.accountChain.accounts.length; i++) {
-        if (this.$store.state.currentwallet.wallet.name !== this.accountChain.accounts[i].name) {
-          tempChain.accounts.splice(i, 1)
-          this.keys.chain = tempChain
+      if (this.accountChain) {
+        for (let i = 0; i < this.accountChain.accounts.length; i++) {
+          if (this.$store.state.currentwallet.wallet.name !== this.accountChain.accounts[i].name) {
+            tempChain.accounts.splice(i, 1)
+            this.keys.chain = tempChain
+          }
         }
       }
     },
