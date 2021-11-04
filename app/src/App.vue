@@ -1,10 +1,11 @@
 <template>
   <div id="q-app" :style="bexStyles">
-    <router-view :keys='network' />
+    <router-view :keys='network'/>
   </div>
 </template>
 
 <script>
+import configManager from '@/util/ConfigManager'
 
 export default {
   name: 'App',
@@ -22,6 +23,23 @@ export default {
       }
       return {}
     }
+  },
+  mounted () {
+    if (this.$store.state.currentwallet.loggedIn === true) {
+      if (chrome !== undefined && this.$isbex) {
+        chrome.idle.setDetectionInterval(15)
+        const idleStateListener = function (state) {
+          if (state === 'idle') {
+            configManager.logout({
+              navigateToLogin: true
+            })
+          }
+        }
+        if (!chrome.idle.onStateChanged.hasListener(idleStateListener)) {
+          chrome.idle.onStateChanged.addListener(idleStateListener)
+        }
+      }
+    }
   }
 }
 </script>
@@ -32,9 +50,13 @@ body {
   background: #F5F5FE;
   /* black; */
 }
+
 @media screen and (max-width: 768px) {
-  ::-webkit-scrollbar { display: none; }
+  ::-webkit-scrollbar {
+    display: none;
+  }
 }
+
 .modal-content {
   background: black;
   border: 0.1rem solid white;
@@ -42,21 +64,25 @@ body {
   color: white !important;
   min-width: 40vw;
 }
+
 .modal-content img, .q-icon {
   cursor: pointer;
 }
+
 .modal-content .q-input {
   color: green !important;
 }
+
 .modal-content .q-btn {
   color: white !important;
   border: 0.05rem solid white;
 }
+
 .modal-content .q-input-target {
   color: white;
 }
 
-.workflow-step  {
+.workflow-step {
   background: black;
   border: 0.1rem solid white;
   color: white !important;

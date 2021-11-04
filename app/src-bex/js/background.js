@@ -1,8 +1,8 @@
 // Background code goes here
 
-const element = document.createElement('div')
-element.id = 'q-app'
-window.document.body.insertBefore(element, window.document.body.firstChild)
+// const element = document.createElement('div')
+// element.id = 'q-app'
+// window.document.body.insertBefore(element, window.document.body.firstChild)
 
 chrome.runtime.onMessageExternal.addListener(
   (message, sender, sendResponse) => {
@@ -17,7 +17,8 @@ chrome.runtime.onMessageExternal.addListener(
     } else if (message.type === 'SYNC_DATA') {
       localStorage.setItem('sync_data', message.data)
       chrome.windows.create(
-        { url: chrome.runtime.getURL('www/index.html'),
+        {
+          url: chrome.runtime.getURL('www/index.html'),
           type: 'popup',
           height: 600,
           width: 357,
@@ -33,6 +34,24 @@ chrome.runtime.onMessageExternal.addListener(
       })
     }
   })
+
+chrome.idle.setDetectionInterval(15)
+
+const idleStateListener = function (state) {
+  if (state === 'idle') {
+    if (ConfigManager.isLoggedIn() === true) {
+      ConfigManager.logout()
+    }
+  }
+}
+if (!chrome.idle.onStateChanged.hasListener(idleStateListener)) {
+  chrome.idle.onStateChanged.addListener(idleStateListener)
+}
+
+// chrome.idle.setDetectionInterval(15)
+// chrome.idle.onStateChanged.addListener(function (state) {
+//   console.log(state)
+// })
 // chrome.browserAction.onClicked.addListener((/* tab */) => {
 //   // Opens our extension in a new browser window.
 //   // Only if a popup isn't defined in the manifest.
