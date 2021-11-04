@@ -1,5 +1,5 @@
 {
-  "name": "Verto Browser Extension",
+  "name": "Verto",
   "description": "Verto is an extension for accessing blockchain enabled distributed applications, or Dapps in your normal Chrome or Firefox browser! ",
   "version": "1.0.0",
   "manifest_version": 2,
@@ -35,7 +35,8 @@
   "permissions": [
     "https://verto.volentix.io/*",
     "http://localhost:8080/*",
-    "storage"
+    "storage",
+    "idle"
   ],
   "externally_connectable": {
     "matches": ["*://localhost/*","*://verto.volentix.io/*"]
