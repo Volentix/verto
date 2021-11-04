@@ -570,9 +570,9 @@ class ConfigManager {
   }
 
   logout (options = { navigateToLogin: false }) {
-    store.commit('currentwallet/updateCurrentWallet', null)
-    store.commit('wallets/updateTokens', null)
-    store.commit('currentwallet/updateConfig', null)
+    store.commit('currentwallet/updateCurrentWallet', {})
+    // store.commit('wallets/updateTokens', null)
+    store.commit('currentwallet/updateConfig', {})
     store.commit('currentwallet/setLoggedIn', false)
     if (options.navigateToLogin) {
       Router.push({

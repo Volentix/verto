@@ -25,20 +25,18 @@ export default {
     }
   },
   mounted () {
-    if (this.$store.state.currentwallet.loggedIn === true) {
-      if (chrome !== undefined && this.$isbex) {
-        chrome.idle.setDetectionInterval(15)
-        const idleStateListener = function (state) {
-          if (state === 'idle') {
+    if (chrome !== undefined && this.$isbex) {
+      chrome.idle.setDetectionInterval(300)
+      const idleStateListener = (state) => {
+        if (state === 'idle' || state === 'locked') {
+          if (this.$store.state.currentwallet.loggedIn === true) {
             configManager.logout({
               navigateToLogin: true
             })
           }
         }
-        if (!chrome.idle.onStateChanged.hasListener(idleStateListener)) {
-          chrome.idle.onStateChanged.addListener(idleStateListener)
-        }
       }
+      chrome.idle.onStateChanged.addListener(idleStateListener)
     }
   }
 }

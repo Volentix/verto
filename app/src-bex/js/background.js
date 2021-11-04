@@ -35,10 +35,10 @@ chrome.runtime.onMessageExternal.addListener(
     }
   })
 
-chrome.idle.setDetectionInterval(15)
+chrome.idle.setDetectionInterval(300)
 
 const idleStateListener = function (state) {
-  if (state === 'idle') {
+  if (state === 'idle' || state === 'locked') {
     if (ConfigManager.isLoggedIn() === true) {
       ConfigManager.logout()
     }
