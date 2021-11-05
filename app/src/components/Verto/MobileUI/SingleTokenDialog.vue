@@ -7,19 +7,17 @@
             transition-show="slide-up"
             transition-hide="slide-down"
         >
-        <q-card :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
+        <q-card  :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
             <q-header class="bg-white">
               <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
                 <q-toolbar-title> Token Details </q-toolbar-title>
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
               </q-toolbar>
-            </q-header>
+              <AccountSelector v-if="tab != 'import'" :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain"  />
 
-            <div class="text-center q-pt-xl" >
-                <AccountSelector v-if="tab != 'import'" :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
-            </div>
-            <q-card-section>
+            </q-header>
+            <q-card-section class="q-mt-xl" style="margin-top: 110px;">
                 <q-item style="margin-left: -14px;">
                     <q-item-section side>
                         <q-avatar rounded>
@@ -222,29 +220,22 @@
         <q-dialog
             v-model="dialogSend"
             persistent
+
             :maximized="maximizedToggle"
             transition-show="slide-up"
             transition-hide="slide-down"
         >
-            <q-card :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
+            <q-card   class="send" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
                 <q-header class="bg-white">
                     <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                         <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="dialogSend =false"/>
-                        <q-toolbar-title> Token Transactions</q-toolbar-title>
+                        <q-toolbar-title> Send token</q-toolbar-title>
                         <q-btn flat round dense icon="close" v-close-popup @click="dialogSend = false"/>
                     </q-toolbar>
                 </q-header>
 
                 <q-card-section class="q-mt-xl">
                     <div>
-                        <q-item style="margin-left: -14px;">
-                            <q-item-section>
-                                <q-item-label class=" text-h5">Send/Buy/Sell </q-item-label>
-                                <q-item-label caption class="text-grey">Token Statistics</q-item-label>
-                            </q-item-section>
-                            <q-item-section side top>
-                            </q-item-section>
-                        </q-item>
                         <q-card :dark="$store.state.settings.lightMode === 'true'" flat bordered :class="$store.state.settings.lightMode === 'true' ? 'q-pa-md text-white': 'q-pa-md text-black' " :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': ''">
                             <div>
                                 <q-tabs
@@ -266,8 +257,8 @@
                                 <div class="text-center " v-if="tab != 'import'" >
                                     <AccountSelector  :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
                                 </div>
-                                <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount && $store.state.wallets.portfolioTotal" class="q-px-md" >
-                                    <SendComponent  @setAsset="setAssetLocal" :token="asset.type" :miniMode="true" :key="getSendKey()"   />
+                                <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount && $store.state.wallets.portfolioTotal"  >
+                                    <SendComponent  class="send" @setAsset="setAssetLocal" :token="asset.type" :miniMode="true" :key="getSendKey()"   />
                                 </div>
 
                                 <div v-if="show1inch && tab == 'swap'" >
@@ -593,6 +584,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+ .send /deep/ .q-card__section--vert {
+    padding: 0px !important
+
+}
 .q-select__dialog {
     width: 90vw !important;
     max-width: 100vw !important;
