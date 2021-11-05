@@ -1,6 +1,5 @@
 <template>
   <div id="app-content">
-  {{tx}}
     <div class="app os-mac browser-chrome">
       <div><span></span></div>
       <div
@@ -269,9 +268,10 @@ export default {
   methods: {
     signTransaction () {
       let data = {
-        gasData: this.txData,
+        gasData: this.gasData,
         txData: this.txData.data
       }
+      console.log(data, 'data')
       let account = [...this.$store.state.currentwallet.config.keys].find(a => a.key.toLowerCase() === this.txData.from.toLowerCase())
       this.spinner = true
       Lib.send(
@@ -345,7 +345,7 @@ export default {
             usdVal: Web3.utils.hexToNumber(this.tx.gas) * o[1].gasPrice / (10 ** 18) * o[0].isUsd
           }
         }).catch(e => {
-          this.error = e
+          this.error = e.message ? e.message : e
         })
       for (let i in this.tx) {
         this.$set(this.txData, i, this.tx[i])

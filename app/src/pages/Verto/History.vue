@@ -32,11 +32,13 @@
                 <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog()" />
                 <q-toolbar-title style="margin-left: -25px"> History  </q-toolbar-title>
                 <div class="row flex justify-end" style="margin-bottom: -10px;">
-                  <AccountSelector  :autoSelectChain="'eos'" class="q-mr-sm" :showAllWallets="true" :titleView='false'/>
+
                   <q-btn round outline  icon="cached" @click="refresh++" class="refresh-history" size="sm"/>
                   <!-- <q-icon name="cached"  @click="refresh++" class="refresh-history"/> -->
                 </div>
+
             </q-toolbar>
+             <AccountSelector  :autoSelectChain="'eos'" class="q-mr-sm" :showAllWallets="true" :titleView='false'/>
          </q-header>
         <div class=" apps-section- history-card-" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 94%;">
           <q-banner inline-actions class="text-white bg-red q-my-md " v-if="false">

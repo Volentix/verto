@@ -127,7 +127,7 @@
                                 class="text-body1 q-pt-md copy-key"
                                 v-else-if=" tab == 'receive' && chain.accounts && chain.accounts.length > 1 "
                             >
-                                {{ chain.accounts.length }} ...accounts <q-icon name="arrow_forward_ios" />
+                                {{ chain.accounts.length }} accounts <q-icon name="arrow_forward_ios" />
                             </div>
                             <div class="text-caption q-pt-md" v-else-if="tab == 'import' || tab == 'create'">
                                 <span class="text-capitalize">

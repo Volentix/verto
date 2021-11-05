@@ -7,7 +7,7 @@
             <div v-if="!$isbex">
                 <q-btn :color="$store.state.settings.lightMode === 'true' ? 'white' : 'grey-8'" outline no-caps class="custom-radius" @click="goImport" >Add/Import</q-btn>
             </div>
-            <div class="row text-grey">Click on a chain to see assets.{{tabIndex}} </div>
+            <div  class="row text-grey">Click on a chain to see assets. </div>
         </div>
 
         <q-tabs
@@ -39,10 +39,10 @@
                   !$route.params.accounts,
               }" />
             <q-tab name="create" icon="arrow_downward" label="Create new account" :class="{ active: tab == 'create', manage: true, }" />
-            <q-tab name="chains" icon="link" label="Chains" class="read" v-if="$store.state.wallets.portfolioTotal"/>
-            <q-tab name="assets" icon="adjust" label="Assets" class="read"/>
+            <q-tab name="chains"  label="Chains" class="read" v-if="$store.state.wallets.portfolioTotal"/>
+            <q-tab name="assets" label="Assets" class="read"/>
             <q-tab name="privateKeys" icon="vpn_key" label="Private Keys" class="manage"/>
-            <q-tab name="investments" icon="trending_up" label="Investments" class="read" v-if="$store.state.wallets.portfolioTotal"/>
+            <q-tab name="investments"  label="Investments" class="read" v-if="$store.state.wallets.portfolioTotal"/>
         </q-tabs>
 
         <ChainItemList :chains="chains" :tab.sync="tabIndex" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :key="componentKey" :getImportLink="getImportLink"/>

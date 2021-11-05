@@ -16,7 +16,7 @@
                         <q-item-section style="margin-left: -110px; margin-top: -10px;" class="q-pt-sm">
                             <q-item-label class="row justify-left">
                                 <q-avatar round size="32px" color="primary">
-                                    <img :src="transaction.image" >
+                                    <img onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="transaction.image" >
                                 </q-avatar>
                                  <div>&nbsp;&nbsp;-{{formatNumber(transaction.amountFriendly)}} {{transaction.symbol}} </div>
                             </q-item-label>
@@ -67,7 +67,7 @@
                                 <q-item-label caption>
                                     <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                                        <!-- <div class="ellipsis"> {{transaction.friendlyHash}} </div> -->
-                                        <div class="ellipsis"> {{transaction.hash}} </div>
+                                        <div class="ellipsis"> {{getKeyFormat(transaction.hash, 20)}} </div>
                                     </span>
                                 </q-item-label>
                                 <q-item-label v-if="transaction.chain == 'eth' || transaction.chain == 'eos'">
@@ -94,7 +94,7 @@
                         <q-item-section style="margin-left: -110px; margin-top: -10px;" class="q-pt-sm">
                             <q-item-label class="row justify-left" >
                                 <q-avatar round size="32px" color="primary">
-                                    <img :src="transaction.subTransactions[0].image" >
+                                    <img onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="transaction.subTransactions[0].image" >
                                 </q-avatar>
                                 <div>&nbsp;&nbsp;-{{formatNumber(transaction.subTransactions[0].amountFriendly)}} {{transaction.subTransactions[0].symbol}} </div>
                             </q-item-label>
@@ -114,7 +114,7 @@
                             <div class="text-grey" v-else> N/A </div> -->
 
                             <q-item-label class="row justify-left" style="align-items: center;" v-if="transaction.details" >
-                                <div> <img width="32" :src="'https://zapper.fi/images/'+transaction.details.icon" /> </div>
+                                <div> <img width="32" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="'https://zapper.fi/images/'+transaction.details.icon" /> </div>
                                 Application <span>{{transaction.details.protocol}}</span>
                             </q-item-label>
                         </q-item-section>
@@ -145,7 +145,7 @@
                                 <q-item-label caption>
                                     <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                                        <!-- <div class="ellipsis"> {{transaction.friendlyHash}} </div> -->
-                                       <div class="ellipsis"> {{transaction.hash}} </div>
+                                       <div class="ellipsis"> {{getKeyFormat(transaction.hash, 20)}} </div>
                                     </span>
                                 </q-item-label>
                                 <q-item-label >
@@ -172,7 +172,8 @@
                         <q-item-section style="margin-left: -110px; margin-top: -10px;" class="q-pt-sm">
                             <q-item-label class="row justify-left" >
                                 <q-avatar round size="32px">
-                                    <img :src="transaction.image">
+
+                                    <img onerror="this.src='https://etherscan.io/images/main/empty-token.png'" :src="transaction.image">
                                 </q-avatar>
                                 <div>&nbsp;&nbsp;<span>+{{formatNumber(transaction.amountFriendly)}}</span> {{transaction.symbol}}</div>
                             </q-item-label>
@@ -206,7 +207,7 @@
                             </q-item-section>
                             <q-item-section  v-if="transaction.chain == 'eos'">
                                 <q-item-label > Memo</q-item-label>
-                                <q-item-label caption :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'">
+                                <q-item-label style="overflow-wrap: anywhere;" caption :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'">
                                     <span class="ellipsis_">{{transaction.memo}}</span>
                                 </q-item-label>
                             </q-item-section>
@@ -223,7 +224,7 @@
                                 </q-item-label>
                                 <q-item-label caption>
                                     <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
-                                       <div class="ellipsis"> {{transaction.hash}} </div>
+                                       <div class="ellipsis"> {{getKeyFormat(transaction.hash, 20)}} </div>
                                     </span>
                                 </q-item-label>
                                 <q-item-label v-if="transaction.chain == 'eth' || transaction.chain == 'eos'">
@@ -263,6 +264,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/deep/ .q-expansion-item__container {
+padding-top: 30px;
+padding-bottom: 30px;
+}
 .mobile-card{
     background-color: #04111F !important;
 }

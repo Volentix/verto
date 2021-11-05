@@ -1793,7 +1793,7 @@
     <!-- <GodexDialog  v-if="$q.platform.is.mobile" :destinationCoinOptions.sync="destinationCoinOptions" :destinationCoinUnfilter="destinationCoinUnfilter" :depositCoinOptions.sync="depositCoinOptions" :hideDeposit.sync="hideDeposit" :hideDestination.sync="hideDestination" /> -->
     <div class="row">
      <div class="col-md-4 offset-md-2">
-     <GodexDialog style="width:400px;"   :step.sync="step" :paths="paths" :formatNumber="formatNumber" :isPathInvalid="isPathInvalid" :setMinimum="setMinimum" :getSwapInfo="getSwapInfo" :destinationCoinOptions.sync="destinationCoinOptions" :destinationCoinUnfilter="destinationCoinUnfilter" :depositCoin.sync="depositCoin" :depositCoinOptions.sync="depositCoinOptions" :depositCoinUnfilter="depositCoinUnfilter" :hideDeposit.sync="hideDeposit" :hideDestination.sync="hideDestination" :swapData="swapData" :spinner="spinner" :setPathTransaction="setPathTransaction" :getDepositTxData="getDepositTxData" :destinationCoin.sync="destinationCoin"  :filterDestinationCoin="filterDestinationCoin" :setSuccessData="setSuccessData" :currentDex="currentDex" :switchAmounts="switchAmounts"
+     <GodexDialog ref="txUi" style="width:400px;"   :step.sync="step" :paths="paths" :formatNumber="formatNumber" :isPathInvalid="isPathInvalid" :setMinimum="setMinimum" :getSwapInfo="getSwapInfo" :destinationCoinOptions.sync="destinationCoinOptions" :destinationCoinUnfilter="destinationCoinUnfilter" :depositCoin.sync="depositCoin" :depositCoinOptions.sync="depositCoinOptions" :depositCoinUnfilter="depositCoinUnfilter" :hideDeposit.sync="hideDeposit" :hideDestination.sync="hideDestination" :swapData="swapData" :spinner="spinner" :setPathTransaction="setPathTransaction" :getDepositTxData="getDepositTxData" :destinationCoin.sync="destinationCoin"  :filterDestinationCoin="filterDestinationCoin" :setSuccessData="setSuccessData" :currentDex="currentDex" :switchAmounts="switchAmounts"
                     :createTransaction="createTransaction" :error="error" :chains="chains" :path="path" :splitterModel="splitterModel" :tab.sync="tab" :setPathData="setPathData" :innerStep="innerStep" :chainData="chainData" :approvalCheckRun="approvalCheckRun" :fromAccountSelected="fromAccountSelected" :getKeyFormat="getKeyFormat" :setSelectedGas="setSelectedGas" :processApproval="processApproval" :swapTokens="swapTokens" :toAccountSelected="toAccountSelected" :setTransactionStatus="setTransactionStatus" :setTab="setTab" :exchangeDetails="exchangeDetails" :showSendComponent="showSendComponent" :validStatus="validStatus" :copyToClipboard="copyToClipboard" />
      </div>
      <div class="col-md-4">
@@ -1990,7 +1990,7 @@ export default {
     this.destinationCoinUnfilter = coins
     this.depositCoinUnfilter = coins
 
-    this.getSwapInfo()
+    // this.getSwapInfo()
   },
   watch: {
     'swapData.fromChosenChain': function (chain) {
@@ -2741,7 +2741,6 @@ export default {
             this.destinationCoin.value.toLowerCase(),
             o.amount
           )
-          console.log(values, 'values')
 
           if (values.length) {
             values.map((a) => {
@@ -2769,7 +2768,7 @@ export default {
               allPaths = allPaths.concat(
                 values.filter((o) => o.toAmount)
               )
-              console.log(allPaths, 'allPaths')
+
               if (allPaths.length) {
                 let path = allPaths.find(
                   (o) => o.fromToken === this.depositCoin.value.toLowerCase()
@@ -2786,7 +2785,8 @@ export default {
                 }
               }
             }
-            allPaths.sort(
+
+            allPaths = allPaths.filter(z => z.fromChain === this.$refs.txUi.currentAccount.from.chain && z.toChain === this.$refs.txUi.currentAccount.to.chain).sort(
               (x, y) => (!x.walletToken ? 1 : 0) - (!y.walletToken ? 1 : 0)
             )
             this.paths = allPaths
