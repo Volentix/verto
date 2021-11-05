@@ -71,9 +71,9 @@
                             no-caps
                             rounded
                             unelevated
-                            toggle-color="purple"
+                            toggle-color="black"
                             :color="$store.state.settings.lightMode === 'true' ? 'black': 'white'"
-                            text-color="purple"
+                            text-color="black"
                             :options="historicalOptions"
                         />
                     </div>

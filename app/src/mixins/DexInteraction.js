@@ -510,6 +510,7 @@ export default {
           image: url,
           chains: ['eos'],
           dex: 'defibox',
+          priority: ['eos', 'vtx', 'dai', 'usdt'].reverse().indexOf(infosArray[1].toLowerCase()),
           amount: item ? item.amount : 0,
           amountUSD: item ? item.usd : 0
 

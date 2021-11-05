@@ -1,5 +1,6 @@
 <template>
 <div>
+
      <q-list :class="{'q-pt-md': miniMode}" v-if="gasOptions.length && (currentAccount.isEvm || currentAccount.chain == 'btc' )" class="gasfield q-mb-sm"  separator>
               <span>{{gasOptions.length ==1 ? 'Gas fee' : 'Select gas'}} <span v-if="txData.title">({{txData.title}})</span></span>
                     <div dense class="gasSelector row q-pt-sm" >
@@ -133,6 +134,8 @@ export default {
           }
         this.gasOptions = [this.gasSelected]
       } */
+      console.log(txObject, 'txObject')
+      delete txObject.gasPrice
       Lib.gas(
         this.currentAccount.chain,
         txObject,

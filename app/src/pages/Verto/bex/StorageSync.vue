@@ -45,7 +45,7 @@ export default {
       })
     } else {
       const lastRoute = localStorage.getItem('last_route') ? JSON.parse(localStorage.getItem('last_route')) : null
-      console.log(lastRoute, 'lastRoute')
+      console.log(lastRoute, 'lastRoute 2')
       if (lastRoute && this.$route.name !== lastRoute.name && !['connectv1', 'storesync', 'login'].includes(lastRoute.name)) {
         console.log('loading existing route ', lastRoute.path)
         this.$router.push({

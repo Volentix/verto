@@ -149,7 +149,7 @@ class Crosschaindex {
         return store.state.settings.coins.oneinch
       },
       eos () {
-
+        return store.state.settings.coins.defibox.sort((a, b) => b.priority - a.priority)
       },
       async bsc () {
         let result = await axios.get(_1inch + '/v3.0/56/tokens')
