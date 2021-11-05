@@ -82,7 +82,7 @@
                       :done="step > 1"
                     >
                     <div class="row">
-                      <div class="col-md-6">
+                      <div class="col-md-6 col-12">
                         <span class="text-body2">Switch account here</span>
                         <q-select
                             :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
@@ -131,7 +131,7 @@
                           </template>
                         </q-select>
                       </div>
-                      <div class="col-md-6 q-pl-lg flex justify-end">
+                      <div class="col-md-6 col-12 q-pl-lg flex justify-end">
                         <div class="row current-stake-balanca full-width">
                               <div class="">
                                 <span class="--title row text-h6"> Current Balance<br>{{ params.tokenID.toUpperCase() }} (Liquid) </span>
@@ -165,7 +165,7 @@
                         <div v-if="condition === 3" class="condition_3">
                           <div class="text-black">
                            <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6 col-12">
                              <div class="slider-holder stake-period ">
                               <br>
                               <div class="row ">
@@ -233,7 +233,7 @@
                         <q-btn @click="step = 2" v-if="condition === 3" unelevated color="deep-purple-14" class="--next-btn" rounded label="Next" />
                       </div>
                             </div>
-                            <div  class="col-md-6 q-pa-md flex justify-end">
+                            <div  class="col-md-6 col-12 q-pa-md flex justify-end">
                             <div class="summary-wrapper row full-width shadow-1 q-ma-lg q-pa-lg rounded-borders" style="max-width:300px;">
                               <div class="full-width">
                                 <span class="--title row text-h6"> Amount to stake </span>

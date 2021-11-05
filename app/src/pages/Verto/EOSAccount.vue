@@ -34,7 +34,7 @@
             <q-header >
               <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" >
                   <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1);"/>
-                  <q-toolbar-title>=Import EOS Account  </q-toolbar-title>
+                  <q-toolbar-title>Import EOS Account  </q-toolbar-title>
                   <q-btn flat round dense icon="close" @click="$router.go(-1);"/>
               </q-toolbar>
             </q-header>

@@ -345,6 +345,7 @@ export default {
             'chains': ['eth', 'matic'],
             'price': coins[key].current_price,
             'dex': 'oneinch',
+            'priority': ['eth', 'dai', 'hex', 'usdt', 'usdc'].reverse().indexOf(coins[key].symbol.toLowerCase()),
             'amount': item ? item.amount : 0,
             'contract': item ? item.address : null,
             'amountUSD': item ? item.usd : 0
@@ -359,7 +360,7 @@ export default {
             return -1
           }
           return 1
-        })
+        }).sort((a, b) => b.priority - a.priority)
         this.$store.commit('settings/setCoinData', {
           source: 'oneinch',
           data: coins
@@ -509,6 +510,7 @@ export default {
           image: url,
           chains: ['eos'],
           dex: 'defibox',
+          priority: ['eos', 'vtx', 'dai', 'usdt'].reverse().indexOf(infosArray[1].toLowerCase()),
           amount: item ? item.amount : 0,
           amountUSD: item ? item.usd : 0
 

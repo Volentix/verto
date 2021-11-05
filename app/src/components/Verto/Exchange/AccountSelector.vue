@@ -77,8 +77,32 @@
   </div>
 
   <div v-if="$q.platform.is.mobile||$isbex" class="row justify-center">
-      <q-btn class="account_selector" dense v-if="accountOption" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : ''" :style="titleView ? 'width: 100%' : 'width:160px;'" outline :icon="`img:${accountOption.icon}`"  :label="formatLabel(accountOption.label)" @click="dialog=true" />
-      <q-dialog v-model="dialog"  :maximized="true">
+      <q-btn class="account_selector" dense v-if="accountOption && false" :color="accountOption.color"  :text-color="$store.state.settings.lightMode !== 'true' ? 'black' : ''" :style="titleView ? 'width: 100%' : 'width:100%'" outline :icon="`img:${accountOption.icon}`"  :label="formatLabel(accountOption.label)" @click="dialog=true" />
+     <q-item class="text-left full-width bg-white text-black">
+        <q-item-section @click="dialog=true"  avatar>
+          <q-img size="lg"  :src="`${accountOption.icon}`" />
+        </q-item-section>
+
+        <q-item-section>
+          <q-item-label @click="dialog=true">{{formatLabel(accountOption.label)}}</q-item-label>
+          <q-item-label caption lines="1" @click="dialog=true">{{getKeyFormat(accountOption.key, 10)}} -  <span class="item-info--amountUSD" v-if="accountOption.total">${{nFormatter2(new Number(isNaN(accountOption.total) ? 0 : accountOption.total).toFixed(2),0)}}</span>
+                              <span class="item-info--amountUSD" v-else>${{nFormatter2(new Number(isNaN(accountOption.usd) ? 0 : accountOption.usd).toFixed(2),0)}}</span></q-item-label>
+        </q-item-section>
+
+        <q-item-section dense side >
+
+          <q-icon @click="copyToClipboard(accountOption[accountOption.chain == 'eos' ? 'name' : 'key'])" name="content_copy" />
+
+        </q-item-section>
+
+        <q-item-section side >
+
+          <q-icon name="more_horiz" @click="dialog=true" class="shadows-2" />
+
+        </q-item-section>
+      </q-item>
+
+ <q-dialog v-model="dialog"  :maximized="true">
 
         <q-card class="" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': ''">
 
@@ -470,6 +494,13 @@ export default {
 .chains:hover .accounts , .singleChain  .accounts  {
 display: block;
 background: #e7e8e8;
+}
+/deep/
+element.style {
+}
+.q-expansion-item__container {
+    padding-top: 20px;
+    padding-bottom: 20px
 }
 .chains:hover {
 background: #e7e8e8;

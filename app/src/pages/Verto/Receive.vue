@@ -1,10 +1,23 @@
 <template>
   <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
-    <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 99vh;">
-      <q-toolbar v-if="($q.platform.is.mobile||$isbex)">
-          <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)"/>
-          <q-toolbar-title :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" > Token Receive </q-toolbar-title>
-      </q-toolbar>
+    <div :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" style="height: 99vh;">
+      <q-header v-if="($q.platform.is.mobile||$isbex)">
+          <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
+            <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="goBackPage()"/>
+               <q-item
+                  dense
+                  :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'"
+                >
+                  <q-item-section avatar>
+                    <q-icon class="option--avatar" :name="`img:${currentToken.image}`" />
+                  </q-item-section>
+                  <q-item-section dark>
+                    <q-item-label v-html="currentToken.label" />
+                    <q-item-label caption class="ellipsis mw200" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">{{ currentToken.value }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+        </q-toolbar>
+      </q-header>
       <div class="desktop-version full-height" v-if="screenSize > 1024" style="height: 100vh;">
         <div class="row full-height">
           <div class="col col-md-3">
@@ -108,7 +121,7 @@
         </h2> -->
         <div class="standard-content--body">
           <div class="standard-content--body__form">
-            <span class="lab-input">To</span>
+            <span class="lab-input" v-if="!$q.platform.is.mobile">To</span>
             <q-select
                 :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
                 separator
@@ -117,6 +130,7 @@
                 class="select-input"
                 v-model="currentToken"
                 :options="options"
+                v-if="!$q.platform.is.mobile"
             >
               <template v-slot:option="scope">
                 <q-item
@@ -150,7 +164,10 @@
                 </q-item>
               </template>
             </q-select>
-            <span class="lab-input text-grey">Or Via Verto ID (Soon)</span>
+            <div >
+
+            </div>
+
             <!-- <q-input :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'" v-model="vertoID" class="input-input" rounded readonly outlined color="purple" type="text"/> -->
             <br>
             <div class="qrcode-wrapper">
@@ -421,6 +438,15 @@ export default {
     this.exchangeAddress = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
   },
   async mounted () {
+    console.log('mounted ', this.$route.params)
+    this.currentToken = {
+      label: this.$route.params.name,
+      value: this.$route.params.value,
+      image: this.$route.params.icon,
+      type: this.$route.params.tokenID,
+      chainID: this.$route.params.chainID
+    }
+    console.log('mounted ', this.currentToken)
     /*
     let cruxKey = await HD.Wallet('crux')
 
@@ -473,6 +499,9 @@ export default {
         type: 'warning',
         position: 'top'
       })
+    },
+    goBackPage () {
+      this.$router.push({ name: 'wallets', params: { openDialog: true } })
     }
   }
 }

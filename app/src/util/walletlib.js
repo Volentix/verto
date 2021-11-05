@@ -892,19 +892,18 @@ class Lib {
           let gas = await web3.eth.estimateGas(transaction)
           gasData.gas = gas
         }
-        console.log(chain, transaction, type, tokenPrice, gasLimit, 'chain, transaction, type, tokenPrice, gasLimit')
+
         if (!response.data) {
           gasData.gasPrice = await web3.eth.getGasPrice()
           gasData.label = 'Fee'
           gasOptions.push(gasData)
         } else {
-          let gasStationData = response.data.sources.find(o => o.name.toLowerCase().includes('gas now'))
-          if (!gasStationData) {
-            gasStationData = response.data.sources.find(o => o.name.toLowerCase().includes('poa'))
-          }
-          ['standard', 'fast', 'instant'].forEach((option) => {
+          let gasStationData = response.data
+
+          let speed = ['normal', 'fast', 'instant']
+          speed.forEach((option) => {
             let gasOption = Object.assign({}, gasData)
-            gasOption.gasPrice = gasStationData[option] * 1000000000 // To wei
+            gasOption.gasPrice = gasStationData[option].gwei * 1000000000 // To wei
             gasOption.label = option
             gasOption = convertGasPrice(gasOption, response.data.ethPrice)
             gasOptions.push(gasOption)

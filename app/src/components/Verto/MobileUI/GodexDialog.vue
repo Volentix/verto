@@ -8,17 +8,19 @@
     </q-header>
 
     <div class="block-contents">
-        <div class="mainBlk active">
+        <div class="mainBlk " :class="{'active': showHeader }">
             <div class="middle-block" >
               <div class="blk-header">
+                {{paths.length}}
                 <ul>
                     <li v-if="false" ><b class="q-mr-md">Swap:</b> Onchain </li>
                     <li class="limitBtn" v-if="false">Limit</li>
                 </ul>
+
                 <ul>
                     <li>
                         <!-- <arrow-locator-loading _ngcontent-bjk-c337="" _nghost-bjk-c327=""><svg _ngcontent-bjk-c327="" id="arrow_loading" xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 36 36" class="arrow-loading" width="36" height="36"><path _ngcontent-bjk-c327="" stroke="none" fill="none" d="M16.2751 7.78995C13.932 5.44681 10.133 5.44681 7.78986 7.78995C7.02853 8.55128 6.51457 9.4663 6.24798 10.4351C6.24473 10.4499 6.24114 10.4646 6.23719 10.4793C6.17635 10.7064 6.12938 10.9339 6.09577 11.161C5.83159 12.9457 6.39255 14.7026 7.52624 15.9944C7.61054 16.0901 7.69842 16.1838 7.78986 16.2752C8.08307 16.5685 8.39909 16.825 8.7322 17.0448C9.25533 17.3892 9.84172 17.6568 10.4798 17.8278C10.7386 17.8971 10.9979 17.9484 11.2565 17.9825C12.9537 18.2061 14.6187 17.6866 15.8747 16.6415C16.0123 16.5265 16.1459 16.4044 16.2751 16.2752C16.2848 16.2655 16.2947 16.2561 16.3047 16.2469C17.0123 15.531 17.5491 14.627 17.8283 13.5851C17.9712 13.0517 18.5196 12.7351 19.053 12.878C19.5865 13.021 19.9031 13.5693 19.7602 14.1028C19.3141 15.7676 18.3745 17.1684 17.1409 18.1899C16.1883 18.9822 15.0949 19.5189 13.9515 19.8002C11.8607 20.3147 9.6028 19.9749 7.7328 18.7809C7.06855 18.3579 6.47841 17.8432 5.97519 17.2589C5.12341 16.2738 4.55173 15.1302 4.26015 13.9324C4.01698 12.9416 3.96104 11.8931 4.12168 10.8379C4.36697 9.20484 5.1183 7.63309 6.37564 6.37574C9.49984 3.25154 14.5652 3.25154 17.6894 6.37574L18.2332 6.91959L18.2337 5.49951C18.2338 5.05769 18.5921 4.69964 19.034 4.69979C19.4758 4.69995 19.8338 5.05825 19.8337 5.50007L19.8325 9.03277L19.8322 9.8325L19.0325 9.83249L18.9401 9.83249C18.8146 9.85665 18.6854 9.85665 18.5599 9.83248L15.5005 9.83245C15.0587 9.83245 14.7005 9.47427 14.7005 9.03244C14.7005 8.59062 15.0587 8.23245 15.5005 8.23245L16.7176 8.23246L16.2751 7.78995Z" class="background-path"></path><defs _ngcontent-bjk-c327=""><path _ngcontent-bjk-c327="" id="arrow" stroke="none" fill="none" d="M16.2751 7.78995C13.932 5.44681 10.133 5.44681 7.78986 7.78995C7.02853 8.55128 6.51457 9.4663 6.24798 10.4351C6.24473 10.4499 6.24114 10.4646 6.23719 10.4793C6.17635 10.7064 6.12938 10.9339 6.09577 11.161C5.83159 12.9457 6.39255 14.7026 7.52624 15.9944C7.61054 16.0901 7.69842 16.1838 7.78986 16.2752C8.08307 16.5685 8.39909 16.825 8.7322 17.0448C9.25533 17.3892 9.84172 17.6568 10.4798 17.8278C10.7386 17.8971 10.9979 17.9484 11.2565 17.9825C12.9537 18.2061 14.6187 17.6866 15.8747 16.6415C16.0123 16.5265 16.1459 16.4044 16.2751 16.2752C16.2848 16.2655 16.2947 16.2561 16.3047 16.2469C17.0123 15.531 17.5491 14.627 17.8283 13.5851C17.9712 13.0517 18.5196 12.7351 19.053 12.878C19.5865 13.021 19.9031 13.5693 19.7602 14.1028C19.3141 15.7676 18.3745 17.1684 17.1409 18.1899C16.1883 18.9822 15.0949 19.5189 13.9515 19.8002C11.8607 20.3147 9.6028 19.9749 7.7328 18.7809C7.06855 18.3579 6.47841 17.8432 5.97519 17.2589C5.12341 16.2738 4.55173 15.1302 4.26015 13.9324C4.01698 12.9416 3.96104 11.8931 4.12168 10.8379C4.36697 9.20484 5.1183 7.63309 6.37564 6.37574C9.49984 3.25154 14.5652 3.25154 17.6894 6.37574L18.2332 6.91959L18.2337 5.49951C18.2338 5.05769 18.5921 4.69964 19.034 4.69979C19.4758 4.69995 19.8338 5.05825 19.8337 5.50007L19.8325 9.03277L19.8322 9.8325L19.0325 9.83249L18.9401 9.83249C18.8146 9.85665 18.6854 9.85665 18.5599 9.83248L15.5005 9.83245C15.0587 9.83245 14.7005 9.47427 14.7005 9.03244C14.7005 8.59062 15.0587 8.23245 15.5005 8.23245L16.7176 8.23246L16.2751 7.78995Z"></path><clipPath _ngcontent-bjk-c327="" id="arrow-clip"><use _ngcontent-bjk-c327="" xlink:href="#arrow"></use></clipPath></defs><g _ngcontent-bjk-c327="" clip-path="url(#arrow-clip)"><circle _ngcontent-bjk-c327="" cx="12" cy="12" r="5" transform="rotate(365,12,12)" fill="none" stroke="currentColor" stroke-width="16" stroke-dasharray="30" stroke-dashoffset="0"><animate _ngcontent-bjk-c327="" attributeName="stroke-dashoffset" values="0;-30" begin="arrow_loading.click; 0.7s" repeatCount="indefinite" dur="9.3s"></animate></circle></g><use _ngcontent-bjk-c327="" xlink:href="#arrow"></use><animateTransform _ngcontent-bjk-c327="" id="transform_0" attributeName="transform" attributeType="XML" type="rotate" from="0 0 0" to="-10 0 0" dur="0.07s" begin="arrow_loading.click;" repeatCount="1"></animateTransform><animateTransform _ngcontent-bjk-c327="" id="transform_1" attributeName="transform" attributeType="XML" type="rotate" from="-45 0 0" to="390 0 0" dur="0.6s" begin="transform_0.end" repeatCount="1"></animateTransform><animateTransform _ngcontent-bjk-c327="" id="transform_2" attributeName="transform" attributeType="XML" type="rotate" from="390 0 0" to="360 0 0" dur="0.15s" begin="transform_1.end" repeatCount="1"></animateTransform></svg></arrow-locator-loading> -->
-                    <b >Account selected</b><br> <span class="q-pl-md key">0x398c...71C2892e27b</span>  <q-btn size="sm" class="q-ml-md" round flat  icon="img:https://icons.veryicon.com/png/128/education-technology/big-data-official-website-icon/exchange-11.png" />
+                    <b class="q-pr-md" >Account selected:&nbsp;&nbsp; </b> <span class="q-ml-md key"> {{getAccountLabel(currentAccount.from)}}</span>  <q-btn size="sm" class="q-ml-md" @click="toSelect = 'accounts' ; showHeader = false; " round flat  icon="img:https://icons.veryicon.com/png/128/education-technology/big-data-official-website-icon/exchange-11.png" />
                     </li>
                     <li v-if="false" class="settingBtn" @click="showHeader = false">
                         <svg xmlns="http://www.w3.org/2000/svg" id="swap-settings" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -32,15 +34,16 @@
                     </li>
                 </ul>
               </div>
-              <div class="fromBlk">
-                  <p style="color:#6c86ad;"><span>From - Ethereum <q-icon name="keyboard_arrow_down"  size="xs"/></span><span>Balance: 0.1387 <span class="max">Max</span></span></p>
-                  <h5 class="drpn"><span  @click="coinStatus = 'deposit' ; showHeader = false; "><img :src="depositCoin.image" alt=""> {{depositCoin.value.toUpperCase()}}  </span> <input type="text"  v-model="swapData.fromAmount" @input="getSwapInfo()"></h5>
-                  <p><span>{{depositCoin.label}}</span> <span>454545</span></p>
+              <div class="fromBlk"  v-if="depositCoin">
+                  <p style="color:#6c86ad;"><span class="drpn"><span class="cursor-pointer" @click="fromSelected = true ; toSelect = 'chains' ; showHeader = false; ">From - {{currentPath.fromChain.label}} <q-icon name="keyboard_arrow_down"  size="xs"/></span></span><span >Balance: {{formatNumber(depositCoin.amount, 5)}} <span class="max" @click="swapData.fromAmount = depositCoin.amount ; getSwapInfo()" v-if="depositCoin.amount">Max</span></span></p>
+                  <h5 class="drpn"><span  @click="toSelect = 'deposit' ; showHeader = false; "><img :src="depositCoin.image" alt=""> {{depositCoin.value.toUpperCase()}}  </span> <input type="text"  v-model="swapData.fromAmount" @input="getSwapInfo()"></h5>
+                  <p><span>{{depositCoin.label}}</span> <span>${{formatNumber(depositCoin.tokenPrice * swapData.fromAmount, 2)}}</span></p>
               </div>
-              <div class="toBlk">
+
+              <div class="toBlk" v-if="destinationCoin">
                   <div class="top_arrow_icon"  @click="switchAmounts()" ><svg xmlns="http://www.w3.org/2000/svg" id="swap-direction-arrow" width="12" height="11" viewBox="0 0 12 11" fill="none"><path d="M6 1L6 10M6 10L11 5M6 10L1 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
-                  <p><span>To - Ethereum <q-icon name="keyboard_arrow_down"  size="xs"/></span> <span>Balance: 0.00</span></p>
-                  <h5 class="drpn" @click="coinStatus = 'destination'; showHeader = false;"><span><img :src="destinationCoin.image" alt=""> {{ destinationCoin.value.toUpperCase() }} </span></h5>
+                  <p><span class="drpn"><span class="cursor-pointer" @click="fromSelected = false ; toSelect = 'chains' ; showHeader = false; ">To - {{currentPath.toChain.label}} <q-icon name="keyboard_arrow_down"  size="xs"/></span></span> <span>Balance: {{formatNumber(destinationCoin.amount,5)}} <br>{{getAccountLabel(currentAccount.to)}}</span></p>
+                  <h5 class="drpn" @click="toSelect = 'destination'; showHeader = false;"><span><img :src="destinationCoin.image" alt=""> {{ destinationCoin.value.toUpperCase() }} </span></h5>
                   <!-- <div class="cash-blk primari active">
                       <h5><b>{{swapData.dex}} <span>{{swapData.chain}}</span></b> <b>{{swapData.toAmount}} <span></span></b></h5>
                   </div> -->
@@ -81,38 +84,70 @@
             </ul>
           </div>
           <!-- SEARCH PANEL  -->
-        <div class="searchBlk" style="position: fixed; width:400px">
+        <div class="searchBlk" :class="{'active': !showHeader}" style="position: fixed; width:400px">
           <h5 class="heading">
             <q-icon name="arrow_back_ios"  class="backfromtoken" style="padding-right: 25px; height: 1px;  top: 50%; left: 13px; background-clor: #000; font-size: 1em;" @click="back()"/>
             <!-- <q-icon name="arrow_back_ios"  class="backfromtoken" style="height: 1px; position: absolute; top: 50%; left: 30px; color: black; font-size: 1em;" @click="back()"/> -->
             <!-- <button type="button" class="backfromtoken text-black" @click="back()"><span class="arrow"></span></button> -->
-             Select a token</h5>
+             {{listOptions[toSelect].title}} </h5>
           <form>
-              <svg xmlns="http://www.w3.org/2000/svg" id="search" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <svg  v-if="!['chains','accounts'].includes(toSelect)" xmlns="http://www.w3.org/2000/svg" id="search" width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <path d="M11 19C12.775 18.9996 14.4988 18.4054 15.897 17.312L19.586 21.001C19.9765 21.3915 20.6095 21.3915 21 21.001C21.3905 20.6105 21.3905 19.9775 21 19.587L17.311 15.898C18.405 14.4997 18.9996 12.7754 19 11C19 6.589 15.411 3 11 3C6.589 3 3 6.589 3 11C3 15.411 6.589 19 11 19ZM11 5C14.309 5 17 7.691 17 11C17 14.309 14.309 17 11 17C7.691 17 5 14.309 5 11C5 7.691 7.691 5 11 5Z" fill="currentColor"></path>
               </svg>
-              <input v-model="search" type="text" placeholder="Search by name or paste address" @input="filterDepositCoinLocal" v-if="coinStatus == 'deposit'">
-              <input v-model="search" type="text" placeholder="Search by name or paste address" @input="filterDestinationCoinLocal" v-else>
+              <input v-model="search" type="text" :placeholder="'Search by symbol ('+depositCoinOptions.length+')'"  v-if="toSelect == 'deposit'">
+              <input v-model="search" type="text" :placeholder="'Search by symbol ('+destinationCoinOptions.length+')'"   v-if="toSelect == 'destination'">
               <!-- <q-input rounded outlined v-model="text" label="Rounded outlined" /> -->
           </form>
-          <ul class="cryptoSuggestions" v-if="coinStatus == 'deposit'">
-              <li v-for="item in [...depositCoinOptions].sort((a,b) => b-a).slice(0,4)" :key="`${Math.floor(Math.random() * 1000)} ${item.address}`" @click="selectionProcess(item)">
-                <img :src="item.image" alt=""> {{item.value.toUpperCase()}}
+          <ul class="cryptoSuggestions" v-if="toSelect == 'deposit'">
+              <li v-for="item in [...depositCoinOptions].sort((a,b) => b-a).slice(0,3)" :key="`${Math.floor(Math.random() * 1000)} ${item.address}`" @click="selectionProcess(item)">
+                <img :src="item.image" alt="" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"> {{item.value.toUpperCase()}}
               </li>
           </ul>
-          <ul class="cryptoSuggestions" v-else>
-              <li v-for="item in [...destinationCoinOptions].sort((a,b) => b-a).slice(0,5)" :key="`${Math.floor(Math.random() * 1000)} ${item.address}`" @click="selectionProcess(item)">
-                <img :src="item.image" alt=""> {{item.value.toUpperCase()}}
+          <ul class="cryptoSuggestions"  v-else-if="toSelect == 'destination'">
+              <li v-for="item in [...destinationCoinOptions].sort((a,b) => b-a).slice(0,3)" :key="`${Math.floor(Math.random() * 1000)} ${item.address}`" @click="selectionProcess(item)">
+                <img :src="item.image" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" alt=""> {{item.value.toUpperCase()}}
               </li>
           </ul>
           <div class="cryptoList">
-              <ul v-if="coinStatus == 'deposit'">
+              <ul v-if="toSelect == 'deposit'">
                   <li v-for="item in depositCoinOptions" :key="`${Math.floor(Math.random() * 1000)} ${item.address}${item.label}`" @click="selectionProcess(item)">
-                      <div class="leftBlk"><img :src="item.image" alt=""> <p>{{item.value.toUpperCase()}} </p></div>
+                      <div class="leftBlk"><img :src="item.image" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" alt=""> <p>{{item.value.toUpperCase()}} </p></div>
                       <!-- span>{{item.label}} </span><b>{{item.amount}}</b> -->
                   </li>
               </ul>
-              <ul v-else>
+               <ul v-else-if="toSelect == 'chains'">
+                  <li v-for="item in chains" :key="`${Math.floor(Math.random() * 1000)+item.label}`" @click="selectionProcess(item)">
+                      <q-item>
+        <q-item-section top avatar>
+          <q-avatar>
+            <img :src="item.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';">
+          </q-avatar>
+        </q-item-section>
+
+        <q-item-section>
+          <q-item-label>{{item.label}}</q-item-label>
+          <q-item-label caption>${{formatNumber(item.chainTotal)}} {{item.accounts.length > 1 ? ' - '+item.accounts.length+' accounts' : ''}}</q-item-label>
+        </q-item-section>
+      </q-item>
+      </li>
+              </ul>
+              <ul v-else-if="toSelect == 'accounts'">
+                  <li v-for="item in currentPath[fromSelected ? 'fromChain' : 'toChain'].accounts" :key="`${Math.floor(Math.random() * 1000)+item.label}`" @click="selectionProcess(item)">
+                      <q-item>
+        <q-item-section top avatar>
+          <q-avatar>
+            <img :src="item.icon">
+          </q-avatar>
+        </q-item-section>
+
+        <q-item-section>
+          <q-item-label>{{item.name}}</q-item-label>
+          <q-item-label caption>${{formatNumber(item.total)}} - {{getKeyFormat(item.key)}}</q-item-label>
+        </q-item-section>
+      </q-item>
+      </li>
+              </ul>
+              <ul v-else-if="toSelect == 'destination'">
                   <li v-for="item in destinationCoinOptions" :key="`${Math.floor(Math.random() * 1000)} ${item.address}${item.label}`" @click="selectionProcess(item)">
                       <div class="leftBlk"><img :src="item.image" alt=""> <p>{{item.value.toUpperCase()}} </p></div>
                       <!-- span>{{item.label}} </span><b>{{item.amount}}</b> -->
@@ -363,17 +398,19 @@
      <q-dialog
             v-model="dialog"
             persistent
+            style="width:400px"
+            class="q-pa-md"
             :maximized="maximizedToggle"
             transition-show="slide-up"
             transition-hide="slide-down"
         >
-        <q-card class="mobile-card text-black" :style="$store.state.settings.lightMode !== 'true' ? 'background: #f2f2f2 !important':''" >
-            <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" >
-                <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="dialog= false"/>
+        <q-card class="mobile-card text-black" :style="$store.state.settings.lightMode !== 'true' ? 'background: white !important':''" >
+            <q-toolbar class="q-pa-md"  :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" >
+                <q-btn v-if="$q.platform.is.mobile" flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="dialog= false"/>
                 <q-toolbar-title> Exchange any to any. </q-toolbar-title>
                 <q-btn flat round dense icon="close" v-close-popup @click="dialog = false"/>
             </q-toolbar>
-            <q-card-section class="q-mt-md">
+            <q-card-section class="q-px-md">
               <q-splitter
                 v-model="splitterModel"
                 class="full-width "
@@ -381,7 +418,7 @@
                 v-if="step == 1"
                 :style="$store.state.settings.lightMode === 'true' ? 'height: 70vh;' :'background-color: white !important; height: 70vh;'"
               >
-                <template v-slot:before>
+                <template  v-slot:before>
                   <q-tabs dark v-model="tabLocal" @input="setLocalTab()" align="left" vertical class="q-tab-wrapper text-teal" v-if="swapData.dex !== 'renbridge'" >
                     <q-tab
                       name="deposit"
@@ -490,7 +527,7 @@
                             chainData.accounts.length &&
                             innerStep.deposit == 2
                           "
-                        >
+                        >  <div v-if="false">
                           Select {{ swapData.fromChosenChain.toUpperCase() }}
                           {{
                             swapData.fromChosenChain == "eos" ? "account" : "address"
@@ -578,6 +615,7 @@
                               </q-item>
                             </template>
                           </q-select>
+                          </div>
                           <span
                             class="text-green"
                             v-if="
@@ -752,6 +790,7 @@
                           :loading="spinner.tx"
                           rounded
                           @click="processApproval()"
+                          class="theme-btn"
                           v-if="
                             swapData.approval &&
                             swapData.approval.required &&
@@ -764,6 +803,7 @@
                           outline
                           :loading="spinner.tx"
                           rounded
+                          class="theme-btn"
                           @click="swapTokens()"
                           v-else-if="
                             swapData.approvalCheck &&
@@ -783,7 +823,7 @@
                           <q-item
                             clickable
                             v-ripple
-                            active-class="text-orange"
+                            active-class="text-orange text-center"
                             v-if="swapData.approval && swapData.approval.required"
                           >
                             <q-item-section avatar>
@@ -823,7 +863,7 @@
                             v-if="swapData.transferObject"
                             active-class="bg-teal-1 text-grey-8"
                           >
-                            <q-item-section avatar>
+                            <q-item-section class="text-center flex flex-center" avatar>
                               <q-spinner-dots
                                 size="2em"
                                 v-if="swapData.transferObject.status == 'Submitted'"
@@ -1532,15 +1572,57 @@ function fnccc () {
 
 import SendComponent from '@/pages/Verto/Send'
 import GasSelector from '../../Verto/ETH/GasSelector.vue'
-
+import CrosschainDex from '@/util/CrosschainDex'
+import Formatter from '@/mixins/Formatter'
 export default {
+  mixins: [Formatter],
   name: 'GodexDialogMobile',
-  props: ['step', 'setMinimum', 'formatNumber', 'isPathInvalid', 'getSwapInfo', 'hideDeposit', 'depositCoin', 'filterDepositCoin', 'destinationCoinUnfilter', 'depositCoinOptions', 'depositCoinUnfilter', 'swapData', 'spinner', 'setPathTransaction', 'paths', 'getDepositTxData', 'destinationCoin', 'destinationCoinOptions', 'sendTo', 'memo', 'isTxValid', 'triggerAction', 'goToExchange', 'spinnerVisible', 'filterDestinationCoin', 'setSuccessData', 'currentDex', 'hideDestination', 'switchAmounts',
-    'createTransaction', 'error', 'chains', 'path', 'splitterModel', 'tab', 'setPathData', 'innerStep', 'chainData', 'approvalCheckRun', 'fromAccountSelected', 'getKeyFormat', 'setSelectedGas', 'processApproval', 'swapTokens', 'toAccountSelected', 'setTransactionStatus', 'setTab', 'exchangeDetails', 'showSendComponent', 'validStatus', 'copyToClipboard' ],
+  props: ['step', 'setMinimum', 'isPathInvalid', 'getSwapInfo', 'hideDeposit', 'filterDepositCoin', 'swapData', 'spinner', 'setPathTransaction', 'paths', 'getDepositTxData', 'sendTo', 'memo', 'isTxValid', 'triggerAction', 'goToExchange', 'spinnerVisible', 'filterDestinationCoin', 'setSuccessData', 'currentDex', 'hideDestination', 'switchAmounts',
+    'createTransaction', 'error', 'path', 'splitterModel', 'tab', 'setPathData', 'innerStep', 'chainData', 'approvalCheckRun', 'fromAccountSelected', 'setSelectedGas', 'processApproval', 'swapTokens', 'toAccountSelected', 'setTransactionStatus', 'setTab', 'exchangeDetails', 'showSendComponent', 'validStatus' ],
   components: { GasSelector, SendComponent },
   data () {
     return {
-      maximizedToggle: true,
+      depositCoinOptions: [],
+      depositCoin: null,
+      currentAccount: {
+        from: {
+          chain: 'eth',
+          key: '',
+          name: ''
+        },
+        to: {
+          chain: 'eth',
+          key: '',
+          name: ''
+        }
+
+      },
+      listOptions: {
+        deposit: {
+          title: 'Select deposit token'
+        },
+        destination: {
+          title: 'Select destination token'
+        },
+        chains: {
+          title: 'Select network'
+        },
+        accounts: {
+          title: 'Select an account'
+        }
+      },
+      chains: [],
+      currentPath: {
+        fromChain: null,
+        toChain: null
+      },
+      fromSelected: null,
+
+      destinationCoin: null,
+      destinationCoinOptions: [],
+      depositCoinUnfilter: [],
+      destinationCoinUnfilter: [],
+      maximizedToggle: false,
       open: false,
       tabIndex: 'assets',
       previousTab: '',
@@ -1552,10 +1634,18 @@ export default {
       swapDataFromAmountLocal: 1,
       search: '',
       showSetting: false,
-      coinStatus: 'deposit',
+      toSelect: 'deposit',
       tabLocal: 'deposit',
       showHeader: true
     }
+  },
+  created () {
+    this.setTokens()
+    this.chains = this.setChains()
+    this.currentPath.fromChain = this.chains.find(o => o.chain === 'eth')
+    this.currentPath.toChain = this.currentPath.fromChain
+    this.currentAccount.from = this.currentPath.fromChain.accounts[0]
+    this.currentAccount.to = this.currentPath.toChain.accounts[0]
   },
   mounted () {
     this.depositCoinLocal = this.depositCoin
@@ -1578,9 +1668,44 @@ export default {
   watch: {
     tab: function () {
       this.tabLocal = this.tab
+    },
+    depositCoin () {
+      let token = this.$store.state.wallets.tokens.find(o => o.chain === this.currentAccount.from.chain && o[this.currentAccount.from.chain === 'eos' ? 'name' : 'key'].toLowerCase() === this.currentAccount.from[this.currentAccount.from.chain === 'eos' ? 'name' : 'key'].toLowerCase() && o.type === this.depositCoin.value.toLowerCase())
+      if (token) {
+        this.depositCoin.usd = token.usd
+        this.depositCoin.amount = token.amount
+        this.depositCoin.tokenPrice = token.tokenPrice
+      }
+    },
+    destinationCoin () {
+      console.log(this.currentAccount, ' this.currentAccount 12')
+      let token = this.$store.state.wallets.tokens.find(o => o.chain === this.currentAccount.to.chain && o[this.currentAccount.to.chain === 'eos' ? 'name' : 'key'].toLowerCase() === this.currentAccount.to[this.currentAccount.to.chain === 'eos' ? 'name' : 'key'].toLowerCase() && o.type === this.destinationCoin.value.toLowerCase())
+      if (token) {
+        this.destinationCoin.usd = token.usd
+        this.destinationCoin.amount = token.amount
+        this.destinationCoin.tokenPrice = token.tokenPrice
+      }
     }
   },
   methods: {
+    async setTokens (fromChain = 'eth', toChain = 'eth') {
+      if (fromChain) {
+        this.depositCoinOptions = await CrosschainDex.getCoinByChain(fromChain)
+        this.depositCoinUnfilter = this.depositCoinOptions
+        this.depositCoin = this.depositCoinOptions[0]
+        this.$emit('update:depositCoin', this.depositCoin)
+      }
+      if (toChain === fromChain) {
+        this.destinationCoinOptions = this.depositCoinOptions
+        this.destinationCoinUnfilter = this.depositCoinOptions
+      } else if (toChain) {
+        this.destinationCoinOptions = this.destinationCoinUnfilter = await CrosschainDex.getCoinByChain(toChain)
+      }
+      if (toChain) {
+        this.destinationCoin = toChain === fromChain ? this.destinationCoinOptions.find(o => o.value !== this.depositCoin.value) : this.destinationCoinOptions[0]
+        this.$emit('update:destinationCoin', this.destinationCoin)
+      }
+    },
     getSwapInfoLocal () {
       let swapData = this.swapData
       swapData.fromAmount = this.swapDataFromAmountLocal
@@ -1613,17 +1738,44 @@ export default {
       )
       this.$emit('update:destinationCoinOptions', options)
     },
-    selectionProcess (item) {
-      if (this.coinStatus === 'deposit') {
+    async selectionProcess (item) {
+      if (this.toSelect === 'deposit') {
+        this.depositCoin = item
         this.$emit('update:hideDeposit', false)
         this.$emit('update:depositCoin', item)
+        this.getSwapInfo()
+        this.back()
         this.setMinimum()
-      } else {
+      } else if (this.toSelect === 'destination') {
+        this.destinationCoin = item
         this.$emit('update:hideDestination', false)
         this.$emit('update:destinationCoin', item)
+        this.getSwapInfo()
+        this.back()
+      } else if (this.toSelect === 'chains') {
+        if (item.accounts.length > 1) {
+          this.currentPath[this.fromSelected ? 'fromChain' : 'toChain'] = item
+          if (this.fromSelected || this.currentPath.fromChain.chain !== this.currentPath.toChain.chain) {
+            this.toSelect = 'accounts'
+          }
+        } else {
+          this.currentPath[this.fromSelected ? 'fromChain' : 'toChain'] = item
+          this.currentAccount[this.fromSelected ? 'from' : 'to'] = item.accounts[0]
+          await this.fetchTokens(item.chain)
+          this.back()
+        }
+      } else if (this.toSelect === 'accounts') {
+        this.currentAccount[this.fromSelected ? 'from' : 'to'] = item
+        this.fetchTokens(item.chain)
+        this.back()
       }
-      this.getSwapInfo()
-      this.back()
+    },
+    async fetchTokens (chain) {
+      if (this.fromSelected) {
+        await this.setTokens(chain, null)
+      } else {
+        await this.setTokens(null, chain)
+      }
     },
     back () {
       this.showHeader = true
@@ -1655,6 +1807,9 @@ export default {
 </script>
 
 <style>
+.q-mt-md, .q-my-md {
+    margin-top: 16px  !important
+}
 span.max {
     color: #7b4dff;
     margin-left: 5px;
@@ -2075,7 +2230,7 @@ h5.drpn span:first-child:hover {
     border-radius: 12px;
     margin-top: 8px;
     padding: 16px 0;
-    background: linear-gradient(45deg, #0FBCE4,#0563D0, #2D88F3);
+    background: linear-gradient(45deg, #0FBCE4,#0563D0, #2D88F3) !important;
     color: #fff;
     font-weight: 600;
     cursor: pointer;
@@ -2307,7 +2462,14 @@ ul.cryptoSuggestions li:hover {
 .cryptoList::-webkit-scrollbar {
     width: 3px;
 }
+.q-pa-md {
+padding:30px !important;
 
+ }
+ .q-px-md {
+padding-right:30px !important;
+padding-left:30px !important;
+ }
 .cryptoList::-webkit-scrollbar-thumb {background: #37445A;border-radius: 30px;}
 
 .popup {
@@ -2762,7 +2924,9 @@ ul.mn li.active {
     margin-top: 20px;
     display: block;
 }
-
+.oneinch-dex > /deep/ .q-splitter__before {
+    display: none;
+}
 .advancedSets label .lbl-txt {
     display: flex;
     align-items: center;
