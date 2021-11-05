@@ -210,7 +210,10 @@
                                 <q-btn flat unelevated class="btn-align-left" to="/verto/profile" :text-color="$store.state.settings.lightMode === 'false' ? 'black':'white'" icon="keyboard_backspace" />
                                 Save Private Key
                             </h2>
-                            <div class="privatekey_bg flex flex-center"><img height="200" src="statics/privatekey_bg.svg" alt=""></div>
+                            <div v-if="$isbex" class="description_privatekey text-grey-8">
+                              Imported accounts will not be associated with your originally created Verto account Secret Recovery Phrase. Learn more about imported accounts <a href="#" target="_blank">here</a>
+                            </div>
+                            <div v-else class="privatekey_bg flex flex-center"><img height="200" src="statics/privatekey_bg.svg" alt=""></div>
                         </div>
                         <div class="chain-tools-wrapper--list_ open">
                             <div class="list-wrapper">
@@ -1129,5 +1132,14 @@ export default {
   }
   .chain-tools-wrapper--list /deep/ .list-wrapper--chain__eos-to-vtx-convertor{
       box-shadow: none !important;
+  }
+  .description_privatekey{
+    font-size: 16px;
+    margin-top: 50px;
+    margin-left: -15px;
+    margin-right: -15px;
+    a{
+      color: blue;
+    }
   }
 </style>

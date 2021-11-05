@@ -232,6 +232,7 @@
 
       <q-footer v-if="($q.platform.is.mobile||$isbex) && showPanelStatus" elevated class=" text-white">
         <q-tabs
+          v-if="!$isbex"
           v-model="tabRoute"
           indicator-color="primary"
           :active-color="$store.state.settings.lightMode === 'true' ? 'white':'primary'"

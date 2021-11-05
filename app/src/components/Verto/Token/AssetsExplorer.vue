@@ -2478,6 +2478,10 @@ ul.tabs li a.active {
   font-size: 13px;
 }
 .assets_explorer_container {
+  @media screen and (max-width: 768px){
+    padding-left: 0px;
+    padding-right: 0px;
+  }
   &.dark-theme {
     background: #04111f;
     .copy-key {

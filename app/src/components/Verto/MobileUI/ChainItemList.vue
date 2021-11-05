@@ -1,56 +1,51 @@
 <template>
-    <div class="q-pb-xl">
+    <div class="q-pb-xl q-pb-xl2">
         <div class="q-pb-sm">
             <div v-if="
                 (($route.params.accounts || !$store.state.wallets.portfolioTotal) &&
                 !['assets', 'investments'].includes(tab)) ||
                 tab == 'chains'
-            " class="q-pb-xl">
-                <q-list  :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'">
+            " class="q-pb-xl q-pb-xl3">
+                <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'">
 
                     <q-item clickable v-ripple
                         v-for="(chain, i) in chains.filter(a => tab !== 'privateKeys' || (a.accounts && a.accounts.length))"
                         :key="i"
                         v-show="!allChains"
                         @click="tab !=='receive' ? openAssetDialog (chain) : '' "
-                        class="q-pt-md"
+                        class="q-pt-md q-pb-md q-pt-md3"
                     >
                         <q-item-section avatar top>
-                            <q-avatar  v-if="!showQr[chain.chain]">
-                                <img :src="chain.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" />
-                            </q-avatar>
+                          <q-avatar  v-if="!showQr[chain.chain]">
+                              <img :src="chain.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" />
+                          </q-avatar>
                         </q-item-section>
                         <q-item-section>
                             <q-item-label lines="1" class="text-bold text-capitalize ellipsis">{{chain.label}} </q-item-label>
-                            <div v-if="!$route.params.accounts && tab == 'chains' && chain.chainTotal > 0" > <br>
-                                <q-item-label v-for="(item, index) in getChainList(chain)"
-                                    :key="index+Math.floor(Math.random() * 1000)"
-
+                            <div class="relative-p" v-if="!$route.params.accounts && tab == 'chains' && chain.chainTotal > 0" >
+                              <q-item-label class="assets_under_chain_wrapper" v-for="(item, index) in getChainList(chain)"
+                                :key="index+Math.floor(Math.random() * 1000)"
+                              >
+                                <q-btn
+                                  align="left"
+                                  size="sm"
+                                  class="col-12 q-mb-sm text-left"
+                                  flat
+                                  dense
                                 >
-                                    <q-btn
-                                        align="left"
-                                        size="sm"
-                                        class="col-12 q-mb-sm text-left"
-                                        flat
-                                        dense
-                                    >
-                                    <q-avatar size="xs">
-                                        <img :src="item.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" />
-                                    </q-avatar>
-                                    <span class="q-pl-sm">{{item.type.toUpperCase()}}</span>
-
-                                        <span class="q-pl-sm text-grey"
-                                        >${{ formatNumber(item.usd, 0) }}</span
-                                        >
-                                    </q-btn>
-                                </q-item-label>
+                                  <q-avatar size="xs">
+                                    <img :src="item.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" />
+                                  </q-avatar>
+                                  <span class="q-pl-sm">{{item.type.toUpperCase()}}</span>
+                                  <span class="q-pl-sm text-grey">${{ formatNumber(item.usd, 0) }}</span>
+                                </q-btn>
+                              </q-item-label>
                             </div>
 
                             <!-- CHAIN SECTION END  -->
 
                             <!-- RECEIVE / PRIVATE KEY SECTION  -->
-                            <div v-if="tab !== 'import' &&(!$route.params.accounts || tab == 'receive' || tab == 'privateKeys')"  class="q-pt-md">
-
+                            <div v-if="tab !== 'import' &&(!$route.params.accounts || tab == 'receive' || tab == 'privateKeys')"  class="q-pt-md4" :class="{'q-pt-md': checkRecvPrivateKeyAccess(chain)}">
                                 <q-btn
                                     v-if="checkRecvPrivateKeyAccess(chain)"
                                     @click="$set(showQr, chain.chain, true)"
@@ -61,7 +56,6 @@
                                     icon-right="img:https://image.flaticon.com/icons/png/512/107/107072.png"
                                 />
                             </div>
-
                             <div v-if="showQr[chain.chain]" class="qr-code">
                                 <qrcode
                                 :key="tab"
@@ -72,7 +66,7 @@
                             </div>
                             <div :class="{ 'text-body1 q-pt-md copy-key' : !showQr[chain.chain], 'text-body2': showQr[chain.chain], }"
                                 v-if=" tab == 'receive' && chain.accounts && chain.accounts.length == 1"
-                            >
+                              >
                                 <span @click="chainAction(chain)" v-if="!showQr[chain.chain]" >
                                     {{ chain.chain == "eos" ? chain.name : getKeyFormat(chain.key) }}
                                     <q-icon name="o_file_copy" />
@@ -154,14 +148,16 @@
                                 Select <q-icon name="arrow_right_alt" />
                             </div> -->
                             <!-- END RECEIVE / PRIVATE KEY SECTION  -->
-
                         </q-item-section>
-
-                        <q-item-section side top>
-                            <!-- CHAIN / RECEIVE / IMPORT COMMON SECTION -->
-                            <div :class="$store.state.settings.lightMode === 'true' ? '': 'text-black'" class="text-bold text-h7" v-if="!$route.params.accounts || !(tab == 'receive' || tab == 'privateKeys' || tab == 'import' || tab == 'create' )" >${{ nFormatter2(chain.chainTotal, chain.chainTotal > 10 ? 0 : 2) }} </div >
-
-                            <!-- COMMON SECTION END  -->
+                        <q-item-section side middle>
+                          <!-- CHAIN / RECEIVE / IMPORT COMMON SECTION -->
+                          <div :class="$store.state.settings.lightMode === 'true' ? '': 'text-black'" class="text-bold text-h7" v-if="!$route.params.accounts || !(tab == 'receive' || tab == 'privateKeys' || tab == 'import' || tab == 'create' )">
+                            ${{ nFormatter2(chain.chainTotal, chain.chainTotal > 10 ? 0 : 2) }}
+                          </div >
+                          <!-- COMMON SECTION END  -->
+                        </q-item-section>
+                        <q-item-section side middle>
+                          <q-icon name="keyboard_arrow_right" />
                         </q-item-section>
                     </q-item>
                     <!-- <q-item>
@@ -171,14 +167,13 @@
                     </q-item> -->
                 </q-list>
             </div>
-
             <!-- ASSET LOOP SECTION  -->
             <div v-show="tab == item.id"
                 v-for="(item, index) in assetsOptions.filter(
                     (o) => !allAssets || o.title == allAssets.title
                 )"
                 :key="index + Math.random() * 1000"
-                class="q-pb-xl"
+                class="q-pb-xl q-pb-xl4"
             >
                 <q-list :dark="$store.state.settings.lightMode === 'true'" bordered separator class="rounded-borders" :class="$store.state.settings.lightMode === 'true' ? '': ' bg-white text-black'">
 
@@ -187,7 +182,7 @@
                         @click="showTokenPage(asset)"
                         v-for="(asset, i) in filterTokens"
                         :key="i"
-                        class="q-pt-md"
+                        class="q-pt-md q-pt-md2"
                     >
                         <q-item-section avatar top>
                             <q-avatar>
@@ -280,22 +275,32 @@
                     </p>
                 </q-list>
             </div>
-
+            <div>
+              <span class="version full-width text-center column">
+                <span class="q-mb-md">{{version}}</span>
+                <span class="q-pa-sm text-grey">
+                  This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-deep-purple-12c" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
+                </span>
+              </span>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+import { version } from '../../../../package.json'
 
 export default {
   name: 'ChainItem',
   props: ['chains', 'tab', 'chainAction', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'showAllChainData', 'tokenSearchVal', 'getImportLink'],
   data () {
     return {
-      lightMode: true
+      lightMode: true,
+      version: {}
     }
   },
   mounted () {
+    this.version = version
     if (this.$q.platform.is.mobile && !this.showAllChains && this.tab === 'chains') { this.showAllChainData() }
   },
   methods: {
@@ -320,4 +325,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.version{
+  padding: 5px 0px;
+  text-align: center;
+  color: #333;
+  font-size: 16px;
+}
+.relative-p{
+  position: relative;
+}
+.assets_under_chain_wrapper{
+  position: absolute;
+  left: -3px;
+  display: none;
+}
 </style>
