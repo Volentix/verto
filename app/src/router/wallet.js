@@ -1,6 +1,6 @@
 let shared_wallet_urls = [
 ]
-if (process.env.MODE === 'bex') {
+if (process.env.MODE === 'bex' || window.screen.width < 500) {
   shared_wallet_urls = [
     {
       name: 'restoreWallet',
@@ -79,13 +79,13 @@ export default [
     component: () => import('layouts/Intro.vue'),
     children: [
       ...shared_wallet_urls,
-      {
+      /*  {
         path: '/verto/vdexnode',
         component: () => import('pages/vDexNode/Index.vue'),
         meta: {
           authRequired: true
         }
-      },
+      }, */
       {
         name: 'secret-words',
         path: '/verto/secret-words',
@@ -320,7 +320,7 @@ export default [
           authRequired: true
         }
       },
-      {
+      /* {
         name: 'exchange-v2',
         path: '/verto/exchange/:action?',
         component: () => import('pages/Verto/Exchange.vue'),
@@ -408,7 +408,7 @@ export default [
           authRequired: true
         }
       },
-
+      */
       {
         name: 'send',
         path: '/verto/wallets/send',
@@ -522,8 +522,8 @@ export default [
       }
 
     ]
-  },
-  {
+  }
+  /* {
     path: '/',
     component: () => import('layouts/Default.vue'),
     children: [
@@ -534,7 +534,7 @@ export default [
         meta: {
           authRequired: true
         }
-      }, /*,      {
+      },,      {
         name: 'zixipay-get-vtx',
         path: 'zixipay-get-vtx',
         component: () => import('pages/Zixipay/GetVtx.vue'),
@@ -570,7 +570,7 @@ export default [
           needskeyscreated: true
         }
       } */
-      {
+  /*,  {
         name: 'vdexnodes',
         path: '/vdexnodes',
         component: () => import('pages/vDex/Nodes.vue'),
@@ -578,7 +578,7 @@ export default [
           authRequired: true,
           needskeyscreated: true
         }
-      }/*,
+      }
       {
         name: 'cruxpay',
         path: '/cruxpay',
@@ -746,7 +746,7 @@ export default [
           authRequired: true,
           needskeyscreated: true
         }
-      } */
+      }
     ]
-  }
+  } */
 ]

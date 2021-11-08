@@ -97,7 +97,7 @@
 
         <q-item-section side >
 
-          <q-icon name="more_horiz" @click="dialog=true" class="shadows-2" />
+          <q-icon name="keyboard_arrow_down" @click="dialog=true" class="shadows-2" />
 
         </q-item-section>
       </q-item>
@@ -113,9 +113,9 @@
 
           <div :class="$store.state.settings.lightMode === 'true' ? 'text-h6 q-pa-md text-white':'text-h6 q-pa-md ' ">Select An Account</div>
           <q-card-section class=" items-center">
-            <q-list bordered separator style="width:100%;" v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index" >
+            <q-list  separator style="width:100%;" v-for="(tokChain, index) in chainsData.filter(o => checkChain(o))"  :key="Math.random()+index" >
 
-              <q-expansion-item :dark="$store.state.settings.lightMode === 'true'"   >
+              <q-expansion-item :default-opened="chainsData.filter(o => checkChain(o)).length == 1" :dark="$store.state.settings.lightMode === 'true'"   >
                 <template v-slot:header>
                     <q-item-section :dark="$store.state.settings.lightMode === 'true'" avatar>
                       <img class="coin-icon" width="25px" :src="tokChain.icon"  />
@@ -133,17 +133,17 @@
                       </div>
                     </q-item-section>
                 </template>
-                <q-card :dark="$store.state.settings.lightMode === 'true'" dense>
+                <q-card :dark="$store.state.settings.lightMode === 'true'" dense flat>
                   <q-card-section :dark="$store.state.settings.lightMode === 'true'">
                       <q-item  @click="getAccount(item) ; setAccount(300) ; dialog=false" :key="Math.random()+index"  v-for="(item, index) in tokChain.accounts"  :class="{'selected' : item.selected}" clickable :active="item.hidden" active-class="bg-teal-1 text-grey-8">
                           <div class="header-wallet-wrapper culumn full-width">
                               <div   class="header-wallet full-width flex justify-between">
                                   <q-item-section avatar>
-                                    <q-icon name="fiber_manual_record" :color="item.color"/>
+                                    <q-icon size="lg" name="fiber_manual_record" :color="item.color"/>
                                   </q-item-section>
                                   <q-item-section class="item-name">
-                                      <span class="item-name--name" v-if="item.isEvm"> {{getAccountLabel(item)}}</span>
-                                      <span class="item-name--name" v-else> {{item.name}}</span>
+                                      <span class="item-name--name text-bold" v-if="item.isEvm"> {{getAccountLabel(item)}}</span>
+                                      <span class="item-name--name text-bold" v-else> {{item.name}}</span>
                                       <span class="item-name--staked" v-if="item.staked && item.staked !== 0 && false">Staked : {{nFormatter2(item.staked, 3)}}</span>
                                       <span  class="item-name--staked" v-if="item.tokenList">{{item.tokenList.length}} token{{ item.tokenList.length > 1 ? 's' : '' }}</span>
                                   </q-item-section>
