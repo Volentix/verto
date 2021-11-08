@@ -1,11 +1,11 @@
 <template>
     <div>
-        <div class="row justify-between">
+        <div class="row justify-between items-center wallets_title_wrapper q-pa-md">
             <div>
-                <div class="text-h6 text-bold">Wallets</div>
+                <div class="text-h6 text-bold my_custom_title">Wallets</div>
             </div>
-            <div>
-                <q-btn flat :color="$store.state.settings.lightMode === 'true' ? 'white' : 'primary'" class="text-bold" @click="goImport" >Add/Import</q-btn>
+            <div v-if="!$isbex">
+                <q-btn :color="$store.state.settings.lightMode === 'true' ? 'white' : 'grey-8'" outline no-caps class="custom-radius" @click="goImport" >Add/Import</q-btn>
             </div>
             <div  class="row text-grey">Click on a chain to see assets. </div>
         </div>
@@ -17,7 +17,7 @@
             no-caps
             outside-arrows
             mobile-arrows
-            class="q-pb-md"
+            class="q-pb-md tabindex_wrapper"
             @click="updateTab(tabIndex)"
             :class="{
                 'account-tabs': $route.params.accounts,
@@ -141,5 +141,43 @@ export default {
 }
 .assets-tabs .manage {
   display: none;
+}
+.tabindex_wrapper{
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #eef8ff;
+  padding-bottom: 0px;
+  box-shadow: 0px 6px 6px 0px rgba(black, .1);
+  /deep/ .q-tabs__content{
+    justify-content: space-between;
+    .q-tab{
+      &:hover{
+        background-color: rgba(#CCC, .1);
+      }
+      .q-tab__content{
+        flex-direction: column-reverse;
+        padding-top: 15px;
+        padding-bottom: 15px;
+      }
+      .q-tab__label{
+        font-size: 15px;
+      }
+      .q-tab__indicator{
+        background: #64b5f6;
+      }
+    }
+  }
+}
+.wallets_title_wrapper{
+  background: #FFF;
+}
+/deep/ .custom-radius{
+  border-radius: 5px;
+}
+.my_custom_title{
+  color: #8d919d;
+  font-size: 19px;
 }
 </style>

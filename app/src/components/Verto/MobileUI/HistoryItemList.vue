@@ -1,6 +1,6 @@
 <template>
     <div class="q-pa-sm" style="overflow: auto;">
-        <q-card flat   v-for="(day,indexDay) in history" :key="indexDay" class="rounded-borders" :class="{'dark-bg': $store.state.settings.lightMode === 'true'}"  :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': ''">
+        <q-card flat v-for="(day,indexDay) in history" :key="indexDay" class="rounded-borders" :class="{'dark-bg': $store.state.settings.lightMode === 'true'}"  :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': ''">
             <div class="title-date q-pl-sm q-mt-lg q-mb-md text-grey-7">{{day.friendlyDay}} </div>
 
             <q-list  :class="$store.state.settings.lightMode === 'true' ? 'rounded-borders text-white':'rounded-borders text-black' " v-for="(transaction, indexTx) in day.data" :key="indexTx" separator>
