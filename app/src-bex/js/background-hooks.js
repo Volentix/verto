@@ -140,7 +140,7 @@ export default function attachBackgroundHooks (bridge /* , allActiveConnections 
   })
 
   bridge.on('app.sync', event => {
-    localStorage.setItem('sync_data', event.data)
+    localStorage.setItem('sync_data', event.data.data)
     chrome.windows.create({
       url: chrome.runtime.getURL('www/index.html'),
       type: 'popup',
