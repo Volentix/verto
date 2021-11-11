@@ -271,7 +271,7 @@
                         </q-item-section>
                     </q-item>
                     <p v-if="!filterTokens.length">
-                    No assets found {{ tokenSearchVal ? "" : "for this chain" }}
+                    No assets found
                     </p>
                 </q-list>
             </div>

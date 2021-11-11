@@ -2,12 +2,13 @@
     <div>
         <div class="row justify-between items-center wallets_title_wrapper q-pa-md">
             <div>
-                <div class="text-h6 text-bold my_custom_title">Wallets</div>
+                <div class="text-h6 text-bold my_custom_title text-capitalize">{{tabIndex}}</div>
             </div>
-            <div v-if="!$isbex">
+            <div v-if="$isbex">
                 <q-btn icon="add" :color="$store.state.settings.lightMode === 'true' ? 'white' : 'grey-8'" outline no-caps class="custom-radius" @click="goImport" >Add/Import</q-btn>
             </div>
-            <div  class="row text-grey">Click on a chain to see assets. </div>
+            <div v-if="$store.state.investment.defaultAccount" class="row text-grey text-capitalize">{{tabIndex}} for current account </div>
+
         </div>
         <q-tabs
             v-model="tabIndex"

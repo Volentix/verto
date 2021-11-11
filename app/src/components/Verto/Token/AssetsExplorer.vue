@@ -985,7 +985,7 @@
             </div>
           </div>
           <p v-if="!filterTokens.length">
-            No assets found {{ tokenSearchVal ? "" : "for this chain" }}
+            No assets found
           </p>
           <AssetBalancesTable
             @setAsset="showTokenPage"
@@ -1357,18 +1357,18 @@ export default {
   },
   computed: {
     allInvestments () {
+      console.log(this.assetsOptions[1].data, 'this.assetsOptions[1].data')
       return Object.keys(this.assetsOptions[1].data).reduce(
         (all, chain) =>
-          this.assetsOptions[1].data[chain] &&
           this.assetsOptions[1].data[chain].length
             ? all.concat(
               this.assetsOptions[1].data[chain].filter((o) =>
-                this.$store.state.currentwallet.wallet.chain
+                this.$store.state.investment.defaultAccount
                   ? (chain === 'eos' &&
-                        o.owner ===
-                          this.$store.state.currentwallet.wallet.name) ||
+                        o.owner.toLowerCase() ===
+                          this.$store.state.investment.defaultAccount.name.toLowerCase()) ||
                       (chain === 'eth' &&
-                        o.owner === this.$store.state.currentwallet.wallet.name)
+                        o.owner.toLowerCase() === this.$store.state.investment.defaultAccount.key.toLowerCase())
                   : true
               )
             )
@@ -1639,6 +1639,7 @@ export default {
             type: a.symbol.toLowerCase(),
             chain: 'eth',
             poolName: t.label,
+            owner: t.address,
             poolsCount: 1,
             amount: a.balance,
             icon: 'https://zapper.fi/images/' + a.symbol + '-icon.png',
