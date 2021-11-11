@@ -3,7 +3,7 @@
 
   <div class="transaction-wrapper" style="height: 100%;">
     <div :class="!($q.platform.is.mobile||$isbex)  ? 'transaction-wrapper--list open' : ''"  :style="!$q.platform.is.mobile ? 'height: 100%;' : 'height: 100%;'">
-      <q-banner inline-actions class="text-white bg-red q-my-lg " v-if="$store.state.investment.defaultAccount && ! (['eos','btc','sol'].includes($store.state.investment.defaultAccount.chain) || $store.state.investment.defaultAccount.isEvm)">
+      <q-banner inline-actions class="text-grey bg-grey-12 q-my-lg " v-if="$store.state.investment.defaultAccount && ! (['eos','btc','sol'].includes($store.state.investment.defaultAccount.chain) || $store.state.investment.defaultAccount.isEvm)">
         History for the {{$store.state.investment.defaultAccount.chain.toUpperCase()}} chain is not currently supported. Coming soon...
       </q-banner>
 
@@ -56,7 +56,7 @@
             </tr>
           </tbody>
         </q-markup-table>
-        <q-linear-progress query color="warning" class="q-mt-md" v-if="$q.platform.is.mobile"/>
+        <q-linear-progress query color="blue-4" class="q-mt-md" v-if="$q.platform.is.mobile"/>
 
       </div>
 
@@ -667,7 +667,7 @@ export default {
     },
     refreshHistory () {
       let account = this.$store.state.investment.defaultAccount
-
+      console.log(account, 'account')
       Lib.deleteWalletHistoryData(account.chain === 'eos' ? account.name : account.key, account.chain)
       this.loading = true
 
@@ -691,6 +691,7 @@ export default {
       return direction
     },
     async groupByDay (allHistoryData) {
+      console.log(allHistoryData, 'allHistoryData')
       allHistoryData.forEach((element) => {
         let dateObj = new Date(parseInt(element.timeStamp) * 1000)
         let month = dateObj.getUTCMonth() + 1
@@ -793,6 +794,9 @@ export default {
 
     background: initial !important
 
+}
+.transaction-wrapper[data-v-7629df43] {
+    padding: 0px 0%  !important
 }
   .title-date {
     text-transform: capitalize;

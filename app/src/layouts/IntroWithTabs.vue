@@ -89,13 +89,7 @@
                       <q-icon  class="q-pl-md" :name="!chainTools.show  ? 'expand_more' : 'expand_less' " />
                     </span>
                   </a>
-                <!--  <AccountSelector
-                    class="top q-pt-md"
-                    v-show="chainTools.show"
-                    :showAllWallets="true"
-                    :key="$store.state.settings.defaultChainData.chain"
-                    :chains="[$store.state.settings.defaultChainData.chain]"
-                  /> -->
+
                 </li>
                 <li v-show="chainTools.show && $store.state.settings.defaultChainData && tools[$store.state.settings.defaultChainData.chain]" v-for="(path, index) in ( $store.state.settings.defaultChainData ? tools[$store.state.settings.defaultChainData.chain] : [])" :key="index" class="tools" :class="{ active: $route.path == path.to }">
                   <router-link :to="path.to">
@@ -230,7 +224,7 @@
         <router-view class="main-container" v-if="toggleView " />
       </q-page-container>
 
-      <q-footer v-if="($q.platform.is.mobile||$isbex) && showPanelStatus" elevated class=" text-white">
+      <q-footer v-if="($q.platform.is.mobile||$isbex) && showPanelStatus && false" elevated class=" text-white">
         <q-tabs
           v-if="!$isbex"
           v-model="tabRoute"

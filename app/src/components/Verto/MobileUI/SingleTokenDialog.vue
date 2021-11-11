@@ -17,7 +17,7 @@
               <AccountSelector v-if="tab != 'import'" :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain"  />
 
             </q-header>
-            <q-card-section class="q-mt-xl" style="margin-top: 110px;">
+            <q-card-section class="q-mt-xl" :class="{'top-space': $store.state.wallets.portfolioTotal}">
                 <q-item style="margin-left: -14px;">
                     <q-item-section side>
                         <q-avatar rounded>
@@ -94,7 +94,7 @@
                         </div>
                     </q-item-section>
                 </q-item>
-                <q-card :dark="$store.state.settings.lightMode === 'true'" flat bordered separator class="q-pa-md  rounded-borders" :class="$store.state.settings.lightMode === 'true' ? 'mobile-card': ' bg-white text-black'" v-if="$store.state.investment.defaultAccount">
+                <q-card :dark="$store.state.settings.lightMode === 'true'" flat bordered separator class="q-pa-md  rounded-borders" :class="$store.state.settings.lightMode === 'true' ? 'mobile-card': ' bg-white text-black'" v-if="$store.state.investment.defaultAccount && false">
                     <div class=" row">
                         <div class="col-6">
                             Profit/Loss <span><i class="far fa-question-circle"></i></span>
@@ -636,5 +636,10 @@ export default {
 .mobile-card{
     background-color: #04111F !important;
   }
-
+.top-space {
+    margin-top: 110px;
+}
+/deep/ .q-tabs--horizontal {
+    display: none;
+}
 </style>

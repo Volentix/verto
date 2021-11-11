@@ -52,7 +52,7 @@ export default function (/* { store, ssrContext } */) {
     const routerLoaded = sessionStorage.getItem('router_loaded')
     const lastRoute = localStorage.getItem('last_route') ? JSON.parse(localStorage.getItem('last_route')) : null
     console.log('navigating to route', to.name, lastRoute)
-    if (appStarted != null && routerLoaded != null && to.name !== 'connectv1') {
+    if (appStarted != null && routerLoaded != null && ['connectv1', 'receive'].includes(to.name)) {
       const route = {
         name: to.name,
         params: to.params,
@@ -60,7 +60,11 @@ export default function (/* { store, ssrContext } */) {
         meta: to.meta,
         path: to.path
       }
-      localStorage.setItem('last_route', JSON.stringify(route))
+      try {
+        localStorage.setItem('last_route', JSON.stringify(route))
+      } catch (error) {
+        console.log(error)
+      }
     }
     if (to.matched.some(record => record.meta.needskeyscreated)) {
       if (!store.state.currentwallet || !store.state.currentwallet.config.keys || store.state.currentwallet.config.keys.length < 1) {

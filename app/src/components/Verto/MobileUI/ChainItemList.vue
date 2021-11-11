@@ -131,7 +131,7 @@
                             </div>
                             <div class="text-caption q-pt-md" v-else-if="tab == 'import' || tab == 'create'">
                                 <span class="text-capitalize">
-                                {{tab}}
+
                                 </span>  <q-icon name="arrow_right_alt" />
                             </div>
                             <span v-else-if="tab == 'chains' && chain.chain == 'eos' && chain.type == 'verto' ">
@@ -149,14 +149,14 @@
                             </div> -->
                             <!-- END RECEIVE / PRIVATE KEY SECTION  -->
                         </q-item-section>
-                        <q-item-section side middle>
+                        <q-item-section v-if="tab == 'assets'" side middle>
                           <!-- CHAIN / RECEIVE / IMPORT COMMON SECTION -->
                           <div :class="$store.state.settings.lightMode === 'true' ? '': 'text-black'" class="text-bold text-h7" v-if="!$route.params.accounts || !(tab == 'receive' || tab == 'privateKeys' || tab == 'import' || tab == 'create' )">
                             ${{ nFormatter2(chain.chainTotal, chain.chainTotal > 10 ? 0 : 2) }}
                           </div >
                           <!-- COMMON SECTION END  -->
                         </q-item-section>
-                        <q-item-section side middle>
+                        <q-item-section v-if="tab == 'assets'" side middle>
                           <q-icon name="keyboard_arrow_right" />
                         </q-item-section>
                     </q-item>
@@ -264,7 +264,7 @@
                             </div>
                             <div class=" ">
                                 <q-chip dense>
-                                    <q-avatar icon="insights" :color="$store.state.settings.lightMode === 'true' ? 'black': 'red'" text-color="white" />
+                                    <q-avatar icon="chevron_right" :color="$store.state.settings.lightMode === 'true' ? 'grey-12': 'grey-12'" text-color="black" />
                                     Trade
                                 </q-chip>
                             </div>
@@ -275,7 +275,7 @@
                     </p>
                 </q-list>
             </div>
-            <div>
+            <div v-if="false">
               <span class="version full-width text-center column">
                 <span class="q-mb-md">{{version}}</span>
                 <span class="q-pa-sm text-grey">

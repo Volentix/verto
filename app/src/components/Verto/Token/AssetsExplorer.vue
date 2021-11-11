@@ -1327,8 +1327,18 @@ export default {
           !this.$route.params.accounts &&
           !['assets', 'chains', 'investments'].includes(this.tab)
         ) {
-          this.tab = 'chains'
+          if (!this.$store.state.investment.defaultAccount) { this.tab = 'chains' }
         }
+      }
+    },
+    tab () {
+      if (this.tab === 'chains' && this.$store.state.investment.defaultAccount && this.$q.platform.is.mobile) {
+        this.tab = 'assets'
+      }
+    },
+    '$store.state.investment.defaultAccount': function (newVal) {
+      if (newVal) {
+        this.initTable()
       }
     },
     '$store.state.investment.investments': function (investments) {
@@ -1732,13 +1742,10 @@ export default {
       this.getChains()
       // console.log(this.chains, 'this.chains = ')
       if (
-        this.$store.state.currentwallet.wallet &&
-        this.$store.state.currentwallet.wallet.name
+        this.$store.state.investment.defaultAccount
       ) {
-        // account = this.$store.state.currentwallet.wallet
+        account = this.$store.state.investment.defaultAccount
         // this.getChainLabel(account.chain)
-      } else {
-        //  this.chainSelected = chain && chain !== 'vtx' ? this.getChainLabel(chain) : false
       }
       chain = chain || this.selectedChain ? this.selectedChain.chain : chain
       this.assets = []

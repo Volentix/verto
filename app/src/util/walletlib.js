@@ -281,7 +281,7 @@ class Lib {
               result.data.data.filter(o => o.parsedInstruction[0].type.toLowerCase() === 'sol-transfer').map(a => {
                 let tx = {}
 
-                let date = new Date(a.blockTime)
+                let date = new Date(a.blockTime * 1000)
                 tx.timeStamp = date.getTime() / 1000
                 tx.chain = token
                 tx.friendlyHash = a.txHash.substring(0, 6) + '...' + a.txHash.substr(a.txHash.length - 5)

@@ -13,7 +13,7 @@
                             <q-item-label class="text-bold"> {{getAction(transaction)}}</q-item-label>
                             <q-item-label caption> {{transaction.time }}</q-item-label>
                         </q-item-section>
-                        <q-item-section style="margin-left: -110px; margin-top: -10px;" class="q-pt-sm">
+                        <q-item-section style="margin-left: -60px; margin-top: -10px;" class="q-pt-sm">
                             <q-item-label class="row justify-left">
                                 <q-avatar round size="32px" color="primary">
                                     <img onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="transaction.image" >
@@ -30,7 +30,8 @@
                                 <!-- <q-avatar round size="32px">
                                     <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAADdElEQVR4Xu3doW4VURhF4bmSpAqFIiG4vkIFr4RrSJDga3gVPILHaJpU4TD18BCryc7NfPjNnK6zus8/l7nD5f72zb8j/Pn052tIH8evd99S/trDa34XAmwVIoAGSAbWBtUACX8PawANkCzSAAnfPqwBNECyUAMkfPuwBtAAyUINkPDtwxpAAyQLNUDCtw9rAA2QLNQACd8+rAE0QLJQAyR8+/C8AX6+/Z6eB6gGVgBPjy/TXfzw8SZdf83vQoC0fwcB4hmuAdoTUZWfBmgFoAHWZ5gZoD2TqQE0gLuA4oAh0BBY/MmPxRsCfQ6QBDQDJHyHuwB3AT4JTL9D9QxzG+g2MAlYw+4C3AUkh9ZHqCEwbZ8hcH4fawYYzwDxF2gu0NnXn4+AswNcn+GVPwEiQQKcHCABCJAI1A/C0sWP43AERIIa4OQACUCARMARMP4oOe3e0d9zSAACVAdT3hCY8GmAiO/6ARoCowLXDvDa1+8IOLnABCBA+2JI5Oefg+Pr9iv/y4+/X9L7AZ7vHuoa5AOB978/h/RxECDh24cJsN+D6QoIMMW/vzgB9nswXQEBpvj3FyfAfg+mKyDAFP/+4gTY78F0BQSY4t9fnAD7PZiugABT/PuLE2C/B9MVEGCKf39xAuz3YLoCAkzx7y+eBaivi68Irv2Zumtfv0fCosEEODlAAhAgEfDVMF8NSwLVsBkgEnQEnBwgAQiQCJgBzABJoBo2A0SCjoCTAyQAARIBM4AZIAlUw2aASNARcHKABCBAIjCfAe5v36T3A6Sf/hXCa4C1AV4BQforLgRI/PIbTtrVe5oAkaEGiABr3BHQCGqAxs8REPnluAZoCDVA46cBIr8c1wANoQZo/DRA5JfjGqAh1ACNnwaI/HJcAzSEGqDx0wCRX45rgIZQAzR+GiDyy3EN0BDOHwl7enxJP8GHjzcpX8PXvn4CRAMIcHKABCBAIrA+whwBafuOQwOcHCABCJAIOALcBiaBatgMEAk6Ak4OkAAESATMAGaAJFANmwEiQUfAyQESgACJgBnADJAEquE8A9QKfL57qD/DVefrf/hQG4QAY30IoAGSghog4duHNYAGSBZqgIRvH9YAGiBZqAESvn1YA2iAZKEGSPj2YQ2gAZKFGiDh24c1gAZIFmqAhG8f1gAaIFmoARK+fXjdAP8BXbztTvEVM2oAAAAASUVORK5CYII=">
                                 </q-avatar> -->
-                                <div :class="{'text-grey': $store.state.settings.lightMode === 'true'}">To&nbsp; {{transaction.friendlyTo}} </div>
+
+                                <div :class="{'text-grey': $store.state.settings.lightMode === 'true'}">To&nbsp; {{getKeyFormat(transaction.friendlyTo, 3)}} </div>
                             </q-item-label>
 
                         </q-item-section>
@@ -91,7 +92,7 @@
                             <q-item-label class="text-bold"> {{getAction(transaction)}}</q-item-label>
                             <q-item-label caption> {{transaction.time }}</q-item-label>
                         </q-item-section>
-                        <q-item-section style="margin-left: -110px; margin-top: -10px;" class="q-pt-sm">
+                        <q-item-section style="margin-left: -60px; margin-top: -10px;" class="q-pt-sm">
                             <q-item-label class="row justify-left" >
                                 <q-avatar round size="32px" color="primary">
                                     <img onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="transaction.subTransactions[0].image" >
@@ -169,7 +170,7 @@
                             <q-item-label class="text-bold"> {{getAction(transaction)}}</q-item-label>
                             <q-item-label caption> {{transaction.time }}</q-item-label>
                         </q-item-section>
-                        <q-item-section style="margin-left: -110px; margin-top: -10px;" class="q-pt-sm">
+                        <q-item-section style="margin-left: -60px; margin-top: -10px;" class="q-pt-sm">
                             <q-item-label class="row justify-left" >
                                 <q-avatar round size="32px">
 
@@ -262,13 +263,13 @@ export default {
 
 }
 </script>
-
 <style lang="scss" scoped>
 /deep/ .q-expansion-item__container {
-padding-top: 30px;
-padding-bottom: 30px;
+    padding-top: 30px;
+    padding-bottom: 30px;
 }
 .mobile-card{
     background-color: #04111F !important;
 }
+
 </style>
