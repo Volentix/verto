@@ -228,9 +228,9 @@
             <q-card   class="send" :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
                 <q-header class="bg-white">
                     <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
-                        <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="dialogSend =false"/>
+                        <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="back() ; dialogSend =false"/>
                         <q-toolbar-title> Send token</q-toolbar-title>
-                        <q-btn flat round dense icon="close" v-close-popup @click="dialogSend = false"/>
+                        <q-btn flat round dense icon="close" v-close-popup @click="back(); dialogSend = false"/>
                     </q-toolbar>
                 </q-header>
 
@@ -570,6 +570,13 @@ export default {
     setAssetLocal () {
       this.setAssetLocalCount++
       if (this.setAssetLocalCount < 2) { this.setAsset() } else console.log('setAssetLocal count ', this.setAssetLocalCount)
+    },
+    back () {
+      if (this.$route.params.openDialog) {
+        this.$router.push('/verto/dashboard')
+      } else {
+        this.dialogSend = false
+      }
     },
     getSendKey () {
       try {

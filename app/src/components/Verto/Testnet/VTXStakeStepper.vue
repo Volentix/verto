@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+  <div :class="{'dark-theme': $store.state.settings.lightMode === 'true', 'mobile': $q.platform.is.mobile}">
     <div class="chain-tools-wrapper">
       <!-- <q-toggle v-model="active" label="Active" /> -->
       <div class="chain-tools-wrapper--list open">
@@ -850,6 +850,13 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.mobile .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor /deep/  .q-stepper--vertical .q-stepper__dot:after {
+    display:none
+}
+
+.mobile .chain-tools-wrapper--list .list-wrapper--chain__eos-to-vtx-convertor /deep/ .q-stepper__step .q-stepper__step-inner {
+padding-left:10px !important
+}
   @import "~@/assets/styles/variables.scss";
    .q-tabs {
     display: none;

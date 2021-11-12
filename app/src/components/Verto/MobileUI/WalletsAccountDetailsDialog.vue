@@ -373,10 +373,13 @@ export default {
     //   }
     },
     closeDialog () {
-      this.$emit('update:dialog', false)
+      if (!this.$store.state.investment.defaultAccount) {
+        this.$emit('update:dialog', false)
+      } else {
+        this.$router.push('/verto/dashboard')
+      }
     },
     goNewWindow () {
-      console.log('goNew tabl')
       window.open('https://volentix.io/node/', '_blank')
     },
     goTo (path) {
