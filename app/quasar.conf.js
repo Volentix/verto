@@ -2,8 +2,9 @@ const path = require('path')
 
 module.exports = function (ctx) {
   return {
-    // app boot file (/src/boot)
-    // --> boot files are part of "main.js"
+    vendor: {
+      disable: false
+    },
     boot: [
       'axios',
       'clipboard',
@@ -139,11 +140,26 @@ module.exports = function (ctx) {
       // vueCompiler: true,
       // gzip: true,
       // analyze: true,
-      // extractCSS: false,
+      extractCSS: true,
       extendWebpack (cfg) {
         cfg.resolve.alias = {
           ...cfg.resolve.alias,
           '@': path.resolve(__dirname, './src')
+        }
+        // cfg.optimization.runtimeChunk = 'single'
+        cfg.optimization.splitChunks = {
+          //   include all types of chunks
+          cacheGroups: {
+            vendor: {
+              // filename: 'vendors.js',
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'initial',
+              maxSize: 4000000
+            }
+          }
+          // chunks: 'all',
+          // maxSize: 4000000
         }
         cfg.module.rules.push({
           enforce: 'pre',
@@ -219,7 +235,21 @@ module.exports = function (ctx) {
       id: 'org.cordova.vertoapp'
       // noIosLegacyBuildFlag: true // uncomment only if you know what you are doing
     },
-
+    bex: {
+      extendWebpack (cfg) {
+        cfg.optimization.splitChunks = {
+          // include all types of chunks
+          cacheGroups: {
+            defaultVendors: {
+              chunks: 'all',
+              name: 'vendor'
+            }
+          }
+          // chunks: 'all',
+          // maxSize: 4000000
+        }
+      }
+    },
     electron: {
       bundler: 'builder', // or 'packager'
       extendWebpack (cfg) {
