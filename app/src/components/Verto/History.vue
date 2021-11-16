@@ -8,7 +8,7 @@
       </q-banner>
 
       <div class="q-pa-md loading-table" v-else-if="loading">
-      <span :class="$store.state.settings.lightMode === 'true' ? 'text-body1 text-white': 'text-body1'">We are loading your transaction history. This may take a moment</span>
+        <span :class="$store.state.settings.lightMode === 'true' ? 'text-body1 text-white': 'text-body1'">We are loading your transaction history. This may take a moment</span>
         <q-markup-table flat v-if="!$q.platform.is.mobile">
           <thead>
             <tr>
@@ -57,13 +57,12 @@
           </tbody>
         </q-markup-table>
         <q-linear-progress query color="warning" class="q-mt-md" v-if="$q.platform.is.mobile"/>
-
       </div>
 
-      <div  :class="$store.state.settings.lightMode === 'true' ? 'text-white q-pa-md': 'text-black q-pa-md'" v-else-if="!history.length && !loading">
+      <div :class="$store.state.settings.lightMode === 'true' ? 'text-white q-pa-md': 'text-black q-pa-md'" v-else-if="!history.length && !loading">
         No transactions recorded yet with this account
       </div>
-      <q-scroll-area v-else :visible="true" :class="$store.state.settings.lightMode === 'true' ? 'q-pr-md':'q-pr-md bg-white'" :style="$q.platform.is.mobile ? 'height: 120%; padding-bottom: 5px;' : 'height: 85%;'">
+      <q-scroll-area v-else :visible="true" :class="$store.state.settings.lightMode === 'true' ? 'q-pr-md':'bg-white'" :style="$q.platform.is.mobile ? 'height: 100%; padding-bottom: 0px;' : 'height: 85%;'">
         <div v-if="!($q.platform.is.mobile||$isbex)">
 
           <div v-for="(day,indexDay) in history" :key="indexDay">
@@ -77,7 +76,7 @@
                     <div class="col col-4">
                       <div class="flex items-center">
                         <div class="q-mr-md flex flex-center">
-                          <img width="32" :src="getImage(transaction)" />
+                          <img width="32" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="getImage(transaction)" />
                         </div>
                         <div class="txLabel">
                           <div :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">{{getAction(transaction)}}</div>
@@ -184,7 +183,7 @@
                         <div class="col col-6 flex items-center">
                           <div class="flex items-center">
                             <div class="q-mr-md flex flex-center">
-                              <img width="32" :src="transaction.subTransactions[0].image" class="" />
+                              <img width="32" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="transaction.subTransactions[0].image" class="" />
                             </div>
                             <div class="column">
 
@@ -207,7 +206,7 @@
                         <div class="col col-5 flex justify-end">
                           <div class="flex items-center">
                             <div class="q-mr-md flex flex-center">
-                              <img width="32" :src="transaction.subTransactions[1].image" class="" />
+                              <img width="32" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="transaction.subTransactions[1].image" class="" />
                             </div>
                             <div class="column">
                               <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">+{{transaction.subTransactions[1].amountFriendly}}</span> {{transaction.subTransactions[1].symbol}} </div>
@@ -230,7 +229,7 @@
                           <div class="column">
                             <div class="">
                               <div class="flex items-center" v-if="transaction.details" style="cursor: pointer;">
-                                <img width="32" :src="'https://zapper.fi/images/'+transaction.details.icon" class="radius" />
+                                <img width="32" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="'https://zapper.fi/images/'+transaction.details.icon" class="radius" />
                                 <div class="q-pl-sm column" >
                                   <div class="">Application</div>
                                   <span>{{transaction.details.protocol}}</span>
@@ -301,7 +300,7 @@
                         <div class="col col-9">
                           <div class="flex items-center">
                             <div class="q-mr-md flex flex-center">
-                              <img width="32" :src="transaction.image" class="" />
+                              <img width="32" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" :src="transaction.image" class="" />
                             </div>
                             <div class="column">
                               <div  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}"><span class="">+{{transaction.amountFriendly}}</span> {{transaction.symbol}}

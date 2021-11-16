@@ -36,7 +36,6 @@ const store = new Vuex.Store({
   },
   plugins: plugins
 })
-
 // if we want some HMR magic for it, we handle
 // the hot update like below. Notice we guard this
 // code with "process.env.DEV" -- so this doesn't

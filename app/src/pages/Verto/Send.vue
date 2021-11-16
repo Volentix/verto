@@ -1,5 +1,5 @@
 <template>
-    <div :class="{'bg-white text-black q-pa-md': $store.state.settings.lightMode === 'false'}">
+    <div :class="{'bg-white text-black ': $store.state.settings.lightMode === 'false'}">
       <q-toolbar v-if="($q.platform.is.mobile||$isbex) && $route.path === '/verto/wallets/send' ">{{selectedCoin}}
           <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="$router.go(-1)"/>
           <q-toolbar-title :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" > Token Send </q-toolbar-title>

@@ -2,7 +2,8 @@
   <div class="bg-white" >
         <AppBar class="appbar_wrapper bg-grey-1" :callChainTools="callChainTools" v-if="showPanelStatus"/>
         <div class="q-pa-md showpanelstatus_wrapper" v-if="showPanelStatus" >
-            <div class="q-pb-md row flex justify-between">
+            <div class="q-pb-md row flex justify-between relative q-pt-md">
+                <span class="label_balance">Balance of all chains</span>
                 <div class="text-h4 text-bold" v-if="$store.state.wallets.customTotal.show" :class="{'text-white': $store.state.settings.lightMode === 'true'} ">
                   US${{ nFormatter2($store.state.wallets.customTotal.usd, 3) }}
                 </div>
@@ -102,5 +103,15 @@ export default {
 }
 .showpanelstatus_wrapper{
   border-bottom: 1px solid rgb(231, 231, 231);
+}
+.relative{
+  position: relative;
+}
+.label_balance{
+  position: absolute;
+  left: 0px;
+  top: -6px;
+  font-size: 15px;
+  font-weight: 500;
 }
 </style>

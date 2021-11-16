@@ -28,17 +28,17 @@
       </div>
        <div class="mobile-version" style="height: inherit;" v-else >
          <q-header>
-            <q-toolbar  id="scrollToID3"  :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'text-black'">
-                <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog()" />
-                <q-toolbar-title style="margin-left: -25px"> History  </q-toolbar-title>
-                <div class="row flex justify-end" style="margin-bottom: -10px;">
-                  <AccountSelector  :autoSelectChain="'eos'" class="q-mr-sm" :showAllWallets="true" :titleView='false'/>
-                  <q-btn round outline  icon="cached" @click="refresh++" class="refresh-history" size="sm"/>
+            <q-toolbar id="scrollToID3" class="back_button_wrapper q-pb-sm bg-grey-1" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'text-black'">
+                <!-- <q-toolbar-title style="margin-left: -25px"> Back  </q-toolbar-title> -->
+                <div class="row flex justify-between items-center full-width" style="margin-bottom: -10px;">
+                  <q-btn no-caps flat dense icon="arrow_back_ios" label="Back" class="q-pl-sm q-pr-sm q-mr-sm" @click="closeDialog()" />
+                  <q-btn round outline icon="cached" @click="refresh++" class="refresh-history" size="sm"/>
                   <!-- <q-icon name="cached"  @click="refresh++" class="refresh-history"/> -->
                 </div>
             </q-toolbar>
+             <AccountSelector :autoSelectChain="'eos'" class="" :showAllWallets="true" :titleView='false'/>
          </q-header>
-        <div class=" apps-section- history-card-" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 94%;">
+        <div class=" apps-section- history-card-" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" style="height: 100%;">
           <q-banner inline-actions class="text-white bg-red q-my-md " v-if="false">
             Section currently in development: currently showing ETH wallets history
           </q-banner>
@@ -305,4 +305,5 @@ export default {
     margin-top: 40px;
     border-radius: 0px;
   }
+  .back_button_wrapper{}
 </style>

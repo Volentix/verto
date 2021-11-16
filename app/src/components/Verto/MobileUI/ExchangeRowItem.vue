@@ -20,7 +20,7 @@
 
                           <q-avatar size="sm"  style="20px" class="q-mr-sm">
                                     <img :src="destinationCoin.image" />
-                                    </q-avatar>   {{paths[index].toAmount}}  {{ path.toToken.toUpperCase() }}
+                                    </q-avatar>   {{formatNumber(paths[index].toAmount, 2)}}  {{ path.toToken.toUpperCase() }}
 
                         </q-item-label>
                     </q-item-section>

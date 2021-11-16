@@ -3,7 +3,7 @@
         <q-toolbar >
             <!-- <q-btn flat round dense icon="menu" class="q-mr-sm" /> -->
 
-            <img src="statics/icons/icon-256x256.png" width="40" class="png_logo q-mr-sm q-pa" alt="">
+            <img src="statics/icons/verto_vulps_logo.svg" width="30" class="png_logo" alt="">
 
             <q-toolbar-title class="primary" :class="{'text-white': $store.state.settings.lightMode === 'true'} ">VERTO</q-toolbar-title>
             <div class="q-gutter-sm">
@@ -150,5 +150,8 @@ export default {
       align-items: flex-end;
       justify-content: flex-end;
     }
+  }
+  .png_logo{
+    margin-right: -6px;
   }
 </style>
