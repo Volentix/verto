@@ -1359,14 +1359,13 @@ export default {
   },
   computed: {
     allInvestments () {
-      console.log(this.assetsOptions[1].data, 'this.assetsOptions[1].data')
       return Object.keys(this.assetsOptions[1].data).reduce(
         (all, chain) =>
           this.assetsOptions[1].data[chain].length
             ? all.concat(
               this.assetsOptions[1].data[chain].filter((o) =>
-                this.$store.state.investment.defaultAccount
-                  ? (chain === 'eos' &&
+                this.$store.state.investment.defaultAccount &&
+                 this.$q.platform.is.mobile ? (chain === 'eos' &&
                         o.owner.toLowerCase() ===
                           this.$store.state.investment.defaultAccount.name.toLowerCase()) ||
                       (chain === 'eth' &&
@@ -1425,9 +1424,10 @@ export default {
         }
 
         if (stakedAmounts) {
+          let vtxPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=volentix-vtx&vs_currencies=usd')).data['volentix-vtx'].usd
           let a = {
-            usd: f.tokenPrice * stakedAmounts,
-            rateUsd: f.tokenPrice,
+            usd: vtxPrice * stakedAmounts,
+            rateUsd: vtxPrice,
             type: 'vtx',
             chain: 'eos',
             poolsCount: false,
