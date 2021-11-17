@@ -49,7 +49,7 @@ class EosWrapper {
       localStorage.setItem('freepwup_' + name, Math.round(+new Date() / 1000))
       Notify.create({
         progress: true,
-        message: 'Whoohahh: ' + name + ' has been powered up for free',
+        message: name + ' has been powered up for free',
         caption: 'Valid for 12 hours',
         color: 'deep-purple-14',
         position: 'bottom-left',

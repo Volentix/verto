@@ -90,6 +90,9 @@ export default {
       this.tabIndex = val
     }
   },
+  mounted () {
+    this.tabIndex = this.tab
+  },
   methods: {
     closeDialog () {
       if (!this.$route.query.hasOwnProperty('return')) {

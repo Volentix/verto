@@ -8,10 +8,10 @@
             <q-toolbar-title class="primary" :class="{'text-white': $store.state.settings.lightMode === 'true'} ">VERTO</q-toolbar-title>
             <div class="q-gutter-sm">
                 <SearchList :openSearch.sync="openSearch"  v-if="openSearch"/>
-                <q-btn dense size="lg" color="white" unelevated text-color="black" class="search_btn" icon="search" @click="openSearch = true" />
-                <q-btn dense size="lg" color="white" @click="tabsAlert = !tabsAlert" class="settings_btn" text-color="black" unelevated icon="settings" />
-                <q-btn v-if="false" :class="$store.state.settings.lightMode === 'true' ? 'text-black':'text-black'" :color="$store.state.settings.lightMode === 'true' ? 'white': ''" dense icon="qr_code" @click="qrSelect = true" />
-                <q-btn v-if="false" :class="$store.state.settings.lightMode === 'true' ? 'text-black':'text-black'" :color="$store.state.settings.lightMode === 'true' ? 'white': ''"   dense icon="notifications">
+                <q-btn dense size="lg" color="white" unelevated text-color="grey" class="search_btn" icon="search" @click="openSearch = true" />
+                <q-btn dense size="lg" color="white" @click="tabsAlert = !tabsAlert" class="settings_btn" text-color="grey" unelevated icon="settings" />
+                <q-btn v-if="false" :class="$store.state.settings.lightMode === 'true' ? 'text-grey':'text-grey'" :color="$store.state.settings.lightMode === 'true' ? 'white': ''" dense icon="qr_code" @click="qrSelect = true" />
+                <q-btn v-if="false" :class="$store.state.settings.lightMode === 'true' ? 'text-grey':'text-grey'" :color="$store.state.settings.lightMode === 'true' ? 'white': ''"   dense icon="notifications">
                     <q-menu transition-show="flip-right" transition-hide="flip-left" auto-close>
                         <q-list separator style="min-width: 100px">
                             <q-item>
@@ -75,10 +75,9 @@
                 :class="$store.state.settings.lightMode === 'true' ? 'mobile-card':'bg-white text-grey-7'"
               >
                 <q-tab flat v-if="!$isbex" name="exchange" no-caps @click="goTo('crosschain-exchange')" label="Exchange"/>
-                <q-tab flat name="history" icon="history" no-caps @click="goTo('history')" label="History"/>
-                <q-tab flat v-if="!$isbex" name="dashboard" icon="dashboard" label=" " @click="goTo('dashboard')"/>
-                <q-tab flat name="account" icon="account_balance_wallet" no-caps @click="goTo('wallets')" label="Wallets"/>
-                <q-tab flat name="profile" icon="settings" no-caps @click="goTo('profile')" label="Settings"/>
+                <q-tab flat v-if="!$store.state.investment.defaultAccount" name="history" icon="history" no-caps @click="goTo('history')" label="History"/>
+                 <q-tab flat name="account" icon="account_balance_wallet" no-caps @click="goToWallets()" :label="!$store.state.investment.defaultAccount ? 'Wallets' : 'Chain tools'"/>
+                 <q-tab flat name="profile" icon="settings" no-caps @click="goTo('profile')" label="Settings"/>
                 <q-tab flat name="profile" icon="add" no-caps @click="goImport" label="Add/Import"/>
               </q-tabs>
             </q-card-section>
@@ -103,7 +102,6 @@
 
     </div>
 </template>
-
 <script>
 import SearchList from '../TopMenu.vue'
 
@@ -125,6 +123,14 @@ export default {
     goImport () {
       this.$router.push({ name: 'accounts', params: { accounts: 'receive', tab: 'import' } })
     },
+    goToWallets () {
+      let a = this.$store.state.investment.defaultAccount
+      if (a) {
+        this.$router.push({ name: 'wallets', params: { return: this.$route, chainID: a.chain, tokenID: a.type, name: a.name, value: a.value, icon: a.icon } })
+      } else {
+        this.goTo('wallets')
+      }
+    },
     goTo (path) {
       this.$router.push(`/verto/${path}`)
     }
@@ -134,9 +140,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .search_btn{}
+
   .settings_btn{
-    border: 2px solid #64b5f6;
+   /* border: 2px solid #64b5f6; */
   }
   /deep/ .tabroute_wrapper{
     .q-tab__content{

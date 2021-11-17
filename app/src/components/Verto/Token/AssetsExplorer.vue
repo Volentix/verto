@@ -837,7 +837,7 @@
                 <div>
                   <h6>
                     {{ asset.type.toUpperCase()
-                    }}<svg
+                    }} {{ asset.isStaked ? 'Staked' : ''}}<svg
                       v-if="false"
                       class="q-ml-md"
                       viewBox="0 0 32 32"
@@ -985,7 +985,7 @@
             </div>
           </div>
           <p v-if="!filterTokens.length">
-            No assets found {{ tokenSearchVal ? "" : "for this chain" }}
+            No assets found
           </p>
           <AssetBalancesTable
             @setAsset="showTokenPage"
@@ -1088,7 +1088,7 @@
   <div> </div>
   <!-- MOBILE SECTION STARTED -->
   <div   v-if="$q.platform.is.mobile||$isbex">
-    <TabAssetsExplorer ref="tabAssetExp" :chains="chains" :tab.sync="tab" :chainAction='chainAction' :formatNumber='formatNumber' :showQr.sync='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage='showTokenPage' :initTable="initTable" :selectedChain.sync="selectedChain" :keys="keys" :showPrivateKeys="showPrivateKeys" :alertSecurity.sync="alertSecurity" :tokenSearchVal="tokenSearchVal" :getImportLink="getImportLink"/>
+    <TabAssetsExplorer :key="uniqueKey" ref="tabAssetExp" :chains="chains" :tab.sync="tab" :chainAction='chainAction' :formatNumber='formatNumber' :showQr.sync='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage='showTokenPage' :initTable="initTable" :selectedChain.sync="selectedChain" :keys="keys" :showPrivateKeys="showPrivateKeys" :alertSecurity.sync="alertSecurity" :tokenSearchVal="tokenSearchVal" :getImportLink="getImportLink"/>
   </div>
   <!-- MOBILE SECTION END -->
 
@@ -1327,8 +1327,20 @@ export default {
           !this.$route.params.accounts &&
           !['assets', 'chains', 'investments'].includes(this.tab)
         ) {
-          this.tab = 'chains'
+          if (!this.$store.state.investment.defaultAccount) { this.tab = 'chains' }
         }
+      }
+    },
+    tab () {
+      if (this.tab === 'chains' && this.$store.state.investment.defaultAccount && this.$q.platform.is.mobile) {
+        this.tab = 'assets'
+      } else if (this.tab === 'investments') {
+        this.getVTXStakingInvestment()
+      }
+    },
+    '$store.state.investment.defaultAccount': function (newVal) {
+      if (newVal) {
+        this.initTable()
       }
     },
     '$store.state.investment.investments': function (investments) {
@@ -1349,16 +1361,15 @@ export default {
     allInvestments () {
       return Object.keys(this.assetsOptions[1].data).reduce(
         (all, chain) =>
-          this.assetsOptions[1].data[chain] &&
           this.assetsOptions[1].data[chain].length
             ? all.concat(
               this.assetsOptions[1].data[chain].filter((o) =>
-                this.$store.state.currentwallet.wallet.chain
-                  ? (chain === 'eos' &&
-                        o.owner ===
-                          this.$store.state.currentwallet.wallet.name) ||
+                this.$store.state.investment.defaultAccount &&
+                 this.$q.platform.is.mobile ? (chain === 'eos' &&
+                        o.owner.toLowerCase() ===
+                          this.$store.state.investment.defaultAccount.name.toLowerCase()) ||
                       (chain === 'eth' &&
-                        o.owner === this.$store.state.currentwallet.wallet.name)
+                        o.owner.toLowerCase() === this.$store.state.investment.defaultAccount.key.toLowerCase())
                   : true
               )
             )
@@ -1390,14 +1401,18 @@ export default {
     }
     setTimeout(() => {
       this.initTable()
-      this.getVTXStakingInvestment()
+      // this.getVTXStakingInvestment()
     }, 1000)
   },
   methods: {
     getVTXStakingInvestment () {
       let stakedAmounts = 0
-      this.$store.state.wallets.tokens.forEach(async (f) => {
-        if (f.type === 'vtx' && f.chain === 'eos') {
+
+      let eosChain = this.setChains().find(a => a.chain === 'eos')
+
+      if (!eosChain || !eosChain.accounts) return
+      eosChain.accounts.forEach(async (f) => {
+        if (f.chain === 'eos') {
           let stakes = await eos.getTable('vertostaking', f.name, 'accountstake')
           if (stakes.length) {
             stakes.forEach(s => {
@@ -1407,20 +1422,23 @@ export default {
             })
           }
         }
+
         if (stakedAmounts) {
+          let vtxPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=volentix-vtx&vs_currencies=usd')).data['volentix-vtx'].usd
           let a = {
-            usd: f.tokenPrice * stakedAmounts,
-            rateUsd: f.tokenPrice,
+            usd: vtxPrice * stakedAmounts,
+            rateUsd: vtxPrice,
             type: 'vtx',
             chain: 'eos',
             poolsCount: false,
             owner: f.name,
             poolName: 'Staked',
-            staked: true,
+            isStaked: true,
             amount: stakedAmounts,
-            icon: f.icon
+            icon: 'https://www.api.bloks.io/image-proxy/display?w=100&h=100&url=https://raw.githubusercontent.com/BlockABC/eos-tokens/master/tokens/volentixgsys/VTX.png&op=resize'
           }
-          let index = this.assetsOptions[1].data.eos.findIndex(o => o.staked && o.type === 'vtx')
+          let index = this.assetsOptions[1].data.eos.findIndex(o => o.isStaked && o.type === 'vtx')
+
           if (index >= 0) {
             this.assetsOptions[1].data.eos[index] = a
           } else {
@@ -1428,6 +1446,7 @@ export default {
           }
         }
       })
+      this.uniqueKey++
     },
     async verifyPassword () {
       console.log('verifyPassword')
@@ -1490,7 +1509,8 @@ export default {
           }
         },
         chains () {
-          self.setChainWalletData(chain)
+          if (!self.$q.platform.is.mobile) { self.setChainWalletData(chain) }
+
           if (chain.type === 'verto') {
             self.$router.push(self.getImportLink('eos'))
           } else if (chain.isEvm || chain.chain === 'eos') {
@@ -1524,7 +1544,7 @@ export default {
       }
     },
     showTokenPage (asset) {
-      if (this.tab === 'investments' && asset.type === 'vtx' && asset.staked) {
+      if (this.tab === 'investments' && asset.type === 'vtx' && asset.isStaked) {
         this.$router.push({
           path: '/verto/stake/eos/vtx'
         })
@@ -1595,7 +1615,7 @@ export default {
         })
       })
       this.$store.dispatch('tokens/getTokensMarketsData', assets)
-      this.assetsOptions[1].data.eos = this.assetsOptions[1].data.eos.filter(o => o.staked && o.type === 'vtx').concat(assets)
+      this.assetsOptions[1].data.eos = this.assetsOptions[1].data.eos.filter(o => o.isStaked && o.type === 'vtx').concat(assets)
     },
     async getVTXHistoriclPrice (days = 30) {
       let response = await this.$axios.get(
@@ -1629,6 +1649,7 @@ export default {
             type: a.symbol.toLowerCase(),
             chain: 'eth',
             poolName: t.label,
+            owner: t.address,
             poolsCount: 1,
             amount: a.balance,
             icon: 'https://zapper.fi/images/' + a.symbol + '-icon.png',
@@ -1732,13 +1753,10 @@ export default {
       this.getChains()
       // console.log(this.chains, 'this.chains = ')
       if (
-        this.$store.state.currentwallet.wallet &&
-        this.$store.state.currentwallet.wallet.name
+        this.$store.state.investment.defaultAccount
       ) {
-        // account = this.$store.state.currentwallet.wallet
+        account = this.$store.state.investment.defaultAccount
         // this.getChainLabel(account.chain)
-      } else {
-        //  this.chainSelected = chain && chain !== 'vtx' ? this.getChainLabel(chain) : false
       }
       chain = chain || this.selectedChain ? this.selectedChain.chain : chain
       this.assets = []

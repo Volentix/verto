@@ -131,7 +131,7 @@
                             </div>
                             <div class="text-caption q-pt-md" v-else-if="tab == 'import' || tab == 'create'">
                                 <span class="text-capitalize">
-                                {{tab}}
+
                                 </span>  <q-icon name="arrow_right_alt" />
                             </div>
                             <span v-else-if="tab == 'chains' && chain.chain == 'eos' && chain.type == 'verto' ">
@@ -149,14 +149,14 @@
                             </div> -->
                             <!-- END RECEIVE / PRIVATE KEY SECTION  -->
                         </q-item-section>
-                        <q-item-section side middle>
+                        <q-item-section v-if="tab == 'chains'" side middle>
                           <!-- CHAIN / RECEIVE / IMPORT COMMON SECTION -->
                           <div :class="$store.state.settings.lightMode === 'true' ? '': 'text-black'" class="text-bold text-h7" v-if="!$route.params.accounts || !(tab == 'receive' || tab == 'privateKeys' || tab == 'import' || tab == 'create' )">
                             ${{ nFormatter2(chain.chainTotal, chain.chainTotal > 10 ? 0 : 2) }}
                           </div >
                           <!-- COMMON SECTION END  -->
                         </q-item-section>
-                        <q-item-section side middle>
+                        <q-item-section v-if="tab == 'chains'" side middle>
                           <q-icon name="keyboard_arrow_right" />
                         </q-item-section>
                     </q-item>
@@ -190,7 +190,7 @@
                             </q-avatar>
                         </q-item-section>
                         <q-item-section>
-                            <q-item-label lines="1" class="text-bold text-capitalize ellipsis">{{asset.type.toUpperCase()}} </q-item-label>
+                            <q-item-label lines="1" class="text-bold text-capitalize ellipsis">{{asset.type.toUpperCase()}}  {{ asset.isStaked ? 'Staked' : ''}}</q-item-label>
                             <q-item-label>
                             </q-item-label>
 
@@ -199,10 +199,10 @@
                                 class="q-pt-sm"
                             >
                                 Amount:
-                                <span class="text-grey q-pl-xs">{{ formatNumber(asset.amount, 6) }}</span>
+                                <span class="text-grey q-pl-xs">{{ formatNumber(asset.amount, 2) }} {{asset.type.toUpperCase()}}</span>
                             </q-item-label>
                             <q-item-label>
-                                <div class="q-pt-sm">
+                                <div class="q-pt-sm" v-if="asset.rateUsd">
                                         Price:
                                         <span class="text-grey q-pl-xs"
                                             >${{ formatNumber(asset.rateUsd, 4) }}</span
@@ -251,7 +251,7 @@
                         </q-item-section>
 
                         <q-item-section side top>
-                            <q-item-label class="text-h7  text-bold" :class="$store.state.settings.lightMode === 'true' ? '': ' text-black'">
+                            <q-item-label v-if="asset.rateUsd" class="text-h7  text-bold" :class="$store.state.settings.lightMode === 'true' ? '': ' text-black'">
                                 <div >${{ formatNumber(asset.usd, 2) }} </div >
                             </q-item-label>
                             <div class="text-bold text-h7 text-black q-mt-md">
@@ -262,20 +262,20 @@
                                     {{ asset.change24hPercentage.substring(1) }}
                                 </span>
                             </div>
-                            <div class=" ">
+                            <div class=" " v-if="tab == 'assets'">
                                 <q-chip dense>
-                                    <q-avatar icon="insights" :color="$store.state.settings.lightMode === 'true' ? 'black': 'red'" text-color="white" />
-                                    Trade
+                                    <q-avatar icon="chevron_right" :color="$store.state.settings.lightMode === 'true' ? 'grey-12': 'grey-12'" text-color="black" />
+                                    Send
                                 </q-chip>
                             </div>
                         </q-item-section>
                     </q-item>
                     <p v-if="!filterTokens.length">
-                    No assets found {{ tokenSearchVal ? "" : "for this chain" }}
+                    No assets found
                     </p>
                 </q-list>
             </div>
-            <div>
+            <div v-if="false">
               <span class="version full-width text-center column">
                 <span class="q-mb-md">{{version}}</span>
                 <span class="q-pa-sm text-grey">

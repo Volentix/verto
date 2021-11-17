@@ -1,6 +1,7 @@
 // Hooks added here have a bridge allowing communication between the BEX Background Script and the BEX Content Script.
 // Note: Events sent from this background script using `bridge.send` can be `listen`'d for by all client BEX bridges for this BEX
 import WalletConnect from '@walletconnect/client'
+// eslint-disable-next-line no-unused-vars
 // import store from '../../src/store'
 // import store from '@/store'
 // More info: https://quasar.dev/quasar-cli/developing-browser-extensions/background-hooks
@@ -140,7 +141,7 @@ export default function attachBackgroundHooks (bridge /* , allActiveConnections 
   })
 
   bridge.on('app.sync', event => {
-    localStorage.setItem('sync_data', event.data)
+    localStorage.setItem('sync_data', event.data.data)
     chrome.windows.create({
       url: chrome.runtime.getURL('www/index.html'),
       type: 'popup',
