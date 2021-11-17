@@ -2,7 +2,6 @@
 // Note: Events sent from this background script using `bridge.send` can be `listen`'d for by all client BEX bridges for this BEX
 import WalletConnect from '@walletconnect/client'
 // eslint-disable-next-line no-unused-vars
-import store from '@/store'
 // import store from '../../src/store'
 // import store from '@/store'
 // More info: https://quasar.dev/quasar-cli/developing-browser-extensions/background-hooks
