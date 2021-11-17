@@ -1,5 +1,5 @@
 <template>
-  <q-page class="text-black bg-white" :class="screenSize > 1024 ? 'desktop-marg': 'mobile-pad'">
+  <q-page class="text-black bg-white" :class="$q.screen.width > 1024 ? 'desktop-marg': 'mobile-pad'">
     <div :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" style="height: 99vh;">
       <q-header v-if="($q.platform.is.mobile||$isbex)">
           <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
@@ -18,7 +18,7 @@
                 </q-item>
         </q-toolbar>
       </q-header>
-      <div class="desktop-version full-height" v-if="screenSize > 1024" style="height: 100vh;">
+      <div class="desktop-version full-height" v-if="$q.screen.width > 1024" style="height: 100vh;">
         <div class="row full-height">
           <div class="col col-md-3">
             <div class="wallets-container" style="height: 100%">
@@ -94,8 +94,8 @@
                             <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy" :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'grey'" icon="o_file_copy" />
                           </div>
                           <span class="qrcode-widget">
-                            <qrcode v-if="currentToken && currentToken.type.length" dark :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
-                            <qrcode v-if="configData" v-show="false" dark :value="configData" :options="{size: 200}"></qrcode>
+                            <qrcode v-if="currentToken && currentToken.type" dark :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
+                            <qrcode v-if="configData && false" v-show="false" dark :value="configData" :options="{size: 200}"></qrcode>
                             <span class="exchange-address full-width text-center">{{currentToken.type === 'eos' ? currentToken.label : currentToken.value}}</span>
                           </span>
                         </div>
@@ -176,17 +176,19 @@
                 <q-btn round flat unelevated @click="copyToClipboard(exchangeAddress , 'Address')" class="btn-copy"  :text-color="$store.state.settings.lightMode === 'true' ? 'white' : 'grey'" icon="o_file_copy" />
               </div>
               <span class="qrcode-widget">
-                <qrcode :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
+                <qrcode v-if="currentToken.value" :value="currentToken.type === 'eos' ? currentToken.label : currentToken.value" :options="{size: 200}"></qrcode>
                 <span class="exchange-address full-width text-center">{{currentToken.type === 'eos' ? currentToken.label : currentToken.value}}</span>
               </span>
             </div>
           </div>
         </div>
-        <div class="standard-content--footer">
+
+        <div class="standard-content--footer" v-if="false">
           <q-btn flat class="action-link next" @click="toggleShare()" color="black" text-color="white" label="Share" />
         </div>
       </div>
     </div>
+
     <q-dialog v-model="showShareWrapper">
       <q-card class="q-pa-lg" :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"  :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
         <q-toolbar>
@@ -198,11 +200,12 @@
           <!-- <span style="font-size: 1em">Select your prefered method</span> -->
           <div class="social-media-wrapper">
             <span class="submenu-wrapper">
+
                 <social-sharing
                   class="share_wrapper text-black flex column justify-even content-start item-start"
-                  :url="`${currentToken.type.toUpperCase()} address: ${exchangeAddress}`"
+                  :url="`${currentToken.type} address: ${exchangeAddress}`"
                   title="Verto | Multi-currency wallet"
-                  :description="`You are receiving this ${currentToken.type.toUpperCase()} token address from (${existingCruxID}).`"
+                  :description="`Receive ${currentToken.type} token from my address `"
                   quote=""
                   media="http://localhost:8080/statics/screens/screen_iphone.png"
                   hashtags=""
@@ -304,10 +307,10 @@
                 </social-sharing>
               </span>
               <div id="copy-btn flex">
-                <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'"  @click="copyToClipboard(exchangeAddress , 'Link')" class="copy-link-button" flat label="Copy link">
+                <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'"  @click="copyToClipboard(exchangeAddress , 'Link')" class="copy-link-button" flat label="Copy address">
                   <img src="/statics/social/copy.svg" alt="">
                 </q-btn>
-                <q-btn :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'"  @click="copyToClipboard(existingCruxID , 'Link')" class="copy-link-button q-ml-sm" flat label="Copy VERTO ID">
+                <q-btn  v-if="false" :color="$store.state.settings.lightMode === 'true' ? 'black':'white'" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'"  @click="copyToClipboard(existingCruxID , 'Link')" class="copy-link-button q-ml-sm" flat label="Copy VERTO ID">
                   <img src="/statics/social/copy.svg" alt="">
                 </q-btn>
               </div>
@@ -319,12 +322,12 @@
 </template>
 
 <script>
-import { osName } from 'mobile-device-detect'
+// import { osName } from 'mobile-device-detect'
 import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import Vue from 'vue'
-import sjcl from 'sjcl'
+/// import sjcl from 'sjcl'
 
 Vue.component(VueQrcode.name, VueQrcode)
 var SocialSharing = require('vue-social-sharing')
@@ -360,7 +363,7 @@ export default {
       vertoID: this.$store.state.currentwallet.config.cruxID,
       goBack: '/verto/dashboard',
       fetchCurrentWalletFromState: true,
-      exchangeAddress: 'dsldkslk34JL309LKLKELKLF0934K34LK3L934LK',
+      exchangeAddress: '',
       memo: '',
       options: [],
       minimizedModal: false,
@@ -370,14 +373,14 @@ export default {
     }
   },
   watch: {
-    currentToken: function (newVal) {
+    /* currentToken: function (newVal) {
       this.exchangeAddress = newVal.type === 'eos' || newVal.type === 'vtx' ? newVal.label : newVal.value
       this.currentAccount = this.tableData.find(w => w.chain === newVal.chainID && w.type === newVal.type && (
         w.chain === 'eos' ? w.name.toLowerCase() === newVal.label : w.key === newVal.label)
       )
 
       // this.$store.state.currentwallet.wallet = this.currentAccount
-    }
+    } */
   },
   computed: {
     wallet () {
@@ -388,7 +391,7 @@ export default {
     window.removeEventListener('resize', this.getWindowWidth)
   },
   async created () {
-    let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
+    /* let exchangeNotif = document.querySelector('.exchange-notif'); if (exchangeNotif !== null) { exchangeNotif.querySelector('.q-btn').dispatchEvent(new Event('click')) }
     this.osName = osName
     this.getWindowWidth()
     window.addEventListener('resize', this.getWindowWidth)
@@ -434,19 +437,21 @@ export default {
     }
 
     this.goBack = this.fetchCurrentWalletFromState ? `/verto/wallets/${this.params.chainID}/${this.params.tokenID}/${this.params.accountName}` : '/verto/dashboard'
-
-    this.exchangeAddress = this.currentAccount.chain !== 'eos' ? this.currentAccount.key : this.currentAccount.name
+    */
   },
   async mounted () {
-    console.log('mounted ', this.$route.params)
-    this.currentToken = {
+    this.$set(this, 'currentToken', {
       label: this.$route.params.name,
       value: this.$route.params.value,
       image: this.$route.params.icon,
       type: this.$route.params.tokenID,
       chainID: this.$route.params.chainID
     }
-    console.log('mounted ', this.currentToken)
+    )
+
+    this.currentAccount = this.currentToken
+    this.exchangeAddress = this.currentAccount.chainID !== 'eos' ? this.currentAccount.value : this.currentAccount.label
+
     /*
     let cruxKey = await HD.Wallet('crux')
 
@@ -458,6 +463,7 @@ export default {
     await cruxClient.init()
     this.existingCruxID = (await cruxClient.getCruxIDState()).cruxID
     */
+    /* QR mnemonic
     let qrData =
       {
         keys: JSON.parse(JSON.stringify(this.$store.state.currentwallet.config.keys)).map(o => o.name + '-' + o.chain + '-' + o.privateKey).join(','),
@@ -469,6 +475,8 @@ export default {
     this.configData = encrypted
     // length of encrypted and non-encrypted PV key (Testing)
     console.log(qrData.length, encrypted.length, 'length')
+
+    */
     /* var CryptoJS = require('crypto-js')
 
     // Encrypt
@@ -501,7 +509,7 @@ export default {
       })
     },
     goBackPage () {
-      this.$router.push({ name: 'wallets', params: { openDialog: true } })
+      this.$router.push(this.$route.params.return ? this.$route.params.return : { name: 'wallets', params: { openDialog: true } })
     }
   }
 }

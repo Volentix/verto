@@ -121,12 +121,11 @@
                                 class="text-body1 copy-key"
                                 v-else-if=" tab == 'receive' && chain.accounts && chain.accounts.length > 1 ">
                                 <span class="nbr_total_account">{{ chain.accounts.length }} accounts</span>
-                                <!-- <q-icon name="arrow_forward_ios" /> -->
+                                <q-icon name="arrow_forward_ios" />
                             </div>
                             <div class="text-caption" v-else-if="tab == 'import' || tab == 'create'">
-                                <span class="text-capitalize">
-                                {{tab}}
-                                </span>  <q-icon name="arrow_right_alt" />
+                                <span class="text-capitalize"></span>
+                                <q-icon name="arrow_right_alt" />
                             </div>
                             <span v-else-if="tab == 'chains' && chain.chain == 'eos' && chain.type == 'verto' ">
                                 <q-btn label="Get EOS account" outline rounded />
@@ -143,15 +142,17 @@
                             </div> -->
                             <!-- END RECEIVE / PRIVATE KEY SECTION  -->
                         </q-item-section>
-                        <q-item-section side middle>
+                        <q-item-section v-if="tab == 'chains'" side middle>
                           <!-- CHAIN / RECEIVE / IMPORT COMMON SECTION -->
                           <div :class="$store.state.settings.lightMode === 'true' ? '': 'text-black'" class="text-bold text-h7" v-if="!$route.params.accounts || !(tab == 'receive' || tab == 'privateKeys' || tab == 'import' || tab == 'create' )">
                             ${{ nFormatter2(chain.chainTotal, chain.chainTotal > 10 ? 0 : 2) }}
                           </div >
                           <!-- COMMON SECTION END  -->
                         </q-item-section>
-                        <q-item-section side middle>
-                          <q-btn color="white" text-color="grey-7" dense icon="chevron_right" flat class="more_verti_btn" unelevated @click="chainAction(chain)" />
+                        <!-- <q-item-section side middle>
+                          <q-btn color="white" text-color="grey-7" dense icon="chevron_right" flat class="more_verti_btn" unelevated @click="chainAction(chain)" /> -->
+                        <q-item-section v-if="tab == 'chains'" side middle>
+                          <q-icon name="keyboard_arrow_right" />
                         </q-item-section>
                     </q-item>
                     <!-- <q-item>
@@ -184,7 +185,7 @@
                           </q-avatar>
                         </q-item-section>
                         <q-item-section>
-                            <q-item-label lines="1" class="text-bold text-capitalize ellipsis">{{asset.type.toUpperCase()}} </q-item-label>
+                          <!-- <q-item-label lines="1" class="text-bold text-capitalize ellipsis">{{asset.type.toUpperCase()}} </q-item-label>
                             <q-item-label></q-item-label>
                             <q-item-label :class="{'text-black': !$store.state.settings.lightMode === 'true',}" class="q-pt-sm">
                               Amount: <span class="text-grey q-pl-xs">{{ formatNumber(asset.amount, 6) }}</span>
@@ -196,24 +197,34 @@
                                 <div class="q-py-sm" v-if="asset.protocol">
                                   <q-icon class="q-pr-sm" size="1.2rem" :name="'img:' + asset.protocolIcon"/>
                                   {{ asset.protocol }}:
-                                </div>
-                                        <span class="text-grey" v-if="asset.poolsCount == 1"
-                                        >{{ asset.poolName }} pool</span
-                                        >
-                                        <span class="text-grey" v-else-if="asset.poolsCount"
-                                        >{{ asset.poolsCount }} pools</span>
+                                </div> -->
+                            <q-item-label lines="1" class="text-bold text-capitalize ellipsis">{{asset.type.toUpperCase()}}  {{ asset.isStaked ? 'Staked' : ''}}</q-item-label>
+                            <q-item-label></q-item-label>
+                            <q-item-label :class="{'text-black': !$store.state.settings.lightMode === 'true',}" class="">
+                              Amount:
+                              <span class="text-grey q-pl-xs">{{ formatNumber(asset.amount, 2) }} {{asset.type.toUpperCase()}}</span>
+                            </q-item-label>
+                            <q-item-label>
+                              <div class="q-pt-sm" v-if="false && asset.rateUsd">
+                                Price: <span class="text-grey q-pl-xs">${{ formatNumber(asset.rateUsd, 4) }}</span>
+                              </div>
+                              <div class="q-py-sm" v-if="asset.protocol">
+                                <q-icon class="q-pr-sm" size="1.2rem" :name="'img:' + asset.protocolIcon"/>{{ asset.protocol }}:
+                              </div>
+                              <span class="text-grey" v-if="asset.poolsCount == 1">{{ asset.poolName }} pool</span>
+                              <span class="text-grey" v-else-if="asset.poolsCount">{{ asset.poolsCount }} pools</span>
                             </q-item-label>
 
                             <!-- <q-item-label
-                                        class="text-caption chain-label q-py-sm"
-                                        v-if="asset.chainLabel"
-                                        :class="{
-                                            'text-white': $store.state.settings.lightMode === 'true',
-                                        }"
-                                        >Chain:
-                                        <span class="text-grey">{{
-                                            asset.chainLabel.replace("Chain", "")
-                                        }}</span>
+                              class="text-caption chain-label q-py-sm"
+                              v-if="asset.chainLabel"
+                              :class="{
+                                  'text-white': $store.state.settings.lightMode === 'true',
+                              }"
+                              >Chain:
+                              <span class="text-grey">{{
+                                  asset.chainLabel.replace("Chain", "")
+                              }}</span>
                             </q-item-label> -->
                             <q-item-label>
                                     <!-- <p v-if="!filterTokens.length">
@@ -232,33 +243,39 @@
                             </q-item-label>
                         </q-item-section>
 
-                        <q-item-section side top>
-                            <q-item-label class="text-h7  text-bold" :class="$store.state.settings.lightMode === 'true' ? '': ' text-black'">
-                                <div >${{ formatNumber(asset.usd, 2) }} </div >
+                        <q-item-section side middle>
+                            <q-item-label v-if="asset.rateUsd" class="text-h7 text-bold" :class="$store.state.settings.lightMode === 'true' ? '': ' text-black'">
+                                <div >${{ formatNumber(asset.usd, 2) }} </div>
                             </q-item-label>
-                            <div class="text-bold text-h7 text-black q-mt-md">
-                                <span
-                                    v-if="asset.change24hPercentage"
-                                    :class="'sr-txt ' + asset.color"
-                                    >{{ asset.color === "text-green-6" ? "↑" : "↓" }}
-                                    {{ asset.change24hPercentage.substring(1) }}
-                                </span>
+                            <div v-if="false" class="text-bold text-h7 text-black q-mt-md">
+                              <span
+                                v-if="asset.change24hPercentage"
+                                :class="'sr-txt ' + asset.color"
+                                >{{ asset.color === "text-green-6" ? "↑" : "↓" }}
+                                {{ asset.change24hPercentage.substring(1) }}
+                              </span>
                             </div>
-                            <div class=" ">
+                            <div class="" v-if="false && tab == 'assets'">
                                 <q-chip dense>
-                                    <q-avatar icon="insights" :color="$store.state.settings.lightMode === 'true' ? 'black': 'red'" text-color="white" />
+                                  <!-- <q-avatar icon="insights" :color="$store.state.settings.lightMode === 'true' ? 'black': 'red'" text-color="white" /> -->
+                                    <q-avatar icon="chevron_right" :color="$store.state.settings.lightMode === 'true' ? 'grey-12': 'grey-12'" text-color="black" />
                                     Send
                                 </q-chip>
                             </div>
                         </q-item-section>
+                        <q-item-section side middle>
+                          <q-avatar flat icon="chevron_right" dense text-color="black" />
+                        </q-item-section>
                     </q-item>
                     <p v-if="!filterTokens.length">
-                    No assets found {{ tokenSearchVal ? "" : "for this chain" }}
+                    No assets found
                     </p>
                 </q-list>
             </div>
-            <div>
-              <span class="version version2 full-width text-center column">
+            <!-- <div>
+              <span class="version version2 full-width text-center column"> -->
+            <div v-if="false">
+              <span class="version full-width text-center column">
                 <span class="q-mb-md">{{version}}</span>
                 <span class="q-pa-md text-grey-6">
                   This app is in beta, please send us bug reports if you find any. <b><a target="_blank" class="text-blue-7" href="https://t.me/vertosupport">t.me/vertosupport</a></b>
@@ -331,11 +348,12 @@ export default {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-right: -25px;
+  // margin-right: -25px;
 }
 .nbr_total_account{
   font-size: 12px;
-  margin-left: 10px;
+  margin-left: 0px;
+  margin-right: 10px;
   padding: 5px;
   background: rgba(#000, .03);
   border-radius: 5px;

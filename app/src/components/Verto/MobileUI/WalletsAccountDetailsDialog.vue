@@ -113,7 +113,7 @@
                                 <q-icon class="p-abs" name="keyboard_arrow_right" style="font-size:1.5em" />
                             </q-item-section>
                         </q-item>
-                        <q-item  clickable v-ripple data-name='Stake Proxy EOS' class="p-relative" >
+                        <q-item v-if="false"  clickable v-ripple data-name='Stake Proxy EOS' class="p-relative" >
                             <q-item-section @click="goNewWindow()">
                                 <q-item-label lines="1" class="text-h6">Run a node </q-item-label>
                             </q-item-section>
@@ -373,10 +373,13 @@ export default {
     //   }
     },
     closeDialog () {
-      this.$emit('update:dialog', false)
+      if (!this.$store.state.investment.defaultAccount) {
+        this.$emit('update:dialog', false)
+      } else {
+        this.$router.push('/verto/dashboard')
+      }
     },
     goNewWindow () {
-      console.log('goNew tabl')
       window.open('https://volentix.io/node/', '_blank')
     },
     goTo (path) {

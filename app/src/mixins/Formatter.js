@@ -29,7 +29,12 @@ export default {
     },
     getAssets (chain = null, account = null) {
       let assets = []
-
+      if (
+        this.$store.state.investment.defaultAccount
+      ) {
+        account = this.$store.state.investment.defaultAccount
+        // this.getChainLabel(account.chain)
+      }
       this.$store.state.wallets.tokens
         .filter(
           (o) =>

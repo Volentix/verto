@@ -1063,6 +1063,10 @@ export default {
         accountName: this.accountName
       })
     }
+    if (this.$store.state.investment.defaultAccount) {
+      this.showMenu(this.$store.state.investment.defaultAccount, false, 1)
+      this.dialog = true
+    }
   },
   computed: {
     //   $store.state.wallets.tokens.filter(this.filterdWalletList)
