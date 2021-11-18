@@ -164,7 +164,7 @@ module.exports = function (ctx) {
           cfg.plugins.push(
             new HtmlWebpackPlugin({
               template: `${__dirname}\\src-bex\\background.template.html`,
-              filename: `${__dirname}\\dist\\\\bex\\\\UnPackaged\\background.html`,
+              filename: `${__dirname}\\dist\\bex\\UnPackaged\\background.html`,
               excludeChunks: ['bex-content-script', 'bex-dom'],
               productName: 'Verto Background',
               productDescription: 'Verto Background',
