@@ -16,14 +16,14 @@
                 <q-btn dense size="lg" color="white" @click="tabsAlert = !tabsAlert" class="settings_btn" text-color="grey" unelevated icon="settings">
                   <q-tooltip>Some text as content of Tooltip</q-tooltip>
                 </q-btn>
-                <q-btn @click="openDialogTrigger" dense v-if="$store.state.investment.defaultAccount" size="lg" color="white" class="settings_btn" text-color="grey" unelevated>
+                <!-- <q-btn @click="openDialogTrigger" dense v-if="$store.state.investment.defaultAccount" size="lg" color="white" class="settings_btn" text-color="grey" unelevated>
                   <q-tooltip>Some text as content of Tooltip</q-tooltip>
                   <div class="flex justify-center items-center">
                     <span class="identicon flex flex-center" v-html="avatar($store.state.investment.defaultAccount.name)" />
                     <q-icon size="xs" name="keyboard_arrow_down" />
                   </div>
-                </q-btn>
-                <q-btn @click="openDialogTrigger" dense v-if="!$store.state.investment.defaultAccount" size="lg" color="transparent" class="view_account_selector" text-color="grey" unelevated>
+                </q-btn> -->
+                <!-- <q-btn @click="openDialogTrigger" dense v-if="!$store.state.investment.defaultAccount" size="lg" color="transparent" class="view_account_selector" text-color="grey" unelevated>
                   <q-tooltip>Some text as content of Tooltip</q-tooltip>
                   <div class="flex justify-center items-center">
                     <span class="identicon flex flex-center">
@@ -41,7 +41,7 @@
                     </span>
                     <q-icon size="xs" name="keyboard_arrow_down" />
                   </div>
-                </q-btn>
+                </q-btn> -->
                 <q-btn v-if="false" :class="$store.state.settings.lightMode === 'true' ? 'text-grey':'text-grey'" :color="$store.state.settings.lightMode === 'true' ? 'white': ''" dense icon="qr_code" @click="qrSelect = true" />
                 <q-btn v-if="false" :class="$store.state.settings.lightMode === 'true' ? 'text-grey':'text-grey'" :color="$store.state.settings.lightMode === 'true' ? 'white': ''"   dense icon="notifications">
                     <q-menu transition-show="flip-right" transition-hide="flip-left" auto-close>
@@ -188,7 +188,7 @@ export default {
 <style lang="scss" scoped>
 
   .settings_btn{
-  //  border: 2px solid #64b5f6;
+   border: 2px solid #64b5f6;
   }
   /deep/ .tabroute_wrapper{
     .q-tab__content{

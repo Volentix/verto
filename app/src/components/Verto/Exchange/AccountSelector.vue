@@ -325,7 +325,7 @@
       />
       <q-item
         v-if="!accountOption"
-        class="text-left full-width bg-white text-black account_selector_top"
+        class="text-left full-width bg-grey-1 text-black account_selector_top"
       >
         <q-item-section @click="dialog = true" avatar>
           <svg width="36" height="36" fill="#64b5f5">
@@ -356,7 +356,7 @@
           />
         </q-item-section>
       </q-item>
-      <q-item v-else class="text-left full-width bg-white text-black account_selector_top">
+      <q-item v-else class="text-left full-width bg-grey-1 text-black account_selector_top">
         <q-item-section @click="dialog = true" avatar>
           <q-img size="lg" :src="`${accountOption.icon}`" />
         </q-item-section>

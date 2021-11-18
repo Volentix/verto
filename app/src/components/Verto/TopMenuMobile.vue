@@ -42,16 +42,12 @@
           </div>
         </div> -->
   <div class="bg-white">
-    <AccountSelector
-      :showPortfolio="true"
-      class="top"
-      :showAllWallets="true"
-    />
-    <AppBar class="appbar_wrapper bg-grey-1" :callChainTools="callChainTools" v-if="showPanelStatus"/>
-
+    <AppBar class="appbar_wrapper" :callChainTools="callChainTools" v-if="showPanelStatus"/>
+    <AccountSelector :showPortfolio="true" class="top bg-grey-1" :showAllWallets="true" />
     <div class="q-pa-md showpanelstatus_wrapper" v-if="showPanelStatus">
       <div class="q-pb-md row flex justify-between relative q-pt-md">
-        <span class="label_balance">Balance of all chains</span>
+        <span v-if="$store.state.investment.defaultAccount" class="label_balance">Balance of current token</span>
+        <span v-else class="label_balance">Balance of all chains</span>
         <div
           class="text-h4 text-bold"
           v-if="$store.state.wallets.customTotal.show"
