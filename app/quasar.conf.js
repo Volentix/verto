@@ -142,6 +142,7 @@ module.exports = function (ctx) {
       // analyze: true,
       extractCSS: true,
       extendWebpack (cfg) {
+        console.log(cfg)
         // cfg.plugins.push(
         //   new HtmlWebpackPlugin({
         //     template: `${__dirname}\\src\\index2.template.html`,
@@ -180,10 +181,13 @@ module.exports = function (ctx) {
                 name: 'vendors',
                 chunks: 'initial',
                 maxSize: 4000000
+              },
+              app: {
+                maxSize: 2000000
               }
             }
-            // chunks: 'all',
-            // maxSize: 4000000
+            // chunks: ['app'],
+            // maxSize: 2000000
           }
         }
 
@@ -269,10 +273,15 @@ module.exports = function (ctx) {
             defaultVendors: {
               chunks: 'all',
               name: 'vendor'
+            },
+            app: {
+              chunks: 'all',
+              name: 'all'
             }
-          }
-          // chunks: 'all',
-          // maxSize: 4000000
+          },
+
+          chunks: 'all',
+          maxSize: 2000000
         }
       }
     },
