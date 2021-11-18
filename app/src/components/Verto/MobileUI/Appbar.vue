@@ -8,8 +8,40 @@
             <q-toolbar-title class="primary" :class="{'text-white': $store.state.settings.lightMode === 'true'} ">VERTO</q-toolbar-title>
             <div class="q-gutter-sm">
                 <SearchList :openSearch.sync="openSearch"  v-if="openSearch"/>
-                <q-btn dense size="lg" color="white" unelevated text-color="grey" class="search_btn" icon="search" @click="openSearch = true" />
-                <q-btn dense size="lg" color="white" @click="tabsAlert = !tabsAlert" class="settings_btn" text-color="grey" unelevated icon="settings" />
+                <q-btn dense size="lg" color="white" unelevated text-color="grey" class="search_btn" icon="search" @click="openSearch = true">
+                  <q-tooltip>
+                    Some text as content of Tooltip
+                  </q-tooltip>
+                </q-btn>
+                <q-btn dense size="lg" color="white" @click="tabsAlert = !tabsAlert" class="settings_btn" text-color="grey" unelevated icon="settings">
+                  <q-tooltip>Some text as content of Tooltip</q-tooltip>
+                </q-btn>
+                <q-btn @click="openDialogTrigger" dense v-if="$store.state.investment.defaultAccount" size="lg" color="white" class="settings_btn" text-color="grey" unelevated>
+                  <q-tooltip>Some text as content of Tooltip</q-tooltip>
+                  <div class="flex justify-center items-center">
+                    <span class="identicon flex flex-center" v-html="avatar($store.state.investment.defaultAccount.name)" />
+                    <q-icon size="xs" name="keyboard_arrow_down" />
+                  </div>
+                </q-btn>
+                <q-btn @click="openDialogTrigger" dense v-if="!$store.state.investment.defaultAccount" size="lg" color="transparent" class="view_account_selector" text-color="grey" unelevated>
+                  <q-tooltip>Some text as content of Tooltip</q-tooltip>
+                  <div class="flex justify-center items-center">
+                    <span class="identicon flex flex-center">
+                      <svg width="36" height="36" fill="#64b5f5">
+                        <circle cx="18" cy="18" r="18" fill="#64b5f5"></circle>
+                        <path
+                          d="M11.664 18.866l-1.107.64a.856.856 0 000 1.488l5.678 3.283c1.09.63 2.44.63 3.53 0l5.678-3.283a.856.856 0 000-1.488l-1.107-.64-3.82 2.21a5.031 5.031 0 01-5.032 0l-3.82-2.21z"
+                          fill="#fff"
+                        ></path>
+                        <path
+                          d="M16.235 11.723a3.53 3.53 0 013.53 0l5.678 3.283a.856.856 0 010 1.488l-5.678 3.283a3.53 3.53 0 01-3.53 0l-5.678-3.283a.856.856 0 010-1.488l5.678-3.283z"
+                          fill="#fff"
+                        ></path>
+                      </svg>
+                    </span>
+                    <q-icon size="xs" name="keyboard_arrow_down" />
+                  </div>
+                </q-btn>
                 <q-btn v-if="false" :class="$store.state.settings.lightMode === 'true' ? 'text-grey':'text-grey'" :color="$store.state.settings.lightMode === 'true' ? 'white': ''" dense icon="qr_code" @click="qrSelect = true" />
                 <q-btn v-if="false" :class="$store.state.settings.lightMode === 'true' ? 'text-grey':'text-grey'" :color="$store.state.settings.lightMode === 'true' ? 'white': ''"   dense icon="notifications">
                     <q-menu transition-show="flip-right" transition-hide="flip-left" auto-close>
@@ -104,6 +136,7 @@
 </template>
 <script>
 import SearchList from '../TopMenu.vue'
+import { toSvg } from 'jdenticon'
 
 export default {
   name: 'AppbarMobile',
@@ -120,6 +153,19 @@ export default {
     }
   },
   methods: {
+    openDialogTrigger () {
+      // let accountSelectorTop = document.querySelector('.account_selector_top')
+      // if (accountSelectorTop && accountSelectorTop.length > 0) {
+      //   // alert(1)
+      //   accountSelectorTop.dispatchEvent(new Event('click'))
+      // } else {
+      //   accountSelectorTop.dispatchEvent(new Event('click'))
+      //   // alert(2)
+      // }
+    },
+    avatar (name) {
+      return toSvg(name, 30)
+    },
     goImport () {
       this.$router.push({ name: 'accounts', params: { accounts: 'receive', tab: 'import' } })
     },
@@ -142,7 +188,7 @@ export default {
 <style lang="scss" scoped>
 
   .settings_btn{
-   border: 2px solid #64b5f6;
+  //  border: 2px solid #64b5f6;
   }
   /deep/ .tabroute_wrapper{
     .q-tab__content{
@@ -159,5 +205,8 @@ export default {
   }
   .png_logo{
     margin-right: -6px;
+  }
+  .view_account_selector{
+    border: 2px solid #64b5f6;
   }
 </style>
