@@ -1,9 +1,10 @@
 const path = require('path')
-
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = function (ctx) {
   return {
-    // app boot file (/src/boot)
-    // --> boot files are part of "main.js"
+    vendor: {
+      disable: false
+    },
     boot: [
       'axios',
       'clipboard',
@@ -139,12 +140,53 @@ module.exports = function (ctx) {
       // vueCompiler: true,
       // gzip: true,
       // analyze: true,
-      // extractCSS: false,
+      extractCSS: true,
       extendWebpack (cfg) {
+        // cfg.plugins.push(
+        //   new HtmlWebpackPlugin({
+        //     template: `${__dirname}\\src\\index2.template.html`,
+        //     filename: 'index3.html',
+        //     chunks: 'all',
+        //     ctx: ctx,
+        //     process: { env: env },
+        //     productName: 'PageTitle 3',
+        //     productDescription: 'PageDescription 3',
+        //     minify: true,
+        //     hash: true
+        //   })
+        // )
         cfg.resolve.alias = {
           ...cfg.resolve.alias,
           '@': path.resolve(__dirname, './src')
         }
+        if (process.env.QMODE === 'bex' && cfg.mode === 'production') {
+          //
+          cfg.plugins.push(
+            new HtmlWebpackPlugin({
+              template: `${__dirname}\\src-bex\\background.template.html`,
+              filename: `${__dirname}\\dist\\bex\\UnPackaged\\background.html`,
+              excludeChunks: ['bex-content-script', 'bex-dom'],
+              productName: 'Verto Background',
+              productDescription: 'Verto Background',
+              minify: false,
+              hash: false
+            })
+          )
+          cfg.optimization.splitChunks = {
+            cacheGroups: {
+              vendor: {
+                // filename: 'vendors.js',
+                test: /[\\/]node_modules[\\/]/,
+                name: 'vendors',
+                chunks: 'initial',
+                maxSize: 4000000
+              }
+            }
+            // chunks: 'all',
+            // maxSize: 4000000
+          }
+        }
+
         cfg.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
@@ -219,7 +261,21 @@ module.exports = function (ctx) {
       id: 'org.cordova.vertoapp'
       // noIosLegacyBuildFlag: true // uncomment only if you know what you are doing
     },
-
+    bex: {
+      extendWebpack (cfg) {
+        cfg.optimization.splitChunks = {
+          // include all types of chunks
+          cacheGroups: {
+            defaultVendors: {
+              chunks: 'all',
+              name: 'vendor'
+            }
+          }
+          // chunks: 'all',
+          // maxSize: 4000000
+        }
+      }
+    },
     electron: {
       bundler: 'builder', // or 'packager'
       extendWebpack (cfg) {

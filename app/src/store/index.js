@@ -20,6 +20,8 @@ if (process.env.MODE === 'bex') {
     syncActions: false
   }))
   plugins.push(storeLoadedPlugin)
+  global.browser = require('webextension-polyfill')
+  Vue.prototype.$browser = global.browser
 }
 Vue.use(Vuex)
 
