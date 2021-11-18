@@ -164,8 +164,8 @@ module.exports = function (ctx) {
           //
           cfg.plugins.push(
             new HtmlWebpackPlugin({
-              template: `${__dirname}\\src-bex\\background.template.html`,
-              filename: `${__dirname}\\dist\\bex\\UnPackaged\\background.html`,
+              template: `${__dirname}/src-bex/background.template.html`,
+              filename: `${__dirname}/dist/bex/UnPackaged/background.html`,
               excludeChunks: ['bex-content-script', 'bex-dom'],
               productName: 'Verto Background',
               productDescription: 'Verto Background',
@@ -176,7 +176,6 @@ module.exports = function (ctx) {
           cfg.optimization.splitChunks = {
             cacheGroups: {
               vendor: {
-                // filename: 'vendors.js',
                 test: /[\\/]node_modules[\\/]/,
                 name: 'vendors',
                 chunks: 'initial',
