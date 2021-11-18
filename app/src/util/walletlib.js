@@ -54,6 +54,15 @@ class Lib {
       gas: '', // The C-Chain gas price is 225 nAVAX (225 GWei). The C-Chain gas limit is 8 * 10e6 (8,000,000).
       network_id: 43114
     }, {
+      name: 'PulseChain',
+      chain: 'tpls',
+      nativeToken: 'tpls',
+      icon: 'https://pbs.twimg.com/profile_images/1412839310106234882/Z4H3-LxW_400x400.jpg',
+      provider: 'https://rpc.testnet.pulsechain.com',
+      explorer: 'https://scan.pulsechain.com/tx/',
+      gas: '', // The C-Chain gas price is 225 nAVAX (225 GWei). The C-Chain gas limit is 8 * 10e6 (8,000,000).
+      network_id: 940
+    }, {
       name: 'Fantom',
       chain: 'ftm',
       nativeToken: 'ftm',

@@ -17,7 +17,7 @@ class Wallets2Tokens {
     let ethWallet = null
     this.tableDataCache = []
     this.tableData = []
-    console.log('walletName', data)
+
     // store.state.wallets.portfolioTotal = 0
     /*
     store.state.currentwallet.config.keys.push({
@@ -52,7 +52,7 @@ class Wallets2Tokens {
         return
       }
     }
-    console.log('walletName 3', data)
+
     this.eos = new EosWrapper()
     const self = this
     self.eosUSD = 0
@@ -61,7 +61,7 @@ class Wallets2Tokens {
     this.tableData = [...store.state.currentwallet.config.keys].filter(
       w => (!walletName || (w.name.toLowerCase() === walletName.toLowerCase() && !ethWallet)) || (ethWallet && w.key.toLowerCase() === ethWallet.key.toLowerCase())
     )
-    console.log(this.tableData, walletName, 'walletName 4')
+
     if (store.state.settings.network === 'testnet') {
       this.tableData = this.tableData.filter(o => o.origin === 'eos_testnet')
       this.tableData.map(async wallet => {
@@ -309,9 +309,10 @@ class Wallets2Tokens {
           }
           this.getEOSTokens(wallet, balances)
         } else if (wallet.type === 'eth') {
+          this.getPulseBalance(wallet)
           // wallet.key = '0x181717bab64928669f606ee8b266502aaa2f6608'
           Lib.evms.filter(m =>
-            m.network_id !== 1 // Until eth is integrated into covalent api
+            ![1, 940].includes(m.network_id) // Until eth is integrated into covalent api
           ).forEach(e => {
             axios
               .get(
@@ -505,6 +506,44 @@ class Wallets2Tokens {
     // console.log('this.$store.state.wallets', this.$store.state)
     // store.commit('wallets/updateTokens', this.tableData)
     // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)
+  }
+  getPulseBalance (wallet) {
+    axios
+      .get(
+        process.env[store.state.settings.network].CACHE + 'https://scan.pulsechain.com/address/' + wallet.key + '/token-balances')
+      .then(res => {
+        var html = new DOMParser().parseFromString(res.data, 'text/html')
+        let rawTokenData = html.querySelectorAll('.border-bottom')
+
+        for (let i = 0; i < rawTokenData.length; ++i) {
+          let tokens = rawTokenData[i].querySelectorAll('p')
+          let address = rawTokenData[i].querySelector('a').getAttribute('href').split('/')[2]
+          let symbol = rawTokenData[i].getAttribute('data-token-symbol')
+          let amount = parseFloat(tokens[1].innerText)
+
+          this.tableData.push({
+            isEvm: true,
+            disabled: false,
+            type: symbol.toLowerCase(),
+            name: wallet.name,
+            tokenPrice: 0,
+            key: wallet.key.toLowerCase(),
+            privateKey: wallet.privateKey,
+            amount: amount,
+            usd: 0,
+            decimals: 18,
+            contract: address,
+            chain: 'tpls',
+            icon: this.getTokenImage('eth', symbol.toLowerCase())
+          })
+        }
+        this.updateWallet()
+      }).catch(e => {
+        this.$q.notify({
+          color: 'negative',
+          message: e
+        })
+      })
   }
   getTokenImage (chain, type) {
     let image = 'https://etherscan.io/images/main/empty-token.png'
