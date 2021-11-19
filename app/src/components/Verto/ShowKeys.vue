@@ -1,51 +1,67 @@
 <template>
-    <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="alert">
-      <q-card :dark="$store.state.settings.lightMode === 'true'">
-        <q-card-section>
-          <div class="text-body1 text-bold"><q-icon :name="'img:'+chain.icon" class="q-pr-sm" />{{chain.label}} accounts: {{(field == 'key' ? 'Public keys' : (field == 'privateKey' ? 'Private keys' : '' )) }}</div>
-        </q-card-section>
-        <q-scroll-area style="height: 300px; ">
-
+  <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="alert">
+    <q-card :dark="$store.state.settings.lightMode === 'true'" style="width: 100%;max-width: 96%">
+      <q-card-section>
+        <!-- Public keys removed -->
+        <div class="text-body1 text-bold">
+          <q-icon :name="'img:'+chain.icon" class="q-pr-sm" />
+          {{chain.label}} accounts {{(field == 'key' ? '' : (field == 'privateKey' ? 'Private keys' : '' )) }}
+        </div>
+      </q-card-section>
+      <q-scroll-area style="height: 45vh;">
         <q-card-section class="q-pt-none" v-for="(account , index) in chain.accounts" :key="index">
-         <span class="q-pb-sm">{{account.name}}  <q-btn v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" :label="!showQr[account.name.split(' ')[0]] ?  'Show QR Code' : 'Hide'" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat size="sm" class="float-right q-mb-sm" icon-right="img:https://image.flaticon.com/icons/png/512/107/107072.png" /></span><br/>
-         <qrcode v-if="(account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]]" dark :value="decryptedKeys[index] ? decryptedKeys[index] : account[field]" :options="{size: 100}"></qrcode>
-         <div class="text-body1 q-pt-md copy-key cursor-pointer q-mt-sm" @click="copyToClipboard(account[field])"  v-if="account[field] || (showPrivateKeys[index] && decryptedKeys[index])" >
-               {{getKeyFormat(decryptedKeys[index] ? decryptedKeys[index] : account[field], 18)}} <q-icon name="o_file_copy"  />
+          <div class="text-body1 q-pt-md flex justify-between items-center copy-key" v-if="account[field] || (showPrivateKeys[index] && decryptedKeys[index])">
+            <div class="flex justify-between">
+              <div class="flex">
+                <span class="identicon" v-html="avatar(account.name)" />
+                <span class="account_name text-bold q-ml-sm q-mr-sm flex flex-center">{{account.name}}</span>
+              </div>
+              <span class="flex flex-center">
+                {{getKeyFormat(decryptedKeys[index] ? decryptedKeys[index] : account[field], 4)}}
+              </span>
+            </div>
+            <div class="flex">
+              <q-btn dense flat color="white" text-color="black" icon="o_file_copy" @click="copyToClipboard(account[field])" />
+              <q-btn dense v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat icon="img:https://image.flaticon.com/icons/png/512/107/107072.png" />
+              <div class="qr_code_wrapper column justify-center items-center" :class="{ 'show' : (account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]] }">
+                <div class="flex flex-center account_name_text">{{account.name}}</div>
+                <q-btn class="close_qr_code_popup" dense v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat icon="close" />
+                <qrcode v-if="(account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]]" dark :value="decryptedKeys[index] ? decryptedKeys[index] : account[field]" :size="200" :options="{size: 100}"></qrcode>
+                <div class="flex flex-center scan_text">Scan the qr code</div>
+              </div>
+            </div>
           </div>
-
-           <div class="text-body1 q-pt-md copy-key cursor-pointer" v-if="account.privateKeyEncrypted && field == 'privateKey' &&  !showPrivateKeys[index] " >
-               <q-input
-                  dense
-                        v-model="privateKeyPassword[index]"
-                        :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
-                        rounded
-                        outlined
-                        class="full-width"
-                        color="green"
-                        label="Private Key Password"
-                        @input="checkPrivateKeyPassword(privateKeyPassword[index], index)"
-                        debounce="500"
-                        @keyup.enter="showKeys(index)"
-                        :type="showPwd[index] ? 'password' : 'text'"
-                        :error="invalidPrivateKeyPassword[index]"
-                        error-message="The private key password is invalid"
-                    >
-                        <template v-slot:append>
-                        <q-btn flat :disable="!decryptedKeys[index]" @click="showKeys(index)" icon="send" rounded   dense />
-                        <q-icon  v-if="false" :name="showPwd[index] ? 'visibility' : 'visibility_off'" class="cursor-pointer" @click="$set(showPwd, index, !showPwd[index])" />
-                        </template>
-
-                    </q-input>
-
+          <div class="text-body1 q-pt-md copy-key cursor-pointer" v-if="account.privateKeyEncrypted && field == 'privateKey' &&  !showPrivateKeys[index] " >
+            <q-input
+              dense
+              v-model="privateKeyPassword[index]"
+              :dark="$store.state.settings.lightMode === 'true'" :light="$store.state.settings.lightMode === 'false'"
+              rounded
+              outlined
+              class="full-width"
+              color="green"
+              label="Private Key Password"
+              @input="checkPrivateKeyPassword(privateKeyPassword[index], index)"
+              debounce="500"
+              @keyup.enter="showKeys(index)"
+              :type="showPwd[index] ? 'password' : 'text'"
+              :error="invalidPrivateKeyPassword[index]"
+              error-message="The private key password is invalid"
+            >
+              <template v-slot:append>
+                <q-btn flat :disable="!decryptedKeys[index]" @click="showKeys(index)" icon="send" rounded   dense />
+                <q-icon  v-if="false" :name="showPwd[index] ? 'visibility' : 'visibility_off'" class="cursor-pointer" @click="$set(showPwd, index, !showPwd[index])" />
+              </template>
+            </q-input>
           </div>
-
         </q-card-section>
- </q-scroll-area>
-      </q-card>
-    </q-dialog>
+      </q-scroll-area>
+    </q-card>
+  </q-dialog>
 </template>
 <script>
 import Vue from 'vue'
+import { toSvg } from 'jdenticon'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 Vue.component(VueQrcode.name, VueQrcode)
 import Formatter from '@/mixins/Formatter'
@@ -76,6 +92,9 @@ export default {
     }
   },
   methods: {
+    avatar (name) {
+      return toSvg(name, 30)
+    },
     showKeys (index) {
       this.checkPrivateKeyPassword()
       if (this.decryptedKeys[index]) {
@@ -111,6 +130,48 @@ export default {
   .q-dialog .q-card.q-card--dark.q-dark{
     .copy-key {
       background: #0e1829;
+    }
+  }
+  .identicon{
+    overflow: hidden;
+    background: #FFF;
+    width: 30px;
+    border-radius: 10px;
+    height: 30px;
+    outline: 1px solid #64b5f6;
+    svg{
+    }
+  }
+  .qr_code_wrapper{
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    width: 100%;
+    max-width: 80vw;
+    height: 100vh;
+    max-height: calc(50vh);
+    z-index: 9;
+    background-color: #fff;
+    visibility: hidden;
+    .close_qr_code_popup{
+      position: absolute;
+      right: 10px;
+      top: 0px;
+    }
+    canvas{
+      transform: scale3d(1.5,1.5,1.5);
+    }
+    &.show{
+      visibility: visible;
+    }
+    .account_name_text{
+      position: absolute;
+      top: 10px;
+    }
+    .scan_text{
+      position: absolute;
+      bottom: 10px;
     }
   }
 </style>

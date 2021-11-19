@@ -105,8 +105,8 @@ export default {
       }
       return label
     },
-    getKeyFormat (key, last = 5) {
-      return key ? key.substring(0, 5).toLowerCase() +
+    getKeyFormat (key, last = 4) {
+      return key ? key.substring(0, 4).toLowerCase() +
       '...' +
       key.substr(key.length - last).toLowerCase() : ''
     },

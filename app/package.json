@@ -94,6 +94,7 @@
     "fs-web": "^1.0.1",
     "hdkey": "^2.0.1",
     "intro.js": "^3.2.1",
+    "jdenticon": "^3.1.1",
     "js-chain-libs": "^0.3.0",
     "leaflet": "^1.7.1",
     "litecore-lib": "^0.13.22",
