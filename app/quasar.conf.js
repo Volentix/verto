@@ -142,6 +142,7 @@ module.exports = function (ctx) {
       // analyze: true,
       extractCSS: true,
       extendWebpack (cfg) {
+        console.log(cfg)
         // cfg.plugins.push(
         //   new HtmlWebpackPlugin({
         //     template: `${__dirname}\\src\\index2.template.html`,
@@ -163,8 +164,8 @@ module.exports = function (ctx) {
           //
           cfg.plugins.push(
             new HtmlWebpackPlugin({
-              template: `${__dirname}\\src-bex\\background.template.html`,
-              filename: `${__dirname}\\dist\\bex\\UnPackaged\\background.html`,
+              template: `${__dirname}/src-bex/background.template.html`,
+              filename: `${__dirname}/dist/bex/UnPackaged/background.html`,
               excludeChunks: ['bex-content-script', 'bex-dom'],
               productName: 'Verto Background',
               productDescription: 'Verto Background',
@@ -175,15 +176,17 @@ module.exports = function (ctx) {
           cfg.optimization.splitChunks = {
             cacheGroups: {
               vendor: {
-                // filename: 'vendors.js',
                 test: /[\\/]node_modules[\\/]/,
                 name: 'vendors',
                 chunks: 'initial',
                 maxSize: 4000000
+              },
+              app: {
+                maxSize: 2000000
               }
             }
-            // chunks: 'all',
-            // maxSize: 4000000
+            // chunks: ['app'],
+            // maxSize: 2000000
           }
         }
 
@@ -269,10 +272,15 @@ module.exports = function (ctx) {
             defaultVendors: {
               chunks: 'all',
               name: 'vendor'
+            },
+            app: {
+              chunks: 'all',
+              name: 'all'
             }
-          }
-          // chunks: 'all',
-          // maxSize: 4000000
+          },
+
+          chunks: 'all',
+          maxSize: 2000000
         }
       }
     },
