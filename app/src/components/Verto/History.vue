@@ -8,7 +8,7 @@
       </q-banner>
 
       <div class="q-pa-md loading-table" v-else-if="loading">
-      <span :class="$store.state.settings.lightMode === 'true' ? 'text-body1 text-white': 'text-body1'">We are loading your transaction history. This may take a moment</span>
+        <span :class="$store.state.settings.lightMode === 'true' ? 'text-body1 text-white': 'text-body1'">We are loading your transaction history. This may take a moment</span>
         <q-markup-table flat v-if="!$q.platform.is.mobile">
           <thead>
             <tr>
@@ -56,14 +56,15 @@
             </tr>
           </tbody>
         </q-markup-table>
+        <!-- <q-linear-progress query color="warning" class="q-mt-md" v-if="$q.platform.is.mobile"/> -->
         <q-linear-progress query color="blue-4" class="q-mt-md" v-if="$q.platform.is.mobile"/>
 
       </div>
 
-      <div  :class="$store.state.settings.lightMode === 'true' ? 'text-white q-pa-md': 'text-black q-pa-md'" v-else-if="!history.length && !loading">
+      <div :class="$store.state.settings.lightMode === 'true' ? 'text-white q-pa-md': 'text-black q-pa-md'" v-else-if="!history.length && !loading">
         No transactions recorded yet with this account
       </div>
-      <q-scroll-area v-else :visible="true" :class="$store.state.settings.lightMode === 'true' ? 'q-pr-md':'q-pr-md bg-white'" :style="$q.platform.is.mobile ? 'height: 120%; padding-bottom: 5px;' : 'height: 85%;'">
+      <q-scroll-area v-else :visible="true" :class="$store.state.settings.lightMode === 'true' ? 'q-pr-md':'bg-white'" :style="$q.platform.is.mobile ? 'height: 100%; padding-bottom: 0px;' : 'height: 85%;'">
         <div v-if="!($q.platform.is.mobile||$isbex)">
 
           <div v-for="(day,indexDay) in history" :key="indexDay">
