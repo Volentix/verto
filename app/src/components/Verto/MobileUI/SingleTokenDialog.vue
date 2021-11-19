@@ -1,31 +1,30 @@
 <template>
     <div>
         <q-dialog
-            v-model="dialog"
-            persistent
-            :maximized="maximizedToggle"
-            transition-show="slide-up"
-            transition-hide="slide-down"
+          v-model="dialog"
+          persistent
+          :maximized="maximizedToggle"
+          transition-show="slide-up"
+          transition-hide="slide-down"
         >
-        <q-card  :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #f2f2f2 !important'">
-            <q-header class="bg-white">
-              <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
-                <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
-                <q-toolbar-title> Token Details </q-toolbar-title>
+        <q-card :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #FFFFFF !important'">
+            <q-header class="bg-white full-width">
+              <q-toolbar class="flex justify-between full-width" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
+                <q-btn flat dense label="Back" no-caps icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
+                <q-toolbar-title v-if="false"> Token Details </q-toolbar-title>
                 <q-btn flat round dense icon="close" v-close-popup @click="closeDialog"/>
               </q-toolbar>
               <AccountSelector v-if="tab != 'import'" :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain"  />
-
             </q-header>
             <q-card-section class="q-mt-xl" :class="{'top-space': $store.state.wallets.portfolioTotal}">
                 <q-item style="margin-left: -14px;">
                     <q-item-section side>
-                        <q-avatar rounded>
-                            <img v-if="asset.icon" :src="asset.icon" style="max-width: 40px" alt="icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"/>
-                        </q-avatar>
+                      <q-avatar rounded>
+                        <img v-if="asset.icon" :src="asset.icon" style="max-width: 40px" alt="icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"/>
+                      </q-avatar>
                     </q-item-section>
                     <q-item-section>
-                        <q-item-label class=" text-h5">{{marketData && marketData.tokenName ? marketData && marketData.tokenName:  asset.type.toUpperCase()}}</q-item-label>
+                        <q-item-label class="text-h6">{{marketData && marketData.tokenName ? marketData && marketData.tokenName : asset.type.toUpperCase()}}</q-item-label>
                     </q-item-section>
                     <q-item-section side top>
                         <div class="text-bold text-h6 ">
@@ -37,13 +36,14 @@
                     </q-item-section>
                 </q-item>
                 <div>
-                    <div @mouseleave="$store.commit('tokens/updateState', { key: 'historicalPrice', value: null })">
+                    <div class="bg-grey-2 rounded q-pl-md q-pr-md q-pb-xl q-mb-md" @mouseleave="$store.commit('tokens/updateState', { key: 'historicalPrice', value: null })">
                         <!--  <q-spinner-dots color="deep-purple-12" v-if="!chartData" /> -->
                         <span class="text-caption" v-if="!chartData && chartAvailable">
-                            Loading historical price (1 month period)</span>
-
+                          Loading historical price (1 month period)
+                        </span>
                         <span class="text-caption" v-else-if="!chartAvailable">
-                            Historical price not available for this token </span>
+                          Historical price not available for this token
+                        </span>
                         <q-linear-progress
                             indeterminate
                             color="grey-5"
@@ -60,17 +60,17 @@
                             style="height: 200px"
                         />
                     </div>
-                    <div v-if="chartAvailable">
+                    <div class="toggle_btns_wrapper" v-if="chartAvailable">
                         <q-btn-toggle
                             @click="getHistoriclPrice(historicalLimit)"
                             v-model="historicalLimit"
-                            style="width: 100%; justify-content: space-evenly;"
-                            class="q-mb-sm"
+                            style="width: 68%; justify-content: space-evenly;"
+                            class="q-mb-sm toggle_btns"
                             no-caps
-                            rounded
+                            dense
                             unelevated
-                            toggle-color="black"
-                            :color="$store.state.settings.lightMode === 'true' ? 'black': 'white'"
+                            toggle-color="grey-8"
+                            :color="$store.state.settings.lightMode === 'true' ? 'black': 'grey-2'"
                             text-color="black"
                             :options="historicalOptions"
                         />
@@ -79,7 +79,7 @@
                 <!-- EQUITY SECTION  START-->
                 <q-item v-if="$store.state.investment.defaultAccount" style="margin-left: -14px;">
                     <q-item-section>
-                        <q-item-label class=" text-h5">Equity</q-item-label>
+                        <q-item-label class="text-h5">Equity</q-item-label>
                         <q-item-label caption>{{ formatNumber(asset.percentage, 2) }}% of Portfolio</q-item-label>
                     </q-item-section>
                     <q-item-section side top>
@@ -201,13 +201,12 @@
                 </q-list>
                 <!-- STATS SECTION END -->
                 <!-- ACCOUNT LIST PANEL -->
-                <div class="row  items-center justify-center q-mb-xl">
-                    <TokenByAccount :type="asset.type" :chain="asset.chain" class="right-area q-mt-lg col" />
+                <div class="row tokenbyaccount1 items-center justify-center q-mb-xl">
+                  <TokenByAccount :type="asset.type" :chain="asset.chain" class="right-area q-mt-lg col" />
                 </div>
-
-                <q-page-sticky expand position="bottom" style="margin-bottom: 10px;">
-                    <q-toolbar class="bg-transparent text-white">
-                        <q-btn rounded icon-right="send" color="primary" label="SEND" class="full-width" @click="dialogSend = true; setAssetLocalCount = 1"/>
+                <q-page-sticky expand position="bottom" style="margin-bottom: 0px;">
+                    <q-toolbar class="bg-white text-white q-pa-md">
+                        <q-btn rounded icon-right="send" color="blue-4" label="Send" unelevated class="full-width send_btn" @click="dialogSend = true; setAssetLocalCount = 1"/>
                     </q-toolbar>
                 </q-page-sticky>
             </q-card-section>
@@ -648,5 +647,31 @@ export default {
 }
 /deep/ .q-tabs--horizontal {
     display: none;
+}
+.rounded{
+  border-radius: 10px;
+}
+.toggle_btns_wrapper{
+  position: relative;
+  .toggle_btns{
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateY(-100%) translateX(-50%);
+    /deep/ .q-btn-item{
+      border-radius: 5px !important;
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+  }
+}
+.send_btn{
+  height: 50px;
+  font-size: 18px;
+  letter-spacing: 1px;
+  font-weight: 300;
+  /deep/ .material-icons{
+    font-size: 18px;
+  }
 }
 </style>

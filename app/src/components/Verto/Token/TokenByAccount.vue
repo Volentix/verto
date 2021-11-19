@@ -33,30 +33,30 @@
       <q-item-section @click="copyToClipboard(accountOption.chain == 'eos' ? accountOption.name : accountOption.key)" v-if="accountOption.value" side top>
         <q-icon name="content_copy"  size="sm"/>
       </q-item-section>
-</div>
-     <q-list bordered class="rounded-borders"  v-else>
-      <q-item-label class="accounts_title_with" v-if="type" header>{{accounts.length}} accounts with {{type.toUpperCase()}}</q-item-label>
+    </div>
+      <!-- v-else -->
+      <q-list v-if="false" bordered class="rounded-borders">
+        <q-item-label class="accounts_title_with" v-if="type" header>{{accounts.length}} accounts with {{type.toUpperCase()}}</q-item-label>
+        <q-item @click="setAccount(account)" clickable v-ripple v-for="(account, index) in accounts" :key="index">
+          <q-item-section avatar>
+          <q-avatar color="primary" text-color="white"><span class="text-body1">{{account.name.substring(0,2).toUpperCase()}}</span></q-avatar>
+          </q-item-section>
 
-      <q-item @click=" setAccount(account)" clickable v-ripple v-for="(account, index) in accounts" :key="index">
-        <q-item-section avatar>
-         <q-avatar color="primary" text-color="white"><span class="text-body1">{{account.name.substring(0,2).toUpperCase()}}</span></q-avatar>
-        </q-item-section>
+          <q-item-section>
+            <q-item-label lines="1">{{account.name}}</q-item-label>
+            <q-item-label caption >
+            {{getKeyFormat(account.key)}}
+            </q-item-label>
+          </q-item-section>
 
-        <q-item-section>
-          <q-item-label lines="1">{{account.name}}</q-item-label>
-          <q-item-label caption >
-           {{getKeyFormat(account.key)}}
-          </q-item-label>
-        </q-item-section>
+          <q-item-section side top>
+            <span class="text-caption"> ${{formatNumber(account.usd)}}</span>
+            <span class="text-caption" v-if="type" > {{formatNumber(account.amount)}} {{type.toUpperCase()}}</span>
 
-        <q-item-section side top>
-           <span class="text-caption"> ${{formatNumber(account.usd)}}</span>
-          <span class="text-caption" v-if="type" > {{formatNumber(account.amount)}} {{type.toUpperCase()}}</span>
-
-        </q-item-section>
-      </q-item>
-    </q-list>
-     </div>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </div>
 </template>
 <script>
 import { scroll } from 'quasar'

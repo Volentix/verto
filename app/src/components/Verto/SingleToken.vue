@@ -582,7 +582,7 @@
           <liquidityPoolsTable  v-else-if="tokenTabOption == 'opportunities'"  :asset="asset" :rowsPerPage="7"   /> -->
           </div>
 
-          <TokenByAccount :type="asset.type" :chain="asset.chain" class="right-area q-mt-lg col" />
+          <TokenByAccount :type="asset.type" :chain="asset.chain" class="tokenbyaccount2 right-area q-mt-lg col" />
         </div>
 
       </div>

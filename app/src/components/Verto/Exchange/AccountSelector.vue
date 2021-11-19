@@ -422,13 +422,12 @@
           <q-toolbar>
             <q-btn
               flat
-              round
               dense
-              :color="
-                $store.state.settings.lightMode === 'true' ? 'white' : 'black'
-              "
+              :color="$store.state.settings.lightMode === 'true' ? 'white' : 'black'"
               icon="arrow_back_ios"
               class="q-mr-sm"
+              no-caps
+              label="Back"
               @click="dialog = false"
             />
             <!-- <q-toolbar-title style="margin-left: -25px"> Select An Account  </q-toolbar-title> -->
@@ -438,14 +437,13 @@
             :class="
               $store.state.settings.lightMode === 'true'
                 ? 'text-h6 q-pa-md text-white'
-                : 'text-h6 q-pa-md '
-            "
+                : 'text-h6 q-pa-md q-ml-md'
+              "
           >
             Select An Account
           </div>
           <q-card-section class="items-center" >
             <q-item
-
               :key="Math.random() + '123'"
               v-if="accountOption"
               class="
@@ -503,7 +501,7 @@
                     :dark="$store.state.settings.lightMode === 'true'"
                     avatar
                   >
-                    <img class="coin-icon" width="25px" :src="tokChain.icon" />
+                    <img class="coin-icon" width="35px" :src="tokChain.icon" />
                   </q-item-section>
                   <q-item-section
                     :dark="$store.state.settings.lightMode === 'true'"
