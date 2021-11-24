@@ -8,7 +8,7 @@
           transition-hide="slide-down"
         >
         <q-card :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'" :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': 'background: #FFFFFF !important'">
-            <q-header class="bg-white full-width">
+            <q-header class="bg-white full-width header_header">
               <q-toolbar class="flex justify-between full-width" :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'">
                 <q-btn flat dense label="Back" no-caps icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/>
                 <q-toolbar-title v-if="false"> Token Details </q-toolbar-title>
@@ -36,7 +36,7 @@
                     </q-item-section>
                 </q-item>
                 <div>
-                    <div class="bg-grey-2 rounded q-pl-md q-pr-md q-pb-xl q-mb-md" @mouseleave="$store.commit('tokens/updateState', { key: 'historicalPrice', value: null })">
+                    <div :class="$store.state.settings.lightMode === 'true' ? 'dark_bg_transparent':'bg-grey-2'" class="rounded q-pl-md q-pr-md q-pb-xl q-mb-md" @mouseleave="$store.commit('tokens/updateState', { key: 'historicalPrice', value: null })">
                         <!--  <q-spinner-dots color="deep-purple-12" v-if="!chartData" /> -->
                         <span class="text-caption" v-if="!chartData && chartAvailable">
                           Loading historical price (1 month period)
@@ -70,7 +70,7 @@
                             dense
                             unelevated
                             toggle-color="grey-8"
-                            :color="$store.state.settings.lightMode === 'true' ? 'black': 'grey-2'"
+                            :color="$store.state.settings.lightMode === 'true' ? 'grey-2': 'grey-2'"
                             text-color="black"
                             :options="historicalOptions"
                         />
@@ -205,7 +205,7 @@
                   <TokenByAccount :type="asset.type" :chain="asset.chain" class="right-area q-mt-lg col" />
                 </div>
                 <q-page-sticky expand position="bottom" style="margin-bottom: 0px;">
-                    <q-toolbar class="bg-white text-white q-pa-md">
+                    <q-toolbar class="q-pa-md" :class="$store.state.settings.lightMode === 'true' ? 'bg-blue-verto':'bg-white text-white'">
                         <q-btn rounded icon-right="send" color="blue-4" label="Send" unelevated class="full-width send_btn" @click="dialogSend = true; setAssetLocalCount = 1"/>
                     </q-toolbar>
                 </q-page-sticky>
@@ -651,6 +651,9 @@ export default {
 .rounded{
   border-radius: 10px;
 }
+.dark_bg_transparent{
+  background: rgba(white, .1);
+}
 .toggle_btns_wrapper{
   position: relative;
   .toggle_btns{
@@ -673,5 +676,8 @@ export default {
   /deep/ .material-icons{
     font-size: 18px;
   }
+}
+.bg-blue-verto{
+  background: #04111f;
 }
 </style>

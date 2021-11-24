@@ -22,6 +22,7 @@
             no-caps
             outside-arrows
             mobile-arrows
+            :dark="$store.state.settings.lightMode === 'true'"
             class="q-pb-md tabindex_wrapper"
             @click="updateTab(tabIndex)"
             :class="{
@@ -29,24 +30,25 @@
                 'assets-tabs': !$route.params.accounts,
                 'text-primary': $store.state.settings.lightMode !== 'true',
                 'text-white': $store.state.settings.lightMode === 'true',
+                'tabindexDark': $store.state.settings.lightMode === 'true'
             }"
         >
-            <q-tab name="receive"  label="Receive" :class="{
+            <q-tab name="receive" :dark="$store.state.settings.lightMode === 'true'" label="Receive" :class="{
                 manage: $store.state.wallets.portfolioTotal,
                 read:
                   !$store.state.wallets.portfolioTotal &&
                   !$route.params.accounts,
               }"/>
-            <q-tab name="import"  label="Import" :class="{
+            <q-tab name="import" :dark="$store.state.settings.lightMode === 'true'" label="Import" :class="{
                 manage: $store.state.wallets.portfolioTotal,
                 read:
                   !$store.state.wallets.portfolioTotal &&
                   !$route.params.accounts,
               }" />
-            <q-tab name="create" label="Create new account" :class="{ active: tab == 'create', manage: true, }" />
-            <q-tab  name="chains"  label="Chains" class="read" v-if="$store.state.wallets.portfolioTotal && !$store.state.investment.defaultAccount"/>
-            <q-tab name="assets" label="Assets" class="read"/>
-            <q-tab v-if="$store.state.investment.defaultAccount" name="history"  label="History" class="read"/>
+            <q-tab name="create" :dark="$store.state.settings.lightMode === 'true'" label="Create new account" :class="{ active: tab == 'create', manage: true, }" />
+            <q-tab  name="chains" :dark="$store.state.settings.lightMode === 'true'" label="Chains" class="read" v-if="$store.state.wallets.portfolioTotal && !$store.state.investment.defaultAccount"/>
+            <q-tab name="assets" :dark="$store.state.settings.lightMode === 'true'" label="Assets" class="read"/>
+            <q-tab v-if="$store.state.investment.defaultAccount" :dark="$store.state.settings.lightMode === 'true'" name="history"  label="History" class="read"/>
 
             <q-tab name="privateKeys"  label="Private Keys" class="manage"/>
             <q-tab @click="setIndex('investments') ; componentKey++ ; openAssetDialog()" name="investments"  label="Investments" class="read" />
@@ -173,6 +175,9 @@ export default {
   background: #eef8ff;
   padding-bottom: 0px;
   box-shadow: 0px 6px 6px 0px rgba(black, .1);
+  &.tabindexDark{
+    background: #15243d;
+  }
   /deep/ .q-tabs__content{
     justify-content: space-between;
     .q-tab{

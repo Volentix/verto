@@ -13,6 +13,7 @@
                         :key="i"
                         v-show="!allChains"
                         @click="tab !=='receive' ? openAssetDialog (chain) : chainAction(chain) "
+                        :dark="$store.state.settings.lightMode === 'true'"
                         class="q-pt-md q-pb-md q-pt-md3"
                     >
                         <q-item-section avatar top>
@@ -152,7 +153,7 @@
                         <!-- <q-item-section side middle>
                           <q-btn color="white" text-color="grey-7" dense icon="chevron_right" flat class="more_verti_btn" unelevated @click="chainAction(chain)" /> -->
                         <q-item-section v-if="tab == 'chains'" side middle>
-                          <q-icon name="keyboard_arrow_right" />
+                          <q-icon name="keyboard_arrow_right" :color="$store.state.settings.lightMode === 'true' ? 'white':''" />
                         </q-item-section>
                     </q-item>
                     <!-- <q-item>
@@ -264,7 +265,7 @@
                             </div>
                         </q-item-section>
                         <q-item-section side middle>
-                          <q-avatar flat icon="chevron_right" dense text-color="black" />
+                          <q-avatar flat icon="chevron_right" dense :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" />
                         </q-item-section>
                     </q-item>
                     <p v-if="!filterTokens.length">

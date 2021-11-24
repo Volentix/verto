@@ -21,7 +21,7 @@
               </span>
             </div>
             <div class="flex">
-              <q-btn dense flat color="white" text-color="black" icon="o_file_copy" @click="copyToClipboard(account[field])" />
+              <q-btn dense flat color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="o_file_copy" @click="copyToClipboard(account[field])" />
               <q-btn dense v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat icon="img:https://image.flaticon.com/icons/png/512/107/107072.png" />
               <div class="qr_code_wrapper column justify-center items-center" :class="{ 'show' : (account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]] }">
                 <div class="flex flex-center account_name_text">{{account.name}}</div>
@@ -127,11 +127,6 @@ export default {
     width: 30px;
     height: 30px;
   }
-  .q-dialog .q-card.q-card--dark.q-dark{
-    .copy-key {
-      background: #0e1829;
-    }
-  }
   .identicon{
     overflow: hidden;
     background: #FFF;
@@ -172,6 +167,17 @@ export default {
     .scan_text{
       position: absolute;
       bottom: 10px;
+    }
+  }
+  .q-dialog .q-card.q-card--dark.q-dark{
+    .copy-key {
+      background: #0e1829;
+    }
+    .identicon{
+      background: #0e1829;
+    }
+    .qr_code_wrapper{
+      background-color: #050a10;
     }
   }
 </style>

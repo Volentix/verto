@@ -3,17 +3,17 @@
         <q-toolbar >
             <!-- <q-btn flat round dense icon="menu" class="q-mr-sm" /> -->
 
-            <img src="statics/icons/verto_vulps_logo.svg" width="30" class="png_logo" alt="">
+            <img :src="'statics/icons/verto_vulps_logo'+ ($store.state.settings.lightMode === 'true' ? '_white':'') +'.svg'" width="30" class="png_logo" alt="">
 
             <q-toolbar-title class="primary" :class="{'text-white': $store.state.settings.lightMode === 'true'} ">VERTO</q-toolbar-title>
             <div class="q-gutter-sm">
                 <SearchList :openSearch.sync="openSearch"  v-if="openSearch"/>
-                <q-btn dense size="lg" color="white" unelevated text-color="grey" class="search_btn" icon="search" @click="openSearch = true">
+                <q-btn dense size="lg" :color="$store.state.settings.lightMode === 'true' ? 'transparent':'white'" :outline="$store.state.settings.lightMode === 'true'" unelevated text-color="grey" class="search_btn" icon="search" @click="openSearch = true">
                   <q-tooltip>
                     Some text as content of Tooltip
                   </q-tooltip>
                 </q-btn>
-                <q-btn dense size="lg" color="white" @click="tabsAlert = !tabsAlert" class="settings_btn" text-color="grey" unelevated icon="settings">
+                <q-btn dense size="lg" :color="$store.state.settings.lightMode === 'true' ? 'transparent':'white'" @click="tabsAlert = !tabsAlert" :class="$store.state.settings.lightMode === 'true' ? '' : 'settings_btn'" text-color="grey" outline unelevated icon="settings">
                   <q-tooltip>Some text as content of Tooltip</q-tooltip>
                 </q-btn>
                 <!-- <q-btn @click="openDialogTrigger" dense v-if="$store.state.investment.defaultAccount" size="lg" color="white" class="settings_btn" text-color="grey" unelevated>
@@ -93,13 +93,14 @@
                 </q-btn>
             </div>
         </q-toolbar>
-        <q-dialog v-model="tabsAlert" class="tabs_alert_dialog" position="top">
-          <q-card style="width: 100%;max-width:50%;margin-top: 70px;margin-right: -43%">
+        <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="tabsAlert" class="tabs_alert_dialog" position="top">
+          <q-card :dark="$store.state.settings.lightMode === 'true'" style="width: 100%;max-width:50%;margin-top: 70px;margin-right: -43%">
             <q-card-section>
               <q-tabs
                 v-model="tabRoute"
                 indicator-color="primary"
                 vertical
+                :dark="$store.state.settings.lightMode === 'true'"
                 :active-color="$store.state.settings.lightMode === 'true' ? 'white':'primary'"
                 :active-bg-color="$store.state.settings.lightMode === 'true' ? 'light-blue-10':'white'"
                 class="text-bold tabroute_wrapper"
@@ -208,5 +209,11 @@ export default {
   }
   .view_account_selector{
     border: 2px solid #64b5f6;
+  }
+  .q-dialog .q-card.q-card--dark.q-dark {
+    border: 1px solid #0e1829;
+    padding: 0px 0px;
+    border-radius: 10px;
+    background: #04111f;
   }
 </style>
