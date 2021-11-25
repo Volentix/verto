@@ -1,8 +1,6 @@
 
 export default ({ Vue }) => {
   Vue.prototype.$isbex = process.env.MODE === 'bex'
-  // process.env.MODE === 'bex'
-  // true
   Vue.prototype.$q.platform.is.mobile = Vue.prototype.$isbex ? true : Vue.prototype.$q.platform.is.mobile
   Vue.prototype.$extensionId = process.env.EXTENSION_ID
   Vue.prototype.$extensionIdMozila = process.env.EXTENSION_ID_MOZILA

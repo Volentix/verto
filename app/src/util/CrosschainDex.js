@@ -190,7 +190,7 @@ class Crosschaindex {
     })
     const getImage = (type) => {
       let images = {
-        eth: 'https://zapper.fi/images/ETH-icon.png',
+        eth: 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png',
         btc: 'https://api.godex.io/storage/coins/nlQJWbSb5SZ0CsXk0RTDFH2Tsg4bcRKuZLZwVyKr.png',
         usdc: 'https://tokens.1inch.exchange/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png'
       }

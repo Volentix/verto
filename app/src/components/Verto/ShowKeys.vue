@@ -9,14 +9,14 @@
         </div>
       </q-card-section>
       <q-scroll-area style="height: 45vh;">
-        <q-card-section class="q-pt-none" v-for="(account , index) in chain.accounts" :key="index">
+        <q-card-section  class="q-pt-none" v-for="(account , index) in chain.accounts" :key="index">
           <div class="text-body1 q-pt-md flex justify-between items-center copy-key" v-if="account[field] || (showPrivateKeys[index] && decryptedKeys[index])">
-            <div class="flex justify-between">
+            <div class="flex justify-between" @click="copyToClipboard(account[field])">
               <div class="flex">
                 <span class="identicon" v-html="avatar(account.name)" />
-                <span class="account_name text-bold q-ml-sm q-mr-sm flex flex-center">{{account.name}}</span>
+                <span class="account_name text-bold q-ml-sm q-mr-sm flex flex-center text-center" >{{account.name}}</span>
               </div>
-              <span class="flex flex-center">
+              <span class="flex flex-center text-cur" >
                 {{getKeyFormat(decryptedKeys[index] ? decryptedKeys[index] : account[field], 4)}}
               </span>
             </div>

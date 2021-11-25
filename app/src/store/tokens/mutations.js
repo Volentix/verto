@@ -4,7 +4,6 @@ let noPriceList = {
   bsc: ['flux', 'velo']
 }
 export const setTokenList = (state, data) => {
-  console.log(typeof data)
   state.list = typeof data === 'string' ? JSON.parse(data) : data
 }
 export const setWalletTokensData = (state, data) => {

@@ -172,7 +172,7 @@ module.exports = function (ctx) {
               minify: false,
               hash: false
             })
-          )
+          ) 
           cfg.optimization.splitChunks = {
             cacheGroups: {
               vendor: {

@@ -81,9 +81,12 @@ export const updateTokens = (state, updatedtokens) => {
 
     return o
   })
-  state.portfolioTotal = updatedtokens
+  let total = updatedtokens
     .map(o => (isNaN(o.usd) ? 0 : +o.usd))
     .reduce((a, c) => a + c, 0)
+
+  if (total && !isNaN(total)) state.portfolioTotal = total
+
   state.tokens = updatedtokens
 
   localStorage.setItem(
