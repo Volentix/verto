@@ -13,7 +13,7 @@
                     Some text as content of Tooltip
                   </q-tooltip>
                 </q-btn>
-                <q-btn dense size="lg" :color="$store.state.settings.lightMode === 'true' ? 'transparent':'white'" @click="tabsAlert = !tabsAlert" :class="$store.state.settings.lightMode === 'true' ? '' : 'settings_btn'" text-color="grey" outline unelevated icon="settings">
+                <q-btn dense size="lg" :color="$store.state.settings.lightMode === 'true' ? 'transparent':'white'" @click="tabsAlert = !tabsAlert" :class="$store.state.settings.lightMode === 'true' ? '' : 'settings_btn'" text-color="grey" :outline="$store.state.settings.lightMode === 'true'" unelevated icon="settings">
                   <q-tooltip>Some text as content of Tooltip</q-tooltip>
                 </q-btn>
                 <!-- <q-btn @click="openDialogTrigger" dense v-if="$store.state.investment.defaultAccount" size="lg" color="white" class="settings_btn" text-color="grey" unelevated>
