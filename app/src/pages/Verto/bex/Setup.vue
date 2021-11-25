@@ -10,7 +10,7 @@
           Verto
         </h2>
         <h2 class="vert-page-content--title__sub">
-          <span class="">Multi-chain wallet manager</span>
+          <span class="">Multi-chain wallet manager 2</span>
         </h2>
       </div>
       <div class="vert-page-content--footer">

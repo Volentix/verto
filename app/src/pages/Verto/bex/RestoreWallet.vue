@@ -18,7 +18,7 @@
         <!-- </div> -->
         <div class="standard-content--body__form">
           <div>
-            <q-file :error="fileError" error-message="Please select config file" accept=".txt" outlined v-model="file" label="Select your config file">
+            <q-file :error="fileError" error-message="Please select config file" accept=".config" outlined v-model="file" label="Select your config file">
               <template v-slot:append>
                 <q-icon name="attach_file" />
               </template>
