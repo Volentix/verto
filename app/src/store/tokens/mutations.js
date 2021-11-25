@@ -4,7 +4,6 @@ let noPriceList = {
   bsc: ['flux', 'velo']
 }
 export const setTokenList = (state, data) => {
-  console.log(typeof data)
   state.list = typeof data === 'string' ? JSON.parse(data) : data
 }
 export const setWalletTokensData = (state, data) => {
@@ -12,7 +11,6 @@ export const setWalletTokensData = (state, data) => {
   store.state.wallets.tokens.forEach((token, i) => {
     let tokenData = state.walletTokensData.find(o => o.symbol.toLowerCase() === token.type)
     if (tokenData) {
-      token.chain = token.chain === 'tpls' ? 'eth' : token.chain
       let usd = Lib.findInExchangeList(token.chain, token.type, token.contract)
 
       if (usd && (!noPriceList[token.chain] || !noPriceList[token.chain].includes(token.type))) {

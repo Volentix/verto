@@ -357,10 +357,7 @@ class Wallets2Tokens {
                 })
                 this.updateWallet()
               }).catch(e => {
-                this.$q.notify({
-                  color: 'negative',
-                  message: e
-                })
+                console.log(e, 'covalenthq')
               })
           })
 
@@ -386,7 +383,7 @@ class Wallets2Tokens {
                   eth.key = wallet.key.toLowerCase()
                   eth.usd = ethplorer.ETH.balance * ethplorer.ETH.price.rate
                   eth.tokenPrice = ethplorer.ETH.price.rate
-                  eth.icon = 'https://zapper.fi/images/ETH-icon.png'
+                  eth.icon = 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png'
                 })
               // let ethBalance = ethplorer.ETH.balance * ethplorer.ETH.price.rate
               // store.state.wallets.portfolioTotal += isNaN(ethBalance) ? 0 : ethBalance
@@ -507,7 +504,25 @@ class Wallets2Tokens {
     // store.commit('wallets/updateTokens', this.tableData)
     // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)
   }
-  getPulseBalance (wallet) {
+  async getPulseBalance (wallet) {
+    let balance = await Lib.balance('tpls', wallet.key)
+
+    this.tableData.push({
+      isEvm: true,
+      disabled: false,
+      type: 'tpls',
+      name: wallet.name,
+      tokenPrice: 0,
+      key: wallet.key.toLowerCase(),
+      privateKey: wallet.privateKey,
+      amount: balance,
+      usd: 0,
+      decimals: 18,
+      contract: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+      chain: 'tpls',
+      icon: 'https://pbs.twimg.com/profile_images/1412839310106234882/Z4H3-LxW_400x400.jpg'
+    })
+
     axios
       .get(
         process.env[store.state.settings.network].CACHE + 'https://scan.pulsechain.com/address/' + wallet.key + '/token-balances')
@@ -539,17 +554,14 @@ class Wallets2Tokens {
         }
         this.updateWallet()
       }).catch(e => {
-        this.$q.notify({
-          color: 'negative',
-          message: e
-        })
+        console.log(e, 'e')
       })
   }
   getTokenImage (chain, type) {
     let image = 'https://etherscan.io/images/main/empty-token.png'
 
     if (Lib.evms.find(o => o.chain === chain) && store.state.tokens.evmTokens[chain]) {
-      let token = store.state.tokens.evmTokens[chain].find(o => o.symbol.toLowerCase() === type.toLowerCase())
+      let token = store.state.tokens.evmTokens[chain].find(o => o.symbol && type && o.symbol.toLowerCase() === type.toLowerCase())
       if (token) image = token.logoURI
       // Set bnb token image temp
     //  if (type === 'bnb') image = 'https://nownodes.io/images/binance-smart-chain/bsc-logo.png'
@@ -807,7 +819,7 @@ class Wallets2Tokens {
             eth.amount = ethBalance.ammount
             eth.usd = ethBalance.usd
             eth.isEvm = true
-            eth.icon = 'https://zapper.fi/images/ETH-icon.png'
+            eth.icon = 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png'
           })
 
         res.data[wallet.key.toLowerCase()]

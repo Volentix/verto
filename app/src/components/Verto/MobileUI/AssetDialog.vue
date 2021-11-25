@@ -82,7 +82,7 @@ export default {
     return {
       maximizedToggle: true,
       open: false,
-      tabIndex: 'assets',
+      tabIndex: 'chains',
       previousTab: ''
     }
   },

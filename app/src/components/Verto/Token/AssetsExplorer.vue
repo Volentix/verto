@@ -1632,7 +1632,7 @@ export default {
 
         t.tokens.forEach((a) => {
           let protocolData = this.platformOptions.find(
-            (o) => o.label.toLowerCase() === t.protocolDisplay.toLowerCase()
+            (o) => t.protocolDisplay && o.label.toLowerCase() === t.protocolDisplay.toLowerCase()
           )
           let index = assets.findIndex(
             (t) => t.type === a.symbol.toLowerCase()

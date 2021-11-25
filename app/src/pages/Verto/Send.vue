@@ -237,7 +237,7 @@
 
                       </div>
                       <div class="col col-4" :class="{'col-md-12 col-12': screenSize < 1024 || miniMode}">
-                        <span class="lab-input" @click="isTest = true" >Amount...</span>
+                        <span class="lab-input"  >Amount...</span>
                         <q-input :dark="$store.state.settings.lightMode === 'true'" @input="sendAmount = parseFloat(sendAmount) > parseFloat(currentToken.amount) ? ( miniMode ?  sendAmount :  parseFloat(currentToken.amount) ) : parseFloat(sendAmount) ; checkGas(); " :light="$store.state.settings.lightMode === 'false'" :max="currentAccount.amount" v-model="sendAmount" class="input-input" rounded outlined color="purple" type="number">
                           <template v-slot:append>
                             <div class="flex justify-end">
@@ -341,11 +341,6 @@
                 <span v-if="gasOptions.length && currentAccount.isEvm && (!miniMode || miniStep == 2)">
                 <span class="q-pl-md cursor-pointer"  @click="showGasOptions = true" v-if="!showGasOptions"><q-icon name="add" /> Advanced </span>
                 <span class="cursor-pointer q-pt-xs" @click="showGasOptions = false" v-else>Hide </span>
-                </span>
-               <span v-if="isTest">{{!currentToken.amount? '!currentToken.amount' :9 }}
-                {{ currentAccount.isEvm ? 'currentAccount.isEvm ' : '5'}}
-                {{ gasOptions.length == 0 ? 'gasOptions.length == 0 ' : 4}}
-                {{!sendToResolved ? ' !sendToResolve':'6'}}{{ currentAccount.chain}}
                 </span>
                 <q-linear-progress v-if="!params.sendTransaction && sendAmount !== 0 && sendToResolved  && currentAccount.isEvm &&  gasOptions.length == 0 " indeterminate rounded  color="deep-purple-12" class="q-my-sm" />
                  <div class="standard-content--footer q-mb-lg" v-if="!params.sendTransaction && (!isExchange || !transSuccessDialog)">
@@ -468,7 +463,6 @@ export default {
       fetchCurrentWalletFromState: true,
       from: '',
       isPwd: true,
-      isTest: false,
       sendAmount: 0,
       formatedAmount: '',
       options: [],

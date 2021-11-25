@@ -103,6 +103,7 @@
                   >
                 </li>
                 <li
+                  v-if="false"
                   :class="{ active: $route.path == '/verto/crosschain-exchange' }"
                 >
                   <router-link to="/verto/crosschain-exchange"
