@@ -33,7 +33,7 @@
                 <img src="https://files.coinswitch.co/public/coins/bnb.png" :class="{'active': chainCoin === 5}" width="20" alt="">
                 <img src="https://assets.coingecko.com/coins/images/4128/small/coinmarketcap-solana-200.png?1616489452" :class="{'active': chainCoin === 6}" width="20" alt="">
                 <img src="https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png" :class="{'active': chainCoin === 7}" width="20" alt="">
-                <img src="https://zapper.fi/images/ETH-icon.png" :class="{'active': chainCoin === 8}" width="20" alt="">
+                <img src="https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png" :class="{'active': chainCoin === 8}" width="20" alt="">
                 <img src="https://files.coinswitch.co/public/coins/btc.png" :class="{'active': chainCoin === 9}" width="20" alt="">
                 <img src="https://files.coinswitch.co/public/coins/dash.png" :class="{'active': chainCoin === 10}" width="20" alt="">
                 <img src="https://files.coinswitch.co/public/coins/ltc.png" :class="{'active': chainCoin === 11}" width="20" alt="">

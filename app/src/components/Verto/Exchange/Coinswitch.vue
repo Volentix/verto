@@ -1525,7 +1525,7 @@ export default {
       destinationCoin: {
         'label': 'Ethereum',
         'value': 'eth',
-        'image': 'https://zapper.fi/images/ETH-icon.png'
+        'image': 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png'
       },
       destinationQuantity: 0,
       destinationCoinOptions: null,

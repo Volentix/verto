@@ -266,7 +266,7 @@ export default {
         isActive: true,
         isFiat: false,
         chain: 'eth',
-        logoUrl: 'https://zapper.fi/images/ETH-icon.png',
+        logoUrl: 'https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x0000000000000000000000000000000000000000.png',
         name: 'ETH',
         symbol: 'eth'
       })

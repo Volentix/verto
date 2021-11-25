@@ -911,7 +911,10 @@ export default {
       }, time)
     },
     unsetDefaultAccount () {
-      this.$store.state.investment.defaultAccount = null
+      this.$store.commit(
+        'investment/setDefaultAccount',
+        false
+      )
       this.accountOption = null
       this.dialog = false
     },
@@ -952,9 +955,8 @@ export default {
       }
     }, */
     '$store.state.investment.defaultAccount': function (val) {
-      console.log(val, 'val')
       if (!val || !['defi', 'set'].includes(val.origin)) return
-      console.log(val, 'val 2')
+
       let w = this.$store.state.investment.defaultAccount
 
       this.accountOption = {

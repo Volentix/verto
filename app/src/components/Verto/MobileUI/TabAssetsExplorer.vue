@@ -54,7 +54,7 @@
 
         <ChainItemList v-if="!['history','investments'].includes(tabIndex)" :chains="chains" :tab.sync="tabIndex" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :key="componentKey" :getImportLink="getImportLink"/>
         <History v-else-if="tabIndex == 'history'" :refresh="true" style="height:100vh" />
-        <AssetDialog :key="componentKey" v-if="!$store.state.investment.defaultAccount || (tabIndex !== 'history' && !(tabIndex == 'assets' && $store.state.investment.defaultAccount)) " :dialog.sync="dialog" :updateTab="updateTab" :tab.sync="tabIndex" :chains="chains" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens'  :getChains='getChains' :allChains='allChains' :showAllChains='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :showPrivateKeys="showPrivateKeys" :getImportLink="getImportLink"/>
+        <AssetDialog :key="componentKey" v-if="(tabIndex == 'chains' && !$store.state.investment.defaultAccount) || (tabIndex !== 'history' && !(tabIndex == 'assets' && $store.state.investment.defaultAccount)) " :dialog.sync="dialog" :updateTab="updateTab" :tab.sync="tabIndex" :chains="chains" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens'  :getChains='getChains' :allChains='allChains' :showAllChains='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :showPrivateKeys="showPrivateKeys" :getImportLink="getImportLink"/>
 
     </div>
 </template>
@@ -71,7 +71,7 @@ export default {
   data () {
     return {
       lightMode: true,
-      tabIndex: 'assets',
+      tabIndex: 'chains',
       qrSelect: false,
       dialog: true,
       componentKey: 1
@@ -88,8 +88,11 @@ export default {
     '$store.state.investment.defaultAccount': function (newVal) {
       if (newVal) {
         this.tabIndex = 'assets'
-        this.componentKey += 1
+      } else {
+        this.tabIndex = 'chains'
+        this.dialog = false
       }
+      this.componentKey += 1
     },
     tabIndex (val) {
       this.componentKey += 1
