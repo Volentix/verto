@@ -2,7 +2,7 @@
     <div class="q-pa-sm" style="overflow: auto;">
       <h4 class="new_title_style text-grey-8 q-pl-sm q-ml-xs">Transactions history</h4>
         <q-card flat v-for="(day,indexDay) in history" :key="indexDay" class="rounded-borders" :class="{'dark-bg': $store.state.settings.lightMode === 'true'}"  :style="$store.state.settings.lightMode === 'true' ? 'background-color: #04111F !important;': ''">
-            <div class="title-date q-pl-md bg-grey-1 q-pt-md q-pb-md text-grey-7">{{day.friendlyDay}} </div>
+            <div class="title-date q-pl-md q-pt-md q-pb-md" :class="$store.state.settings.lightMode === 'true' ? 'text-grey-8':'bg-grey-1 text-grey-7'">{{day.friendlyDay}} </div>
             <q-list :class="$store.state.settings.lightMode === 'true' ? 'rounded-borders text-white':'rounded-borders text-black' " v-for="(transaction, indexTx) in day.data" :key="indexTx" separator>
                 <q-expansion-item class="outgoing_style" v-if="transaction.direction == 'outgoing'" >
                     <template v-slot:header>
@@ -11,7 +11,7 @@
                         </q-item-section>
                         <q-item-section style="margin-left: -10px;">
                             <q-item-label class="text-bold">{{getAction(transaction)}} {{transaction.symbol}}</q-item-label>
-                            <q-item-label caption> To&nbsp; {{transaction.friendlyTo}}</q-item-label>
+                            <q-item-label caption :class="$store.state.settings.lightMode === 'true' ? 'text-grey-7':''"> To&nbsp; {{transaction.friendlyTo}}</q-item-label>
                         </q-item-section>
                         <!-- <q-item-section style="margin-left: 0px;" class="">
                             <q-item-label class="row justify-end full-width items-center">
@@ -48,7 +48,7 @@
                           </q-item-section>
                             <q-item-section v-if="transaction.chain == 'eth'">
                                 <q-item-label > Fee</q-item-label>
-                                <q-item-label caption>
+                                <q-item-label caption :class="$store.state.settings.lightMode === 'true' ? 'text-grey-7':''">
                                     <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'">
                                         <span >{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
                                         <span >ETH</span>
@@ -73,7 +73,7 @@
                                         </div>
                                     </div>
                                 </q-item-label>
-                                <q-item-label caption>
+                                <q-item-label caption :class="$store.state.settings.lightMode === 'true' ? 'text-grey-7':''">
                                     <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                                        <!-- <div class="ellipsis"> {{transaction.friendlyHash}} </div> -->
                                         <div class="ellipsis"> {{getKeyFormat(transaction.hash, 20)}} </div>
@@ -136,7 +136,7 @@
                             </q-item-section>
                             <q-item-section>
                                 <q-item-label > Fee</q-item-label>
-                                <q-item-label caption>
+                                <q-item-label caption :class="$store.state.settings.lightMode === 'true' ? 'text-grey-7':''">
                                     <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'">
                                         <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
                                         <span class="">ETH</span>
@@ -145,7 +145,7 @@
                             </q-item-section>
                             <q-item-section >
                                 <q-item-label > Rate</q-item-label>
-                                <q-item-label caption>
+                                <q-item-label caption :class="$store.state.settings.lightMode === 'true' ? 'text-grey-7':''">
                                     <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'">
                                         <span class="">1</span>&nbsp;
                                         <span class="">{{transaction.subTransactions[0].symbol}}</span>
@@ -178,7 +178,7 @@
                         </q-item-section>
                         <q-item-section style="margin-left: -10px;">
                             <q-item-label class="text-bold">{{getAction(transaction)}} {{transaction.symbol}}</q-item-label>
-                            <q-item-label caption> From&nbsp; {{transaction.friendlyFrom}}</q-item-label>
+                            <q-item-label caption :class="$store.state.settings.lightMode === 'true' ? 'text-grey-7':''"> From&nbsp; {{transaction.friendlyFrom}}</q-item-label>
                         </q-item-section>
                         <!-- <q-item-section style="margin-left: 0px;" class="">
                             <q-item-label class="row justify-end full-width items-center">
@@ -214,7 +214,7 @@
                             </q-item-section>
                             <q-item-section  v-if="transaction.chain == 'eth'">
                                 <q-item-label > Fee</q-item-label>
-                                <q-item-label caption>
+                                <q-item-label caption :class="$store.state.settings.lightMode === 'true' ? 'text-grey-7':''">
                                     <span :class="$store.state.settings.lightMode === 'true' ? 'text-white':'text-black'">
                                         <span class="">{{transaction.gasTotal.toFixed(6)}}</span>&nbsp;
                                         <span class="">ETH</span>
@@ -238,7 +238,7 @@
                                         </div>
                                     </div>
                                 </q-item-label>
-                                <q-item-label caption>
+                                <q-item-label caption :class="$store.state.settings.lightMode === 'true' ? 'text-grey-7':''">
                                     <span  :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}">
                                        <div class="ellipsis"> {{getKeyFormat(transaction.hash, 20)}} </div>
                                        <div v-if="transaction.chain == 'eth' || transaction.chain == 'eos'" class="actions_btns flex justify-end items-center">

@@ -206,7 +206,7 @@
                 </div>
                 <q-page-sticky expand position="bottom" style="margin-bottom: 0px;">
                     <q-toolbar class="q-pa-md" :class="$store.state.settings.lightMode === 'true' ? 'bg-blue-verto':'bg-white text-white'">
-                        <q-btn rounded icon-right="send" color="blue-4" label="Send" unelevated class="full-width send_btn" @click="dialogSend = true; setAssetLocalCount = 1"/>
+                        <q-btn outline icon-right="send" color="blue-4" label="Send" unelevated class="full-width send_btn" @click="dialogSend = true; setAssetLocalCount = 1"/>
                     </q-toolbar>
                 </q-page-sticky>
             </q-card-section>

@@ -111,7 +111,7 @@
                 <q-tab flat v-if="!$store.state.investment.defaultAccount" name="history" icon="history" no-caps @click="goTo('history')" label="History"/>
                  <q-tab flat name="account" icon="account_balance_wallet" no-caps @click="goToWallets()" :label="!$store.state.investment.defaultAccount ? 'Wallets' : 'Chain tools'"/>
                  <q-tab flat name="profile" icon="settings" no-caps @click="goTo('profile')" label="Settings"/>
-                <q-tab flat name="profile" icon="add" no-caps @click="goImport" label="Add/Import"/>
+                <q-tab flat name="addImport" icon="add" no-caps @click="goImport" label="Add/Import"/>
               </q-tabs>
             </q-card-section>
           </q-card>

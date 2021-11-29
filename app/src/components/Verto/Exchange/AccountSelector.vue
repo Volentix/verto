@@ -233,23 +233,17 @@
           }"
       >
         <q-item-section :dark="$store.state.settings.lightMode === 'true'" @click="dialog = true" avatar>
-          <svg width="36" height="36" fill="#64b5f5">
-            <circle cx="18" cy="18" r="18" fill="#64b5f5"></circle>
-            <path
-              d="M11.664 18.866l-1.107.64a.856.856 0 000 1.488l5.678 3.283c1.09.63 2.44.63 3.53 0l5.678-3.283a.856.856 0 000-1.488l-1.107-.64-3.82 2.21a5.031 5.031 0 01-5.032 0l-3.82-2.21z"
-              fill="#fff"
-            ></path>
-            <path
-              d="M16.235 11.723a3.53 3.53 0 013.53 0l5.678 3.283a.856.856 0 010 1.488l-5.678 3.283a3.53 3.53 0 01-3.53 0l-5.678-3.283a.856.856 0 010-1.488l5.678-3.283z"
-              fill="#fff"
-            ></path>
+          <svg width="49" fill="transparent" height="49" class="view_all_svg">
+            <circle cx="18" cy="18" r="18"></circle>
+            <path d="M11.664 18.866l-1.107.64a.856.856 0 000 1.488l5.678 3.283c1.09.63 2.44.63 3.53 0l5.678-3.283a.856.856 0 000-1.488l-1.107-.64-3.82 2.21a5.031 5.031 0 01-5.032 0l-3.82-2.21z"></path>
+            <path d="M16.235 11.723a3.53 3.53 0 013.53 0l5.678 3.283a.856.856 0 010 1.488l-5.678 3.283a3.53 3.53 0 01-3.53 0l-5.678-3.283a.856.856 0 010-1.488l5.678-3.283z"></path>
           </svg>
         </q-item-section>
 
         <q-item-section :dark="$store.state.settings.lightMode === 'true'">
           <q-item-label @click="dialog = true">Portfolio view</q-item-label>
           <q-item-label caption lines="1" @click="dialog = true"
-            >Click here to view specific account
+            >Click here to view a specific account
           </q-item-label>
         </q-item-section>
 
@@ -366,16 +360,10 @@
               }"
             >
               <q-item-section avatar @click="unsetDefaultAccount()">
-                <svg width="36" height="36" fill="#64b5f5">
-                  <circle cx="18" cy="18" r="18" fill="#64b5f5"></circle>
-                  <path
-                    d="M11.664 18.866l-1.107.64a.856.856 0 000 1.488l5.678 3.283c1.09.63 2.44.63 3.53 0l5.678-3.283a.856.856 0 000-1.488l-1.107-.64-3.82 2.21a5.031 5.031 0 01-5.032 0l-3.82-2.21z"
-                    fill="#fff"
-                  ></path>
-                  <path
-                    d="M16.235 11.723a3.53 3.53 0 013.53 0l5.678 3.283a.856.856 0 010 1.488l-5.678 3.283a3.53 3.53 0 01-3.53 0l-5.678-3.283a.856.856 0 010-1.488l5.678-3.283z"
-                    fill="#fff"
-                  ></path>
+                <svg width="49" fill="transparent" height="49" class="view_all_svg">
+                  <circle cx="18" cy="18" r="18"></circle>
+                  <path d="M11.664 18.866l-1.107.64a.856.856 0 000 1.488l5.678 3.283c1.09.63 2.44.63 3.53 0l5.678-3.283a.856.856 0 000-1.488l-1.107-.64-3.82 2.21a5.031 5.031 0 01-5.032 0l-3.82-2.21z"></path>
+                  <path d="M16.235 11.723a3.53 3.53 0 013.53 0l5.678 3.283a.856.856 0 010 1.488l-5.678 3.283a3.53 3.53 0 01-3.53 0l-5.678-3.283a.856.856 0 010-1.488l5.678-3.283z"></path>
                 </svg>
               </q-item-section>
 
@@ -1061,5 +1049,18 @@ body.desktop .q-hoverable:hover > .q-focus-helper:after {
 }
 .bg-blue-verto{
   background: #0e1829;
+}
+.view_all_svg{
+  padding: 5px;
+}
+.view_all_svg circle{
+  stroke: #64b5f5;
+  stroke-width: 1px;
+  stroke-dashoffset: 3;
+  transform: translate(1px, 1px);
+}
+.view_all_svg path{
+  transform: translate(1px, 1px);
+  fill: #64b5f5;
 }
 </style>
