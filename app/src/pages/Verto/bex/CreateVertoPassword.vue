@@ -1,14 +1,12 @@
 <template>
-  <q-page
-    class="column items-center justify-start create-password-page"
-  >
+  <q-page v-if="false" class="column items-center justify-start create-password-page">
     <div class="q-pa-md">
       <img src="statics/icons/icon-256x256.png" width="80" alt="logo"/>
     </div>
     <notify-message/>
     <div class="vert-page-content">
       <h2 class="vert-page-content--title">
-        Create your Verto Password
+        Create your Verto Password 2
       </h2>
       <h2
         class="vert-page-content--desc"
@@ -81,6 +79,75 @@
         <q-btn outline unelevated size="lg" class="btn--outline__blue" label="Back" @click="$router.back()"/>
       </div>
     </div>
+  </q-page>
+  <q-page v-else class="column items-center justify-start login-page restore-page-wrapper2" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+    <div class="full-width full-height">
+      <img :src="'statics/login_ui_' + ($store.state.settings.lightMode === 'true' ? 'dark':'light') +'.png'" alt="head-login" class="head-login" />
+      <div class="form_wrapper full-height column q-pa-lg">
+        <span class="text-h2 q-pl-md">VERTO</span>
+        <span class="text-h3 q-pl-md q-pr-md q-mt-md" v-if="false">Create your Verto Password</span>
+        <p class="q-pl-md q-pr-md q-mt-md q-mb-xs">Please write down your password and store it somewhere safe. Only you know your password.</p>
+        <div class="password_wrapper q-pl-md q-pr-md">
+          <div class="full-width">
+            <div class="full-width">
+              <div>
+                <label class="ver-label">Enter your password</label>
+                <q-input
+                  ref="psswrd"
+                  v-model="password"
+                  @input="passwordCheck"
+                  @keyup.enter="gotoSecondScreen"
+                  autofocus
+                  outlined
+                  :error="passHasError"
+                  :error-message="passwordError"
+                  :type="isPwd ? 'password' : 'text'"
+                  class="q-mt-sm"
+                  :dark="$store.state.settings.lightMode === 'true'"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
+                </q-input>
+              </div>
+              <div class="">
+                <label class="ver-label">Re-type your password</label>
+                <q-input
+                  ref="psswrdConfirm"
+                  v-model="confirmPassword"
+                  @input="confirmPasswordCheck"
+                  @keyup.enter="submit"
+                  outlined
+                  :error="(!passHasError)&&!passwordsMatch"
+                  error-message="Password mismatched"
+                  :color="passwordsMatch ? 'green' : 'deep-red-14'"
+                  :type="isPwd ? 'password' : 'text'"
+                  class="q-mt-sm"
+                  :dark="$store.state.settings.lightMode === 'true'"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
+                </q-input>
+              </div>
+            </div>
+            <div class="unlock_restore flex justify-between items-end q-mt-sm">
+              <q-btn @click="submit(2)" unelevated class="btn__blue unlock_btn" color="grey-4" outline size="md" no-caps label="Continue" />
+              <q-btn flat size="md" no-caps class="restore_btn" color="grey-8" label="Back" @click="$router.back()" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <notify-message/>
   </q-page>
 </template>
 
@@ -475,6 +542,113 @@ export default {
 
   .perpleGlow {
     text-shadow: 2px 2px 2px #6200ea;
+  }
+}
+.restore-page-wrapper2{
+  background: #F9F9F9;
+  .head-login{
+    max-width: 100%;
+    position: relative;
+    transform: scale3d(1,1,1);
+  }
+  .form_wrapper{
+    border-radius: 50px 50px 0px 0px;
+    margin-top: -100px;
+    background: #F9F9F9;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0px -30px 50px 0px rgba(black, .1);
+    .text-h2{
+      font-family: $Franklin;
+      font-weight: $black;
+      font-size: 20px;
+      line-height: 30px;
+      color: #04111F;
+    }
+    .text-h3{
+      font-family: $Franklin;
+      font-weight: $lighter;
+      font-size: 30px;
+      line-height: 35px;
+      color: #04111F;
+    }
+    p{
+      font-family: $Franklin;
+      font-weight: $lighter;
+      font-size: 14px;
+      line-height: 22px;
+      color: #04111F;
+    }
+    .unlock_restore{
+      // min-height: 102px;
+      .unlock_btn{
+        width: 65%;
+        height: 45px;
+        letter-spacing: 1px;
+        font-weight: $lighter;
+        font-family: $Franklin;
+        font-size: 16px !important;
+        /deep/ .q-btn__wrapper:before{
+          border: 2px solid #CCC !important;
+        }
+      }
+      .restore_btn{
+        width: 30%;
+        height: 45px;
+        letter-spacing: 1px;
+        font-weight: $lighter;
+        font-family: $Franklin;
+        font-size: 16px !important;
+      }
+    }
+  }
+  &.dark-theme{
+    background: #04111F;
+    .form_wrapper{
+      background: #04111F;
+      .text-h2{
+        color: #FFF;
+      }
+      .text-h3{
+        color: #FFF;
+      }
+      p{
+        color: #FFF;
+      }
+      .restore_btn{
+        // color: #FFF !important;
+      }
+    }
+  }
+}
+.q-mt--md{
+  margin-top: -15px;
+}
+.password_wrapper{
+  /deep/ .q-field__messages{
+    color: #929398;
+    font-size: 12px;
+    margin-left: -7px;
+    margin-top: -3px;
+  }
+  /deep/ .text-negative {
+    color: #929398 !important;
+  }
+  /deep/ .q-field__native{
+    div{
+      font-size: 12px;
+      opacity: .7;
+    }
+  }
+}
+.dark-theme{
+  .password_wrapper{
+    /deep/ .q-field__messages{
+      color: #FFF;
+    }
+    /deep/ .text-negative {
+      color: #FFF !important;
+    }
   }
 }
 </style>
