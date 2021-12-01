@@ -61,7 +61,8 @@ class Lib {
       provider: 'https://rpc.testnet.pulsechain.com',
       explorer: 'https://scan.pulsechain.com/tx/',
       gas: '', // The C-Chain gas price is 225 nAVAX (225 GWei). The C-Chain gas limit is 8 * 10e6 (8,000,000).
-      network_id: 940
+      network_id: 940,
+      testnet: true
     }, {
       name: 'Fantom',
       chain: 'ftm',
@@ -867,6 +868,9 @@ class Lib {
     }
     return transactionReceipt.status
   }
+  isEvm (chain) {
+    return this.evms.find(o => o.chain === chain)
+  }
   getWeb3Instance (chain) {
     let evmData = this.getEvmData(chain)
     return evmData ? (new Web3(new Web3.providers.HttpProvider(this.getEvmData(chain).provider))) : null
@@ -1012,6 +1016,7 @@ class Lib {
 
         return gasOptions
       },
+
       async bsc () {
         /*
           The difference between Binance Chain and Ethereum is that there is no notion of gas.

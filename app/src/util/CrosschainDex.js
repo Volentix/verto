@@ -5,6 +5,7 @@ import { number_to_asset, asset } from 'eos-common'
 import RenJS from '@renproject/ren'
 import { Bitcoin, Ethereum } from '@renproject/chains'
 import Lib from '@/util/walletlib'
+import HD from '@/util/hdwallet'
 import abiArray from '@/statics/abi/erc20.json'
 const _1inch = process.env[store.state.settings.network].CACHE + 'https://api.1inch.exchange'
 import {
@@ -117,6 +118,7 @@ class Crosschaindex {
     }
     return list[exchange]()
   }
+
   format1InchTokens (coins, chain) {
     coins = Object.keys(coins).map((key, index) => {
       let image = coins[key].symbol.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : 'https://tokens.1inch.exchange/' + coins[key].address.toLowerCase() + '.png'
@@ -162,9 +164,18 @@ class Crosschaindex {
         return self.format1InchTokens(coins, 'matic')
       }
     }
-
-    let data = await coins[chain]()
-
+    let v = coins[chain]
+    let data = null
+    if (v) {
+      data = await coins[chain]()
+    } else if (!Lib.isEvm(chain)) {
+      let x = HD.names.find(o => o.value === chain)
+      if (x) {
+        x.image = x.icon ? x.icon : 'https://files.coinswitch.co/public/coins/' + x.value + '.png'
+        data = [x]
+      }
+    }
+    console.log(data, 'data')
     return data
   }
   getAllCoins (unique = true, dex = false) {

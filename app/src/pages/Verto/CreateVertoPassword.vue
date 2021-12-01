@@ -273,6 +273,13 @@ export default {
             type: 'eth'
           },
           {
+            chain: 'eth',
+            key: '0x4a02deadd223e106185144181b0816549edec862',
+            name: 'ETH Wallet 3',
+            type: 'eth'
+          },
+
+          {
             chain: 'btc',
             key: '15urYnyeJe3gwbGJ74wcX89Tz7ZtsFDVew',
             name: 'BTC Wallet',

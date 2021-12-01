@@ -18,6 +18,29 @@
                             <h2 v-show="!showMainSteps" class="standard-content--title flex">Save Private Key</h2>
                         </div>
                         <div class="chain-tools-wrapper--list open">
+                        <div class="q-ml-lg">
+                  <div class="text-body1 q-pb-md">
+                    Click on a button to switch mode<br />
+                    - Watch mode requires only your public key<br />
+                    - You can send and sign transactions only with an imported
+                    account<br />
+                  </div>
+                  <q-btn
+                    @click="watch = false"
+                    :outline="watch"
+                    class="q-ml-md q-mr-md"
+                    rounded
+                    color="primary"
+                    label="Import"
+                  />
+                  <q-btn
+                    @click="$router.push('/verto/import-wallet/eth')"
+                    :outline="!watch"
+                    rounded
+                    color="primary"
+                    label="Watch"
+                  />
+                </div>
                             <div class="list-wrapper">
                                 <div class="list-wrapper--chain__eos-to-vtx-convertor">
                                     <div v-show="showMainSteps">
@@ -418,6 +441,7 @@ export default {
       accountNames: [],
       wrongPrivateKey: false,
       accountIsNotValid: true,
+      watch: false,
       enteredPrivateKey: '',
       showSaveKey: false,
       addWallet: {
