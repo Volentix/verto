@@ -187,7 +187,7 @@ export default {
         this.progress = Math.round(i / count * 10000) / 100
 
         this.status = name
-
+        name.label = name.value === 'eth' ? 'Account 1' : name.label
         await HD.Wallet(name.value).then(async keys => {
           return self.$configManager.saveWalletAndKey(name.label, self.vertoPassword, null, keys.publicKey, keys.privateKey, name.value, 'mnemonic')
         })

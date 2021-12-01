@@ -3,7 +3,7 @@
     v-if="!chain || chains || showAllWallets"
     :class="{ 'dark-theme': $store.state.settings.lightMode === 'true' }"
   >
-    <div v-if="!($q.platform.is.mobile || $isbex)">
+    <div v-if="!($q.platform.is.mobile || $isbex) && false">
       <q-btn
         class="account_selector"
         dense
@@ -107,10 +107,8 @@
                         class="header-wallet full-width flex justify-between"
                       >
                         <q-item-section avatar>
-                          <q-icon
-                            name="fiber_manual_record"
-                            :color="item.color"
-                          />
+
+                       <span class="identicon" v-html="toAvatar(item.name)" />
                         </q-item-section>
                         <q-item-section class="item-name">
                           <span class="item-name--name" v-if="item.isEvm">
@@ -124,7 +122,7 @@
                             v-if="item.staked && item.staked !== 0 && false"
                             >Staked : {{ nFormatter2(item.staked, 3) }}</span
                           >
-                          <span class="item-name--staked" v-if="item.tokenList"
+                          <span class="item-name--staked" v-if="item.tokenList && (item.isEvm || item.chain == 'eos')"
                             >{{ item.tokenList.length }} token{{
                               item.tokenList.length > 1 ? "s" : ""
                             }}</span
@@ -310,7 +308,7 @@
   </div>
 </div> -->
 
-    <div v-if="$q.platform.is.mobile || $isbex" class="row justify-center">
+    <div  class="row justify-center full-width">
       <q-btn
         class="account_selector"
         dense
@@ -324,7 +322,7 @@
         @click="dialog = true"
       />
       <q-item
-        v-if="!accountOption"
+       v-if="!accountOption && allSelector"
         class="text-left full-width bg-grey-1 text-black account_selector_top"
       >
         <q-item-section @click="dialog = true" avatar>
@@ -403,14 +401,14 @@
 
         <q-item-section side>
           <q-icon
-            name="keyboard_arrow_down"
+            :name="!dialog ? 'keyboard_arrow_down' : 'keyboard_arrow_up'"
             @click="dialog = true"
             class="shadows-2"
           />
         </q-item-section>
       </q-item>
 
-      <q-dialog v-model="dialog" :maximized="true">
+      <q-dialog v-model="dialog" :maximized="$q.platform.is.mobile">
         <q-card
           class=""
           :style="
@@ -431,23 +429,14 @@
               class="q-mr-sm"
               @click="dialog = false"
             />
-            <!-- <q-toolbar-title style="margin-left: -25px"> Select An Account  </q-toolbar-title> -->
+             <q-toolbar-title class="text-body1 q-pl-md" style="margin-left: -25px"> Select an Account  </q-toolbar-title>
           </q-toolbar>
 
-          <div
-            :class="
-              $store.state.settings.lightMode === 'true'
-                ? 'text-h6 q-pa-md text-white'
-                : 'text-h6 q-pa-md '
-            "
-          >
-            Select An Account
-          </div>
           <q-card-section class="items-center" >
             <q-item
 
               :key="Math.random() + '123'"
-              v-if="accountOption"
+              v-if="accountOption && allSelector"
               class="
                 z-top
                 text-left
@@ -554,9 +543,10 @@
                         setAccount(300);
                         dialog = false;
                       "
+
                       :key="Math.random() + index"
                       v-for="(item, index) in tokChain.accounts"
-                      :class="{ selected: item.selected }"
+                      :class="{ selected: item.selected , 'bg-indigo-1': accountOption.index == item.index}"
                       clickable
                       :active="item.hidden"
                       active-class="bg-teal-1 text-grey-8"
@@ -566,11 +556,8 @@
                           class="header-wallet full-width flex justify-between"
                         >
                           <q-item-section avatar>
-                            <q-icon
-                              size="lg"
-                              name="fiber_manual_record"
-                              :color="item.color"
-                            />
+
+                            <span class="identicon" v-html="toAvatar(item.name)" />
                           </q-item-section>
                           <q-item-section class="item-name">
                             <span
@@ -589,7 +576,7 @@
                             >
                             <span
                               class="item-name--staked"
-                              v-if="item.tokenList"
+                             v-if="item.tokenList && (item.isEvm || item.chain == 'eos')"
                               >{{ item.tokenList.length }} token{{
                                 item.tokenList.length > 1 ? "s" : ""
                               }}</span
@@ -678,8 +665,10 @@
 <script>
 import Formatter from '@/mixins/Formatter'
 import DexInteraction from '@/mixins/DexInteraction'
+
 export default {
   props: [
+    'allSelector',
     'showPortfolio',
     'chain',
     'showAllWallets',
@@ -1148,4 +1137,16 @@ body.desktop .q-hoverable:hover > .q-focus-helper:after {
   background: #061a30;
   opacity: 0.3;
 }
+
+.identicon{
+    overflow: hidden;
+    background: #FFF;
+    width: 30px;
+    border-radius: 10px;
+    height: 30px;
+    outline: 1px solid #64b5f6;
+    svg{
+    }
+  }
+
 </style>

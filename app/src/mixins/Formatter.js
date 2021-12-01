@@ -1,9 +1,12 @@
 import HD from '@/util/hdwallet'
 import Lib from '@/util/walletlib'
 import { scroll } from 'quasar'
-
+import { toSvg } from 'jdenticon'
 export default {
   methods: {
+    toAvatar (name) {
+      return toSvg(name, 30)
+    },
     isValidUrl (string) {
       let url
 

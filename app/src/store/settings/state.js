@@ -2,6 +2,7 @@ export default {
   newSettingsPage: false,
   rightOrder: false,
   network: 'mainnet',
+  accountTab: null,
   devMode: false,
   defaultChainData: null,
   globalSettings: {},

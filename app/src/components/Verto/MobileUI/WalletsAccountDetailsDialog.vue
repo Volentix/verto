@@ -316,7 +316,7 @@ export default {
       },
       tools: {
         eth: [{
-          icon: 'img:https://zapper.fi/images/HEX-icon.png',
+          icon: 'img:https://ethplorer.io/images/HEX2b591e99.png',
           to: '/verto/stake/eth/hex',
           title: 'Stake HEX',
           activeAccRequired: true

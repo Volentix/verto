@@ -57,8 +57,9 @@ class Wallets2Tokens {
     const self = this
     self.eosUSD = 0
     this.getEosUSD()
-
-    this.tableData = [...store.state.currentwallet.config.keys].filter(
+    let watchAccounts = localStorage.getItem('watchAccounts')
+    watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
+    this.tableData = [...store.state.currentwallet.config.keys].concat(watchAccounts).filter(
       w => (!walletName || (w.name.toLowerCase() === walletName.toLowerCase() && !ethWallet)) || (ethWallet && w.key.toLowerCase() === ethWallet.key.toLowerCase())
     )
 
@@ -398,46 +399,20 @@ class Wallets2Tokens {
                     }
                   )
                   .then(res => {
-                    let tokenSets = res.data.rebalancing_sets
+                    // let tokenSets = res.data.rebalancing_sets
 
                     if (ethplorer.tokens) {
                       ethplorer.tokens
                         .filter(t => t.balance > 0 && t.tokenInfo.symbol)
                         .map(async (t, index) => {
-                          let token = tokenSets.find(
-                            s =>
-                              s.address.toLowerCase() ===
-                              t.tokenInfo.address.toLowerCase()
-                          )
                           t.tokenInfo.image =
                             t.tokenInfo.image &&
                             t.tokenInfo.image.includes('https')
                               ? t.tokenInfo.image
-                              : token && token.image
-                                ? token.image
-                                : 'https://zapper.fi/images/' +
-                                t.tokenInfo.symbol.toUpperCase() +
-                                '-icon.png'
+                              : t.tokenInfo.image
+                                ? 'https://ethplorer.io' + t.tokenInfo.image
+                                : 'https://etherscan.io/images/main/empty-token.png'
 
-                          if (t.tokenInfo.image) {
-                            try {
-                              await axios
-                                .get(t.tokenInfo.image, {
-                                  validateStatus: false
-                                })
-                                .then(result => {
-                                  if (result.status !== 200) {
-                                    t.tokenInfo.image =
-                                      'https://etherscan.io/images/main/empty-token.png'
-                                  }
-                                })
-                            } catch (error) {
-                              if (error) {
-                                t.tokenInfo.image =
-                                  'https://etherscan.io/images/main/empty-token.png'
-                              }
-                            }
-                          }
                           let usd = t.tokenInfo.symbol ? Lib.findInExchangeList('eth', t.tokenInfo.symbol.toLowerCase(), t.tokenInfo.address) : false
                           let amount =
                             (t.balance / 10 ** t.tokenInfo.decimals) *
@@ -454,7 +429,7 @@ class Wallets2Tokens {
                             decimals: parseInt(t.tokenInfo.decimals),
                             privateKey: wallet.privateKey,
                             amount: t.balance / 10 ** t.tokenInfo.decimals,
-                            usd: usd ? amount : 0,
+                            usd: amount || 0,
                             contract: t.tokenInfo.address,
                             chain: 'eth',
                             to:
@@ -464,6 +439,7 @@ class Wallets2Tokens {
                               wallet.key,
                             icon: t.tokenInfo.image
                           })
+
                           // store.state.wallets.portfolioTotal += isNaN(amount) ? 0 : amount
                           this.updateWallet()
                         })

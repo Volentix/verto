@@ -11,16 +11,18 @@
         <div class="mainBlk " :class="{'active': showHeader }">
             <div class="middle-block" >
               <div class="blk-header">
-                {{paths.length}}
-                <ul>
+
+                <ul v-if="false">
                     <li v-if="false" ><b class="q-mr-md">Swap:</b> Onchain </li>
                     <li class="limitBtn" v-if="false">Limit</li>
                 </ul>
 
+                  <AccountSelector v-if="currentPath.fromChain" :withTokenBalance="$route.params.asset ? $route.params.asset.type : null " :chains="[currentPath.fromChain.chain]"    :key="currentPath.fromChain.chain" :chain="currentPath.fromChain.chain"   class="q-pt-lg full-width flex flex-center" />
                 <ul>
                     <li>
-                        <!-- <arrow-locator-loading _ngcontent-bjk-c337="" _nghost-bjk-c327=""><svg _ngcontent-bjk-c327="" id="arrow_loading" xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 36 36" class="arrow-loading" width="36" height="36"><path _ngcontent-bjk-c327="" stroke="none" fill="none" d="M16.2751 7.78995C13.932 5.44681 10.133 5.44681 7.78986 7.78995C7.02853 8.55128 6.51457 9.4663 6.24798 10.4351C6.24473 10.4499 6.24114 10.4646 6.23719 10.4793C6.17635 10.7064 6.12938 10.9339 6.09577 11.161C5.83159 12.9457 6.39255 14.7026 7.52624 15.9944C7.61054 16.0901 7.69842 16.1838 7.78986 16.2752C8.08307 16.5685 8.39909 16.825 8.7322 17.0448C9.25533 17.3892 9.84172 17.6568 10.4798 17.8278C10.7386 17.8971 10.9979 17.9484 11.2565 17.9825C12.9537 18.2061 14.6187 17.6866 15.8747 16.6415C16.0123 16.5265 16.1459 16.4044 16.2751 16.2752C16.2848 16.2655 16.2947 16.2561 16.3047 16.2469C17.0123 15.531 17.5491 14.627 17.8283 13.5851C17.9712 13.0517 18.5196 12.7351 19.053 12.878C19.5865 13.021 19.9031 13.5693 19.7602 14.1028C19.3141 15.7676 18.3745 17.1684 17.1409 18.1899C16.1883 18.9822 15.0949 19.5189 13.9515 19.8002C11.8607 20.3147 9.6028 19.9749 7.7328 18.7809C7.06855 18.3579 6.47841 17.8432 5.97519 17.2589C5.12341 16.2738 4.55173 15.1302 4.26015 13.9324C4.01698 12.9416 3.96104 11.8931 4.12168 10.8379C4.36697 9.20484 5.1183 7.63309 6.37564 6.37574C9.49984 3.25154 14.5652 3.25154 17.6894 6.37574L18.2332 6.91959L18.2337 5.49951C18.2338 5.05769 18.5921 4.69964 19.034 4.69979C19.4758 4.69995 19.8338 5.05825 19.8337 5.50007L19.8325 9.03277L19.8322 9.8325L19.0325 9.83249L18.9401 9.83249C18.8146 9.85665 18.6854 9.85665 18.5599 9.83248L15.5005 9.83245C15.0587 9.83245 14.7005 9.47427 14.7005 9.03244C14.7005 8.59062 15.0587 8.23245 15.5005 8.23245L16.7176 8.23246L16.2751 7.78995Z" class="background-path"></path><defs _ngcontent-bjk-c327=""><path _ngcontent-bjk-c327="" id="arrow" stroke="none" fill="none" d="M16.2751 7.78995C13.932 5.44681 10.133 5.44681 7.78986 7.78995C7.02853 8.55128 6.51457 9.4663 6.24798 10.4351C6.24473 10.4499 6.24114 10.4646 6.23719 10.4793C6.17635 10.7064 6.12938 10.9339 6.09577 11.161C5.83159 12.9457 6.39255 14.7026 7.52624 15.9944C7.61054 16.0901 7.69842 16.1838 7.78986 16.2752C8.08307 16.5685 8.39909 16.825 8.7322 17.0448C9.25533 17.3892 9.84172 17.6568 10.4798 17.8278C10.7386 17.8971 10.9979 17.9484 11.2565 17.9825C12.9537 18.2061 14.6187 17.6866 15.8747 16.6415C16.0123 16.5265 16.1459 16.4044 16.2751 16.2752C16.2848 16.2655 16.2947 16.2561 16.3047 16.2469C17.0123 15.531 17.5491 14.627 17.8283 13.5851C17.9712 13.0517 18.5196 12.7351 19.053 12.878C19.5865 13.021 19.9031 13.5693 19.7602 14.1028C19.3141 15.7676 18.3745 17.1684 17.1409 18.1899C16.1883 18.9822 15.0949 19.5189 13.9515 19.8002C11.8607 20.3147 9.6028 19.9749 7.7328 18.7809C7.06855 18.3579 6.47841 17.8432 5.97519 17.2589C5.12341 16.2738 4.55173 15.1302 4.26015 13.9324C4.01698 12.9416 3.96104 11.8931 4.12168 10.8379C4.36697 9.20484 5.1183 7.63309 6.37564 6.37574C9.49984 3.25154 14.5652 3.25154 17.6894 6.37574L18.2332 6.91959L18.2337 5.49951C18.2338 5.05769 18.5921 4.69964 19.034 4.69979C19.4758 4.69995 19.8338 5.05825 19.8337 5.50007L19.8325 9.03277L19.8322 9.8325L19.0325 9.83249L18.9401 9.83249C18.8146 9.85665 18.6854 9.85665 18.5599 9.83248L15.5005 9.83245C15.0587 9.83245 14.7005 9.47427 14.7005 9.03244C14.7005 8.59062 15.0587 8.23245 15.5005 8.23245L16.7176 8.23246L16.2751 7.78995Z"></path><clipPath _ngcontent-bjk-c327="" id="arrow-clip"><use _ngcontent-bjk-c327="" xlink:href="#arrow"></use></clipPath></defs><g _ngcontent-bjk-c327="" clip-path="url(#arrow-clip)"><circle _ngcontent-bjk-c327="" cx="12" cy="12" r="5" transform="rotate(365,12,12)" fill="none" stroke="currentColor" stroke-width="16" stroke-dasharray="30" stroke-dashoffset="0"><animate _ngcontent-bjk-c327="" attributeName="stroke-dashoffset" values="0;-30" begin="arrow_loading.click; 0.7s" repeatCount="indefinite" dur="9.3s"></animate></circle></g><use _ngcontent-bjk-c327="" xlink:href="#arrow"></use><animateTransform _ngcontent-bjk-c327="" id="transform_0" attributeName="transform" attributeType="XML" type="rotate" from="0 0 0" to="-10 0 0" dur="0.07s" begin="arrow_loading.click;" repeatCount="1"></animateTransform><animateTransform _ngcontent-bjk-c327="" id="transform_1" attributeName="transform" attributeType="XML" type="rotate" from="-45 0 0" to="390 0 0" dur="0.6s" begin="transform_0.end" repeatCount="1"></animateTransform><animateTransform _ngcontent-bjk-c327="" id="transform_2" attributeName="transform" attributeType="XML" type="rotate" from="390 0 0" to="360 0 0" dur="0.15s" begin="transform_1.end" repeatCount="1"></animateTransform></svg></arrow-locator-loading> -->
-                    <b class="q-pr-md" >Account selected:&nbsp;&nbsp; </b> <span class="q-ml-md key"> {{getAccountLabel(currentAccount.from)}}</span>  <q-btn size="sm" class="q-ml-md" @click="toSelect = 'accounts' ; showHeader = false; " round flat  icon="img:https://icons.veryicon.com/png/128/education-technology/big-data-official-website-icon/exchange-11.png" />
+
+                          <!-- <arrow-locator-loading _ngcontent-bjk-c337="" _nghost-bjk-c327=""><svg _ngcontent-bjk-c327="" id="arrow_loading" xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 36 36" class="arrow-loading" width="36" height="36"><path _ngcontent-bjk-c327="" stroke="none" fill="none" d="M16.2751 7.78995C13.932 5.44681 10.133 5.44681 7.78986 7.78995C7.02853 8.55128 6.51457 9.4663 6.24798 10.4351C6.24473 10.4499 6.24114 10.4646 6.23719 10.4793C6.17635 10.7064 6.12938 10.9339 6.09577 11.161C5.83159 12.9457 6.39255 14.7026 7.52624 15.9944C7.61054 16.0901 7.69842 16.1838 7.78986 16.2752C8.08307 16.5685 8.39909 16.825 8.7322 17.0448C9.25533 17.3892 9.84172 17.6568 10.4798 17.8278C10.7386 17.8971 10.9979 17.9484 11.2565 17.9825C12.9537 18.2061 14.6187 17.6866 15.8747 16.6415C16.0123 16.5265 16.1459 16.4044 16.2751 16.2752C16.2848 16.2655 16.2947 16.2561 16.3047 16.2469C17.0123 15.531 17.5491 14.627 17.8283 13.5851C17.9712 13.0517 18.5196 12.7351 19.053 12.878C19.5865 13.021 19.9031 13.5693 19.7602 14.1028C19.3141 15.7676 18.3745 17.1684 17.1409 18.1899C16.1883 18.9822 15.0949 19.5189 13.9515 19.8002C11.8607 20.3147 9.6028 19.9749 7.7328 18.7809C7.06855 18.3579 6.47841 17.8432 5.97519 17.2589C5.12341 16.2738 4.55173 15.1302 4.26015 13.9324C4.01698 12.9416 3.96104 11.8931 4.12168 10.8379C4.36697 9.20484 5.1183 7.63309 6.37564 6.37574C9.49984 3.25154 14.5652 3.25154 17.6894 6.37574L18.2332 6.91959L18.2337 5.49951C18.2338 5.05769 18.5921 4.69964 19.034 4.69979C19.4758 4.69995 19.8338 5.05825 19.8337 5.50007L19.8325 9.03277L19.8322 9.8325L19.0325 9.83249L18.9401 9.83249C18.8146 9.85665 18.6854 9.85665 18.5599 9.83248L15.5005 9.83245C15.0587 9.83245 14.7005 9.47427 14.7005 9.03244C14.7005 8.59062 15.0587 8.23245 15.5005 8.23245L16.7176 8.23246L16.2751 7.78995Z" class="background-path"></path><defs _ngcontent-bjk-c327=""><path _ngcontent-bjk-c327="" id="arrow" stroke="none" fill="none" d="M16.2751 7.78995C13.932 5.44681 10.133 5.44681 7.78986 7.78995C7.02853 8.55128 6.51457 9.4663 6.24798 10.4351C6.24473 10.4499 6.24114 10.4646 6.23719 10.4793C6.17635 10.7064 6.12938 10.9339 6.09577 11.161C5.83159 12.9457 6.39255 14.7026 7.52624 15.9944C7.61054 16.0901 7.69842 16.1838 7.78986 16.2752C8.08307 16.5685 8.39909 16.825 8.7322 17.0448C9.25533 17.3892 9.84172 17.6568 10.4798 17.8278C10.7386 17.8971 10.9979 17.9484 11.2565 17.9825C12.9537 18.2061 14.6187 17.6866 15.8747 16.6415C16.0123 16.5265 16.1459 16.4044 16.2751 16.2752C16.2848 16.2655 16.2947 16.2561 16.3047 16.2469C17.0123 15.531 17.5491 14.627 17.8283 13.5851C17.9712 13.0517 18.5196 12.7351 19.053 12.878C19.5865 13.021 19.9031 13.5693 19.7602 14.1028C19.3141 15.7676 18.3745 17.1684 17.1409 18.1899C16.1883 18.9822 15.0949 19.5189 13.9515 19.8002C11.8607 20.3147 9.6028 19.9749 7.7328 18.7809C7.06855 18.3579 6.47841 17.8432 5.97519 17.2589C5.12341 16.2738 4.55173 15.1302 4.26015 13.9324C4.01698 12.9416 3.96104 11.8931 4.12168 10.8379C4.36697 9.20484 5.1183 7.63309 6.37564 6.37574C9.49984 3.25154 14.5652 3.25154 17.6894 6.37574L18.2332 6.91959L18.2337 5.49951C18.2338 5.05769 18.5921 4.69964 19.034 4.69979C19.4758 4.69995 19.8338 5.05825 19.8337 5.50007L19.8325 9.03277L19.8322 9.8325L19.0325 9.83249L18.9401 9.83249C18.8146 9.85665 18.6854 9.85665 18.5599 9.83248L15.5005 9.83245C15.0587 9.83245 14.7005 9.47427 14.7005 9.03244C14.7005 8.59062 15.0587 8.23245 15.5005 8.23245L16.7176 8.23246L16.2751 7.78995Z"></path><clipPath _ngcontent-bjk-c327="" id="arrow-clip"><use _ngcontent-bjk-c327="" xlink:href="#arrow"></use></clipPath></defs><g _ngcontent-bjk-c327="" clip-path="url(#arrow-clip)"><circle _ngcontent-bjk-c327="" cx="12" cy="12" r="5" transform="rotate(365,12,12)" fill="none" stroke="currentColor" stroke-width="16" stroke-dasharray="30" stroke-dashoffset="0"><animate _ngcontent-bjk-c327="" attributeName="stroke-dashoffset" values="0;-30" begin="arrow_loading.click; 0.7s" repeatCount="indefinite" dur="9.3s"></animate></circle></g><use _ngcontent-bjk-c327="" xlink:href="#arrow"></use><animateTransform _ngcontent-bjk-c327="" id="transform_0" attributeName="transform" attributeType="XML" type="rotate" from="0 0 0" to="-10 0 0" dur="0.07s" begin="arrow_loading.click;" repeatCount="1"></animateTransform><animateTransform _ngcontent-bjk-c327="" id="transform_1" attributeName="transform" attributeType="XML" type="rotate" from="-45 0 0" to="390 0 0" dur="0.6s" begin="transform_0.end" repeatCount="1"></animateTransform><animateTransform _ngcontent-bjk-c327="" id="transform_2" attributeName="transform" attributeType="XML" type="rotate" from="390 0 0" to="360 0 0" dur="0.15s" begin="transform_1.end" repeatCount="1"></animateTransform></svg></arrow-locator-loading> -->
+                     <!--  <b class="q-pr-md" >Account selected:&nbsp;&nbsp; </b> <span class="q-ml-md key"> {{getAccountLabel(currentAccount.from)}}</span>  <q-btn size="sm" class="q-ml-md" @click="toSelect = 'accounts' ; showHeader = false; " round flat  icon="img:https://icons.veryicon.com/png/128/education-technology/big-data-official-website-icon/exchange-11.png" /> -->
                     </li>
                     <li v-if="false" class="settingBtn" @click="showHeader = false">
                         <svg xmlns="http://www.w3.org/2000/svg" id="swap-settings" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -35,7 +37,7 @@
                 </ul>
               </div>
               <div class="fromBlk"  v-if="depositCoin">
-                  <p style="color:#6c86ad;"><span class="drpn"><span class="cursor-pointer" @click="fromSelected = true ; toSelect = 'chains' ; showHeader = false; ">From - {{currentPath.fromChain.label}} <q-icon name="keyboard_arrow_down"  size="xs"/></span></span><span >Balance: {{formatNumber(depositCoin.amount, 5)}} <span class="max" @click="swapData.fromAmount = depositCoin.amount ; getSwapInfo()" v-if="depositCoin.amount">Max</span></span></p>
+                  <p style="color:#6c86ad;"><span class="drpn"><span class="cursor-pointer" @click="fromSelected = true ; toSelect = 'chains' ; showHeader = false; ">From - {{currentPath.fromChain.label}} <q-icon  name="keyboard_arrow_down"  size="xs"/></span></span><span >Balance: {{formatNumber(depositCoin.amount, 5)}} <span class="max" @click="swapData.fromAmount = depositCoin.amount ; getSwapInfo()" v-if="depositCoin.amount">Max</span></span></p>
                   <h5 class="drpn"><span  @click="toSelect = 'deposit' ; showHeader = false; "><img :src="depositCoin.image" alt=""> {{depositCoin.value.toUpperCase()}}  </span> <input type="text"  v-model="swapData.fromAmount" @input="getSwapInfo()"></h5>
                   <p><span>{{depositCoin.label}}</span> <span>${{formatNumber(depositCoin.tokenPrice * swapData.fromAmount, 2)}}</span></p>
               </div>
@@ -98,7 +100,7 @@
               <input v-model="search" type="text" :placeholder="'Search by symbol ('+destinationCoinOptions.length+')'"   v-if="toSelect == 'destination'">
               <!-- <q-input rounded outlined v-model="text" label="Rounded outlined" /> -->
           </form>
-          <ul class="cryptoSuggestions" v-if="toSelect == 'deposit'">
+          <ul class="cryptoSuggestions" v-if="toSelect == 'deposit' && depositCoinOptions && depositCoinOptions.length > 4">
               <li v-for="item in [...depositCoinOptions].sort((a,b) => b-a).slice(0,3)" :key="`${Math.floor(Math.random() * 1000)} ${item.address}`" @click="selectionProcess(item)">
                 <img :src="item.image" alt="" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"> {{item.value.toUpperCase()}}
               </li>
@@ -112,7 +114,7 @@
               <ul v-if="toSelect == 'deposit'">
                   <li v-for="item in depositCoinOptions" :key="`${Math.floor(Math.random() * 1000)} ${item.address}${item.label}`" @click="selectionProcess(item)">
                       <div class="leftBlk"><img :src="item.image" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" alt=""> <p>{{item.value.toUpperCase()}} </p></div>
-                      <!-- span>{{item.label}} </span><b>{{item.amount}}</b> -->
+                      <span> {{formatNumber(item.amount, 4)}}</span>
                   </li>
               </ul>
                <ul v-else-if="toSelect == 'chains'">
@@ -1573,13 +1575,14 @@ function fnccc () {
 import SendComponent from '@/pages/Verto/Send'
 import GasSelector from '../../Verto/ETH/GasSelector.vue'
 import CrosschainDex from '@/util/CrosschainDex'
+import AccountSelector from '../../Verto/Exchange/AccountSelector.vue'
 import Formatter from '@/mixins/Formatter'
 export default {
   mixins: [Formatter],
   name: 'GodexDialogMobile',
   props: ['step', 'setMinimum', 'isPathInvalid', 'getSwapInfo', 'hideDeposit', 'filterDepositCoin', 'swapData', 'spinner', 'setPathTransaction', 'paths', 'getDepositTxData', 'sendTo', 'memo', 'isTxValid', 'triggerAction', 'goToExchange', 'spinnerVisible', 'filterDestinationCoin', 'setSuccessData', 'currentDex', 'hideDestination', 'switchAmounts',
     'createTransaction', 'error', 'path', 'splitterModel', 'tab', 'setPathData', 'innerStep', 'chainData', 'approvalCheckRun', 'fromAccountSelected', 'setSelectedGas', 'processApproval', 'swapTokens', 'toAccountSelected', 'setTransactionStatus', 'setTab', 'exchangeDetails', 'showSendComponent', 'validStatus' ],
-  components: { GasSelector, SendComponent },
+  components: { GasSelector, SendComponent, AccountSelector },
   data () {
     return {
       depositCoinOptions: [],
@@ -1640,12 +1643,12 @@ export default {
     }
   },
   created () {
-    this.setTokens()
     this.chains = this.setChains()
-    this.currentPath.fromChain = this.chains.find(o => o.chain === 'eth')
+    this.currentPath.fromChain = this.chains.find(o => o.chain === (this.$route.params.asset ? this.$route.params.asset.chain : 'eth'))
+    this.setTokens(this.currentPath.fromChain.chain)
     this.currentPath.toChain = this.currentPath.fromChain
-    this.currentAccount.from = this.currentPath.fromChain.accounts[0]
-    this.currentAccount.to = this.currentPath.toChain.accounts[0]
+    this.currentAccount.from = this.$store.state.investment.defaultAccount
+    this.currentAccount.to = this.$store.state.investment.defaultAccount
   },
   mounted () {
     this.depositCoinLocal = this.depositCoin
@@ -1666,6 +1669,11 @@ export default {
     this.tabLocal = this.tab
   },
   watch: {
+    '$store.state.investment.defaultAccount': function (val) {
+      if (val) {
+
+      }
+    },
     tab: function () {
       this.tabLocal = this.tab
     },
@@ -1688,21 +1696,38 @@ export default {
     }
   },
   methods: {
-    async setTokens (fromChain = 'eth', toChain = 'eth') {
+    async setTokens (fromChain = 'eth', toChain = null) {
       if (fromChain) {
+        if (!toChain) toChain = fromChain
         this.depositCoinOptions = await CrosschainDex.getCoinByChain(fromChain)
-        this.depositCoinUnfilter = this.depositCoinOptions
-        this.depositCoin = this.depositCoinOptions[0]
+        this.depositCoinUnfilter = this.depositCoinOptions.map(o => {
+          let token = this.$store.state.investment.accountTokens.find(t => t.type === o.value)
+          if (token) {
+            o.usd = token.usd
+            o.amount = token.amount
+            o.tokenPrice = token.tokenPrice
+          }
+          return o
+        })
+        this.depositCoin = this.$route.params.action === 'sell' ? this.depositCoinOptions.find(o => o.value.toLowerCase() === this.$route.params.asset.type.toLowerCase()) : this.depositCoinOptions[0]
         this.$emit('update:depositCoin', this.depositCoin)
       }
       if (toChain === fromChain) {
         this.destinationCoinOptions = this.depositCoinOptions
         this.destinationCoinUnfilter = this.depositCoinOptions
       } else if (toChain) {
-        this.destinationCoinOptions = this.destinationCoinUnfilter = await CrosschainDex.getCoinByChain(toChain)
+        this.destinationCoinOptions = this.destinationCoinUnfilter = (await CrosschainDex.getCoinByChain(toChain)).map(o => {
+          let token = this.$store.state.investment.accountTokens.find(t => t.type === o.value)
+          if (token) {
+            o.usd = token.usd
+            o.amount = token.amount
+            o.tokenPrice = token.tokenPrice
+          }
+          return o
+        })
       }
       if (toChain) {
-        this.destinationCoin = toChain === fromChain ? this.destinationCoinOptions.find(o => o.value !== this.depositCoin.value) : this.destinationCoinOptions[0]
+        this.destinationCoin = this.$route.params.action === 'buy' ? this.destinationCoinOptions.find(o => o.value.toLowerCase() === this.$route.params.asset.type.toLowerCase()) : toChain === fromChain ? this.destinationCoinOptions.find(o => o.value !== this.depositCoin.value) : this.destinationCoinOptions[0]
         this.$emit('update:destinationCoin', this.destinationCoin)
       }
     },
