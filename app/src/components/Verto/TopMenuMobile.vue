@@ -1,7 +1,7 @@
 <template>
   <div :class="$store.state.settings.lightMode === 'true' ? 'bg-blue-verto':'bg-white'">
     <AppBar class="appbar_wrapper" :callChainTools="callChainTools" v-if="showPanelStatus"/>
-    <AccountSelector :showPortfolio="true" class="top" :class="$store.state.settings.lightMode === 'true' ? 'bg-tranparent':'bg-grey-1'" :showAllWallets="true" />
+    <AccountSelector :showPortfolio="true" :allSelector="true" class="top" :class="$store.state.settings.lightMode === 'true' ? 'bg-tranparent':'bg-grey-1'" :showAllWallets="true" />
     <div class="q-pa-md showpanelstatus_wrapper" :class="{'showpanelDark': $store.state.settings.lightMode === 'true'}" v-if="showPanelStatus">
       <div class="q-pb-md row flex justify-between relative" :class="$store.state.investment.defaultAccount ? '':'q-pt-md'">
         <span v-if="$store.state.investment.defaultAccount" class="label_balance"/>

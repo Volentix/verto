@@ -327,10 +327,11 @@
               icon="arrow_back_ios"
               class="q-mr-sm"
               no-caps
+              v-close-popup
               label="Back"
               @click="dialog = false"
             />
-             <q-toolbar-title class="text-body1 q-pl-md" style="margin-left: -25px"> Select an Account  </q-toolbar-title>
+             <q-toolbar-title v-if="false" class="text-body1 q-pl-md" style="margin-left: -25px"> Select an Account  </q-toolbar-title>
           </q-toolbar>
 
           <div
