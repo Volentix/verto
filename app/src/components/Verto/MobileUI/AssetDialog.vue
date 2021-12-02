@@ -27,31 +27,34 @@
                     no-caps
                     outside-arrows
                     mobile-arrows
-                    class="bg-grey-2 text-primary tabindex_wrapper"
+                    :dark="$store.state.settings.lightMode === 'true'"
+                    class="bg-grey-2 tabindex_wrapper"
                     @input="handleTab(tabIndex)"
                     :class="{
                         'account-tabs': $route.params.accounts,
                         'assets-tabs': !$route.params.accounts,
-                        'mobile-card text-white':  $store.state.settings.lightMode === 'true'
+                        'text-primary': $store.state.settings.lightMode !== 'true',
+                        'mobile-card text-white':  $store.state.settings.lightMode === 'true',
+                        'tabindexDark': $store.state.settings.lightMode === 'true'
                     }"
                 >
-                    <q-tab name="receive" dense label="Receive" :class="{
+                    <q-tab :dark="$store.state.settings.lightMode === 'true'" name="receive" dense label="Receive" :class="{
                         manage: $store.state.wallets.portfolioTotal,
                         read:
                         !$store.state.wallets.portfolioTotal &&
                         !$route.params.accounts,
                     }"/>
-                    <q-tab name="import"  label="Import" :class="{
+                    <q-tab :dark="$store.state.settings.lightMode === 'true'" name="import"  label="Import" :class="{
                         manage: $store.state.wallets.portfolioTotal,
                         read:
                         !$store.state.wallets.portfolioTotal &&
                         !$route.params.accounts,
                     }" />
-                    <q-tab name="create"  label="New account" :class="{ active: tab == 'create', manage: true, }" />
-                    <q-tab name="chains"  label="Chains" class="read" v-if="$store.state.wallets.portfolioTotal"/>
-                    <q-tab name="assets" label="Assets" class="read"/>
-                    <q-tab name="privateKeys"  label="Private Keys" class="manage" @click="handlePrivateKey(tabIndex)"/>
-                    <q-tab name="investments"  label="Investments" class="read" v-if="$store.state.wallets.portfolioTotal"/>
+                    <q-tab :dark="$store.state.settings.lightMode === 'true'" name="create"  label="New account" :class="{ active: tab == 'create', manage: true, }" />
+                    <q-tab :dark="$store.state.settings.lightMode === 'true'" name="chains"  label="Chains" class="read" v-if="$store.state.wallets.portfolioTotal"/>
+                    <q-tab :dark="$store.state.settings.lightMode === 'true'" name="assets" label="Assets" class="read"/>
+                    <q-tab :dark="$store.state.settings.lightMode === 'true'" name="privateKeys"  label="Private Keys" class="manage" @click="handlePrivateKey(tabIndex)"/>
+                    <q-tab :dark="$store.state.settings.lightMode === 'true'" name="investments"  label="Investments" class="read" v-if="$store.state.wallets.portfolioTotal"/>
                 </q-tabs>
             </q-card-section>
             <div class=" q-pl-md q-pb-md" v-if="tabIndex == 'import'">
@@ -157,6 +160,9 @@ export default {
   box-shadow: 0px 6px 6px 0px rgba(black, .1);
   padding-left: 0px;
   padding-right: 0px;
+  &.tabindexDark{
+    background: #15243d !important;
+  }
   /deep/ .q-tabs__content{
     justify-content: space-between;
     .q-tab{

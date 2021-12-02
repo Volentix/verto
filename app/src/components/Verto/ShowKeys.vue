@@ -1,12 +1,13 @@
 <template>
-  <q-dialog :dark="$store.state.settings.lightMode === 'true'" v-model="alert">
-    <q-card :dark="$store.state.settings.lightMode === 'true'" style="width: 100%;max-width: 96%">
+  <q-dialog  :dark="$store.state.settings.lightMode === 'true'" v-model="alert">
+    <q-card :class="{'min-size': !$q.platform.is.mobile}" :dark="$store.state.settings.lightMode === 'true'" style="width: 100%;max-width: 96%">
       <q-card-section>
         <!-- Public keys removed -->
         <div class="text-body1 text-bold">
           <q-icon :name="'img:'+chain.icon" class="q-pr-sm" />
           {{chain.label}} accounts {{(field == 'key' ? '' : (field == 'privateKey' ? 'Private keys' : '' )) }}
         </div>
+             <q-btn v-close-popup class="close_qr_code_popup absolute-top-right q-pa-md" dense flat icon="close" />
       </q-card-section>
       <q-scroll-area style="height: 45vh;">
         <q-card-section  class="q-pt-none" v-for="(account , index) in chain.accounts" :key="index">
@@ -21,13 +22,13 @@
               </span>
             </div>
             <div class="flex">
-              <q-btn dense flat color="white" text-color="black" icon="o_file_copy" @click="copyToClipboard(account[field])" />
+              <q-btn dense flat color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="o_file_copy" @click="copyToClipboard(account[field])" />
               <q-btn dense v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat icon="img:https://image.flaticon.com/icons/png/512/107/107072.png" />
-              <div class="qr_code_wrapper column justify-center items-center" :class="{ 'show' : (account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]] }">
+              <div class="qr_code_wrapper column justify-center items-center" :class="{ 'min-size': !$q.platform.is.mobile, 'show' : (account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]] }">
                 <div class="flex flex-center account_name_text">{{account.name}}</div>
                 <q-btn class="close_qr_code_popup" dense v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat icon="close" />
                 <qrcode v-if="(account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]]" dark :value="decryptedKeys[index] ? decryptedKeys[index] : account[field]" :size="200" :options="{size: 100}"></qrcode>
-                <div class="flex flex-center scan_text">Scan the qr code</div>
+                <div class="flex flex-center scan_text q-pt-md" style="bottom:0px">Scan the qr code</div>
               </div>
             </div>
           </div>
@@ -127,11 +128,6 @@ export default {
     width: 30px;
     height: 30px;
   }
-  .q-dialog .q-card.q-card--dark.q-dark{
-    .copy-key {
-      background: #0e1829;
-    }
-  }
   .identicon{
     overflow: hidden;
     background: #FFF;
@@ -173,5 +169,19 @@ export default {
       position: absolute;
       bottom: 10px;
     }
+  }
+  .q-dialog .q-card.q-card--dark.q-dark{
+    .copy-key {
+      background: #0e1829;
+    }
+    .identicon{
+      background: #0e1829;
+    }
+    .qr_code_wrapper{
+      background-color: #050a10;
+    }
+  }
+  .min-size {
+     width:400px  !important
   }
 </style>

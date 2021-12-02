@@ -1,12 +1,12 @@
 <template>
-  <div class="column items-center justify-start login-page full-width">
+  <div v-if="false" class="column items-center justify-start login-page full-width">
     <div class="q-pa-md">
       <img src="statics/icons/icon-256x256.png" width="170" alt="logo"/>
     </div>
     <notify-message/>
     <div class="standard-content col-grow">
       <h2 class="landing--title">
-        Verto
+        Verto 2
       </h2>
       <h2 class="landing--title__sub">
         <span class="">Multi-chain wallet manager</span>
@@ -29,6 +29,34 @@
       </div>
     </div>
   </div>
+  <q-page class="column items-center justify-start login-page login-page-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}" v-else>
+    <div class="full-width full-height">
+      <img :src="'statics/login_ui_' + ($store.state.settings.lightMode === 'true' ? 'dark':'light') +'.png'" alt="head-login" class="head-login" />
+      <div class="form_wrapper full-height column q-pa-lg">
+        <span class="text-h2 q-pl-md">VERTO</span>
+        <span class="text-h3 q-pl-md q-pr-md q-mt-md">Multi-chain wallet manager</span>
+        <p class="q-pl-md q-pr-md q-mt-md">Store, trade, generate yield from your digital assets. One app for the multi-chain universe</p>
+        <div class="password_wrapper q-pl-md q-pr-md">
+          <label class="ver-label">Enter your password</label>
+          <q-input :dark="$store.state.settings.lightMode === 'true'" :bg-color="$store.state.settings.lightMode === 'true' ? 'transparent':'white'" ref="psswrd" v-model="password" @keyup.enter="login" error-message="Your password is wrong" @input="checkPassword" :error="passHasError" outlined :type="isPwd ? 'password' : 'text'">
+            <template v-slot:append>
+              <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd"/>
+            </template>
+          </q-input>
+          <div class="unlock_restore flex justify-between q-mt-sm">
+            <q-btn unelevated class="btn__blue unlock_btn" color="grey-4" outline size="md" no-caps :loading="spinnerVisible" @click="login">
+              <div class="flex justify-center items-center">
+                <span class="q-ml-md q-mr-md">Unlock</span>
+                <svg width="15" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.72 41.21"><path class="cls-1" :fill="$store.state.settings.lightMode === 'true' ? '#FFF':'#555'" d="M325.25,1207.35c0-1.12,0-2.23,0-3.34a53.91,53.91,0,0,1,.19-6.51,9.74,9.74,0,0,1,10.25-8.19,10,10,0,0,1,9.3,9,1.89,1.89,0,0,1,0,.91c-.16.33-.49.78-.76.78s-.71-.4-.82-.72a12.48,12.48,0,0,1-.21-1.65,8.22,8.22,0,0,0-16.28,1.43c0,2.76,0,5.52,0,8.4h18.43c3,0,4.64,1.67,4.64,4.6q0,6.95,0,13.9c0,3-1.67,4.59-4.64,4.59H324.93c-3,0-4.64-1.65-4.64-4.68q0-6.82,0-13.65c0-3.08,1.48-4.62,4.56-4.78C325,1207.41,325.06,1207.38,325.25,1207.35Zm9.83,21.5h10.55a2.47,2.47,0,0,0,2.71-2.7q0-7.16,0-14.31a2.51,2.51,0,0,0-2.76-2.75H324.73a2.53,2.53,0,0,0-2.79,2.81q0,7.07,0,14.15a2.52,2.52,0,0,0,2.85,2.82Z" transform="translate(-320.28 -1189.3)"/><path fill="#FFF" class="cls-1" d="M336,1220.6c0,1.29,0,2.55,0,3.8,0,.58-.1,1.12-.8,1.14s-.88-.52-.87-1.15c0-1.25,0-2.51,0-3.74-2.73-1.35-3.71-3-3.16-5.18a4.12,4.12,0,0,1,4.25-3.07,4.06,4.06,0,0,1,3.79,3.4C339.54,1218,338.44,1219.66,336,1220.6Zm-.8-6.55a2.45,2.45,0,1,0,2.45,2.44A2.47,2.47,0,0,0,335.17,1214.05Z" transform="translate(-320.28 -1189.3)"/></svg>
+              </div>
+            </q-btn>
+            <q-btn flat size="md" no-caps class="restore_btn" label="Restore" @click="startRestoreConfig"/>
+          </div>
+        </div>
+      </div>
+    </div>
+    <notify-message/>
+  </q-page>
 </template>
 
 <script>
@@ -471,6 +499,103 @@ export default {
   /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
   /deep/ .q-field--dark .q-field__marginal,
   /deep/ .q-field--dark .q-field__bottom {
+  }
+}
+.login-page-wrapper{
+  background: #F9F9F9;
+  .head-login{
+    max-width: 100%;
+    position: relative;
+    transform: scale3d(1,1,1);
+  }
+  .form_wrapper{
+    border-radius: 50px 50px 0px 0px;
+    margin-top: -80px;
+    background: #F9F9F9;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0px -30px 50px 0px rgba(black, .1);
+    .text-h2{
+      font-family: $Franklin;
+      font-weight: $black;
+      font-size: 20px;
+      line-height: 30px;
+      color: #04111F;
+    }
+    .text-h3{
+      font-family: $Franklin;
+      font-weight: $lighter;
+      font-size: 30px;
+      line-height: 35px;
+      color: #04111F;
+    }
+    p{
+      font-family: $Franklin;
+      font-weight: $lighter;
+      font-size: 14px;
+      line-height: 22px;
+      color: #04111F;
+    }
+    .unlock_restore{
+      .unlock_btn{
+        width: 65%;
+        height: 45px;
+        letter-spacing: 1px;
+        font-weight: $lighter;
+        font-family: $Franklin;
+        font-size: 16px !important;
+        /deep/ .q-btn__wrapper:before{
+          border: 2px solid #CCC !important;
+        }
+      }
+      .restore_btn{
+        width: 30%;
+        height: 45px;
+        letter-spacing: 1px;
+        font-weight: $lighter;
+        font-family: $Franklin;
+        font-size: 16px !important;
+      }
+    }
+  }
+  &.dark-theme{
+    background: #04111F;
+    .form_wrapper{
+      background: #04111F;
+      .text-h2{
+        color: #FFF;
+      }
+      .text-h3{
+        color: #FFF;
+      }
+      p{
+        color: #FFF;
+      }
+      .restore_btn{
+        color: #FFF !important;
+      }
+    }
+  }
+}
+.password_wrapper{
+  /deep/ .q-field__messages{
+    color: #929398;
+    font-size: 14px;
+    margin-left: -10px;
+    margin-top: -4px;
+  }
+  /deep/ .text-negative {
+    color: #929398 !important;
+  }
+}
+.dark-theme{
+  .password_wrapper{
+    /deep/ .q-field__messages{
+      color: #FFF;
+    }
+    /deep/ .text-negative {
+      color: #FFF !important;
+    }
   }
 }
 </style>

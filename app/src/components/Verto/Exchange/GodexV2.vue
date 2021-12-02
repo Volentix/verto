@@ -4506,6 +4506,13 @@ export default {
     padding: 20px 30px;
     border-radius: 40px;
   }
+  @media screen and (max-width: 768px){
+    .q-dialog .q-card.q-card--dark.q-dark{
+      border: 1px solid #0e1829;
+      padding: 0px;
+      border-radius: 6px;
+    }
+  }
   .dex_name{
     text-transform: uppercase;
     font-size: 14px;

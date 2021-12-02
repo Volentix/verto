@@ -4,7 +4,8 @@
       'q-pt-lg': !allAssets,
       'dark-theme': $store.state.settings.lightMode === 'true',
       'receive_wrapper_class': tab == 'receive',
-      'import_wrapper_class': tab == 'import'
+      'import_wrapper_class': tab == 'import',
+      'min-size': !$q.platform.is.mobile
     }"
     class="wrapper q-px-lg full-width assets_explorer_container"
     :style=" ($q.platform.is.mobile||$isbex) && $store.state.settings.lightMode !== 'true' ? 'background: #f2f2f2 !important' : '' "
@@ -1080,6 +1081,7 @@
   </div>
 
   <ShowKeys
+
     :key="keys.keying"
     v-if="keys.chain"
     :chain="keys.chain"
@@ -1318,9 +1320,15 @@ export default {
     this.getVTXHistoriclPrice()
   },
   watch: {
+    '$store.state.settings.accountTab': function (val, old) {
+      if (val === 'privateKeys' && old !== 'privateKeys') {
+        this.alertSecurity = true
+      } else if (val) { this.tab = val }
+    },
     '$store.state.wallets.tokens': {
       deep: true,
       handler () {
+        this.initTable()
         if (!this.$store.state.wallets.portfolioTotal) {
           this.tab = 'receive'
         } else if (
@@ -1753,7 +1761,8 @@ export default {
       this.getChains()
       // console.log(this.chains, 'this.chains = ')
       if (
-        this.$store.state.investment.defaultAccount
+        this.$store.state.investment.defaultAccount &&
+        this.$q.platform.is.mobile
       ) {
         account = this.$store.state.investment.defaultAccount
         // this.getChainLabel(account.chain)
@@ -1767,8 +1776,8 @@ export default {
             (chain && o.chain === chain && !account) ||
             (account &&
               o.chain === account.chain &&
-              ((account.isEvm && o.key === account.key) ||
-                (!account.isEvm && o.name === account.name)))
+              ((account.isEvm && o.key.toLowerCase() === account.key.toLowerCase()) ||
+                (!account.isEvm && o.name.toLowerCase() === account.name.toLowerCase())))
         )
         .forEach((asset, i) => {
           let token = Object.assign({}, asset)
@@ -2516,5 +2525,8 @@ ul.tabs li a.active {
 .import_wrapper_class_scroll{
   height: 60vh !important;
   margin-left: 0px !important;
+}
+.desktop /deep/ .q-dialog {
+  max-width:400px !important
 }
 </style>

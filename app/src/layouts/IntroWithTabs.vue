@@ -141,13 +141,51 @@
                   </router-link>
                 </li>
                 <li
-                  @click="goToAccounts()"
+                  @click="goToAccounts('receive')"
                   :class="{ active: $route.path.includes('accounts') }"
                 >
                   <a href="javascript:void(0)"
-                    ><i class="fas fa-plus change-c"></i><span>Accounts </span>
+                    ><i class="fas fa-plus change-c"></i><span>Accounts <q-icon size="md" name="keyboard_arrow_right" /></span>
                   </a>
                 </li>
+
+                <li
+                v-if="$route.path.includes('accounts')"
+                  @click="goToAccounts('import')"
+                  :class="{ active: $route.path.includes('accounts') , 'text-deep-purle-12' : $store.state.settings.accountTab == 'import'}"
+                >
+                  <a href="javascript:void(0)"
+                    ><i class="fas fa-wallet change-c"></i><span>Import Account </span>
+                  </a>
+                </li>
+                <li
+                v-if="$route.path.includes('accounts') && false"
+                  @click="goToAccounts('import')"
+                  :class="{ active: $route.path.includes('accounts') , 'text-deep-purle-12' : $store.state.settings.accountTab == 'import' }"
+                >
+                  <a href="javascript:void(0)"
+                    ><i class="fas fa-smile-beam change-c"></i><span>Watch account </span>
+                  </a>
+                </li>
+                <li
+                v-if="$route.path.includes('accounts')"
+                  @click="goToAccounts('create')"
+                  :class="{ active: $route.path.includes('accounts') , 'text-deep-purle-12' : $store.state.settings.accountTab == 'create' }"
+                >
+                  <a href="javascript:void(0)"
+                    ><i class="fas fa-plus-circle change-c"></i><span>New account </span>
+                  </a>
+                </li>
+                <li
+                v-if="$route.path.includes('accounts')"
+                  @click="goToAccounts('privateKeys')"
+                  :class="{ active: $route.path.includes('accounts') ,'text-deep-purle-12' : $store.state.settings.accountTab == 'privateKeys'}"
+                >
+                  <a href="javascript:void(0)"
+                    ><i class="fas fa-lock change-c"></i><span>Private keys </span>
+                  </a>
+                </li>
+
               </ul>
             </div>
             <span class="version full-width text-center column">
@@ -275,7 +313,7 @@ export default {
       },
       tools: {
         eth: [{
-          icon: 'img:https://zapper.fi/images/HEX-icon.png',
+          icon: 'img:https://ethplorer.io/images/HEX2b591e99.png',
           to: '/verto/stake/eth/hex',
           title: 'Stake HEX',
           activeAccRequired: true
@@ -370,8 +408,9 @@ export default {
       })
       this.toggleView = true
     },
-    goToAccounts () {
-      this.$router.push('/verto/manage/accounts')
+    goToAccounts (tab = 'receive') {
+      this.$store.state.settings.accountTab = tab
+      this.$router.push({ name: 'accounts', params: { accounts: 'accounts', tab: tab } })
     },
     goToTab (tab, chain) {
       this.$router.push({
