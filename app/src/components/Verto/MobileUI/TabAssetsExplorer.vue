@@ -1,5 +1,15 @@
 <template>
     <div>
+      <q-header class="bg-white" v-if="$route.path != '/verto/dashboard'">
+              <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" class="back_button_wrapper q-pb-sm bg-grey-1">
+                <!-- <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/> -->
+                <div class="row flex justify-between items-center full-width" style="margin-bottom: -10px;">
+                  <q-btn no-caps flat dense icon="arrow_back_ios" label="Back" class="q-pl-sm q-pr-sm q-mr-sm" @click="$router.push('/verto/dashboard')" />
+                  <!-- <q-toolbar-title> Assets List </q-toolbar-title> -->
+
+                </div>
+              </q-toolbar>
+            </q-header>
       <!-- <div v-if="false" class="row justify-between items-center wallets_title_wrapper q-pa-md">
             <div v-if="false">
                 <div class="text-h6 text-bold my_custom_title text-grey-8">Wallets</div> -->
@@ -45,18 +55,18 @@
                   !$store.state.wallets.portfolioTotal &&
                   !$route.params.accounts,
               }" />
-            <q-tab name="create" :dark="$store.state.settings.lightMode === 'true'" label="Create new account" :class="{ active: tab == 'create', manage: true, }" />
+            <q-tab name="create" :dark="$store.state.settings.lightMode === 'true'" label="New account" :class="{ active: tab == 'create', manage: true, }" />
             <q-tab  name="chains" :dark="$store.state.settings.lightMode === 'true'" label="Chains" class="read" v-if="$store.state.wallets.portfolioTotal && !$store.state.investment.defaultAccount"/>
             <q-tab name="assets" :dark="$store.state.settings.lightMode === 'true'" label="Assets" class="read"/>
             <q-tab v-if="$store.state.investment.defaultAccount" :dark="$store.state.settings.lightMode === 'true'" name="history"  label="History" class="read"/>
 
             <q-tab name="privateKeys"  label="Private Keys" class="manage"/>
-            <q-tab @click="setIndex('investments') ; componentKey++ ; openAssetDialog()" name="investments"  label="Investments" class="read" />
+            <q-tab name="investments"  label="Investments" class="read" />
         </q-tabs>
 
-        <ChainItemList v-if="!['history','investments'].includes(tabIndex)" :chains="chains" :tab.sync="tabIndex" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :key="componentKey" :getImportLink="getImportLink"/>
+        <ChainItemList v-if="!['history'].includes(tabIndex)" :chains="chains" :tab.sync="tabIndex" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :key="componentKey" :getImportLink="getImportLink"/>
         <History v-else-if="tabIndex == 'history'" :refresh="true" style="height:100vh" />
-        <AssetDialog :key="componentKey" v-if="(tabIndex == 'chains' && !$store.state.investment.defaultAccount) || (tabIndex !== 'history' && !(tabIndex == 'assets' && $store.state.investment.defaultAccount)) " :dialog.sync="dialog" :updateTab="updateTab" :tab.sync="tabIndex" :chains="chains" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens'  :getChains='getChains' :allChains='allChains' :showAllChains='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :showPrivateKeys="showPrivateKeys" :getImportLink="getImportLink"/>
+        <AssetDialog :key="componentKey" v-if="(tabIndex !== 'chains' && !$store.state.investment.defaultAccount) || ((tabIndex == 'investments' && $store.state.investment.defaultAccount)) " :dialog.sync="dialog" :updateTab="updateTab" :tab.sync="tabIndex" :chains="chains" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens'  :getChains='getChains' :allChains='allChains' :showAllChains='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :showPrivateKeys="showPrivateKeys" :getImportLink="getImportLink"/>
 
     </div>
 </template>
@@ -82,7 +92,7 @@ export default {
   mounted () {
     this.tabIndex = this.tab
     if (this.$store.state.investment.defaultAccount) {
-      this.tabIndex = 'assets'
+      // this.tabIndex = 'assets'
       this.componentKey += 1
     }
   },

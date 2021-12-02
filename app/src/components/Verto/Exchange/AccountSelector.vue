@@ -331,7 +331,7 @@
               label="Back"
               @click="dialog = false"
             />
-             <q-toolbar-title v-if="false" class="text-body1 q-pl-md" style="margin-left: -25px"> Select an Account  </q-toolbar-title>
+
           </q-toolbar>
 
           <div
@@ -341,10 +341,12 @@
                 : 'text-h6 q-pa-md q-ml-md'
               "
           >
-            Select An Account
+            Select An Account         {{dialog ? 'tes' : 'ds'}}
           </div>
+
           <q-card-section class="items-center" >
             <q-item
+
               :key="Math.random() + '123'"
               v-if="accountOption && allSelector"
               class="
@@ -358,7 +360,7 @@
                 'bg-blue-verto text-white':$store.state.settings.lightMode === 'true'
               }"
             >
-              <q-item-section avatar @click="unsetDefaultAccount()">
+              <q-item-section avatar >
                 <svg width="49" fill="transparent" height="49" class="view_all_svg">
                   <circle cx="18" cy="18" r="18"></circle>
                   <path d="M11.664 18.866l-1.107.64a.856.856 0 000 1.488l5.678 3.283c1.09.63 2.44.63 3.53 0l5.678-3.283a.856.856 0 000-1.488l-1.107-.64-3.82 2.21a5.031 5.031 0 01-5.032 0l-3.82-2.21z"></path>
@@ -366,16 +368,17 @@
                 </svg>
               </q-item-section>
 
-              <q-item-section @click="unsetDefaultAccount()">
-                <q-item-label @click="dialog = true"
-                  >View entire portfolio</q-item-label
+              <q-item-section >
+                <q-item-label
+                @click=" dialog = false; unsetDefaultAccount()"
+                  >View entire portfolio </q-item-label
                 >
-                <q-item-label :class="$store.state.settings.lightMode === 'true' ? 'text-white':''" :dark="$store.state.settings.lightMode === 'true'" caption lines="1" @click="dialog = true"
+                <q-item-label  @click=" dialog = false; unsetDefaultAccount()" :class="$store.state.settings.lightMode === 'true' ? 'text-white':''" :dark="$store.state.settings.lightMode === 'true'" caption lines="1"
                   >View all chains and assets
                 </q-item-label>
               </q-item-section>
 
-              <q-item-section side @click="unsetDefaultAccount()">
+              <q-item-section side @click=" dialog = false; " >
                 <q-icon name="expand_more" class="shadows-2" />
               </q-item-section>
             </q-item>
@@ -452,7 +455,7 @@
 
                       :key="Math.random() + index"
                       v-for="(item, index) in tokChain.accounts"
-                      :class="{ selected: item.selected , 'bg-indigo-1': accountOption.index == item.index}"
+                      :class="{ selected: item.selected , 'bg-indigo-1': accountOption && accountOption.index == item.index}"
                       clickable
                       :active="item.hidden"
                       active-class="bg-teal-1 text-grey-8"
@@ -811,7 +814,6 @@ export default {
         false
       )
       this.accountOption = null
-      this.dialog = false
     },
     formatLabel (label) {
       try {
