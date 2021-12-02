@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column items-center justify-start recovery-seed-page">
+  <q-page v-if="false" class="column items-center justify-start recovery-seed-page">
     <div class="q-pa-xs q-pt-lg">
       <img src="statics/icons/icon-256x256.png" width="80" alt="logo"/>
     </div>
@@ -56,7 +56,7 @@
                  :label="downloaded ? 'Next': 'Verify'"
                  @click="downloaded ? saveMnemonic() : step=3"/>
           <span class="q-pa-sm"></span>
-          <q-btn class="btn--outline__blue" size="lg" outline  unelevated label="Back"
+          <q-btn class="btn--outline__blue" size="lg" outline  unelevated label="Back2"
                  @click="$router.back()"/>
         </div>
       </div>
@@ -88,10 +88,9 @@
           </div>
         </div>
         <div class="vert-page-content--footer">
-          <q-btn class="btn__blue" size="lg" unelevated label="Next"
-                 @click="saveMnemonic()"/>
+          <q-btn class="btn__blue" size="lg" unelevated label="Next" @click="saveMnemonic()"/>
           <span class="q-pa-sm"></span>
-          <q-btn outline unelevated size="lg" class="btn--outline__blue"  label="Back" @click="step=2"/>
+          <q-btn outline unelevated size="lg" class="btn--outline__blue"  label="Back3" @click="step=2"/>
         </div>
       </div>
       <div v-if="step===4" style="flex-grow: 1" class="flex column">
@@ -131,18 +130,120 @@
           </div>
         </div>
         <div class="vert-page-content--footer">
-          <q-btn class="btn__blue" size="lg" unelevated  :loading="spinnervisible"
-                 label="Next"
-                 :disable="!mnemonicValidated"
-                 @click="saveMnemonic(true)" />
+          <q-btn class="btn__blue" size="lg" unelevated  :loading="spinnervisible" label="Next" :disable="!mnemonicValidated" @click="saveMnemonic(true)" />
           <span class="q-pa-sm"></span>
-          <q-btn class="btn--outline__blue" size="lg" outline  unelevated label="Back"
-                 @click="$router.back()"/>
-<!--          <q-btn class="action-link next" rounded flat outline color="deep-purple-14" text-color="white" label="Next"-->
-<!--                 @click="saveMnemonic(true)" :disable="!mnemonicValidated"/>-->
+          <q-btn class="btn--outline__blue" size="lg" outline  unelevated label="Back4" @click="$router.back()"/>
+          <!-- <q-btn class="action-link next" rounded flat outline color="deep-purple-14" text-color="white" label="Next" @click="saveMnemonic(true)" :disable="!mnemonicValidated"/>-->
         </div>
       </div>
     </div>
+  </q-page>
+  <q-page v-else class="column items-center justify-start login-page restore-page-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+    <div class="full-width full-height">
+      <img :src="'statics/login_ui_' + ($store.state.settings.lightMode === 'true' ? 'dark':'light') +'.png'" alt="head-login" class="head-login" />
+      <div class="form_wrapper full-height column q-pa-lg">
+        <span class="text-h2 q-pl-md">VERTO</span>
+        <span class="text-h3 q-pl-md q-pr-md q-mt-md" v-if="step===0">Do you want to create or restore your 24 word mnemonic secret seed phrase?</span>
+        <span class="text-h3 q-pl-md q-pr-md q-mt-md" v-if="step===2">Recovery seed phrase.</span>
+        <span class="text-h3 q-pl-md q-pr-md q-mt-md" v-if="step===3">Select the first and the last word</span>
+        <span class="text-h3 q-pl-md q-pr-md q-mt-md" v-if="step===4">Paste your recovery seed phrase.</span>
+        <p class="q-pl-md q-pr-md q-mt-md q-mb-none" v-if="hasError && step===3">{{errorMessage}}</p>
+        <p class="q-pl-md q-pr-md q-mt-md q-mb-none" v-if="step===4">
+          <span>If you do not have a recovery seed, go back and choose create.</span>
+          <ul class=""><li v-for="(word, index) in wordOptions" :key="index" class=""> {{ word.label }}</li></ul>
+        </p>
+        <p class="q-pl-md q-pr-md q-mt-md q-mb-none" v-if="step===2">
+          This list of words is used to generate all your HD wallets.
+          You can use them to restore and access your wallet at any time. Save these words in the right order in a
+          secure location. Nobody will be able to help if you lose them !
+        </p>
+        <div class="password_wrapper q-pl-md q-pr-md">
+          <div v-if="step===0" class="full-width">
+            <div class="full-width"></div>
+            <div class="unlock_restore flex justify-between items-end q-mt-sm">
+              <q-btn unelevated class="btn__blue unlock_btn" color="grey-4" outline size="md" no-caps label="Restore" @click="step=4" />
+              <q-btn flat size="md" no-caps class="restore_btn" color="grey-4" label="Create" @click="createMnemonic()" />
+            </div>
+          </div>
+          <div v-if="step===2" class="full-width">
+            <div class="full-width">
+              <div class="flex justify-between">
+                <q-btn flat size="sm" label="Download" class="btn-flat__blue" @click="downloadMnemonic()" icon="get_app"/>
+                <q-btn flat size="sm" unelevated label="Copy" class="btn-flat__blue" @click="copy2clip(mnemonic)" icon="o_file_copy"/>
+              </div>
+              <q-input
+                ref="mnemonic"
+                type="textarea"
+                readonly
+                outlined
+                class="mnemonic"
+                v-model="mnemonic"
+                @focus="$event.target.select()"
+                :dark="$store.state.settings.lightMode === 'true'"
+              />
+              <q-btn size="sm" label="Regenerate" flat @click="createMnemonic" icon="cached" class="btn-flat__blue"/>
+            </div>
+            <div class="unlock_restore flex justify-between items-end q-mt-sm">
+              <q-btn unelevated class="btn__blue unlock_btn" color="grey-4" outline size="md" no-caps :loading="spinnervisible" :label="downloaded ? 'Next': 'Verify'" @click="downloaded ? saveMnemonic() : step=3" />
+              <q-btn flat size="md" no-caps class="restore_btn" color="grey-8" label="Back" @click="$router.back()" />
+            </div>
+          </div>
+          <div v-if="step===3" class="full-width">
+            <div class="full-width">
+              <words-order-bex :words="mnemonic"/>
+              <div v-if="!vertoPassword">
+                <q-input
+                  v-model="vertoPasswordTemp"
+                  color="green"
+                  label="Verto Password"
+                  debounce="500"
+                  :error="!goodPassword"
+                  error-message="The password is incorrect"
+                  @input="checkVertoPassword"
+                  :type="isPwd ? 'password' : 'text'"
+                  :dark="$store.state.settings.lightMode === 'true'"
+                >
+                  <template v-slot:append>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    />
+                  </template>
+                </q-input>
+              </div>
+            </div>
+            <div class="unlock_restore flex justify-between items-end q-mt-sm">
+              <q-btn unelevated class="btn__blue unlock_btn" color="grey-4" outline size="md" no-caps label="Next" @click="saveMnemonic()" />
+              <q-btn flat size="md" no-caps class="restore_btn" color="grey-8" label="Back" @click="step=2" />
+            </div>
+          </div>
+          <div v-if="step===4" class="full-width">
+            <div class="full-width">
+              <h4 class="mnemonic--heading" :class="$store.state.settings.lightMode === 'true' ? 'text-white':''">Mnemonic</h4>
+              <q-input
+                ref="mnemonic"
+                type="textarea"
+                class="mnemonic--field"
+                color="black"
+                @input="validateMnemonic()"
+                v-model="mnemonic"
+                autofocus
+                outlined
+                error-message="The mnemonic seed is invalid"
+                :error="!mnemonicValidated"
+                :dark="$store.state.settings.lightMode === 'true'"
+              />
+            </div>
+            <div class="unlock_restore flex justify-between items-end q-mt-sm">
+              <q-btn unelevated class="btn__blue unlock_btn" color="grey-4" outline size="md" no-caps :loading="spinnervisible" label="Next" :disable="!mnemonicValidated" @click="saveMnemonic(true)" />
+              <q-btn flat size="md" no-caps class="restore_btn" color="grey-8" label="Back" @click="$router.back()" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <notify-message/>
   </q-page>
 </template>
 
@@ -624,4 +725,109 @@ export default {
 //    }
 //  }
 //}
+.restore-page-wrapper{
+  background: #F9F9F9;
+  .head-login{
+    max-width: 100%;
+    position: relative;
+    transform: scale3d(1,1,1);
+    margin-top: -30px;
+  }
+  .form_wrapper{
+    border-radius: 50px 50px 0px 0px;
+    margin-top: -140px;
+    background: #F9F9F9;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0px -30px 50px 0px rgba(black, .1);
+    .text-h2{
+      font-family: $Franklin;
+      font-weight: $black;
+      font-size: 20px;
+      line-height: 30px;
+      color: #04111F;
+    }
+    .text-h3{
+      font-family: $Franklin;
+      font-weight: $lighter;
+      font-size: 30px;
+      line-height: 35px;
+      color: #04111F;
+    }
+    p{
+      font-family: $Franklin;
+      font-weight: $lighter;
+      font-size: 14px;
+      line-height: 22px;
+      color: #04111F;
+    }
+    .unlock_restore{
+      min-height: 50px;
+      .unlock_btn{
+        width: 65%;
+        height: 45px;
+        letter-spacing: 1px;
+        font-weight: $lighter;
+        font-family: $Franklin;
+        font-size: 16px !important;
+        /deep/ .q-btn__wrapper:before{
+          border: 2px solid #CCC !important;
+        }
+      }
+      .restore_btn{
+        width: 30%;
+        height: 45px;
+        letter-spacing: 1px;
+        font-weight: $lighter;
+        font-family: $Franklin;
+        font-size: 16px !important;
+      }
+    }
+  }
+  &.dark-theme{
+    background: #04111F;
+    .form_wrapper{
+      background: #04111F;
+      .text-h2{
+        color: #FFF;
+      }
+      .text-h3{
+        color: #FFF;
+      }
+      p{
+        color: #FFF;
+      }
+      .restore_btn{
+        // color: #FFF !important;
+      }
+    }
+  }
+}
+.password_wrapper{
+  /deep/ .q-field__messages{
+    color: #929398;
+    font-size: 14px;
+    margin-left: -10px;
+    margin-top: -4px;
+  }
+  /deep/ .text-negative {
+    color: #929398 !important;
+  }
+  /deep/ .q-field__native{
+    div{
+      font-size: 12px;
+      opacity: .7;
+    }
+  }
+}
+.dark-theme{
+  .password_wrapper{
+    /deep/ .q-field__messages{
+      color: #FFF;
+    }
+    /deep/ .text-negative {
+      color: #FFF !important;
+    }
+  }
+}
 </style>
