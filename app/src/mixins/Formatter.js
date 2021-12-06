@@ -18,14 +18,15 @@ export default {
 
       return url.protocol === 'http:' || url.protocol === 'https:'
     },
-    getImportLink (chain) {
-      let to = '/verto/import-wallet/' + chain
+    getImportLink (chain, watch = false) {
+      let to = '/verto/import-wallet/' + chain + (watch ? '/watch' : '')
+
       let routes = {
-        eth: '/verto/import-private-key/eth',
-        eos: '/verto/eos-account/import',
-        btc: '/verto/import-wallet/btc'
+        eth: '/verto/import-private-key/eth' + (watch ? '/watch' : ''),
+        eos: '/verto/eos-account/import' + (watch ? '/watch' : ''),
+        btc: '/verto/import-wallet/btc' + (watch ? '/watch' : '')
       }
-      if (routes[chain]) {
+      if (!watch && routes[chain]) {
         to = routes[chain]
       }
       return to
