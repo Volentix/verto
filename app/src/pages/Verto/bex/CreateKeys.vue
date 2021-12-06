@@ -101,7 +101,7 @@
               <p class="q-mt-md" v-if="$store.state.settings.dexData.depositCoin && $store.state.settings.dexData.depositCoin && false">Click go to exchange to swap {{$store.state.settings.dexData.fromAmount}}  {{$store.state.settings.dexData.depositCoin.value.toUpperCase()}} to {{$store.state.settings.dexData.destinationCoin.value.toUpperCase()}}</p>
             </div>
             <div class="unlock_restore unlock_restore2 flex justify-between items-end q-mt-sm">
-              <q-btn @click="dataRefresh()" unelevated label="Start Trading" class="btn__blue unlock_btn" color="grey-4" outline size="md" no-caps />
+              <q-btn @click="dataRefresh()" unelevated label="Get Started" class="btn__blue unlock_btn" color="grey-4" outline size="md" no-caps />
               <q-btn @click="backupConfig" label="Download" icon="file_download" class="q-mt-md" no-caps color="red-5" outline />
             </div>
           </div>
