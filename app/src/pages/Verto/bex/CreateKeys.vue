@@ -66,11 +66,11 @@
         <span class="text-h2 q-pl-md">VERTO</span>
         <span class="text-h3 q-pl-md q-pr-md q-mt-md" v-if="step===2">Creating keys</span>
         <span class="text-h3 q-pl-md q-pr-md q-mt-md" v-if="$store.getters['notify/message']=='' && step===3">Congratulations!</span>
-        <p class="q-pl-md q-pr-md q-mt-md" v-if="status && step===2">Creating keys ({{ progress }} %)</p>
+        <!-- <p class="q-pl-md q-pr-md q-mt-md" v-if="status && step===2">Creating keys ({{ progress }} %)</p> -->
         <div class="password_wrapper q-pl-md q-pr-md">
           <div v-if="step==2" class="full-width">
-            <div class="full-width">
-              <q-circular-progress dark :value="progress" size="90px" :thickness="0.06" color="white" track-color="transparent"/>
+            <div class="full-width q-pt-md">
+              <q-circular-progress center-color="transparent" font-size="14px" show-value dark :value="progress" size="90px" :thickness="0.06" color="white" track-color="transparent"/>
               <div v-if="status">
                 <div class="q-mt-md flex justify-start items-center">
                   <q-icon class="q-pr-sm q_icon_coin" size="sm" :name="'img:'+ (status.icon ?  status.icon : 'https://files.coinswitch.co/public/coins/'+status.value+'.png')"/>
@@ -761,5 +761,8 @@ export default {
 .q_icon_coin{
   position: relative;
   top: -7px;
+}
+/deep/ .q-circular-progress__text{
+  color: #FFF !important;
 }
 </style>
