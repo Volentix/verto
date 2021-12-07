@@ -339,9 +339,8 @@
               $store.state.settings.lightMode === 'true'
                 ? 'text-h6 q-pa-md text-white'
                 : 'text-h6 q-pa-md q-ml-md'
-              "
-          >
-            Select An Account         {{dialog ? 'tes' : 'ds'}}
+              ">
+            Select An Account {{dialog ? 'tes' : 'ds'}}
           </div>
 
           <q-card-section class="items-center" >
@@ -373,8 +372,8 @@
                 @click=" dialog = false; unsetDefaultAccount()"
                   >View entire portfolio </q-item-label
                 >
-                <q-item-label  @click=" dialog = false; unsetDefaultAccount()" :class="$store.state.settings.lightMode === 'true' ? 'text-white':''" :dark="$store.state.settings.lightMode === 'true'" caption lines="1"
-                  >View all chains and assets
+                <q-item-label  @click=" dialog = false; unsetDefaultAccount()" :class="$store.state.settings.lightMode === 'true' ? 'text-white':''" :dark="$store.state.settings.lightMode === 'true'" caption lines="1">
+                  (All chains and assets)
                 </q-item-label>
               </q-item-section>
 

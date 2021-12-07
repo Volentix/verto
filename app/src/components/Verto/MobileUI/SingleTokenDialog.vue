@@ -251,8 +251,8 @@
                         <div class="text-center " v-if="tab != 'import'" >
                           <AccountSelector  :withTokenBalance="asset.type" :chains="[asset.chain]"  v-show="tab != 'swap' && !fromPreview"   :key="asset.chain +'-'+asset.type" :chain="asset.chain" class="q-pt-lg" />
                         </div>
-                        <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount && $store.state.wallets.portfolioTotal"  >
-                          <SendComponent  class="send" @setAsset="setAssetLocal" :token="asset.type" :miniMode="true" :key="getSendKey()"   />
+                        <div v-if="tab == 'send' && asset.chain != 'eos' && $store.state.investment.defaultAccount && $store.state.wallets.portfolioTotal" class="q-pl-md q-pr-md" >
+                          <SendComponent class="send SendComponentWrapper" @setAsset="setAssetLocal" :token="asset.type" :miniMode="true" :key="getSendKey()"   />
                         </div>
                         <div v-if="show1inch && tab == 'swap'" >
                           <Oneinch :miniMode="true" :tokenType="asset.type"  :chain="asset.chain" class="oneinch-wrapper"></Oneinch>
