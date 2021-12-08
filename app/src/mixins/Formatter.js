@@ -1,7 +1,8 @@
 import HD from '@/util/hdwallet'
 import Lib from '@/util/walletlib'
-import { scroll } from 'quasar'
+import { scroll, openURL } from 'quasar'
 import { toSvg } from 'jdenticon'
+
 export default {
   methods: {
     toAvatar (name) {
@@ -227,6 +228,9 @@ export default {
       }
       return form_data
     },
+    goToLink (url) {
+      openURL(url)
+    },
     nFormatter2 (num, digits) {
       if (isNaN(num)) {
         return 0
@@ -284,6 +288,7 @@ export default {
            ....,
         ]
       */
+
       let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || v.type === 'verto' || !['eos', 'eth'].includes(v.chain)) && a.findIndex(t => (t.chain === v.chain)) === i)))
         .map(o => {
           let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
