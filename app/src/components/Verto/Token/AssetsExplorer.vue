@@ -838,7 +838,8 @@
                 <div>
                   <h6>
                     {{ asset.type.toUpperCase()
-                    }} {{ asset.isStaked ? 'Staked' : ''}}<svg
+                    }} {{ asset.isStaked ? 'Staked' : ''}}
+                    <svg
                       v-if="false"
                       class="q-ml-md"
                       viewBox="0 0 32 32"
@@ -933,7 +934,11 @@
               <h2 class="q-my-none ellipsis">
                 ${{ formatNumber(asset.usd, 2) }}
                 <!-- <span v-if="parseInt(asset.usd).toString().length <= 5" class="g-txt">.{{formatNumber(asset.usd,2).split('.')[1]}}</span> -->
-                <span
+                  <span
+                  v-if="asset.notValuable"
+                    class="no-value"
+                  >No Value</span>
+                  <span
                   v-if="asset.change24hPercentage"
                   :class="'sr-txt absolute-top-right ' + asset.color"
                   >{{ asset.color === "text-green-6" ? "↑" : "↓" }}
@@ -1769,6 +1774,8 @@ export default {
       }
       chain = chain || this.selectedChain ? this.selectedChain.chain : chain
       this.assets = []
+      let not_valuable = localStorage.getItem('not_valuable')
+      not_valuable = not_valuable ? JSON.parse(not_valuable) : []
       this.$store.state.wallets.tokens
         .filter(
           (o) =>
@@ -1783,6 +1790,12 @@ export default {
           let token = Object.assign({}, asset)
           token.amount = parseFloat(token.amount)
           token.usd = parseFloat(token.usd)
+
+          if (not_valuable.length && not_valuable.find(z => z.chain === token.chain && z.type === token.type)) {
+            token.tokenPrice = 0
+            token.usd = 0
+            token.notValuable = true
+          }
           if (
             (!isNaN(token.amount) && token.amount !== 0) ||
             token.isEvm ||
@@ -1795,6 +1808,7 @@ export default {
                 (token.chain !== 'eos' || o.contract === token.contract)
             )
             if (index !== -1) {
+              this.assets[index].notValuable = token.notValuable
               this.assets[index].amount += token.amount
               this.assets[index].usd += isNaN(token.usd) ? 0 : token.usd
               this.assets[index].rateUsd = isNaN(token.tokenPrice)
@@ -2177,7 +2191,7 @@ export default {
   transition: all 0.2s ease-in-out;
   margin-left: 0px;
   margin-right: 0px;
-  min-height: 208px;
+
 }
 .row > .col-md-3{
   padding-bottom: 10px;
@@ -2529,4 +2543,8 @@ ul.tabs li a.active {
 .desktop /deep/ .q-dialog {
   max-width:400px !important
 }
+.no-value {
+    font-size: 14px;
+    color: red !important
+ }
 </style>

@@ -44,18 +44,19 @@
 
               <div class="toBlk" v-if="destinationCoin">
                   <div class="top_arrow_icon"  @click="switchAmounts()" ><svg xmlns="http://www.w3.org/2000/svg" id="swap-direction-arrow" width="12" height="11" viewBox="0 0 12 11" fill="none"><path d="M6 1L6 10M6 10L11 5M6 10L1 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
-                  <p><span class="drpn"><span class="cursor-pointer" @click="fromSelected = false ; toSelect = 'chains' ; showHeader = false; ">To - {{currentPath.toChain.label}} <q-icon name="keyboard_arrow_down"  size="xs"/></span></span> <span>Balance: {{formatNumber(destinationCoin.amount,5)}} <br>{{getAccountLabel(currentAccount.to)}}</span></p>
-                  <h5 class="drpn" @click="toSelect = 'destination'; showHeader = false;"><span><img :src="destinationCoin.image" alt=""> {{ destinationCoin.value.toUpperCase() }} </span></h5>
+                  <p><span class="drpn"><span class="cursor-pointer" @click="fromSelected = false ; toSelect = 'chains' ; showHeader = false; ">To - {{currentPath.toChain.label}} <q-icon name="keyboard_arrow_down"  size="xs"/></span></span> <span>Balance: {{formatNumber(destinationCoin.amount,5)}} <br><span v-if="currentAccount.to !== currentAccount.from">{{getAccountLabel(currentAccount.to)}}</span></span></p>
+                  <h5 class="drpn" ><span @click="toSelect = 'destination'; showHeader = false;"><img :src="destinationCoin.image"  alt=""> {{ destinationCoin.value.toUpperCase() }} </span><input v-if="currentPathData" type="text" readonly :value="formatNumber(currentPathData.toAmount, 2)" ></h5>
                   <!-- <div class="cash-blk primari active">
                       <h5><b>{{swapData.dex}} <span>{{swapData.chain}}</span></b> <b>{{swapData.toAmount}} <span></span></b></h5>
                   </div> -->
                   <!-- <div class="cash-blk">
                       <h5><b class="dn_arr"> <div class="withArr">Unifi <span class="arrow"></span></div> <span>Tx cost 0.0336E (~$123.74)</span></b> <b>0.00031 <span>~$1.18</span></b></h5>
                   </div> -->
-                  <div class="cash-blk last_ops hide" v-show="false" v-for="(path, index) in paths" :key="index">
-                      <h5><b class="dn_arr"  >{{path.dex}}<span>{{ path.txChainLabel }}</span> </b> <b style="text-align: end;">{{ formatNumber(path.toAmount, 5) }} {{ destinationCoin.value.toUpperCase() }} <span>{{ path.tokenPrice ? "$" + formatNumber(path.tokenPrice, 2) : "NAN" }}</span></b></h5>
+                  <div class="cash-blk last_ops hide"  v-if="currentPathData && currentPathData.toAmount" >
+                      <h5><b class="dn_arr"  ><img width="50px" :src="currentPathData.dexLogo" /><span>Fees: $12</span> </b> <b style="text-align: end;">{{ formatNumber(currentPathData.toAmount, 5) }} {{ destinationCoin.value.toUpperCase() }} <span>{{ currentPathData.toUsdTotal ? "$" + formatNumber(currentPathData.toUsdTotal, 2) : "" }}</span></b></h5>
                   </div>
               </div>
+
               <button type="button" class="theme-btn" @click="openWallet()" :disabled="paths.length < 1">Exchange</button>
             </div>
             <ul class="rates" :class="$store.state.settings.lightMode === 'true' ? 'mobile-card':'bg-white'">
@@ -1575,6 +1576,7 @@ function fnccc () {
 import SendComponent from '@/pages/Verto/Send'
 import GasSelector from '../../Verto/ETH/GasSelector.vue'
 import CrosschainDex from '@/util/CrosschainDex'
+import Lib from '@/util/walletlib'
 import AccountSelector from '../../Verto/Exchange/AccountSelector.vue'
 import Formatter from '@/mixins/Formatter'
 export default {
@@ -1620,7 +1622,7 @@ export default {
         toChain: null
       },
       fromSelected: null,
-
+      currentPathData: null,
       destinationCoin: null,
       destinationCoinOptions: [],
       depositCoinUnfilter: [],
@@ -1669,6 +1671,17 @@ export default {
     this.tabLocal = this.tab
   },
   watch: {
+    async paths () {
+      if (this.paths.length) {
+        this.$set(this, 'currentPathData', this.paths[0])
+
+        let usd = await Lib.getCoinGeckoPrice({ address: this.destinationCoin.address, chain: this.currentPath.toChain, type: this.destinationCoin.value.toLowerCase() })
+        this.$set(this.currentPathData, 'toUsd', usd)
+        this.$set(this.currentPathData, 'toUsdTotal', usd * this.currentPathData.toAmount)
+      } else {
+        this.currentPathData = []
+      }
+    },
     '$store.state.investment.defaultAccount': function (val) {
       if (val) {
 
@@ -1686,7 +1699,6 @@ export default {
       }
     },
     destinationCoin () {
-      console.log(this.currentAccount, ' this.currentAccount 12')
       let token = this.$store.state.wallets.tokens.find(o => o.chain === this.currentAccount.to.chain && o[this.currentAccount.to.chain === 'eos' ? 'name' : 'key'].toLowerCase() === this.currentAccount.to[this.currentAccount.to.chain === 'eos' ? 'name' : 'key'].toLowerCase() && o.type === this.destinationCoin.value.toLowerCase())
       if (token) {
         this.destinationCoin.usd = token.usd
@@ -1709,7 +1721,7 @@ export default {
           }
           return o
         })
-        this.depositCoin = this.$route.params.action === 'sell' ? this.depositCoinOptions.find(o => o.value.toLowerCase() === this.$route.params.asset.type.toLowerCase()) : this.depositCoinOptions[0]
+        this.depositCoin = this.$route.params.action === 'sell' ? this.depositCoinOptions.find(o => o.value.toLowerCase() === this.$route.params.asset.type.toLowerCase()) : (this.$route.params.action === 'buy' ? this.depositCoinOptions.find(o => o.value.toLowerCase() !== this.$route.params.asset.type.toLowerCase()) : this.depositCoinOptions[0])
         this.$emit('update:depositCoin', this.depositCoin)
       }
       if (toChain === fromChain) {

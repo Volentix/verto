@@ -69,17 +69,17 @@
         </q-select>
     </div>
 
-      <div class="col col-3 flex items-center date-scrolling-msg">
+      <div v-if="false" class="col col-1 flex items-center date-scrolling-msg">
         <div class="flex items-center main_portfolio" :class="{'text-white': $store.state.settings.lightMode === 'true'}" v-if="$router.currentRoute.path === '/verto/defi'">
           <h3 class="">Main Portfolio</h3> <span class="q-ml-sm q-mr-sm q-mb-xs">|</span> <h2 class="">${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }} USD</h2>
         </div>
         <!-- <div class="date">{{ refreshDate() }}</div> -->
         <!-- <VTextMarquee :speed="40" @click="animate = !animate" :animate="animate" content='This app is in beta, please send us bug reports if you find any. <b><a target="_blank" href="https://t.me/vertosupport">t.me/vertosupport</a></b>' /> -->
       </div>
-      <div class="col col-4 flex justify-end q-pt-xs q-pr-md items-center menu">
+      <div class="col col-5 flex justify-end q-pt-xs q-pr-md items-center menu">
         <!-- to="/verto/create-polkadot-account" -->
        <!-- <router-link to="/verto/create-polkadot-account" >Polkadot</router-link> -->
-        <q-btn @click="$store.state.settings.activityBar = !$store.state.settings.activityBar" dense unelevated round icon="notifications_none" :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}" class="q-ml-md q-mr-md">
+        <q-btn v-if="false" @click="$store.state.settings.activityBar = !$store.state.settings.activityBar" dense unelevated round icon="notifications_none" :class="{'text-black': $store.state.settings.lightMode === 'false', 'text-white': $store.state.settings.lightMode === 'true'}" class="q-ml-md q-mr-md">
           <q-badge color="white" class="text-black" floating>0</q-badge>
         </q-btn>
         <q-btn-dropdown
@@ -127,37 +127,50 @@
         </q-item>
         <q-btn-dropdown
           no-caps
-          icon="upgrade"
-          label="Import accounts"
+          icon="visibility"
+          label="Watch accounts"
           flat
-          v-if="false"
-          :color="$store.state.settings.lightMode === 'true' ? 'white':'black'"
+          dense
+          :color="$store.state.settings.lightMode === 'true' ? 'white':'indigo-5'"
         >
           <q-list
           :light="$store.state.settings.lightMode === 'false'"
           :dark="$store.state.settings.lightMode === 'true'"
           >
-            <q-item dense to="/verto/import-private-key/eos" clickable v-close-popup>
+           <q-item :key="index" v-for="(chain, index) in chains" dense :to="getImportLink(chain.chain, true)" clickable v-close-popup>
               <q-item-section avatar>
                 <q-avatar
-                  :icon="'img:https://files.coinswitch.co/public/coins/eos.png'"
+                  :icon="'img:'+chain.icon"
                   text-color="white"
                 />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Import EOS account</q-item-label>
+                <q-item-label>{{chain.label}}</q-item-label>
               </q-item-section>
             </q-item>
-
-            <q-item dense to="/verto/import-private-key/eth" clickable v-close-popup>
+          </q-list>
+        </q-btn-dropdown>
+        <q-btn-dropdown
+          no-caps
+          icon="add"
+          label="Import accounts"
+          flat
+          dense
+          :color="$store.state.settings.lightMode === 'true' ? 'white':'purple-5'"
+        >
+          <q-list
+          :light="$store.state.settings.lightMode === 'false'"
+          :dark="$store.state.settings.lightMode === 'true'"
+          >
+            <q-item :key="index" v-for="(chain, index) in chains" dense :to="getImportLink(chain.chain)" clickable v-close-popup>
               <q-item-section avatar>
                 <q-avatar
-                  :icon="'img:https://files.coinswitch.co/public/coins/eth.png'"
+                  :icon="'img:'+chain.icon"
                   text-color="white"
                 />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Import ETH account</q-item-label>
+                <q-item-label>{{chain.label}}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -169,6 +182,7 @@
           >Create Test Account</router-link
         >
         <q-select
+         v-if="false"
           dense
           borderless
           :light="$store.state.settings.lightMode === 'false'"
@@ -362,6 +376,7 @@ export default {
       optionsUnfiltered: [],
       temp: false,
       animate: true,
+      chains: [],
       searchVal: '',
       interval: null,
       key: 0,
@@ -407,6 +422,7 @@ export default {
       (o) => o.value.toLowerCase() === this.$store.state.settings.network
     )
     // this.options = CrosschainDex.getAllCoins()
+    this.chains = this.setChains()
     window.localStorage.setItem(
       'skin',
       window.localStorage.getItem('skin') !== null
@@ -425,6 +441,9 @@ export default {
   watch: {
     '$store.state.tokens.list': function () {
       this.getTokens()
+    },
+    '$store.state.wallets.tokens': function () {
+      this.chains = this.setChains()
     }
   },
   methods: {

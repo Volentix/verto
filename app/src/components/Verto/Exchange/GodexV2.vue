@@ -2749,7 +2749,7 @@ export default {
                 (w) => w.chain === a.fromChain && w.type === a.fromToken
               )
               a.walletToken = walletToken
-              a.tokenPrice = walletToken
+              a.fromTokenPrice = walletToken
                 ? walletToken.tokenPrice
                 : o.tokenPrice
               a.fromAmount = o.amount
