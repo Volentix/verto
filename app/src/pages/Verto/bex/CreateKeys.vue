@@ -1,64 +1,115 @@
 <template>
-<q-page  class="column items-center justify-start create-keys-page">
-  <div class="q-pa-md">
-    <img src="statics/icons/icon-256x256.png"  width="150" alt="logo"/>
-  </div>
-  <notify-message/>
+  <q-page v-if="false" class="column items-center justify-start create-keys-page">
+    <div class="q-pa-md">
+      <img src="statics/icons/icon-256x256.png"  width="150" alt="logo"/>
+    </div>
+    <notify-message/>
     <div style="flex-grow: 1;display: flex;flex-direction: column; width: 100%">
-        <div v-if="step===2" class="vert-page-content" style="padding-bottom: 0px">
-            <div class="vert-page-content--body">
-                <h2 class="vert-page-content--title"> Creating keys... </h2>
-                <!-- <p class="diclaimer"> {{ status }} </p> -->
-                <div class="standard-content--body">
-                    <div class="send-modal__content--body column flex-center">
-                        <q-circular-progress :value="progress" size="120px" :thickness="0.05" color="blue" track-color="blue-1" class="q-ma-md" show-value font-size="20px" />
-<!--                        <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58">-->
-<!--                            <path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path>-->
-<!--                        </svg>-->
-                        <div class="--label text-h6">{{ progress }} %</div>
-                    </div>
-                    <div class="send-modal__content--footer" v-if="status">
-                        <div class="text-h6 q-mb-none --status">Creating keys for: </div>
-                        <div class="text-h6 text-center --name">
-                          <q-icon class="q-pr-sm" size="sm" :name="'img:'+ (status.icon ?  status.icon : 'https://files.coinswitch.co/public/coins/'+status.value+'.png')"/>{{status.label}}
-                        </div>
-                    </div>
-                    <div class="flex-end flex justify-end" v-if="false">
-                        <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="step=3" :disable="!mapped" />
-                    </div>
-                </div>
-            </div>
+      <div v-if="step===2" class="vert-page-content" style="padding-bottom: 0px">
+          <div class="vert-page-content--body">
+              <h2 class="vert-page-content--title"> Creating keys... </h2>
+              <!-- <p class="diclaimer"> {{ status }} </p> -->
+              <div class="standard-content--body">
+                  <div class="send-modal__content--body column flex-center">
+                      <q-circular-progress :value="progress" size="120px" :thickness="0.05" color="blue" track-color="blue-1" class="q-ma-md" show-value font-size="20px" />
+                      <!-- <svg class="svg_logo" fill="#7272FA" width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 20.58">-->
+                      <!-- <path d="M199,25.24q0,3.29,0,6.57a.5.5,0,0,1-.18.41l-7.32,6.45a.57.57,0,0,1-.71,0l-7.21-6.1c-.12-.11-.25-.22-.38-.32a.53.53,0,0,1-.22-.47q0-3.83,0-7.66,0-2.69,0-5.39c0-.33.08-.47.29-.51s.33.07.44.37l3.45,8.84c.52,1.33,1,2.65,1.56,4a.21.21,0,0,0,.23.16h4.26a.19.19,0,0,0,.21-.14l3.64-9.7,1.21-3.22c.08-.22.24-.32.42-.29a.34.34,0,0,1,.27.37c0,.41,0,.81,0,1.22Q199,22.53,199,25.24Zm-8.75,12s0,0,0,0,0,0,0,0a.28.28,0,0,0,0-.05l-1.88-4.83c0-.11-.11-.11-.2-.11h-3.69s-.1,0-.13,0l.11.09,4.48,3.8C189.38,36.55,189.8,36.93,190.25,37.27Zm-6.51-16.76h0s0,.07,0,.1q0,5.4,0,10.79c0,.11,0,.16.15.16h4.06c.15,0,.15,0,.1-.16s-.17-.44-.26-.66l-3.1-7.94Zm14.57.06c-.06,0-.06.07-.07.1l-1.89,5q-1.06,2.83-2.13,5.66c-.06.16,0,.19.13.19h3.77c.16,0,.2,0,.2-.2q0-5.3,0-10.59Zm-7.16,17,.05-.11,1.89-5c.05-.13,0-.15-.11-.15h-3.71c-.17,0-.16,0-.11.18.26.65.51,1.31.77,2Zm.87-.3,0,0,5.65-5H194c-.13,0-.16.07-.19.17l-1.59,4.23Zm0,.06h0Z" transform="translate(-183 -18.21)"></path>-->
+                      <!-- </svg>-->
+                      <div class="--label text-h6">{{ progress }} %</div>
+                  </div>
+                  <div class="send-modal__content--footer" v-if="status">
+                      <div class="text-h6 q-mb-none --status">Creating keys for: </div>
+                      <div class="text-h6 text-center --name">
+                        <q-icon class="q-pr-sm" size="sm" :name="'img:'+ (status.icon ?  status.icon : 'https://files.coinswitch.co/public/coins/'+status.value+'.png')"/>{{status.label}}
+                      </div>
+                  </div>
+                  <div class="flex-end flex justify-end" v-if="false">
+                      <q-btn class="action-link next" color="deep-purple-14" text-color="white" label="Next" @click="step=3" :disable="!mapped" />
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div v-if="step===3" class="vert-page-content" style="">
+  <!--            <div class="vert-page-content&#45;&#45;body">-->
+              <h2 v-if="$store.getters['notify/message']==''" class="vert-page-content--title  text-center">Congratulations!</h2>
+        <div class="vert-page-content--body" style="justify-content: start">
+          <p class="vert-page-content--desc">
+            Disclaimer
+            <br/>
+            <span v-if="$store.state.settings.backupConfig">
+                    Download your new config. <br>
+                    It contains your old config accounts and your newly created accounts.
+                    Save your 24 words and your new config. If you restore your wallet without using this new config, it will not include the newly created accounts.
+                    <br>
+                    <q-btn @click="backupConfig" label="Click to Download" icon="file_download" class="q-mt-md" color="red" flat/>
+                  </span>
+            <span v-else>
+                  Your 24 words are very important! <br>
+                  Keep them stored somewhere safe. <br>
+                  The position of each word is critical and should be stored in the correct sequence.<br><br>
+                  Anyone with access to these 24 words will be able to recover this Verto app and the private keys it is associated with,
+                  so keep in a safe place that only you have access to.
+                  </span>
+          </p>
+              <p  class="q-py-sm text-bold" v-if="$store.state.settings.dexData.depositCoin && $store.state.settings.dexData.depositCoin && false"> Click go to exchange to swap {{$store.state.settings.dexData.fromAmount}}  {{$store.state.settings.dexData.depositCoin.value.toUpperCase()}} to {{$store.state.settings.dexData.destinationCoin.value.toUpperCase()}}</p>
+          </div>
+        <div class="vert-page-content--footer" style="padding-bottom: 30px">
+          <q-btn class="btn__blue" size="lg" @click="dataRefresh()" unelevated label="Start Trading"/>
         </div>
-        <div v-if="step===3" class="vert-page-content" style="">
-<!--            <div class="vert-page-content&#45;&#45;body">-->
-                <h2 v-if="$store.getters['notify/message']==''" class="vert-page-content--title  text-center">Congratulations!</h2>
-          <div class="vert-page-content--body" style="justify-content: start">
-            <p class="vert-page-content--desc">
-              Disclaimer
-              <br/>
-              <span v-if="$store.state.settings.backupConfig">
-                      Download your new config. <br>
-                      It contains your old config accounts and your newly created accounts.
-                      Save your 24 words and your new config. If you restore your wallet without using this new config, it will not include the newly created accounts.
-                      <br>
-                      <q-btn @click="backupConfig" label="Click to Download" icon="file_download" class="q-mt-md" color="red" flat/>
-                    </span>
-              <span v-else>
-                    Your 24 words are very important! <br>
-                    Keep them stored somewhere safe. <br>
-                    The position of each word is critical and should be stored in the correct sequence.<br><br>
-                    Anyone with access to these 24 words will be able to recover this Verto app and the private keys it is associated with,
-                    so keep in a safe place that only you have access to.
-                    </span>
-            </p>
-                <p  class="q-py-sm text-bold" v-if="$store.state.settings.dexData.depositCoin && $store.state.settings.dexData.depositCoin && false"> Click go to exchange to swap {{$store.state.settings.dexData.fromAmount}}  {{$store.state.settings.dexData.depositCoin.value.toUpperCase()}} to {{$store.state.settings.dexData.destinationCoin.value.toUpperCase()}}</p>
+      </div>
+    </div>
+  </q-page>
+  <q-page v-else class="column items-center justify-start login-page restore-page-wrapper" :class="{'dark-theme': $store.state.settings.lightMode === 'true'}">
+    <div class="full-width full-height">
+      <img :src="'statics/login_ui_' + ($store.state.settings.lightMode === 'true' ? 'dark':'light') +'.png'" alt="head-login" class="head-login" />
+      <div class="form_wrapper full-height column q-pa-lg">
+        <span class="text-h2 q-pl-md">VERTO</span>
+        <span class="text-h3 q-pl-md q-pr-md q-mt-md" v-if="step===2">Creating keys</span>
+        <span class="text-h3 q-pl-md q-pr-md q-mt-md" v-if="$store.getters['notify/message']=='' && step===3">Congratulations!</span>
+        <!-- <p class="q-pl-md q-pr-md q-mt-md" v-if="status && step===2">Creating keys ({{ progress }} %)</p> -->
+        <div class="password_wrapper q-pl-md q-pr-md">
+          <div v-if="step==2" class="full-width">
+            <div class="full-width q-pt-md">
+              <q-circular-progress center-color="transparent" font-size="14px" show-value dark :value="progress" size="90px" :thickness="0.06" color="white" track-color="transparent"/>
+              <div v-if="status">
+                <div class="q-mt-md flex justify-start items-center">
+                  <q-icon class="q-pr-sm q_icon_coin" size="sm" :name="'img:'+ (status.icon ?  status.icon : 'https://files.coinswitch.co/public/coins/'+status.value+'.png')"/>
+                  <p class="text-grey-4"> {{status.label}}</p>
+                </div>
+              </div>
             </div>
-          <div class="vert-page-content--footer" style="padding-bottom: 30px">
-            <q-btn class="btn__blue" size="lg" @click="dataRefresh()" unelevated label="Start Trading"/>
+            <div class="unlock_restore flex justify-between items-end q-mt-sm">
+              <q-btn unelevated class="btn__blue unlock_btn" color="grey-4" outline size="md" label="Next" no-caps @click="step=3" :disable="!mapped" />
+              <b></b>
+            </div>
+          </div>
+          <div v-if="step==3" class="full-width">
+            <div class="full-width">
+              <p class="q-mt-md text-bold">Disclaimer</p>
+              <p v-if="$store.state.settings.backupConfig" class="q-mt-md">
+                Download your new config. <br>
+                It contains your old config accounts and your newly created accounts.
+                Save your 24 words and your new config. If you restore your wallet without using this new config, it will not include the newly created accounts. <br>
+              </p>
+              <p v-else class="q-mt-md">
+                Your 24 words are very important! <br>
+                Keep them stored somewhere safe. <br>
+                The position of each word is critical and should be stored in the correct sequence.<br><br>
+                Anyone with access to these 24 words will be able to recover this Verto app and the private keys it is associated with,
+                so keep in a safe place that only you have access to.
+              </p>
+              <p class="q-mt-md" v-if="$store.state.settings.dexData.depositCoin && $store.state.settings.dexData.depositCoin && false">Click go to exchange to swap {{$store.state.settings.dexData.fromAmount}}  {{$store.state.settings.dexData.depositCoin.value.toUpperCase()}} to {{$store.state.settings.dexData.destinationCoin.value.toUpperCase()}}</p>
+            </div>
+            <div class="unlock_restore unlock_restore2 flex justify-between items-end q-mt-sm">
+              <q-btn @click="dataRefresh()" unelevated label="Get Started" class="btn__blue unlock_btn" color="grey-4" outline size="md" no-caps />
+              <q-btn @click="backupConfig" label="Download" icon="file_download" class="q-mt-md" no-caps color="red-5" outline />
+            </div>
           </div>
         </div>
+      </div>
     </div>
-</q-page>
+    <notify-message/>
+  </q-page>
 </template>
 
 <script>
@@ -601,5 +652,117 @@ export default {
     left: 0px;
     z-index: 9;
   }
+}
+.restore-page-wrapper{
+  background: #F9F9F9;
+  .head-login{
+    max-width: 100%;
+    position: relative;
+    transform: scale3d(1,1,1);
+  }
+  .form_wrapper{
+    border-radius: 50px 50px 0px 0px;
+    margin-top: -100px;
+    background: #F9F9F9;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0px -30px 50px 0px rgba(black, .1);
+    .text-h2{
+      font-family: $Franklin;
+      font-weight: $black;
+      font-size: 20px;
+      line-height: 30px;
+      color: #04111F;
+    }
+    .text-h3{
+      font-family: $Franklin;
+      font-weight: $lighter;
+      font-size: 30px;
+      line-height: 35px;
+      color: #04111F;
+    }
+    p{
+      font-family: $Franklin;
+      font-weight: $lighter;
+      font-size: 14px;
+      line-height: 22px;
+      color: #04111F;
+    }
+    .unlock_restore{
+      min-height: 95px;
+      &.unlock_restore2{
+        min-height: 95px;
+      }
+      .unlock_btn{
+        width: 49%;
+        font-weight: $lighter;
+        font-family: $Franklin;
+        font-size: 14px !important;
+        /deep/ .q-btn__wrapper:before{
+          border: 2px solid #CCC !important;
+        }
+      }
+      .restore_btn{
+        width: 30%;
+        height: 45px;
+        letter-spacing: 1px;
+        font-weight: $lighter;
+        font-family: $Franklin;
+        font-size: 16px !important;
+      }
+    }
+  }
+  &.dark-theme{
+    background: #04111F;
+    .form_wrapper{
+      background: #04111F;
+      .text-h2{
+        color: #FFF;
+      }
+      .text-h3{
+        color: #FFF;
+      }
+      p{
+        color: #FFF;
+      }
+      .restore_btn{
+        // color: #FFF !important;
+      }
+    }
+  }
+}
+.password_wrapper{
+  /deep/ .q-field__messages{
+    color: #929398;
+    font-size: 14px;
+    margin-left: -10px;
+    margin-top: -4px;
+  }
+  /deep/ .text-negative {
+    color: #929398 !important;
+  }
+  /deep/ .q-field__native{
+    div{
+      font-size: 12px;
+      opacity: .7;
+    }
+  }
+}
+.dark-theme{
+  .password_wrapper{
+    /deep/ .q-field__messages{
+      color: #FFF;
+    }
+    /deep/ .text-negative {
+      color: #FFF !important;
+    }
+  }
+}
+.q_icon_coin{
+  position: relative;
+  top: -7px;
+}
+/deep/ .q-circular-progress__text{
+  color: #FFF !important;
 }
 </style>

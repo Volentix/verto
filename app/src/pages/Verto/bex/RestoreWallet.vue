@@ -43,9 +43,7 @@
         <!-- </div> -->
         <div class="standard-content--body__form">
           <div>
-            <label class="ver-label">
-              Enter your password
-            </label>
+            <label class="ver-label">Enter your password</label>
             <q-input
               ref="psswrd"
               v-model="addWallet.vertoPassword"
@@ -80,26 +78,26 @@
       <div class="form_wrapper full-height column q-pa-lg">
         <span class="text-h2 q-pl-md">VERTO</span>
         <span class="text-h3 q-pl-md q-pr-md q-mt-md">Restore wallet</span>
-        <p class="q-pl-md q-pr-md q-mt-md" v-if="step==1">Select your config file</p>
+        <!-- <p class="q-pl-md q-pr-md q-mt-md" v-if="step==1">Select your config file</p> -->
         <p class="q-pl-md q-pr-md q-mt-md" v-if="step==2">Enter your config password</p>
         <div class="password_wrapper q-pl-md q-pr-md">
           <div v-if="step==1" class="full-width">
-            <div class="full-width">
+            <div class="full-width q-pt-lg">
               <q-file :dark="$store.state.settings.lightMode === 'true'" class="full-width" :error="fileError" error-message="Please select config file" accept=".config" outlined v-model="file" label="Select your config file">
                 <template v-slot:append>
                   <q-icon name="attach_file" />
                 </template>
               </q-file>
             </div>
-            <div class="unlock_restore flex justify-between items-end q-mt-sm">
+            <div class="unlock_restore flex justify-between items-end q-mt-xl">
               <q-btn unelevated class="btn__blue unlock_btn" color="grey-4" outline size="md" no-caps @click="validateAndToNextstep" label="Continue" />
               <q-btn flat size="md" no-caps class="restore_btn" color="grey-8" label="Cancel" @click="$router.back()"/>
             </div>
           </div>
-          <div v-if="step==2" class="full-width">
-            <div class="full-width">
+          <div v-if="step==2" class="full-width q-pt-xs">
+            <div class="full-width q-mt-md q-pt-xs">
               <div>
-                <label class="ver-label">Enter your password</label>
+                <label class="ver-label" v-if="false">Enter your password</label>
                 <q-input
                   ref="psswrd"
                   v-model="addWallet.vertoPassword"
@@ -831,7 +829,7 @@ export default {
       color: #04111F;
     }
     .unlock_restore{
-      min-height: 142px;
+      min-height: 132px;
       .unlock_btn{
         width: 65%;
         height: 45px;
