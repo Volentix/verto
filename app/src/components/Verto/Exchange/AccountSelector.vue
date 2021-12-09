@@ -206,7 +206,7 @@
         <span>No account found {{ chain }}</span>
       </div>
     </div>
-    <div v-if="$q.platform.is.mobile || $isbex" class="row justify-center">
+    <div  class="row justify-center">
       <q-btn
         class="account_selector"
         dense
@@ -339,8 +339,9 @@
               $store.state.settings.lightMode === 'true'
                 ? 'text-h6 q-pa-md text-white'
                 : 'text-h6 q-pa-md q-ml-md'
-              ">
-            Select An Account {{dialog ? 'tes' : 'ds'}}
+              "
+          >
+            Select An Account
           </div>
 
           <q-card-section class="items-center" >

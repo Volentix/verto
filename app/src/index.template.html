@@ -25,131 +25,55 @@
 <!--  })(window,document,'script','dataLayer','GTM-P437ZDP');</script>-->
 <!--  &lt;!&ndash; End Google Tag Manager &ndash;&gt;-->
   <style>
-      #preloader{
-        height: 600px;
-        width: 357px;
-        background-color: #04111F;
-        position: absolute;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
+    #preloader{
+      height: 600px;
+      width: 357px;
+      background-color: #F5F5FE;
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+    }
+    .loading-container{
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+    }
+    .loading {
+      justify-content: center;
+      align-items: center;
+      width: 150px;
+      height: 150px;
+      display: flex;
+    }
+    .loading-img{
+      padding-top: 28px;
+      padding-left: 18px;
+    }
+    .loading:after {
+      content: " ";
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      width: 150px;
+      height: 150px;
+      margin: 8px;
+      border-radius: 50%;
+      border: 3px solid #4A88EE;
+      border-color: #4A88EE transparent #4A88EE transparent;
+      animation: lds-dual-ring 1.2s linear infinite;
+    }
+    @keyframes lds-dual-ring {
+      0% {
+        transform: rotate(0deg);
       }
-      .loading-container{
-        position: absolute;
-        left: 0%;
-        top: 0%;
+      100% {
+        transform:  rotate(360deg);
       }
-      .loading {
-        justify-content: center;
-        align-items: center;
-        width: 50px;
-        height: 50px;
-        display: flex;
-        position: relative;
-      }
-      .loading-img{
-        padding-top: 28px;
-        padding-left: 18px;
-      }
-      .loading:after {
-        content: " ";
-        position: absolute;
-        top: 0;
-        left: 0;
-        display: block;
-        width: 50px;
-        height: 50px;
-        margin: 8px;
-        border-radius: 50%;
-        border: 3px solid #FFF;
-        border-color: #FFF transparent #FFF transparent;
-        animation: lds-dual-ring 1.2s linear infinite;
-      }
-      @keyframes lds-dual-ring {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform:  rotate(360deg);
-        }
-      }
-      /*This part is required for navigation to work properly*/
-        .login-page-wrapper {
-          background: #F9F9F9;
-        }
-        .login-page-wrapper .head-login {
-          max-width: 100%;
-          position: relative;
-          transform: scale3d(1, 1, 1);
-        }
-        .login-page-wrapper .form_wrapper {
-          border-radius: 50px 50px 0px 0px;
-          margin-top: -80px;
-          background: #F9F9F9;
-          position: relative;
-          z-index: 2;
-          box-shadow: 0px -30px 50px 0px rgba(0, 0, 0, 0.1);
-          min-height: 411px;
-        }
-        .login-page-wrapper .form_wrapper .text-h2 {
-          font-family: 'Libre Franklin', sans-serif;
-          font-weight: 900;
-          font-size: 20px;
-          line-height: 30px;
-          color: #04111F;
-        }
-        .login-page-wrapper .form_wrapper .text-h3 {
-          font-family: 'Libre Franklin', sans-serif;
-          font-weight: 100;
-          font-size: 30px;
-          line-height: 35px;
-          color: #04111F;
-        }
-        .login-page-wrapper .form_wrapper p {
-          font-family: 'Libre Franklin', sans-serif;
-          font-weight: 100;
-          font-size: 14px;
-          line-height: 22px;
-          color: #04111F;
-        }
-        .login-page-wrapper .form_wrapper .unlock_restore .unlock_btn {
-          width: 65%;
-          height: 45px;
-          letter-spacing: 1px;
-          font-weight: 100;
-          font-family: 'Libre Franklin', sans-serif;
-          font-size: 16px !important;
-        }
-        .login-page-wrapper .form_wrapper .unlock_restore .unlock_btn /deep/ .q-btn__wrapper:before {
-          border: 2px solid #CCC !important;
-        }
-        .login-page-wrapper .form_wrapper .unlock_restore .restore_btn {
-          width: 30%;
-          height: 45px;
-          letter-spacing: 1px;
-          font-weight: 100;
-          font-family: 'Libre Franklin', sans-serif;
-          font-size: 16px !important;
-        }
-        .login-page-wrapper.dark-theme {
-          background: #04111F;
-        }
-        .login-page-wrapper.dark-theme .form_wrapper {
-          background: #04111F;
-        }
-        .login-page-wrapper.dark-theme .form_wrapper .text-h2 {
-          color: #FFF;
-        }
-        .login-page-wrapper.dark-theme .form_wrapper .text-h3 {
-          color: #FFF;
-        }
-        .login-page-wrapper.dark-theme .form_wrapper p {
-          color: #FFF;
-        }
-        .login-page-wrapper.dark-theme .form_wrapper .restore_btn {
-          color: #FFF !important;
-        }
+    }
     /*This part is required for navigation to work properly*/
     <% if (htmlWebpackPlugin.options.ctx.mode.bex) { %>
       html{
@@ -181,24 +105,10 @@
 
     <!-- DO NOT touch the following DIV -->
     <% if (htmlWebpackPlugin.options.ctx.mode.bex) { %>
-    <!-- <div id="preloader">
-      <div class="loading-container test_class">
+    <div id="preloader">
+      <div class="loading-container">
         <div class="loading">
           <img class="loading-img" width="100" src="statics/icons/icon-256x256.png">
-        </div>
-      </div>
-    </div> -->
-    <div id="preloader" class="login-page-wrapper dark-theme">
-      <div class="loading-container">
-        <div class="full-width full-height">
-          <img src="statics/login_ui_dark.png" alt="head-login" class="head-login" />
-          <div class="form_wrapper full-height column q-pa-lg">
-            <span class="text-h2 q-pl-md">VERTO</span>
-            <span class="text-h3 q-pl-md q-pr-md q-mt-md">Multi-chain wallet manager</span>
-            <p class="q-pl-md q-pr-md q-mt-md">Store, trade, generate yield from your digital assets. One app for the multi-chain universe</p>
-            <p class="q-pl-md q-pr-md q-mt-md">Please, wait...</p>
-            <div class="loading"></div>
-          </div>
         </div>
       </div>
     </div>

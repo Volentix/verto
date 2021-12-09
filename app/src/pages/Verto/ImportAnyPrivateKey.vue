@@ -30,7 +30,7 @@
           "
         />
         <q-toolbar-title v-show="showMainSteps">
-          Import {{ getChainLabel(currentChain) }} wallet
+           {{(!watch ? 'Import ' : 'Watch ' )+ getChainLabel(currentChain) }} wallet
         </q-toolbar-title>
         <q-toolbar-title v-show="!showMainSteps">
           Save Private Key
@@ -90,7 +90,7 @@
                     v-show="showMainSteps"
                     class="standard-content--title flex"
                   >
-                    Import {{ getChainLabel(currentChain) }} wallet
+                    {{(!watch ? 'Import ' : 'Watch ' )+ getChainLabel(currentChain) }} wallet
                   </h2>
                   <h2
                     v-show="!showMainSteps"
@@ -103,27 +103,28 @@
                 <div class="q-ml-lg">
                   <div class="text-body1 q-pb-md">
                     Click on a button to switch mode<br />
-                    - Watch mode requires only your public key<br />
+                    - Watch mode requires only your {{currentChain == 'EOS' ? 'account name' : 'public key'}}<br />
                     - You can send and sign transactions only with an imported
                     account<br />
                   </div>
                   <q-btn
                     @click="currentChain == 'ETH' ? $router.push('/verto/import-private-key/eth') : watch = false"
-                    :outline="watch"
+
                     class="q-ml-md q-mr-md"
                     rounded
-                    color="primary"
+                    :color="watch ? 'white' : 'black'"
+                    :text-color="watch ? 'black' : 'white'"
                     label="Import"
                   />
                   <q-btn
                     @click="watch = true"
-                    :outline="!watch"
+                    :color="watch ? 'black' : 'white'"
+                    :text-color="watch ? 'white' : 'black'"
                     rounded
-                    color="primary"
                     label="Watch"
                   />
                 </div>
-                <div class="chain-tools-wrapper--list open">
+                <div class="chain-tools-wrapper--list open q-mt-sm">
                   <div class="list-wrapper">
                     <div class="list-wrapper--chain__eos-to-vtx-convertor">
                       <div v-show="showMainSteps">
@@ -143,7 +144,7 @@
                                                     1.Private key
                                                     -->
                           <q-step
-                            :title="watch ? 'Public key' : 'Private Key'"
+                            :title="watch ? (currentChain == 'EOS' ? 'Account name' : 'Public key') : 'Private Key'"
                             :name="1"
                             prefix="1"
                             order="10"
@@ -173,7 +174,7 @@
                                         >
                                       </span>
                                       A valid {{ getChainLabel(currentChain) }}
-                                      {{ watch ? "public key" : "private Key" }}
+                                      {{ watch ? (currentChain == 'EOS' ? 'Account name' : 'Public key') : "private Key" }}
                                     </span>
                                   </li>
                                 </ul>
@@ -215,11 +216,12 @@
                                   @input="
                                     watchStatus = null;
                                     addWallet.walletName =
+                                      currentChain == 'EOS' ?  addWallet.address :
                                       getChainLabel(currentChain) +
                                       '...' +
                                       addWallet.address.slice(-5);
                                   "
-                                  label="Enter public key"
+                                  :label="'Enter '+(currentChain == 'EOS' ? 'Account name' : 'Public key')"
                                 />
                                 <q-input
                                   style="max-width: 300px"
@@ -227,7 +229,7 @@
                                   v-if="
                                     watch &&
                                     addWallet.address &&
-                                    addWallet.address.length
+                                    addWallet.address.length && currentChain !== 'EOS'
                                   "
                                   :dark="
                                     $store.state.settings.lightMode === 'true'
@@ -1260,6 +1262,7 @@ export default {
   },
   created () {
     this.getWindowWidth()
+    this.watch = this.$route.params.watch
     window.addEventListener('resize', this.getWindowWidth)
     this.currentChain = this.$route.params.chain.toUpperCase()
     this.currentChain = this.$route.params.chain.toUpperCase()

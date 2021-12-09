@@ -187,7 +187,7 @@ export default [
       }, {
         // Any Non-EOS wallet
         name: 'import-wallet',
-        path: '/verto/import-wallet/:chain',
+        path: '/verto/import-wallet/:chain/:watch?',
         component: () => import('pages/Verto/ImportAnyPrivateKey.vue'),
         meta: {
           authRequired: true

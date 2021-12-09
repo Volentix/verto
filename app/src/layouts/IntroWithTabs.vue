@@ -260,7 +260,7 @@
           />
           <q-breadcrumbs-el v-else class="text-capitalize" :class="{'text-white': $store.state.settings.lightMode === 'true'}" :label="$route.name" />
         </q-breadcrumbs>
-        <router-view class="main-container" v-if="toggleView " />
+        <router-view class="main-container" :key="$route.path" v-if="toggleView " />
       </q-page-container>
 
       <q-footer v-if="($q.platform.is.mobile||$isbex) && showPanelStatus && false" elevated class=" text-white">
@@ -439,6 +439,7 @@ export default {
     }
   },
   created () {
+    this.$store.dispatch('tokens/getTokenList')
     if (this.$isbex) {
       this.$q.platform.is.mobile = true
     }
