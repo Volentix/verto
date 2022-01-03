@@ -1,6 +1,9 @@
 <template>
   <div class="wrapper">
-    <div class="part1">
+   <span v-if="loading">Loading NFTS...</span>
+   <p class="q-pb-lg" v-else-if="!loading && nfts.length == 0"> No NFTs found on Ethereum</p>
+   <q-linear-progress class="q-pb-lg" indeterminate v-if="loading" color="grey" />
+    <div class="part1" v-if="false">
       <div class="heading">
         <h2 class="q-pa-none q-ma-none">Explore ⚡</h2>
       </div>
@@ -91,10 +94,10 @@
     </div>
 
     <div class="part2 row q-col-gutter-md">
-      <div class="part2-main col-md-4" v-for="item in 13" :key="item">
+      <div class="part2-main col-md-4" v-for="(nft, index) in nfts" :key="index">
         <div class="wrap-content">
           <div class="main-top">
-            <div class="mt-img">
+            <div class="mt-img" v-if="false">
               <img src="https://images.rarible.com/?fit=outsize&n=-1&url=https%3A%2F%2Fipfs.rarible.com%2Fipfs%2FQmUNbMmMtbzP5ZwpQ7X77cNEqR5DvEmDYqWvw1QQkx7nbE&w=100" alt="img" />
               <img src="https://images.rarible.com/?fit=outsize&n=-1&url=https%3A%2F%2Fipfs.rarible.com%2Fipfs%2FQmYBra8T5BNmph65g4FYqbDxrydyDK1rU5u6PW1AK3PZpM&w=100" alt="img" class="ml-l" />
               <img src="https://images.rarible.com/?fit=outsize&n=-1&url=https%3A%2F%2Fipfs.rarible.com%2Fipfs%2FQmSd3TEEAJv7DrYXaaWmNojUGwm88GGRuRTqkkjWis6DgV&w=100" alt="img" class="ml-l" />
@@ -141,11 +144,11 @@
             </div>
           </div>
           <div class="mid-img">
-            <img src="https://lh3.googleusercontent.com/KrQ_G9KKuNYBl1PMrA5zickPjbez8NpG4Cf3mrkku_C_21g8zoDBtEasLcyQbc6KVpnpgJOO6_J0AMKcX6RzbG4JCoAlY0vkoqEYbg=s250" alt="img" class="mid-img" />
+            <q-img style="height:300px" :src="nft.assetImg" alt="img" class="mid-img" />
           </div>
 
-          <h4>'SpaceX Crypto'</h4>
-          <h5>0.09 ETH<span class="gr-txt">1 of 1</span></h5>
+          <h4>{{nft.assetName}}</h4>
+          <h5>USD {{formatNumber(nft.balanceUSD,2)}}</h5>
           <h2 class="q-pa-none q-ma-none" v-if="false">
             <a href="#">Place a bid</a>
             <span
@@ -160,19 +163,44 @@
   </div>
 </template>
 <script>
+import Formatter from '@/mixins/Formatter'
+import Lib from '@/util/walletlib'
 export default {
-
+  mixins: [Formatter],
+  data () {
+    return {
+      nfts: [],
+      loading: true
+    }
+  },
+  created () {
+    let wallets = Lib.getWallets('eth')
+    wallets.forEach(async (element, i) => {
+      let v = await Lib.fetchNfts(element.key)
+      this.nfts = this.nfts.concat(v)
+      if (i === wallets.length - 1) {
+        this.loading = false
+      }
+    })
+  }
 }
 </script>
 
 <style scoped>
+* {
+   font-family: "Poppins-Medium";
+}
 .wrapper {
   width: 99%;
-  background: #fff;
+
   padding: 0 32px;
   padding-bottom: 30px;
 }
-
+.wrapper {
+    height: auto !important;
+    padding-bottom: 10px;
+    background: #04121f !important;
+}
 .part1 {
     display: grid;
     grid-template-columns: repeat(auto-fit,minmax(150px,auto));
@@ -440,16 +468,16 @@ min-width: 100%;
 }
 
 .wrap-content {
-  padding: 23px 23px;
-  border: 1px solid #E8E8E9;
-  border-radius: 16px;
-  transition: all 0.2s ease-in-out;
-  position: relative;
-  z-index: 9;
-  background: #fff;
+ padding: 23px 23px;
+    border: 1px solid #0a1830;
+    border-radius: 16px;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    z-index: 9;
+    background: #0a1830;
 }
 .part2-main {
-  background: #fff;
+
   border-radius: 16px;
   transition: all 0.2s ease-in-out;
 
@@ -462,23 +490,23 @@ min-width: 100%;
 .part2-main h4 {
   font-size: 15px;
   line-height: 20.7px;
-  font-family: inherit;
+
   font-weight: 900;
   display: block;
   letter-spacing: -0.2px;
-  color: #000;
+  color: #e7e7e7;
 
 }
 
 .part2-main h5 {
-  font-size: 14px;
-  line-height: 20.7px;
-  font-family: inherit;
-  font-weight: 900;
-  display: block;
-  letter-spacing: -0.2px;
-  color: #000;
-  margin: 5px 0 0;
+     font-size: 18px;
+    line-height: 20.7px;
+
+    font-weight: 900;
+    display: block;
+    letter-spacing: -0.2px;
+    color: #fff;
+    margin: 5px 0 0;
 
 }
 
@@ -769,7 +797,7 @@ min-width: 100%;
   }
 
 .part2-main {
-  background: #fff;
+
   border-radius: 16px;
   transition: all 0.2s ease-in-out;
   position: relative;
