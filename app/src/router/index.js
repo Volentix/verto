@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-
+import Lib from '@/util/walletlib'
 import store from '../store/index.js'
 import otherRoutes from './routes'
 import login from './_login'
@@ -50,17 +50,42 @@ export default function (/* { store, ssrContext } */) {
   Router.beforeEach((to, from, next) => {
     const appStarted = sessionStorage.getItem('app_started')
     const routerLoaded = sessionStorage.getItem('router_loaded')
-    const lastRoute = localStorage.getItem('last_route') ? JSON.parse(localStorage.getItem('last_route')) : null
-    console.log('navigating to route', to.name, lastRoute)
+    // const lastRoute = localStorage.getItem('last_route') ? JSON.parse(localStorage.getItem('last_route')) : null
+    let params = Object.assign({}, from.params)
+
+    if (params.asset) {
+      params.asset = Lib.removePrivateData([params.asset])[0]
+    }
+
+    if (params.assets) {
+      params.assets = Lib.removePrivateData(params.assets)
+    }
+    const fromRoute = {
+      name: from.name,
+      params: params,
+      query: from.query,
+      meta: from.meta,
+      path: from.path
+    }
+    localStorage.setItem('prev_route', JSON.stringify(fromRoute))
     if (appStarted != null && routerLoaded != null && ['connectv1', 'receive'].includes(to.name)) {
-      const route = {
-        name: to.name,
-        params: to.params,
-        query: to.query,
-        meta: to.meta,
-        path: to.path
-      }
       try {
+        params = Object.assign({}, to.params)
+
+        if (params.asset) {
+          params.asset = Lib.removePrivateData([params.asset])[0]
+        }
+
+        if (params.assets) {
+          params.assets = Lib.removePrivateData(params.assets)
+        }
+        const route = {
+          name: to.name,
+          params: params,
+          query: to.query,
+          meta: to.meta,
+          path: to.path
+        }
         localStorage.setItem('last_route', JSON.stringify(route))
       } catch (error) {
         console.log(error)

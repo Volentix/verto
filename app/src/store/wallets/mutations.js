@@ -1,14 +1,6 @@
 import store from '@/store'
+import Lib from '@/util/walletlib'
 
-const removePrivateData = data => {
-  return JSON.parse(JSON.stringify(data)).map(o => {
-    o.privateKeyEncrypted = null
-    delete o.privateKeyEncrypted
-    o.privateKey = null
-    delete o.privateKey
-    return o
-  })
-}
 // Create index for Easy Access
 const getWalletIndex = wallet => {
   let index =
@@ -31,12 +23,20 @@ export const updateTokens = (state, updatedtokens) => {
 
   let not_valuable = localStorage.getItem('not_valuable')
   not_valuable = not_valuable ? JSON.parse(not_valuable) : []
+
   updatedtokens = updatedtokens.map((o, index) => {
     o.index = getWalletIndex(o)
 
     if (not_valuable.length && not_valuable.find(z => z.chain === o.chain && z.type === o.type)) {
       o.tokenPrice = 0
       o.usd = 0
+    }
+    if (store.state.settings.globalSettings.blacklist && store.state.settings.globalSettings.blacklist[o.chain] && store.state.settings.globalSettings.blacklist[o.chain].includes(o.type)) {
+      o.tokenPrice = 0
+      o.usd = 0
+    }
+    if (Lib.evms.find(f => f.chain === o.chain)) {
+      o.isEvm = true
     }
     if (o.type === 'eos') {
       // console.log(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name), o.name, updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(b => b.usd), parseFloat(updatedtokens.filter(f => f.chain === 'eos' && f.name === o.name).map(o => isNaN(o.usd) ? 0 : o.usd).reduce((a, b) => a + b, 0)), 'total')
@@ -91,7 +91,7 @@ export const updateTokens = (state, updatedtokens) => {
 
   localStorage.setItem(
     'walletPublicDatav2',
-    JSON.stringify(removePrivateData(updatedtokens))
+    JSON.stringify(Lib.removePrivateData(updatedtokens))
   )
 
   store.dispatch('tokens/getTokensMarketsData', state.tokens)

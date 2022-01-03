@@ -2,7 +2,8 @@ import EosWrapper from '@/util/EosWrapper'
 import axios from 'axios'
 import store from '@/store'
 import * as solanaWeb3 from '@solana/web3.js'
-
+// import abiHex from '@/statics/abi/hex.json'
+import abiEnz from '@/statics/abi/enz.json'
 import {
   userError
 } from '@/util/errorHandler'
@@ -10,6 +11,7 @@ import {
   date
 } from 'quasar'
 import abiArray from '@/statics/abi/erc20.json'
+import initWallet from './Wallets2Tokens'
 const Web3 = require('web3')
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -58,8 +60,8 @@ class Lib {
       chain: 'tpls',
       nativeToken: 'tpls',
       icon: 'https://pbs.twimg.com/profile_images/1412839310106234882/Z4H3-LxW_400x400.jpg',
-      provider: 'https://rpc.testnet.pulsechain.com',
-      explorer: 'https://scan.pulsechain.com/tx/',
+      provider: 'https://rpc.v2.testnet.pulsechain.com',
+      explorer: 'https://scan.v2.testnet.pulsechain.com/tx/',
       gas: '', // The C-Chain gas price is 225 nAVAX (225 GWei). The C-Chain gas limit is 8 * 10e6 (8,000,000).
       network_id: 940,
       testnet: true
@@ -99,7 +101,167 @@ class Lib {
     }
     console.log(this.evms, ' this.evms')
   }
+  async hexStake (address) {
+    let locked = 0
+    let res = await axios.post('https://cpu.volentix.io/api/global/hexStats', { address: address })
+    if (res.data.locked) {
+      locked = res.data.locked
+    }
+    return locked
+  }
+  async checkPulseMethods () {
+    let add = '0x7e6d3b1161DF9c9c7527F68d651B297d2Fdb820B'
+    const compiledContractABI = JSON.parse(abiEnz.result)
+    const Web3 = require('web3')
+    const web3 = new Web3(this.getEvmData('tpls').provider)
+    let hex = new web3.eth.Contract(compiledContractABI, add)
+    console.log(hex.methods, 'hex.methods')
+    let data = await hex.methods.getCreator().call()
+    console.log(data, 'data')
+  }
+  async getHexStake (addr) {
+    let val = await this.hexStake(addr)
+    return val
+    /*
+    /* global BigInt
+    // addr = '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1'
+    const compiledContractABI = JSON.parse(abiHex.result)
+    const hexAddr = '0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39'
+    const Web3 = require('web3')
+    const web3 = new Web3(this.getEvmData('eth').provider)
+    let hex = new web3.eth.Contract(compiledContractABI, hexAddr)
+    let stakeCount = await hex.methods.stakeCount(addr).call()
 
+    const getLastDataDay = async (hex) => {
+      let globalInfo = await hex.methods.globalInfo().call()
+      const lastDay = globalInfo[4]
+      return Number.parseInt(lastDay)
+    }
+    const getDataRange = async (hex, b, e) => {
+      const dataRange = await hex
+        .methods
+        .dailyDataRange(b, e)
+        .call()
+      const data = []
+      for (let i = 0; i < dataRange.length; i++) {
+        data.push(decodeDailyData(dataRange[i]))
+      }
+
+      return data
+    }
+
+    const HEARTS_UINT_SHIFT = 72n
+    const HEARTS_MASK = (1n << HEARTS_UINT_SHIFT) - 1n
+    const SATS_UINT_SHIFT = 56n
+    const SATS_MASK = (1n << SATS_UINT_SHIFT) - 1n
+    const decodeDailyData = (encDay) => {
+      let v = BigInt(encDay)
+      let payout = v & HEARTS_MASK
+      v = v >> HEARTS_UINT_SHIFT
+      let shares = v & HEARTS_MASK
+      v = v >> HEARTS_UINT_SHIFT
+      let sats = v & SATS_MASK
+      return { payout, shares, sats }
+    }
+    const getStake = async (hex, addr, sid) => {
+      let stakeCount = await hex.methods.stakeCount(addr).call()
+      for (let i = 0; i < stakeCount; i++) {
+        let stake = await hex.methods.stakeLists(addr, i).call()
+        if (stake.stakeId === sid.toString()) {
+          return stake
+        }
+      }
+    }
+    const getStakeByIndex = async (hex, addr, idx) => {
+      let stake = await hex.methods.stakeLists(addr, idx).call()
+      return stake
+    }
+    const getInterestToDate = async (hex, addr, stakeId, stakeIndex, stake) => {
+      let s
+      if (stake !== undefined) {
+        s = stake
+      } else if (stakeIndex !== undefined) {
+        s = await getStakeByIndex(hex, addr, stakeIndex)
+      } else {
+        s = await getStake(hex, addr, stakeId)
+      } // Not validating that I have both things correct/matching, error detection needed
+
+      const b = Number.parseInt(s.lockedDay)
+      const e = await getLastDataDay(hex)
+
+      if (b >= e) {
+        // not started - error
+        return 0n
+      } else {
+        const data = await getDataRange(hex, b, e)
+
+        let i = interestForRange(data.slice(-1), BigInt(s.stakeShares)) * (BigInt(s.stakedDays) - BigInt(e + Number.parseInt(s.lockedDay)))
+        return interestForRange(data, BigInt(s.stakeShares)) + i
+      }
+    }
+    const interestForRange = (dailyData, myShares) => {
+      return dailyData.reduce((s, d) => s + interestForDay(d, myShares), 0n)
+    }
+
+    const interestForDay = (dayObj, myShares) => {
+      let i = myShares * dayObj.payout / dayObj.shares
+      console.log(Number(i), 'i')
+      return i
+    }
+
+    let total = 0n
+    for (let i = 0; i < stakeCount; i++) {
+      let stake = await hex.methods.stakeLists(addr, i).call()
+      // let interest = 0n
+
+      let interest = await getInterestToDate(hex, addr, undefined, i, undefined)
+      console.log(Number(interest) / (10 ** 8), stake.stakedHearts / (10 ** 8))
+      total += (BigInt(stake.stakedHearts) + interest) / BigInt(10 ** 8)
+    }
+    total = Number(total)
+
+    return total
+    */
+  }
+  getDefaultToken (chain) {
+    let defaultImg = '/statics/empty-token.png'
+    let values = {
+      eos: 'https://defibox.s3.ap-northeast-1.amazonaws.com/defibox-eos-web/static/img/eos.png',
+      eth: 'https://etherscan.io/images/main/empty-token.png'
+    }
+    if (values[chain]) {
+      defaultImg = values[chain]
+    }
+    return defaultImg
+  }
+  getWallets (chain = null) {
+    let watchAccounts = localStorage.getItem('watchAccounts')
+    watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
+    return [...store.state.currentwallet.config.keys].concat(watchAccounts).filter(o => o.chain === chain || !chain)
+  }
+  async fetchNfts (address) {
+    /// address = '0x60e4d786628fea6478f785a6d7e704777c86a7c6'
+    let url = 'https://api.zapper.fi/v1/protocols/nft/balances?addresses%5B%5D=' + address + '&network=ethereum&api_key=5d1237c2-3840-4733-8e92-c5a58fe81b88&newBalances=true'
+    let res = await axios.get(url)
+    let nfts = []
+    if (res.data && res.data[address] && res.data[address].products.length) {
+      nfts = res.data[address].products[0].assets
+      nfts = nfts.map(n => {
+        if (n.tokens[0].assets[0] && n.tokens[0].assets[0].assetImg.length) { return n.tokens[0].assets[0] }
+      }).filter(o => o)
+    }
+    return nfts
+  }
+  removePrivateData (data) {
+    if (typeof data !== 'object' && !data.length) return data
+    return JSON.parse(JSON.stringify(data)).map(o => {
+      o.privateKeyEncrypted = null
+      delete o.privateKeyEncrypted
+      o.privateKey = null
+      delete o.privateKey
+      return o
+    })
+  }
   async getRawETHTransaction (token, from, to, value, key, contract, origin = 'mnemonic', evm = 'eth') {
     const Web3 = require('web3')
     let evmData = this.evms.find(o => o.chain === evm)
@@ -1051,8 +1213,8 @@ class Lib {
       (t) =>
         t.symbol.toLowerCase() === asset.type.toLowerCase() &&
       (
-        t.platforms2.includes(asset.address.toLowerCase() ||
-        (!t.platforms2.includes('0x'))
+        (asset.address && t.platforms2.includes(asset.address.toLowerCase())) ||
+        (!t.platforms2.includes('0x')
 
         )
       ))
@@ -1062,6 +1224,144 @@ class Lib {
     let id = this.getCoinGeckoId(asset)
     console.log(id, 'id')
     return id ? (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=' + id + '&vs_currencies=usd')).data[id].usd : null
+  }
+
+  setDemoMode () {
+    store.state.currentwallet.config = {
+      mnemonic: 'xxx',
+      keys: [
+        {
+          chain: 'eth',
+          key: '0x4a02dEADD223E106185144181B0816549Edec862',
+          name: 'SIF Private Vault',
+          type: 'eth'
+        },
+        {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'crosschainfx',
+          type: 'eos'
+        }, {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'vtxisforhodl',
+          type: 'eos'
+        }, {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'staiderprm11',
+          type: 'eos'
+        }, {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'staiderx1m24',
+          type: 'eos'
+        }, {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'staiderx2m35',
+          type: 'eos'
+        }, {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'staiderx3m4o',
+          type: 'eos'
+        }, {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'master1xxxxx',
+          type: 'eos'
+        }, {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'master2xxxxx',
+          type: 'eos'
+        }, {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'master3xxxxx',
+          type: 'eos'
+        }, {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'master4xxxxx',
+          type: 'eos'
+        }, {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'master5xxxxx',
+          type: 'eos'
+        }, {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'imresistance',
+          type: 'eos'
+        }, {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'volentixp2pb',
+          type: 'eos'
+        },
+        {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'cryptoninja1',
+          type: 'eos'
+        },
+        {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'vtxtothemoon',
+          type: 'eos'
+        },
+        {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'vtxnightnday',
+          type: 'eos'
+        },
+        {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'vdexchinavtx',
+          type: 'eos'
+        },
+        {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'vtxarmychina',
+          type: 'eos'
+        },
+        {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: '4tunadineros',
+          type: 'eos'
+        },
+        {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'ciaociaobell',
+          type: 'eos'
+        },
+        {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: '4theluvofcrp',
+          type: 'eos'
+        },
+        {
+          chain: 'eos',
+          key: 'xxxxx',
+          name: 'excellenceit',
+          type: 'eos'
+        }
+
+      ]
+    }
+    store.state.settings.isDemo = true
+    store.state.currentwallet.loggedIn = true
+    initWallet('init')
   }
   send = async (chain, token, from, to, value, memo, key, contract, data) => {
     const self = this

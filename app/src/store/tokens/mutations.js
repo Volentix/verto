@@ -1,10 +1,11 @@
 import store from '@/store'
 import Lib from '@/util/walletlib'
-let noPriceList = {
-  bsc: ['flux', 'velo']
-}
+
 export const setTokenList = (state, data) => {
   state.list = typeof data === 'string' ? JSON.parse(data) : data
+}
+export const updatePending = (pending, payload) => {
+  pending = payload
 }
 export const setWalletTokensData = (state, data) => {
   state.walletTokensData = state.walletTokensData.concat(data)
@@ -13,10 +14,13 @@ export const setWalletTokensData = (state, data) => {
     let tokenData = state.walletTokensData.find(o => o.symbol.toLowerCase() === token.type)
     if (tokenData) {
       let usd = Lib.findInExchangeList(token.chain, token.type, token.contract)
-
-      if (usd && (!noPriceList[token.chain] || !noPriceList[token.chain].includes(token.type))) {
+      let foundINBlacklist = store.state.settings.globalSettings.blacklist && store.state.settings.globalSettings.blacklist[token.chain] && store.state.settings.globalSettings.blacklist[token.chain].includes(token.type)
+      if (usd && !foundINBlacklist) {
         store.state.wallets.tokens[i].tokenPrice = tokenData.current_price
         store.state.wallets.tokens[i].usd = tokenData.current_price * token.amount
+      } else if (foundINBlacklist) {
+        store.state.wallets.tokens[i].tokenPrice = 0
+        store.state.wallets.tokens[i].usd = 0
       }
       if (store.state.wallets.tokens[i].icon.includes('empty')) {
         store.state.wallets.tokens[i].icon = tokenData.image

@@ -32,15 +32,8 @@ export const getTokensMarketsData = ({ commit, state }, tokens) => {
       tokens.find(
         o =>
           t.symbol.toLowerCase() === o.type &&
-          (o.isEvm ||
-            (!t.platforms.hasOwnProperty('eos') &&
-              !t.platforms.hasOwnProperty('ethereum')) ||
-            o.chain ===
-              (t.platforms.hasOwnProperty('eos')
-                ? 'eos'
-                : t.platforms.hasOwnProperty('ethereum')
-                  ? 'eth'
-                  : o.chain))
+          (!o.contract || (JSON.stringify(t.platforms).includes('0x') && JSON.stringify(t.platforms).includes(o.contract)) ||
+            !o.isEvm)
       ) &&
       !state.walletTokensData.find(a => a.id === t.id)
   )
@@ -127,5 +120,38 @@ export const getEvmsTokensData = ({ commit }) => {
           }
         })
     }
+  })
+}
+
+export const getTokensMarketsDataBySymbols = ({ commit, state }, tokens) => {
+  return new Promise((resolve, reject) => {
+    axios.get('https://cache.volentix.io/https://api.coingecko.com/api/v3/coins/list?include_platform=true'
+    // https://cache.volentix.io/
+    // {
+      // headers: { 'Access-Control-Allow-Origin': '*' }
+    // }
+    ).then((result) => {
+      /// commit('setTokenList', result.data)
+      // console.log('setTokenList', state.list)
+      // console.log('state.walletTokensData before -----', state.walletTokensData)
+      if (!state.list) return
+      // let list = state.list.filter(t => !state.pending.find(o => o === t.id) && tokens.find(o => t.symbol === o.type) && !state.walletTokensData.find(a => a.id === t.id))
+      let list = state.list.filter(t => !state.pending.find(o => o === t.id) && tokens.find(o => t.symbol === o.type && Object.keys(t.platforms).length > 0 && Object.keys(t.platforms).find(chain => t.platforms[chain] === o.address) && (o.chain === (t.platforms.hasOwnProperty('eos') ? 'eos' : (t.platforms.hasOwnProperty('ethereum') ? 'eth' : o.chain)))))
+      // console.log('tokens,list,state.walletTokensData', tokens, list, state.walletTokensData)
+      if (list.length) {
+        list = list.map(l => l.id)
+        commit('updatePending', state.pending.concat(list))
+        list = list.join(',')
+        axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=' + window.localStorage.getItem('currency').toUpperCase() + '&ids=' + list + '&price_change_percentage=24h'
+        // https://cache.volentix.io/
+        // {
+          // headers: { 'Access-Control-Allow-Origin': '*' }
+        // }
+        ).then((result) => {
+          // commit('setWalletTokensData', result.data)
+          resolve(result.data)
+        })
+      }
+    })
   })
 }

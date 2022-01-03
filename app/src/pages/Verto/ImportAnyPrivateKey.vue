@@ -1210,6 +1210,7 @@ import Wallets from '../../components/Verto/Wallets'
 import ProfileHeader from '../../components/Verto/ProfileHeader'
 import Formatter from '@/mixins/Formatter'
 import initWallet from '@/util/Wallets2Tokens'
+import Lib from '@/util/walletlib'
 const Web3 = require('web3')
 let web3 = new Web3(
   'https://mainnet.infura.io/v3/0dd5e7c7cbd14603a5c20124a76afe63'
@@ -1446,13 +1447,17 @@ export default {
     addChainAddress: async function () {
       if (this.submitKey) {
         this.resetErrors()
+        let chain = this.currentChain.toLowerCase()
+        if (Lib.evms.find(f => f.chain === this.currentChain.toLowerCase())) {
+          chain = 'eth'
+        }
         const result = await this.$configManager.saveWalletAndKey(
           this.addWallet.walletName,
           this.addWallet.vertoPassword,
           null,
           this.addWallet.address,
           this.addWallet.addressPriv,
-          this.currentChain.toLowerCase(),
+          chain,
           'import'
         )
 

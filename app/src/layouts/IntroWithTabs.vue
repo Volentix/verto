@@ -41,6 +41,7 @@
                   <span v-else>Total Balance</span>
                     <q-btn
                       dense
+                      :disable="loadingIndicator"
                       flat
                       icon-right="cached"
                       color="grey"
@@ -53,6 +54,8 @@
                   <div class="text-h3 total" v-else>
                     ${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }}
                   </div>
+
+              <p class="text-body2 text-center test text-grey" v-if="$store.state.wallets.tokens.length && loadingIndicator"><span class="text-bold">Updating {{getChainLabel($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].chain)}} wallet</span><br/><span class="deep-purple-12">{{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].name}}</span> {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total ? '($'+formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total,0)+')' : ''}} <br> {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].type.toUpperCase()}} balance:  (${{formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].usd,2)}})...</p>
 
                   <div class="row flex flex-center q-pt-md q-pb-sm">
                     <q-btn
@@ -236,13 +239,12 @@
           <template v-slot:separator>
             <q-icon size="1.5em" name="chevron_right" :color="$store.state.settings.lightMode === 'true' ? 'white':'primary'" />
           </template>
-
           <q-breadcrumbs-el
             label="Back"
             icon="keyboard_backspace"
             :class="{'text-white': $store.state.settings.lightMode === 'true'}"
             class="cursor-pointer q-ml-md"
-            @click="$route.name.includes('token') && $route.params.asset && !['btc'].includes($route.params.asset.chain) && $route.params.asset.name ? goToTab('chains', $route.params.asset.chain) : $router.back()"
+            @click="$route.name.includes('token') && $route.params.asset && !['btc'].includes($route.params.asset.chain) && $route.params.asset.name ? goToTab('chains', $route.params.asset.chain) : redirectToLastRoute()"
           />
           <q-breadcrumbs-el
             v-if="$route.name.includes('token')"
@@ -252,7 +254,7 @@
             :class="{'text-white': $store.state.settings.lightMode === 'true'}"
           />
            <q-breadcrumbs-el
-            v-if="$route.name.includes('token')"
+            v-if="$route.name.includes('token') && $route.params.asset && $route.params.asset.type"
             :icon="'img:'+$route.params.asset.icon"
             :label="$route.params.asset.type.toUpperCase()"
             class="cursor-pointer"
@@ -290,12 +292,14 @@
 <script>
 import { version } from '../../package.json'
 import initWallet from '@/util/Wallets2Tokens'
+// import Lib from '@/util/walletlib'
 import Formatter from '@/mixins/Formatter'
 import AccountSelector from '@/components/Verto/Exchange/AccountSelector.vue'
 import TopMenu from '../components/Verto/TopMenu'
 import SelectTokenPopup from '../components/Verto/Token/SelectTokenPopup.vue'
 import TopMenuMobile from '../components/Verto/TopMenuMobile.vue'
 import { QScrollArea } from 'quasar'
+
 export default {
   components: {
     AccountSelector,
@@ -356,6 +360,7 @@ export default {
         send: false
       },
       str: {},
+      loadingIndicator: false,
       miniState: false,
       showPanelStatus: true,
       tabRoute: 'dashboard',
@@ -366,12 +371,19 @@ export default {
     if (this.$q.platform.is.mobile) { this.checkRoute() }
   },
   watch: {
+    '$store.state.wallets.portfolioTotal': function () {
+      this.loadingIndicator = true
+      setTimeout(() => {
+        this.loadingIndicator = false
+      }, 3000)
+    },
     '$store.state.settings.defaultChainData': function () {
       if (this.$store.state.settings.defaultChainData) {
         this.chainTools.show = true
       }
     },
     '$route': function () {
+      console.log(this.$route, 'this.$route')
       if (this.$q.platform.is.mobile) { this.checkRoute() }
     }
   },
@@ -444,6 +456,7 @@ export default {
       this.$q.platform.is.mobile = true
     }
     this.version = version
+    // Lib.checkPulseMethods()
   },
   mixins: [Formatter]
 }

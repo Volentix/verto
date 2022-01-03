@@ -33,7 +33,7 @@ class EosRPC {
 
   async getAccounts (wif) {
     try {
-      let accounts = await this.rpc.history_get_key_accounts(wif)
+      let accounts = await this.rpc.get_accounts_by_authorizers(wif)
       return accounts
     } catch (error) {
       // console.log(error, wif)

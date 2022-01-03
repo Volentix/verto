@@ -5,7 +5,8 @@
       'dark-theme': $store.state.settings.lightMode === 'true',
       'receive_wrapper_class': tab == 'receive',
       'import_wrapper_class': tab == 'import',
-      'min-size': !$q.platform.is.mobile
+      'min-size': !$q.platform.is.mobile,
+      'investments' : tab === 'investments'
     }"
     class="wrapper q-px-lg full-width assets_explorer_container"
     :style=" ($q.platform.is.mobile||$isbex) && $store.state.settings.lightMode !== 'true' ? 'background: #f2f2f2 !important' : '' "
@@ -211,7 +212,7 @@
                 ><q-icon name="trending_up" /> Investments</a
               >
             </li>
-            <li v-if="false">
+            <li class="read">
               <a
                 @click="tab = 'nfts'"
                 :class="{ active: tab == 'nfts' }"
@@ -221,9 +222,29 @@
             </li>
           </ul>
         </div>
+
         <div class="col-md-6 row justify-end q-pr-lg" v-if="!$route.params.accounts">
            <TokenByAccount @filterTokensByAccount="filterTokensByAccount" v-if="tab == 'assets' && selectedChain" :mode="'select'"     :chain="selectedChain.chain" class="justify-end q-mr-md" />
-           <q-input
+              <div class="see-text col flex justify-end" v-if="tab == 'assets'">
+            <span class="flex flex-center">
+              <span class="text-body2 q-pr-sm">View</span>
+              <q-icon
+                name="table_rows"
+                @click="listViewMode = 'list'"
+                size="1.2rem"
+                :color="listViewMode == 'list' ? 'deep-purple-3' : 'grey'"
+                class="q-pr-xs"
+              />
+              <q-icon
+                name="dashboard_customize"
+                @click="listViewMode = 'card'"
+                size="1.2rem"
+                :color="listViewMode == 'card' ? 'deep-purple-3' : 'grey'"
+                class="q-pr-sm"
+              />
+            </span>
+          </div>
+          <q-input
             @input="tab = 'assets'"
             :dark="$store.state.settings.lightMode === 'true'"
             :class="{'bg-white': $store.state.settings.lightMode === 'false'}"
@@ -318,7 +339,7 @@
         />
       </div>
     </div>
-
+    <nfts-explorer v-show=" tab == 'nfts'"/>
     <div
       :class="{ 'chains q-pt-md': !$route.params.accounts }"
       v-if="
@@ -824,7 +845,7 @@
           <div
             class="col-md-3"
             v-show="
-              !allAssets || item.id == 'investments' || listViewMode == 'card'
+               item.id == 'investments' || listViewMode == 'card'
             "
             @click="showTokenPage(asset)"
             v-for="(asset, i) in filterTokens"
@@ -833,12 +854,13 @@
             <div class="main cursor-pointer">
               <div class="main-top">
                 <div class="mt-img">
-                  <img :src="asset.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"/>
+                  <img :src="asset.icon" :onerror="defaultToken(asset.chain)" />
                 </div>
                 <div>
                   <h6>
                     {{ asset.type.toUpperCase()
                     }} {{ asset.isStaked ? 'Staked' : ''}}
+
                     <svg
                       v-if="false"
                       class="q-ml-md"
@@ -929,24 +951,33 @@
                       </defs>
                     </svg>
                   </h6>
+
                 </div>
+
               </div>
-              <h2 class="q-my-none ellipsis">
+               <span
+                  v-if="asset.change24hPercentage"
+                  :class="'sr-txt absolute ' + asset.color"
+                  >{{ asset.color === "text-green-6" ? "↑" : "↓" }}
+                  {{ asset.change24hPercentage.substring(1) }}</span
+                >
+              <h2 class="q-my-none ellipsis" v-if="!asset.pending">
                 ${{ formatNumber(asset.usd, 2) }}
                 <!-- <span v-if="parseInt(asset.usd).toString().length <= 5" class="g-txt">.{{formatNumber(asset.usd,2).split('.')[1]}}</span> -->
                   <span
                   v-if="asset.notValuable"
                     class="no-value"
                   >No Value</span>
-                  <span
-                  v-if="asset.change24hPercentage"
-                  :class="'sr-txt absolute-top-right ' + asset.color"
-                  >{{ asset.color === "text-green-6" ? "↑" : "↓" }}
-                  {{ asset.change24hPercentage.substring(1) }}</span
-                >
-                <a href="javascript:void(0)">Trade</a>
-              </h2>
 
+                <a v-if="!readOnly" href="javascript:void(0)">Trade</a>
+              </h2>
+              <div v-if="asset.pending">
+              Fetching HEX stats...
+              <q-linear-progress indeterminate color="grey" class="q-mb-md q-mt-md" />
+              <q-linear-progress indeterminate color="grey" class="q-mb-md" />
+              <q-linear-progress indeterminate color="grey" class="q-mb-md" />
+</div>
+ <div v-else>
               <q-item-label
                 :class="{
                   'text-white': $store.state.settings.lightMode === 'true',
@@ -966,6 +997,7 @@
               </div>
               <div class="q-py-sm" v-if="asset.protocol">
                 <q-icon
+                  v-if="asset.protocolIcon"
                   class="q-pr-sm"
                   size="1.2rem"
                   :name="'img:' + asset.protocolIcon"
@@ -988,19 +1020,21 @@
                   asset.chainLabel.replace("Chain", "")
                 }}</span></q-item-label
               >
+              </div>
             </div>
           </div>
           <p v-if="!filterTokens.length">
             No assets found
           </p>
+
           <AssetBalancesTable
             @setAsset="showTokenPage"
             data-title="Asset balances"
             data-intro="Here you can see the asset balances"
-            :rowsPerPage="8"
-            v-if="allAssets && listViewMode == 'list'"
+            :rowsPerPage="7"
+            v-if="listViewMode == 'list' && tab == 'assets'"
             class="full-width"
-            :tableData="filterTokens(allAssets)"
+            :tableData="filterTokens"
           />
         </div>
       </q-scroll-area>
@@ -1117,10 +1151,12 @@ import AssetBalancesTable from '@/components/Verto/AssetBalancesTable'
 import configManager from '@/util/ConfigManager'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import EosWrapper from '@/util/EosWrapper'
+import Lib from '@/util/walletlib'
 // MOOBILE TAB UI
 import TabAssetsExplorer from '../MobileUI/TabAssetsExplorer.vue'
 
 import { QScrollArea } from 'quasar'
+import NftsExplorer from './NftsExplorer.vue'
 const eos = new EosWrapper()
 Vue.component(VueQrcode.name, VueQrcode)
 export default {
@@ -1134,9 +1170,10 @@ export default {
     ShowKeys,
     TabAssetsExplorer,
     NewAccounts,
-    QScrollArea
+    QScrollArea,
+    NftsExplorer
   },
-  props: ['rowsPerPage'],
+  props: ['rowsPerPage', 'settings'],
   data () {
     return {
       createPopup: {
@@ -1152,6 +1189,7 @@ export default {
       uniqueKey: 1235878,
       alertSecurity: false,
       showAllChains: false,
+      readOnly: false,
       keys: {
         chain: null,
         field: '',
@@ -1163,22 +1201,22 @@ export default {
         {
           label: 'Uniswap V2',
           value: 'Uniswap V2',
-          icon: 'UNI-icon.svg'
+          icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Uniswap_Logo.svg/1026px-Uniswap_Logo.svg.png'
         },
         {
           label: 'Balancer',
           value: 'Balancer-labs',
-          icon: 'BAL-icon.svg'
+          icon: 'https://thumbs.dreamstime.com/b/balancer-bal-token-symbol-cryptocurrency-logo-coin-icon-isolated-white-background-vector-illustration-219784418.jpg'
         },
         {
           label: 'yEarn',
           value: 'yEarn',
-          icon: 'YFI-icon.svg'
+          icon: 'https://cryptologos.cc/logos/yearn-finance-yfi-logo.png'
         },
         {
           label: 'Curve',
           value: 'Curve',
-          icon: 'Curve-icon.svg'
+          icon: 'https://crypto-monedas.com.mx/wp-content/uploads/2021/04/CRV.png'
         }
       ],
       assetsOptions: [
@@ -1282,7 +1320,12 @@ export default {
       allChains: false
     }
   },
-  created () {
+  async created () {
+    if (this.settings) {
+      for (let i in this.settings) {
+        this[i] = this.settings[i]
+      }
+    }
     this.$store.state.settings.defaultChainData = false
     this.getWindowWidth()
 
@@ -1301,11 +1344,13 @@ export default {
       if (chain.isEvm || chain.chain === 'eos') { this.chainAction(chain) }
     }
     this.initTable()
-    this.$store.state.wallets.tokens
-      .filter((o) => o.chain === 'eth' && o.type === 'eth')
-      .forEach((w) => {
-        this.getInvestments(w)
-      })
+    setTimeout(() => {
+      this.$store.state.wallets.tokens
+        .filter((o) => o.chain === 'eth' && o.type === 'eth')
+        .forEach((w) => {
+          this.getInvestments(w)
+        })
+    }, 2000)
     let eosWallets = this.$store.state.wallets.tokens
       .filter((o) => o.chain === 'eos' && o.type === 'eos')
       .map((o) => o.name)
@@ -1338,10 +1383,18 @@ export default {
           this.tab = 'receive'
         } else if (
           !this.$route.params.accounts &&
-          !['assets', 'chains', 'investments'].includes(this.tab)
+          !['assets', 'chains', 'investments', 'nfts'].includes(this.tab)
         ) {
           if (!this.$store.state.investment.defaultAccount) { this.tab = 'chains' }
         }
+      }
+    },
+    'allInvestments': {
+      deep: true,
+      handler () {
+        let total = this.allInvestments.map(v => (isNaN(v.usd) ? 0 : +v.usd))
+          .reduce((a, b) => a + b, 0)
+        this.$store.commit('investment/setInvestmentTotal', total)
       }
     },
     tab () {
@@ -1350,6 +1403,7 @@ export default {
       } else if (this.tab === 'investments') {
         this.getVTXStakingInvestment()
       }
+      this.updateTotals()
     },
     '$store.state.investment.defaultAccount': function (newVal) {
       if (newVal) {
@@ -1359,6 +1413,7 @@ export default {
     '$store.state.investment.investments': function (investments) {
       this.getInvestedTokens(investments)
     },
+
     '$store.state.investment.allEosWalletsInvestments': function (investments) {
       this.getInvestedEosTokens(investments)
     },
@@ -1372,13 +1427,30 @@ export default {
   },
   computed: {
     allInvestments () {
-      return Object.keys(this.assetsOptions[1].data).reduce(
+      let all = []
+
+      Object.keys(this.assetsOptions[1].data).forEach(chain => {
+        all = all.concat(this.assetsOptions[1].data[chain].filter((o) =>
+          (this.$store.state.investment.defaultAccount &&
+                 this.$q.platform.is.mobile) ? (chain === 'eos' &&
+                        o.owner.toLowerCase() ===
+                          this.$store.state.investment.defaultAccount.name.toLowerCase()) ||
+                      (chain === 'eth' &&
+                        o.owner.toLowerCase() === this.$store.state.investment.defaultAccount.key.toLowerCase()) : true))
+      })
+      return all.sort(
+        (a, b) =>
+          (isNaN(parseFloat(b.usd)) ? 0 : parseFloat(b.usd)) -
+                (isNaN(parseFloat(a.usd)) ? 0 : parseFloat(a.usd))
+      )
+      /* .reduce(
         (all, chain) =>
+
           this.assetsOptions[1].data[chain].length
             ? all.concat(
               this.assetsOptions[1].data[chain].filter((o) =>
-                this.$store.state.investment.defaultAccount &&
-                 this.$q.platform.is.mobile ? (chain === 'eos' &&
+                (this.$store.state.investment.defaultAccount &&
+                 this.$q.platform.is.mobile) ? (chain === 'eos' &&
                         o.owner.toLowerCase() ===
                           this.$store.state.investment.defaultAccount.name.toLowerCase()) ||
                       (chain === 'eth' &&
@@ -1388,7 +1460,7 @@ export default {
             )
             : [],
         []
-      )
+      ) */
     },
     filterTokens () {
       let tokens =
@@ -1414,11 +1486,87 @@ export default {
     }
     setTimeout(() => {
       this.initTable()
-      // this.getVTXStakingInvestment()
+      this.getVTXStakingInvestment()
     }, 1000)
   },
   methods: {
+    updateTotals () {
+      if (this.tab === 'assets' && !this.selectedChain) {
+        this.$store.state.wallets.customTotal.usd = this.$store.state.wallets.portfolioTotal
+        this.$store.state.wallets.customTotal.show = true
+        this.$store.state.wallets.customTotal.label = 'Total assets'
+      } else if (this.tab === 'investments') {
+        this.$store.state.wallets.customTotal.usd = this.$store.state.investment.investmentTotal
+        this.$store.state.wallets.customTotal.show = true
+        this.$store.state.wallets.customTotal.label = 'Total investments'
+      }
+    },
+    addPendingHexFetch () {
+      let a = {
+        usd: 0,
+        type: 'hex',
+        chain: 'eth',
+        poolsCount: false,
+        poolName: 'Staked',
+        pending: true,
+        isStaked: true,
+        amount: 0,
+        icon: 'https://ethplorer.io/images/HEX2b591e99.png'
+      }
+
+      let index = this.assetsOptions[1].data.eth.findIndex(o => o.isStaked && o.type === 'hex')
+
+      if (index >= 0) {
+        this.assetsOptions[1].data.eth[index] = a
+      } else {
+        this.assetsOptions[1].data.eth.push(a)
+      }
+
+      this.$set(this, 'assetsOptions', this.assetsOptions)
+    },
+    async  getHexStakes () {
+      let stakedAmounts = 0
+      this.addPendingHexFetch()
+      let ethChain = this.setChains().find(a => a.chain === 'eth')
+
+      if (!ethChain || !ethChain.accounts) return
+      ethChain.accounts.forEach(async (f) => {
+        stakedAmounts = await Lib.getHexStake(f.key)
+
+        if (stakedAmounts) {
+          let hexPrice = (await this.$axios.get(process.env[this.$store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=hex&vs_currencies=usd')).data['hex'].usd
+          let a = {
+            usd: hexPrice * stakedAmounts,
+            rateUsd: hexPrice,
+            type: 'hex',
+            chain: 'eth',
+            poolsCount: false,
+            pending: false,
+            owner: f.name,
+            poolName: 'Staked',
+            isStaked: true,
+            amount: stakedAmounts,
+            icon: 'https://ethplorer.io/images/HEX2b591e99.png'
+          }
+          let index = this.assetsOptions[1].data.eth.findIndex(o => o.isStaked && o.type === 'hex')
+
+          if (index >= 0) {
+            this.assetsOptions[1].data.eth.splice(index, 1)
+            this.assetsOptions[1].data.eth.push(a)
+          } else {
+            this.assetsOptions[1].data.eth.push(a)
+          }
+
+          this.$set(this, 'assetsOptions', this.assetsOptions)
+          this.updateTotals()
+        }
+
+        this.uniqueKey++
+      })
+    },
     getVTXStakingInvestment () {
+      this.getHexStakes()
+
       let stakedAmounts = 0
 
       let eosChain = this.setChains().find(a => a.chain === 'eos')
@@ -1462,7 +1610,6 @@ export default {
       this.uniqueKey++
     },
     async verifyPassword () {
-      console.log('verifyPassword')
       this.passHasError = false
       if (!this.password) {
         this.passHasError = true
@@ -1530,7 +1677,6 @@ export default {
             self.selectedChain = chain
             self.initTable(chain.chain)
             self.tab = 'assets'
-            console.log('seting tab ass')
           } else {
             self.showTokenPage(chain, self.assetsOptions[0].data)
           }
@@ -1557,14 +1703,15 @@ export default {
       }
     },
     showTokenPage (asset) {
+      if (this.readOnly) return
       if (this.tab === 'investments' && asset.type === 'vtx' && asset.isStaked) {
         this.$router.push({
           path: '/verto/stake/eos/vtx'
         })
       } else {
         this.$router.push({
-          name: this.getPageName('token'),
-          path: '/verto/token/' + asset.chain + '/' + asset.type,
+          name: 'single-token-page',
+          // path: '/verto/token/' + asset.chain + '/' + asset.type,
           params: {
             asset: asset,
             assets: this.assetsOptions[0].data
@@ -1594,8 +1741,10 @@ export default {
         let tkData = this.$store.state.tokens.walletTokensData.find(
           (a) => a.symbol.toLowerCase() === t['symbol' + index].toLowerCase()
         )
+        let total = tkData ? tkData.current_price * parseFloat(t['count' + index]) : 0
+
         return {
-          usd: tkData ? tkData.current_price * t['count' + index] : '',
+          usd: total,
           rateUsd: tkData ? tkData.current_price : '',
           type: t['symbol' + index].toLowerCase(),
           chain: 'eos',
@@ -1603,25 +1752,29 @@ export default {
           owner: t.owner,
           poolName: t.symbol0 + ' / ' + t.symbol1,
           amount: t['count' + index],
+          contract: t['contract' + index],
           icon:
-            'https://defibox.oss-accelerate.aliyuncs.com/eos/' +
+            'https://defibox.s3.ap-northeast-1.amazonaws.com/eos/' +
             t['contract' + index] +
             '-' +
             t['symbol' + index].toLowerCase() +
             '.png',
           protocol: 'Defibox',
-          protocolIcon: 'https://defibox.oss-accelerate.aliyuncs.com/eos/token.defi-box.png'
+          protocolIcon: 'https://defibox.s3.ap-northeast-1.amazonaws.com/eos/token.defi-box.png'
+
         }
       }
       investments.forEach((item) => {
         let indexes = [0, 1]
         indexes.forEach((i) => {
           let index = assets.findIndex(
-            (t) => t.type === item['symbol' + i].toLowerCase()
+            (t) => t.type === item['symbol' + i].toLowerCase() && item['contract' + i] === t.contract
           )
+
           if (index > -1) {
             assets[index].poolsCount += 1
             assets[index].amount += item['count' + i]
+            assets[index].usd += assets[index].rateUsd * assets[index].amount
             return
           }
           assets.push(setValue(item, i))
@@ -1665,11 +1818,9 @@ export default {
             owner: t.address,
             poolsCount: 1,
             amount: a.balance,
-            icon: 'https://zapper.fi/images/' + a.symbol + '-icon.png',
+            icon: 'https://token.enzyme.finance/' + a.address,
             protocol: protocolData ? protocolData.label : null,
-            protocolIcon: protocolData
-              ? 'https://zapper.fi/images/' + protocolData.icon
-              : null
+            protocolIcon: protocolData ? protocolData.icon : 'https://etherscan.io/images/main/empty-token.png'
           }
           assets.push(data)
         })
@@ -1685,6 +1836,7 @@ export default {
           let account = {
             value: wallet.key
           }
+
           account.platform = 'uniswap-v2'
           self.$store.dispatch('investment/getInvestments', account)
           account.platform = 'uniswap'
@@ -2047,21 +2199,10 @@ export default {
   margin-top: 20px;
 }
 .wrapper {
-  height: 89.5vh;
+
   padding-bottom: 10px;
   // overflow: auto;
-  @media screen and (min-height: 700px) {
-    height: 91.5vh;
-  }
-  @media screen and (min-height: 760px) {
-    height: 91.5vh;
-  }
-  @media screen and (min-height: 800px) {
-    height: 91.5vh;
-  }
-  @media screen and (min-height: 870px) {
-    height: 91.5vh;
-  }
+
 }
 .wrapper /deep/ .q-scrollarea.desktop-size {
   // height: 81.5vh !important;
@@ -2244,7 +2385,8 @@ export default {
   font-weight: 500;
   letter-spacing: -0.6px;
   font-family: "Roboto";
-  margin-top: -40px;
+    margin-top: -40px;
+    margin-left: 160px;
 }
 
 .main .sg-txt {
@@ -2373,7 +2515,7 @@ export default {
     color: rgb(240, 240, 240);
   }
   .wrapper {
-    background-color: #ffffff;
+   // background-color: #ffffff;
     // border: 1px solid #627797;
     /deep/ .q-dark {
       background-color: #04111f !important;
@@ -2547,4 +2689,7 @@ ul.tabs li a.active {
     font-size: 14px;
     color: red !important
  }
+ .investments .col-md-3 .main {
+    height: 219px;
+}
 </style>
