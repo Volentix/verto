@@ -67,7 +67,7 @@
               Select chain to copy private keys
             </div>
             <q-card-section class="q-pa-none">
-              <ChainItemList :chains="chains" :tab.sync="tabIndex" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions'  :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :getImportLink="getImportLink"/>
+              <ChainItemList :chains="chains" :tab.sync="tabIndex" :defaultToken="defaultToken" :chainAction='chainAction' :formatNumber='formatNumber' :showQr='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions'  :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains='showAllChains' :showTokenPage="showTokenPage" :showAllChainData="showAllChainData" :tokenSearchVal="tokenSearchVal" :getImportLink="getImportLink"/>
             </q-card-section>
         </q-card>
         </q-dialog>
@@ -79,7 +79,7 @@ import ChainItemList from './ChainItemList.vue'
 
 export default {
   name: 'AssesDialogMobile',
-  props: ['dialog', 'chains', 'updateTab', 'tab', 'chainAction', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'showAllChainData', 'tokenSearchVal', 'showPrivateKeys', 'getImportLink'],
+  props: ['dialog', 'chains', 'defaultToken', 'updateTab', 'tab', 'chainAction', 'formatNumber', 'showQr', 'getKeyFormat', 'nFormatter2', 'assetsOptions', 'allAssets', 'listViewMode', 'filterTokens', 'getChains', 'allChains', 'showAllChains', 'showTokenPage', 'showAllChainData', 'tokenSearchVal', 'showPrivateKeys', 'getImportLink'],
   components: { ChainItemList },
   data () {
     return {

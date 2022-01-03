@@ -281,6 +281,11 @@ export default {
 
       return w
     },
+    getChainIcon (chain) {
+      let chainsData = HD.getVertoChains()
+      let c = chainsData.find(p => p.chain === chain)
+      return c ? c.icon : 'statics/empty-token.png'
+    },
     setChains () {
       /*
         Hierarchy chains[]->accounts[]->tokenList[]
@@ -305,7 +310,7 @@ export default {
            ....,
         ]
       */
-
+      let chainsData = HD.getVertoChains()
       let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || v.type === 'verto' || !['eos', 'eth'].includes(v.chain)) && a.findIndex(t => (t.chain === v.chain)) === i)))
         .map(o => {
           let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
@@ -317,6 +322,8 @@ export default {
             q.color = this.getRandomColor()
             q.value = o.chain === 'eos' ? q.name : q.key
             q.label = o.chain === 'eos' ? q.name : q.key
+            let c = chainsData.find(p => p.chain === q.chain)
+            q.icon = c ? c.icon : q.icon
             return q
           })
           o.count = o.accounts.length

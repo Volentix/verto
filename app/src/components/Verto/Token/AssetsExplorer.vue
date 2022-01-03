@@ -1129,7 +1129,7 @@
   <div> </div>
   <!-- MOBILE SECTION STARTED -->
   <div   v-if="$q.platform.is.mobile||$isbex">
-    <TabAssetsExplorer :key="uniqueKey" ref="tabAssetExp" :chains="chains" :tab.sync="tab" :chainAction='chainAction' :formatNumber='formatNumber' :showQr.sync='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage='showTokenPage' :initTable="initTable" :selectedChain.sync="selectedChain" :keys="keys" :showPrivateKeys="showPrivateKeys" :alertSecurity.sync="alertSecurity" :tokenSearchVal="tokenSearchVal" :getImportLink="getImportLink"/>
+    <TabAssetsExplorer :defaultToken="defaultToken" :key="uniqueKey" ref="tabAssetExp" :chains="chains" :tab.sync="tab" :chainAction='chainAction' :formatNumber='formatNumber' :showQr.sync='showQr' :getKeyFormat='getKeyFormat' :nFormatter2='nFormatter2' :assetsOptions='assetsOptions' :allAssets='allAssets' :listViewMode='listViewMode' :filterTokens='filterTokens' :getChains='getChains' :allChains='allChains' :showAllChains.sync='showAllChains' :showTokenPage='showTokenPage' :initTable="initTable" :selectedChain.sync="selectedChain" :keys="keys" :showPrivateKeys="showPrivateKeys" :alertSecurity.sync="alertSecurity" :tokenSearchVal="tokenSearchVal" :getImportLink="getImportLink"/>
   </div>
   <!-- MOBILE SECTION END -->
 
@@ -1432,11 +1432,11 @@ export default {
       Object.keys(this.assetsOptions[1].data).forEach(chain => {
         all = all.concat(this.assetsOptions[1].data[chain].filter((o) =>
           (this.$store.state.investment.defaultAccount &&
-                 this.$q.platform.is.mobile) ? (chain === 'eos' &&
+                 this.$q.platform.is.mobile) ? (chain === 'eos' && this.$store.state.investment.defaultAccount.chain === 'eos' &&
                         o.owner.toLowerCase() ===
                           this.$store.state.investment.defaultAccount.name.toLowerCase()) ||
                       (chain === 'eth' &&
-                        o.owner.toLowerCase() === this.$store.state.investment.defaultAccount.key.toLowerCase()) : true))
+                        o.owner && o.owner.toLowerCase() === this.$store.state.investment.defaultAccount.key.toLowerCase() && this.$store.state.investment.defaultAccount.chain === 'eth') : true))
       })
       return all.sort(
         (a, b) =>
@@ -1542,7 +1542,7 @@ export default {
             chain: 'eth',
             poolsCount: false,
             pending: false,
-            owner: f.name,
+            owner: f.key,
             poolName: 'Staked',
             isStaked: true,
             amount: stakedAmounts,
@@ -1809,13 +1809,14 @@ export default {
             assets[index].amount += a.balance
             return
           }
+
           let data = {
             usd: a.balanceUSD,
             rateUsd: a.price,
             type: a.symbol.toLowerCase(),
             chain: 'eth',
             poolName: t.label,
-            owner: t.address,
+            owner: t.owner,
             poolsCount: 1,
             amount: a.balance,
             icon: 'https://token.enzyme.finance/' + a.address,

@@ -452,6 +452,7 @@ export default {
   },
   created () {
     this.$store.dispatch('tokens/getTokenList')
+    this.$store.dispatch('settings/getSettings')
     if (this.$isbex) {
       this.$q.platform.is.mobile = true
     }

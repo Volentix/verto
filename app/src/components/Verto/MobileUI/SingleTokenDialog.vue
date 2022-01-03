@@ -36,12 +36,12 @@
                   </q-item-section>
               </q-item>
               <div>
-                  <div :class="$store.state.settings.lightMode === 'true' ? 'dark_bg_transparent':'bg-grey-2'" class="rounded q-pl-md q-pr-md q-pb-xl q-mb-md" @mouseleave="$store.commit('tokens/updateState', { key: 'historicalPrice', value: null })">
+                  <div v-if="chartAvailable"  :class="$store.state.settings.lightMode === 'true' ? 'dark_bg_transparent':'bg-grey-2'" class="rounded q-pl-md q-pr-md q-pb-xl q-mb-md" @mouseleave="$store.commit('tokens/updateState', { key: 'historicalPrice', value: null })">
                       <!--  <q-spinner-dots color="deep-purple-12" v-if="!chartData" /> -->
                       <span class="text-caption" v-if="!chartData && chartAvailable">
                         Loading historical price (1 month period)
                       </span>
-                      <span class="text-caption" v-else-if="!chartAvailable">
+                      <span class="text-caption" v-else-if="!chartAvailable && false">
                         Historical price not available for this token
                       </span>
                       <q-linear-progress
@@ -77,7 +77,7 @@
                   </div>
               </div>
               <!-- EQUITY SECTION  START-->
-              <q-item v-if="$store.state.investment.defaultAccount" style="margin-left: -14px;">
+              <q-item :class="{'q-mt-lg' : !chartAvailable}" v-if="$store.state.investment.defaultAccount" style="margin-left: -14px;">
                   <q-item-section>
                       <q-item-label class="text-h5">Equity</q-item-label>
                       <q-item-label caption>{{ formatNumber(asset.percentage, 2) }}% of Portfolio</q-item-label>
@@ -475,8 +475,9 @@ import transactEOS from '../transactEOS.vue'
 import SendComponent from '../../../pages/Verto/Send.vue'
 import AccountSelector from '../Exchange/AccountSelector.vue'
 import PriceChart from '../Token/PriceChart.vue'
-
+import Formatter from '@/mixins/Formatter'
 export default {
+  mixins: [Formatter],
   name: 'TokenDialogMobile',
   props: ['marketData', 'asset', 'formatNumber', 'chartData', 'chartAvailable', 'intervalHistory', 'getHistoriclPrice', 'nFormatter2', 'tab', 'success', 'error', 'exchangeToken', 'setAsset', 'fromPreview', 'depositQuantity', 'assetBalance', 'destinationCoin', 'destinationCoinOptions', 'sendTo', 'memo', 'isTxValid', 'triggerAction', 'goToExchange', 'spinnerVisible', 'filterDestinationCoin', 'setSuccessData', 'getTxData'],
   components: { PriceChart, ImportView, SendComponent, AccountSelector, transactEOS, TokenByAccount },

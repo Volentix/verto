@@ -219,6 +219,7 @@
         :label="formatLabel(accountOption.label)"
         @click="dialog = true"
       />
+
       <q-item
         v-if="!accountOption && allSelector"
         class="text-left full-width account_selector_top"
@@ -257,8 +258,9 @@
         'bg-grey-1 text-black': $store.state.settings.lightMode !== 'true',
         'bg-blue-verto text-white': $store.state.settings.lightMode === 'true'
       }">
+
         <q-item-section @click="dialog = true" avatar>
-          <q-img size="lg" :src="`${accountOption.icon}`" />
+          <q-img size="lg" :src="`${getChainIcon(accountOption.chain)}`" />
         </q-item-section>
 
         <q-item-section>

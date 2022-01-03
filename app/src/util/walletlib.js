@@ -115,7 +115,7 @@ class Lib {
     const Web3 = require('web3')
     const web3 = new Web3(this.getEvmData('tpls').provider)
     let hex = new web3.eth.Contract(compiledContractABI, add)
-    console.log(hex.methods, 'hex.methods')
+
     let data = await hex.methods.getCreator().call()
     console.log(data, 'data')
   }
@@ -224,7 +224,7 @@ class Lib {
     */
   }
   getDefaultToken (chain) {
-    let defaultImg = '/statics/empty-token.png'
+    let defaultImg = 'statics/empty-token.png'
     let values = {
       eos: 'https://defibox.s3.ap-northeast-1.amazonaws.com/defibox-eos-web/static/img/eos.png',
       eth: 'https://etherscan.io/images/main/empty-token.png'

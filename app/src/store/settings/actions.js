@@ -4,6 +4,7 @@ export function someAction (context) {
 */
 import { Notify } from 'quasar'
 import axios from 'axios'
+import initWallet from '@/util/Wallets2Tokens'
 import {
   version
 } from '../../../package.json'
@@ -50,6 +51,8 @@ export const getSettings = ({ commit }, data) => {
         })
       }
     }
+
     commit('setGlobalSettings', settings)
+    initWallet()
   })
 }
