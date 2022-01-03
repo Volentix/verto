@@ -44,99 +44,101 @@
                             </div>
                             <!-- CHAIN SECTION END  -->
                             <!-- RECEIVE / PRIVATE KEY SECTION  -->
-                            <div v-if="tab !== 'import' &&(!$route.params.accounts || tab == 'receive' || tab == 'privateKeys')" class="q-pt-md4 relative" :class="{'': checkRecvPrivateKeyAccess(chain)}">
-                              <q-btn
-                                  v-if="checkRecvPrivateKeyAccess(chain)"
-                                  @click="$set(showQr, chain.chain, true)"
-                                  unelevated
-                                  color="grey-2"
-                                  text-color="black"
-                                  no-caps
-                                  size="sm"
-                                  dense
-                                  class="full-width"
-                                  icon-right="img:https://image.flaticon.com/icons/png/512/107/107072.png"
-                              />
-                            </div>
-                            <div v-if="showQr[chain.chain]" class="qr-code">
-                                <qrcode
-                                :key="tab"
-                                dark
-                                :value="chain[tab == 'privateKeys' ? 'privateKey' : 'key']"
-                                :options="{ size: 100 }"
-                                ></qrcode>
-                            </div>
-                            <div :class="{ 'text-body1 copy-key text-right' : !showQr[chain.chain], 'text-body2': showQr[chain.chain], }"
-                                v-if=" tab == 'receive' && chain.accounts && chain.accounts.length == 1" class="address_truncut">
-                                <span @click="chainAction(chain)" v-if="!showQr[chain.chain]" class="">
-                                    <span class="">{{ chain.chain == "eos" ? chain.name : getKeyFormat(chain.key) }}</span>
-                                    <q-icon name="o_file_copy" size="xs" color="grey-7" class="q-ml-sm" />
-                                </span>
-                                <q-btn v-else rounded class="cursor-pointer_" @click="showQr[chain.chain] = false">
-                                  <q-icon name="visibility_off" /> Hide QR Code
-                                </q-btn>
-                            </div>
-                            <div
-                                :class="{
-                                    'text-body1 copy-key': !showQr[chain.chain],
-                                    'text-body2': showQr[chain.chain],
-                                }"
-                                v-else-if="tab == 'privateKeys'"
-                            >
-                                <div
-                                    @click="chainAction(chain)"
-                                    v-if="
-                                    chain.accounts &&
-                                    chain.accounts.length == 1 &&
-                                    chain.accounts[0].privateKey &&
-                                    !showQr[chain.chain]
-                                    "
-                                >
-                                    {{ getKeyFormat(chain.privateKey) }}
-                                    <q-icon name="o_file_copy" />
-                                </div>
-                                <div
-                                    @click="chainAction(chain)"
-                                    v-else-if="
-                                    tab == 'privateKeys' &&
-                                    chain.accounts &&
-                                    (chain.accounts.length > 1 || !chain.accounts[0].privateKey)
-                                    "
-                                >
-                                    {{ chain.accounts.length }} private keys
-                                    <q-icon name="arrow_forward_ios" />
-                                </div>
-                                <span
-                                    class="cursor-pointer"
-                                    @click="showQr[chain.chain] = false"
-                                    v-else-if="
-                                    tab == 'privateKeys' &&
-                                    chain.accounts &&
-                                    chain.accounts.length == 1 &&
-                                    showQr[chain.chain]
-                                    "
-                                    ><q-icon name="visibility_off" /> Hide QR Code
-                                </span>
-                            </div>
-                            <div
-                                class="text-body1 copy-key"
-                                v-else-if=" tab == 'receive' && chain.accounts && chain.accounts.length > 1 ">
-                                <span class="nbr_total_account">{{ chain.accounts.length }} accounts</span>
-                                <q-icon name="arrow_forward_ios" />
-                            </div>
-                            <div class="text-caption" v-else-if="tab == 'import' || tab == 'create'">
-                                <span class="text-capitalize"></span>
-                                <q-icon name="arrow_right_alt" />
-                            </div>
-                            <span v-else-if="tab == 'chains' && chain.chain == 'eos' && chain.type == 'verto' ">
-                                <q-btn label="Get EOS account" outline rounded />
-                            </span>
-                            <div
-                                @click="$router.push(getImportLink('eos'))"
-                                class="text-caption q-pt-md"
-                                v-else-if="chain.type == 'verto'"
-                                >
-                                Setup account <q-icon name="arrow_right_alt" />
+                            <div class="flex reverse justify-end items-center">
+                              <div v-if="tab !== 'import' &&(!$route.params.accounts || tab == 'receive' || tab == 'privateKeys')" class="q-pt-md4 relative" :class="{'': checkRecvPrivateKeyAccess(chain)}">
+                                <q-btn
+                                    v-if="checkRecvPrivateKeyAccess(chain)"
+                                    @click="$set(showQr, chain.chain, true)"
+                                    unelevated
+                                    color="grey-2"
+                                    text-color="black"
+                                    no-caps
+                                    size="sm"
+                                    dense
+                                    class="full-width"
+                                    icon-right="img:https://image.flaticon.com/icons/png/512/107/107072.png"
+                                />
+                              </div>
+                              <div v-if="showQr[chain.chain]" class="qr-code">
+                                  <qrcode
+                                  :key="tab"
+                                  dark
+                                  :value="chain[tab == 'privateKeys' ? 'privateKey' : 'key']"
+                                  :options="{ size: 100 }"
+                                  ></qrcode>
+                              </div>
+                              <div :class="{ 'text-body1 copy-key text-right' : !showQr[chain.chain], 'text-body2': showQr[chain.chain], }"
+                                  v-if=" tab == 'receive' && chain.accounts && chain.accounts.length == 1" class="address_truncut">
+                                  <span @click="chainAction(chain)" v-if="!showQr[chain.chain]" class="">
+                                      <span class="">{{ chain.chain == "eos" ? chain.name : getKeyFormat(chain.key) }}</span>
+                                      <q-icon name="o_file_copy" size="xs" color="grey-7" class="q-ml-sm" />
+                                  </span>
+                                  <q-btn v-else no-caps flat class="q-pa-none cursor-pointer_" @click="showQr[chain.chain] = false">
+                                    <q-icon name="visibility_off" class="q-mr-sm" /> Hide QR Code
+                                  </q-btn>
+                              </div>
+                              <div
+                                  :class="{
+                                      'text-body1 copy-key': !showQr[chain.chain],
+                                      'text-body2': showQr[chain.chain],
+                                  }"
+                                  v-else-if="tab == 'privateKeys'"
+                              >
+                                  <div
+                                      @click="chainAction(chain)"
+                                      v-if="
+                                      chain.accounts &&
+                                      chain.accounts.length == 1 &&
+                                      chain.accounts[0].privateKey &&
+                                      !showQr[chain.chain]
+                                      "
+                                  >
+                                      {{ getKeyFormat(chain.privateKey) }}
+                                      <q-icon name="o_file_copy" />
+                                  </div>
+                                  <div
+                                      @click="chainAction(chain)"
+                                      v-else-if="
+                                      tab == 'privateKeys' &&
+                                      chain.accounts &&
+                                      (chain.accounts.length > 1 || !chain.accounts[0].privateKey)
+                                      "
+                                  >
+                                      {{ chain.accounts.length }} private keys
+                                      <q-icon name="arrow_forward_ios" />
+                                  </div>
+                                  <span
+                                      class="cursor-pointer"
+                                      @click="showQr[chain.chain] = false"
+                                      v-else-if="
+                                      tab == 'privateKeys' &&
+                                      chain.accounts &&
+                                      chain.accounts.length == 1 &&
+                                      showQr[chain.chain]
+                                      "
+                                      ><q-icon name="visibility_off" /> Hide QR Code
+                                  </span>
+                              </div>
+                              <div
+                                  class="text-body1 copy-key"
+                                  v-else-if=" tab == 'receive' && chain.accounts && chain.accounts.length > 1 ">
+                                  <span class="nbr_total_account">{{ chain.accounts.length }} accounts</span>
+                                  <q-icon name="arrow_forward_ios" />
+                              </div>
+                              <div class="text-caption" v-else-if="tab == 'import' || tab == 'create'">
+                                  <span class="text-capitalize"></span>
+                                  <q-icon name="arrow_right_alt" />
+                              </div>
+                              <span v-else-if="tab == 'chains' && chain.chain == 'eos' && chain.type == 'verto' ">
+                                  <q-btn label="Get EOS account" outline rounded />
+                              </span>
+                              <div
+                                  @click="$router.push(getImportLink('eos'))"
+                                  class="text-caption"
+                                  v-else-if="chain.type == 'verto'"
+                                  >
+                                  Setup account <q-icon name="arrow_right_alt" />
+                              </div>
                             </div>
                             <!-- <div class="text-caption q-pt-md" v-else-if="!$route.params.accounts" >
                                 Select <q-icon name="arrow_right_alt" />
@@ -351,6 +353,9 @@ export default {
   align-items: center;
   // margin-right: -25px;
 }
+.reverse{
+  flex-direction: row-reverse;
+}
 .nbr_total_account{
   font-size: 12px;
   margin-left: 0px;
@@ -370,9 +375,14 @@ export default {
   position: relative;
 }
 .address_truncut{
-  position: absolute;
+  // position: absolute;
   font-size: 12px;
   right: 36%;
   text-align: center;
+}
+.qr-code{
+  border: 1px dashed #CCC;
+  margin-bottom: 5px;
+  margin-top: 5px;
 }
 </style>
