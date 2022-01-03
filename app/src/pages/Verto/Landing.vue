@@ -10,15 +10,22 @@
       <div class="video-page-wrapper q-pt-md q-pb-md">
         <div class="standard-content" style="padding-bottom: 0px">
           <h2 class="landing--title text-white">
-            <span class="text-white">Multi-chain wallet manager {{$q.platform.is.mobile ? 'yes' : 'no'}}</span>
+            <span class="text-white">Multi-chain wallet manager</span>
           </h2>
           <div class="standard-content--body full-width">
             <div class="standard-content--body__form">
-              <q-input dark ref="psswrd" v-model="password" @keyup.enter="login" @input="checkPassword" :error="passHasError" rounded outlined color="deep-purple-14" :type="isPwd ? 'password' : 'text'" label="Type your password" hint="*Minimum of 8 characters">
+            <q-form autocorrect="off"
+autocapitalize="off"
+autocomplete="off"
+spellcheck="false">  <q-input   autocorrect="off"
+autocapitalize="off"
+autocomplete="off"
+spellcheck="false" dark ref="psswrd" v-model="password" @keyup.enter="login" @input="checkPassword" :error="passHasError" rounded outlined color="deep-purple-14" :type="isPwd ? 'password' : 'text'" label="Type your password" hint="*Minimum of 8 characters">
                 <template v-slot:append>
                   <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
                 </template>
               </q-input>
+            </q-form>
             </div>
           </div>
           <div class="standard-content--footer full-width justify-end">
@@ -72,12 +79,17 @@
       <div class="standard-content-bex--body full-width">
         <div class="standard-content-bex--body__form">
           <label class="ver-label">Enter your password</label>
-          <q-input bg-color="white" ref="psswrd" v-model="password" @keyup.enter="login" error-message="Your password is wrong" @input="checkPassword" :error="passHasError"
+         <q-form autocorrect="off"
+              autocapitalize="off"
+              autocomplete="off"
+              spellcheck="false">
+ <q-input  bg-color="white" ref="psswrd" v-model="password" @keyup.enter="login" error-message="Your password is wrong" @input="checkPassword" :error="passHasError"
                    outlined :type="isPwd ? 'password' : 'text'">
             <template v-slot:append>
               <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd"/>
             </template>
           </q-input>
+          </q-form>
         </div>
       </div>
       <div class="standard-content-bex--footer full-width justify-end">

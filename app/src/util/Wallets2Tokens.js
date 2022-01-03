@@ -11,6 +11,8 @@ class Wallets2Tokens {
       walletName = null
       localStorage.removeItem('walletPublicDatav2')
     }
+    let watchAccounts = localStorage.getItem('watchAccounts')
+    watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
 
     let data = this.getWalletFromCache()
     let existingWallet = null
@@ -57,8 +59,7 @@ class Wallets2Tokens {
     const self = this
     self.eosUSD = 0
     this.getEosUSD()
-    let watchAccounts = localStorage.getItem('watchAccounts')
-    watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
+
     this.tableData = [...store.state.currentwallet.config.keys].concat(watchAccounts).filter(
       w => (!walletName || (w.name.toLowerCase() === walletName.toLowerCase() && !ethWallet)) || (ethWallet && w.key.toLowerCase() === ethWallet.key.toLowerCase())
     )
@@ -199,6 +200,9 @@ class Wallets2Tokens {
         if (!wallet.hasOwnProperty('type')) {
           wallet.type = 'verto'
         }
+        if (Lib.evms.find(f => f.chain === wallet.type) && wallet.type !== 'eth') {
+          wallet.type = 'eth'
+        }
 
         if (wallet.type === 'eos') {
           wallet.to = '/verto/wallets/eos/eos/' + wallet.name.toLowerCase()
@@ -271,7 +275,7 @@ class Wallets2Tokens {
       })
     }
     store.state.currentwallet.config.keys
-      .filter(w => (!walletName || (w.name.toLowerCase() === walletName.toLowerCase() && !ethWallet)) || (ethWallet && w.key.toLowerCase() === ethWallet.key.toLowerCase()))
+      .concat(watchAccounts).filter(w => (!walletName || (w.name.toLowerCase() === walletName.toLowerCase() && !ethWallet)) || (ethWallet && w.key.toLowerCase() === ethWallet.key.toLowerCase()))
       .filter(
         o =>
           store.state.settings.network === 'mainnet' &&
@@ -411,7 +415,7 @@ class Wallets2Tokens {
                               ? t.tokenInfo.image
                               : t.tokenInfo.image
                                 ? 'https://ethplorer.io' + t.tokenInfo.image
-                                : 'https://etherscan.io/images/main/empty-token.png'
+                                : Lib.getDefaultToken('eth')
 
                           let usd = t.tokenInfo.symbol ? Lib.findInExchangeList('eth', t.tokenInfo.symbol.toLowerCase(), t.tokenInfo.address) : false
                           let amount =
@@ -501,7 +505,7 @@ class Wallets2Tokens {
 
     axios
       .get(
-        process.env[store.state.settings.network].CACHE + 'https://scan.pulsechain.com/address/' + wallet.key + '/token-balances')
+        process.env[store.state.settings.network].CACHE + 'https://scan.v2.testnet.pulsechain.com/address/' + wallet.key + '/token-balances')
       .then(res => {
         var html = new DOMParser().parseFromString(res.data, 'text/html')
         let rawTokenData = html.querySelectorAll('.border-bottom')
@@ -534,7 +538,7 @@ class Wallets2Tokens {
       })
   }
   getTokenImage (chain, type) {
-    let image = 'https://etherscan.io/images/main/empty-token.png'
+    let image = Lib.getDefaultToken(chain)
 
     if (Lib.evms.find(o => o.chain === chain) && store.state.tokens.evmTokens[chain]) {
       let token = store.state.tokens.evmTokens[chain].find(o => o.symbol && type && o.symbol.toLowerCase() === type.toLowerCase())

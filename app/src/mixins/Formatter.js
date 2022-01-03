@@ -5,8 +5,14 @@ import { toSvg } from 'jdenticon'
 
 export default {
   methods: {
+    defaultToken (chain) {
+      return "this.src='" + Lib.getDefaultToken(chain) + "'"
+    },
     toAvatar (name) {
       return toSvg(name, 30)
+    },
+    clickBtn (id) {
+      document.getElementById(id).click()
     },
     isValidUrl (string) {
       let url
@@ -114,6 +120,17 @@ export default {
       return key ? key.substring(0, 4).toLowerCase() +
       '...' +
       key.substr(key.length - last).toLowerCase() : ''
+    },
+    redirectToLastRoute () {
+      const lastRoute = localStorage.getItem('prev_route') ? JSON.parse(localStorage.getItem('prev_route')) : null
+
+      if (lastRoute && this.$route.name !== lastRoute.name) {
+        this.$router.push({
+          name: lastRoute.name,
+          query: lastRoute.query,
+          params: lastRoute.params
+        })
+      }
     },
     getPageName (name) {
       let pages = {

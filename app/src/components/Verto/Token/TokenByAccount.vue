@@ -12,7 +12,7 @@
             <q-icon class="option--avatar" :name="`img:${scope.opt.icon}`" />
           </q-item-section>
           <q-item-section dark>
-            <q-item-label v-html="scope.opt.name" />
+            <q-item-label :class="{'text-white': $store.state.settings.lightMode === 'true'}" v-html="scope.opt.name" />
             <q-item-label caption class="ellipsis">{{ getKeyFormat(scope.opt.key) }}</q-item-label>
           </q-item-section>
         </q-item>

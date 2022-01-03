@@ -363,6 +363,7 @@ import EosRPC from '@/util/EosWrapper'
 import Formatter from '@/mixins/Formatter'
 import configManager from '@/util/ConfigManager'
 import Lib from '@/util/walletlib'
+import HD from '@/util/hdwallet'
 export default {
   name: 'TopMenu',
   mixins: [Formatter],
@@ -422,7 +423,7 @@ export default {
       (o) => o.value.toLowerCase() === this.$store.state.settings.network
     )
     // this.options = CrosschainDex.getAllCoins()
-    this.chains = this.setChains()
+    this.chains = HD.getVertoChains()
     window.localStorage.setItem(
       'skin',
       window.localStorage.getItem('skin') !== null

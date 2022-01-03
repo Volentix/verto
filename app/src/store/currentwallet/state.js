@@ -2,6 +2,7 @@
 export default {
   wallet: {},
   config: {},
+  user: null,
   params: {
     chainID: '',
     tokenID: '',

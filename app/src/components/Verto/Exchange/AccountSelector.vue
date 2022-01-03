@@ -455,7 +455,7 @@
 
                       :key="Math.random() + index"
                       v-for="(item, index) in tokChain.accounts"
-                      :class="{ selected: item.selected , 'bg-indigo-1': accountOption && accountOption.index == item.index}"
+                      :class="{ selected: item.selected , 'bg-blue-grey-5': accountOption && accountOption.index == item.index}"
                       clickable
                       :active="item.hidden"
                       active-class="bg-teal-1 text-grey-8"

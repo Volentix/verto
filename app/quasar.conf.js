@@ -133,7 +133,7 @@ module.exports = function (ctx) {
     build: {
       uglifyOptions: {
         keep_fnames: true,
-        compress: { drop_console: true }
+      //  compress: { drop_console: true }
       },
       scopeHoisting: true,
       vueRouterMode: 'history',
@@ -160,6 +160,7 @@ module.exports = function (ctx) {
           ...cfg.resolve.alias,
           '@': path.resolve(__dirname, './src')
         }
+        /*
         if (process.env.QMODE === 'bex' && cfg.mode === 'production') {
           //
           cfg.plugins.push(
@@ -189,7 +190,7 @@ module.exports = function (ctx) {
             // maxSize: 2000000
           }
         }
-
+         */
         cfg.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,

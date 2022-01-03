@@ -14,12 +14,12 @@
              <div class="text-h6 text-bold">
               {{marketData && marketData.tokenName ? marketData && marketData.tokenName:  asset.type.toUpperCase()}}
 
-                <q-btn-dropdown class="float-right q-pr-lg" dense flat color="primary" icon="more_horiz" label="Options">
+                <q-btn-dropdown  class="float-right q-pr-lg" dense flat  icon="more_horiz" label="Options">
       <q-list>
         <q-item clickable v-close-popup >
           <q-item-section>
-            <q-item-label @click="markAsNotValuable()" v-if="isValuable">Mark as not valuable</q-item-label>
-             <q-item-label @click="markAsValuable()" v-else>Mark as valuable</q-item-label>
+            <q-item-label @click="markAsNotValuable()" v-if="isValuable">Hide</q-item-label>
+             <q-item-label @click="markAsValuable()" v-else>Unhide</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -345,6 +345,7 @@
                <q-tab v-if="!$store.state.wallets.portfolioTotal" name="import" label="Import" />
                 <q-tab v-if="$store.state.wallets.portfolioTotal" name="send" label="Send" />
            <!--     <q-tab name="swap" v-if="asset.chain != 'eos'  && show1inch" label="Swap" />-->
+               <q-tab name="stake" v-if="asset.type == 'hex' && asset.chain == 'eth'" @click="$router.push('/verto/stake/eth/hex')"  label="Stake" />
                 <q-tab name="buy" v-if="$store.state.wallets.portfolioTotal" @click="exchangeToken({asset:asset, action: 'buy'})"  label="Buy" />
                 <q-tab v-if="$store.state.investment.defaultAccount && $store.state.investment.defaultAccount.key && $store.state.wallets.portfolioTotal" name="sell" @click="exchangeToken({asset:asset, action: 'sell'})" label="Sell" />
               </q-tabs>
@@ -630,7 +631,7 @@ import { QScrollArea } from 'quasar'
 import SignleTokenDialog from './MobileUI/SingleTokenDialog.vue'
 import initWallet from '@/util/Wallets2Tokens'
 // import Godex from './Exchange/Godex.vue'
-
+import Lib from '@/util/walletlib'
 export default {
   components: {
     TokenByAccount,
@@ -917,18 +918,7 @@ export default {
       let id = this.asset.coinGeckoId
       try {
         if (!id) {
-          let token = this.$store.state.tokens.list.find(
-            (t) =>
-              t.symbol.toLowerCase() === this.asset.type &&
-            ((!t.platforms.hasOwnProperty('eos') &&
-              !t.platforms.hasOwnProperty('ethereum')) ||
-              this.asset.chain ===
-                (t.platforms.hasOwnProperty('eos')
-                  ? 'eos'
-                  : this.asset.chain)))
-
-          id = token ? token.id : null
-          // console.log('token ', token)
+          id = Lib.getCoinGeckoId(this.asset)
         }
         if (id) {
           this.getMarketData(id)

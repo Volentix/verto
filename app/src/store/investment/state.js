@@ -3,6 +3,7 @@ export default function () {
     selectedPool: null,
     selectedEOSPool: null,
     pools: [],
+    fundData: null,
     zapperTokens: [],
     gasPrice: null,
     poolDataHistory: {},
@@ -21,6 +22,7 @@ export default function () {
     allEosWalletsInvestments: [],
     globalTokens: [],
     eosPools: [],
+    investmentTotal: 0,
     testnetEOSInvestments: []
   }
 }

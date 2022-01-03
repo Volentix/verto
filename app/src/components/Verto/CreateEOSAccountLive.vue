@@ -124,7 +124,7 @@
                                       v-html="currentToken.label"
                                     />
                                     <q-item-label caption>{{
-                                      currentToken.value.replace(/(.{7})..+/, '$1…')
+                                      currentToken.value
                                     }}</q-item-label>
                                   </q-item-section>
                                 </q-item>
@@ -137,7 +137,7 @@
                                   flat
                                   unelevated
                                   text-color="grey"
-                                  @click.stop
+                                  @click="copyToClipboard(currentToken.value)"
                                   icon="o_file_copy"
                                 />
                               </template>

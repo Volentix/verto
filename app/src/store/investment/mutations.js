@@ -6,6 +6,10 @@ export function someMutation (state) {
 export const setSelectedPool = (state, pool) => {
   state.selectedPool = pool
 }
+export const setInvestmentTotal = (state, total) => {
+  state.investmentTotal = total
+}
+
 export const setPools = (state, pools) => {
   state.pools = pools
 }

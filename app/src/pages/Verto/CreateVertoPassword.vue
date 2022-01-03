@@ -256,47 +256,131 @@ export default {
         keys: [
           {
             chain: 'eth',
-            key: '0x915f86d27e4E4A58E93E59459119fAaF610B5bE1',
-            name: 'ETH Wallet',
+            key: '0x4a02dEADD223E106185144181B0816549Edec862',
+            name: 'SIF Private Vault',
             type: 'eth'
-          },
-          {
-            chain: 'sol',
-            key: 'HekM1hBawXQu6wK6Ah1yw1YXXeMUDD2bfCHEzo25vnEB',
-            name: 'Solana',
-            type: 'sol'
-          },
-          {
-            chain: 'eth',
-            key: '0xe79cfa452632690d5c87029424530bb42769dbf3',
-            name: 'ETH Wallet 2',
-            type: 'eth'
-          },
-          {
-            chain: 'eth',
-            key: '0x4a02deadd223e106185144181b0816549edec862',
-            name: 'ETH Wallet 3',
-            type: 'eth'
-          },
-
-          {
-            chain: 'btc',
-            key: '15urYnyeJe3gwbGJ74wcX89Tz7ZtsFDVew',
-            name: 'BTC Wallet',
-            type: 'btc'
           },
           {
             chain: 'eos',
-            key: 'xxxx',
+            key: 'xxxxx',
             name: 'crosschainfx',
             type: 'eos'
+          }, {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'vtxisforhodl',
+            type: 'eos'
+          }, {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'staiderprm11',
+            type: 'eos'
+          }, {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'staiderx1m24',
+            type: 'eos'
+          }, {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'staiderx2m35',
+            type: 'eos'
+          }, {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'staiderx3m4o',
+            type: 'eos'
+          }, {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'master1xxxxx',
+            type: 'eos'
+          }, {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'master2xxxxx',
+            type: 'eos'
+          }, {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'master3xxxxx',
+            type: 'eos'
+          }, {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'master4xxxxx',
+            type: 'eos'
+          }, {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'master5xxxxx',
+            type: 'eos'
+          }, {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'imresistance',
+            type: 'eos'
+          }, {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'volentixp2pb',
+            type: 'eos'
           },
           {
             chain: 'eos',
-            key: 'xxxx2',
-            name: 'berthonythe2',
+            key: 'xxxxx',
+            name: 'cryptoninja1',
+            type: 'eos'
+          },
+          {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'vtxtothemoon',
+            type: 'eos'
+          },
+          {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'vtxnightnday',
+            type: 'eos'
+          },
+          {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'vdexchinavtx',
+            type: 'eos'
+          },
+          {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'vtxarmychina',
+            type: 'eos'
+          },
+          {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: '4tunadineros',
+            type: 'eos'
+          },
+          {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'ciaociaobell',
+            type: 'eos'
+          },
+          {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: '4theluvofcrp',
+            type: 'eos'
+          },
+          {
+            chain: 'eos',
+            key: 'xxxxx',
+            name: 'excellenceit',
             type: 'eos'
           }
+
         ]
       }
       store.state.settings.isDemo = true

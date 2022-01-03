@@ -32,13 +32,13 @@ export const getSettings = ({ commit }, data) => {
       settings = localStorage.getItem('globalSettings')
       if (settings) settings = JSON.parse(settings)
     } else {
-      if (version !== settings.vertoVersion && settings.vertoVersion && versionToInt('0.9.260.7') && versionToInt(settings.vertoVersion) > versionToInt(version)) {
+      if (process.env.QMODE !== 'bex' && version !== settings.vertoVersion && settings.vertoVersion && versionToInt('0.9.260.7') && versionToInt(settings.vertoVersion) > versionToInt(version)) {
         Notify.create({
           message: 'New Version available (v' + settings.vertoVersion + ')',
           color: 'black',
           position: 'top',
           // #SUJAN timeout: 360000,
-          timeout: 360,
+          timeout: 3600,
           avatar: 'https://verto.volentix.io/statics/icons/vtx-logo-1024x1024.png',
           actions: [
             { label: 'Refresh Page',

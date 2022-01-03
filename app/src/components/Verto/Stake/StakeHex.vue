@@ -274,8 +274,8 @@
                                     />
                                     <GasSelector
                                 ref="gas_global"
-                                :key="daysNumber+sendAmount"
-                                v-if="
+                                :key="daysNumber+sendAmount+uniqueKey"
+                                v-if="currentAccount &&
                                   txObj &&
                                   txObj.data
                                 "
@@ -738,6 +738,7 @@ export default {
       privateKey: {
         success: null
       },
+      uniqueKey: 0,
       transactionId: null,
       transactionError: '',
       spinnerVisible: false,
@@ -785,6 +786,8 @@ export default {
       var hearts = Math.round(this.sendAmount * (10 ** 8))
       let hexrefContract = new web3.eth.Contract(JSON.parse(abi), hexContractAddress)
       this.txObj.data = hexrefContract.methods.stakeStart(web3.utils.toHex(hearts.toString()), this.daysNumber).encodeABI()
+      this.$set(this, 'txObj', this.txObj)
+      this.uniqueKey++
     },
     setSelectedGas (data) {
       if (data.value && data.value.gas && data.value.gasPrice) {
@@ -818,23 +821,18 @@ export default {
         })
     },
     initAccount () {
-      this.tableData = this.$store.state.wallets.tokens
-        .filter((o) => o.chain === 'eth' && o.type === 'hex')
+      this.tableData = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens
+        .filter((o) => o.chain === 'eth' && o.type === 'eth')))
         .map((o) => {
           o.label = o.name
           o.value = o.key
+          o.icon = 'https://ethplorer.io/images/HEX2b591e99.png'
+          let token = this.$store.state.wallets.tokens
+            .find((a) => a.chain === 'eth' && a.type === 'hex' && a.key.toLowerCase() === o.key.toLowerCase())
+          o.amount = token ? token.amount : 0
           return o
         })
-      if (!this.tableData.length) {
-        this.tableData = this.$store.state.wallets.tokens
-          .filter((o) => o.chain === 'eth' && o.type === 'eth')
-          .map((o) => {
-            o.label = o.name
-            o.value = o.key
-            o.amount = 0
-            return o
-          })
-      }
+
       if (this.tableData && this.tableData.length) {
         if (!this.currentAccount) {
           this.currentAccount = this.tableData[0]
@@ -857,8 +855,6 @@ export default {
                 w.key === this.wallet.key
           )
       }
-      this.getStakingData()
-      this.getStakingObject()
     },
     async initData () {
       this.currentAccount.amount = this.currentAccount.amount
@@ -938,6 +934,9 @@ export default {
         this.setTimers()
         this.currentAccount.staked = stakedAmounts
         */
+      this.currentAccount.staked = await Lib.getHexStake(this.currentAccount.key)
+
+      this.getStakingObject()
     },
 
     setTimers () {

@@ -31,8 +31,12 @@ class EosWrapper {
 
   //  ---- ACCOUNTS ----
   async getAccountNamesFromPubKeyP (pubKey) {
-    let names = await this.rpc.history_get_key_accounts(pubKey)
-    return names
+    let url = 'https://eos.greymass.com/v1/chain/get_accounts_by_authorizers'
+    let names = []
+    let data = await axios.post(url, { accounts: [], keys: [pubKey] })
+    if (data.data && data.data.accounts) names = data.data.accounts
+
+    return { account_names: names.map(o => o.account_name) }
   }
   async freePowerUp (name) {
     let lastpwUp = localStorage.getItem('freepwup_' + name)
