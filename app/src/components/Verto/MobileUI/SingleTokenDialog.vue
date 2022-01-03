@@ -20,7 +20,7 @@
               <q-item style="margin-left: -14px;">
                   <q-item-section side>
                     <q-avatar rounded>
-                      <img v-if="asset.icon" :src="asset.icon" style="max-width: 40px" alt="icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"/>
+                      <img v-if="asset.icon" :src="asset.icon" style="max-width: 40px" alt="icon" :onerror="defaultToken(asset.chain)"/>
                     </q-avatar>
                   </q-item-section>
                   <q-item-section>

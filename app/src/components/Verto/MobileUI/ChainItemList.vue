@@ -18,7 +18,7 @@
                     >
                         <q-item-section avatar top>
                           <q-avatar  v-if="!showQr[chain.chain]">
-                              <img :src="chain.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" />
+                              <img :src="chain.icon" :onerror="defaultToken(chain.chain)" />
                           </q-avatar>
                         </q-item-section>
                         <q-item-section class="chain_and_total_account_section">
@@ -35,7 +35,7 @@
                                   dense
                                 >
                                   <q-avatar size="xs">
-                                    <img :src="item.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';" />
+                                    <img :src="item.icon" :onerror="defaultToken(item.chain)" />
                                   </q-avatar>
                                   <span class="q-pl-sm">{{item.type.toUpperCase()}}</span>
                                   <span class="q-pl-sm text-grey">${{ formatNumber(item.usd, 0) }}</span>
@@ -182,7 +182,7 @@
                     >
                         <q-item-section avatar top>
                           <q-avatar>
-                              <img :src="asset.icon" onerror="this.src='https://etherscan.io/images/main/empty-token.png';"/>
+                              <img :src="asset.icon" :onerror="defaultToken(asset.chain)"/>
                           </q-avatar>
                         </q-item-section>
                         <q-item-section>
