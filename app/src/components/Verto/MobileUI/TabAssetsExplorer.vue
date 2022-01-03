@@ -1,28 +1,26 @@
 <template>
     <div>
       <q-header class="bg-white" v-if="$route.path != '/verto/dashboard'">
-              <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" class="back_button_wrapper q-pb-sm bg-grey-1">
-                <!-- <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/> -->
-                <div class="row flex justify-between items-center full-width" style="margin-bottom: -10px;">
-                  <q-btn no-caps flat dense icon="arrow_back_ios" label="Back" class="q-pl-sm q-pr-sm q-mr-sm" @click="$router.push('/verto/dashboard')" />
-                  <!-- <q-toolbar-title> Assets List </q-toolbar-title> -->
-
-                </div>
-              </q-toolbar>
-            </q-header>
+        <q-toolbar :class="$store.state.settings.lightMode === 'true' ? 'text-white mobile-card':'bg-white text-black'" class="back_button_wrapper q-pb-sm bg-grey-1">
+          <!-- <q-btn flat round dense icon="arrow_back_ios" class="q-mr-sm" @click="closeDialog"/> -->
+          <div class="row flex justify-between items-center full-width" style="margin-bottom: -10px;">
+            <q-btn no-caps flat dense icon="arrow_back_ios" label="Back" class="q-pl-sm q-pr-sm q-mr-sm" @click="$router.push('/verto/dashboard')" />
+            <!-- <q-toolbar-title> Assets List </q-toolbar-title> -->
+          </div>
+        </q-toolbar>
+      </q-header>
       <!-- <div v-if="false" class="row justify-between items-center wallets_title_wrapper q-pa-md">
             <div v-if="false">
                 <div class="text-h6 text-bold my_custom_title text-grey-8">Wallets</div> -->
         <div v-if="false" class="row justify-between items-center wallets_title_wrapper q-pa-md">
-            <div>
-                <div class="text-h6 text-bold my_custom_title text-capitalize">{{tabIndex}}</div>
-            </div>
-            <div v-if="$isbex">
-                <q-btn icon="add" :color="$store.state.settings.lightMode === 'true' ? 'white' : 'grey-8'" outline no-caps class="custom-radius" @click="goImport" >Add/Import</q-btn>
-            </div>
-            <!-- <div v-if="false" class="row text-grey-8">Click on a chain to see assets. </div> -->
-            <div v-if="$store.state.investment.defaultAccount" class="row text-grey text-capitalize">{{tabIndex}} for current account </div>
-
+          <div>
+            <div class="text-h6 text-bold my_custom_title text-capitalize">{{tabIndex}}</div>
+          </div>
+          <div v-if="$isbex">
+            <q-btn icon="add" :color="$store.state.settings.lightMode === 'true' ? 'white' : 'grey-8'" outline no-caps class="custom-radius" @click="goImport" >Add/Import</q-btn>
+          </div>
+          <!-- <div v-if="false" class="row text-grey-8">Click on a chain to see assets. </div> -->
+          <div v-if="$store.state.investment.defaultAccount" class="row text-grey text-capitalize">{{tabIndex}} for current account </div>
         </div>
 
         <q-tabs
@@ -188,6 +186,8 @@ export default {
   background: #eef8ff;
   padding-bottom: 0px;
   box-shadow: 0px 6px 6px 0px rgba(black, .1);
+  width: 100vw;
+  overflow: hidden;
   &.tabindexDark{
     background: #15243d;
   }
