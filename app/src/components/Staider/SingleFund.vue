@@ -752,6 +752,7 @@ export default {
   },
   methods: {
     async getUserAPY () {
+      console.log(this.userAPY, this.$store.state.currentwallet.user, 2)
       if (this.userAPY) return
       let data = (await Enzyme.getUserInvestments(this.$store.state.currentwallet.user.address))
       if (data && data.funds) {
@@ -762,6 +763,7 @@ export default {
       }
     },
     async getInvestments () {
+      console.log(this.totalInvestments, this.$store.state.currentwallet.user, 1)
       if (!this.$store.state.currentwallet.user || this.totalInvestments) return
 
       let deposits = await Enzyme.getDeposits(this.$route.params.fundID)
@@ -1725,7 +1727,7 @@ export default {
   padding: 0;
   border-style: none;
 }
-/*! CSS Used from: https://ethernal-blue.ansarians.com/assets/css/app.css */
+
 .heading {
   color: #ffffff;
 }

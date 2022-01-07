@@ -678,7 +678,6 @@ export default {
     updateFundData () {
       if (this.$store.state.investment.fundData) {
         let data = this.$data
-        console.log(data, 'data')
         data.currentCurrency = 'USD'
         this.$store.state.investment.fundData[this.$route.params.fundID] = data
       } else {

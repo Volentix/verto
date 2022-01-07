@@ -1,9 +1,6 @@
 <template>
   <div>
-    <q-tabs v-if="false" v-model="tab" inline-label class="bg-primary text-white shadow-2">
-      <q-tab name="all" icon="mail" label="All deposits" />
-      <q-tab name="user_deposits" icon="alarm" label="My deposit" />
-    </q-tabs>
+
     <q-table
       flat
       :dark="$store.state.settings.lightMode === 'true'"
@@ -12,6 +9,7 @@
       :visible-columns="visibleColumns"
       :columns="columns"
       row-key="date"
+     :no-data-label="'No '+(action == 'deposits' ? 'deposits' : 'withdrawals')+' have been made for this account'"
     >
       <template v-slot:body-cell-depositor="props">
         <q-td v-if="props.row.investor && props.row.investor.id"  :props="props" class="body-table-col ">

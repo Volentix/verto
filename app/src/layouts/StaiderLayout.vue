@@ -1786,7 +1786,7 @@ input {
     width: 50%;
   }
 }
-/*! CSS Used from: https://ethernal-blue.ansarians.com/assets/libs/remixicon/fonts/remixicon.css */
+
 [class^="ri-"] {
   font-family: "remixicon" !important;
   font-style: normal;
@@ -1802,7 +1802,7 @@ input {
 .ri-notification-2-line:before {
   content: "\ef92";
 }
-/*! CSS Used from: https://ethernal-blue.ansarians.com/assets/css/app.css */
+
 .navbar-main-2 .container-fluid .wrapper {
   display: flex;
   align-items: center;

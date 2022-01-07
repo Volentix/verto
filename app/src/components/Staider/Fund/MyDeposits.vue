@@ -11,7 +11,7 @@
       :data="deposits"
        @row-click="onRowClick"
       :columns="columns"
-
+      no-data-label="No investments have been made for this account"
     >
 
       <template v-slot:body-cell-asset="props">

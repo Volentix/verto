@@ -237,7 +237,7 @@ class Lib {
   getWallets (chain = null) {
     let watchAccounts = localStorage.getItem('watchAccounts')
     watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
-    return [...store.state.currentwallet.config.keys].concat(watchAccounts).filter(o => o.chain === chain || !chain)
+    return (store.state.currentwallet.config.keys ? [...store.state.currentwallet.config.keys] : []).concat(watchAccounts).filter(o => o.chain === chain || !chain)
   }
   async fetchNfts (address) {
     /// address = '0x60e4d786628fea6478f785a6d7e704777c86a7c6'

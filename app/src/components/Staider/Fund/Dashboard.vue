@@ -12,6 +12,7 @@
       </div>
 
       <div
+        v-if="false"
         class="profile-nav text-center q-mb-lg"
         @click="
           $store.state.currentwallet && $store.state.currentwallet.user
@@ -36,16 +37,8 @@
         </div>
       </div>
 
-      <div  class="flex flex-center chart">
-      <PortfolioChart :fundData="myFunds"  v-if="$store.state.currentwallet.user  && myFunds.length" />
-      </div>
       <q-list bordered separator>
-        <q-item clickable v-ripple>
-          <q-item-section class="text-body1">Portfolio Value</q-item-section>
-          <q-item-section class="text-h6 text-white" side
-            >USD {{ formatNumber(totalPValue, 2) }}</q-item-section
-          >
-        </q-item>
+
         <q-item clickable v-ripple>
           <q-item-section class="text-body1">Average APY</q-item-section>
           <q-item-section class="text-h6" :class="{'text-green-6':avApy >= 0,'text-pink-12':avApy < 0 }" side
@@ -58,6 +51,11 @@
             >USD {{ formatNumber(changeInceptionUSD, 2) }}</q-item-section
           >
         </q-item>
+        <q-item>
+           <div  class="flex flex-center chart">
+      <PortfolioChart :fundData="myFunds"  v-if="$store.state.currentwallet.user  && myFunds.length" />
+      </div>
+      </q-item>
         <q-item clickable v-ripple>
           <q-item-section class="text-body1">Average Share Price</q-item-section>
           <q-item-section class="text-h6 text-white" side
