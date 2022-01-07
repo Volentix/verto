@@ -206,7 +206,7 @@
         <span>No account found {{ chain }}</span>
       </div>
     </div>
-    <div  class="row justify-center">
+    <div  class=" full-width">
       <q-btn
         class="account_selector"
         dense
@@ -457,7 +457,7 @@
 
                       :key="Math.random() + index"
                       v-for="(item, index) in tokChain.accounts"
-                      :class="{ selected: item.selected , 'bg-blue-grey-5': accountOption && accountOption.index == item.index}"
+                      :class="{ selected: item.selected , 'bg-grey-3': accountOption && accountOption.index == item.index && $store.state.settings.lightMode !== 'true', 'bg-blue-grey-5': accountOption && accountOption.index == item.index && $store.state.settings.lightMode === 'true'}"
                       clickable
                       :active="item.hidden"
                       active-class="bg-teal-1 text-grey-8"
@@ -466,6 +466,7 @@
                         <div
                           class="header-wallet full-width flex justify-between"
                         >
+
                           <q-item-section avatar>
 
                             <span class="identicon" v-html="toAvatar(item.name)" />
@@ -480,19 +481,22 @@
                             <span class="item-name--name text-bold" v-else>
                               {{ item.name }}</span
                             >
-                            <span
-                              class="item-name--staked"
-                              v-if="item.staked && item.staked !== 0 && false"
-                              >Staked : {{ nFormatter2(item.staked, 3) }}</span
-                            >
+
                             <span
                               class="item-name--staked"
                              v-if="item.tokenList && (item.isEvm || item.chain == 'eos')"
                               >{{ item.tokenList.length }} token{{
                                 item.tokenList.length > 1 ? "s" : ""
-                              }}</span
+                              }} - <span class="text-deep-purple-12" v-if="item.watch"><q-icon color="text-deep-purple-12" name="visibility" /> </span> </span
+                            >
+                             <span
+                             @click="$router.push(getImportLink(item.chain))"
+                              class="item-name--staked text-body2 text-deep-purple cursor-pointer"
+                              v-if="item.watch"
+                              ><span>+ Import private key</span></span
                             >
                           </q-item-section>
+
                           <q-item-section side>
                             <span class="item-info--amountUSD" v-if="item.total"
                               >${{
@@ -632,6 +636,7 @@ export default {
             amount: w.amount,
             name: w.name,
             key: w.key,
+            watch: w.watch,
             index: w.index,
             usd: w.usd,
             chain: 'eos',
@@ -655,6 +660,7 @@ export default {
             key: w.key,
             amount: w.amount,
             chain: 'eth',
+            watch: w.watch,
             index: w.index,
             isEvm: w.isEvm || this.isEvm(w.type),
             type: w.type,
@@ -920,6 +926,10 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.removeWatch {
+    top: 22px;
+    right: -20px;
+}
 .item-info {
   max-width: 40px !important;
 }

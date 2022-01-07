@@ -349,7 +349,7 @@ class Lib {
         'value': coin.type,
         'contract': coin.contract,
         'precision': coin.precision,
-        'image': coin.chain === 'eos' ? 'https://defibox.oss-accelerate.aliyuncs.com/eos/' + coin.contract + '-' + coin.type.toLowerCase() + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type.toLowerCase() + '.png',
+        'image': coin.chain === 'eos' ? 'https://defibox.s3.ap-northeast-1.amazonaws.com/eos/' + coin.contract + '-' + coin.type.toLowerCase() + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type.toLowerCase() + '.png',
         'dex': 'coinswitch',
         'amount': parseFloat(coin.amount),
         'amountUSD': coin.usd
@@ -1204,6 +1204,9 @@ class Lib {
     return value
   }
   getCoinGeckoId (asset) {
+    if (asset.contract) {
+      asset.address = asset.contract
+    }
     let tokens = store.state.tokens.list.map((o) => {
       o.platforms2 = Object.keys(o.platforms).map(a => o.platforms[a] ? o.platforms[a].toLowerCase() : '')
       return o
@@ -1214,15 +1217,13 @@ class Lib {
         t.symbol.toLowerCase() === asset.type.toLowerCase() &&
       (
         (asset.address && t.platforms2.includes(asset.address.toLowerCase())) ||
-        (!t.platforms2.includes('0x')
-
-        )
+        (!t.platforms2.join(',').includes('0x'))
       ))
+    console.log(asset, 'asset', token)
     return token ? token.id : null
   }
   async getCoinGeckoPrice (asset) {
     let id = this.getCoinGeckoId(asset)
-    console.log(id, 'id')
     return id ? (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=' + id + '&vs_currencies=usd')).data[id].usd : null
   }
 

@@ -9,22 +9,29 @@
         </div>
              <q-btn v-close-popup class="close_qr_code_popup absolute-top-right q-pa-md" dense flat icon="close" />
       </q-card-section>
-      <q-scroll-area style="height: 45vh;">
-        <q-card-section  class="q-pt-none" v-for="(account , index) in chain.accounts" :key="index">
+      <q-scroll-area style="height: 45vh;" :key="deletedAccountNames.length">
+        <q-card-section  v-show="!deletedAccountNames.includes(account.name)" class="q-pt-none" v-for="(account , index) in chain.accounts" :key="index">
           <div class="text-body1 q-pt-md flex justify-between items-center copy-key" v-if="account[field] || (showPrivateKeys[index] && decryptedKeys[index])">
             <div class="flex justify-between" @click="copyToClipboard(account[field])">
               <div class="flex">
                 <span class="identicon" v-html="avatar(account.name)" />
-                <span class="account_name text-bold q-ml-sm q-mr-sm flex flex-center text-center" >{{account.name}}</span>
+                <span class="account_name text-bold q-ml-sm q-mr-sm " >{{account.name}} <span
+                             @click="$router.push(getImportLink(account.chain))"
+                              class="item-name--staked text-body2 text-deep-purple cursor-pointer"
+                              v-if="account.watch"
+                              ><br><span>+ Import </span></span
+                            ></span>
               </div>
               <span class="flex flex-center text-cur" >
                 {{getKeyFormat(decryptedKeys[index] ? decryptedKeys[index] : account[field], 4)}}
               </span>
+
             </div>
             <div class="flex">
               <q-btn dense flat color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="o_file_copy" @click="copyToClipboard(account[field])" />
               <q-btn dense v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat icon="img:https://image.flaticon.com/icons/png/512/107/107072.png" />
-              <div class="qr_code_wrapper column justify-center items-center" :class="{ 'min-size': !$q.platform.is.mobile, 'show' : (account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]] }">
+              <q-btn v-if="account.watch" dense flat color="white" :text-color="$store.state.settings.lightMode === 'true' ? 'white':'black'" icon="close" @click="deleteAccount(account)" />
+               <div class="qr_code_wrapper column justify-center items-center" :class="{ 'min-size': !$q.platform.is.mobile, 'show' : (account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]] }">
                 <div class="flex flex-center account_name_text">{{account.name}}</div>
                 <q-btn class="close_qr_code_popup" dense v-if="account[field] || showPrivateKeys[index] || decryptedKeys[index]" @click="$set(showQr,account.name.split(' ')[0],!showQr[account.name.split(' ')[0]])" flat icon="close" />
                 <qrcode v-if="(account[field] || showPrivateKeys[index]) && showQr[account.name.split(' ')[0]]" dark :value="decryptedKeys[index] ? decryptedKeys[index] : account[field]" :size="200" :options="{size: 100}"></qrcode>
@@ -75,6 +82,7 @@ export default {
       showQr: {
 
       },
+      deletedAccountNames: [],
       showPrivateKeys: {
 
       },
@@ -95,6 +103,23 @@ export default {
   methods: {
     avatar (name) {
       return toSvg(name, 30)
+    },
+    deleteAccount (acc) {
+      this.$q.dialog({
+        title: 'Confirm',
+        message: 'Do you really want to remove account ' + acc.name + ' from Verto?',
+        cancel: true,
+        ok: {
+          push: true,
+          label: 'Yes',
+          tabindex: 1
+        }
+      }).onOk(() => {
+        if (acc.watch) {
+          this.deletedAccountNames.push(acc.name)
+          this.deleteWatchAccount('name', acc.name)
+        }
+      })
     },
     showKeys (index) {
       this.checkPrivateKeyPassword()

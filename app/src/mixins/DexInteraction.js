@@ -112,7 +112,7 @@ export default {
           'value': coin.type,
           'contract': coin.contract,
           'precision': coin.precision,
-          'image': coin.chain === 'eos' ? 'https://defibox.oss-accelerate.aliyuncs.com/eos/' + this.checkContractFormat(coin.contract) + '-' + coin.type.toLowerCase() + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type.toLowerCase() + '.png',
+          'image': coin.chain === 'eos' ? 'https://defibox.s3.ap-northeast-1.amazonaws.com/eos/' + this.checkContractFormat(coin.contract) + '-' + coin.type.toLowerCase() + '.png' : 'https://files.coinswitch.co/public/coins/' + coin.type.toLowerCase() + '.png',
           'dex': coin.chain === 'eos' ? 'defibox' : 'coinswitch',
           'amount': parseFloat(coin.amount),
           'amountUSD': coin.usd
@@ -141,7 +141,7 @@ export default {
           'contract': coin.contract,
           'precision': coin.precision,
           'image': coin.icon,
-          // 'image': 'https://defibox.oss-accelerate.aliyuncs.com/eos/' + coin.contract + '-' + coin.type + '.png',
+          // 'image': 'https://defibox.s3.ap-northeast-1.amazonaws.com/eos/' + coin.contract + '-' + coin.type + '.png',
           'dex': 'coinswitch',
           'amount': parseFloat(coin.amount),
           'amountUSD': coin.usd
@@ -334,8 +334,8 @@ export default {
 
         coins = Object.keys(coins).filter(o => coins[o].symbol.toLowerCase() !== 'vtx').map((key, index) => {
           let item = this.$store.state.wallets.tokens.find(o => o.type.toLowerCase() === coins[key].symbol.toLowerCase() && o.chain === 'eth')
-          let image = coins[key].symbol.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : 'https://tokens.1inch.exchange/' + coins[key].address.toLowerCase() + '.png'
-
+          // let image = coins[key].symbol.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : 'https://token.enzyme.finance/' + coins[key].address.toLowerCase()
+          let image = coins[key].symbol.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : 'https://tokens.1inch.io/' + coins[key].address + '.png'
           let row = {
             'label': coins[key].name.toUpperCase(),
             'value': coins[key].symbol,

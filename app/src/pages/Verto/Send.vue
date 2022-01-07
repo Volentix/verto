@@ -87,7 +87,7 @@
               </div>
             </template>
           </q-input>
-          <a :class="{'text-white':$store.state.settings.lightMode === 'true', 'text-black':$store.state.settings.lightMode !== 'false'}" :href="transactionLink" target="_blank" class="text-body2 "> More info</a>
+          <a :class="{'text-white':$store.state.settings.lightMode === 'true', 'text-black':$store.state.settings.lightMode === 'false'}" :href="transactionLink" target="_blank" class="text-body2 "> More info</a>
         </q-card-section>
         <q-card-actions align="right" class="q-pr-sm">
           <q-btn label="Close" flat class="yes-btn" color="primary" v-close-popup/>

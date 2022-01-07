@@ -126,7 +126,7 @@ button{text-transform:none;}
 .accordion-item:last-of-type .accordion-button.collapsed{border-bottom-right-radius:calc(.25rem - 1px);border-bottom-left-radius:calc(.25rem - 1px);}
 .accordion-item:last-of-type .accordion-collapse{border-bottom-right-radius:.25rem;border-bottom-left-radius:.25rem;}
 .accordion-body{padding:1rem 1.25rem;}
-/*! CSS Used from: https://ethernal-blue.ansarians.com/assets/css/app.css */
+
 .faq-main{margin:128px 0;}
 .faq-main .container-fluid .wrapper{margin:0 0 72px 0;}
 .faq-main .container-fluid .wrapper .tab-otr{display:flex;align-items:center;}

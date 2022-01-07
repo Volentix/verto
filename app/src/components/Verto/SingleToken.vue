@@ -912,13 +912,13 @@ export default {
         })
     },
     async getHistoriclPrice (days = 30) {
-      console.log('getHistoriclPrice called')
       this.chartData = false
       this.chartAvailable = true
       let id = this.asset.coinGeckoId
+
       try {
         if (!id) {
-          id = Lib.getCoinGeckoId(this.asset)
+          id = Lib.getCoinGeckoId({ address: this.asset.contract, type: this.asset.type })
         }
         if (id) {
           this.getMarketData(id)

@@ -24,7 +24,7 @@ if (process.env.QMODE !== 'bex') {
     //     { path: '', component: () => import('components/createwallet/SaveToFile.vue') }
     //   ]
     // },
-    /* {
+    {
       path: '/',
       component: () => import('layouts/staiderLayout.vue'),
       children: [
@@ -47,7 +47,7 @@ if (process.env.QMODE !== 'bex') {
           component: () => import('components/Verto/Token/AssetsExplorer.vue')
         }
       ]
-    }, */
+    },
     {
       path: '/blocktopusCreate',
       component: () => import('layouts/Default.vue'),

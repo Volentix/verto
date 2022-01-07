@@ -16,7 +16,7 @@
     <div v-if="!$q.platform.is.mobile">
       <UI v-if="false"/>
       <q-btn label="test" v-if="false" @click="testData()" />
-      <div class="gdx-exchange-form q-px-md" v-show="step != 2">
+      <div class="gdx-exchange-form q-px-md" v-show="step != 2" v-if="false">
         <div class="text-h6 full-width q-py-md">Exchange any to any</div>
         <div class="coins">
           <div class="gdx-exchange-coin" id="tx-tab">
@@ -1792,11 +1792,11 @@
 
     <!-- <GodexDialog  v-if="$q.platform.is.mobile" :destinationCoinOptions.sync="destinationCoinOptions" :destinationCoinUnfilter="destinationCoinUnfilter" :depositCoinOptions.sync="depositCoinOptions" :hideDeposit.sync="hideDeposit" :hideDestination.sync="hideDestination" /> -->
     <div class="row">
-     <div class="col-md-4 offset-md-2">
+     <div class="col-md-4 offset-md-3">
      <GodexDialog ref="txUi" style="width:400px;"   :step.sync="step" :paths="paths" :formatNumber="formatNumber" :isPathInvalid="isPathInvalid" :setMinimum="setMinimum" :getSwapInfo="getSwapInfo" :destinationCoinOptions.sync="destinationCoinOptions" :destinationCoinUnfilter="destinationCoinUnfilter" :depositCoin.sync="depositCoin" :depositCoinOptions.sync="depositCoinOptions" :depositCoinUnfilter="depositCoinUnfilter" :hideDeposit.sync="hideDeposit" :hideDestination.sync="hideDestination" :swapData="swapData" :spinner="spinner" :setPathTransaction="setPathTransaction" :getDepositTxData="getDepositTxData" :destinationCoin.sync="destinationCoin"  :filterDestinationCoin="filterDestinationCoin" :setSuccessData="setSuccessData" :currentDex="currentDex" :switchAmounts="switchAmounts"
                     :createTransaction="createTransaction" :error="error" :chains="chains" :path="path" :splitterModel="splitterModel" :tab.sync="tab" :setPathData="setPathData" :innerStep="innerStep" :chainData="chainData" :approvalCheckRun="approvalCheckRun" :fromAccountSelected="fromAccountSelected" :getKeyFormat="getKeyFormat" :setSelectedGas="setSelectedGas" :processApproval="processApproval" :swapTokens="swapTokens" :toAccountSelected="toAccountSelected" :setTransactionStatus="setTransactionStatus" :setTab="setTab" :exchangeDetails="exchangeDetails" :showSendComponent="showSendComponent" :validStatus="validStatus" :copyToClipboard="copyToClipboard" />
      </div>
-     <div class="col-md-4">
+     <div class="col-md-4" v-if="false">
        <ExchangeRowItem  :paths="paths" :formatNumber="formatNumber" :destinationCoin="destinationCoin" :setPathTransaction="setPathTransaction" :isPathInvalid="isPathInvalid" />
      </div>
       </div>
@@ -1827,7 +1827,7 @@
                 readonly
               >
                 <template v-slot:prepend>
-                  <q-btn icon="file_copy" label="Copy key" outline rounded @click="copyToClipboard(popupData.key, 'Key')" />
+                  <q-btn icon="file_copy" label="" outline rounded @click="copyToClipboard(popupData.key, 'Key')" />
                 </template>
               </q-input>
             </div>
@@ -2004,6 +2004,7 @@ export default {
       }
     },
     depositCoin: function () {
+      if (!this.depositCoin || !this.destinationCoin) return
       if (
         this.depositCoin.value.toLowerCase() ===
         this.destinationCoin.value.toLowerCase()
@@ -2017,6 +2018,7 @@ export default {
       }
     },
     destinationCoin: function () {
+      if (!this.depositCoin || !this.destinationCoin) return
       if (
         this.depositCoin.value.toLowerCase() ===
         this.destinationCoin.value.toLowerCase()
@@ -2528,7 +2530,7 @@ export default {
       return (renVmPercent * amount) / 100
     },
     setSuccessData () {},
-    async getPaths (from, to, amount) {
+    async getPaths (from, to, amount, chain) {
       let path = []
 
       if (from.toLowerCase() === 'eth' && to.toLowerCase() === 'vtx') {
@@ -2545,7 +2547,8 @@ export default {
           from.toLowerCase(),
           to.toLowerCase()
         )
-
+        // no crosschain
+        dexes = dexes.filter(s => s.chains.includes(chain))
         await Promise.all(
           dexes
             .filter((o) => o.chains.length)
@@ -2732,14 +2735,15 @@ export default {
         amount: amount,
         icon: this.depositCoin.image
       })
-
+      console.log(list, 'list')
       list
         .filter((a) => a.amount && !isNaN(a.amount) && a.type !== this.destinationCoin.value.toLowerCase())
         .forEach(async (o) => {
           let values = await this.getPaths(
             o.type,
             this.destinationCoin.value.toLowerCase(),
-            o.amount
+            o.amount,
+            this.$store.state.investment.defaultAccount.chain
           )
 
           if (values.length) {
@@ -2749,10 +2753,11 @@ export default {
                 (w) => w.chain === a.fromChain && w.type === a.fromToken
               )
               a.walletToken = walletToken
-              a.fromTokenPrice = walletToken
+              a.fromUsd = walletToken
                 ? walletToken.tokenPrice
                 : o.tokenPrice
               a.fromAmount = o.amount
+              a.fromUsdTotal = o.amount * a.fromUsd
 
               a.fChainLabel = this.getChainLabel(a.fromChain)
               a.tChainLabel = this.getChainLabel(a.toChain)
@@ -2786,14 +2791,16 @@ export default {
               }
             }
 
-            allPaths = allPaths.filter(z => z.fromChain === this.$refs.txUi.currentAccount.from.chain && z.toChain === this.$refs.txUi.currentAccount.to.chain).sort(
+            allPaths = allPaths.filter(z => z.fromChain === this.$store.state.investment.defaultAccount.chain && z.toChain === this.$store.state.investment.defaultAccount.chain).sort(
               (x, y) => (!x.walletToken ? 1 : 0) - (!y.walletToken ? 1 : 0)
             )
+            console.log(allPaths, 'allPaths')
             this.paths = allPaths
           }
         })
     },
     async getSwapInfo (setStep = false) {
+      if (!this.depositCoin || !this.destinationCoin) return
       this.spinner.amount = true
       this.resetSwapData()
       this.getPathForToken(

@@ -171,6 +171,7 @@ export default {
         chain: w.chain,
         amount: w.amount,
         type: w.type,
+        watch: w.watch,
         index: w.index,
         usd: w.usd,
         total: w.total,
@@ -223,6 +224,18 @@ export default {
         type: 'primary',
         position: 'top'
       })
+    },
+    deleteWatchAccount (key, value) {
+      let watchAccounts = localStorage.getItem('watchAccounts')
+      watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
+      watchAccounts = watchAccounts.filter(o => o[key].toLowerCase() !== value.toLowerCase())
+      localStorage.setItem('watchAccounts', JSON.stringify(watchAccounts))
+
+      let data = localStorage.getItem('walletPublicDatav2')
+      data = data ? JSON.parse(data) : []
+      data = data.filter(o => o[key].toLowerCase() !== value.toLowerCase())
+      localStorage.setItem('walletPublicDatav2', JSON.stringify(data))
+      this.$store.state.wallets.tokens = this.$store.state.wallets.tokens.filter(o => o[key].toLowerCase() !== value.toLowerCase())
     },
     getRandomColor () {
       const randomNumber = (min, max) => {

@@ -121,7 +121,7 @@ class Crosschaindex {
 
   format1InchTokens (coins, chain) {
     coins = Object.keys(coins).map((key, index) => {
-      let image = coins[key].symbol.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : 'https://tokens.1inch.exchange/' + coins[key].address.toLowerCase() + '.png'
+      let image = coins[key].symbol.toLowerCase() === 'eth' ? 'https://s3.amazonaws.com/token-icons/eth.png' : 'https://tokens.1inch.io/' + coins[key].address + '.png'
 
       let row = {
         'label': coins[key].name.toUpperCase(),
@@ -136,7 +136,7 @@ class Crosschaindex {
       return row
     })
     return coins.filter(function (el) {
-      return el != null
+      return el != null && el.address.toString() !== 'unknown'
     }).sort(function (a, b) {
       if (a.label && b.label && a.label.toLowerCase() < b.label.toLowerCase()) {
         return -1
@@ -191,7 +191,7 @@ class Crosschaindex {
         'contract': coin.contract,
         'precision': coin.precision,
         'image': coin.icon,
-        // 'image': 'https://defibox.oss-accelerate.aliyuncs.com/eos/' + coin.contract + '-' + coin.type + '.png',
+        // 'image': 'https://defibox.s3.ap-northeast-1.amazonaws.com/eos/' + coin.contract + '-' + coin.type + '.png',
         'dex': 'coinswitch',
         'amount': parseFloat(coin.amount),
         'amountUSD': coin.usd

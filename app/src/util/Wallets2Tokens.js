@@ -13,7 +13,7 @@ class Wallets2Tokens {
     }
     let watchAccounts = localStorage.getItem('watchAccounts')
     watchAccounts = watchAccounts ? JSON.parse(watchAccounts) : []
-
+    watchAccounts = watchAccounts.filter(o => !store.state.currentwallet.config.keys || ![...store.state.currentwallet.config.keys].find(a => a.key === o.key.toLowerCase()))
     let data = this.getWalletFromCache()
     let existingWallet = null
     let ethWallet = null
@@ -139,7 +139,7 @@ class Wallets2Tokens {
                     chain: 'eos',
                     to: '/verto/wallets/eos/' + type + '/' + name,
                     icon:
-                      'https://defibox.oss-accelerate.aliyuncs.com/eos/' +
+                      'https://defibox.s3.ap-northeast-1.amazonaws.com/eos/' +
                       t.code +
                       '-' +
                       t.symbol.toLowerCase() +
@@ -349,6 +349,7 @@ class Wallets2Tokens {
                     privateKey: wallet.privateKey,
                     amount: t.balance / 10 ** t.contract_decimals,
                     usd: amount,
+                    watch: wallet.watch,
                     decimals: t.contract_decimals,
                     contract: t.contract_address,
                     chain: e.chain,
@@ -521,6 +522,7 @@ class Wallets2Tokens {
             disabled: false,
             type: symbol.toLowerCase(),
             name: wallet.name,
+            watch: wallet.watch,
             tokenPrice: 0,
             key: wallet.key.toLowerCase(),
             privateKey: wallet.privateKey,
@@ -607,6 +609,7 @@ class Wallets2Tokens {
                 privateKey: wallet.privateKey,
                 privateKeyEncrypted: wallet.privateKeyEncrypted,
                 amount: t.amount,
+                watch: wallet.watch,
                 tokenPrice: usd ? usdValue : usd,
                 usd: usd ? usdValue * t.amount : 0,
                 contract: t.code,
@@ -616,7 +619,7 @@ class Wallets2Tokens {
                 chain: 'eos',
                 to: '/verto/wallets/eos/' + type + '/' + name,
                 icon:
-                'https://defibox.oss-accelerate.aliyuncs.com/eos/' +
+                'https://defibox.s3.ap-northeast-1.amazonaws.com/eos/' +
                 t.code +
                 '-' +
                 t.symbol.toLowerCase() +
@@ -691,6 +694,7 @@ class Wallets2Tokens {
               disabled: false,
               type: token.currency.toLowerCase(),
               name: wallet.name,
+              watch: wallet.watch,
               key: wallet.key,
               privateKey: wallet.privateKey,
               privateKeyEncrypted: wallet.privateKeyEncrypted,
@@ -727,7 +731,7 @@ class Wallets2Tokens {
       data = JSON.parse(data)
 
       data.map(o => {
-        let wallet = store.state.currentwallet.config.keys.find(
+        let wallet = (store.state.currentwallet.config.keys || []).find(
           a => a.key === o.key
         )
 
@@ -813,6 +817,7 @@ class Wallets2Tokens {
               key: wallet.key,
               privateKey: wallet.privateKey,
               amount: t.balance,
+              watch: wallet.watch,
               usd: t.balanceUSD,
               contract: t.tokenAddress,
               chain: 'eth',
