@@ -90,7 +90,7 @@
             type="button"
           >
             <span
-              @click="alert = false"
+              @click="alert = false ; $emit('setDialog',false)"
               class="flex-1 flex items-center justify-center"
               ><span class="sr-only">Close</span
               ><svg
@@ -1224,6 +1224,7 @@ export default {
     }
   },
   async created () {
+    if (this.actionType === 'whitelistRequired') { this.whitelistRequired = true }
     this.denominationData = this.EnzymeData.denominationAssetData
     this.getDeposits()
     this.getUserBalance()

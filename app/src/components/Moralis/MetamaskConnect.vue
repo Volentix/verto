@@ -9,11 +9,14 @@
     </q-item-section>
     <q-item-section v-show="false" v-if="user.address" class="deposit_button_wrapper">
       <q-btn id="depositBtn" color="black" @click="triggerDeposit()" class="q-pa-sm q-pr-md deposit_button" icon="vertical_align_bottom" no-wrap no-caps label="Deposit"/>
+
+      <q-btn id="whitelistBtn" color="black" @click="triggerDeposit('whitelistRequired')" class="q-pa-sm q-pr-md deposit_button" icon="vertical_align_bottom" no-wrap no-caps label="Deposit"/>
+
       <q-btn id="withdrawBtn" color="black" @click="action = 'withdraw' ; showDialog = true ; trigger++" class="q-pa-sm q-pr-md deposit_button" icon="vertical_align_bottom" no-wrap no-caps label="Deposit"/>
     </q-item-section>
-    <div v-if="type !=='type2WithoutPopup' && showDialog" v-show="showDialog">
-      <DepositPopup :provider="provider" :actionType="action" :EnzymeData="EnzymeData" :key="trigger" v-if="user.address && $route.params.fundID && EnzymeData"  :user="user" :fundAddress="$route.params.fundID" />
-    </div>
+
+      <DepositPopup @setDialog="setDialog" :provider="provider" :actionType="action" :EnzymeData="EnzymeData" :key="trigger" v-if="user.address && $route.params.fundID && EnzymeData && showDialog"  :user="user" :fundAddress="$route.params.fundID" />
+
      <q-dialog  @hide="connectLoading = false" v-model="connectOptions">
       <q-card>
         <q-card-section>
@@ -78,13 +81,17 @@ export default {
   },
   props: ['type'],
   methods: {
-    triggerDeposit () {
+    setDialog (val) {
+      this.showDialog = val
+    },
+    triggerDeposit (action = 'deposit') {
       if (!this.user.address) {
         this.connectOptions = true
         return
       }
+
       this.connectOptions = false
-      this.action = 'deposit'
+      this.action = action
       this.showDialog = true
       this.trigger++
     },
@@ -131,7 +138,7 @@ export default {
       return web3
     },
     async setConnectDialog (value) {
-      this.connectOptions = value
+    //  this.connectOptions = value
     },
     async sendTransaction (to, amount, utf8Data) {
       let from = this.user.address
@@ -276,7 +283,6 @@ export default {
         this.EnzymeData = null
         await Enzyme.init(this.$route.params.fundID)
         this.EnzymeData = Enzyme
-        console.log(Enzyme, 'Enzyme')
       }
     }
   },

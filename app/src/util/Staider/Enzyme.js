@@ -74,6 +74,16 @@ class Enzyme {
     }
     return fund
   }
+  async isInvestor (fundAddress, investorAddress) {
+    let found = false
+    let comptrollerProxy = await this.getComptrollerProxy(fundAddress)
+    let response = await axios.post(process.env[store.state.settings.network].CACHE + 'https://api.thegraph.com/subgraphs/name/enzymefinance/enzyme',
+      { 'operationName': 'FundPolicies', 'variables': { 'comptrollerProxy': comptrollerProxy }, 'query': 'query FundPolicies($comptrollerProxy: ID!) {   comptrollerProxy(id: $comptrollerProxy) {     id     policySettings {       id       policy {         id         __typename       }       ...AdapterBlacklistSetting       ...AdapterWhitelistSetting       ...AssetBlacklistSetting       ...AssetWhitelistSetting       ...InvestorWhitelistSetting       ...MaxConcentrationSetting       ...MinMaxInvestmentSetting       ...BuySharesCallerWhitelistSetting       ...GuaranteedRedemptionSetting       __typename     }     __typename   } }  fragment AdapterBlacklistSetting on AdapterBlacklistSetting {   listed   enabled   __typename }  fragment AdapterWhitelistSetting on AdapterWhitelistSetting {   listed   enabled   __typename }  fragment AssetBlacklistSetting on AssetBlacklistSetting {   listed   enabled   __typename }  fragment AssetWhitelistSetting on AssetWhitelistSetting {   listed   enabled   __typename }  fragment InvestorWhitelistSetting on InvestorWhitelistSetting {   enabled   listedInvestors: listed(first: 1000) {     id     __typename   }   __typename }  fragment MaxConcentrationSetting on MaxConcentrationSetting {   enabled   maxConcentration   __typename }  fragment MinMaxInvestmentSetting on MinMaxInvestmentSetting {   enabled   minInvestmentAmount   maxInvestmentAmount   __typename }  fragment BuySharesCallerWhitelistSetting on BuySharesCallerWhitelistSetting {   enabled   listed   __typename }  fragment GuaranteedRedemptionSetting on GuaranteedRedemptionSetting {   enabled   startTimestamp   duration   __typename }' })
+    if (response && response.data && response.data.data) {
+      found = response.data.data.comptrollerProxy.policySettings.find(o => o.__typename === 'InvestorWhitelistSetting').listedInvestors.map(o => o.id.toLowerCase()).includes(investorAddress.toLowerCase())
+    }
+    return found ? 'whitelisted' : false
+  }
   async getUserInvestments (userAddress) {
     let funds = null
     let response = await axios.post(process.env[store.state.settings.network].CACHE + 'https://services.enzyme.finance/api/enzyme/investor/funds?address=' + userAddress)

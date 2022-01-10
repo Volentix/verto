@@ -89,7 +89,7 @@
                     class="value"
                     v-if="
                       fundRefData &&
-                      fundRefData.staiderData
+                      fundRefData.staiderData && fundRefData.staiderData.calculations
                     "
                     > <span
                           class="value"
@@ -136,7 +136,7 @@
 
               </div>
 
-              <p class="text-body1" v-if="fundRefData && fundRefData.staiderData">
+              <p class="text-body1" v-if="fundRefData && fundRefData.staiderData && fundRefData.staiderData.calculations">
                 Asset under management: <span class="text-bold text-green-6 text-body1" v-if="fundRefData.staiderData.calculations &&
                       Object.keys(fundRefData.staiderData.calculations)
                         .length > 0">
@@ -263,9 +263,51 @@
                     }}
                   </p>
                 </div>
-                <div class="bid-inr bid-inr2">
-                  <div id="clock" class="timer">
+                <div class="bid-inr bid-inr2 ">
+                  <div id="clock" class="timer "  style="width:300px">
+
+                  <div class="text-body1" v-if="whitelistStatus == 'pending' && $store.state.currentwallet.user" >
+<span class="text-bold">Fetching whitelist status</span>
+                   <q-linear-progress
+                indeterminate
+                color="grey-5"
+                size="xs"
+                class="q-mt-sm"
+
+              />
+               <q-linear-progress
+                indeterminate
+                color="grey-5"
+                size="xs"
+                class="q-mt-sm"
+
+              />
+               <q-linear-progress
+                indeterminate
+                color="grey-5"
+                size="xs"
+                class="q-mt-sm"
+
+              />
+              </div>
+              <div class="text-body1" v-else-if="whitelistStatus == false">
+              <span class="text-bold">Whitelisting required</span>
+              <q-btn
+                      style="width: 250px"
+                      label="Submit request"
+                      size="lg"
+                      color="white"
+                      class="q-mt-md"
+                      text-color="black"
+                      @click="
+                        openPopup(
+                            'whitelistBtn'
+                        )
+                      "
+                    />
+              </div>
                     <q-btn
+                      v-if="!$store.state.currentwallet.user || whitelistStatus == 'whitelisted'"
                       style="width: 250px"
                       :label="
                         $store.state.currentwallet.user
@@ -285,7 +327,7 @@
                       "
                     /><br />
                     <q-btn
-                      v-if="$store.state.currentwallet.user"
+                      v-if="$store.state.currentwallet.user && whitelistStatus == 'whitelisted'"
                       style="width: 250px"
                       label="Withdraw"
                       @click="
@@ -478,7 +520,8 @@
                             : 'text-pink-12'
                         ]"
                           v-if="
-                            Object.keys(fundRefData.sharePriceMetrics)
+                      fundRefData &&
+                      fundRefData.staiderData && Object.keys(fundRefData.sharePriceMetrics)
                               .length > 0
                           "
                           >{{
@@ -658,6 +701,9 @@ export default {
           this.$route.params.fundID,
           this.$store.state.currentwallet.user.address
         )
+        this.whitelistStatus = await Enzyme.isInvestor(this.$route.params.fundID,
+          this.$store.state.currentwallet.user.address
+        )
       }
     },
     /*  'fundRefData.MonthlyReturnsData': {
@@ -748,11 +794,13 @@ export default {
       )
       this.getInvestments()
       this.getUserAPY()
+      this.whitelistStatus = await Enzyme.isInvestor(this.$route.params.fundID,
+        this.$store.state.currentwallet.user.address
+      )
     }
   },
   methods: {
     async getUserAPY () {
-      console.log(this.userAPY, this.$store.state.currentwallet.user, 2)
       if (this.userAPY) return
       let data = (await Enzyme.getUserInvestments(this.$store.state.currentwallet.user.address))
       if (data && data.funds) {
@@ -763,7 +811,6 @@ export default {
       }
     },
     async getInvestments () {
-      console.log(this.totalInvestments, this.$store.state.currentwallet.user, 1)
       if (!this.$store.state.currentwallet.user || this.totalInvestments) return
 
       let deposits = await Enzyme.getDeposits(this.$route.params.fundID)
@@ -795,6 +842,7 @@ export default {
         investors: 108
       },
       userAPY: null,
+      whitelistStatus: 'pending',
       currency: 'usd',
       tab: 'assets',
       marketData: null,

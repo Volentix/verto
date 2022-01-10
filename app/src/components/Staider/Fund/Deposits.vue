@@ -62,7 +62,7 @@ export default {
           return d
         })
       }
-      console.log(u, ' u')
+
       return u
     }
   },
