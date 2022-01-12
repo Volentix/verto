@@ -31,7 +31,7 @@ export const updateTokens = (state, updatedtokens) => {
       o.tokenPrice = 0
       o.usd = 0
     }
-    if (store.state.settings.globalSettings.blacklist && store.state.settings.globalSettings.blacklist[o.chain] && store.state.settings.globalSettings.blacklist[o.chain].includes(o.type)) {
+    if (store.state.settings.globalSettings.blacklist && store.state.settings.globalSettings.blacklist[o.chain] && store.state.settings.globalSettings.blacklist[o.chain].includes(o.type.toLowerCase())) {
       o.tokenPrice = 0
       o.usd = 0
     }

@@ -3,7 +3,7 @@
 
       <q-table v-if="assets.length"  @row-click="onRowClick" :light="$store.state.settings.lightMode === 'false'" :dark="$store.state.settings.lightMode === 'true'" :pagination="initialPagination" :loading="loaded" :data="assets" :columns="columns" :filter="filter" :filter-method="filterTable" flat class="desktop-card-style current-investments explore-opportunities" :class="{'dark-theme': $store.state.settings.lightMode === 'false'}">
         <template v-slot:body-cell-name="props">
-          <q-td :props="props" class="body-table-col _coin_type cursor-pointer" @click="$emit('setAsset', props.row)">
+          <q-td :props="props" class="body-table-col _coin_type cursor-pointer" @click="$emit('showTokenPage', props.row)">
             <div class="col-1 flex items-center">
               <span class="imgs">
                 <img :src="props.row.icon" alt="">
@@ -113,11 +113,18 @@ export default {
           field: 'currentPrice',
           format: val => `${val}`,
           sortable: true
+        }, {
+          name: 'amount',
+          align: 'left',
+          label: 'Balance',
+          field: 'amount',
+          sortable: true,
+          format: val => `${this.formatNumber(val, 2)}`
         },
         {
           name: 'usd',
           align: 'left',
-          label: 'USD Equivalent',
+          label: 'Value',
           field: 'usd',
           format: val => `${this.formatNumber(val, 2)}`,
           sortable: true
@@ -130,14 +137,7 @@ export default {
           format: val => `${val}`,
           sortable: true
         },
-        {
-          name: 'amount',
-          align: 'left',
-          label: 'Balance',
-          field: 'amount',
-          sortable: true,
-          format: val => `${this.formatNumber(val, 2)}`
-        },
+
         /*  {
           name: 'average_cost',
           align: 'left',
@@ -179,7 +179,7 @@ export default {
   },
   methods: {
     onRowClick (evt, row) {
-      this.$emit('setAsset', row)
+      this.$emit('showTokenPage', row)
     },
     getIncomingTransaction (ethAddress) {
       let request = {

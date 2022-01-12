@@ -11,6 +11,7 @@
     class="wrapper q-px-lg full-width assets_explorer_container"
     :style=" ($q.platform.is.mobile||$isbex) && $store.state.settings.lightMode !== 'true' ? 'background: #f2f2f2 !important' : '' "
 >
+
   <q-dialog v-model="alertSecurity">
     <q-card
       style="width: 100%; max-width: 400px"
@@ -85,13 +86,14 @@
   >
     <div
       class="wrap"
+      v-if="!['chains','investments','assets'].includes(tab) || hideList"
       :class="{
         'account-tabs': $route.params.accounts,
         'assets-tabs': !$route.params.accounts,
       }"
     >
       <div class="row">
-        <div :class="{ 'col-md-6' : !$route.params.accounts , 'col-md-8': $route.params.accounts}">
+        <div :class="{ 'col-md-7' : !$route.params.accounts , 'col-md-8': $route.params.accounts}">
 
           <!-- RELOCATED ALERT & ACCOUNT DIALOG TO TOP FROM HERE FOR COMMON USE-->
 
@@ -150,6 +152,21 @@
               >
             </li>
             <li class="read" v-if="$store.state.wallets.portfolioTotal">
+              <a
+                @click="
+                  tab = 'chains';
+                  hideList = false ;
+                  selectedChain = null;
+                  $store.state.settings.defaultChainData = null;
+                  $store.state.wallets.customTotal.show = false;
+
+                "
+                :class="{ active: tab == 'overview' }"
+                href="javascript:void(0)"
+                ><q-icon name="link" /> Overview</a
+              >
+            </li>
+             <li class="read" v-if="$store.state.wallets.portfolioTotal">
               <a
                 @click="
                   tab = 'chains';
@@ -223,7 +240,7 @@
           </ul>
         </div>
 
-        <div class="col-md-6 row justify-end q-pr-lg" v-if="!$route.params.accounts">
+        <div class="col-md-5 row justify-end q-pr-lg" v-if="!$route.params.accounts">
            <TokenByAccount @filterTokensByAccount="filterTokensByAccount" v-if="tab == 'assets' && selectedChain" :mode="'select'"     :chain="selectedChain.chain" class="justify-end q-mr-md" />
               <div class="see-text col flex justify-end" v-if="tab == 'assets'">
             <span class="flex flex-center">
@@ -348,8 +365,14 @@
         tab == 'chains'
       "
     >
+     <div class="row" v-show="!hideList">
+        <AssetGroup :getChainTotal="getChainTotal" @showAll="showAll" class="col-md-3" v-if="chains && chains.length"  :card="{title:'Chains', description:'Portfolio value by chain', limit:5, type:'chains', bgColor:'bg-indigo-1', textColor:'text-indigo-6', data:chains}"  />
+         <AssetGroup :getChainTotal="getChainTotal" @showAll="showAll"  class="col-md-3" v-if="allInvestments && allInvestments.length" :card="{title:'Investments', hideArrow:true, description:'Staked and locked assets', limit:5, bgColor:'bg-purple-1', textColor:'text-purple-5', data:allInvestments , type:'investments'}" />
+          <AssetGroup :getChainTotal="getChainTotal" @showAll="showAll"  class="col-md-3" v-if="assets && assets.length"  :card="{title:'Assets' ,hideArrow:true, description:'Liquid assets', limit:5, bgColor:'bg-teal-1', textColor:'text-teal-6', type:'assets',data:assets }" />
+          <AssetGroup :getChainTotal="getChainTotal" @showAll="showAll"  class="col-md-3"   :card="{title:'Nfts' , description:'NFTs on Ethereum',hideArrow:true, limit:5, bgColor:'bg-cyan-1', textColor:'text-cyan-6', type:'nfts',data:[] }" />
+          </div>
     <!-- CHAIN LOOP START  -->
-      <q-scroll-area :visible="true" :dark="$store.state.settings.lightMode === 'true'" :class="{'receive_wrapper_class_scroll': tab == 'receive', 'import_wrapper_class_scroll': tab == 'import'}" style="margin-left: -15px; height: 77vh;">
+      <q-scroll-area v-if="hideList" :visible="true" :dark="$store.state.settings.lightMode === 'true'" :class="{'receive_wrapper_class_scroll': tab == 'receive', 'import_wrapper_class_scroll': tab == 'import'}" style="margin-left: -15px; height: 77vh;">
         <div class="sub-top sub-top-chart">
           <div class="subt-text" v-if="!allChains && false">
             <p class="q-ma-none text-bold text-body1">
@@ -426,6 +449,7 @@
             </q-input>
           </div>
         </div>
+
         <div
           class="row q-col-gutter-md"
           :class="{ 'q-pr-lg': $q.screen.width > 500 }"
@@ -468,7 +492,7 @@
                 >
                   <h6 v-if="!(tab == 'receive' || tab == 'privateKeys')">
                     ${{
-                      nFormatter2(chain.chainTotal, chain.chainTotal > 10 ? 0 : 2)
+                      nFormatter2(getChainTotal(chain), getChainTotal(chain) > 10 ? 0 : 2)
                     }}
                     <br />
                   </h6>
@@ -1028,7 +1052,7 @@
           </p>
 
           <AssetBalancesTable
-            @setAsset="showTokenPage"
+            @showTokenPage="showTokenPage"
             data-title="Asset balances"
             data-intro="Here you can see the asset balances"
             :rowsPerPage="7"
@@ -1152,6 +1176,7 @@ import configManager from '@/util/ConfigManager'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import EosWrapper from '@/util/EosWrapper'
 import Lib from '@/util/walletlib'
+import AssetGroup from '@/components/Verto/Token/AssetGroup'
 // MOOBILE TAB UI
 import TabAssetsExplorer from '../MobileUI/TabAssetsExplorer.vue'
 
@@ -1162,6 +1187,7 @@ Vue.component(VueQrcode.name, VueQrcode)
 export default {
   components: {
     ExchangeSection,
+    AssetGroup,
     AssetBalancesTable,
     TokenByAccount,
     MakeVTXSection,
@@ -1180,6 +1206,7 @@ export default {
         chain: null,
         show: false
       },
+      hideList: false,
       chartData: false,
       showPrivateKeys: false,
       showQr: {},
@@ -1426,6 +1453,14 @@ export default {
     }
   },
   computed: {
+    chainInvestments () {
+      let self = this
+      let chains = {
+        eth: self.assetsOptions[1].data.eth.map(v => (isNaN(v.usd) ? 0 : +v.usd)).reduce((a, b) => a + b, 0),
+        eos: self.assetsOptions[1].data.eos.map(v => (isNaN(v.usd) ? 0 : +v.usd)).reduce((a, b) => a + b, 0)
+      }
+      return chains
+    },
     allInvestments () {
       let all = []
 
@@ -1490,6 +1525,20 @@ export default {
     }, 1000)
   },
   methods: {
+    getChainTotal (chain) {
+      let total = chain.chainTotal
+      if (this.chainInvestments[chain.chain]) {
+        total += this.chainInvestments[chain.chain]
+      }
+      return total
+    },
+    showAll (tab) {
+      this.tab = tab
+      this.hideList = true
+      if (tab === 'chains') {
+        this.showAllChains = true
+      }
+    },
     updateTotals () {
       if (this.tab === 'assets' && !this.selectedChain) {
         this.$store.state.wallets.customTotal.usd = this.$store.state.wallets.portfolioTotal
@@ -1691,7 +1740,7 @@ export default {
       if (chain) {
         const self = this
         self.$store.state.settings.defaultChainData = chain
-        self.$store.state.wallets.customTotal.usd = chain.chainTotal
+        self.$store.state.wallets.customTotal.usd = self.getChainTotal(chain)
         self.$store.state.wallets.customTotal.show = true
         self.$store.state.wallets.customTotal.label = chain.label + ' balance'
         if (chain.accounts.length) {
@@ -1853,7 +1902,7 @@ export default {
       investment[wallet.chain]()
     },
     onRowClick (evt, row) {
-      this.$emit('setAsset', row)
+      // this.$emit('setAsset', row)
     },
     getIncomingTransaction (ethAddress) {
       let request = {

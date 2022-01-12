@@ -552,9 +552,9 @@ export default {
       columns: [
         { name: 'asset', align: 'left', label: 'Asset', field: row => row.name, sortable: true, format: val => `${val}` },
         { name: 'price', align: 'left', label: `Price`, field: row => row.name, sortable: true, format: val => `${val}` },
-        { name: 'value', align: 'left', label: `USD Equivalent`, field: row => row.name, sortable: true, format: val => `${val}` },
-        { name: 'dailyChange', align: 'left', label: 'Daily Change', field: row => row.name, sortable: true, format: val => `${val}` },
-        { name: 'balance', align: 'left', label: 'Balance', field: row => row.name, sortable: true, format: val => `${val}` }
+        { name: 'balance', align: 'left', label: 'Balance', field: row => row.name, sortable: true, format: val => `${val}` },
+        { name: 'value', align: 'left', label: `Value`, field: row => row.name, sortable: true, format: val => `${val}` },
+        { name: 'dailyChange', align: 'left', label: 'Daily Change', field: row => row.name, sortable: true, format: val => `${val}` }
       ],
       datasCoins: [],
       MonthlyReturnscolumns: [

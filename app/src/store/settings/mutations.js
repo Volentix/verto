@@ -2,6 +2,7 @@
 export function someMutation (state) {
 }
 */
+import initWallet from '@/util/Wallets2Tokens'
 
 export const setAirplaneMode = (state, data) => {
   state.airplaneMode = data
@@ -12,6 +13,7 @@ export const setGlobalSettings = (state, data) => {
       state.globalSettings[key] = data[key]
     }
   }
+  initWallet()
   localStorage.setItem('globalSettings', JSON.stringify(data))
 }
 export const setGlobalSettingsItem = (state, item) => {

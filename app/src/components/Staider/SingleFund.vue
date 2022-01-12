@@ -800,6 +800,9 @@ export default {
     }
   },
   methods: {
+    setAsset () {
+
+    },
     async getUserAPY () {
       if (this.userAPY) return
       let data = (await Enzyme.getUserInvestments(this.$store.state.currentwallet.user.address))
