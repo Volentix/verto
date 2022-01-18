@@ -43,10 +43,10 @@
               </div>
             </div>
           </div>
-          <div class="Exchange_parttop_a2">
+          <div class="Exchange_parttop_a2 cursor-pointer">
             <img
-              :src="require('assets/Heartdefi/img/hex-hex.png')"
-              alt="images not found" />
+              src="https://icons.veryicon.com/png/o/miscellaneous/fs-icon/switch-38.png"
+               />
           </div>
         </div>
       </div>

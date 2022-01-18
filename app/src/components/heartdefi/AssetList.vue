@@ -3,7 +3,7 @@
 
   <div class="myportofolio-area">
     <div class="myportofolio-left">
-      <h2>My Portofolio</h2>
+      <h2 class="title">My Portofolio</h2>
     </div>
     <div class="myportofolio-right">
       <ul>

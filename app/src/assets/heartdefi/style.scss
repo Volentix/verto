@@ -98,7 +98,7 @@ ul {
 
 
 .main-container {
-   background-color: #ffe5e5;
+   background-color: rgba(171, 71, 187, 0.13);
    padding-top: 15px;
    border-radius: 25px 25px 0px 0px;
    padding-right: 15px;
@@ -724,7 +724,7 @@ ul {
     width: 50%;
 }
 
-.myportofolio-left h2 {
+.myportofolio-left  .title{
     font-family: "Poppins-Bold";
     color: #0e134c;
     font-size: 25px;
@@ -790,7 +790,7 @@ ul {
 .bitcoin-parta {
     display: flex;
     align-items: center;
-    background-color: #f1f5f8;
+    background-color: #fff;
     padding: 8px 10px;
     border-radius: 5px;
 }
