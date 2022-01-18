@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md">
+  <div class="q-px-md">
     <div class="mncright">
       <div class="mncright-left">
         <div class="dashboard-area">

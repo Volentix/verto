@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <div class="tpRecent-parta1 tpRecent-parta2">
+    <div class="tpRecent-parta1">
         <div class="Recent-parta">
         <div class="Recent-parta1">
           <img src="img/hex-hex.png" alt="images not found" />
