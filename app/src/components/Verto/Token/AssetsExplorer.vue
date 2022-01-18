@@ -93,16 +93,16 @@
       }"
     >
       <div class="row">
-        <div :class="{ 'col-md-7' : !$route.params.accounts , 'col-md-8': $route.params.accounts}">
+        <div class="col-md-8">
 
           <!-- RELOCATED ALERT & ACCOUNT DIALOG TO TOP FROM HERE FOR COMMON USE-->
 
           <ul class="tabs group">
             <li
               :class="{
-                'manage': $store.state.wallets.portfolioTotal,
+                'manage': tokensTotal,
                 'read':
-                  !$store.state.wallets.portfolioTotal &&
+                  !tokensTotal &&
                   !$route.params.accounts,
               }"
             >
@@ -119,9 +119,9 @@
             </li>
             <li
               :class="{
-                'manage': $store.state.wallets.portfolioTotal,
+                'manage': tokensTotal,
                 'read':
-                  !$store.state.wallets.portfolioTotal &&
+                  !tokensTotal &&
                   !$route.params.accounts,
               }"
             >
@@ -139,9 +139,9 @@
             <li
              v-if="$route.params.accounts"
              :class="{
-                'manage': $store.state.wallets.portfolioTotal,
+                'manage': tokensTotal,
                 'read':
-                  !$store.state.wallets.portfolioTotal &&
+                  !tokensTotal &&
                   !$route.params.accounts,
               }">
               <a
@@ -151,14 +151,16 @@
                 ><q-icon name="link"  /> New account</a
               >
             </li>
-            <li class="read" v-if="$store.state.wallets.portfolioTotal">
+            <li class="read" v-if="tokensTotal">
               <a
                 @click="
                   tab = 'chains';
                   hideList = false ;
+                  currentChain = false ;
                   selectedChain = null;
                   $store.state.settings.defaultChainData = null;
                   $store.state.wallets.customTotal.show = false;
+                   initTable();
 
                 "
                 :class="{ active: tab == 'overview' }"
@@ -166,7 +168,7 @@
                 ><q-icon name="link" /> Overview</a
               >
             </li>
-             <li class="read" v-if="$store.state.wallets.portfolioTotal">
+             <li class="read" v-if="tokensTotal">
               <a
                 @click="
                   tab = 'chains';
@@ -218,7 +220,7 @@
               >
             </li>
 
-            <li class="read" v-if="$store.state.wallets.portfolioTotal">
+            <li class="read" v-if="tokensTotal">
               <a
                 @click="
                   tab = 'investments';
@@ -240,8 +242,8 @@
           </ul>
         </div>
 
-        <div class="col-md-5 row justify-end q-pr-lg" v-if="!$route.params.accounts">
-           <TokenByAccount @filterTokensByAccount="filterTokensByAccount" v-if="tab == 'assets' && selectedChain" :mode="'select'"     :chain="selectedChain.chain" class="justify-end q-mr-md" />
+        <div class="col-md-4 row justify-end q-pr-lg" v-if="!$route.params.accounts">
+           <TokenByAccount @filterTokensByAccount="filterTokensByAccount" v-if="tab == 'assets' && selectedChain" :mode="'select'"     :chain="selectedChain.chain" class="justify-end q-mx-md" />
               <div class="see-text col flex justify-end" v-if="tab == 'assets'">
             <span class="flex flex-center">
               <span class="text-body2 q-pr-sm">View</span>
@@ -262,6 +264,7 @@
             </span>
           </div>
           <q-input
+            v-if="false"
             @input="tab = 'assets'"
             :dark="$store.state.settings.lightMode === 'true'"
             :class="{'bg-white': $store.state.settings.lightMode === 'false'}"
@@ -360,16 +363,16 @@
     <div
       :class="{ 'chains q-pt-md': !$route.params.accounts }"
       v-if="
-        (($route.params.accounts || !$store.state.wallets.portfolioTotal) &&
+        (($route.params.accounts || !tokensTotal) &&
           !['assets', 'investments'].includes(tab)) ||
         tab == 'chains'
       "
     >
      <div class="row" v-show="!hideList">
-        <AssetGroup :getChainTotal="getChainTotal" @showAll="showAll" class="col-md-3" v-if="chains && chains.length"  :card="{title:'Chains', description:'Portfolio value by chain', limit:5, type:'chains', bgColor:'bg-indigo-1', textColor:'text-indigo-6', data:chains}"  />
-         <AssetGroup :getChainTotal="getChainTotal" @showAll="showAll"  class="col-md-3" v-if="allInvestments && allInvestments.length" :card="{title:'Investments', hideArrow:true, description:'Staked and locked assets', limit:5, bgColor:'bg-purple-1', textColor:'text-purple-5', data:allInvestments , type:'investments'}" />
-          <AssetGroup :getChainTotal="getChainTotal" @showAll="showAll"  class="col-md-3" v-if="assets && assets.length"  :card="{title:'Assets' ,hideArrow:true, description:'Liquid assets', limit:5, bgColor:'bg-teal-1', textColor:'text-teal-6', type:'assets',data:assets }" />
-          <AssetGroup :getChainTotal="getChainTotal" @showAll="showAll"  class="col-md-3"   :card="{title:'Nfts' , description:'NFTs on Ethereum',hideArrow:true, limit:5, bgColor:'bg-cyan-1', textColor:'text-cyan-6', type:'nfts',data:[] }" />
+        <AssetGroup @setItemAction="setItemAction" :getChainTotal="getChainTotal" @showAll="showAll" class="col-md-3" v-if="chains && chains.length"  :card="{title:'Chains', description:'Portfolio value by chain', limit:5, type:'chains', bgColor:'bg-indigo-1', textColor:'text-indigo-6', data:chains}"  />
+         <AssetGroup @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll"  class="col-md-3" v-if="allInvestments && allInvestments.length" :card="{title:'Investments', hideArrow:this.readOnly, description:'Staked and locked assets', limit:5, bgColor:'bg-purple-1', textColor:'text-purple-5', data:allInvestments , type:'investments'}" />
+          <AssetGroup @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll"  class="col-md-3" v-if="assets && assets.length"  :card="{title:'Assets' ,hideArrow:this.readOnly, description:'Liquid assets', limit:5, bgColor:'bg-teal-1', textColor:'text-teal-6', type:'assets',data:assets }" />
+          <AssetGroup @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll"  class="col-md-3"   :card="{title:'Nfts' , description:'NFTs on Ethereum',hideArrow:this.readOnly, limit:5, bgColor:'bg-cyan-1', textColor:'text-cyan-6', type:'nfts',data:[] }" />
           </div>
     <!-- CHAIN LOOP START  -->
       <q-scroll-area v-if="hideList" :visible="true" :dark="$store.state.settings.lightMode === 'true'" :class="{'receive_wrapper_class_scroll': tab == 'receive', 'import_wrapper_class_scroll': tab == 'import'}" style="margin-left: -15px; height: 77vh;">
@@ -1215,7 +1218,7 @@ export default {
       tab: 'chains',
       uniqueKey: 1235878,
       alertSecurity: false,
-      showAllChains: false,
+      showAllChains: true,
       readOnly: false,
       keys: {
         chain: null,
@@ -1358,6 +1361,7 @@ export default {
 
     if (this.$route.params.accounts) {
       this.tab = 'receive'
+      this.hideList = true
     }
     if (this.$route.params.tab) {
       this.tab = this.$route.params.tab
@@ -1368,6 +1372,7 @@ export default {
         (o) => o.chain === this.$route.params.selectChain
       )
       this.tab = 'chains'
+      this.hideList = true
       if (chain.isEvm || chain.chain === 'eos') { this.chainAction(chain) }
     }
     this.initTable()
@@ -1402,11 +1407,16 @@ export default {
         this.alertSecurity = true
       } else if (val) { this.tab = val }
     },
+    currentChain (val) {
+      if (val) {
+        this.hideList = true
+      }
+    },
     '$store.state.wallets.tokens': {
       deep: true,
       handler () {
         this.initTable()
-        if (!this.$store.state.wallets.portfolioTotal) {
+        if (!this.tokensTotal) {
           this.tab = 'receive'
         } else if (
           !this.$route.params.accounts &&
@@ -1431,6 +1441,11 @@ export default {
         this.getVTXStakingInvestment()
       }
       this.updateTotals()
+      setTimeout(() => {
+        if (this.tab === 'receive') {
+          this.hideList = true
+        }
+      }, 2000)
     },
     '$store.state.investment.defaultAccount': function (newVal) {
       if (newVal) {
@@ -1453,6 +1468,15 @@ export default {
     }
   },
   computed: {
+    tokensTotal () {
+      let total = 0
+      this.$store.state.wallets.tokens.forEach(o => {
+        if (o.amount && !isNaN(o.amount)) {
+          total += parseFloat(o.amount)
+        }
+      })
+      return total
+    },
     chainInvestments () {
       let self = this
       let chains = {
@@ -1516,7 +1540,7 @@ export default {
     this.$store.state.wallets.customTotal.show = false
   },
   mounted () {
-    if (!this.$store.state.wallets.portfolioTotal) {
+    if (!this.tokensTotal) {
       this.tab = 'receive'
     }
     setTimeout(() => {
@@ -1525,6 +1549,15 @@ export default {
     }, 1000)
   },
   methods: {
+    setItemAction (data) {
+      if (data.tab === 'chains') {
+        this.hideList = true
+        this.chainAction(data.item)
+      } else {
+        this.hideList = true
+        this.showTokenPage(data.item)
+      }
+    },
     getChainTotal (chain) {
       let total = chain.chainTotal
       if (this.chainInvestments[chain.chain]) {
@@ -1937,6 +1970,7 @@ export default {
       let all = null
       if (!['new', 'import'].includes(this.tab)) {
         all = this.setChains()
+        console.log(all, 'all')
         this.chains = all.filter(
           (o) =>
             o.type === 'verto' || (o.accounts &&
@@ -2001,7 +2035,7 @@ export default {
           if (
             (!isNaN(token.amount) && token.amount !== 0) ||
             token.isEvm ||
-            !this.$store.state.wallets.portfolioTotal
+            !this.tokensTotal
           ) {
             let index = this.assets.findIndex(
               (o) =>

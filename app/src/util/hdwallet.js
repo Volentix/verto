@@ -89,6 +89,7 @@ class HD {
     Lib.evms.forEach(o => {
       chains.unshift({
         icon: o.icon,
+        isEvm: true,
         value: o.chain,
         label: o.name
       })

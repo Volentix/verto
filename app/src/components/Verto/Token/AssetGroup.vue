@@ -12,7 +12,7 @@
       <div style="min-height:318px;" v-if="card.data.length == 0" class="text-h6 flex flex-center text-center text-grey">
       No <br/> <br/>{{card.title}}<br/> <br/> found
       </div>
-      <q-item  v-for="(item, i) in card.data.slice(0, card.limit)" :key="i" class="q-mb-sm" clickable v-ripple>
+      <q-item @click="$emit('setItemAction',{item:item, tab:card.type})" v-for="(item, i) in card.data.slice(0, card.limit)" :key="i" class="q-mb-sm" clickable v-ripple>
         <q-item-section avatar>
           <q-avatar>
             <img :src="item.icon">
@@ -50,43 +50,10 @@
 </template>
 <script>
 import Formatter from '@/mixins/Formatter'
-const contacts = [ {
-  id: 1,
-  name: 'Ruddy Jedrzej',
-  email: 'rjedrzej0@discuz.net',
-  letter: 'R'
-}, {
-  id: 2,
-  name: 'Mallorie Alessandrini',
-  email: 'malessandrini1@marketwatch.com',
-  letter: 'M'
-}, {
-  id: 3,
-  name: 'Elisabetta Wicklen',
-  email: 'ewicklen2@microsoft.com',
-  letter: 'E'
-}, {
-  id: 4,
-  name: 'Seka Fawdrey',
-  email: 'sfawdrey3@wired.com',
-  letter: 'S'
-} ]
-
-const offline = [ {
-  id: 5,
-  name: 'Brunhilde Panswick',
-  email: 'bpanswick4@csmonitor.com',
-  avatar: 'avatar2.jpg'
-}, {
-  id: 6,
-  name: 'Winfield Stapforth',
-  email: 'wstapforth5@pcworld.com',
-  avatar: 'avatar6.jpg'
-} ]
 
 export default {
   mixins: [Formatter],
-  props: ['card', 'getChainTotal'],
+  props: ['card', 'getChainTotal', 'itemAction'],
   computed: {
     total () {
       let field = 'usd'
@@ -99,8 +66,7 @@ export default {
   },
   data () {
     return {
-      contacts,
-      offline
+
     }
   }
 }

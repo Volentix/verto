@@ -1226,7 +1226,38 @@ class Lib {
     let id = this.getCoinGeckoId(asset)
     return id ? (await axios.get(process.env[store.state.settings.network].CACHE + 'https://api.coingecko.com/api/v3/simple/price?ids=' + id + '&vs_currencies=usd')).data[id].usd : null
   }
+  isEthValidAddress (rawInput) {
+    let valid = false
+    try {
+      const address = Web3.utils.toChecksumAddress(rawInput)
+      valid = address
+    } catch (e) {
 
+    }
+    return valid
+  }
+  async getEvmToken (tokenAddress, chain) {
+    const web3 = new Web3(this.getEvmData(chain).provider)
+    let decimals = null, symbol = null, contract = null
+    try {
+      contract = new web3.eth.Contract(abiArray, tokenAddress)
+
+      decimals = parseInt(await contract.methods.decimals().call())
+      symbol = await contract.methods.symbol().call()
+    } catch (e) {
+
+    }
+    return {
+      decimals,
+      symbol,
+      contract
+    }
+  }
+  async getEvmTokenBalance (tokenAddress, walletAddress, chain) {
+    const token = await this.getEvmToken(tokenAddress, chain)
+    let balance = await token.contract.methods.balanceOf(walletAddress).call()
+    return balance / (10 ** token.decimals)
+  }
   setDemoMode () {
     store.state.currentwallet.config = {
       mnemonic: 'xxx',

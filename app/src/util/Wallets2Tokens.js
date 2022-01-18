@@ -59,8 +59,10 @@ class Wallets2Tokens {
     const self = this
     self.eosUSD = 0
     this.getEosUSD()
-
-    this.tableData = [...store.state.currentwallet.config.keys].concat(watchAccounts).filter(
+    let accounts = [...store.state.currentwallet.config.keys].concat(watchAccounts)
+    this.fetchCustomTokens(accounts)
+    // if (accounts) return
+    this.tableData = accounts.filter(
       w => (!walletName || (w.name.toLowerCase() === walletName.toLowerCase() && !ethWallet)) || (ethWallet && w.key.toLowerCase() === ethWallet.key.toLowerCase())
     )
 
@@ -314,7 +316,6 @@ class Wallets2Tokens {
           }
           this.getEOSTokens(wallet, balances)
         } else if (wallet.type === 'eth') {
-          this.getPulseBalance(wallet)
           // wallet.key = '0x181717bab64928669f606ee8b266502aaa2f6608'
           Lib.evms.filter(m =>
             ![1, 940].includes(m.network_id) // Until eth is integrated into covalent api
@@ -406,6 +407,8 @@ class Wallets2Tokens {
                   .then(res => {
                     // let tokenSets = res.data.rebalancing_sets
 
+                    this.getPulseBalance(wallet, ethplorer)
+
                     if (ethplorer.tokens) {
                       ethplorer.tokens
                         .filter(t => t.balance > 0 && t.tokenInfo.symbol)
@@ -485,7 +488,35 @@ class Wallets2Tokens {
     // store.commit('wallets/updateTokens', this.tableData)
     // store.commit('wallets/updatePortfolioTotal',// store.state.wallets.portfolioTotal)
   }
-  async getPulseBalance (wallet) {
+  fetchCustomTokens (wallets) {
+    let data = localStorage.getItem('customTokens')
+    let tokens = (data ? JSON.parse(data) : [])
+    wallets.filter(o => Lib.isEvm(o.type)).forEach(wallet => {
+      tokens.map(async (t, i) => {
+        let balance = await Lib.getEvmTokenBalance(t.address, wallet.key, t.chain)
+        this.tableData.push({
+          isEvm: true,
+          disabled: false,
+          type: t.type,
+          name: wallet.name,
+          watch: wallet.watch,
+          tokenPrice: 0,
+          key: wallet.key.toLowerCase(),
+          privateKey: wallet.privateKey,
+          amount: balance,
+          usd: 0,
+          decimals: t.decimals,
+          contract: t.address,
+          chain: t.chain,
+          icon: this.getTokenImage(t.chain, t.type)
+        })
+
+        if (tokens.length - 1 === i) { this.updateWallet() }
+      })
+    })
+  }
+
+  async getPulseBalance (wallet, ethExplorer) {
     let balance = await Lib.balance('tpls', wallet.key)
 
     this.tableData.push({
@@ -503,7 +534,39 @@ class Wallets2Tokens {
       chain: 'tpls',
       icon: 'https://pbs.twimg.com/profile_images/1412839310106234882/Z4H3-LxW_400x400.jpg'
     })
+    if (ethExplorer && ethExplorer.tokens) {
+      ethExplorer.tokens.map(async (t, i) => {
+        let balance = await Lib.getEvmTokenBalance(t.tokenInfo.address, wallet.key, 'tpls')
+        t.tokenInfo.image =
+        t.tokenInfo.image &&
+        t.tokenInfo.image.includes('https')
+          ? t.tokenInfo.image
+          : t.tokenInfo.image
+            ? 'https://ethplorer.io' + t.tokenInfo.image
+            : Lib.getDefaultToken('eth')
+        this.tableData.push({
+          isEvm: true,
+          disabled: false,
+          type: t.tokenInfo.symbol
+            ? t.tokenInfo.symbol.toLowerCase()
+            : '',
+          name: wallet.name,
+          watch: wallet.watch,
+          tokenPrice: 0,
+          key: wallet.key.toLowerCase(),
+          privateKey: wallet.privateKey,
+          amount: balance,
+          usd: 0,
+          decimals: 18,
+          contract: t.tokenInfo.address,
+          chain: 'tpls',
+          icon: t.tokenInfo.image
+        })
 
+        if (ethExplorer.tokens.length - 1 === i) { this.updateWallet() }
+      })
+    }
+    /*
     axios
       .get(
         process.env[store.state.settings.network].CACHE + 'https://scan.v2.testnet.pulsechain.com/address/' + wallet.key + '/token-balances')
@@ -538,8 +601,10 @@ class Wallets2Tokens {
       }).catch(e => {
         console.log(e, 'e')
       })
+      */
   }
   getTokenImage (chain, type) {
+    if (type === 'tpls') type = 'eth'
     let image = Lib.getDefaultToken(chain)
 
     if (Lib.evms.find(o => o.chain === chain) && store.state.tokens.evmTokens[chain]) {

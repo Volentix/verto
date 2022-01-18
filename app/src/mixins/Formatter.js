@@ -4,6 +4,17 @@ import { scroll, openURL } from 'quasar'
 import { toSvg } from 'jdenticon'
 
 export default {
+  computed: {
+    fundTotal () {
+      let total = 0
+      if (this.$store.state.wallets.customTotal.show) {
+        total = this.nFormatter2(this.$store.state.wallets.customTotal.usd, 3)
+      } else {
+        total = this.nFormatter2(this.$store.state.investment.investmentTotal + this.$store.state.wallets.portfolioTotal, 3)
+      }
+      return total
+    }
+  },
   methods: {
     defaultToken (chain) {
       return "this.src='" + Lib.getDefaultToken(chain) + "'"
@@ -324,7 +335,7 @@ export default {
         ]
       */
       let chainsData = HD.getVertoChains()
-      let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || v.type === 'verto' || !['eos', 'eth'].includes(v.chain)) && a.findIndex(t => (t.chain === v.chain)) === i)))
+      let chains = JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter((v, i, a) => (v.type === v.chain || v.type === 'verto' || Lib.isEvm(v.chain) || !['eos'].includes(v.chain)) && a.findIndex(t => (t.chain === v.chain)) === i)))
         .map(o => {
           let accounts = this.$store.state.wallets.tokens.filter(f => f.chain === o.chain)
           o.chainTotal = accounts.reduce((a, b) => +a + (isNaN(b.usd) ? 0 : +b.usd), 0)

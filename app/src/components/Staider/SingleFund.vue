@@ -745,15 +745,6 @@ export default {
     } */
   },
   computed: {
-    fundTotal () {
-      let total = 0
-      if (this.$store.state.wallets.customTotal.show) {
-        total = this.nFormatter2(this.$store.state.wallets.customTotal.usd, 3)
-      } else {
-        total = this.nFormatter2(this.$store.state.investment.investmentTotal + this.$store.state.wallets.portfolioTotal, 3)
-      }
-      return total
-    },
     fundRefData () {
       return this.$store.state.investment.fundData ? this.$store.state.investment.fundData[this.$route.params.fundID] : null
     },

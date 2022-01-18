@@ -52,7 +52,7 @@
                     ${{ nFormatter2($store.state.wallets.customTotal.usd, 3) }}
                   </div>
                   <div class="text-h3 total" v-else>
-                    ${{ nFormatter2($store.state.wallets.portfolioTotal, 3) }}
+                    ${{ fundTotal }}
                   </div>
 
               <p class="text-body2 text-center test text-grey" v-if="$store.state.wallets.tokens.length && loadingIndicator"><span class="text-bold">Updating {{getChainLabel($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].chain)}} wallet</span><br/><span class="deep-purple-12">{{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].name}}</span> {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total ? '($'+formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].total,0)+')' : ''}} <br> {{$store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].type.toUpperCase()}} balance:  (${{formatNumber($store.state.wallets.tokens[$store.state.wallets.tokens.length - 1].usd,2)}})...</p>
