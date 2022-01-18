@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="q-pb-lg">
     <div class="Upcoming-events">
       <h2>Upcoming events</h2>
       <p>Don't miss scheduled events</p>

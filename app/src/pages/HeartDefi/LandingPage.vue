@@ -92,10 +92,9 @@
       <div class="mncright-right">
         <div class="mncright-right2">
           <RightSideTop/>
-<NewsArea/>
+          <NewsArea/>
           <RecentTransactions/>
-
-            <UpcomingEvents/>
+          <UpcomingEvents/>
         </div>
       </div>
     </div>

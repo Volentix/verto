@@ -83,5 +83,8 @@ export default {
     .mncright-right{
       padding-top: 0 !important;
     }
+    .main-container-right{
+      overflow-y: scroll;
+    }
   }
 </style>
