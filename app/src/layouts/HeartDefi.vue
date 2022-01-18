@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import LeftDrawer from 'components/heartdefi/LeftDrawer'
-import NewsArea from 'components/heartdefi/NewsArea'
+import LeftDrawer from 'components/Heartdefi/LeftDrawer'
+import NewsArea from 'components/Heartdefi/NewsArea'
 export default {
   mixins: [],
   components: {
@@ -58,8 +58,8 @@ export default {
 }
 </script>
 <style>
-  @import '~assets/heartdefi/style.scss';
-  @import '~assets/heartdefi/css/responsive.css';
+  @import '~assets/Heartdefi/style.scss';
+  @import '~assets/Heartdefi/css/responsive.css';
 </style>
 <style lang="scss">
   .main-area{

@@ -14,7 +14,7 @@
             <div class="Exchange-part">
               <div class="mainexch-eth-left">
                 <img
-                  :src="require('assets/heartdefi/img/Ethereum-ETH-icon.png')"
+                  :src="require('assets/Heartdefi/img/Ethereum-ETH-icon.png')"
                   alt="images not found " />
                 <p>ETH</p>
               </div>
@@ -30,7 +30,7 @@
             <div class="Exchange-part newExchange-part">
               <div class="mainexch-eth-left">
                 <img
-                  :src="require('assets/heartdefi/img/hex-hex.png')"
+                  :src="require('assets/Heartdefi/img/hex-hex.png')"
                   alt="images not found " />
                 <p>BNB</p>
               </div>
@@ -45,7 +45,7 @@
           </div>
           <div class="Exchange_parttop_a2">
             <img
-              :src="require('assets/heartdefi/img/hex-hex.png')"
+              :src="require('assets/Heartdefi/img/hex-hex.png')"
               alt="images not found" />
           </div>
         </div>

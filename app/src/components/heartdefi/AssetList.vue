@@ -1,4 +1,17 @@
 <template>
+<div>
+
+  <div class="myportofolio-area">
+    <div class="myportofolio-left">
+      <h2>My Portofolio</h2>
+    </div>
+    <div class="myportofolio-right">
+      <ul>
+        <li><a href="" @click.prevent=""><i class="fas fa-chevron-left"></i></a></li>
+        <li><a href="" @click.prevent=""><i class="fas fa-chevron-right"></i></a></li>
+      </ul>
+    </div>
+  </div>
   <div class="bitcoin-area">
     <div class="bitcoin-part row q-col-gutter-md">
       <div class="bitcoin-part_a col-md-4" v-for="item in 6" :key="item">
@@ -19,11 +32,11 @@
 
     </div>
   </div>
+    </div>
 </template>
 
 <script>
 export default {
- 
 
 }
 </script>

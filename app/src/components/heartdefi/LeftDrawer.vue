@@ -3,7 +3,7 @@
     <div class="logo-area">
       <a href="" @click.prevent="">
         <img
-          :src="require('assets/heartdefi/img/logo.png')"
+          :src="require('assets/Heartdefi/img/logo.png')"
           alt="logo" />
       </a>
     </div>
