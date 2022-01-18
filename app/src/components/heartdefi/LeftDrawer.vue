@@ -19,19 +19,19 @@
             <li>
               <a href="" @click.prevent=""  >
                 <i class="far fa-chart-bar"/>
-                <p>Exchange</p>
+                <p>History</p>
               </a>
             </li>
             <li>
               <a href="" @click.prevent=""  >
                 <i class="fas fa-wallet"/>
-                <p>Wallet</p>
+                <p>Projects</p>
               </a>
             </li>
             <li>
               <a href="" @click.prevent=""  >
                 <i class="fas fa-chart-line"/>
-                <p>Chart</p>
+                <p>NFTs</p>
               </a>
             </li>
             <li>

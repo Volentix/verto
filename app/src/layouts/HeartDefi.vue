@@ -9,7 +9,7 @@
         content-class="left-drawer">
         <div class="main-container-left">
           <LeftDrawer/>
-          <NewsArea/>
+
         </div>
       </q-drawer>
       <q-page-container class="main-container-right" style="padding-left:0px" :style="{'margin-left':left_width+'px'}">
@@ -24,12 +24,11 @@
 
 <script>
 import LeftDrawer from 'components/Heartdefi/LeftDrawer'
-import NewsArea from 'components/Heartdefi/NewsArea'
+
 export default {
   mixins: [],
   components: {
-    LeftDrawer,
-    NewsArea
+    LeftDrawer
   },
   data () {
     return {
