@@ -90,7 +90,7 @@ ul {
 
 /*--- ---*/
 .main-area {
-    background-color: #cee8ff;
+    background-color: #ffffff;
     padding: 10px;
     padding-bottom: 0px;
     overflow: hidden;
@@ -98,7 +98,7 @@ ul {
 
 
 .main-container {
-   background-color: #f0f7ff;
+   background-color: #ffe5e5;
    padding-top: 15px;
    border-radius: 25px 25px 0px 0px;
    padding-right: 15px;
@@ -166,7 +166,7 @@ ul {
 
 .menu-part ul li.active a {
     color: #fff;
-    background-color: #3662ff;   
+    background-color: #e01f00;   
 }
 
 .menu-part ul li a::before {
@@ -183,11 +183,11 @@ ul {
 }
 
 .menu-part ul li a:hover::before {
-     background-color: #3662ff;    
+     background-color: #000000;    
 }
 
 .menu-part ul li.active a::before {
-    background-color: #3662ff; 
+    background-color: #000000; 
 }
 
 .menu-part ul li i {
@@ -203,7 +203,7 @@ ul {
 
 .menu-part ul li a {
     font-family: "Poppins-Medium";
-    color: #5b9cfd;
+    color: #000000;
     font-size: 16px;
     display: block;
 }
@@ -357,7 +357,7 @@ ul {
 
 
 .main-container-right {
-    background-color: #fff;
+    background-color: #fffbfb;
     padding: 15px;
     padding-left: 20px;
     width: 100%;

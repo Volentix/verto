@@ -66,7 +66,7 @@ export default {
     .q-drawer{
       background: transparent;
       .left-drawer{
-        background-color: #f0f7ff;
+        background-color: #ffe5e4;
       }
     }
   }

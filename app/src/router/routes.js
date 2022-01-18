@@ -25,16 +25,13 @@ if (process.env.QMODE !== 'bex') {
     //   ]
     // },
     {
-<<<<<<< HEAD
-=======
       path: '/heart-layout',
       component: () => import('layouts/HeartDefi.vue'),
       children: [
         { path: '', component: () => import('components/heartdefi/LandingPage.vue') }
       ]
-    },
+    }, /*
     {
->>>>>>> 2aad6ec0158f8a1875026b6f816eccabca2649ff
       path: '/',
       component: () => import('layouts/staiderLayout.vue'),
       children: [
@@ -57,7 +54,7 @@ if (process.env.QMODE !== 'bex') {
           component: () => import('components/Verto/Token/AssetsExplorer.vue')
         }
       ]
-    },
+    }, */
     {
       path: '/blocktopusCreate',
       component: () => import('layouts/Default.vue'),

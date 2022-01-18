@@ -81,7 +81,7 @@
           </div>
         </div>
         <PortfolioArea/>
-        <BitCoinList v-for="i in 2" :key="i"/>
+        <AssetList />
         <DefiList
           v-for="i in 2"
           :key="'defi-'+i"
@@ -102,7 +102,7 @@
 <script>
 import ExchangeForm from 'components/heartdefi/ExchangeForm'
 import PortfolioArea from 'components/heartdefi/PortfolioArea'
-import BitCoinList from 'components/heartdefi/BitCoinList'
+import AssetList from './AssetList'
 import DefiList from 'components/heartdefi/DefiList'
 import RightSideTop from 'components/heartdefi/RightSideTop'
 import UpcomingEvents from 'components/heartdefi/UpcomingEvents'
@@ -111,7 +111,7 @@ export default {
   mixins: [],
   components: {
     ExchangeForm,
-    BitCoinList,
+    AssetList,
     DefiList,
     RightSideTop,
     UpcomingEvents,
