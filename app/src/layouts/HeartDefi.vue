@@ -80,5 +80,8 @@ export default {
     .mainexch-eth-right{
       padding-left: 22px;
     }
+    .mncright-right{
+      padding-top: 0 !important;
+    }
   }
 </style>
