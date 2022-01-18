@@ -1,0 +1,25 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/verto
+    docker:
+      - image: circleci/node:10.12.0-browsers
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install dependencies
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run:
+          name: Unit Testing
+          command: npm run test
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build

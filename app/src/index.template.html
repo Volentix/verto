@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= htmlWebpackPlugin.options.productName %></title>
+
+    <meta charset="utf-8">
+    <meta name="description" content="<%= htmlWebpackPlugin.options.productDescription %>">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width<% if (htmlWebpackPlugin.options.ctx.mode.cordova || htmlWebpackPlugin.options.ctx.mode.capacitor) { %>, viewport-fit=cover<% } %>">
+
+    <link rel="icon" type="image/png" href="statics/app-logo-128x128.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="statics/icons/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="statics/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="statics/icons/favicon-96x96.png">
+    <link rel="icon" type="image/ico" href="statics/icons/favicon.ico">
+
+    <!-- <link rel="icon" href="statics/logo.svg" size="any" type="image/x-icon"> -->
+
+
+    <!-- Google Tag Manager -->
+<!--  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':-->
+<!--  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],-->
+<!--  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);-->
+<!--  })(window,document,'script','dataLayer','GTM-P437ZDP');</script>-->
+<!--  &lt;!&ndash; End Google Tag Manager &ndash;&gt;-->
+  <style>
+    #preloader{
+      height: 600px;
+      width: 357px;
+      background-color: #F5F5FE;
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+    }
+    .loading-container{
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+    }
+    .loading {
+      justify-content: center;
+      align-items: center;
+      width: 150px;
+      height: 150px;
+      display: flex;
+    }
+    .loading-img{
+      padding-top: 28px;
+      padding-left: 18px;
+    }
+    .loading:after {
+      content: " ";
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      width: 150px;
+      height: 150px;
+      margin: 8px;
+      border-radius: 50%;
+      border: 3px solid #4A88EE;
+      border-color: #4A88EE transparent #4A88EE transparent;
+      animation: lds-dual-ring 1.2s linear infinite;
+    }
+    @keyframes lds-dual-ring {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform:  rotate(360deg);
+      }
+    }
+    /*This part is required for navigation to work properly*/
+    <% if (htmlWebpackPlugin.options.ctx.mode.bex) { %>
+      html{
+      position: relative;
+        width: 357px !important;
+        height: 600px !important;
+      }
+      body{
+        width: 357px !important;
+        background-color: #F5F5FE !important;
+        position: relative !important;
+      }
+      body.q-body--fullscreen-mixin.q-body--prevent-scroll{
+        position: relative !important;
+
+      }
+    <% } %>
+
+  </style>
+  </head>
+  <body
+    style="position: relative !important;"
+  >
+
+    <!-- Google Tag Manager (noscript) -->
+<!--<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P437ZDP"-->
+<!--  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>-->
+  <!-- End Google Tag Manager (noscript) -->
+
+    <!-- DO NOT touch the following DIV -->
+    <% if (htmlWebpackPlugin.options.ctx.mode.bex) { %>
+    <div id="preloader">
+      <div class="loading-container">
+        <div class="loading">
+          <img class="loading-img" width="100" src="statics/icons/icon-256x256.png">
+        </div>
+      </div>
+    </div>
+    <div>
+      <div id="q-app" style="width: 357px;;height: 600px"></div>
+    </div>
+    <% } %>
+    <% if (!htmlWebpackPlugin.options.ctx.mode.bex) { %>
+    <div id="q-app"></div>
+    <% } %>
+
+  </body>
+</html>
+

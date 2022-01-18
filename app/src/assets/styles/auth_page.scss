@@ -1,0 +1,98 @@
+.vert-page-content {
+  padding: 0 8% 3% 8%;
+  flex-grow: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  &--title {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+    font-family: $Franklin;
+    position: relative;
+    margin-left: 0%;
+    margin-top: 0px;
+    text-align: center;
+
+    &__sub {
+      font-size: 14px;
+      font-weight: 400;
+      text-align: center;
+      line-height: 14px;
+      margin-top: 0px;
+    }
+  }
+
+  &--desc {
+    font-size: 14px;
+    font-weight: $regular;
+    line-height: 20px;
+    font-family: $Titillium;
+  }
+
+  &--body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    //margin-top: 5%;
+    //margin-bottom: 5%;
+
+    @media screen and (min-width: 768px) {
+      margin-top: 5%;
+      margin-bottom: 0%;
+      max-width: 400px;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    &.extra__px {
+      padding: 0 20px;
+    }
+  }
+
+  &--footer {
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /deep/ .q-field--focused .q-field__label {
+  }
+
+  /deep/ .q-field--outlined .q-field__control {
+    background-color: #fff
+  }
+
+  /deep/ .q-field--outlined .q-field__control:after {
+    border: 2px solid #E1E1E9;
+    //background-color: #fff;
+    //box-shadow: 0px 0px 10px 0px #E1E1E9;
+  }
+
+  /deep/ .q-field--outlined .q-field__control:before {
+    border: 2px solid #E1E1E9;
+    //background-color: #fff;
+    //box-shadow: 0px 0px 10px 0px #E1E1E9;
+  }
+
+  /deep/ .q-field--outlined.q-field--focused .q-field__control:after {
+    border: 2px solid #c4c4c6;
+    //background-color: #fff;
+    //box-shadow: 0px 0px 10px 0px #d4d4db;
+  }
+
+  /deep/ .q-field--outlined.q-field--focused .q-field__control:before {
+    border: 2px solid #c4c4c6;
+    //background-color: #fff;
+    //box-shadow: 0px 0px 10px 0px #d4d4db;
+  }
+
+  /deep/ .q-field--dark:not(.q-field--focused) .q-field__label,
+  /deep/ .q-field--dark .q-field__marginal,
+  /deep/ .q-field--dark .q-field__bottom {
+  }
+}

@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@200;300;400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@200;300;400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;700&display=swap');
+$Titillium: 'Titillium Web', sans-serif;
+$Franklin: 'Libre Franklin', sans-serif;
+$Comfortaa: 'Comfortaa', cursive;
+$lighter: 200;
+$light: 300;
+$regular: 400;
+$semibold: 600;
+$bold: 700;
+$bolder: 800;
+$black: 900;
+
+.scale3d{
+  transform: scale3d(1,1,1);
+}
+.boxed{
+  max-width: 1280px;
+  margin: auto !important;
+}
+.relative{
+  position: relative;
+}
+.shadoweffect{
+  position: absolute;
+  bottom: -30px;
+}
+.section2, .section5, .section6, .section7, .section8, .section9, .section10{
+  h1{
+    color: rgba(#00368e, 1) !important;
+    @media screen and (max-width: 768px) {
+      font-size: 40px !important;
+      padding-left: 20px;
+    }
+    @media screen and (max-width: 414px) {
+      font-size: 35px !important;
+    }
+  }
+}
+.section3,.section4, .section5, .section7, .section9, .section10{
+  h1{
+    color: rgba(#00368e, 1) !important;
+    @media screen and (max-width: 768px) {
+      font-size: 40px !important;
+      line-height: 40px !important;
+      padding-left: 20px;
+      padding-right: 20px;
+      text-align: center;
+    }
+    @media screen and (max-width: 414px) {
+      font-size: 35px !important;
+    }
+  }
+}
+.section10, .section4{
+  h1{
+    color: rgba(#00368e, 1) !important;
+    @media screen and (max-width: 768px) {
+      font-size: 35px !important;
+      padding-left: 20px;
+    }
+  }
+}
+.dark_theme{
+  .section2, .section5, .section6, .section7, .section8, .section9, .section10{
+    h1{
+      color: rgba(#FFF, 1) !important;
+    }
+  }
+  .section3,.section4, .section5, .section7, .section9, .section10{
+    h1{
+      color: rgba(#FFF, 1) !important;
+    }
+  }
+  .section10, .section4{
+    h1{
+      color: rgba(#FFF, 1) !important;
+    }
+  }
+}
