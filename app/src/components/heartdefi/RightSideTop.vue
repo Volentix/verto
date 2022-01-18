@@ -5,10 +5,10 @@
         <i class="fas fa-bell"></i>
       </div>
       <div class="rightsidetop-part-right">
-        <ul>
-        <li><a href="#"><img src="img/Ethereum-ETH-icon.png" alt="images not found" /></a></li>
-        <li><a href="#">Arya Wijaya</a></li>
-        <li><a href="#"><i class="fas fa-chevron-down" aria-hidden="true"></i></a></li>
+        <ul class="q-gutter-x-xs">
+          <li><a href="#"><img src="img/Ethereum-ETH-icon.png" alt="images not found" /></a></li>
+          <li><a href="#">Arya Wijaya</a></li>
+          <li><a href="#"><i class="fas fa-chevron-down" aria-hidden="true"></i></a></li>
         </ul>
       </div>
     </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md">
+  <div class="q-pl-md">
     <div class="mncright">
       <div class="mncright-left">
         <div class="dashboard-area">
@@ -30,7 +30,7 @@
               </div>
             </div>
 
-            <div class="dashboard-left_abc3 q-mb-lg">
+            <div class="dashboard-left_abc3">
               <div class="dashboard-left_abbc3">
                 <div class="dashboard-left_abbc3a1">
                   <a href="" @click.prevent="">
