@@ -211,6 +211,9 @@ module.exports = function (ctx) {
       // },
       // https: true,
       // port: 8080,
+      watchOptions: {
+        poll: 1000 // Check for changes every second
+      },
       open: true // opens browser window automatically
     },
 

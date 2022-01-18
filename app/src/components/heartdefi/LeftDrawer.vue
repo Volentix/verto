@@ -3,7 +3,7 @@
     <div class="logo-area">
       <a href="" @click.prevent="">
         <img
-          :src="require('assets/heartdefi/img/logo.png')"
+          :src="require('assets/Heartdefi/img/logo.png')"
           alt="logo" />
       </a>
     </div>
@@ -19,19 +19,19 @@
             <li>
               <a href="" @click.prevent=""  >
                 <i class="far fa-chart-bar"/>
-                <p>Exchange</p>
+                <p>History</p>
               </a>
             </li>
             <li>
               <a href="" @click.prevent=""  >
                 <i class="fas fa-wallet"/>
-                <p>Wallet</p>
+                <p>Projects</p>
               </a>
             </li>
             <li>
               <a href="" @click.prevent=""  >
                 <i class="fas fa-chart-line"/>
-                <p>Chart</p>
+                <p>NFTs</p>
               </a>
             </li>
             <li>

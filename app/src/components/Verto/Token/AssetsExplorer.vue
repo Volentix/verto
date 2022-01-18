@@ -1,14 +1,14 @@
 <template>
 <div
   :class="{
-      'q-pt-lg': !allAssets,
+      'q-pt-lgd': !allAssets,
       'dark-theme': $store.state.settings.lightMode === 'true',
       'receive_wrapper_class': tab == 'receive',
       'import_wrapper_class': tab == 'import',
       'min-size': !$q.platform.is.mobile,
       'investments' : tab === 'investments'
     }"
-    class="wrapper q-px-lg full-width assets_explorer_container"
+    class="wrapper  full-width assets_explorer_container"
     :style=" ($q.platform.is.mobile||$isbex) && $store.state.settings.lightMode !== 'true' ? 'background: #f2f2f2 !important' : '' "
 >
 
@@ -368,11 +368,11 @@
         tab == 'chains'
       "
     >
-     <div class="row" v-show="!hideList">
-        <AssetGroup @setItemAction="setItemAction" :getChainTotal="getChainTotal" @showAll="showAll" class="col-md-3" v-if="chains && chains.length"  :card="{title:'Chains', description:'Portfolio value by chain', limit:5, type:'chains', bgColor:'bg-indigo-1', textColor:'text-indigo-6', data:chains}"  />
-         <AssetGroup @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll"  class="col-md-3" v-if="allInvestments && allInvestments.length" :card="{title:'Investments', hideArrow:this.readOnly, description:'Staked and locked assets', limit:5, bgColor:'bg-purple-1', textColor:'text-purple-5', data:allInvestments , type:'investments'}" />
-          <AssetGroup @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll"  class="col-md-3" v-if="assets && assets.length"  :card="{title:'Assets' ,hideArrow:this.readOnly, description:'Liquid assets', limit:5, bgColor:'bg-teal-1', textColor:'text-teal-6', type:'assets',data:assets }" />
-          <AssetGroup @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll"  class="col-md-3"   :card="{title:'Nfts' , description:'NFTs on Ethereum',hideArrow:this.readOnly, limit:5, bgColor:'bg-cyan-1', textColor:'text-cyan-6', type:'nfts',data:[] }" />
+     <div class="row q-col-gutter-md" v-show="!hideList">
+        <AssetGroup @setItemAction="setItemAction" :getChainTotal="getChainTotal" @showAll="showAll" style="background: #3f50b512;" class="col-md-6" v-if="chains && chains.length"  :card="{title:'Chains', view:'grid', description:'Portfolio value by chain', limit:5, type:'chains', bgColor:'bg-indigo-1', textColor:'text-indigo-6', data:chains}"  />
+         <AssetGroup @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #ab47bb21;" class="col-md-6" v-if="allInvestments && allInvestments.length" :card="{title:'Investments', view:'grid',hideArrow:this.readOnly, description:'Staked and locked assets', limit:5, bgColor:'bg-purple-1', textColor:'text-purple-5', data:allInvestments , type:'investments'}" />
+          <AssetGroup @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #cbe5e15e;"   class="col-md-6" v-if="assets && assets.length"  :card="{title:'Assets' ,view:'grid',hideArrow:this.readOnly, description:'Liquid assets', limit:5, bgColor:'bg-teal-1', textColor:'text-teal-6', type:'assets',data:assets }" />
+          <AssetGroup @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #00ffff1f;"   class="col-md-6"   :card="{title:'Nfts' , description:'NFTs on Ethereum',view:'grid',hideArrow:this.readOnly, limit:5, bgColor:'bg-cyan-1', textColor:'text-cyan-6', type:'nfts',data:[] }" />
           </div>
     <!-- CHAIN LOOP START  -->
       <q-scroll-area v-if="hideList" :visible="true" :dark="$store.state.settings.lightMode === 'true'" :class="{'receive_wrapper_class_scroll': tab == 'receive', 'import_wrapper_class_scroll': tab == 'import'}" style="margin-left: -15px; height: 77vh;">
@@ -2279,7 +2279,7 @@ export default {
   background: #fff;
   // height: 86vh;
   border-radius: 12px;
-  padding-right: 10px;
+ /* padding-right: 10px; */
   margin-top: 20px;
 }
 .wrapper {

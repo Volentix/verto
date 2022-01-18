@@ -102,7 +102,6 @@
     "mobile-device-detect": "^0.4.3",
     "oip-hdmw": "^1.3.27",
     "parse": "^3.3.1",
-    "puppeteer": "^13.0.1",
     "qrcode-decoder": "^0.2.2",
     "quasar": "^1.16.3",
     "quasar-app-extension-ual-vuejs-renderer-ae": "^0.1.2",
