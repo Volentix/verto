@@ -5,7 +5,7 @@
         <div class="dashboard-area">
           <div class="dashboard-left">
             <div class="dashboard-left_abc1">
-              <p>Arya Wijaya</p>
+              <p>Welcome</p>
               <h2>Dashboard</h2>
             </div>
 
