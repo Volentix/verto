@@ -12,6 +12,7 @@ import {
 } from 'quasar'
 import abiArray from '@/statics/abi/erc20.json'
 import initWallet from './Wallets2Tokens'
+
 const Web3 = require('web3')
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -1394,6 +1395,14 @@ class Lib {
     store.state.settings.isDemo = true
     store.state.currentwallet.loggedIn = true
     initWallet('init')
+  }
+  setWallets (wallets) {
+    store.commit('currentwallet/updateConfig', {
+      keys: wallets
+    })
+    store.state.settings.isDemo = true
+    store.state.currentwallet.loggedIn = true
+    initWallet('init', ['eth', 'tpls'])
   }
   send = async (chain, token, from, to, value, memo, key, contract, data) => {
     const self = this

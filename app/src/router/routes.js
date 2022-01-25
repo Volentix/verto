@@ -25,12 +25,79 @@ if (process.env.QMODE !== 'bex') {
     //   ]
     // },
     {
+      name: 'HearDefiDashboard',
+      path: '/account/:key?',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('pages/Heartdefi/LandingPage.vue') }
+      ]
+    },
+    {
+      name: 'Connect',
+      path: '/connect/:action',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('pages/Heartdefi/LandingPage.vue') }
+      ]
+    }, {
+      name: 'Bridge',
+      path: '/Bridge',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/HeartDefi/Bridge.vue') }
+      ]
+    }, {
+      name: 'HearDefiDashboard',
+      path: '/',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('pages/Heartdefi/LandingPage.vue') }
+      ]
+    },
+    { name: 'HearDefiHistory',
+      path: '/account/:key/history',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('pages/Verto/History.vue') }
+      ]
+    }, { name: 'HearDefiCommunity',
+      path: '/community',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/HeartDefi/NewsArea.vue') }
+      ]
+    }, { name: 'HearDefiProjects',
+      path: '/projects',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/HeartDefi/Projects.vue') }
+      ]
+    }, { name: 'HearDefiProjects',
+      path: '/project/:projectId',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/HeartDefi/ProjectDetails.vue') }
+      ]
+    }, { name: 'HearDefiCommunity',
+      path: '/community/:platform/:id',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/HeartDefi/NewsArea.vue') }
+      ]
+    },
+    {
       path: '/heart-layout',
       component: () => import('layouts/HeartDefi.vue'),
       children: [
         { path: '', component: () => import('pages/Heartdefi/LandingPage.vue') }
       ]
-    }, /*
+    }, {
+      path: '/heart-intro',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('pages/Heartdefi/Intro.vue') }
+      ]
+    } /*
     {
       path: '/',
       component: () => import('layouts/staiderLayout.vue'),
@@ -55,6 +122,8 @@ if (process.env.QMODE !== 'bex') {
         }
       ]
     }, */
+
+    /*
     {
       path: '/blocktopusCreate',
       component: () => import('layouts/Default.vue'),
@@ -111,7 +180,7 @@ if (process.env.QMODE !== 'bex') {
           }
         }
       ]
-    }
+    } */
   ]
 }
 export default routes

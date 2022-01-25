@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div v-if="card.view == 'grid'" class="q-mr-md">
+  <div :class="{'col-md-12':mode == 'all', 'col-md-6':mode == 'mini'}">
+     <div v-if="card.view == 'grid'" class="q-mr-md">
       <div class="myportofolio-area">
         <div class="myportofolio-left full-width">
           <div class="q-pl-md" >
@@ -8,6 +8,7 @@
             ><span class="q-ml-lg text-grey text-bold shad"
               >${{ nFormatter2(total, 1) }}</span
             >
+            <span  @click="mode == 'all' ? mode = 'mini': mode = 'all'" class="float-right q-pt-sm q-pr-md text-body2 cursor-pointer"> {{mode == 'mini' ? 'More' : 'Less'}} {{mode == 'mini' ? '('+card.data.length+')' : ''}} <q-icon :name="mode == 'mini' ? 'arrow_forward' : 'keyboard_backspace'" /></span>
           </div>
         </div>
         <div class="myportofolio-right" v-if="false">
@@ -25,15 +26,18 @@
           </ul>
         </div>
       </div>
-      <div class="bitcoin-area">
-        <div class="bitcoin-part row q-col-gutter-md rounded-borders">
+       <AssetBalancesTable  v-if="mode == 'all'" class="full-width" :tableData="card.data" :rowsPerPage="card.data.length"   />
+
+      <div class="bitcoin-area" v-if="mode == 'mini'">
+        <div class="bitcoin-part row q-col-gutter-sm rounded-borders">
           <div
-            class="bitcoin-part_a col-md-6"
+          :class="{'col-md-3': mode == 'all', 'col-md-6' :  mode == 'mini'}"
+            class="bitcoin-part_a "
             @click="$emit('setItemAction', { item: item, tab: card.type })"
-            v-for="(item, i) in card.data.slice(0, card.limit)"
+            v-for="(item, i) in card.data.slice(0, mode == 'all' ? card.data.length + 1 : card.limit)"
             :key="i"
           >
-            <div class="bitcoin-parta">
+            <div class="bitcoin-parta full-width col-md-12">
               <div class="bitcoin-part_a1">
                 <img :src="item.icon" alt="images not found" />
               </div>
@@ -50,15 +54,22 @@
                   >
                 </q-item-section>
                 <q-item-section v-else-if="card.type == 'assets'">
-                  <q-item-label>{{ item.type.toUpperCase() }}</q-item-label>
+                  <q-item-label lines="1">{{ item.type.toUpperCase() }}</q-item-label>
+                   <q-item-label caption
+                    >{{ formatNumber(item.amount, 2) }}</q-item-label
+                  >
                   <q-item-label class="text-bold"
                     >${{ formatNumber(item.usd, 2) }}</q-item-label
                   >
                 </q-item-section>
                 <q-item-section v-if="card.type == 'investments'">
+
                   <q-item-label
-                    >{{ item.type.toUpperCase() }}
+                   lines="1" >{{ item.type.toUpperCase() }}
                     {{ item.isStaked ? "Staked" : "" }}</q-item-label
+                  >
+                   <q-item-label v-if="!item.pending" caption
+                    >{{ formatNumber(item.amount, 2) }}</q-item-label
                   >
                   <div v-if="item.pending">
                     Fetching HEX stats...
@@ -180,9 +191,12 @@
 </template>
 <script>
 import Formatter from '@/mixins/Formatter'
-
+import AssetBalancesTable from '@/components/Verto/AssetBalancesTable'
 export default {
   mixins: [Formatter],
+  components: {
+    AssetBalancesTable
+  },
   props: ['card', 'getChainTotal', 'itemAction'],
   computed: {
     total () {
@@ -201,7 +215,9 @@ export default {
     }
   },
   data () {
-    return {}
+    return {
+      mode: 'mini'
+    }
   }
 }
 </script>

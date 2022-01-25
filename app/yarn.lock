@@ -11632,6 +11632,11 @@ iferr@^0.1.5:
   resolved "https://registry.yarnpkg.com/iferr/-/iferr-0.1.5.tgz#c60eed69e6d8fdb6b3104a1fcbca1c192dc5b501"
   integrity sha1-xg7taebY/bazEEofy8ocGS3FtQE=
 
+iframe-injectable@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/iframe-injectable/-/iframe-injectable-0.1.0.tgz#4bbd7a264c1a58e92b88ca2e3f4be2988342ae9a"
+  integrity sha512-/bxjoz9/YOvJGlqjgkQ9vPaHQkbiidRHg0JcCZh6clEGZawyKzY1YcJ8ZO2Oue/e0QAw4V2LBe8PzCh+9UErtA==
+
 ignore@^3.0.9, ignore@^3.3.5:
   version "3.3.10"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.10.tgz#0a97fb876986e8081c631160f8f9f389157f0043"

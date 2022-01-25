@@ -134,7 +134,7 @@
     "xrp-provider": "^0.0.5"
   },
   "devDependencies": {
-    "@quasar/app": "^1.9.6", 
+    "@quasar/app": "^1.9.6",
     "@quasar/quasar-app-extension-testing": "^1.0.5",
     "@quasar/quasar-app-extension-testing-quality": "^1.0.0-beta.8",
     "@quasar/quasar-app-extension-testing-security": "^1.0.0-alpha.8",

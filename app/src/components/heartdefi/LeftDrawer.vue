@@ -10,28 +10,34 @@
     <div class="menu-area">
       <div class="menu-part">
         <ul>
-            <li class="active">
-              <a href="" @click.prevent=""  >
+            <li @click="$router.push('/account/'+($store.state.currentwallet.user ?  $store.state.currentwallet.user.address : ''))" :class="{'active': $route.path == '/account/'+$route.params.key}">
+              <a href="javascript:void(0)" @click.prevent=""  >
                 <i class="fas fa-home"/>
                 <p>Dashboard</p>
               </a>
             </li>
-            <li>
-              <a href="" @click.prevent=""  >
+            <li  :class="{'active': $route.path.includes('bridge')}" @click="$router.push('/bridge')">
+              <a href="javascript:void(0)" @click.prevent=""  >
+                <q-icon name="swap_horiz" />
+                <p>Bridge</p>
+              </a>
+            </li>
+            <li v-if="$store.state.currentwallet.user" :class="{'active': $route.path.includes('history')}" @click="$router.push('/account/'+$route.params.key+'/history')">
+              <a href="javascript:void(0)" @click.prevent=""  >
                 <i class="far fa-chart-bar"/>
                 <p>History</p>
               </a>
             </li>
-            <li>
-              <a href="" @click.prevent=""  >
+            <li @click="$router.push('/projects')" :class="{'active': $route.path.includes('project')}">
+              <a href="javascript:void(0)"   >
                 <i class="fas fa-wallet"/>
                 <p>Projects</p>
               </a>
             </li>
-            <li>
+            <li  :class="{'active': $route.path.includes('community')}" @click="$router.push('/community')">
               <a href="" @click.prevent=""  >
                 <i class="fas fa-chart-line"/>
-                <p>NFTs</p>
+                <p>Community</p>
               </a>
             </li>
             <li>

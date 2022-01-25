@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="Search">
+    <div class="Search" v-if="!hideForm">
       <form action="#" method="POST">
         <i class="fas fa-search"></i>
-        <input type="search" name="search" placeholder="Search Crypto" />
+        <q-input @input="search()" v-model="input" type="search" name="search" placeholder="Enter address" />
       </form>
     </div>
     <div class="Exchange-area">
@@ -58,17 +58,30 @@
 </template>
 
 <script>
+import Lib from '@/util/walletlib'
+import Connect from '../../mixins/Connect'
 export default {
-  mixins: [],
+  mixins: [Connect],
+  props: ['hideForm'],
   components: {},
   data () {
-    return {}
+    return {
+      input: null
+    }
   },
   watch: {},
   computed: {},
   created () {},
   mounted () {},
-  methods: {},
+  methods: {
+    search () {
+      if (this.input && this.input.length) {
+        if (Lib.isEthValidAddress(this.input)) {
+          this.connect('address', { address: this.input })
+        }
+      }
+    }
+  },
   destroyed () {}
 }
 </script>

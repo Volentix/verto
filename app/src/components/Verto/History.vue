@@ -490,7 +490,7 @@ export default {
         return
       }
       this.history = []
-      console.log(account, 'account')
+
       if (account.origin === 'metamask') {
         account = this.$store.state.wallets.tokens.find(o => o.type === 'eth' && o.origin !== 'metamask')
       }

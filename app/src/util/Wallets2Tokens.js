@@ -6,7 +6,7 @@ import Lib from '@/util/walletlib'
 import EosWrapper from '@/util/EosWrapper'
 
 class Wallets2Tokens {
-  constructor (walletName = null) {
+  constructor (walletName = null, chains = null) {
     if (walletName) {
       walletName = null
       localStorage.removeItem('walletPublicDatav2')
@@ -318,7 +318,7 @@ class Wallets2Tokens {
         } else if (wallet.type === 'eth') {
           // wallet.key = '0x181717bab64928669f606ee8b266502aaa2f6608'
           Lib.evms.filter(m =>
-            ![1, 940].includes(m.network_id) // Until eth is integrated into covalent api
+            ![1, 940].includes(m.network_id) && (!chains || chains.includes(m.chain)) // Until eth is integrated into covalent api
           ).forEach(e => {
             axios
               .get(
@@ -413,13 +413,7 @@ class Wallets2Tokens {
                       ethplorer.tokens
                         .filter(t => t.balance > 0 && t.tokenInfo.symbol)
                         .map(async (t, index) => {
-                          t.tokenInfo.image =
-                            t.tokenInfo.image &&
-                            t.tokenInfo.image.includes('https')
-                              ? t.tokenInfo.image
-                              : t.tokenInfo.image
-                                ? 'https://ethplorer.io' + t.tokenInfo.image
-                                : Lib.getDefaultToken('eth')
+                          t.tokenInfo.image = 'https://token.enzyme.finance//' + t.tokenInfo.address
 
                           let usd = t.tokenInfo.symbol ? Lib.findInExchangeList('eth', t.tokenInfo.symbol.toLowerCase(), t.tokenInfo.address) : false
                           let amount =
@@ -612,6 +606,11 @@ class Wallets2Tokens {
       if (token) image = token.logoURI
       // Set bnb token image temp
     //  if (type === 'bnb') image = 'https://nownodes.io/images/binance-smart-chain/bsc-logo.png'
+    } else {
+      let i = Lib.getTokenImage(type)
+      if (i) {
+        image = i
+      }
     }
     return image
   }
@@ -991,8 +990,8 @@ class Wallets2Tokens {
     return currentAsset
   }
 }
-const initWallet = async walletName => {
-  let wallet = await new Wallets2Tokens(walletName)
+const initWallet = async (walletName, chains) => {
+  let wallet = await new Wallets2Tokens(walletName, chains)
   return wallet
 }
 export default initWallet

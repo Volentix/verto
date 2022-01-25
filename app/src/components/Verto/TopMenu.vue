@@ -426,24 +426,8 @@ export default {
         }
       ],
       dialog: false,
-      thumbStyle: {
-        right: '5px',
-        borderRadius: '8px',
-        backgroundColor: '#C7CBCE',
-        width: '8px',
-        opacity: 0.75
-      },
-      barStyle: {
-        right: '2px',
-        borderRadius: '14px',
-        backgroundColor: '#BCC2C7',
-        width: '14px',
-        opacity: 0.2,
-        marginTop: '-3px',
-        marginBottom: '-3px',
-        paddingTop: '3px',
-        paddingBottom: '3px'
-      }
+      
+    
     }
   },
   created () {

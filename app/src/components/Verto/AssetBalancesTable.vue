@@ -19,7 +19,7 @@
           <q-td :props="props" class="body-table-col _rate_usd">
             <div class="col-3 flex items-center">
               <span class="flex items-center pairs">
-                <span class="q-pl-xs qmtxs current_price" :class="{'text-grey-3': $store.state.settings.lightMode === 'true', 'text-grey-8': $store.state.settings.lightMode === 'false'}">${{formatNumber(props.row.rateUsd,8)}}<q-tooltip>Current price</q-tooltip></span>
+                <span class="q-pl-xs qmtxs current_price" :class="{'text-grey-3': $store.state.settings.lightMode === 'true', 'text-grey-8': $store.state.settings.lightMode === 'false'}">${{formatNumber(props.row.rateUsd,2)}}<q-tooltip>Current price</q-tooltip></span>
               </span>
             </div>
           </q-td>
@@ -111,7 +111,7 @@ export default {
           align: 'left',
           label: 'Price',
           field: 'currentPrice',
-          format: val => `${val}`,
+          format: val => `${this.formatNumber(val, 2)}`,
           sortable: true
         }, {
           name: 'amount',

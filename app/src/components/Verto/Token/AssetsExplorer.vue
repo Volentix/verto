@@ -364,15 +364,16 @@
       :class="{ 'chains q-pt-md': !$route.params.accounts }"
       v-if="
         (($route.params.accounts || !tokensTotal) &&
-          !['assets', 'investments'].includes(tab)) ||
+          !['assets', 'investments'].includes(tab)) || $store.state.currentwallet.user ||
         tab == 'chains'
       "
     >
      <div class="row q-col-gutter-md" v-show="!hideList">
-        <AssetGroup @setItemAction="setItemAction" :getChainTotal="getChainTotal" @showAll="showAll" style="background: #3f50b512;" class="col-md-6" v-if="chains && chains.length"  :card="{title:'Chains', view:'grid', description:'Portfolio value by chain', limit:5, type:'chains', bgColor:'bg-indigo-1', textColor:'text-indigo-6', data:chains}"  />
-         <AssetGroup @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #ab47bb21;" class="col-md-6" v-if="allInvestments && allInvestments.length" :card="{title:'Investments', view:'grid',hideArrow:this.readOnly, description:'Staked and locked assets', limit:5, bgColor:'bg-purple-1', textColor:'text-purple-5', data:allInvestments , type:'investments'}" />
-          <AssetGroup @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #cbe5e15e;"   class="col-md-6" v-if="assets && assets.length"  :card="{title:'Assets' ,view:'grid',hideArrow:this.readOnly, description:'Liquid assets', limit:5, bgColor:'bg-teal-1', textColor:'text-teal-6', type:'assets',data:assets }" />
-          <AssetGroup @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #00ffff1f;"   class="col-md-6"   :card="{title:'Nfts' , description:'NFTs on Ethereum',view:'grid',hideArrow:this.readOnly, limit:5, bgColor:'bg-cyan-1', textColor:'text-cyan-6', type:'nfts',data:[] }" />
+
+        <AssetGroup  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #3f50b512;" class="col-md-6" v-if=" (!entity || entity.includes('chains'))"  :card="{title:'Chains', view:'grid', description:'Portfolio value by chain', limit:6, type:'chains', bgColor:'bg-indigo-1', textColor:'text-indigo-6', data:chains}"  />
+         <AssetGroup  @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #cbe5e15e;"   class="col-md-6" v-if="(!entity || entity.includes('assets'))"  :card="{title:'Assets' ,view:'grid',hideArrow:this.readOnly, description:'Liquid assets', limit:6, bgColor:'bg-teal-1', textColor:'text-teal-6', type:'assets',data:assets }" />
+          <AssetGroup  @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #ab47bb21;" class="col-md-6" v-if="allInvestments && allInvestments.length && (!entity || entity.includes('investments'))" :card="{title:'Investments', view:'grid',hideArrow:this.readOnly, description:'Staked and locked assets', limit:6, bgColor:'bg-purple-1', textColor:'text-purple-5', data:allInvestments , type:'investments'}" />
+          <AssetGroup v-if="!entity || entity.includes('nfts')" @setItemAction="setItemAction"  :getChainTotal="getChainTotal" @showAll="showAll" style="background: #00ffff1f;"   class="col-md-6"   :card="{title:'Nfts' , description:'NFTs on Ethereum',view:'grid',hideArrow:this.readOnly, limit:6, bgColor:'bg-cyan-1', textColor:'text-cyan-6', type:'nfts',data:[] }" />
           </div>
     <!-- CHAIN LOOP START  -->
       <q-scroll-area v-if="hideList" :visible="true" :dark="$store.state.settings.lightMode === 'true'" :class="{'receive_wrapper_class_scroll': tab == 'receive', 'import_wrapper_class_scroll': tab == 'import'}" style="margin-left: -15px; height: 77vh;">
@@ -797,7 +798,7 @@
      <!-- ASSET LOOP SECTION  -->
     <div
       class="q-pt-md chains"
-      v-show="tab == item.id"
+      v-show="tab == item.id && !$store.state.currentwallet.user"
       v-for="(item, index) in assetsOptions.filter(
         (o) => !allAssets || o.title == allAssets.title
       )"
@@ -1202,7 +1203,7 @@ export default {
     QScrollArea,
     NftsExplorer
   },
-  props: ['rowsPerPage', 'settings'],
+  props: ['rowsPerPage', 'settings', 'entity', 'filterChains'],
   data () {
     return {
       createPopup: {
@@ -1446,6 +1447,14 @@ export default {
           this.hideList = true
         }
       }, 2000)
+      if (this.tab === 'receive' && this.$store.state.currentwallet.user) {
+        this.tab = 'assets'
+      }
+    },
+    '$store.state.investment.defaultAccount.chain': function (newVal) {
+      if (newVal) {
+        this.initTable()
+      }
     },
     '$store.state.investment.defaultAccount': function (newVal) {
       if (newVal) {
@@ -1769,14 +1778,14 @@ export default {
         actions[self.tab]()
       }
     },
-    setChainWalletData (chain) {
+    setChainWalletData (chain, updateAccount = true) {
       if (chain) {
         const self = this
         self.$store.state.settings.defaultChainData = chain
         self.$store.state.wallets.customTotal.usd = self.getChainTotal(chain)
         self.$store.state.wallets.customTotal.show = true
         self.$store.state.wallets.customTotal.label = chain.label + ' balance'
-        if (chain.accounts.length) {
+        if (chain.accounts && chain.accounts.length && updateAccount) {
           self.$store.state.currentwallet.wallet = chain.accounts[0]
           self.$store.state.investment.defaultAccount = self.formatAccoountOption(
             chain.accounts[0]
@@ -1999,11 +2008,12 @@ export default {
     initTable (chain = null, account = null) {
     //  let account = null
       // this.chains = (this.$route.params.accounts) ? HD.getVertoChains() :
+      console.log(888)
       this.getChains()
       // console.log(this.chains, 'this.chains = ')
       if (
         this.$store.state.investment.defaultAccount &&
-        this.$q.platform.is.mobile
+       (this.$q.platform.is.mobile || this.$store.state.currentwallet.user)
       ) {
         account = this.$store.state.investment.defaultAccount
         // this.getChainLabel(account.chain)
@@ -2012,7 +2022,8 @@ export default {
       this.assets = []
       let not_valuable = localStorage.getItem('not_valuable')
       not_valuable = not_valuable ? JSON.parse(not_valuable) : []
-      this.$store.state.wallets.tokens
+      // .filter(o => !this.filterChains || this.filterChains.includes(o.chain))
+      JSON.parse(JSON.stringify(this.$store.state.wallets.tokens
         .filter(
           (o) =>
             (!account && !chain) ||
@@ -2021,7 +2032,7 @@ export default {
               o.chain === account.chain &&
               ((account.isEvm && o.key.toLowerCase() === account.key.toLowerCase()) ||
                 (!account.isEvm && o.name.toLowerCase() === account.name.toLowerCase())))
-        )
+        )))
         .forEach((asset, i) => {
           let token = Object.assign({}, asset)
           token.amount = parseFloat(token.amount)
@@ -2079,6 +2090,10 @@ export default {
           this.loaded = false
         })
       this.assetsOptions[0].data = this.assets
+
+      if (account) {
+        this.setChainWalletData(this.chains.find(o => o.chain === account.chain), false)
+      }
     },
     getHistoricalValue (token) {
       let tokenData = this.$store.state.tokens.walletTokensData.find(

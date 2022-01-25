@@ -1,6 +1,6 @@
 <template>
   <div class="main-area">
-    <q-layout view="lHh lpR lFf" class="main-container">
+    <q-layout view="lHh lpR lFf" class="main-container global" :class="$route.path.split('/').join(' ')">
       <q-drawer
         show-if-above
         :width="left_width"
@@ -15,7 +15,9 @@
       </q-drawer>
       <q-page-container class="main-container-right" style="padding-left:0px" :style="{'margin-left':left_width+'px'}">
         <q-page>
-          <router-view/>
+
+          <LandingPage v-if="$store.state.currentwallet.user"  v-show="$route.path == '/account/'+$store.state.currentwallet.user.address" />
+          <router-view v-if="!$store.state.currentwallet.user || $route.path != '/account/'+$store.state.currentwallet.user.address"/>
         </q-page>
       </q-page-container>
 
@@ -26,10 +28,15 @@
 <script>
 import LeftDrawer from 'components/Heartdefi/LeftDrawer'
 
+import LandingPage from 'pages/Heartdefi/LandingPage'
+import Lib from '@/util/walletlib'
+import Connect from '../mixins/Connect'
+import DexInteraction from '../mixins/DexInteraction'
 export default {
-  mixins: [],
+  mixins: [Connect, DexInteraction],
   components: {
-    LeftDrawer
+    LeftDrawer,
+    LandingPage
   },
   data () {
     return {
@@ -38,13 +45,40 @@ export default {
     }
   },
   watch: {
-
+    '$store.state.currentwallet.user': function (val) {
+      console.log(val, 'val')
+      if (val) {
+        let wallet = {
+          chain: 'eth',
+          key: val.address,
+          name: val.wallet + '...' + val.addressFriendly,
+          type: 'eth'
+        }
+        Lib.setWallets([wallet])
+        this.$store.commit(
+          'investment/setDefaultAccount',
+          wallet
+        )
+        if (this.$route.path !== '/account/' + val.address) { this.$router.push('/account/' + val.address) }
+      }
+    }
   },
   computed: {
 
   },
   created () {
+    if (this.$route.params.action === 'logout') {
+      this.logout()
+    } else {
+      this.initConnect()
+    }
 
+    if (this.$route.params.key && !this.$store.state.currentwallet.user) {
+      this.setUser(this.$route.params.key, 'address')
+    }
+    this.get1inchCoins()
+    this.$store.dispatch('tokens/getTokenList')
+    this.$store.state.settings.lightMode = 'false'
   },
   mounted () {
   },
@@ -62,6 +96,12 @@ export default {
   @import '~assets/Heartdefi/css/responsive.css';
 </style>
 <style lang="scss">
+.global .main-container-right {
+    overflow: scroll !important;
+}
+.account_selector_top {
+    display: none !important
+}
   .main-area{
     .q-drawer{
       background: transparent;
@@ -84,4 +124,5 @@ export default {
       padding-top: 0 !important;
     }
   }
+
 </style>
