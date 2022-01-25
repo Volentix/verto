@@ -263,7 +263,7 @@ export default {
       var form_data = new FormData()
 
       for (var key in data) {
-        if (data[key] != null) {
+        if (data[key] !== null) {
           form_data.append(key, data[key])
         }
       }
@@ -399,6 +399,93 @@ export default {
         }
       }
       return amount.toString()
+    },
+    secondsTotime: function (secondsValue, text = false, pad = true, prefix = true, short = false, concat = 4) {
+      if (concat === 0) {
+        concat = 4
+      }
+      var days = 0,
+        hours = 0,
+        minutes = 0,
+        seconds = 0,
+        future = parseInt(secondsValue) >= 0
+
+      let value = future ? 'In ' : ''
+
+      secondsValue = Math.abs(secondsValue)
+      if (secondsValue >= 0) {
+        days = this.pad(parseInt(secondsValue / 86400), pad)
+        secondsValue = secondsValue % 86400
+
+        hours = this.pad(parseInt(secondsValue / 3600), pad)
+        secondsValue = secondsValue % 3600
+
+        minutes = this.pad(parseInt(secondsValue / 60), pad)
+        seconds = this.pad(parseInt(secondsValue % 60), pad)
+      } else {
+        days = hours = minutes = seconds = 0
+      }
+
+      if (text === true) {
+        if (days && days.toString() !== '00' && days !== 0) {
+          if (concat > 0) {
+            concat -= 1
+            value += parseInt(days).toString()
+
+            value += short ? 'd ' : parseInt(days) === 1 ? 'day ' : 'days '
+          }
+        }
+        if (hours && hours.toString() !== '00' && hours !== 0) {
+          if (concat > 0) {
+            concat -= 1
+            value += parseInt(hours).toString()
+            value += short ? 'h ' : parseInt(hours) === 1 ? 'hour ' : 'hours '
+          }
+        }
+        if (minutes && minutes.toString() !== '00' && minutes !== 0) {
+          if (concat > 0) {
+            concat -= 1
+            value += parseInt(minutes).toString()
+            value += short ? 'm ' : parseInt(minutes) === 1 ? 'min. ' : 'min. '
+          }
+        }
+
+        if (parseInt(secondsValue) === 0) {
+          value += ' just now'
+        } else if (seconds && seconds.toString() !== '00' && seconds !== 0) {
+          if (concat > 0) {
+            concat -= 1
+            value += parseInt(seconds).toString()
+            value += parseInt(seconds) === 1 ? 's ' : 's '
+          }
+        }
+
+        if (parseInt(secondsValue) !== 0) { value += future ? '' : 'ago' }
+      } else {
+        value = {
+          days: days,
+          hours: hours,
+          minutes: minutes,
+          seconds: seconds
+        }
+      }
+
+      return value
+    },
+    pad: function (n, use = true) {
+      if (use) {
+        return (n < 10 ? '0' : '') + n
+      } else {
+        return n
+      }
+    },
+    getTimeAgo (date_from, short = false, concat = 4) {
+      var date_now = new Date()
+      var time = new Date(date_from * 1000)
+      time = time.getTime()
+      var diff = time - date_now.getTime()
+      diff /= 1000
+      return this.secondsTotime(Math.round(diff), true, true, true, short, concat)
     },
     convertTimestamp (timestamp) {
       let d = isNaN(timestamp) ? new Date(timestamp) : new Date(timestamp * 1000),

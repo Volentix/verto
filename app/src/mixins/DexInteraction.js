@@ -390,7 +390,7 @@ export default {
       let account = null
 
       if (this.$store.state.currentwallet.wallet && this.$store.state.currentwallet.wallet.name) {
-        account = this.$store.state.currentwallet.wallet
+        //   account = this.$store.state.currentwallet.wallet
       }
 
       JSON.parse(JSON.stringify(this.$store.state.wallets.tokens.filter(o => (!account && !chain) || (chain && o.chain === chain) || (account && o.chain === account.chain && o.name === account.name)))).forEach((token, i) => {

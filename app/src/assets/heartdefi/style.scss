@@ -8,7 +8,9 @@ Header area start
     margin: 0;
     padding: 0;
 }
-
+ .desktop-version {
+    padding:0px !important
+}
 
 @font-face {
     font-family: "Poppins-Regular";
@@ -159,7 +161,7 @@ ul {
 
 
 .menu-part ul li a:hover {
-    background-color: #3662ff;
+    background-color: #e01f00;
     color: #fff;
 }
 
@@ -217,8 +219,8 @@ ul {
     padding-left: 13px;
 }
 
-.news-area h3 {
-    color: #694fe6;
+.news-area h3.timeline {
+    color: #ab47bb;
     font-size: 18px;
     padding-left: 16px;
     background: #f5e7f6;  
@@ -696,7 +698,7 @@ ul {
     font-family: 'Poppins-Medium';
     color: #fff;
     font-size: 15px;
-    background-color: #694fe6;
+    background-color: #ab47bb;
     width: 100%;
     display: block;
     text-align: center;
@@ -805,7 +807,7 @@ ul {
 }
 
 .bitcoin-part_a2 {
-   width: 30%; 
+   width: 70%; 
 }
 
 .bitcoin-part_a2 p {
@@ -845,9 +847,9 @@ ul {
 }
 
 .bitcoin-part_a3 p {
-    font-family: 'Poppins-Bold';
-    color: #6dcdf3;
-    font-size: 11px;
+    font-family: 'Poppins';
+    color: #ab47bb;
+    font-size: 14px;
     margin: 0;
     text-align: right;
     padding-top: 5px;
@@ -925,7 +927,7 @@ ul {
     background-color: #fff;
     border-radius: 10px;
     border: 1px solid #dee1e5;
-    width: 100%;
+    width: 33%;
     padding: 7px 17px;
 }
 
@@ -1038,9 +1040,9 @@ ul {
 .cvv-partb2 h5 {
     font-family: 'Poppins-Medium';
     color: #42424c;
-    font-size: 12px;
+    font-size: 17px;
     margin: 0;
-    padding-top: 4px;
+    padding-top: 0px;
     padding-left: 3px;
 }
 
@@ -1163,7 +1165,7 @@ ul {
     font-family: 'Poppins-Medium';
     color: #fff;
     font-size: 13px;
-    background-color: #2961ec;
+    background-color: #ab47bb;
     text-align: center;
     border-radius: 30px;
     padding: 7px 35px;
@@ -1413,9 +1415,16 @@ ul {
 .Recent-parta {
     display: flex;
     align-items: center;
-    margin-bottom: 28px;
-}
 
+}
+.tpRecent-parta1 {
+    background: white;
+    box-shadow: 0px 1px 5px rgb(0 0 0 / 15%);
+    border-radius: 11px;
+    background-color: #fff;
+    margin-bottom: 18px;
+    padding: 10px;
+}
 .Recent-parta1 {
     width: 23%;
 }
@@ -1440,7 +1449,7 @@ ul {
 .Recent-parta2 p {
     font-family: 'Poppins-Regular';
     color: #bdbfbc;
-    font-size: 15px;
+    font-size: 12px;
     font-weight: 400;
     margin: 0;    
 }
@@ -1458,7 +1467,7 @@ ul {
 }
 
 .Recent-parta33 h5 {
-    color: #2ed1f6;
+    color: #000;
 }
 
 

@@ -25,7 +25,7 @@ export const getTokenMarketData = ({ commit, state }, ids) => {
 
 export const getTokensMarketsData = ({ commit, state }, tokens) => {
   if (!state.list) return
-  console.log(state.list, ' state.list')
+
   let list = state.list.filter(
     t =>
       !state.pending.find(o => o === t.id) &&
