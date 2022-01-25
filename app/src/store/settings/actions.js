@@ -5,6 +5,7 @@ export function someAction (context) {
 import { Notify } from 'quasar'
 import axios from 'axios'
 import initWallet from '@/util/Wallets2Tokens'
+import parseDb from '@/util/Staider/ParseWrapper'
 import {
   version
 } from '../../../package.json'
@@ -55,4 +56,84 @@ export const getSettings = ({ commit }, data) => {
     commit('setGlobalSettings', settings)
     initWallet()
   })
+}
+
+export const subscribeUpvotes = async (context, payload) => {
+  try {
+    const parseQuery = parseDb.parseQuery('Upvotes')
+    const live_event = await parseQuery.subscribe()
+
+    live_event.on('open', () => {
+      console.log('subscribeUpvotes')
+      context.dispatch('getUserNotifications', payload)
+    })
+
+    const insertUpvote = async (response) => {
+      try {
+        const upvote = JSON.parse(JSON.stringify(response.attributes))
+        upvote.id = response.id
+        console.log(upvote)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    live_event.on('create', insertUpvote)
+
+    live_event.on('update', insertUpvote)
+
+    live_event.on('delete', async response => {
+      const upvote = JSON.parse(JSON.stringify(response.attributes))
+      upvote.id = response.id
+      console.log(upvote)
+    })
+  } catch (error) {
+    context.dispatch('subscribeUpvotes', payload)
+    // context.dispatch("getUserNotifications",payload)
+  }
+}
+
+export const addUpvote = async (context, payload) => {
+  return new Promise(async function (resolve, reject) {
+    const parseObject = parseDb.parse('Upvotes')
+    for (const key in payload) {
+      parseObject.set(key, payload[key])
+    }
+    // var acl = parseDb.acl()
+    // acl.setPublicReadAccess(true)
+    // acl.setWriteAccess(payload.user, true)
+    // parseObject.setACL(acl)
+
+    parseObject.save(payload)
+      .then(async (response) => {
+        const upvote = JSON.parse(JSON.stringify(response.attributes))
+        upvote.obj = response
+        console.log(upvote)
+        context.commit('insertUpvote', upvote)
+        resolve(upvote)
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  })
+}
+
+export async function getUpvotes (context, payload) {
+  try {
+    const parseQuery = parseDb.parseQuery('Upvotes')
+    parseQuery.find()
+      .then((response) => {
+        for (const element of response) {
+          console.log(element)
+          const upvote = JSON.parse(JSON.stringify(element.attributes))
+          upvote.obj = element
+          context.commit('insertUpvote', upvote)
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  } catch (error) {
+    console.log(error)
+  }
 }
