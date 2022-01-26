@@ -54,6 +54,14 @@ if (process.env.QMODE !== 'bex') {
         { path: '', component: () => import('pages/Heartdefi/LandingPage.vue') }
       ]
     },
+    {
+      name: 'pulsexsac',
+      path: '/pulsexsac/:key',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/Heartdefi/Sacrifices.vue') }
+      ]
+    },
     { name: 'HearDefiHistory',
       path: '/account/:key/history',
       component: () => import('layouts/HeartDefi.vue'),
@@ -97,7 +105,7 @@ if (process.env.QMODE !== 'bex') {
       children: [
         { path: '', component: () => import('pages/Heartdefi/Intro.vue') }
       ]
-    } /*
+    }/*,
     {
       path: '/',
       component: () => import('layouts/staiderLayout.vue'),
@@ -121,9 +129,8 @@ if (process.env.QMODE !== 'bex') {
           component: () => import('components/Verto/Token/AssetsExplorer.vue')
         }
       ]
-    }, */
+    }
 
-    /*
     {
       path: '/blocktopusCreate',
       component: () => import('layouts/Default.vue'),

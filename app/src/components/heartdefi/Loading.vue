@@ -1,6 +1,6 @@
 <template>
     <div class="wrapper flex  flex-center" >
-    <div class="text-center text-h3">Loading wallet data</div>
+
     <div class="full-width topw">
   <div class="bg shadows-2">
     <div class="el"></div>
@@ -17,7 +17,7 @@ export default {
 $loadingTime: 10s;
 $color: rgb(255,0,0);
 .wrapper {
-height:400px
+height:100px
 }
 body {
   background-color: white;

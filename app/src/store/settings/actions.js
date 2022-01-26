@@ -9,6 +9,7 @@ import parseDb from '@/util/Staider/ParseWrapper'
 import {
   version
 } from '../../../package.json'
+
 export const setAirplaneMode = ({ commit }, data) => {
   commit('setAirplaneMode', data)
 }
@@ -24,9 +25,11 @@ export const temporary = ({ commit }, data) => {
 export const rightOrder = ({ commit }, data) => {
   commit('rightOrder', data)
 }
+
 const versionToInt = (version) => {
   return parseInt(version.toString().split('.').join(''))
 }
+
 export const getSettings = ({ commit }, data) => {
   axios.get('https://cpu.volentix.io/api/global/vertoSettings').then(response => {
     let settings = response.data
@@ -60,12 +63,12 @@ export const getSettings = ({ commit }, data) => {
 
 export const initiateFeeds = async (context, payload) => {
   try {
-    context.dispatch('subscribeComments', payload)
     context.dispatch('getUpvotes', payload)
+    context.dispatch('subscribeComments', payload)
     context.dispatch('subscribeReplies', payload)
   } catch (error) {
-    context.dispatch('subscribeComments', payload)
     context.dispatch('getUpvotes', payload)
+    context.dispatch('subscribeComments', payload)
     context.dispatch('subscribeReplies', payload)
   }
 }

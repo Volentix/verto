@@ -32,6 +32,7 @@ import LandingPage from 'pages/Heartdefi/LandingPage'
 import Lib from '@/util/walletlib'
 import Connect from '../mixins/Connect'
 import DexInteraction from '../mixins/DexInteraction'
+import initWallet from '@/util/Wallets2Tokens'
 export default {
   mixins: [Connect, DexInteraction],
   components: {
@@ -46,7 +47,6 @@ export default {
   },
   watch: {
     '$store.state.currentwallet.user': function (val) {
-      console.log(val, 'val')
       if (val) {
         let wallet = {
           chain: 'eth',
@@ -54,12 +54,29 @@ export default {
           name: val.wallet + '...' + val.addressFriendly,
           type: 'eth'
         }
-        Lib.setWallets([wallet])
-        this.$store.commit(
-          'investment/setDefaultAccount',
-          wallet
-        )
-        if (this.$route.path !== '/account/' + val.address) { this.$router.push('/account/' + val.address) }
+        let init = true
+        if (this.$store.state.wallets.tokens && this.$store.state.wallets.tokens.find(o => o.key.toLowerCase() === val.address.toLowerCase())) {
+          init = false
+        } else {
+          let data = localStorage.getItem('walletPublicDatav2')
+
+          if (data) {
+            data = JSON.parse(data)
+            if (data && data.find(o => o.key.toLowerCase() === val.address.toLowerCase())) {
+              initWallet()
+              init = false
+            }
+          }
+        }
+
+        if (init) {
+          Lib.setWallets([wallet])
+          this.$store.commit(
+            'investment/setDefaultAccount',
+            wallet
+          )
+          if (this.$route.path !== '/account/' + val.address) { this.$router.push('/account/' + val.address) }
+        }
       }
     }
   },

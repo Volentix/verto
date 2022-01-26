@@ -129,7 +129,7 @@ export default {
   },
   created () {
     this.projectData = this.$store.state.settings.projects.find(o => o.id === this.$route.params.projectId)
-    this.$store.dispatch('settings/initiateFeeds')
+    document.querySelector('.main-container-right').scrollTop = 0
   },
   watch: {
     '$route' (to, from) {

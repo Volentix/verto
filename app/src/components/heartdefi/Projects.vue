@@ -41,8 +41,7 @@
           :color="isUpvoted(project) ? 'red' : 'primary'"
           size="md"
           class="row"
-          :disable="!user"
-          @click.stop.prevent="upvoteProject(project)">
+          @click.stop.prevent="user ? upvoteProject(project) : $q.notify({message:'Connect a wallet to upvote', position:'center'})">
           <div class="col-12">
             <q-icon
               :color="isUpvoted(project) ? 'red' : 'grey'"

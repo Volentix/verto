@@ -2,8 +2,8 @@
     <div class="tpRecent-parta1 cursor-pointer" @click="setNotifAction()">
 
         <div class="Recent-parta">
-        <div class="Recent-parta1">
-          <img :src="data.icon" alt="images not found" />
+        <div class="Recent-parta1 q-pr-sm">
+          <q-img contain :src="data.icon" alt="images not found" />
         </div>
         <div class="Recent-parta2">
           <h3>{{data.title}}</h3>
