@@ -21,6 +21,12 @@ class ParseDB {
     return query
   }
 
+  parse (name) {
+    var MyClass = Parse.Object.extend(name)
+    var object = new MyClass()
+    return object
+  }
+
   destroy () {
     Parse.LiveQuery.close()
   }

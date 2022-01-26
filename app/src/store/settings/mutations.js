@@ -51,3 +51,19 @@ export const setDex = (state, data) => {
 export const updateState = (state, payload) => {
   state[payload.key] = payload.value
 }
+
+export const insertUpvote = (state, upvote) => {
+  const index = state.upvotes.findIndex(store => store.upvote_id === upvote.upvote_id)
+  if (index < 0) {
+    state.upvotes.push(upvote)
+  } else {
+    state.upvotes.splice(index, 1, upvote)
+  }
+}
+
+export const removeUpvote = (state, upvote) => {
+  const index = state.upvotes.findIndex(store => store.upvote_id === upvote.upvote_id)
+  if (index >= 0) {
+    state.upvotes.splice(index, 1)
+  }
+}

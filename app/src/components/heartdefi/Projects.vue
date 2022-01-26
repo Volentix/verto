@@ -20,23 +20,95 @@
         />
       </div>
       <div class="col-md-9">
-        <div class="text-h6 text-bold q-pb-sm">{{ project.title }}</div>
-        <q-item-label lines="2" class="text-body1">{{
-          project.description
-        }}</q-item-label>
+        <div class="text-h6 text-bold q-pb-sm">
+          {{ project.title }}
+        </div>
+        <q-item-label lines="2" class="text-body1">
+          {{project.description}}
+        </q-item-label>
       </div>
-       <div class="col-md-1 flex flex-center">
-      <q-icon size="3rem" color="grey" name="arrow_forward_ios" />
-    </div>
+      <div class="col-md-1 flex flex-center">
+        <q-btn
+          outline
+          color="primary"
+          size="md"
+          class="row"
+          :disable="!user"
+          @click.stop.prevent="upvoteProject(project)">
+          <div class="col-12">
+            <q-icon
+              :color="isUpvoted(project) ? 'red' : 'grey'"
+              name="play_arrow"
+              style="transform: rotateZ(270deg)"/>
+          </div>
+          <div class="col-12">
+            {{getUpvotes(project).length}}
+          </div>
+        </q-btn>
+      </div>
     </div>
 
   </div>
 </template>
 <script>
+import {
+  mapState
+} from 'vuex'
 export default {
   data () {
     return {
-      projects: []
+      projects: [],
+      loading: false
+    }
+  },
+  computed: {
+    ...mapState('settings', ['upvotes']),
+    ...mapState('currentwallet', ['user'])
+  },
+  watch: {
+
+  },
+  created () {
+    this.$store.dispatch('settings/getUpvotes')
+  },
+  mounted () {
+
+  },
+  methods: {
+    isUpvoted (project) {
+      const index = this.upvotes.findIndex((x) => x.type_id === project.id && x.user_id === 'jhuril')
+      if (index >= 0) return this.upvotes[index]
+      return null
+    },
+    getUpvotes (project) {
+      const arr = this.upvotes.filter((x) => x.type_id === project.id)
+      return arr
+    },
+    upvoteProject (project) {
+      if (this.loading) return
+      this.loading = true
+      if (this.isUpvoted(project)) {
+        const upvote = this.isUpvoted(project)
+        upvote.obj.destroy()
+        this.$store.commit('settings/removeUpvote', upvote)
+        this.loading = false
+      } else {
+        const time = new Date().getTime()
+        const obj = {
+          upvote_id: time,
+          type: 'project',
+          type_id: project.id,
+          user_id: 'jhuril'
+        }
+        this.$store.dispatch('settings/addUpvote', obj)
+          .then((response) => {
+            this.loading = false
+          })
+          .catch((error) => {
+            console.log(error)
+            this.loading = false
+          })
+      }
     }
   }
 }
