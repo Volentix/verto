@@ -104,7 +104,7 @@
             <div class="col-12 text-h6 q-mt-lg">
               Discussion
             </div>
-            <div class="col-md-12 comment-section rounded-borders q-pa-md">
+            <div class="col-md-10 comment-section rounded-borders q-pa-md">
               <CommentSection :feed="projectData"/>
             </div>
 
@@ -129,6 +129,7 @@ export default {
   },
   created () {
     this.projectData = this.$store.state.settings.projects.find(o => o.id === this.$route.params.projectId)
+    this.$store.dispatch('settings/initiateFeeds')
   },
   watch: {
     '$route' (to, from) {

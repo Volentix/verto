@@ -99,3 +99,11 @@ export const removeReply = (state, data) => {
     state.replies.splice(index, 1)
   }
 }
+
+export const subscribedComments = (state, data) => {
+  state.subscribed_comments = data
+}
+
+export const subscribedReplies = (state, data) => {
+  state.subscribed_replies = data
+}

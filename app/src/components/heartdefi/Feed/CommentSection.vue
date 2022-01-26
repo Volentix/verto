@@ -16,7 +16,10 @@
             <q-input
               dense
               outlined
+              autogrow
+              @keypress.enter.prevent.stop="submitComment(feed.id)"
               v-model="comment"
+              :disable="!user"
               placeholder="What do you think of this project?"/>
           </q-item-section>
           <q-item-section side>
@@ -30,9 +33,29 @@
         </q-item>
       </form>
     </div>
+
     <div class="col-12 q-px-lg q-mt-lg q-gutter-y-md">
-      <div v-for="item in project_comments" :key="item.comment_id">
-        <CommentItem :feed="feed" :item="item"/>
+      <div
+        v-for="(item,index) in feed_comments"
+        :key="item.comment_id">
+        <CommentItem
+          v-if="(is_limit ? index < comment_limit : true)"
+          :feed="feed"
+          :item="item" />
+      </div>
+    </div>
+    <div
+      v-if="is_limit && feed_comments.length > comment_limit"
+      class="fit row wrap justify-center items-start content-start">
+      <div class="text-primary q-pl-sm text-lowercase text-subtitle2 cursor-pointer" @click.prevent="is_limit=false" >
+        <span class="text-capitalize">
+          View
+        </span> {{feed_comments.length - comment_limit}} more comments
+      </div>
+    </div>
+    <div class="col-12 row justify-center" v-if="feed_comments.length == 0 && subscribed_comments">
+      <div class="text-subtitle2">
+        Comment is empty
       </div>
     </div>
   </div>
@@ -49,6 +72,18 @@ export default {
       default () {
         return null
       }
+    },
+    type: {
+      type: String,
+      default () {
+        return 'project'
+      }
+    },
+    comment_limit: {
+      type: Number,
+      default () {
+        return 2
+      }
     }
   },
 
@@ -59,21 +94,24 @@ export default {
   data () {
     return {
       comment: '',
-      loading: false
+      loading: false,
+      is_limit: true
     }
   },
 
   computed: {
     ...mapState('currentwallet', ['user']),
-    ...mapState('settings', ['comments', 'replies']),
-    project_comments () {
+    ...mapState('settings', ['comments', 'subscribed_comments']),
+    feed_comments () {
       if (!this.feed) return []
-      return this.comments.filter((x) => x.type === 'project' && x.type_id === this.feed.id).sort((a, b) => (new Date(a.createdAt).getTime()) - (new Date(b.createdAt).getTime())).reverse()
+      console.log(this.$store.getters)
+      const comments = this.$store.getters['settings/feed_comments'](this.type, this.feed.id)
+      return comments
     }
   },
 
   watch: {
-    project_comments: {
+    feed_comments: {
       immediate: true,
       handler (newVal) {
         console.log(newVal)
@@ -91,7 +129,7 @@ export default {
 
   methods: {
     submitComment (id) {
-      if (this.loading || !this.user) return
+      if (this.loading || !this.user || this.comment.length === 0) return
       this.loading = true
       const obj = {
         title: this.comment,

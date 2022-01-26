@@ -1,5 +1,5 @@
 <template>
-  <div v-if="item">
+  <div v-if="item" class="q-px-sm">
     <q-item dense class="q-px-none">
       <q-item-section side @click.prevent="" class="q-pr-sm">
         <q-avatar class="cursor-pointer" size="2.2rem">
@@ -28,9 +28,10 @@
           </span>
           <q-btn
             flat
+            round
             icon="more_horiz"
             size="sm"
-            padding="none"
+            padding="xs"
             :loading="loading_delete"
             v-if="user && item.user_id === user.address">
               <q-menu
@@ -88,7 +89,7 @@
           </div>
           <div
             class="cursor-pointer col col-shrink"
-            @click="user && actions ? reply_comment = !reply_comment : ''">
+            @click="user ? $emit('mentionReply',item) : ''">
             <q-icon
               size="xs"
               color="grey"
@@ -100,77 +101,12 @@
         </q-item-label>
       </q-item-section>
     </q-item>
-    <div
-      v-if="is_limit && comment_replies.length > reply_limit"
-      class="q-pt-sm fit row wrap justify-center items-start content-start">
-      <div class="text-primary q-pl-sm text-lowercase text-subtitle2 cursor-pointer" @click="is_limit=false" >
-        <span class="text-capitalize">
-          View
-        </span> {{(reply_limit === 0 ? 'replies' : (comment_replies.length - reply_limit)+' more replies' )}}
-      </div>
-    </div>
-    <div class="row q-mb-md q-px-lg">
-      <div
-        class="col-12 reply-item"
-        v-for="(rep,index) in comment_replies"
-        :key="rep.reply_id">
-        <template v-if="(is_limit ? index < reply_limit : true)">
-          <div :class="index == 0 ? 'q-pt-sm' : 'q-pt-md'">
-            <ReplyItem
-              @mentionReply="mentionReply"
-              :feed="feed"
-              :item="rep" />
-          </div>
-        </template>
-      </div>
-    </div>
-    <div class="row" v-if="reply_comment">
-      <form
-        class="col-md-12"
-        @submit.prevent="!user ? '' : submitReply(item)"
-      >
-        <q-item dense class="q-px-none q-ml-lg">
-          <q-item-section side top @click.prevent="" class="q-pr-sm">
-            <q-avatar class="cursor-pointer" size="2.2rem">
-              <img
-                :src="'https://ui-avatars.com/api/?name='+(user ? user.address.charAt(2) : 'u')" />
-            </q-avatar>
-          </q-item-section>
-
-          <q-item-section>
-            <q-input
-              ref="reply_input"
-              dense
-              outlined
-              v-model="reply"
-              autogrow
-              @keypress.enter.prevent.stop="submitReply(item)"
-              placeholder="Add reply"/>
-            <q-item-label
-              caption
-              class="cursor-pointer text-dark q-mt-sm"
-              @click="reply_comment = false;reply = ''">
-              Cancel
-            </q-item-label>
-          </q-item-section>
-          <q-item-section side top>
-            <q-btn
-              color="primary"
-              label="Send"
-              :loading="loading"
-              :disable="!user"
-              type="submit"/>
-          </q-item-section>
-        </q-item>
-      </form>
-    </div>
   </div>
 </template>
 
 <script>
-import Formatter from '@/mixins/Formatter'
 import { mapState } from 'vuex'
-import ReplyItem from './ReplyItem.vue'
+import Formatter from '@/mixins/Formatter'
 export default {
   mixins: [Formatter],
   props: {
@@ -185,23 +121,11 @@ export default {
       default () {
         return null
       }
-    },
-    reply_limit: {
-      type: Number,
-      default () {
-        return 2
-      }
-    },
-    actions: {
-      type: Boolean,
-      default () {
-        return true
-      }
     }
   },
 
   components: {
-    ReplyItem
+
   },
 
   data () {
@@ -209,7 +133,6 @@ export default {
       reply: '',
       loading: false,
       reply_comment: false,
-      is_limit: true,
       loading_delete: false,
       loading_upvote: false
     }
@@ -217,16 +140,11 @@ export default {
 
   computed: {
     ...mapState('currentwallet', ['user']),
-    ...mapState('settings', ['upvotes', 'replies']),
+    ...mapState('settings', ['upvotes']),
     item_upvotes () {
       if (!this.feed || !this.item) return []
-      const arr = this.$store.getters['settings/feed_upvotes']('comment', this.item.comment_id.toString())
+      const arr = this.$store.getters['settings/feed_upvotes']('reply', this.item.reply_id.toString())
       return arr
-    },
-    comment_replies () {
-      if (!this.feed || !this.item) return []
-      const arr = this.$store.getters['settings/comment_replies'](this.item.comment_id)
-      return arr.reverse()
     },
     upvoted () {
       if (!this.user || !this.item) return null
@@ -236,18 +154,12 @@ export default {
     },
     item_date () {
       if (!this.item) return ''
-      return this.getTimeAgo(this.item.comment_id, false, 1, 1)
+      return this.getTimeAgo(this.item.reply_id, false, 1, 1)
     }
   },
 
   watch: {
-    reply_comment (val) {
-      if (val) {
-        setTimeout(() => {
-          this.$refs.reply_input.focus()
-        }, 100)
-      }
-    }
+
   },
 
   created () {
@@ -255,7 +167,7 @@ export default {
   },
 
   mounted () {
-    console.log(this.item_upvotes)
+
   },
 
   methods: {
@@ -269,12 +181,8 @@ export default {
         console.log(error)
       }
     },
-    mentionReply (item) {
-      if (item.user_id !== this.user.address) this.reply = '@' + item.user_id + ' '
-      this.reply_comment = true
-    },
     submitReply (item) {
-      if (this.loading || !this.user || this.reply.length === 0) return
+      if (this.loading || !this.user) return
       this.loading = true
       const obj = {
         title: this.reply,
@@ -305,8 +213,8 @@ export default {
         const time = new Date().getTime()
         const obj = {
           upvote_id: time,
-          type: 'comment',
-          type_id: item.comment_id.toString(),
+          type: 'reply',
+          type_id: item.reply_id.toString(),
           user_id: this.user.address
         }
         this.$store.dispatch('settings/addUpvote', obj)

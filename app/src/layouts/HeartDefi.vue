@@ -79,6 +79,7 @@ export default {
     this.get1inchCoins()
     this.$store.dispatch('tokens/getTokenList')
     this.$store.state.settings.lightMode = 'false'
+    this.$store.dispatch('settings/initiateFeeds')
   },
   mounted () {
   },

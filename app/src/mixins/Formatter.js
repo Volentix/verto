@@ -479,9 +479,9 @@ export default {
         return n
       }
     },
-    getTimeAgo (date_from, short = false, concat = 4) {
+    getTimeAgo (date_from, short = false, concat = 4, multiple = 1000) {
       var date_now = new Date()
-      var time = new Date(date_from * 1000)
+      var time = new Date(date_from * multiple)
       time = time.getTime()
       var diff = time - date_now.getTime()
       diff /= 1000

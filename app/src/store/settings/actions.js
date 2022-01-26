@@ -58,38 +58,89 @@ export const getSettings = ({ commit }, data) => {
   })
 }
 
-export const subscribeUpvotes = async (context, payload) => {
+export const initiateFeeds = async (context, payload) => {
   try {
-    const parseQuery = parseDb.parseQuery('Upvotes')
+    context.dispatch('subscribeComments', payload)
+    context.dispatch('getUpvotes', payload)
+    context.dispatch('subscribeReplies', payload)
+  } catch (error) {
+    context.dispatch('subscribeComments', payload)
+    context.dispatch('getUpvotes', payload)
+    context.dispatch('subscribeReplies', payload)
+  }
+}
+
+export const subscribeComments = async (context, payload) => {
+  try {
+    if (context.state.subscribed_comments) {
+      context.dispatch('getComments', payload)
+      return
+    }
+    const parseQuery = parseDb.parseQuery('Comments')
     const live_event = await parseQuery.subscribe()
+    context.commit('subscribedComments', live_event)
 
     live_event.on('open', () => {
-      console.log('subscribeUpvotes')
-      context.dispatch('getUserNotifications', payload)
+      console.log('subscribeComments')
+      context.dispatch('getComments', payload)
     })
 
-    const insertUpvote = async (response) => {
+    const insertComment = async (response) => {
       try {
-        const upvote = JSON.parse(JSON.stringify(response.attributes))
-        upvote.id = response.id
-        console.log(upvote)
+        const data = JSON.parse(JSON.stringify(response.attributes))
+        data.obj = response
+        context.commit('insertComment', data)
       } catch (error) {
         console.log(error)
       }
     }
 
-    live_event.on('create', insertUpvote)
+    live_event.on('create', insertComment)
 
-    live_event.on('update', insertUpvote)
+    live_event.on('update', insertComment)
 
     live_event.on('delete', async response => {
-      const upvote = JSON.parse(JSON.stringify(response.attributes))
-      upvote.id = response.id
-      console.log(upvote)
+      context.commit('removeComment', { ...response.attributes })
     })
   } catch (error) {
-    context.dispatch('subscribeUpvotes', payload)
-    // context.dispatch("getUserNotifications",payload)
+    context.dispatch('subscribeComments', payload)
+  }
+}
+
+export const subscribeReplies = async (context, payload) => {
+  try {
+    if (context.state.subscribed_comments) {
+      context.dispatch('getReplies', payload)
+      return
+    }
+    const parseQuery = parseDb.parseQuery('Replies')
+    const live_event = await parseQuery.subscribe()
+    context.commit('subscribedReplies', live_event)
+
+    live_event.on('open', () => {
+      console.log('subscribeReplies')
+      context.dispatch('getReplies', payload)
+    })
+
+    const insertReply = async (response) => {
+      try {
+        const data = JSON.parse(JSON.stringify(response.attributes))
+        data.obj = response
+        context.commit('insertReply', data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    live_event.on('create', insertReply)
+
+    live_event.on('update', insertReply)
+
+    live_event.on('delete', async response => {
+      context.commit('removeReply', { ...response.attributes })
+    })
+  } catch (error) {
+    context.dispatch('subscribeReplies', payload)
   }
 }
 
@@ -123,6 +174,7 @@ export const addUpvote = async (context, payload) => {
       .then(async (response) => {
         const data = JSON.parse(JSON.stringify(response.attributes))
         data.obj = response
+        // data.obj.destroy()
         context.commit('insertUpvote', data)
         resolve(data)
       })
@@ -138,9 +190,9 @@ export async function getComments (context, payload) {
     parseQuery.find()
       .then((response) => {
         for (const element of response) {
-          console.log(element)
           const data = JSON.parse(JSON.stringify(element.attributes))
           data.obj = element
+          // data.obj.destroy()
           context.commit('insertComment', data)
         }
       })
@@ -158,9 +210,9 @@ export async function getReplies (context, payload) {
     parseQuery.find()
       .then((response) => {
         for (const element of response) {
-          console.log(element)
           const data = JSON.parse(JSON.stringify(element.attributes))
           data.obj = element
+          // data.obj.destroy()
           context.commit('insertReply', data)
         }
       })

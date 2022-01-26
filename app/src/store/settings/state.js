@@ -131,5 +131,7 @@ export default {
   lightMode: true,
   upvotes: [],
   comments: [],
-  replies: []
+  replies: [],
+  subscribed_comments: null,
+  subscribed_replies: null
 }

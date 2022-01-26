@@ -19,31 +19,26 @@
           :src="project.icon"
         />
       </div>
-      <div class="col-md-9 row">
-        <div class="col-md-12 text-h6 text-bold q-pb-sm">
+      <div class="col-md-9">
+        <div class="text-h6 text-bold q-pb-sm">
           {{ project.title }}
         </div>
-        <q-item-label lines="2" class="col-md-12 text-body1">
+        <q-item-label lines="2" class="text-body1">
           {{project.description}}
         </q-item-label>
-        <q-item-label class="q-pt-md col-md-12 text-caption">
+        <q-item-label class="q-pt-md text-caption">
           <q-icon
           color="grey"
           name="mode_comment"
           class="relative-position"
           style="top:-2px;"/>
-          2
+          {{$store.getters['settings/feed_comments']('project', project.id).length}}
         </q-item-label>
-        <div class="col-md-8 q-mt-md q-pa-sm rounded-borders q-gutter-y-md comment-section" v-if="false">
-          <div v-for="i in 2" :key="i">
-            <CommentItem :feed="project"/>
-          </div>
-        </div>
       </div>
       <div class="col-md-1 flex flex-center">
         <q-btn
           outline
-          color="primary"
+          :color="isUpvoted(project) ? 'red' : 'primary'"
           size="md"
           class="row"
           :disable="!user"
@@ -58,6 +53,21 @@
             {{getUpvotes(project).length}}
           </div>
         </q-btn>
+      </div>
+      <div class="col-md-9 offset-md-2 row">
+        <div class="col-12 q-mt-sm q-px-sm rounded-borders q-gutter-y-md comment-section" v-if="$store.getters['settings/feed_comments']('project', project.id).length > 0">
+          <div
+            class="q-px-md"
+            v-for="(item,index) in $store.getters['settings/feed_comments']('project', project.id)"
+            :key="project.id+'-'+item.comment_id">
+            <CommentItem
+              v-if="index < 2"
+              :feed="project"
+              :item="item"
+              :actions="false"
+              :reply_limit="0"/>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -77,20 +87,31 @@ export default {
     }
   },
   computed: {
-    ...mapState('settings', ['upvotes']),
+    ...mapState('settings', ['upvotes', 'comments', 'replies']),
     ...mapState('currentwallet', ['user'])
   },
   watch: {
-
+    upvotes: {
+      immediate: true,
+      handler (newVal) {
+        console.log(newVal)
+        // for (const elem of newVal) {
+        //   elem.obj.destroy()
+        // }
+      }
+    }
   },
   created () {
-    this.$store.dispatch('settings/getUpvotes')
-    this.$store.dispatch('settings/getComments')
+
   },
   mounted () {
 
   },
   methods: {
+    getProjectDiscussions (project) {
+      const arr = this.$store.getters['settings/feed_items']('project', project.id)
+      return arr
+    },
     isUpvoted (project) {
       if (!this.user) return null
       const index = this.upvotes.findIndex((x) => x.type_id === project.id && x.user_id === this.user.address)
@@ -98,7 +119,7 @@ export default {
       return null
     },
     getUpvotes (project) {
-      const arr = this.upvotes.filter((x) => x.type_id === project.id)
+      const arr = this.$store.getters['settings/feed_upvotes']('project', project.id)
       return arr
     },
     upvoteProject (project) {
@@ -114,7 +135,7 @@ export default {
         const obj = {
           upvote_id: time,
           type: 'project',
-          type_id: project.id,
+          type_id: project.id.toString(),
           user_id: this.user.address
         }
         this.$store.dispatch('settings/addUpvote', obj)
