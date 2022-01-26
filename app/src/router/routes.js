@@ -54,6 +54,14 @@ if (process.env.QMODE !== 'bex') {
         { path: '', component: () => import('pages/Heartdefi/LandingPage.vue') }
       ]
     },
+    {
+      name: 'pulsexsac',
+      path: '/pulsexsac/:key',
+      component: () => import('layouts/HeartDefi.vue'),
+      children: [
+        { path: '', component: () => import('components/Heartdefi/Sacrifices.vue') }
+      ]
+    },
     { name: 'HearDefiHistory',
       path: '/account/:key/history',
       component: () => import('layouts/HeartDefi.vue'),

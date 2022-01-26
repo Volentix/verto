@@ -128,6 +128,7 @@ export default {
       })
     },
     async logout (redirect = null) {
+      this.$store.state.wallets.tokens = []
       this.connectLoading = false
       this.$route.params.key = null
       this.user = {

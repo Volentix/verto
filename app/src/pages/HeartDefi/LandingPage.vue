@@ -1,9 +1,9 @@
 <template>
   <div class="q-px-md">
     <div class="mncright">
-      <Loading class="mncright-left"  v-show="loadingP" />
 
-      <div class="mncright-left" v-show="!loadingP">
+      <div class="mncright-left" >
+
         <div v-if="!$store.state.currentwallet.user"><Intro
 
           class="full-width connectTo"
@@ -11,7 +11,9 @@
           <AssetList />
         </div>
         <div v-else>
+         <Loading class=" q-mb-md" v-if="loadingP" />
           <div class="dashboard-area">
+
             <div class="dashboard-left">
               <div class="dashboard-left_abc1">
                 <p>Welcome</p>
@@ -197,7 +199,7 @@ export default {
   },
   data () {
     return {
-      loadingP: true,
+      loadingP: false,
       currentChain: {
         current: {},
         alt: {}
@@ -211,17 +213,7 @@ export default {
       }
     },
     '$store.state.currentwallet.user': function (val) {
-      if (val && val.address) {
-        let init = true
-        if (this.$store.state.wallets.tokens && this.$store.state.wallets.tokens.find(o => o.key.toLowerCase() === val.address.toLowerCase())) {
-          init = false
-        }
-        this.loadingP = init
-        this.getChainData()
-        setTimeout(() => {
-          this.loadingP = false
-        }, 5000)
-      }
+      this.initUser()
     }
   },
   computed: {},
@@ -229,6 +221,7 @@ export default {
     this.getChainData()
   },
   mounted () {
+    this.loadingP = true
     if (this.$store.state.currentwallet.user && this.$store.state.currentwallet.user.address) {
       setTimeout(() => {
         this.loadingP = false
@@ -238,6 +231,22 @@ export default {
     }
   },
   methods: {
+    initUser () {
+      console.log(123334)
+      let val = this.$store.state.currentwallet.user
+      if (val && val.address) {
+        let init = true
+        if (this.$store.state.wallets.tokens && this.$store.state.wallets.tokens.find(o => o.key.toLowerCase() === val.address.toLowerCase())) {
+          init = false
+        }
+        this.loadingP = init
+        console.log(init, 'init 2')
+        this.getChainData()
+        setTimeout(() => {
+          this.loadingP = false
+        }, 5000)
+      }
+    },
     switchChain () {
       let temp = this.currentChain.alt
       this.currentChain.alt = this.currentChain.current

@@ -15,6 +15,19 @@ export default {
   },
   projects: [
     {
+      title: 'FreePulse.io',
+      id: 'freepulseio',
+      chain: 'tpls',
+      icon: 'https://freepulse.io/_assets/img/logo.png',
+      tokens: [],
+      website: 'https://freepulse.io',
+      telegram: 'https://t.me/FreePulse',
+      twitter: 'https://twitter.com/FreePulseio',
+      type: 'project',
+      featuredVideo: 'QnO-5cM6b8s',
+      description:
+        'Claim up to $200 of free PLS / hour. A possible onboarding tool for @PulseChainCom.'
+    }, {
       title: 'Liquid loans',
       id: 'liquid-loans',
       chain: 'tpls',

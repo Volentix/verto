@@ -10,7 +10,7 @@
     <div class="menu-area">
       <div class="menu-part">
         <ul>
-            <li @click="$router.push('/account/'+($store.state.currentwallet.user ?  $store.state.currentwallet.user.address : ''))" :class="{'active': $route.path == '/account/'+$route.params.key}">
+            <li @click="$router.push('/account/'+($store.state.currentwallet.user ?  $store.state.currentwallet.user.address : ''))" :class="{'active': $route.path == '/account/'+$route.params.key || $route.path == '/account/'}">
               <a href="javascript:void(0)" @click.prevent=""  >
                 <i class="fas fa-home"/>
                 <p>Dashboard</p>
@@ -40,13 +40,13 @@
                 <p>Community</p>
               </a>
             </li>
-            <li>
+            <li v-if="false">
               <a href="" @click.prevent=""  >
                 <i class="fas fa-user"/>
                 <p> Profile</p>
               </a>
             </li>
-            <li>
+            <li v-if="false">
               <a href="" @click.prevent=""  >
                 <i class="fas fa-cog"/>
                 <p>Settings</p>

@@ -12,25 +12,26 @@
      <Transaction   :key="'Transaction'+i" :data="item" v-if="item.type == 'transaction'" />
      </div>
 </div>
-    <div  v-show="!mini" :id="item.id"  :style="!maximize(item.id, index) ? 'height:auto' : 'height:80vh'" :key="index" v-for="(item, index) in feed" :class="{'col-md-6': !mini &&  !max[index], 'col-md-12': mini || maximize(item.id, index)}" >
+    <div  v-show="!mini" :id="item.featuredVideo"  :style="!maximize(item.featuredVideo, index) ? 'height:auto' : 'height:80vh'" :key="index" v-for="(item, index) in feed" :class="{'col-md-6': !mini &&  !max[index], 'col-md-12': mini || maximize(item.featuredVideo, index)}" >
 
      <q-item v-if="item.youtube"  class="q-mb-sm" >
-        <q-item-section avatar>
+        <q-item-section class="cursor-pointer" avatar @click="!mini ? $router.push('/project/'+item.id) : ''">
           <q-avatar>
-            <img :src="`https://cdn.quasar.dev/img/avatar6.jpg`">
+            <q-img contain :src="item.icon" />
           </q-avatar>
         </q-item-section>
 
-        <q-item-section>
-          <q-item-label lines="1">Channel Name</q-item-label>
+        <q-item-section class="cursor-pointer" @click="!mini ? $router.push('/project/'+item.featuredVideo) : ''">
+          <q-item-label lines="1">{{item.title}}</q-item-label>
 
         </q-item-section>
 
-        <q-item-section @click="mini ? $router.push('/community/y/'+item.id) : $set(max,index,!max[index])" style="width:100px" class="row inline endDetails" side>
-         <div class="flex flex-center" >6m  ago </div> <div class="flex flex-center" ><q-btn flat :icon="maximize(item.id, index) ? 'close_fullscreen' : 'check_box_outline_blank'" /> </div>
+        <q-item-section @click="mini ? $router.push('/community/y/'+item.featuredVideo) : $set(max,index,!max[index])" style="width:100px" class="row inline endDetails" side>
+         <div class="flex flex-center" >Max </div> <div class="flex flex-center" ><q-btn flat :icon="maximize(item.featuredVideo, index) ? 'close_fullscreen' : 'check_box_outline_blank'" /> </div>
         </q-item-section>
       </q-item>
-     <iframe v-if="item.youtube"   width="100%" :style="!maximize(item.id, index) ? (mini ? '' : 'height:315px') : 'height:80vh; padding-bottom:80px'" :src="'https://www.youtube.com/embed/'+item.id" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <q-item-label lines="2" class="q-mb-md">{{item.description}}</q-item-label>
+     <iframe v-if="item.youtube"   width="100%" :style="!maximize(item.featuredVideo, index) ? (mini ? '' : 'height:315px') : 'height:80vh; padding-bottom:80px'" :src="'https://www.youtube.com/embed/'+item.featuredVideo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
       <div v-if="item.twitter"  class="news-part">
       <blockquote class="twitter-tweet">
@@ -103,6 +104,13 @@ export default {
 
   },
   created () {
+    this.feed = JSON.parse(JSON.stringify(this.$store.state.settings.projects)).map(o => {
+      if (o.featuredVideo && o.featuredVideo.length) {
+        o.youtube = true
+        // o.id = o.featuredVideo
+      }
+      return o
+    }).filter(o => o.youtube)
     if (this.$route.params.id) {
       this.feed = this.feed.sort((a) => {
         return a.id === this.$route.params.id ? -1 : 1

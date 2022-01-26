@@ -32,6 +32,7 @@ import LandingPage from 'pages/Heartdefi/LandingPage'
 import Lib from '@/util/walletlib'
 import Connect from '../mixins/Connect'
 import DexInteraction from '../mixins/DexInteraction'
+import initWallet from '@/util/Wallets2Tokens'
 export default {
   mixins: [Connect, DexInteraction],
   components: {
@@ -56,8 +57,18 @@ export default {
         let init = true
         if (this.$store.state.wallets.tokens && this.$store.state.wallets.tokens.find(o => o.key.toLowerCase() === val.address.toLowerCase())) {
           init = false
+        } else {
+          let data = localStorage.getItem('walletPublicDatav2')
+
+          if (data) {
+            data = JSON.parse(data)
+            if (data && data.find(o => o.key.toLowerCase() === val.address.toLowerCase())) {
+              initWallet()
+              init = false
+            }
+          }
         }
-        console.log(init, 'init', this.$store.state.wallets.tokens)
+
         if (init) {
           Lib.setWallets([wallet])
           this.$store.commit(

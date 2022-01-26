@@ -33,8 +33,7 @@
           color="primary"
           size="md"
           class="row"
-          :disable="!user"
-          @click.stop.prevent="upvoteProject(project)">
+          @click.stop.prevent="user ? upvoteProject(project) : $q.notify({message:'Connect a wallet to upvote', position:'center'})">
           <div class="col-12">
             <q-icon
               :color="isUpvoted(project) ? 'red' : 'grey'"
@@ -76,7 +75,7 @@ export default {
   },
   methods: {
     isUpvoted (project) {
-      const index = this.upvotes.findIndex((x) => x.type_id === project.id && x.user_id === 'jhuril')
+      const index = this.upvotes.findIndex((x) => x.type_id === project.id)
       if (index >= 0) return this.upvotes[index]
       return null
     },
