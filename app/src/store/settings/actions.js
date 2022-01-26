@@ -93,41 +93,15 @@ export const subscribeUpvotes = async (context, payload) => {
   }
 }
 
-export const addUpvote = async (context, payload) => {
-  return new Promise(async function (resolve, reject) {
-    const parseObject = parseDb.parse('Upvotes')
-    for (const key in payload) {
-      parseObject.set(key, payload[key])
-    }
-    // var acl = parseDb.acl()
-    // acl.setPublicReadAccess(true)
-    // acl.setWriteAccess(payload.user, true)
-    // parseObject.setACL(acl)
-
-    parseObject.save(payload)
-      .then(async (response) => {
-        const upvote = JSON.parse(JSON.stringify(response.attributes))
-        upvote.obj = response
-        console.log(upvote)
-        context.commit('insertUpvote', upvote)
-        resolve(upvote)
-      })
-      .catch((error) => {
-        reject(error)
-      })
-  })
-}
-
 export async function getUpvotes (context, payload) {
   try {
     const parseQuery = parseDb.parseQuery('Upvotes')
     parseQuery.find()
       .then((response) => {
         for (const element of response) {
-          console.log(element)
-          const upvote = JSON.parse(JSON.stringify(element.attributes))
-          upvote.obj = element
-          context.commit('insertUpvote', upvote)
+          const data = JSON.parse(JSON.stringify(element.attributes))
+          data.obj = element
+          context.commit('insertUpvote', data)
         }
       })
       .catch((error) => {
@@ -136,4 +110,106 @@ export async function getUpvotes (context, payload) {
   } catch (error) {
     console.log(error)
   }
+}
+
+export const addUpvote = async (context, payload) => {
+  return new Promise(async function (resolve, reject) {
+    const parseObject = parseDb.parse('Upvotes')
+    for (const key in payload) {
+      parseObject.set(key, payload[key])
+    }
+
+    parseObject.save(payload)
+      .then(async (response) => {
+        const data = JSON.parse(JSON.stringify(response.attributes))
+        data.obj = response
+        context.commit('insertUpvote', data)
+        resolve(data)
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  })
+}
+
+export async function getComments (context, payload) {
+  try {
+    const parseQuery = parseDb.parseQuery('Comments')
+    parseQuery.find()
+      .then((response) => {
+        for (const element of response) {
+          console.log(element)
+          const data = JSON.parse(JSON.stringify(element.attributes))
+          data.obj = element
+          context.commit('insertComment', data)
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export async function getReplies (context, payload) {
+  try {
+    const parseQuery = parseDb.parseQuery('Replies')
+    parseQuery.find()
+      .then((response) => {
+        for (const element of response) {
+          console.log(element)
+          const data = JSON.parse(JSON.stringify(element.attributes))
+          data.obj = element
+          context.commit('insertReply', data)
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const addComment = async (context, payload) => {
+  return new Promise(async function (resolve, reject) {
+    const parseObject = parseDb.parse('Comments')
+    for (const key in payload) {
+      parseObject.set(key, payload[key])
+    }
+
+    parseObject.save(payload)
+      .then(async (response) => {
+        const comment = JSON.parse(JSON.stringify(response.attributes))
+        comment.obj = response
+        console.log(comment)
+        context.commit('insertComment', comment)
+        resolve(comment)
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  })
+}
+
+export const addReply = async (context, payload) => {
+  return new Promise(async function (resolve, reject) {
+    const parseObject = parseDb.parse('Replies')
+    for (const key in payload) {
+      parseObject.set(key, payload[key])
+    }
+
+    parseObject.save(payload)
+      .then(async (response) => {
+        const comment = JSON.parse(JSON.stringify(response.attributes))
+        comment.obj = response
+        console.log(comment)
+        context.commit('insertReply', comment)
+        resolve(comment)
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  })
 }

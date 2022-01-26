@@ -19,13 +19,26 @@
           :src="project.icon"
         />
       </div>
-      <div class="col-md-9">
-        <div class="text-h6 text-bold q-pb-sm">
+      <div class="col-md-9 row">
+        <div class="col-md-12 text-h6 text-bold q-pb-sm">
           {{ project.title }}
         </div>
-        <q-item-label lines="2" class="text-body1">
+        <q-item-label lines="2" class="col-md-12 text-body1">
           {{project.description}}
         </q-item-label>
+        <q-item-label class="q-pt-md col-md-12 text-caption">
+          <q-icon
+          color="grey"
+          name="mode_comment"
+          class="relative-position"
+          style="top:-2px;"/>
+          2
+        </q-item-label>
+        <div class="col-md-8 q-mt-md q-pa-sm rounded-borders q-gutter-y-md comment-section" v-if="false">
+          <div v-for="i in 2" :key="i">
+            <CommentItem :feed="project"/>
+          </div>
+        </div>
       </div>
       <div class="col-md-1 flex flex-center">
         <q-btn
@@ -50,10 +63,12 @@
   </div>
 </template>
 <script>
-import {
-  mapState
-} from 'vuex'
+import { mapState } from 'vuex'
+import CommentItem from './Feed/CommentItem'
 export default {
+  components: {
+    CommentItem
+  },
   data () {
     return {
       projects: [],
@@ -69,13 +84,15 @@ export default {
   },
   created () {
     this.$store.dispatch('settings/getUpvotes')
+    this.$store.dispatch('settings/getComments')
   },
   mounted () {
 
   },
   methods: {
     isUpvoted (project) {
-      const index = this.upvotes.findIndex((x) => x.type_id === project.id)
+      if (!this.user) return null
+      const index = this.upvotes.findIndex((x) => x.type_id === project.id && x.user_id === this.user.address)
       if (index >= 0) return this.upvotes[index]
       return null
     },
@@ -97,7 +114,7 @@ export default {
           upvote_id: time,
           type: 'project',
           type_id: project.id,
-          user_id: 'jhuril'
+          user_id: this.user.address
         }
         this.$store.dispatch('settings/addUpvote', obj)
           .then((response) => {
@@ -113,6 +130,9 @@ export default {
 }
 </script>
 <style scoped>
+.comment-section{
+  border:1px solid rgb(207, 207, 207);
+}
 .project-item {
   box-shadow: 1px 1px 20px #e01f0038;
   border-radius: 20px;

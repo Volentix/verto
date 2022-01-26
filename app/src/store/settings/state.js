@@ -142,5 +142,7 @@ export default {
     swapSlippage: 3
   },
   lightMode: true,
-  upvotes: []
+  upvotes: [],
+  comments: [],
+  replies: []
 }
